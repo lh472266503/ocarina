@@ -2,6 +2,7 @@
 #include <iostream>
 #include <array>
 #include <utility>
+#include "ast/op.h"
 
 // debugging aid
 template<typename T, T... ints>
@@ -55,5 +56,5 @@ int main() {
 
     // print it to cout
     std::cout << tuple << '\n';
-
+    fun();
 }
