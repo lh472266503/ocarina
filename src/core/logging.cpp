@@ -3,3 +3,12 @@
 //
 
 #include "logging.h"
+
+namespace sycamore {
+    inline namespace core {
+        spdlog::logger &logger() noexcept {
+            static auto ret = spdlog::stdout_color_mt("console");
+            return *ret;
+        }
+    }
+}
