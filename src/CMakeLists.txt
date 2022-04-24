@@ -3,8 +3,13 @@ add_subdirectory(ext)
 add_subdirectory(core)
 add_subdirectory(ast)
 
+add_library(sycamore-all INTERFACE)
+target_link_libraries(sycamore-all INTERFACE
+        sycamore-ast
+        sycamore-core)
+
 add_executable(sycamore main.cpp)
-target_link_libraries(sycamore sycamore-ast)
+target_link_libraries(sycamore sycamore-all)
 
 set_target_properties(sycamore PROPERTIES
         PUBLIC_HEADER "${HEADER_FILES}"

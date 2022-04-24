@@ -1,9 +1,7 @@
 file(GLOB_RECURSE HEADER_FILES *.h*)
 file(GLOB_RECURSE SOURCE_FILES *.c*)
 
-
 add_library(sycamore-core SHARED ${SOURCE_FILES})
-#target_compile_definitions(sycamore-core PRIVATE SCM_AST_EXPORT_DLL=1)
 set_target_properties(sycamore-core PROPERTIES
         PUBLIC_HEADER "${HEADER_FILES}"
         LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIG>/bin/"
