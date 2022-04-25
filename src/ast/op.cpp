@@ -7,7 +7,3 @@
 
 using std::cout;
 using std::endl;
-
-void fun() {
-    cout << "wori" << endl;
-}

@@ -56,5 +56,4 @@ int main() {
 
     // print it to cout
     std::cout << tuple << '\n';
-    fun();
 }
