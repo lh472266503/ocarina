@@ -6,4 +6,6 @@
 #pragma once
 
 #include <filesystem>
+#include <stdint.h>
 
+#define SCM_NODISCARD [[nodiscard]]

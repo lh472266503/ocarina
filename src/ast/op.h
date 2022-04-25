@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include "core/basic_type.h"
+
 namespace sycamore {
 inline namespace ast {
 
@@ -14,7 +16,7 @@ enum struct UnaryOp : uint32_t {
     BIT_NOT
 };
 
-enum struct BinaryOp:uint32_t {
+enum struct BinaryOp : uint32_t {
     // arithmetic
     ADD,
     SUB,
@@ -116,6 +118,8 @@ enum struct CallOp : uint32_t {
     MAKE_FLOAT2X2,
     MAKE_FLOAT3X3,
     MAKE_FLOAT4X4,
+
+    COUNT
 };
 
 }

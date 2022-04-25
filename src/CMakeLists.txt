@@ -1,5 +1,6 @@
 
 include_directories(ext/spdlog/include)
+include_directories(src)
 
 add_subdirectory(ext)
 add_subdirectory(core)

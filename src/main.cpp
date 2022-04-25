@@ -40,20 +40,26 @@ auto &operator<<(std::basic_ostream<Ch, Tr> &os,
     return os << ")";
 }
 
-
+using namespace sycamore;
+using namespace std;
 int main() {
-    print_sequence(std::integer_sequence<unsigned, 9, 2, 5, 1, 9, 1, 6>{});
-    print_sequence(std::make_integer_sequence<int, 20>{});
-    print_sequence(std::make_index_sequence<10>{});
-    print_sequence(std::index_sequence_for<float, std::iostream, char>{});
+    auto a = 512_kb;
+    std::true_type type1;
 
-    std::array<int, 4> array = {1, 2, 3, 4};
+    cout << type1 << endl;
 
-    // convert an array into a tuple
-    auto tuple = a2t(array);
-    static_assert(std::is_same<decltype(tuple),
-            std::tuple<int, int, int, int>>::value, "");
-
-    // print it to cout
-    std::cout << tuple << '\n';
+//    print_sequence(std::integer_sequence<unsigned, 9, 2, 5, 1, 9, 1, 6>{});
+//    print_sequence(std::make_integer_sequence<int, 20>{});
+//    print_sequence(std::make_index_sequence<10>{});
+//    print_sequence(std::index_sequence_for<float, std::iostream, char>{});
+//
+//    std::array<int, 4> array = {1, 2, 3, 4};
+//
+//    // convert an array into a tuple
+//    auto tuple = a2t(array);
+//    static_assert(std::is_same<decltype(tuple),
+//            std::tuple<int, int, int, int>>::value, "");
+//
+//    // print it to cout
+//    std::cout << tuple << '\n';
 }
