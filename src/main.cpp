@@ -5,6 +5,7 @@
 #include "ast/op.h"
 #include "core/concepts.h"
 #include "core/basic_trait.h"
+#include "typeinfo"
 
 // debugging aid
 template<typename T, T... ints>
@@ -48,12 +49,14 @@ using namespace sycamore;
 using namespace std;
 int main() {
 
-    cout << sycamore::is_integral<uint>::value << endl;
-    cout << sycamore::is_same_v<int, int,int> << endl;
-    cout << sycamore::is_same_v<> << endl;
-    cout << sycamore::is_same_v<int, bool,int> << endl;
-    cout << sycamore::is_same_v<bool, int,int> << endl;
-    cout << sycamore::is_same_v<int, int,bool> << endl;
+    cout << typeid(sycamore::vector_element_t<Vector<int,3>>).name() << endl;
+//    cout << sycamore::is_vector_same_dimension<Vector<int, 3>,Vector<int, 3>,Vector<float, 3>>::value << endl;
+//    cout << sycamore::is_integral<uint>::value << endl;
+//    cout << sycamore::is_same_v<int, int,int> << endl;
+//    cout << sycamore::is_same_v<> << endl;
+//    cout << sycamore::is_same_v<int, bool,int> << endl;
+//    cout << sycamore::is_same_v<bool, int,int> << endl;
+//    cout << sycamore::is_same_v<int, int,bool> << endl;
 
 
 //    print_sequence(std::integer_sequence<unsigned, 9, 2, 5, 1, 9, 1, 6>{});

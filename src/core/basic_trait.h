@@ -104,6 +104,11 @@ struct vector_element_impl {
     using type = T;
 };
 
+template<typename T, size_t N>
+struct vector_element_impl<Vector<T, N>> {
+    using type = T;
+};
+
 template<typename T>
 struct vector_dimension_impl {
     static constexpr auto value = static_cast<size_t>(1u);
@@ -137,5 +142,89 @@ template<typename First, typename... Other>
 struct is_vector_all_same_dimension_impl<First, Other...> : std::conjunction<is_vector_same_dimension_impl<First, Other>...> {};
 
 }// namespace detail
+
+template<typename... T>
+using is_vector_same_dimension = detail::is_vector_all_same_dimension_impl<std::remove_cvref_t<T>...>;
+
+template<typename... T>
+constexpr auto is_vector_same_dimension_v = is_vector_same_dimension<T...>::value;
+
+template<typename T>
+using vector_dimension = detail::vector_dimension_impl<std::remove_cvref_t<T>>;
+
+template<typename T>
+constexpr auto vector_dimension_v = vector_dimension<T>::value;
+
+template<typename T>
+using matrix_dimension = detail::matrix_dimension_impl<std::remove_cvref_t<T>>;
+
+template<typename T>
+constexpr auto matrix_dimension_v = matrix_dimension<T>::value;
+
+template<typename T>
+using vector_element = detail::vector_element_impl<std::remove_cvref_t<T>>;
+
+template<typename T>
+using vector_element_t = typename vector_element<T>::type;
+
+template<typename T, size_t N = 0u>
+using is_vector = detail::is_vector_impl<std::remove_cvref_t<T>, N>;
+
+template<typename T>
+using is_vector2 = is_vector<T, 2u>;
+
+template<typename T>
+using is_vector3 = is_vector<T, 3u>;
+
+template<typename T>
+using is_vector4 = is_vector<T, 4u>;
+
+template<typename T>
+using is_bool_vector = std::conjunction<is_vector<T>, std::is_same<vector_element_t<T>, bool>>;
+
+template<typename T>
+constexpr auto is_bool_vector_v = is_bool_vector<T>::value;
+
+template<typename T>
+using is_float_vector = std::conjunction<is_vector<T>, std::is_same<vector_element_t<T>, float>>;
+
+template<typename T>
+constexpr auto is_float_vector_v = is_float_vector<T>::value;
+
+template<typename T>
+using is_int_vector = std::conjunction<is_vector<T>, std::is_same<vector_element_t<T>, int>>;
+
+template<typename T>
+constexpr auto is_int_vector_v = is_int_vector<T>::value;
+
+template<typename T>
+using is_uint_vector = std::conjunction<is_vector<T>, std::is_same<vector_element_t<T>, uint>>;
+
+template<typename T>
+constexpr auto is_uint_vector_v = is_uint_vector<T>::value;
+
+template<typename T, size_t N = 0u>
+constexpr auto is_vector_v = is_vector<T, N>::value;
+
+template<typename T>
+constexpr auto is_vector2_v = is_vector2<T>::value;
+
+template<typename T>
+constexpr auto is_vector3_v = is_vector3<T>::value;
+
+template<typename T>
+constexpr auto is_vector4_v = is_vector4<T>::value;
+
+template<typename T, size_t N = 0u>
+using is_matrix = detail::is_matrix_impl<std::remove_cvref_t<T>, N>;
+
+template<typename T>
+using is_matrix2 = is_matrix<T, 2u>;
+
+template<typename T>
+using is_matrix3 = is_matrix<T, 3u>;
+
+template<typename T>
+using is_matrix4 = is_matrix<T, 4u>;
 
 }// namespace sycamore

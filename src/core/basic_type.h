@@ -68,8 +68,84 @@ struct Vector : public detail::VectorStorage<T, N> {
                   "Invalid vector type");
     static_assert(N == 2 || N == 3 || N == 4, "Invalid vector dimension");
     using Storage::VectorStorage;
-    [[nodiscard]] constexpr T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
-    [[nodiscard]] constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
+    SCM_NODISCARD constexpr T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
+    SCM_NODISCARD constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
 };
+
+#define SYCAMORE_MAKE_VECTOR_TYPES(T) \
+    using T##2 = Vector<T, 2>;        \
+    using T##3 = Vector<T, 3>;        \
+    using T##4 = Vector<T, 4>;
+
+SYCAMORE_MAKE_VECTOR_TYPES(bool)
+SYCAMORE_MAKE_VECTOR_TYPES(float)
+SYCAMORE_MAKE_VECTOR_TYPES(int)
+SYCAMORE_MAKE_VECTOR_TYPES(uint)
+
+#undef SYCAMORE_MAKE_VECTOR_TYPES
+
+template<size_t N>
+struct Matrix {
+    static_assert(always_false_v<std::integral_constant<size_t, N>>, "Invalid matrix type");
+};
+
+template<>
+struct Matrix<2> {
+
+    float2 cols[2];
+
+    constexpr Matrix() noexcept
+        : cols{float2{1.0f, 0.0f}, float2{0.0f, 1.0f}} {}
+
+    constexpr Matrix(const float2 c0, const float2 c1) noexcept
+        : cols{c0, c1} {}
+
+    SCM_NODISCARD constexpr float2 &operator[](size_t i) noexcept { return cols[i]; }
+    SCM_NODISCARD constexpr const float2 &operator[](size_t i) const noexcept { return cols[i]; }
+};
+
+template<>
+struct Matrix<3> {
+
+    float3 cols[3];
+
+    constexpr Matrix() noexcept
+        : cols{float3{1.0f, 0.0f, 0.0f}, float3{0.0f, 1.0f, 0.0f}, float3{0.0f, 0.0f, 1.0f}} {}
+
+    constexpr Matrix(const float3 c0, const float3 c1, const float3 c2) noexcept
+        : cols{c0, c1, c2} {}
+
+    SCM_NODISCARD constexpr float3 &operator[](size_t i) noexcept { return cols[i]; }
+    SCM_NODISCARD constexpr const float3 &operator[](size_t i) const noexcept { return cols[i]; }
+};
+
+template<>
+struct Matrix<4> {
+
+    float4 cols[4];
+
+    constexpr Matrix() noexcept
+        : cols{float4{1.0f, 0.0f, 0.0f, 0.0f},
+               float4{0.0f, 1.0f, 0.0f, 0.0f},
+               float4{0.0f, 0.0f, 1.0f, 0.0f},
+               float4{0.0f, 0.0f, 0.0f, 1.0f}} {}
+
+    constexpr Matrix(const float4 c0, const float4 c1, const float4 c2, const float4 c3) noexcept
+        : cols{c0, c1, c2, c3} {}
+
+    SCM_NODISCARD constexpr float4 &operator[](size_t i) noexcept { return cols[i]; }
+    SCM_NODISCARD constexpr const float4 &operator[](size_t i) const noexcept { return cols[i]; }
+};
+
+using float2x2 = Matrix<2>;
+using float3x3 = Matrix<3>;
+using float4x4 = Matrix<4>;
+
+using basic_types = std::tuple<
+    bool, float, int, uint,
+    bool2, float2, int2, uint2,
+    bool3, float3, int3, uint3,
+    bool4, float4, int4, uint4,
+    float2x2, float3x3, float4x4>;
 
 }// namespace sycamore

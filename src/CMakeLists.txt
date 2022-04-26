@@ -5,6 +5,7 @@ include_directories(src)
 add_subdirectory(ext)
 add_subdirectory(core)
 add_subdirectory(ast)
+add_subdirectory(tests)
 
 add_library(sycamore-all INTERFACE)
 target_link_libraries(sycamore-all INTERFACE
