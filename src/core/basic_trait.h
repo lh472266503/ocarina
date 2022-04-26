@@ -227,4 +227,22 @@ using is_matrix3 = is_matrix<T, 3u>;
 template<typename T>
 using is_matrix4 = is_matrix<T, 4u>;
 
+template<typename T, size_t N = 0u>
+constexpr auto is_matrix_v = is_matrix<T, N>::value;
+
+template<typename T>
+constexpr auto is_matrix2_v = is_matrix2<T>::value;
+
+template<typename T>
+constexpr auto is_matrix3_v = is_matrix3<T>::value;
+
+template<typename T>
+constexpr auto is_matrix4_v = is_matrix4<T>::value;
+
+template<typename T>
+using is_basic = std::disjunction<is_scalar<T>, is_vector<T>, is_matrix<T>>;
+
+template<typename T>
+constexpr auto is_basic_v = is_basic<T>::value;
+
 }// namespace sycamore
