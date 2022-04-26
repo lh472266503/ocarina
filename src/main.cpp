@@ -3,6 +3,8 @@
 #include <array>
 #include <utility>
 #include "ast/op.h"
+#include "core/concepts.h"
+#include "core/basic_trait.h"
 
 // debugging aid
 template<typename T, T... ints>
@@ -40,13 +42,19 @@ auto &operator<<(std::basic_ostream<Ch, Tr> &os,
     return os << ")";
 }
 
+
+
 using namespace sycamore;
 using namespace std;
 int main() {
-    auto a = 512_kb;
-    std::true_type type1;
 
-    cout << type1 << endl;
+    cout << sycamore::is_integral<uint>::value << endl;
+    cout << sycamore::is_same_v<int, int,int> << endl;
+    cout << sycamore::is_same_v<> << endl;
+    cout << sycamore::is_same_v<int, bool,int> << endl;
+    cout << sycamore::is_same_v<bool, int,int> << endl;
+    cout << sycamore::is_same_v<int, int,bool> << endl;
+
 
 //    print_sequence(std::integer_sequence<unsigned, 9, 2, 5, 1, 9, 1, 6>{});
 //    print_sequence(std::make_integer_sequence<int, 20>{});
