@@ -34,6 +34,7 @@ struct alignas(sizeof(T) * 2) VectorStorage<T, 2> {
     T x, y;
     explicit constexpr VectorStorage(T s = {}) noexcept : x{s}, y{s} {}
     constexpr VectorStorage(T x, T y) noexcept : x{x}, y{y} {}
+#include "swizzle_2.inl.h"
 };
 
 template<typename T>
@@ -41,6 +42,7 @@ struct alignas(sizeof(T) * 4) VectorStorage<T, 3> {
     T x, y, z;
     explicit constexpr VectorStorage(T s = {}) noexcept : x{s}, y{s}, z{s} {}
     constexpr VectorStorage(T x, T y, T z) noexcept : x{x}, y{y}, z{z} {}
+#include "swizzle_3.inl.h"
 };
 
 template<typename T>
@@ -48,6 +50,7 @@ struct alignas(sizeof(T) * 4) VectorStorage<T, 4> {
     T x, y, z, w;
     explicit constexpr VectorStorage(T s = {}) noexcept : x{s}, y{s}, z{s}, w{s} {}
     constexpr VectorStorage(T x, T y, T z, T w) noexcept : x{x}, y{y}, z{z}, w{w} {}
+#include "swizzle_4.inl.h"
 };
 
 }// namespace detail
