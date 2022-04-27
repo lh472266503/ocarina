@@ -205,36 +205,40 @@ requires sycamore::is_integral_v<T>
     }
 }
 
-#define SCM_MAKE_VECTOR_BINARY_OPERATOR(op, ...)                                           \
-    template<typename T, size_t N>                                                         \
-    requires __VA_ARGS__                                                                   \
-        SCM_NODISCARD constexpr auto                                                       \
-        operator op(                                                                       \
-            sycamore::Vector<T, N> lhs, sycamore::Vector<T, N> rhs) noexcept {             \
-        if constexpr (N == 2) {                                                            \
-            return sycamore::Vector<T, 2>{                                                 \
-                lhs.x op rhs.x,                                                            \
-                lhs.y op rhs.y};                                                           \
-        } else if constexpr (N == 3) {                                                     \
-            return sycamore::Vector<T, 3>{                                                 \
-                lhs.x op rhs.x,                                                            \
-                lhs.y op rhs.y,                                                            \
-                lhs.z op rhs.z};                                                           \
-        } else {                                                                           \
-            return sycamore::Vector<T, 4>{                                                 \
-                lhs.x op rhs.x,                                                            \
-                lhs.y op rhs.y,                                                            \
-                lhs.z op rhs.z,                                                            \
-                lhs.w op rhs.w};                                                           \
-        }                                                                                  \
-    }                                                                                      \
-    template<typename T, size_t N, std::enable_if_t<__VA_ARGS__, int> = 0>                 \
-    [[nodiscard]] constexpr auto operator op(sycamore::Vector<T, N> lhs, T rhs) noexcept { \
-        return lhs op sycamore::Vector<T, N>{rhs};                                         \
-    }                                                                                      \
-    template<typename T, size_t N, std::enable_if_t<__VA_ARGS__, int> = 0>                 \
-    [[nodiscard]] constexpr auto operator op(T lhs, sycamore::Vector<T, N> rhs) noexcept { \
-        return sycamore::Vector<T, N>{lhs} op rhs;                                         \
+#define SCM_MAKE_VECTOR_BINARY_OPERATOR(op, ...)                               \
+    template<typename T, size_t N>                                             \
+    requires __VA_ARGS__                                                       \
+        SCM_NODISCARD constexpr auto                                           \
+        operator op(                                                           \
+            sycamore::Vector<T, N> lhs, sycamore::Vector<T, N> rhs) noexcept { \
+        if constexpr (N == 2) {                                                \
+            return sycamore::Vector<T, 2>{                                     \
+                lhs.x op rhs.x,                                                \
+                lhs.y op rhs.y};                                               \
+        } else if constexpr (N == 3) {                                         \
+            return sycamore::Vector<T, 3>{                                     \
+                lhs.x op rhs.x,                                                \
+                lhs.y op rhs.y,                                                \
+                lhs.z op rhs.z};                                               \
+        } else {                                                               \
+            return sycamore::Vector<T, 4>{                                     \
+                lhs.x op rhs.x,                                                \
+                lhs.y op rhs.y,                                                \
+                lhs.z op rhs.z,                                                \
+                lhs.w op rhs.w};                                               \
+        }                                                                      \
+    }                                                                          \
+    template<typename T, size_t N>                                             \
+    requires __VA_ARGS__                                                       \
+        SCM_NODISCARD constexpr auto                                           \
+        operator op(sycamore::Vector<T, N> lhs, T rhs) noexcept {              \
+        return lhs op sycamore::Vector<T, N>{rhs};                             \
+    }                                                                          \
+    template<typename T, size_t N>                                             \
+    requires __VA_ARGS__                                                       \
+        SCM_NODISCARD constexpr auto                                           \
+        operator op(T lhs, sycamore::Vector<T, N> rhs) noexcept {              \
+        return sycamore::Vector<T, N>{lhs} op rhs;                             \
     }
 SCM_MAKE_VECTOR_BINARY_OPERATOR(+, sycamore::is_number_v<T>)
 SCM_MAKE_VECTOR_BINARY_OPERATOR(-, sycamore::is_number_v<T>)
@@ -259,8 +263,8 @@ SCM_MAKE_VECTOR_BINARY_OPERATOR(^, std::negation_v<sycamore::is_floating_point<T
         if constexpr (N == 4) { lhs.w op rhs.w; }                           \
         return (lhs);                                                       \
     }                                                                       \
-    template<typename T, size_t N, std::enable_if_t<__VA_ARGS__, int> = 0>  \
-    constexpr decltype(auto) operator op(                                   \
+    template<typename T, size_t N>                                          \
+    requires __VA_ARGS__ constexpr decltype(auto) operator op(              \
         sycamore::Vector<T, N> &lhs, T rhs) noexcept {                      \
         return (lhs op sycamore::Vector<T, N>{rhs});                        \
     }
@@ -277,36 +281,40 @@ SCM_MAKE_VECTOR_ASSIGN_OPERATOR(^=, std::negation_v<sycamore::is_floating_point<
 
 #undef SCM_MAKE_VECTOR_ASSIGN_OPERATOR
 
-#define SCM_MAKE_VECTOR_LOGIC_OPERATOR(op, ...)                                            \
-    template<typename T, size_t N>                                                         \
-    requires __VA_ARGS__                                                                   \
-        [[nodiscard]] constexpr auto                                                       \
-        operator op(                                                                       \
-            sycamore::Vector<T, N> lhs, sycamore::Vector<T, N> rhs) noexcept {             \
-        if constexpr (N == 2) {                                                            \
-            return sycamore::bool2{                                                        \
-                lhs.x op rhs.x,                                                            \
-                lhs.y op rhs.y};                                                           \
-        } else if constexpr (N == 3) {                                                     \
-            return sycamore::bool3{                                                        \
-                lhs.x op rhs.x,                                                            \
-                lhs.y op rhs.y,                                                            \
-                lhs.z op rhs.z};                                                           \
-        } else {                                                                           \
-            return sycamore::bool4{                                                        \
-                lhs.x op rhs.x,                                                            \
-                lhs.y op rhs.y,                                                            \
-                lhs.z op rhs.z,                                                            \
-                lhs.w op rhs.w};                                                           \
-        }                                                                                  \
-    }                                                                                      \
-    template<typename T, size_t N, std::enable_if_t<__VA_ARGS__, int> = 0>                 \
-    [[nodiscard]] constexpr auto operator op(sycamore::Vector<T, N> lhs, T rhs) noexcept { \
-        return lhs op sycamore::Vector<T, N>{rhs};                                         \
-    }                                                                                      \
-    template<typename T, size_t N, std::enable_if_t<__VA_ARGS__, int> = 0>                 \
-    [[nodiscard]] constexpr auto operator op(T lhs, sycamore::Vector<T, N> rhs) noexcept { \
-        return sycamore::Vector<T, N>{lhs} op rhs;                                         \
+#define SCM_MAKE_VECTOR_LOGIC_OPERATOR(op, ...)                                \
+    template<typename T, size_t N>                                             \
+    requires __VA_ARGS__                                                       \
+        SCM_NODISCARD constexpr auto                                           \
+        operator op(                                                           \
+            sycamore::Vector<T, N> lhs, sycamore::Vector<T, N> rhs) noexcept { \
+        if constexpr (N == 2) {                                                \
+            return sycamore::bool2{                                            \
+                lhs.x op rhs.x,                                                \
+                lhs.y op rhs.y};                                               \
+        } else if constexpr (N == 3) {                                         \
+            return sycamore::bool3{                                            \
+                lhs.x op rhs.x,                                                \
+                lhs.y op rhs.y,                                                \
+                lhs.z op rhs.z};                                               \
+        } else {                                                               \
+            return sycamore::bool4{                                            \
+                lhs.x op rhs.x,                                                \
+                lhs.y op rhs.y,                                                \
+                lhs.z op rhs.z,                                                \
+                lhs.w op rhs.w};                                               \
+        }                                                                      \
+    }                                                                          \
+    template<typename T, size_t N>                                             \
+    requires __VA_ARGS__                                                       \
+        SCM_NODISCARD constexpr auto                                           \
+        operator op(sycamore::Vector<T, N> lhs, T rhs) noexcept {              \
+        return lhs op sycamore::Vector<T, N>{rhs};                             \
+    }                                                                          \
+    template<typename T, size_t N>                                             \
+    requires __VA_ARGS__                                                       \
+        SCM_NODISCARD constexpr auto                                           \
+        operator op(T lhs, sycamore::Vector<T, N> rhs) noexcept {              \
+        return sycamore::Vector<T, N>{lhs} op rhs;                             \
     }
 SCM_MAKE_VECTOR_LOGIC_OPERATOR(||, sycamore::is_boolean_v<T>)
 SCM_MAKE_VECTOR_LOGIC_OPERATOR(&&, sycamore::is_boolean_v<T>)
