@@ -80,7 +80,7 @@ SpacesInParentheses: false
 SpacesInSquareBrackets: false
 TabWidth: 4
 UseTab: Never
-IndentRequires: true
+IndentRequires: false
 SpacesInConditionalStatement: false
 SortUsingDeclarations: true
 AlignEscapedNewlines: Left

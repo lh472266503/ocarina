@@ -148,4 +148,59 @@ using basic_types = std::tuple<
     bool4, float4, int4, uint4,
     float2x2, float3x3, float4x4>;
 
+SCM_NODISCARD constexpr bool any(const bool2 v) noexcept { return v.x || v.y; }
+SCM_NODISCARD constexpr bool any(const bool3 v) noexcept { return v.x || v.y || v.z; }
+SCM_NODISCARD constexpr bool any(const bool4 v) noexcept { return v.x || v.y || v.z || v.w; }
+
+SCM_NODISCARD constexpr bool all(const bool2 v) noexcept { return v.x && v.y; }
+SCM_NODISCARD constexpr bool all(const bool3 v) noexcept { return v.x && v.y && v.z; }
+SCM_NODISCARD constexpr bool all(const bool4 v) noexcept { return v.x && v.y && v.z && v.w; }
+
+SCM_NODISCARD constexpr bool none(const bool2 v) noexcept { return !any(v); }
+SCM_NODISCARD constexpr bool none(const bool3 v) noexcept { return !any(v); }
+SCM_NODISCARD constexpr bool none(const bool4 v) noexcept { return !any(v); }
+
 }// namespace sycamore
+
+template<typename T, size_t N>
+requires sycamore::is_number_v<T>
+    SCM_NODISCARD constexpr auto operator+(const sycamore::Vector<T, N> v) noexcept {
+    return v;
+}
+
+template<typename T, size_t N>
+requires sycamore::is_number_v<T>
+    SCM_NODISCARD constexpr auto operator-(const sycamore::Vector<T, N> v) noexcept {
+    using R = sycamore::Vector<T, N>;
+    if constexpr (N == 2) {
+        return R{-v.x, -v.y};
+    } else if constexpr (N == 3) {
+        return R{-v.x, -v.y, -v.z};
+    } else {
+        return R{-v.x, -v.y, -v.z, -v.w};
+    }
+}
+
+template<typename T, size_t N>
+SCM_NODISCARD constexpr auto operator!(const sycamore::Vector<T, N> v) noexcept {
+    if constexpr (N == 2u) {
+        return sycamore::bool2{!v.x, !v.y};
+    } else if constexpr (N == 3u) {
+        return sycamore::bool3{!v.x, !v.y, !v.z};
+    } else {
+        return sycamore::bool3{!v.x, !v.y, !v.z, !v.w};
+    }
+}
+
+template<typename T, size_t N>
+requires sycamore::is_integral_v<T>
+    SCM_NODISCARD constexpr auto operator~(const sycamore::Vector<T, N> v) noexcept {
+    using R = sycamore::Vector<T, N>;
+    if constexpr (N == 2) {
+        return R{~v.x, ~v.y};
+    } else if constexpr (N == 3) {
+        return R{~v.x, ~v.y, ~v.z};
+    } else {
+        return R{~v.x, ~v.y, ~v.z, ~v.w};
+    }
+}

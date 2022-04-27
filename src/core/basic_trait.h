@@ -73,6 +73,13 @@ using is_scalar = std::disjunction<is_integral<T>,
 template<typename T>
 constexpr auto is_scalar_v = is_scalar<T>::value;
 
+template<typename T>
+using is_number = std::disjunction<is_integral<T>,
+                                   std::is_floating_point<T>>;
+
+template<typename T>
+constexpr auto is_number_v = is_number<T>::value;
+
 template<typename T, size_t N>
 struct Vector;
 
