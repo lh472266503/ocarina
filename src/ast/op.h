@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "core/basic_type.h"
+#include "core/basic_types.h"
 
 namespace sycamore {
 inline namespace ast {

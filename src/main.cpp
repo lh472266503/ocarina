@@ -4,7 +4,7 @@
 #include <utility>
 #include "ast/op.h"
 #include "core/concepts.h"
-#include "core/basic_trait.h"
+#include "core/basic_traits.h"
 #include "typeinfo"
 
 // debugging aid
