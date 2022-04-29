@@ -6,6 +6,7 @@
 #include "core/concepts.h"
 #include "core/basic_traits.h"
 #include "typeinfo"
+#include "core/hash.h"
 
 // debugging aid
 template<typename T, T... ints>

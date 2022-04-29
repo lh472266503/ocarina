@@ -7,5 +7,9 @@
 
 #include <filesystem>
 #include <stdint.h>
+#include <cstdint>
+#include <cstddef>
+#include <tuple>
+#include <type_traits>
 
 #define SCM_NODISCARD [[nodiscard]]
