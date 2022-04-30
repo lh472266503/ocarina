@@ -162,5 +162,66 @@ struct canonical_layout<std::tuple<T...>> {
     using type = std::tuple<typename canonical_layout<T>::type...>;
 };
 
+template<typename T>
+using canonical_layout_t = typename canonical_layout<T>::type;
+
+template<typename... T>
+struct tuple_join {
+    static_assert(always_false_v<T...>);
+};
+
+template<typename... T, typename... U>
+struct tuple_join<std::tuple<T...>, U...> {
+    using type = std::tuple<T..., U...>;
+};
+
+template<typename... A, typename... B, typename... C>
+struct tuple_join<std::tuple<A...>, std::tuple<B...>, C...> {
+    using type = typename tuple_join<std::tuple<A..., B...>, C...>::type;
+};
+
+template<typename... T>
+using tuple_join_t = typename tuple_join<T...>::type;
+
+namespace detail {
+
+template<typename T>
+struct dimension_impl {
+    static constexpr auto value = dimension_impl<canonical_layout_t<T>>::value;
+};
+
+template<typename T, size_t N>
+struct dimension_impl<T[N]> {
+    static constexpr auto value = N;
+};
+
+template<typename T, size_t N>
+struct dimension_impl<std::array<T, N>> {
+    static constexpr auto value = N;
+};
+
+template<typename T, size_t N>
+struct dimension_impl<Vector<T, N>> {
+    static constexpr auto value = N;
+};
+
+template<size_t N>
+struct dimension_impl<Matrix<N>> {
+    static constexpr auto value = N;
+};
+
+template<typename... T>
+struct dimension_impl<std::tuple<T...>> {
+    static constexpr auto value = sizeof...(T);
+};
+
+}// namespace detail
+
+template<typename T>
+using dimension = detail::dimension_impl<std::remove_cvref_t<T>>;
+
+template<typename T>
+constexpr auto dimension_v = dimension<T>::value;
+
 }
 }// namespace sycamore::ast
