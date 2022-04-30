@@ -223,5 +223,15 @@ using dimension = detail::dimension_impl<std::remove_cvref_t<T>>;
 template<typename T>
 constexpr auto dimension_v = dimension<T>::value;
 
+class Type;
+
+struct TypeVisitor {
+    virtual void visit(const Type *) noexcept = 0;
+};
+
+class SCM_AST_API Type {
+
+};
+
 }
 }// namespace sycamore::ast

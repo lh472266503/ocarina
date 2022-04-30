@@ -4,3 +4,6 @@
 [submodule "src/ext/fmt"]
 	path = src/ext/fmt
 	url = https://github.com/fmtlib/fmt.git
+[submodule "src/ext/xxHash"]
+	path = src/ext/xxHash
+	url = https://github.com/Cyan4973/xxHash.git
