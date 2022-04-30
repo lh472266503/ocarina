@@ -80,9 +80,14 @@ namespace detail {
 template<typename T, size_t>
 using array_to_tuple_element_t = T;
 
-template<typename T, size_t... i>
-[[nodiscard]] constexpr auto array_to_tuple_impl(std::index_sequence<i...>) noexcept {
-    return static_cast<std::tuple<array_to_tuple_element_t<T, i>...> *>(nullptr);
+template<typename T, size_t N, size_t... i>
+SCM_NODISCARD constexpr auto array_to_tuple_impl(std::array<T, N> array, std::index_sequence<i...>) noexcept {
+    return static_cast<std::tuple<array_to_tuple_element_t<T, i>...>>(std::tuple(array[i]...));
+}
+
+template<typename T, size_t N>
+SCM_NODISCARD constexpr auto array_to_tuple_impl(std::array<T, N> array = {}) noexcept {
+    return array_to_tuple_impl(array, std::make_index_sequence<N>());
 }
 
 }// namespace detail
@@ -100,7 +105,7 @@ struct struct_member_tuple<std::tuple<T...>> {
 template<typename T, size_t N>
 struct struct_member_tuple<std::array<T, N>> {
     using type = std::remove_pointer_t<
-        decltype(detail::array_to_tuple_impl<T>(std::make_index_sequence<N>{}))>;
+        decltype(detail::array_to_tuple_impl<T, N>())>;
 };
 
 }
