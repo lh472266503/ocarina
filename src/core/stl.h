@@ -12,7 +12,11 @@
 #include <span>
 #include <vector>
 #include <map>
+#include <array>
 #include <unordered_map>
+#include <memory>
+#include <string>
+#include <string_view>
 
 namespace sycamore {
 

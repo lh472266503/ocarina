@@ -11,7 +11,7 @@
 #include <string_view>
 
 namespace sycamore {
-inline namespace concepts {
+namespace concepts {
 
 struct Noncopyable {
     Noncopyable() noexcept = default;

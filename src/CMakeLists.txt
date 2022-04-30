@@ -1,5 +1,7 @@
 
 include_directories(ext/spdlog/include)
+include_directories(ext/xxHash)
+include_directories(ext/fmt/include)
 include_directories(src)
 
 add_subdirectory(ext)
