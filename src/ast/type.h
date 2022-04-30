@@ -5,6 +5,7 @@
 #pragma once
 
 #include "core/header.h"
+#include "core/basic_types.h"
 
 namespace sycamore {
 inline namespace ast {
@@ -106,6 +107,59 @@ template<typename T, size_t N>
 struct struct_member_tuple<std::array<T, N>> {
     using type = std::remove_pointer_t<
         decltype(detail::array_to_tuple_impl<T, N>())>;
+};
+
+template<typename T, size_t N>
+struct struct_member_tuple<T[N]> {
+    using type = typename struct_member_tuple<std::array<T, N>>::type;
+};
+
+template<typename T, size_t N>
+struct struct_member_tuple<Vector<T, N>> {
+    using type = typename struct_member_tuple<std::array<T, N>>::type;
+};
+
+template<size_t N>
+struct struct_member_tuple<Matrix<N>> {
+    using type = typename struct_member_tuple<std::array<Vector<float, N>, N>>::type;
+};
+
+template<typename T>
+using struct_member_tuple_t = typename struct_member_tuple<T>::type;
+
+template<typename T>
+struct canonical_layout {
+    using type = struct_member_tuple_t<T>;
+};
+
+template<>
+struct canonical_layout<float> {
+    using type = std::tuple<float>;
+};
+
+template<>
+struct canonical_layout<bool> {
+    using type = std::tuple<bool>;
+};
+
+template<>
+struct canonical_layout<int> {
+    using type = std::tuple<int>;
+};
+
+template<>
+struct canonical_layout<uint> {
+    using type = std::tuple<uint>;
+};
+
+template<typename T>
+struct canonical_layout<std::tuple<T>> {
+    using type = typename canonical_layout<T>::type;
+};
+
+template<typename... T>
+struct canonical_layout<std::tuple<T...>> {
+    using type = std::tuple<typename canonical_layout<T>::type...>;
 };
 
 }
