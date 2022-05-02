@@ -8,9 +8,10 @@
 #include "core/concepts.h"
 #include "core/stl.h"
 #include "core/hash.h"
+#include "expression.h"
 
 namespace sycamore {
-inline namespace ast {
+namespace ast {
 
 class ScopeStmt;
 class BreakStmt;
@@ -121,6 +122,19 @@ private:
 
 public:
     ContinueStmt() noexcept : Statement(Tag::CONTINUE) {}
+    SCM_MAKE_STATEMENT_ACCEPT_VISITOR
+};
+
+class SCM_AST_API ReturnStmt : public Statement {
+private:
+    const Expression * _expression;
+private:
+    uint64_t _compute_hash() const noexcept override {
+        return hash64(_expression == nullptr ? 0ull : _expression->hash());
+    }
+
+public:
+    ReturnStmt() noexcept : Statement(Tag::RETURN) {}
     SCM_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 

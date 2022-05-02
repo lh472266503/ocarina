@@ -6,9 +6,10 @@
 
 #include "core/header.h"
 #include "core/basic_types.h"
+#include "core/stl.h"
 
 namespace sycamore {
-inline namespace ast {
+namespace ast {
 
 template<typename T>
 struct array_dimension {
@@ -230,7 +231,43 @@ struct TypeVisitor {
 };
 
 class SCM_AST_API Type {
+public:
+    enum struct Tag : uint32_t {
+        BOOL,
+        FLOAT,
+        INT,
+        UINT,
 
+        VECTOR,
+        MATRIX,
+
+        ARRAY,
+        STRUCTURE,
+
+        BUFFER,
+        TEXTURE,
+        BINDLESS_ARRAY,
+        ACCEL
+    };
+
+private:
+    uint64_t _hash;
+    size_t _size;
+    size_t _index;
+    size_t _alignment;
+    uint32_t _dimension;
+    Tag _tag;
+    sycamore::string _description;
+    sycamore::vector<const Type *> _members;
+
+public:
+    SCM_NODISCARD constexpr auto hash() const noexcept { return _hash; }
+
+    template<typename T>
+    SCM_NODISCARD static const Type *of() noexcept;
+
+    template<typename T>
+    SCM_NODISCARD static auto of(T &&) noexcept { return of<std::remove_cvref_t<T>>(); }
 };
 
 }

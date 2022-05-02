@@ -5,7 +5,7 @@
 #include "type_register.h"
 
 namespace sycamore {
-inline namespace ast {
+namespace ast {
 
 }
 }

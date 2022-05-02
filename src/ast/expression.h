@@ -5,10 +5,11 @@
 #pragma once
 
 #include "core/stl.h"
+#include "type.h"
 #include "core/concepts.h"
 
 namespace sycamore {
-inline namespace ast {
+namespace ast {
 
 class Expression : public concepts::Noncopyable {
 public:
@@ -23,7 +24,17 @@ public:
         CALL,
         CAST
     };
+private:
+    const Type *_type;
+    mutable uint64_t _hash{0u};
+    mutable bool _hash_computed{false};
+    Tag _tag;
 
+private:
+    SCM_NODISCARD virtual uint64_t _compute_hash() const noexcept = 0;
+
+public:
+    SCM_NODISCARD uint64_t hash() const noexcept;
 };
 
 }
