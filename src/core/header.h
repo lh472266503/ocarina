@@ -25,3 +25,9 @@
 #else
 #define SCM_CORE_API __declspec(dllimport)
 #endif
+
+#ifdef SCM_DSL_EXPORT_DLL
+#define SCM_DSL_API __declspec(dllexport)
+#else
+#define SCM_DSL_API __declspec(dllimport)
+#endif
