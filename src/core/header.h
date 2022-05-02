@@ -14,7 +14,7 @@
 
 #define SCM_NODISCARD [[nodiscard]]
 
-//#define SCM_AST_EXPORT_DLL
+#define SCM_AST_EXPORT_DLL
 
 #ifdef SCM_AST_EXPORT_DLL
 #define SCM_AST_API __declspec(dllexport)
