@@ -7,4 +7,5 @@ set_target_properties(sycamore-ast PROPERTIES
         LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIG>/bin/"
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIG>/bin/"
         WINDOWS_EXPORT_ALL_SYMBOLS ON)
+target_compile_definitions(sycamore-core PRIVATE SCM_AST_EXPORT_DLL=1)
 target_link_libraries(sycamore-ast PUBLIC sycamore-ext)
