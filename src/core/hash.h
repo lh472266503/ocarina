@@ -3,9 +3,12 @@
 //
 
 #pragma once
-
+#define XXH_STATIC_LINKING_ONLY   /* access advanced declarations */
+#define XXH_IMPLEMENTATION   /* access definitions */
 #include "xxhash.h"
 #include "stl.h"
+#include "basic_types.h"
+#include "concepts.h"
 
 namespace sycamore {
 namespace detail {
@@ -30,7 +33,7 @@ SCM_NODISCARD SCM_CORE_API std::string_view hash_to_string(uint64_t hash) noexce
 
 class Hash64 {
 public:
-    static constexpr auto default_seed = 90769076ull;
+    static constexpr auto default_seed = 123456789ull;
 
 private:
     uint64_t _seed;

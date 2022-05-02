@@ -11,6 +11,7 @@ add_subdirectory(tests)
 
 add_library(sycamore-all INTERFACE)
 target_link_libraries(sycamore-all INTERFACE
+        sycamore-ext
         sycamore-ast
         sycamore-core)
 
