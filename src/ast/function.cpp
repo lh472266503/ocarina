@@ -4,8 +4,6 @@
 
 #include "function.h"
 
-namespace sycamore {
-inline namespace ast {
+namespace sycamore::ast {
 
-}
 }

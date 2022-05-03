@@ -247,16 +247,18 @@ public:
         BUFFER,
         TEXTURE,
         BINDLESS_ARRAY,
-        ACCEL
+        ACCEL,
+
+        NONE
     };
 
 private:
-    uint64_t _hash;
-    size_t _size;
-    size_t _index;
-    size_t _alignment;
-    uint32_t _dimension;
-    Tag _tag;
+    uint64_t _hash{0};
+    size_t _size{0};
+    size_t _index{0};
+    size_t _alignment{0};
+    uint32_t _dimension{0};
+    Tag _tag{Tag::NONE};
     sycamore::string _description;
     sycamore::vector<const Type *> _members;
 

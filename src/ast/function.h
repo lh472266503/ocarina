@@ -3,3 +3,41 @@
 //
 
 #pragma once
+
+#include "core/basic_types.h"
+#include "core/stl.h"
+#include "core/header.h"
+#include "type.h"
+#include "variable.h"
+
+namespace sycamore::ast {
+
+namespace detail {
+class FunctionBuilder;
+}
+
+class SCM_AST_API Function {
+public:
+    enum struct Tag : uint {
+        KERNEL,
+        CALLABLE,
+    };
+
+    struct Constant {
+
+    };
+
+private:
+    const detail::FunctionBuilder *_builder{nullptr};
+
+public:
+    Function() noexcept = default;
+    explicit Function(const detail::FunctionBuilder *builder) noexcept : _builder{builder} {}
+    SCM_NODISCARD sycamore::span<const Variable> builtin_variables() const noexcept;
+    SCM_NODISCARD sycamore::span<const Constant> constants() const noexcept;
+    SCM_NODISCARD sycamore::span<const Variable> arguments() const noexcept;
+    SCM_NODISCARD uint3 block_size() const noexcept;
+    SCM_NODISCARD const Type *return_type() const noexcept;
+};
+
+}// namespace sycamore::ast

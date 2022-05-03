@@ -7,29 +7,32 @@
 #include "core/stl.h"
 #include "core/basic_types.h"
 #include "var.h"
+#include "builtin.h"
 
 namespace sycamore::dsl {
 
 namespace detail {
 template<typename T>
-struct definition_to_prototype {
+struct var_to_prototype {
     static_assert(always_false_v<T>, "Invalid type in function definition.");
 };
 
 template<typename T>
-struct definition_to_prototype<Var<T>> {
+struct var_to_prototype<Var<T>> {
     using type = T;
 };
 
 template<typename T>
-struct definition_to_prototype<const Var<T> &> {
+struct var_to_prototype<const Var<T> &> {
     using type = T;
 };
 
 template<typename T>
-struct definition_to_prototype<Var<T> &> {
+struct var_to_prototype<Var<T> &> {
     using type = T &;
 };
+
+
 }// namespace detail
 
 template<typename T>
