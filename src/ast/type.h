@@ -7,9 +7,9 @@
 #include "core/header.h"
 #include "core/basic_types.h"
 #include "core/stl.h"
+#include <cassert>
 
-namespace sycamore {
-namespace ast {
+namespace sycamore::ast {
 
 template<typename T>
 struct array_dimension {
@@ -263,14 +263,54 @@ private:
     sycamore::vector<const Type *> _members;
 
 public:
-    SCM_NODISCARD constexpr auto hash() const noexcept { return _hash; }
-
     template<typename T>
     SCM_NODISCARD static const Type *of() noexcept;
 
     template<typename T>
     SCM_NODISCARD static auto of(T &&) noexcept { return of<std::remove_cvref_t<T>>(); }
+
+    SCM_NODISCARD static const Type *from(std::string_view description) noexcept;
+
+    SCM_NODISCARD static const Type *find(uint64_t hash) noexcept;
+
+    SCM_NODISCARD static const Type *at(uint32_t uid) noexcept;
+
+    SCM_NODISCARD static size_t count() noexcept;
+
+    SCM_NODISCARD bool operator==(const Type &rhs) const noexcept { return _hash == rhs._hash; }
+    SCM_NODISCARD bool operator!=(const Type &rhs) const noexcept { return !(*this == rhs); }
+    SCM_NODISCARD bool operator<(const Type &rhs) const noexcept { return _index < rhs._index; }
+    SCM_NODISCARD constexpr size_t index() const noexcept { return _index; }
+    SCM_NODISCARD constexpr uint64_t hash() const noexcept { return _hash; }
+    SCM_NODISCARD constexpr size_t size() const noexcept { return _size; }
+    SCM_NODISCARD constexpr size_t alignment() const noexcept { return _alignment; }
+    SCM_NODISCARD constexpr Tag tag() const noexcept { return _tag; }
+    SCM_NODISCARD auto description() const noexcept { return sycamore::string_view{_description}; }
+
+    SCM_NODISCARD constexpr size_t dimension() const noexcept {
+        assert(is_array() || is_vector() || is_matrix() || is_texture());
+        return _dimension;
+    }
+
+    SCM_NODISCARD sycamore::span<const Type *const> members() const noexcept;
+    SCM_NODISCARD const Type *element() const noexcept;
+
+    SCM_NODISCARD constexpr bool is_scalar() const noexcept {
+        return _tag == Tag::BOOL || _tag == Tag::FLOAT || _tag == Tag::INT || _tag == Tag::UINT;
+    }
+
+    SCM_NODISCARD constexpr auto is_basic() const noexcept {
+        return is_scalar() || is_vector() || is_matrix();
+    }
+
+    SCM_NODISCARD constexpr bool is_array() const noexcept { return _tag == Tag::ARRAY; }
+    SCM_NODISCARD constexpr bool is_vector() const noexcept { return _tag == Tag::VECTOR; }
+    SCM_NODISCARD constexpr bool is_matrix() const noexcept { return _tag == Tag::MATRIX; }
+    SCM_NODISCARD constexpr bool is_structure() const noexcept { return _tag == Tag::STRUCTURE; }
+    SCM_NODISCARD constexpr bool is_buffer() const noexcept { return _tag == Tag::BUFFER; }
+    SCM_NODISCARD constexpr bool is_texture() const noexcept { return _tag == Tag::TEXTURE; }
+    SCM_NODISCARD constexpr bool is_bindless_array() const noexcept { return _tag == Tag::BINDLESS_ARRAY; }
+    SCM_NODISCARD constexpr bool is_accel() const noexcept { return _tag == Tag::ACCEL; }
 };
 
-}
 }// namespace sycamore::ast

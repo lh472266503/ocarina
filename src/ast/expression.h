@@ -8,6 +8,7 @@
 #include "type.h"
 #include "core/concepts.h"
 #include "usage.h"
+#include "op.h"
 
 namespace sycamore::ast {
 
@@ -32,7 +33,6 @@ struct ExprVisitor {
     virtual void visit(const CallExpr *) = 0;
     virtual void visit(const CastExpr *) = 0;
 };
-
 
 class Expression : public concepts::Noncopyable {
 public:
@@ -70,7 +70,27 @@ public:
     void mark(Usage usage) const noexcept;
 };
 
+#define SCM_MAKE_EXPRESSION_ACCEPT_VISITOR \
+    void accept(ExprVisitor &visitor) const override { visitor.visit(this); }
+
 class UnaryExpr : public Expression {
+private:
+    const Expression *_operand;
+    UnaryOp _op;
+
+public:
+    UnaryExpr(const Type *type, UnaryOp op, const Expression *expression)
+        : Expression(Tag::UNARY, type), _op(op), _operand(expression) {}
+    SCM_NODISCARD auto operand() const noexcept { return _operand; }
+    SCM_NODISCARD auto op() const noexcept { return _op; }
+    SCM_MAKE_EXPRESSION_ACCEPT_VISITOR
+};
+
+class BinaryExpr : public Expression {
+private:
+    const Expression *lhs;
+    const Expression *rhs;
+    BinaryOp _op;
 };
 
 }// namespace sycamore::ast

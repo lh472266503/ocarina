@@ -7,7 +7,7 @@
 #include "core/basic_types.h"
 
 namespace sycamore {
-inline namespace ast {
+namespace ast {
 
 enum struct UnaryOp : uint32_t {
     POSITIVE,
