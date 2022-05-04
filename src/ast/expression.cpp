@@ -5,8 +5,7 @@
 #include "expression.h"
 #include "core/hash.h"
 
-namespace sycamore {
-namespace ast {
+namespace sycamore::ast {
 uint64_t Expression::hash() const noexcept {
     if (!_hash_computed) {
         using namespace std::string_view_literals;
@@ -17,5 +16,4 @@ uint64_t Expression::hash() const noexcept {
     return _hash;
 }
 
-}
 }// namespace sycamore::ast
