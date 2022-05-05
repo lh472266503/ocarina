@@ -88,9 +88,66 @@ public:
 
 class BinaryExpr : public Expression {
 private:
-    const Expression *lhs;
-    const Expression *rhs;
+    const Expression *_lhs;
+    const Expression *_rhs;
     BinaryOp _op;
+
+public:
+    BinaryExpr(const Type *type, BinaryOp op, const Expression *lhs, const Expression *rhs) noexcept
+        : Expression{Tag::BINARY, type}, _lhs{lhs}, _rhs{rhs}, _op{op} {
+        _lhs->mark(Usage::READ);
+        _rhs->mark(Usage::READ);
+    }
+    SCM_NODISCARD auto lhs() const noexcept { return _lhs; }
+    SCM_NODISCARD auto rhs() const noexcept { return _rhs; }
+    SCM_NODISCARD auto op() const noexcept { return _op; }
+    SCM_MAKE_EXPRESSION_ACCEPT_VISITOR
+};
+
+class AccessExpr : public Expression {
+private:
+    const Expression *_range;
+    const Expression *_index;
+
+public:
+    AccessExpr(const Type *type, const Expression *range, const Expression *index)
+        : Expression(Tag::ACCESS, type), _range(range), _index(index) {
+        _range->mark(Usage::READ);
+        _index->mark(Usage::READ);
+    }
+
+    SCM_NODISCARD const Expression *range() const noexcept { return _range; }
+    SCM_NODISCARD const Expression *index() const noexcept { return _index; }
+    SCM_MAKE_EXPRESSION_ACCEPT_VISITOR
+};
+
+namespace detail {
+template<typename T>
+struct literal_value {
+    static_assert(always_false_v<T>);
+};
+
+template<typename... T>
+struct literal_value<std::tuple<T...>> {
+    using type = sycamore::variant<T...>;
+};
+}// namespace detail
+
+template<typename T>
+using literal_value_t = typename detail::literal_value<T>::type;
+
+class LiteralExpr : public Expression {
+public:
+    using value_type = literal_value_t<basic_types>;
+
+private:
+    value_type _value;
+
+public:
+    LiteralExpr(const Type *type, value_type value)
+        : Expression(Tag::LITERAL, type), _value(std::move(value)) {}
+    SCM_NODISCARD decltype(auto) value() const noexcept { return _value; }
+    SCM_MAKE_EXPRESSION_ACCEPT_VISITOR
 };
 
 }// namespace sycamore::ast

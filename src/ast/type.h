@@ -9,7 +9,7 @@
 #include "core/stl.h"
 #include <cassert>
 
-namespace sycamore::ast {
+namespace sycamore {
 
 template<typename T>
 struct array_dimension {
