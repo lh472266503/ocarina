@@ -9,6 +9,8 @@ sycamore::vector<FunctionBuilder *> &FunctionBuilder::_function_stack() noexcept
     static thread_local sycamore::vector<FunctionBuilder *> stack;
     return stack;
 }
-
+FunctionBuilder *FunctionBuilder::current() noexcept {
+    return _function_stack().back();
+}
 
 }// namespace sycamore::ast

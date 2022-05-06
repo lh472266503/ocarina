@@ -8,6 +8,8 @@
 #include "core/basic_types.h"
 #include "var.h"
 #include "builtin.h"
+#include "expr.h"
+#include "ast/function_builder.h"
 
 namespace sycamore::dsl {
 
@@ -32,6 +34,16 @@ struct var_to_prototype<Var<T> &> {
     using type = T &;
 };
 
+template<typename T>
+struct prototype_to_callable_invocation {
+    using type = Expr<T>;
+};
+
+template<typename T>
+struct prototype_to_callable_invocation<const T &> {
+    using type = Expr<T>;
+};
+
 
 }// namespace detail
 
@@ -51,6 +63,15 @@ struct is_callable<Callable<T>> : std::true_type {};
 
 template<typename Ret, typename... Args>
 class Callable<Ret(Args...)> {
+    static_assert(std::negation_v<std::disjunction<std::is_pointer<Args>...>>);
+
+private:
+    sycamore::shared_ptr<ast::FunctionBuilder> _builder;
+
+public:
+//    template<typename Func>
+//    requires std:
+
 };
 
 }// namespace sycamore::dsl

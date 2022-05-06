@@ -23,6 +23,7 @@ private:
     sycamore::vector<ScopeStmt *> _scope_stack;//
     sycamore::vector<Variable> _builtin_variables;
     sycamore::vector<Variable> _arguments;
+    sycamore::vector<sycamore::shared_ptr<const FunctionBuilder>> _used_custom_callables;
 
 public:
     using Tag = Function::Tag;
@@ -30,9 +31,17 @@ public:
 
 protected:
     SCM_NODISCARD static sycamore::vector<FunctionBuilder *> &_function_stack() noexcept;
+    void _add_statement(const Statement *statement) noexcept;
+    SCM_NODISCARD const RefExpr *_builtin(Variable::Tag tag) noexcept;
+    SCM_NODISCARD const RefExpr *_ref(Variable::Tag tag) noexcept;
+    void _void_expr(const Expression *expr) noexcept;
+private:
+
 
 public:
     SCM_NODISCARD static FunctionBuilder *current() noexcept;
+
+
 };
 
 }// namespace sycamore::ast
