@@ -65,7 +65,39 @@ SCM_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(uint, UINT32)
 
 #undef SCM_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION
 
-}// namespace detail
+// matrices
+template<>
+struct TypeDesc<float2x2> {
+    static constexpr sycamore::string_view description() noexcept {
+        using namespace std::string_view_literals;
+        return "matrix<2>"sv;
+    }
+};
+
+template<>
+struct TypeDesc<float3x3> {
+    static constexpr sycamore::string_view description() noexcept {
+        using namespace std::string_view_literals;
+        return "matrix<3>"sv;
+    }
+};
+
+template<>
+struct TypeDesc<float4x4> {
+    static constexpr sycamore::string_view description() noexcept {
+        using namespace std::string_view_literals;
+        return "matrix<4>"sv;
+    }
+};
+
+//template<typename... T>
+//struct TypeDesc<std::tuple<T...>> {
+//    static constexpr sycamore::string_view description() noexcept {
+//
+//    }
+//}
+
+};// namespace detail
 
 }
 }// namespace sycamore::ast
