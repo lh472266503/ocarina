@@ -7,8 +7,7 @@
 #include "core/stl.h"
 #include "core/basic_types.h"
 
-namespace sycamore {
-namespace ast {
+namespace sycamore::ast {
 template<typename T>
 class Buffer;
 
@@ -99,5 +98,4 @@ struct TypeDesc<float4x4> {
 
 };// namespace detail
 
-}
 }// namespace sycamore::ast
