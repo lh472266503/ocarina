@@ -6,7 +6,7 @@
 
 #include "core/basic_types.h"
 
-namespace sycamore {
+namespace katana {
 namespace ast {
 
 enum struct UnaryOp : uint32_t {
@@ -123,4 +123,4 @@ enum struct CallOp : uint32_t {
 };
 
 }
-}// namespace sycamore::ast
+}// namespace katana::ast

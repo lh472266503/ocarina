@@ -4,11 +4,11 @@
 
 #include "logging.h"
 
-namespace sycamore {
+namespace katana {
 inline namespace core {
 spdlog::logger &logger() noexcept {
     static auto ret = spdlog::stdout_color_mt("console");
     return *ret;
 }
 }
-}// namespace sycamore::core
+}// namespace katana::core

@@ -4,7 +4,7 @@
 
 #include "type_registry.h"
 
-namespace sycamore {
+namespace katana {
 namespace ast {
 
 }

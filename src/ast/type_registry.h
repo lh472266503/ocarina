@@ -7,7 +7,7 @@
 #include "core/stl.h"
 #include "core/basic_types.h"
 
-namespace sycamore::ast {
+namespace katana::ast {
 template<typename T>
 class Buffer;
 
@@ -27,47 +27,47 @@ struct TypeDesc {
     static_assert(always_false_v<T>, "Invalid type.");
 };
 
-#define SCM_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(S, tag)     \
+#define KTN_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(S, tag)     \
     template<>                                                          \
     struct TypeDesc<S> {                                                \
-        static constexpr sycamore::string_view description() noexcept { \
+        static constexpr katana::string_view description() noexcept { \
             using namespace std::string_view_literals;                  \
             return #S##sv;                                              \
         }                                                               \
     };                                                                  \
     template<>                                                          \
     struct TypeDesc<Vector<S, 2>> {                                     \
-        static constexpr sycamore::string_view description() noexcept { \
+        static constexpr katana::string_view description() noexcept { \
             using namespace std::string_view_literals;                  \
             return "vector<" #S ",2>"sv;                                \
         }                                                               \
     };                                                                  \
     template<>                                                          \
     struct TypeDesc<Vector<S, 3>> {                                     \
-        static constexpr sycamore::string_view description() noexcept { \
+        static constexpr katana::string_view description() noexcept { \
             using namespace std::string_view_literals;                  \
             return "vector<" #S ",3>"sv;                                \
         }                                                               \
     };                                                                  \
     template<>                                                          \
     struct TypeDesc<Vector<S, 4>> {                                     \
-        static constexpr sycamore::string_view description() noexcept { \
+        static constexpr katana::string_view description() noexcept { \
             using namespace std::string_view_literals;                  \
             return "vector<" #S ",4>"sv;                                \
         }                                                               \
     };
 
-SCM_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(bool, BOOL)
-SCM_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(float, FLOAT)
-SCM_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(int, INT32)
-SCM_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(uint, UINT32)
+KTN_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(bool, BOOL)
+KTN_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(float, FLOAT)
+KTN_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(int, INT32)
+KTN_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(uint, UINT32)
 
-#undef SCM_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION
+#undef KTN_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION
 
 // matrices
 template<>
 struct TypeDesc<float2x2> {
-    static constexpr sycamore::string_view description() noexcept {
+    static constexpr katana::string_view description() noexcept {
         using namespace std::string_view_literals;
         return "matrix<2>"sv;
     }
@@ -75,7 +75,7 @@ struct TypeDesc<float2x2> {
 
 template<>
 struct TypeDesc<float3x3> {
-    static constexpr sycamore::string_view description() noexcept {
+    static constexpr katana::string_view description() noexcept {
         using namespace std::string_view_literals;
         return "matrix<3>"sv;
     }
@@ -83,7 +83,7 @@ struct TypeDesc<float3x3> {
 
 template<>
 struct TypeDesc<float4x4> {
-    static constexpr sycamore::string_view description() noexcept {
+    static constexpr katana::string_view description() noexcept {
         using namespace std::string_view_literals;
         return "matrix<4>"sv;
     }
@@ -91,11 +91,11 @@ struct TypeDesc<float4x4> {
 
 //template<typename... T>
 //struct TypeDesc<std::tuple<T...>> {
-//    static constexpr sycamore::string_view description() noexcept {
+//    static constexpr katana::string_view description() noexcept {
 //
 //    }
 //}
 
 };// namespace detail
 
-}// namespace sycamore::ast
+}// namespace katana::ast

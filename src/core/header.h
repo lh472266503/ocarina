@@ -12,22 +12,22 @@
 #include <tuple>
 #include <type_traits>
 
-#define SCM_NODISCARD [[nodiscard]]
+#define KTN_NODISCARD [[nodiscard]]
 
-#ifdef SCM_AST_EXPORT_DLL
-#define SCM_AST_API __declspec(dllexport)
+#ifdef KTN_AST_EXPORT_DLL
+#define KTN_AST_API __declspec(dllexport)
 #else
-#define SCM_AST_API __declspec(dllimport)
+#define KTN_AST_API __declspec(dllimport)
 #endif
 
-#ifdef SCM_CORE_EXPORT_DLL
-#define SCM_CORE_API __declspec(dllexport)
+#ifdef KTN_CORE_EXPORT_DLL
+#define KTN_CORE_API __declspec(dllexport)
 #else
-#define SCM_CORE_API __declspec(dllimport)
+#define KTN_CORE_API __declspec(dllimport)
 #endif
 
-#ifdef SCM_DSL_EXPORT_DLL
-#define SCM_DSL_API __declspec(dllexport)
+#ifdef KTN_DSL_EXPORT_DLL
+#define KTN_DSL_API __declspec(dllexport)
 #else
-#define SCM_DSL_API __declspec(dllimport)
+#define KTN_DSL_API __declspec(dllimport)
 #endif

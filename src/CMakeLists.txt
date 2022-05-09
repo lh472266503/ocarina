@@ -10,16 +10,16 @@ add_subdirectory(ast)
 add_subdirectory(dsl)
 add_subdirectory(tests)
 
-add_library(sycamore-all INTERFACE)
-target_link_libraries(sycamore-all INTERFACE
-        sycamore-ext
-        sycamore-ast
-        sycamore-core)
+add_library(katana-all INTERFACE)
+target_link_libraries(katana-all INTERFACE
+        katana-ext
+        katana-ast
+        katana-core)
 
-add_executable(sycamore main.cpp)
-target_link_libraries(sycamore sycamore-all)
+add_executable(katana main.cpp)
+target_link_libraries(katana katana-all)
 
-set_target_properties(sycamore PROPERTIES
+set_target_properties(katana PROPERTIES
         PUBLIC_HEADER "${HEADER_FILES}"
         LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIG>/bin/"
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIG>/bin/"

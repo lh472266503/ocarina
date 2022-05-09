@@ -4,6 +4,6 @@
 
 #include "function.h"
 
-namespace sycamore::ast {
+namespace katana::ast {
 
 }

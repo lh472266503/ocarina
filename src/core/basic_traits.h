@@ -7,7 +7,7 @@
 #include "core/header.h"
 
 
-namespace sycamore {
+namespace katana {
 
 template<typename... T>
 struct always_false : std::false_type {};
@@ -22,7 +22,7 @@ template<typename... T>
 constexpr auto always_true_v = always_true<T...>::value;
 
 template<typename T>
-requires std::is_enum_v<T> SCM_NODISCARD constexpr auto to_underlying(T e) noexcept {
+requires std::is_enum_v<T> KTN_NODISCARD constexpr auto to_underlying(T e) noexcept {
     return static_cast<std::underlying_type_t<T>>(e);
 }
 
@@ -249,4 +249,4 @@ using is_basic = std::disjunction<is_scalar<T>, is_vector<T>, is_matrix<T>>;
 template<typename T>
 constexpr auto is_basic_v = is_basic<T>::value;
 
-}// namespace sycamore
+}// namespace katana

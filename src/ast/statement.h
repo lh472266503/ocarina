@@ -10,7 +10,7 @@
 #include "core/hash.h"
 #include "expression.h"
 
-namespace sycamore {
+namespace katana {
 namespace ast {
 
 class ScopeStmt;
@@ -41,10 +41,10 @@ struct StmtVisitor {
     virtual void visit(const ForStmt *) = 0;
 };
 
-#define SCM_MAKE_STATEMENT_ACCEPT_VISITOR \
+#define KTN_MAKE_STATEMENT_ACCEPT_VISITOR \
     void accept(StmtVisitor &visitor) const override { visitor.visit(this); }
 
-class SCM_AST_API Statement : public concepts::Noncopyable {
+class KTN_AST_API Statement : public concepts::Noncopyable {
 public:
     enum struct Tag : uint32_t {
         SCOPE,
@@ -67,14 +67,14 @@ private:
     Tag _tag;
 
 private:
-    SCM_NODISCARD virtual uint64_t _compute_hash() const noexcept = 0;
+    KTN_NODISCARD virtual uint64_t _compute_hash() const noexcept = 0;
 
 public:
     explicit Statement(Tag tag) noexcept : _tag{tag} {}
-    SCM_NODISCARD auto tag() const noexcept { return _tag; }
+    KTN_NODISCARD auto tag() const noexcept { return _tag; }
     virtual void accept(StmtVisitor &) const = 0;
     virtual ~Statement() noexcept = default;
-    SCM_NODISCARD uint64_t hash() const noexcept {
+    KTN_NODISCARD uint64_t hash() const noexcept {
         if (!_hash_computed) {
             using namespace std::string_view_literals;
             uint64_t h = _compute_hash();
@@ -85,12 +85,12 @@ public:
     }
 };
 
-class SCM_AST_API ScopeStmt : public Statement {
+class KTN_AST_API ScopeStmt : public Statement {
 private:
-    sycamore::vector<const Statement *> _statements;
+    katana::vector<const Statement *> _statements;
 
 private:
-    SCM_NODISCARD uint64_t _compute_hash() const noexcept override {
+    KTN_NODISCARD uint64_t _compute_hash() const noexcept override {
         auto h = Hash64::default_seed;
         for (auto &&s : _statements) { h = hash64(s->hash(), h); }
         return h;
@@ -98,12 +98,12 @@ private:
 
 public:
     ScopeStmt() noexcept : Statement(Tag::SCOPE) {}
-    SCM_NODISCARD auto statements() const noexcept { return sycamore::span(_statements); }
+    KTN_NODISCARD auto statements() const noexcept { return katana::span(_statements); }
     void append(const Statement *stmt) noexcept { _statements.push_back(stmt); }
-    SCM_MAKE_STATEMENT_ACCEPT_VISITOR
+    KTN_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 
-class SCM_AST_API BreakStmt : public Statement {
+class KTN_AST_API BreakStmt : public Statement {
 private:
     uint64_t _compute_hash() const noexcept override {
         return Hash64::default_seed;
@@ -111,10 +111,10 @@ private:
 
 public:
     BreakStmt() noexcept : Statement{Tag::BREAK} {}
-    SCM_MAKE_STATEMENT_ACCEPT_VISITOR
+    KTN_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 
-class SCM_AST_API ContinueStmt : public Statement {
+class KTN_AST_API ContinueStmt : public Statement {
 private:
     uint64_t _compute_hash() const noexcept override {
         return Hash64::default_seed;
@@ -122,10 +122,10 @@ private:
 
 public:
     ContinueStmt() noexcept : Statement(Tag::CONTINUE) {}
-    SCM_MAKE_STATEMENT_ACCEPT_VISITOR
+    KTN_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 
-class SCM_AST_API ReturnStmt : public Statement {
+class KTN_AST_API ReturnStmt : public Statement {
 private:
     const Expression * _expression;
 private:
@@ -135,8 +135,8 @@ private:
 
 public:
     ReturnStmt() noexcept : Statement(Tag::RETURN) {}
-    SCM_MAKE_STATEMENT_ACCEPT_VISITOR
+    KTN_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 
 }
-}// namespace sycamore::ast
+}// namespace katana::ast

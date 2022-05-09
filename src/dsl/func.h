@@ -11,7 +11,7 @@
 #include "expr.h"
 #include "ast/function_builder.h"
 
-namespace sycamore::dsl {
+namespace katana::dsl {
 
 namespace detail {
 template<typename T>
@@ -66,7 +66,7 @@ class Callable<Ret(Args...)> {
     static_assert(std::negation_v<std::disjunction<std::is_pointer<Args>...>>);
 
 private:
-    sycamore::shared_ptr<ast::FunctionBuilder> _builder;
+    katana::shared_ptr<ast::FunctionBuilder> _builder;
 
 public:
 //    template<typename Func>
@@ -74,4 +74,4 @@ public:
 
 };
 
-}// namespace sycamore::dsl
+}// namespace katana::dsl

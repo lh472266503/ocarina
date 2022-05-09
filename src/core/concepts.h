@@ -10,7 +10,7 @@
 #include <type_traits>
 #include <string_view>
 
-namespace sycamore {
+namespace katana {
 namespace concepts {
 
 struct Noncopyable {
@@ -94,4 +94,4 @@ template<typename A, typename B>
 concept different = !same<A, B>;
 
 }
-}// namespace sycamore::concepts
+}// namespace katana::concepts

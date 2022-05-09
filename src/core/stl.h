@@ -18,7 +18,7 @@
 #include <string>
 #include <string_view>
 
-namespace sycamore {
+namespace katana {
 
 using std::const_pointer_cast;
 using std::dynamic_pointer_cast;
@@ -47,4 +47,4 @@ using std::queue;
 using std::unordered_map;
 using std::variant;
 
-}// namespace sycamore
+}// namespace katana

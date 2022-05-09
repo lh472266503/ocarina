@@ -10,7 +10,7 @@
 #include "ast/type.h"
 #include "core/stl.h"
 
-using namespace sycamore;
+using namespace katana;
 using namespace std;
 
 template<typename T, size_t N, size_t ...i>
@@ -27,6 +27,6 @@ int main() {
 //    std::tuple<float, float> tp = std::tuple<float, float>(1,5);
 //    cout << typeid(tp).name() << endl;
 //    cout << typeid(struct_member_tuple<std::array<float, 2>>::type).name();
-cout << typeid(sycamore::tuple_join_t<tuple<int, float, int>, tuple<int, float, uint>, int>).name() << endl;
+cout << typeid(katana::tuple_join_t<tuple<int, float, int>, tuple<int, float, uint>, int>).name() << endl;
 //    cout << typeid(canonical_layout<float2x2>::type).name() << endl;
 }

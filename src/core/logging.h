@@ -12,7 +12,7 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 
-namespace sycamore {
+namespace katana {
 inline namespace core {
 spdlog::logger &logger() noexcept;
 
@@ -76,36 +76,36 @@ inline void error_if_not(bool predicate, Args &&...args) {
     error_if(!predicate, std::forward<Args>(args)...);
 }
 }
-}// namespace sycamore::core
+}// namespace katana::core
 
 #define SYCAMORE_SOURCE_LOCATION __FILE__ , ":", __LINE__
 
 #define SYCAMORE_DEBUG(...) \
-    ::sycamore::core::debug(__VA_ARGS__);
+    ::katana::core::debug(__VA_ARGS__);
 
 #define SET_LOG_LEVEL(lv) \
-    ::sycamore::core::set_log_level(spdlog::level::level_enum::lv);
+    ::katana::core::set_log_level(spdlog::level::level_enum::lv);
 
 #define SYCAMORE_INFO(...) \
-    ::sycamore::core::info(__VA_ARGS__);
+    ::katana::core::info(__VA_ARGS__);
 
 #define SYCAMORE_WARNING(...) \
-    ::sycamore::core::warning(__VA_ARGS__, "\n    Source: ", SYCAMORE_SOURCE_LOCATION);
+    ::katana::core::warning(__VA_ARGS__, "\n    Source: ", SYCAMORE_SOURCE_LOCATION);
 #define SYCAMORE_WARNING_IF(...) \
-    ::sycamore::core::warning_if(__VA_ARGS__, "\n    Source: ", SYCAMORE_SOURCE_LOCATION);
+    ::katana::core::warning_if(__VA_ARGS__, "\n    Source: ", SYCAMORE_SOURCE_LOCATION);
 #define SYCAMORE_WARNING_IF_NOT(...) \
-    ::sycamore::core::warning_if_not(__VA_ARGS__, "\n    Source: ", SYCAMORE_SOURCE_LOCATION);
+    ::katana::core::warning_if_not(__VA_ARGS__, "\n    Source: ", SYCAMORE_SOURCE_LOCATION);
 
 #define SYCAMORE_EXCEPTION(...) \
-    ::sycamore::core::exception(__VA_ARGS__, "\n    Source: ", SYCAMORE_SOURCE_LOCATION);
+    ::katana::core::exception(__VA_ARGS__, "\n    Source: ", SYCAMORE_SOURCE_LOCATION);
 #define SYCAMORE_EXCEPTION_IF(...) \
-    ::sycamore::core::exception_if(__VA_ARGS__, "\n    Source: ", SYCAMORE_SOURCE_LOCATION);
+    ::katana::core::exception_if(__VA_ARGS__, "\n    Source: ", SYCAMORE_SOURCE_LOCATION);
 #define SYCAMORE_EXCEPTION_IF_NOT(...) \
-    ::sycamore::core::exception_if_not(__VA_ARGS__, "\n    Source: ", SYCAMORE_SOURCE_LOCATION);
+    ::katana::core::exception_if_not(__VA_ARGS__, "\n    Source: ", SYCAMORE_SOURCE_LOCATION);
 
 #define SYCAMORE_ERROR(...) \
-    ::sycamore::core::error(__VA_ARGS__, "\n    Source: ", SYCAMORE_SOURCE_LOCATION);
+    ::katana::core::error(__VA_ARGS__, "\n    Source: ", SYCAMORE_SOURCE_LOCATION);
 #define SYCAMORE_ERROR_IF(...) \
-    ::sycamore::core::error_if(__VA_ARGS__, "\n    Source: ", SYCAMORE_SOURCE_LOCATION);
+    ::katana::core::error_if(__VA_ARGS__, "\n    Source: ", SYCAMORE_SOURCE_LOCATION);
 #define SYCAMORE_ERROR_IF_NOT(...) \
-    ::sycamore::core::error_if_not(__VA_ARGS__, "\n    Source: ", SYCAMORE_SOURCE_LOCATION);
+    ::katana::core::error_if_not(__VA_ARGS__, "\n    Source: ", SYCAMORE_SOURCE_LOCATION);

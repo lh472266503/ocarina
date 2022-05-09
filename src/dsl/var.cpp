@@ -4,7 +4,7 @@
 
 #include "var.h"
 
-namespace sycamore::dsl {
+namespace katana::dsl {
 
 
 

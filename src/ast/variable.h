@@ -6,7 +6,7 @@
 
 #include "core/stl.h"
 
-namespace sycamore::ast {
+namespace katana::ast {
 
 class Variable {
 public:
@@ -37,4 +37,4 @@ private:
     Tag _tag;
 };
 
-}// namespace sycamore::ast
+}// namespace katana::ast

@@ -13,7 +13,7 @@
 #include <filesystem>
 #include "string_util.h"
 
-namespace sycamore {
+namespace katana {
 inline namespace core {
 template<typename... Args>
 inline std::string serialize(Args &&...args) noexcept {
@@ -165,4 +165,4 @@ inline std::string string_printf(const char *fmt, Args... args) {
     return ret;
 }
 }
-}// namespace sycamore::core
+}// namespace katana::core

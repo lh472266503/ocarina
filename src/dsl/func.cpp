@@ -5,7 +5,7 @@
 
 #include "func.h"
 
-namespace sycamore {
+namespace katana {
 namespace dsl {
 
 }

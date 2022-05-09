@@ -6,6 +6,6 @@
 
 #include "core/stl.h"
 
-namespace sycamore::dsl {
+namespace katana::dsl {
 
 }

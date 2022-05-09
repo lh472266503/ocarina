@@ -6,7 +6,7 @@
 
 #include <cstdint>
 
-namespace sycamore {
+namespace katana {
 
 enum struct Usage : uint32_t {
     NONE = 0u,
