@@ -11,7 +11,8 @@
 #include <array>
 #include <regex>
 #include <filesystem>
-#include "string_util.h"
+#include <fmt/format.h>
+#include "stl.h"
 
 namespace katana {
 inline namespace core {
@@ -164,5 +165,14 @@ inline std::string string_printf(const char *fmt, Args... args) {
     string_printf_recursive(&ret, fmt, args...);
     return ret;
 }
+
+template<typename FMT, typename... Args>
+[[nodiscard]] inline auto format(FMT &&f, Args &&...args) noexcept {
+    using memory_buffer = fmt::basic_memory_buffer<char, fmt::inline_buffer_size, katana::allocator<char>>;
+    memory_buffer buffer;
+    fmt::format_to(std::back_inserter(buffer), std::forward<FMT>(f), std::forward<Args>(args)...);
+    return katana::string{buffer.data(), buffer.size()};
+}
+
 }
 }// namespace katana::core

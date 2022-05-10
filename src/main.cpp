@@ -8,7 +8,7 @@
 #include "typeinfo"
 #include "core/hash.h"
 #include "ast/type.h"
-#include "core/stl.h"
+#include "core/string_util.h"
 
 using namespace katana;
 using namespace std;
@@ -28,5 +28,7 @@ int main() {
 //    cout << typeid(tp).name() << endl;
 //    cout << typeid(struct_member_tuple<std::array<float, 2>>::type).name();
 cout << typeid(katana::tuple_join_t<tuple<int, float, int>, tuple<int, float, uint>, int>).name() << endl;
+
+    cout << katana::format("wori {} {}", 5, 1.9f);
 //    cout << typeid(canonical_layout<float2x2>::type).name() << endl;
 }

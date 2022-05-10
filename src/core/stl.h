@@ -32,11 +32,13 @@ using std::static_pointer_cast;
 using std::unique_ptr;
 using std::weak_ptr;
 
-using string = std::string;
+using std::string;
 using std::string_view;
 
 using std::span;
 using std::vector;
+
+using std::allocator;
 
 using std::deque;
 using std::list;
