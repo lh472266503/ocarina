@@ -161,76 +161,48 @@ using is_same_expr = concepts::is_same<expr_value_t<T>...>;
 template<typename... T>
 constexpr auto is_same_expr_v = is_same_expr<T...>::value;
 
-template<typename T>
-using is_integral_expr = is_integral<T>;
+#define EXPR_TYPE_TRAITS(type)             \
+    template<typename T>                   \
+    using is_##type##_expr = is_##type<T>; \
+    template<typename T>                   \
+    constexpr auto is_##type##_expr_v = is_##type##_expr<T>::value;
 
-template<typename T>
-constexpr auto is_integral_expr_v = is_integral_expr<T>::value;
+EXPR_TYPE_TRAITS(integral)
+EXPR_TYPE_TRAITS(boolean)
+EXPR_TYPE_TRAITS(floating_point)
+EXPR_TYPE_TRAITS(scalar)
 
-template<typename T>
-using is_boolean_expr = is_boolean<T>;
+#undef EXPR_TYPE_TRAITS
 
-template<typename T>
-constexpr auto is_boolean_expr_v = is_boolean_expr<T>::value;
+#define EXPR_DIMENSION_TRAITS(cls, dim)                          \
+    template<typename T>                                         \
+    using is_##cls##dim##_expr = is_##cls##dim<expr_value_t<T>>; \
+    template<typename T>                                         \
+    constexpr auto is_##cls##dim##_expr_v = is_##cls##dim##_expr<T>::value;
 
-template<typename T>
-using is_floating_point_expr = is_floating_point<expr_value_t<T>>;
+EXPR_DIMENSION_TRAITS(vector, )
+EXPR_DIMENSION_TRAITS(vector, 2)
+EXPR_DIMENSION_TRAITS(vector, 3)
+EXPR_DIMENSION_TRAITS(vector, 4)
 
-template<typename T>
-constexpr auto is_floating_point_expr_v = is_floating_point_expr<T>::value;
+EXPR_DIMENSION_TRAITS(matrix, )
+EXPR_DIMENSION_TRAITS(matrix, 2)
+EXPR_DIMENSION_TRAITS(matrix, 3)
+EXPR_DIMENSION_TRAITS(matrix, 4)
 
-template<typename T>
-using is_scalar_expr = is_scalar<expr_value_t<T>>;
+#undef EXPR_DIMENSION_TRAITS
 
-template<typename T>
-constexpr auto is_scalar_expr_v = is_scalar_expr<T>::value;
+#define EXPR_VECTOR_TYPE_TRAITS(type)                                    \
+    template<typename T>                                                 \
+    using is_##type##_vector_expr = is_##type##_vector<expr_value_t<T>>; \
+    template<typename T>                                                 \
+    constexpr auto is_##type##_vector_expr_v = is_##type##_vector_expr<T>::value;
 
-template<typename T>
-using is_vector_expr = is_vector<expr_value_t<T>>;
+EXPR_VECTOR_TYPE_TRAITS(bool)
+EXPR_VECTOR_TYPE_TRAITS(float)
+EXPR_VECTOR_TYPE_TRAITS(int)
+EXPR_VECTOR_TYPE_TRAITS(uint)
 
-template<typename T>
-constexpr auto is_vector_expr_v = is_vector_expr<T>::value;
-
-template<typename T>
-using is_vector2_expr = is_vector2<expr_value_t<T>>;
-
-template<typename T>
-constexpr auto is_vector2_expr_v = is_vector2_expr<T>::value;
-
-template<typename T>
-using is_vector3_expr = is_vector3<expr_value_t<T>>;
-
-template<typename T>
-constexpr auto is_vector3_expr_v = is_vector3_expr<T>::value;
-
-template<typename T>
-using is_vector4_expr = is_vector4<expr_value_t<T>>;
-
-template<typename T>
-constexpr auto is_vector4_expr_v = is_vector4_expr<T>::value;
-
-template<typename T>
-using is_bool_vector_expr = is_bool_vector<expr_value_t<T>>;
-
-template<typename T>
-constexpr auto is_bool_vector_expr_v = is_bool_vector_expr<T>::value;
-
-template<typename T>
-using is_float_vector_expr = is_float_vector<expr_value_t<T>>;
-
-template<typename T>
-constexpr auto is_float_vector_expr_v = is_float_vector_expr<T>::value;
-
-template<typename T>
-using is_int_vector_expr = is_int_vector<expr_value_t<T>>;
-
-template<typename T>
-constexpr auto is_int_vector_expr_v = is_int_vector_expr<T>::value;
-
-template<typename T>
-using is_uint_vector_expr = is_uint_vector<expr_value_t<T>>;
-
-template<typename T>
-constexpr auto is_uint_vector_expr_v = is_uint_vector_expr<T>::value;
+#undef EXPR_VECTOR_TYPE_TRAITS
 
 }// namespace katana::dsl
