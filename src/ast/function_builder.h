@@ -35,13 +35,42 @@ protected:
     KTN_NODISCARD const RefExpr *_builtin(Variable::Tag tag) noexcept;
     KTN_NODISCARD const RefExpr *_ref(Variable::Tag tag) noexcept;
     void _void_expr(const Expression *expr) noexcept;
-private:
 
+private:
+    template<typename Func>
+    static auto _define(Function::Tag tag, Func &&func) noexcept {
+    }
 
 public:
     KTN_NODISCARD static FunctionBuilder *current() noexcept;
 
+    template<typename Func>
+    static auto define_callable(Func &&func) noexcept {
+        return _define(Tag::CALLABLE, std::forward<Func>(func));
+    }
 
+    template<typename Func>
+    static auto define_kernel(Func &&func) noexcept {
+        return _define(Tag::KERNEL, std::forward<Func>(func));
+    }
+
+    void break_() noexcept;
+
+    void continue_() noexcept;
+
+    void return_(const Expression *expression = nullptr) noexcept;
+
+    void assign(const Expression *lhs, const Expression *rhs) noexcept;
+
+    KTN_NODISCARD IfStmt *if_(const Expression *condition) noexcept;
+
+    KTN_NODISCARD SwitchStmt *switch_(const Expression *expression) noexcept;
+
+    KTN_NODISCARD SwitchCaseStmt *case_(const Statement *statement) noexcept;
+
+    KTN_NODISCARD SwitchDefaultStmt *default_() noexcept;
+
+    KTN_NODISCARD ForStmt *for_(const RefExpr *var, const Expression *condition, const Expression *update) noexcept;
 };
 
 }// namespace katana::ast
