@@ -9,6 +9,7 @@
 #include "core/hash.h"
 #include "ast/type.h"
 #include "core/string_util.h"
+#include "dsl/common.h"
 
 using namespace katana;
 using namespace std;

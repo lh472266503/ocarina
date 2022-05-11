@@ -10,42 +10,9 @@
 #include "builtin.h"
 #include "expr.h"
 #include "ast/function_builder.h"
+#include "expr_traits.h"
 
 namespace katana::dsl {
-
-namespace detail {
-template<typename T>
-struct var_to_prototype {
-    static_assert(always_false_v<T>, "Invalid type in function definition.");
-};
-
-template<typename T>
-struct var_to_prototype<Var<T>> {
-    using type = T;
-};
-
-template<typename T>
-struct var_to_prototype<const Var<T> &> {
-    using type = T;
-};
-
-template<typename T>
-struct var_to_prototype<Var<T> &> {
-    using type = T &;
-};
-
-template<typename T>
-struct prototype_to_callable_invocation {
-    using type = Expr<T>;
-};
-
-template<typename T>
-struct prototype_to_callable_invocation<const T &> {
-    using type = Expr<T>;
-};
-
-
-}// namespace detail
 
 template<typename T>
 class Callable {

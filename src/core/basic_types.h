@@ -205,40 +205,40 @@ requires katana::is_integral_v<T>
     }
 }
 
-#define KTN_MAKE_VECTOR_BINARY_OPERATOR(op, ...)                               \
-    template<typename T, size_t N>                                             \
-    requires __VA_ARGS__                                                       \
-        KTN_NODISCARD constexpr auto                                           \
-        operator op(                                                           \
+#define KTN_MAKE_VECTOR_BINARY_OPERATOR(op, ...)                           \
+    template<typename T, size_t N>                                         \
+    requires __VA_ARGS__                                                   \
+        KTN_NODISCARD constexpr auto                                       \
+        operator op(                                                       \
             katana::Vector<T, N> lhs, katana::Vector<T, N> rhs) noexcept { \
-        if constexpr (N == 2) {                                                \
-            return katana::Vector<T, 2>{                                     \
-                lhs.x op rhs.x,                                                \
-                lhs.y op rhs.y};                                               \
-        } else if constexpr (N == 3) {                                         \
-            return katana::Vector<T, 3>{                                     \
-                lhs.x op rhs.x,                                                \
-                lhs.y op rhs.y,                                                \
-                lhs.z op rhs.z};                                               \
-        } else {                                                               \
-            return katana::Vector<T, 4>{                                     \
-                lhs.x op rhs.x,                                                \
-                lhs.y op rhs.y,                                                \
-                lhs.z op rhs.z,                                                \
-                lhs.w op rhs.w};                                               \
-        }                                                                      \
-    }                                                                          \
-    template<typename T, size_t N>                                             \
-    requires __VA_ARGS__                                                       \
-        KTN_NODISCARD constexpr auto                                           \
-        operator op(katana::Vector<T, N> lhs, T rhs) noexcept {              \
-        return lhs op katana::Vector<T, N>{rhs};                             \
-    }                                                                          \
-    template<typename T, size_t N>                                             \
-    requires __VA_ARGS__                                                       \
-        KTN_NODISCARD constexpr auto                                           \
-        operator op(T lhs, katana::Vector<T, N> rhs) noexcept {              \
-        return katana::Vector<T, N>{lhs} op rhs;                             \
+        if constexpr (N == 2) {                                            \
+            return katana::Vector<T, 2>{                                   \
+                lhs.x op rhs.x,                                            \
+                lhs.y op rhs.y};                                           \
+        } else if constexpr (N == 3) {                                     \
+            return katana::Vector<T, 3>{                                   \
+                lhs.x op rhs.x,                                            \
+                lhs.y op rhs.y,                                            \
+                lhs.z op rhs.z};                                           \
+        } else {                                                           \
+            return katana::Vector<T, 4>{                                   \
+                lhs.x op rhs.x,                                            \
+                lhs.y op rhs.y,                                            \
+                lhs.z op rhs.z,                                            \
+                lhs.w op rhs.w};                                           \
+        }                                                                  \
+    }                                                                      \
+    template<typename T, size_t N>                                         \
+    requires __VA_ARGS__                                                   \
+        KTN_NODISCARD constexpr auto                                       \
+        operator op(katana::Vector<T, N> lhs, T rhs) noexcept {            \
+        return lhs op katana::Vector<T, N>{rhs};                           \
+    }                                                                      \
+    template<typename T, size_t N>                                         \
+    requires __VA_ARGS__                                                   \
+        KTN_NODISCARD constexpr auto                                       \
+        operator op(T lhs, katana::Vector<T, N> rhs) noexcept {            \
+        return katana::Vector<T, N>{lhs} op rhs;                           \
     }
 KTN_MAKE_VECTOR_BINARY_OPERATOR(+, katana::is_number_v<T>)
 KTN_MAKE_VECTOR_BINARY_OPERATOR(-, katana::is_number_v<T>)
@@ -253,20 +253,20 @@ KTN_MAKE_VECTOR_BINARY_OPERATOR(^, std::negation_v<katana::is_floating_point<T>>
 
 #undef KTN_MAKE_VECTOR_BINARY_OPERATOR
 
-#define KTN_MAKE_VECTOR_ASSIGN_OPERATOR(op, ...)                            \
-    template<typename T, size_t N>                                          \
-    requires __VA_ARGS__ constexpr decltype(auto) operator op(              \
+#define KTN_MAKE_VECTOR_ASSIGN_OPERATOR(op, ...)                        \
+    template<typename T, size_t N>                                      \
+    requires __VA_ARGS__ constexpr decltype(auto) operator op(          \
         katana::Vector<T, N> &lhs, katana::Vector<T, N> rhs) noexcept { \
-        lhs.x op rhs.x;                                                     \
-        lhs.y op rhs.y;                                                     \
-        if constexpr (N >= 3) { lhs.z op rhs.z; }                           \
-        if constexpr (N == 4) { lhs.w op rhs.w; }                           \
-        return (lhs);                                                       \
-    }                                                                       \
-    template<typename T, size_t N>                                          \
-    requires __VA_ARGS__ constexpr decltype(auto) operator op(              \
-        katana::Vector<T, N> &lhs, T rhs) noexcept {                      \
-        return (lhs op katana::Vector<T, N>{rhs});                        \
+        lhs.x op rhs.x;                                                 \
+        lhs.y op rhs.y;                                                 \
+        if constexpr (N >= 3) { lhs.z op rhs.z; }                       \
+        if constexpr (N == 4) { lhs.w op rhs.w; }                       \
+        return (lhs);                                                   \
+    }                                                                   \
+    template<typename T, size_t N>                                      \
+    requires __VA_ARGS__ constexpr decltype(auto) operator op(          \
+        katana::Vector<T, N> &lhs, T rhs) noexcept {                    \
+        return (lhs op katana::Vector<T, N>{rhs});                      \
     }
 KTN_MAKE_VECTOR_ASSIGN_OPERATOR(+=, katana::is_number_v<T>)
 KTN_MAKE_VECTOR_ASSIGN_OPERATOR(-=, katana::is_number_v<T>)
@@ -281,40 +281,40 @@ KTN_MAKE_VECTOR_ASSIGN_OPERATOR(^=, std::negation_v<katana::is_floating_point<T>
 
 #undef KTN_MAKE_VECTOR_ASSIGN_OPERATOR
 
-#define KTN_MAKE_VECTOR_LOGIC_OPERATOR(op, ...)                                \
-    template<typename T, size_t N>                                             \
-    requires __VA_ARGS__                                                       \
-        KTN_NODISCARD constexpr auto                                           \
-        operator op(                                                           \
+#define KTN_MAKE_VECTOR_LOGIC_OPERATOR(op, ...)                            \
+    template<typename T, size_t N>                                         \
+    requires __VA_ARGS__                                                   \
+        KTN_NODISCARD constexpr auto                                       \
+        operator op(                                                       \
             katana::Vector<T, N> lhs, katana::Vector<T, N> rhs) noexcept { \
-        if constexpr (N == 2) {                                                \
-            return katana::bool2{                                            \
-                lhs.x op rhs.x,                                                \
-                lhs.y op rhs.y};                                               \
-        } else if constexpr (N == 3) {                                         \
-            return katana::bool3{                                            \
-                lhs.x op rhs.x,                                                \
-                lhs.y op rhs.y,                                                \
-                lhs.z op rhs.z};                                               \
-        } else {                                                               \
-            return katana::bool4{                                            \
-                lhs.x op rhs.x,                                                \
-                lhs.y op rhs.y,                                                \
-                lhs.z op rhs.z,                                                \
-                lhs.w op rhs.w};                                               \
-        }                                                                      \
-    }                                                                          \
-    template<typename T, size_t N>                                             \
-    requires __VA_ARGS__                                                       \
-        KTN_NODISCARD constexpr auto                                           \
-        operator op(katana::Vector<T, N> lhs, T rhs) noexcept {              \
-        return lhs op katana::Vector<T, N>{rhs};                             \
-    }                                                                          \
-    template<typename T, size_t N>                                             \
-    requires __VA_ARGS__                                                       \
-        KTN_NODISCARD constexpr auto                                           \
-        operator op(T lhs, katana::Vector<T, N> rhs) noexcept {              \
-        return katana::Vector<T, N>{lhs} op rhs;                             \
+        if constexpr (N == 2) {                                            \
+            return katana::bool2{                                          \
+                lhs.x op rhs.x,                                            \
+                lhs.y op rhs.y};                                           \
+        } else if constexpr (N == 3) {                                     \
+            return katana::bool3{                                          \
+                lhs.x op rhs.x,                                            \
+                lhs.y op rhs.y,                                            \
+                lhs.z op rhs.z};                                           \
+        } else {                                                           \
+            return katana::bool4{                                          \
+                lhs.x op rhs.x,                                            \
+                lhs.y op rhs.y,                                            \
+                lhs.z op rhs.z,                                            \
+                lhs.w op rhs.w};                                           \
+        }                                                                  \
+    }                                                                      \
+    template<typename T, size_t N>                                         \
+    requires __VA_ARGS__                                                   \
+        KTN_NODISCARD constexpr auto                                       \
+        operator op(katana::Vector<T, N> lhs, T rhs) noexcept {            \
+        return lhs op katana::Vector<T, N>{rhs};                           \
+    }                                                                      \
+    template<typename T, size_t N>                                         \
+    requires __VA_ARGS__                                                   \
+        KTN_NODISCARD constexpr auto                                       \
+        operator op(T lhs, katana::Vector<T, N> rhs) noexcept {            \
+        return katana::Vector<T, N>{lhs} op rhs;                           \
     }
 KTN_MAKE_VECTOR_LOGIC_OPERATOR(||, katana::is_boolean_v<T>)
 KTN_MAKE_VECTOR_LOGIC_OPERATOR(&&, katana::is_boolean_v<T>)
