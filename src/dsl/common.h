@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "builtin.h"
 #include "expr_traits.h"
 #include "expr.h"
-#include "builtin.h"
+#include "var.h"

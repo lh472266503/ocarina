@@ -60,7 +60,7 @@ KTN_NODISCARD auto create_argument_tuple_impl(T tuple, std::index_sequence<i...>
 
 template<typename VarTuple, typename TagTuple, typename T>
 KTN_NODISCARD auto create_argument_tuple(T tuple) {
-
+    return detail::create_argument_tuple_impl<VarTuple, TagTuple>(tuple, std::make_index_sequence<std::tuple_size_v<VarTuple>>());
 }
 
 template<typename Ret, typename... Args>

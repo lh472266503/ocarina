@@ -57,6 +57,8 @@ public:
         return _define(Tag::KERNEL, std::forward<Func>(func));
     }
 
+    KTN_NODISCARD const CastExpr *cast(const Type*type, CastOp cast_op, const Expression *expression);
+
     KTN_NODISCARD const RefExpr *argument(const Type *type) noexcept;
 
     KTN_NODISCARD const RefExpr *reference(const Type *type) noexcept;

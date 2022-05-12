@@ -34,6 +34,11 @@ struct ExprVisitor {
     virtual void visit(const CastExpr *) = 0;
 };
 
+enum struct CastOp : uint32_t {
+    STATIC,
+    BITWISE
+};
+
 class Expression : public concepts::Noncopyable {
 public:
     enum struct Tag : uint32_t {
