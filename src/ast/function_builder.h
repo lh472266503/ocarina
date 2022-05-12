@@ -39,6 +39,9 @@ protected:
 private:
     template<typename Func>
     static auto _define(Function::Tag tag, Func &&func) noexcept {
+        auto builder = katana::make_shared<FunctionBuilder>(tag);
+
+        return katana::const_pointer_cast<const FunctionBuilder>(builder);
     }
 
 public:
@@ -53,6 +56,10 @@ public:
     static auto define_kernel(Func &&func) noexcept {
         return _define(Tag::KERNEL, std::forward<Func>(func));
     }
+
+    KTN_NODISCARD const RefExpr *argument(const Type *type) noexcept;
+
+    KTN_NODISCARD const RefExpr *reference(const Type *type) noexcept;
 
     void break_() noexcept;
 

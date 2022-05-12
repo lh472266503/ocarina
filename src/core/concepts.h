@@ -9,9 +9,9 @@
 #include <concepts>
 #include <type_traits>
 #include <string_view>
+#include "stl.h"
 
-namespace katana {
-namespace concepts {
+namespace katana::concepts {
 
 struct Noncopyable {
     Noncopyable() noexcept = default;
@@ -29,12 +29,12 @@ concept iterable = requires(T v) {
 
 template<typename T>
 concept string_viewable = requires(T v) {
-    std::string_view{v};
+    katana::string_view{v};
 };
 
 template<typename T>
 concept span_convertible = requires(T v) {
-    std::span{v};
+    katana::span{v};
 };
 
 template<typename T, typename... Args>
@@ -93,5 +93,4 @@ concept same = is_same_v<T...>;
 template<typename A, typename B>
 concept different = !same<A, B>;
 
-}
 }// namespace katana::concepts

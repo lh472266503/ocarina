@@ -5,6 +5,7 @@
 #pragma once
 
 #include "core/stl.h"
+#include "ref.h"
 #include "core/basic_types.h"
 
 namespace katana::dsl {
