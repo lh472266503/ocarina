@@ -13,7 +13,7 @@
 #include "expr_traits.h"
 #include "arg.h"
 
-namespace katana::dsl {
+namespace katana {
 
 namespace detail {
 template<typename T>

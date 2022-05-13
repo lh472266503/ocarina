@@ -5,7 +5,7 @@
 #include "expression.h"
 #include "core/hash.h"
 
-namespace katana::ast {
+namespace katana {
 uint64_t Expression::hash() const noexcept {
     if (!_hash_computed) {
         using namespace std::string_view_literals;

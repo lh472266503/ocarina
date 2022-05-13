@@ -4,7 +4,7 @@
 
 #include "function_builder.h"
 
-namespace katana::ast {
+namespace katana {
 katana::vector<FunctionBuilder *> &FunctionBuilder::_function_stack() noexcept {
     static thread_local katana::vector<FunctionBuilder *> stack;
     return stack;
@@ -13,4 +13,4 @@ FunctionBuilder *FunctionBuilder::current() noexcept {
     return _function_stack().back();
 }
 
-}// namespace katana::ast
+}// namespace katana

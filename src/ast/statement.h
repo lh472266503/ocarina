@@ -11,7 +11,6 @@
 #include "expression.h"
 
 namespace katana {
-namespace ast {
 
 class ScopeStmt;
 class BreakStmt;
@@ -127,7 +126,8 @@ public:
 
 class KTN_AST_API ReturnStmt : public Statement {
 private:
-    const Expression * _expression;
+    const Expression *_expression;
+
 private:
     uint64_t _compute_hash() const noexcept override {
         return hash64(_expression == nullptr ? 0ull : _expression->hash());
@@ -138,5 +138,4 @@ public:
     KTN_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 
-}
-}// namespace katana::ast
+}// namespace katana

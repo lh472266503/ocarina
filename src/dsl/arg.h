@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace katana::dsl {
+namespace katana {
 struct ArgumentCreation {};
 struct ReferenceArgumentCreation {};
 }// namespace katana::dsl

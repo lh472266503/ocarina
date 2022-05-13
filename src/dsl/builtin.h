@@ -9,14 +9,14 @@
 #include "dsl/expr.h"
 #include "ast/expression.h"
 
-namespace katana::dsl {
+namespace katana {
 template<typename T>
 KTN_NODISCARD inline Var<expr_value_t<T>> def(T &&x) noexcept {
     return Var{Expr{std::forward<T>(x)}};
 }
 
 template<typename T>
-KTN_NODISCARD inline Var<expr_value_t<T>> def(const ast::Expression *expr) noexcept {
+KTN_NODISCARD inline Var<expr_value_t<T>> def(const Expression *expr) noexcept {
     return Var{Expr<expr_value_t<T>>{expr}};
 }
-}// namespace katana::dsl
+}// namespace katana

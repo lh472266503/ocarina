@@ -10,7 +10,7 @@
 #include "ast/type.h"
 #include "core/basic_traits.h"
 
-namespace katana::dsl {
+namespace katana {
 
 template<typename T>
 struct Expr;

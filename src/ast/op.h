@@ -7,7 +7,6 @@
 #include "core/basic_types.h"
 
 namespace katana {
-namespace ast {
 
 enum struct UnaryOp : uint32_t {
     POSITIVE,
@@ -122,5 +121,4 @@ enum struct CallOp : uint32_t {
     COUNT
 };
 
-}
-}// namespace katana::ast
+}// namespace katana

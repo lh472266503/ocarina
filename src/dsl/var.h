@@ -8,7 +8,7 @@
 #include "ref.h"
 #include "core/basic_types.h"
 
-namespace katana::dsl {
+namespace katana {
 
 template<typename T>
 class Var {

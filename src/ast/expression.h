@@ -10,7 +10,7 @@
 #include "usage.h"
 #include "op.h"
 
-namespace katana::ast {
+namespace katana {
 
 class UnaryExpr;
 class BinaryExpr;
@@ -155,4 +155,4 @@ public:
     KTN_MAKE_EXPRESSION_ACCEPT_VISITOR
 };
 
-}// namespace katana::ast
+}// namespace katana

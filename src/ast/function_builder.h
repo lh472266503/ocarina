@@ -12,7 +12,7 @@
 #include "statement.h"
 #include "variable.h"
 
-namespace katana::ast {
+namespace katana {
 
 class FunctionBuilder : public katana::enable_shared_from_this<FunctionBuilder>,
                         public concepts::Noncopyable {
@@ -57,7 +57,7 @@ public:
         return _define(Tag::KERNEL, std::forward<Func>(func));
     }
 
-    KTN_NODISCARD const CastExpr *cast(const Type*type, CastOp cast_op, const Expression *expression);
+    KTN_NODISCARD const CastExpr *cast(const Type *type, CastOp cast_op, const Expression *expression);
 
     KTN_NODISCARD const RefExpr *argument(const Type *type) noexcept;
 
@@ -82,4 +82,4 @@ public:
     KTN_NODISCARD ForStmt *for_(const RefExpr *var, const Expression *condition, const Expression *update) noexcept;
 };
 
-}// namespace katana::ast
+}// namespace katana

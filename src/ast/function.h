@@ -10,7 +10,7 @@
 #include "type.h"
 #include "variable.h"
 
-namespace katana::ast {
+namespace katana {
 
 namespace detail {
 class FunctionBuilder;
@@ -24,7 +24,6 @@ public:
     };
 
     struct Constant {
-
     };
 
 private:
@@ -40,4 +39,4 @@ public:
     KTN_NODISCARD const Type *return_type() const noexcept;
 };
 
-}// namespace katana::ast
+}// namespace katana

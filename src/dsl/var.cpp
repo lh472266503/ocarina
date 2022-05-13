@@ -4,7 +4,7 @@
 
 #include "var.h"
 
-namespace katana::dsl {
+namespace katana {
 
 
 

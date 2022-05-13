@@ -7,7 +7,7 @@
 #include "core/stl.h"
 #include "core/basic_types.h"
 
-namespace katana::ast {
+namespace katana {
 template<typename T>
 class Buffer;
 
@@ -27,34 +27,34 @@ struct TypeDesc {
     static_assert(always_false_v<T>, "Invalid type.");
 };
 
-#define KTN_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(S, tag)     \
-    template<>                                                          \
-    struct TypeDesc<S> {                                                \
+#define KTN_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(S, tag)   \
+    template<>                                                        \
+    struct TypeDesc<S> {                                              \
         static constexpr katana::string_view description() noexcept { \
-            using namespace std::string_view_literals;                  \
-            return #S##sv;                                              \
-        }                                                               \
-    };                                                                  \
-    template<>                                                          \
-    struct TypeDesc<Vector<S, 2>> {                                     \
+            using namespace std::string_view_literals;                \
+            return #S##sv;                                            \
+        }                                                             \
+    };                                                                \
+    template<>                                                        \
+    struct TypeDesc<Vector<S, 2>> {                                   \
         static constexpr katana::string_view description() noexcept { \
-            using namespace std::string_view_literals;                  \
-            return "vector<" #S ",2>"sv;                                \
-        }                                                               \
-    };                                                                  \
-    template<>                                                          \
-    struct TypeDesc<Vector<S, 3>> {                                     \
+            using namespace std::string_view_literals;                \
+            return "vector<" #S ",2>"sv;                              \
+        }                                                             \
+    };                                                                \
+    template<>                                                        \
+    struct TypeDesc<Vector<S, 3>> {                                   \
         static constexpr katana::string_view description() noexcept { \
-            using namespace std::string_view_literals;                  \
-            return "vector<" #S ",3>"sv;                                \
-        }                                                               \
-    };                                                                  \
-    template<>                                                          \
-    struct TypeDesc<Vector<S, 4>> {                                     \
+            using namespace std::string_view_literals;                \
+            return "vector<" #S ",3>"sv;                              \
+        }                                                             \
+    };                                                                \
+    template<>                                                        \
+    struct TypeDesc<Vector<S, 4>> {                                   \
         static constexpr katana::string_view description() noexcept { \
-            using namespace std::string_view_literals;                  \
-            return "vector<" #S ",4>"sv;                                \
-        }                                                               \
+            using namespace std::string_view_literals;                \
+            return "vector<" #S ",4>"sv;                              \
+        }                                                             \
     };
 
 KTN_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(bool, BOOL)
@@ -98,4 +98,4 @@ struct TypeDesc<float4x4> {
 
 };// namespace detail
 
-}// namespace katana::ast
+}// namespace katana

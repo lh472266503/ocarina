@@ -8,13 +8,13 @@
 #include "ast/expression.h"
 #include "ast/function_builder.h"
 
-namespace katana::dsl {
+namespace katana {
 
 template<typename T>
 KTN_NODISCARD inline Var<expr_value_t<T>> def(T &&x) noexcept;
 
 template<typename T>
-KTN_NODISCARD inline Var<expr_value_t<T>> def(const ast::Expression *expr) noexcept;
+KTN_NODISCARD inline Var<expr_value_t<T>> def(const Expression *expr) noexcept;
 
 namespace detail {
 template<typename T>
@@ -24,7 +24,7 @@ struct ExprEnableStaticCast {
         KTN_NODISCARD auto cast() const noexcept {
         auto src = def(*static_cast<const T *>(this));
         using ExprDest = expr_value_t<Dest>;
-        return def(ast::FunctionBuilder::current()->cast(Type::of<ExprDest>(), ast::CastOp::STATIC, src));
+        return def(katana::FunctionBuilder::current()->cast(Type::of<ExprDest>(), CastOp::STATIC, src));
     }
 };
 
@@ -32,10 +32,10 @@ template<typename T>
 struct ExprEnableBitwiseCast {
     template<class Dest>
     requires concepts::bitwise_convertible<expr_value_t<T>, expr_value_t<Dest>>
-    KTN_NODISCARD auto bit_cast() const noexcept {
+        KTN_NODISCARD auto bit_cast() const noexcept {
         auto src = def(*static_cast<const T *>(this));
         using ExprDest = expr_value_t<Dest>;
-        return def(ast::FunctionBuilder::current()->cast(Type::of<ExprDest>(), ast::CastOp::BITWISE, src));
+        return def(katana::FunctionBuilder::current()->cast(Type::of<ExprDest>(), CastOp::BITWISE, src));
     }
 };
 }// namespace detail

@@ -6,7 +6,7 @@
 
 #include "core/stl.h"
 
-namespace katana::ast {
+namespace katana {
 
 class Variable {
 public:
@@ -37,4 +37,4 @@ private:
     Tag _tag;
 };
 
-}// namespace katana::ast
+}// namespace katana

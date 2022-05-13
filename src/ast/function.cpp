@@ -4,6 +4,6 @@
 
 #include "function.h"
 
-namespace katana::ast {
+namespace katana {
 
 }

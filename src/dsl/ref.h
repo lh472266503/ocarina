@@ -11,7 +11,7 @@
 #include "expr.h"
 #include "ast/function_builder.h"
 
-namespace katana::dsl {
+namespace katana {
 
 template<typename Lhs, typename Rhs>
 void assign(Lhs &&lhs, Rhs &&rhs) noexcept;

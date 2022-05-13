@@ -313,4 +313,4 @@ public:
     KTN_NODISCARD constexpr bool is_accel() const noexcept { return _tag == Tag::ACCEL; }
 };
 
-}// namespace katana::ast
+}// namespace katana
