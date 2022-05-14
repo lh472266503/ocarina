@@ -205,4 +205,4 @@ EXPR_VECTOR_TYPE_TRAITS(uint)
 
 #undef EXPR_VECTOR_TYPE_TRAITS
 
-}// namespace katana::dsl
+}// namespace katana

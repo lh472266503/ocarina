@@ -51,9 +51,8 @@ struct is_callable<Callable<T>> : std::true_type {};
 
 namespace detail {
 
-template<typename VarTuple, typename TagTuple, typename T, size_t ...i>
+template<typename VarTuple, typename TagTuple, typename T, size_t... i>
 KTN_NODISCARD auto create_argument_tuple_impl(T tuple, std::index_sequence<i...>) {
-
 }
 
 }// namespace detail
@@ -68,12 +67,12 @@ class Callable<Ret(Args...)> {
     static_assert(std::negation_v<std::disjunction<std::is_pointer<Args>...>>);
 
 private:
-    katana::shared_ptr<ast::FunctionBuilder> _builder;
+    katana::shared_ptr<FunctionBuilder> _builder;
 
 public:
     template<typename Func>
     requires is_callable<std::remove_cvref_t<Func>>::value explicit Callable(Func &&func) noexcept
-        : _builder(ast::FunctionBuilder::define_callable([&] {
+        : _builder(FunctionBuilder::define_callable([&] {
               static_assert(std::is_invocable_v<Func, detail::prototype_to_var<Args>...>);
               using arg_tuple = std::tuple<Args...>;
               using var_tuple = std::tuple<Var<std::remove_cvref_t<Args>>...>;
@@ -86,4 +85,4 @@ public:
     //    requires std:
 };
 
-}// namespace katana::dsl
+}// namespace katana

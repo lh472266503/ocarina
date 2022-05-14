@@ -11,10 +11,10 @@
 namespace katana {
 
 template<typename T>
-KTN_NODISCARD inline Var<expr_value_t<T>> def(T &&x) noexcept;
+KTN_NODISCARD inline Var<expr_value_t<T>> def(T &&x) noexcept;  // implement in builtin.h
 
 template<typename T>
-KTN_NODISCARD inline Var<expr_value_t<T>> def(const Expression *expr) noexcept;
+KTN_NODISCARD inline Var<expr_value_t<T>> def(const Expression *expr) noexcept; // implement in builtin.h
 
 namespace detail {
 template<typename T>
@@ -43,4 +43,4 @@ struct ExprEnableBitwiseCast {
 template<typename T>
 class Expr {
 };
-}// namespace katana::dsl
+}// namespace katana
