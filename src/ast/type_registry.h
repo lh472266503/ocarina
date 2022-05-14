@@ -5,7 +5,8 @@
 #pragma once
 
 #include "core/stl.h"
-#include "core/basic_types.h"
+#include "type.h"
+#include "core/util.h"
 
 namespace katana {
 template<typename T>
@@ -97,5 +98,49 @@ struct TypeDesc<float4x4> {
 //}
 
 };// namespace detail
+
+namespace detail {
+template<typename S, typename Members, typename offsets>
+struct is_valid_reflection : std::false_type {};
+
+template<typename S, typename... M, typename I, I... os>
+struct is_valid_reflection<S, std::tuple<M...>, std::integer_sequence<I, os...>> {
+    static_assert(((!is_struct_v<M>)&&...));
+    static_assert((!is_bool_vector_v<M> && ...),
+                  "Boolean vectors are not allowed in DSL "
+                  "structures since their may have different "
+                  "layouts on different platforms.");
+
+private:
+    KTN_NODISCARD static constexpr bool _check() noexcept {
+        constexpr auto count = sizeof...(M);
+        static_assert(sizeof...(os) == count);
+        constexpr std::array<size_t, count> sizes{sizeof(M)...};
+        constexpr std::array<size_t, count> alignments{alignof(M)...};
+        constexpr std::array<size_t, count> offsets{os...};
+        size_t cur_offset = 0u;
+        for (auto i = 0u; i < count; ++i) {
+            auto offset = offsets[i];
+            auto size = sizes[i];
+            auto alignment = alignments[i];
+            cur_offset = mem_offset(cur_offset, alignment);
+            if (cur_offset != offset) {
+                return false;
+            }
+            cur_offset += size;
+        }
+        constexpr auto struct_size = sizeof(S);
+        constexpr auto struct_alignment = alignof(S);
+        cur_offset = mem_offset(cur_offset, struct_alignment);
+        return cur_offset == struct_size;
+    };
+
+public:
+    static constexpr bool value = _check();
+};
+};// namespace detail
+
+template<typename S, typename M, typename I>
+static constexpr bool is_valid_reflection_v = detail::is_valid_reflection<S, M, I>::value;
 
 }// namespace katana

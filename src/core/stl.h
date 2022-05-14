@@ -49,4 +49,6 @@ using std::queue;
 using std::unordered_map;
 using std::variant;
 
+using std::array;
+
 }// namespace katana
