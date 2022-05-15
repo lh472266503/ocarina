@@ -7,6 +7,7 @@
 #include "core/stl.h"
 #include "type.h"
 #include "core/util.h"
+#include "core/string_util.h"
 
 namespace katana {
 template<typename T>
@@ -90,12 +91,18 @@ struct TypeDesc<float4x4> {
     }
 };
 
-//template<typename... T>
-//struct TypeDesc<std::tuple<T...>> {
-//    static constexpr katana::string_view description() noexcept {
-//
-//    }
-//}
+template<typename... T>
+struct TypeDesc<std::tuple<T...>> {
+    static katana::string_view description() noexcept {
+        static thread_local katana::string str = []() -> katana::string {
+            auto ret = katana::format("struct<{}", alignof(std::tuple<T...>));
+            (ret.append(",").append(TypeDesc<T>::description()), ...);
+            ret.append(">");
+            return ret;
+        }();
+        return string_view(str);
+    }
+};
 
 };// namespace detail
 
