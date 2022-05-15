@@ -7,6 +7,7 @@
 #include "core/header.h"
 #include "core/basic_types.h"
 #include "core/stl.h"
+#include "core/macro_map.h"
 #include <cassert>
 
 namespace katana {
@@ -124,6 +125,21 @@ template<size_t N>
 struct struct_member_tuple<Matrix<N>> {
     using type = typename struct_member_tuple<std::array<Vector<float, N>, N>>::type;
 };
+
+/// make struct reflection
+#define KTN_MEMBER_TYPE_MAP(member) std::remove_cvref_t<decltype(this_type::member)>
+#define KTN_TYPE_OFFSET_OF(member) KTN_OFFSET_OF(this_type, member)
+#define KTN_MAKE_STRUCT_REFLECTION(S, ...)                                               \
+    template<>                                                                           \
+    struct katana::is_struct<S> : std::true_type {};                                     \
+    template<>                                                                           \
+    struct katana::struct_member_tuple<S> {                                              \
+        using this_type = Hit;                                                           \
+        using type = std::tuple<MAP_LIST(KTN_MEMBER_TYPE_MAP, ##__VA_ARGS__)>;           \
+        using offset = std::index_sequence<MAP_LIST(KTN_TYPE_OFFSET_OF, ##__VA_ARGS__)>; \
+        static_assert(is_valid_reflection_v<this_type, type, offset>,                    \
+                      "may be order of members is wrong!");                              \
+    };
 
 template<typename T>
 using struct_member_tuple_t = typename struct_member_tuple<T>::type;

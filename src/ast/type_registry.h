@@ -106,6 +106,15 @@ struct TypeDesc<std::tuple<T...>> {
 
 };// namespace detail
 
+/// make struct type description
+#define MAKE_STRUCT_DESC(S, ...)                            \
+    template<>                                              \
+    struct katana::detail::TypeDesc<S> {                    \
+        using this_type = S;                                \
+        static katana::string_view description() noexcept { \
+        }                                                   \
+    };
+
 namespace detail {
 template<typename S, typename Members, typename offsets>
 struct is_valid_reflection : std::false_type {};
