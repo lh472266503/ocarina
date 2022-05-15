@@ -8,6 +8,7 @@ add_subdirectory(ext)
 add_subdirectory(core)
 add_subdirectory(ast)
 add_subdirectory(dsl)
+add_subdirectory(rt)
 add_subdirectory(tests)
 
 add_library(katana-all INTERFACE)
