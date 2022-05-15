@@ -31,3 +31,9 @@
 #else
 #define KTN_DSL_API __declspec(dllimport)
 #endif
+
+#ifdef _MSC_VER
+#define KTN_OFFSET_OF(type, member) __builtin_offsetof(type, member)
+#else
+#define KTN_OFFSET_OF(type, member) offsetof(type, member)
+#endif
