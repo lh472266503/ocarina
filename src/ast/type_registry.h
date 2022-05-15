@@ -66,7 +66,7 @@ KTN_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(uint, UINT32)
 
 #undef KTN_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION
 
-// matrices
+/// matrices
 template<>
 struct TypeDesc<float2x2> {
     static constexpr katana::string_view description() noexcept {
@@ -107,12 +107,22 @@ struct TypeDesc<std::tuple<T...>> {
 };// namespace detail
 
 /// make struct type description
-#define MAKE_STRUCT_DESC(S, ...)                            \
-    template<>                                              \
-    struct katana::detail::TypeDesc<S> {                    \
-        using this_type = S;                                \
-        static katana::string_view description() noexcept { \
-        }                                                   \
+#define KTN_MAKE_STRUCT_MEMBER_FMT(member) ",{}"
+
+#define KTN_MAKE_STRUCT_MEMBER_DESC(member) \
+    katana::detail::TypeDesc<std::remove_cvref_t<decltype(this_type::member)>>::description()
+
+#define KTN_MAKE_STRUCT_DESC(S, ...)                                                        \
+    template<>                                                                              \
+    struct katana::detail::TypeDesc<S> {                                                    \
+        using this_type = S;                                                                \
+        static katana::string_view description() noexcept {                                 \
+            static thread_local katana::string s = katana::format(                          \
+                FMT_STRING("struct<{}" MAP(KTN_MAKE_STRUCT_MEMBER_FMT, ##__VA_ARGS__) ">"), \
+                alignof(this_type),                                                         \
+                MAP_LIST(KTN_MAKE_STRUCT_MEMBER_DESC, ##__VA_ARGS__));                      \
+            return s;                                                                       \
+        }                                                                                   \
     };
 
 namespace detail {
@@ -154,7 +164,7 @@ private:
 public:
     static constexpr bool value = _check();
 };
-};// namespace detail
+}// namespace detail
 
 template<typename S, typename M, typename I>
 static constexpr bool is_valid_reflection_v = detail::is_valid_reflection<S, M, I>::value;

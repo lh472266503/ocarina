@@ -11,6 +11,7 @@
 #include "core/string_util.h"
 #include "ast/type_registry.h"
 #include "dsl/common.h"
+#include "rt/hit.h"
 
 using namespace katana;
 using namespace std;
@@ -30,7 +31,7 @@ int main() {
     //    cout << typeid(tp).name() << endl;
     //    cout << typeid(struct_member_tuple<std::array<float, 2>>::type).name();
     cout << detail::TypeDesc<decltype(tp)>::description() << endl;
-    cout << detail::TypeDesc<decltype(tp)>::description() << endl;
+    cout << detail::TypeDesc<Hit>::description() << endl;
     //    cout << typeid(katana::tuple_join_t<tuple<int, float, int>, tuple<int, float, uint>, int>).name() << endl;
     //    cout << typeid(canonical_layout<float2x2>::type).name() << endl;
 }
