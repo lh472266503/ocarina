@@ -20,7 +20,12 @@ namespace detail {
 
 template<typename T>
 struct RefEnableSubscriptAccess {
-    
+//    template<typename Index, KTN_REQUIRES(is_integral_expr_v<Index>)>
+//    KTN_NODISCARD auto operator[](Index &&index) const &noexcept {
+//        auto self = def<T>(static_cast<const T *>(this)->expression());
+//        using Element = std::remove_cvref_t<decltype(std::declval<expr_value_t<T>>()[0])>;
+//        return def<Element>(katana::FunctionBuilder::current())
+//    }
 };
 
 template<typename T>
@@ -29,8 +34,9 @@ struct RefEnableGetMemberByIndex {
 
 template<typename T>
 struct Ref : ExprEnableStaticCast<Ref<T>>,
-            ExprEnableBitwiseCast<Ref<T>> {
+             ExprEnableBitwiseCast<Ref<T>> {
     static_assert(concepts::scalar<T>);
+
 private:
     const Expression *_expression;
 

@@ -63,6 +63,10 @@ public:
 
     KTN_NODISCARD const RefExpr *reference(const Type *type) noexcept;
 
+    KTN_NODISCARD const LiteralExpr *literal(const Type *type, LiteralExpr *literal_expr) noexcept;
+
+    KTN_NODISCARD const AccessExpr *access(const Type *type, const Expression *range, const Expression *index) noexcept;
+
     void break_() noexcept;
 
     void continue_() noexcept;

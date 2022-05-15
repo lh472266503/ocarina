@@ -41,6 +41,15 @@ struct ExprEnableBitwiseCast {
 }// namespace detail
 
 template<typename T>
+KTN_NODISCARD decltype(auto) extract_expression(T &&v) noexcept {
+    if constexpr (is_dsl_v<T>) {
+        return std::forward<T>(v).expression();
+    } else {
+        return katana::FunctionBuilder::current()->literal(Type::of<T>(), std::forward<T>(v));
+    }
+}
+
+template<typename T>
 class Expr {
 };
 }// namespace katana
