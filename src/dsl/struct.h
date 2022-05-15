@@ -23,6 +23,13 @@
     };
 
 /// make struct type description
+#define MAKE_STRUCT_DESC(S, ...)                            \
+    template<>                                              \
+    struct katana::detail::TypeDesc<S> {                    \
+        using this_type = S;                                \
+        static katana::string_view description() noexcept { \
+        }                                                   \
+    };
 
 /// make struct ref
 
