@@ -37,3 +37,5 @@
 #else
 #define KTN_OFFSET_OF(type, member) offsetof(type, member)
 #endif
+
+#define KTN_REQUIRES(args) std::enable_if_t<args, int> = 0

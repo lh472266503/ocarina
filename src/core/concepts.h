@@ -73,6 +73,52 @@ concept container = requires(T a) {
     a.size();
 };
 
+template<typename T>
+concept integral = is_integral_v<T>;
+
+template<typename T>
+concept scalar = is_scalar_v<T>;
+
+template<typename T>
+concept vector = is_vector_v<T>;
+
+template<typename T>
+concept vector2 = is_vector2_v<T>;
+
+template<typename T>
+concept vector3 = is_vector3_v<T>;
+
+template<typename T>
+concept vector4 = is_vector4_v<T>;
+
+
+template<typename T>
+concept bool_vector = is_bool_vector_v<T>;
+
+template<typename T>
+concept float_vector = is_float_vector_v<T>;
+
+template<typename T>
+concept int_vector = is_int_vector_v<T>;
+
+template<typename T>
+concept uint_vector = is_uint_vector_v<T>;
+
+template<typename T>
+concept matrix = is_matrix_v<T>;
+
+template<typename T>
+concept matrix2 = is_matrix2_v<T>;
+
+template<typename T>
+concept matrix3 = is_matrix3_v<T>;
+
+template<typename T>
+concept matrix4 = is_matrix4_v<T>;
+
+template<typename T>
+concept basic = is_basic_v<T>;
+
 namespace detail {
     template<typename... T>
     struct all_same_impl : std::true_type {};
@@ -92,5 +138,7 @@ concept same = is_same_v<T...>;
 
 template<typename A, typename B>
 concept different = !same<A, B>;
+
+
 
 }// namespace katana::concepts

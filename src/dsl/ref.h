@@ -19,8 +19,18 @@ void assign(Lhs &&lhs, Rhs &&rhs) noexcept;
 namespace detail {
 
 template<typename T>
-class Ref : detail::ExprEnableStaticCast<Ref<T>>,
-            detail::ExprEnableBitwiseCast<Ref<T>> {
+struct RefEnableSubscriptAccess {
+    
+};
+
+template<typename T>
+struct RefEnableGetMemberByIndex {
+};
+
+template<typename T>
+struct Ref : ExprEnableStaticCast<Ref<T>>,
+            ExprEnableBitwiseCast<Ref<T>> {
+    static_assert(concepts::scalar<T>);
 private:
     const Expression *_expression;
 
