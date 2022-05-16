@@ -36,6 +36,16 @@ struct RefEnableSubscriptAccess {
     //    }
 };
 
+template<typename T>
+struct RefEnableGetMemberByIndex {
+    template<size_t i>
+    KTN_NODISCARD auto get() const noexcept {
+        static_assert(i < dimension_v<expr_value_t<T>>);
+        auto self = const_cast<T *>(static_cast<const T *>(this));
+        return Ref((*self)[static_cast<uint>(i)]);
+    }
+};
+
 #define KTN_REF_COMMON(...)                                                \
 private:                                                                   \
     const Expression *_expression{nullptr};                                \
@@ -71,33 +81,37 @@ struct Ref : ExprEnableStaticCast<Ref<T>>,
 
 template<typename T>
 struct Ref<Vector<T, 2>>
-    : detail::ExprEnableStaticCast<Ref<Vector<T, 2>>>,
-      detail::ExprEnableBitwiseCast<Ref<Vector<T, 2>>>,
-      detail::RefEnableSubscriptAccess<Ref<Vector<T, 2>>> {
+    : ExprEnableStaticCast<Ref<Vector<T, 2>>>,
+      ExprEnableBitwiseCast<Ref<Vector<T, 2>>>,
+      RefEnableGetMemberByIndex<Ref<Vector<T, 2>>>,
+      RefEnableSubscriptAccess<Ref<Vector<T, 2>>> {
     KTN_REF_COMMON(Vector<T, 2>)
 };
 
 template<typename T>
 struct Ref<Vector<T, 3>>
-    : detail::ExprEnableStaticCast<Ref<Vector<T, 3>>>,
-      detail::ExprEnableBitwiseCast<Ref<Vector<T, 3>>>,
-      detail::RefEnableSubscriptAccess<Ref<Vector<T, 3>>> {
+    : ExprEnableStaticCast<Ref<Vector<T, 3>>>,
+      ExprEnableBitwiseCast<Ref<Vector<T, 3>>>,
+      RefEnableGetMemberByIndex<Ref<Vector<T, 3>>>,
+      RefEnableSubscriptAccess<Ref<Vector<T, 3>>> {
     KTN_REF_COMMON(Vector<T, 3>)
 };
 
 template<typename T>
 struct Ref<Vector<T, 4>>
-    : detail::ExprEnableStaticCast<Ref<Vector<T, 4>>>,
-      detail::ExprEnableBitwiseCast<Ref<Vector<T, 4>>>,
-      detail::RefEnableSubscriptAccess<Ref<Vector<T, 4>>> {
+    : ExprEnableStaticCast<Ref<Vector<T, 4>>>,
+      ExprEnableBitwiseCast<Ref<Vector<T, 4>>>,
+      RefEnableGetMemberByIndex<Ref<Vector<T, 4>>>,
+      RefEnableSubscriptAccess<Ref<Vector<T, 4>>> {
     KTN_REF_COMMON(Vector<T, 4>)
 };
 
 template<size_t N>
 struct Ref<Matrix<N>>
-    : detail::ExprEnableStaticCast<Ref<Matrix<N>>>,
-      detail::ExprEnableBitwiseCast<Ref<Matrix<N>>>,
-      detail::RefEnableSubscriptAccess<Ref<Matrix<N>>> {
+    : ExprEnableStaticCast<Ref<Matrix<N>>>,
+      ExprEnableBitwiseCast<Ref<Matrix<N>>>,
+      RefEnableGetMemberByIndex<Ref<Matrix<N>>>,
+      RefEnableSubscriptAccess<Ref<Matrix<N>>> {
     KTN_REF_COMMON(Matrix<N>)
 };
 
