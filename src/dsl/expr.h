@@ -52,7 +52,21 @@ template<typename T>
 
 }// namespace detail
 
+#define KTN_EXPR_COMMON(...)                                               \
+private:                                                                   \
+    const Expression *_expression{nullptr};                                \
+                                                                           \
+public:                                                                    \
+    explicit Expr(const Expression *e) noexcept                            \
+        : _expression(e) {}                                                \
+    [[nodiscard]] auto expression() const noexcept { return _expression; } \
+    Expr(Expr &&expr) noexcept = default;                                  \
+    Expr(const Expr &expr) noexcept = default;                             \
+    Expr &operator=(Expr) noexcept = delete;
+
 template<typename T>
-class Expr {
+struct Expr {
+    static_assert(concepts::scalar<T>);
+    KTN_EXPR_COMMON(t)
 };
 }// namespace katana

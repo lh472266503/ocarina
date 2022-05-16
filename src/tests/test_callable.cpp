@@ -20,8 +20,7 @@ int main() {
 //        return a + b;
 //    };
 
-    using namespace size_literals;
-    cout << 1_gb;
+
 
     return 0;
 }

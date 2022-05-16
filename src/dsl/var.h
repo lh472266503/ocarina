@@ -11,8 +11,7 @@
 namespace katana {
 
 template<typename T>
-class Var {
-
+class Var : public detail::Ref<T> {
 };
 
-}
+}// namespace katana
