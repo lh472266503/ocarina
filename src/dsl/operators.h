@@ -7,6 +7,7 @@
 #include "core/stl.h"
 #include "core/basic_types.h"
 #include "dsl/expr.h"
+#include "ast/op.h"
 
 #define KTN_MAKE_DSL_UNARY_OPERATOR(op, tag)                                                   \
     template<typename T>                                                                       \
@@ -25,11 +26,43 @@ KTN_MAKE_DSL_UNARY_OPERATOR(-, NEGATIVE)
 KTN_MAKE_DSL_UNARY_OPERATOR(!, NOT)
 KTN_MAKE_DSL_UNARY_OPERATOR(~, BIT_NOT)
 
-namespace katana {
+#define KTN_MAKE_DSL_BINARY_OPERATOR(op, tag)                                            \
+    template<typename Lhs, typename Rhs>                                                 \
+    requires katana::any_dsl_v<Lhs, Rhs> &&                                              \
+        katana::is_basic_v<katana::expr_value_t<Lhs>> &&                                 \
+        katana::is_basic_v<katana::expr_value_t<Rhs>>                                    \
+    [[nodiscard]] inline auto operator op(Lhs &&lhs, Rhs &&rhs) noexcept {               \
+        using namespace std::string_view_literals;                                       \
+        static constexpr bool is_logic_op = #op == "||"sv || #op == "&&"sv;              \
+        static constexpr bool is_bit_op = #op == "|"sv || #op == "&"sv || #op == "^"sv;  \
+        static constexpr bool is_bool_lhs = katana::is_boolean_expr_v<Lhs>;              \
+        static constexpr bool is_bool_rhs = katana::is_boolean_expr_v<Rhs>;              \
+        using NormalRet = std::remove_cvref_t<                                           \
+            decltype(std::declval<katana::expr_value_t<Lhs>>() op                        \
+                         std::declval<katana::expr_value_t<Rhs>>())>;                    \
+        using Ret = std::conditional_t<is_bool_lhs && is_logic_op, bool, NormalRet>;     \
+        return def<Ret>(katana::FunctionBuilder::current()->binary(                      \
+                            katana::Type::of<Ret>(),                                     \
+                            katana::detail::extract_expression(std::forward<Lhs>(lhs)),  \
+                            katana::detail::extract_expression(std::forward<Rhs>(rhs))), \
+                        katana::BinaryOp::tag);                                          \
+    }
 
-template<typename Lhs, typename Rhs>
-requires any_dsl_v<Lhs, Rhs> && is_basic_v<expr_value_t<Lhs>> && is_basic_v<expr_value_t<Rhs>>
-[[nodiscard]] inline auto operator+(Lhs &&lhs, Rhs &&rhs) noexcept {
-}
-
-}// namespace katana
+KTN_MAKE_DSL_BINARY_OPERATOR(+, ADD)
+KTN_MAKE_DSL_BINARY_OPERATOR(-, SUB)
+KTN_MAKE_DSL_BINARY_OPERATOR(*, MUL)
+KTN_MAKE_DSL_BINARY_OPERATOR(/, DIV)
+KTN_MAKE_DSL_BINARY_OPERATOR(%, MOD)
+KTN_MAKE_DSL_BINARY_OPERATOR(&, BIT_AND)
+KTN_MAKE_DSL_BINARY_OPERATOR(|, BIT_OR)
+KTN_MAKE_DSL_BINARY_OPERATOR(^, BIT_XOR)
+KTN_MAKE_DSL_BINARY_OPERATOR(<<, SHL)
+KTN_MAKE_DSL_BINARY_OPERATOR(>>, SHR)
+KTN_MAKE_DSL_BINARY_OPERATOR(&&, AND)
+KTN_MAKE_DSL_BINARY_OPERATOR(||, OR)
+KTN_MAKE_DSL_BINARY_OPERATOR(==, EQUAL)
+KTN_MAKE_DSL_BINARY_OPERATOR(!=, NOT_EQUAL)
+KTN_MAKE_DSL_BINARY_OPERATOR(<, LESS)
+KTN_MAKE_DSL_BINARY_OPERATOR(<=, LESS_EQUAL)
+KTN_MAKE_DSL_BINARY_OPERATOR(>, GREATER)
+KTN_MAKE_DSL_BINARY_OPERATOR(>=, GREATER_EQUAL)
