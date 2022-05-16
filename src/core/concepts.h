@@ -5,7 +5,6 @@
 #pragma once
 
 #include "basic_types.h"
-#include "basic_traits.h"
 #include "stl.h"
 
 namespace katana::concepts {

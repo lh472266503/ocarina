@@ -4,7 +4,10 @@
 
 #include "dsl/common.h"
 #include "core/concepts.h"
-
+//#include "core/util.h"
+#include <iostream>
+using std::cout;
+using std::endl;
 using namespace katana;
 
 int main() {
@@ -12,6 +15,9 @@ int main() {
 //    auto callable = [](Var<int> a, Var<int> b) {
 //        return a + b;
 //    };
+
+    using namespace size_literals;
+    cout << 1_gb;
 
     return 0;
 }
