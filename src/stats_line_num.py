@@ -28,7 +28,7 @@ for root,dirs,files in os.walk(os.path.join(os.getcwd(), "src")):
         if ".natvis" in fn:
             continue
         try:
-            print(file)
+            # print(file)
             
             f = open(fn, "r")
             count += len(f.readlines())

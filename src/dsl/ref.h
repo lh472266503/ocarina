@@ -20,47 +20,85 @@ namespace detail {
 
 template<typename T>
 struct RefEnableSubscriptAccess {
-//    template<typename Index, KTN_REQUIRES(is_integral_expr_v<Index>)>
-//    KTN_NODISCARD auto operator[](Index &&index) const &noexcept {
-//        auto self = def<T>(static_cast<const T *>(this)->expression());
-//        using Element = std::remove_cvref_t<decltype(std::declval<expr_value_t<T>>()[0])>;
-//        return def<Element>(katana::FunctionBuilder::current())
-//    }
+    template<typename Index, KTN_REQUIRES(is_integral_expr_v<Index>)>
+    KTN_NODISCARD auto operator[](Index &&index) const &noexcept {
+        auto self = def<T>(static_cast<const T *>(this)->expression());
+        using Element = std::remove_cvref_t<decltype(std::declval<expr_value_t<T>>()[0])>;
+        return def<Element>(katana::FunctionBuilder::current()->access(
+            Type::of<Element>(), self.expression(),
+            extract_expression(std::forward<Index>(index))));
+    }
+
+    //todo
+    //    template<typename Index, KTN_REQUIRES(is_integral_expr_v<Index>)>
+    //    KTN_NODISCARD auto operator[](Index &&index) &noexcept {
+    //
+    //    }
 };
 
-template<typename T>
-struct RefEnableGetMemberByIndex {
-};
+#define KTN_REF_COMMON(...)                                                \
+private:                                                                   \
+    const Expression *_expression{nullptr};                                \
+                                                                           \
+public:                                                                    \
+    explicit Ref(const Expression *e) noexcept : _expression{e} {}         \
+    [[nodiscard]] auto expression() const noexcept { return _expression; } \
+    Ref(Ref &&) noexcept = default;                                        \
+    Ref(const Ref &) noexcept = default;                                   \
+    template<typename Rhs>                                                 \
+    Ref &operator=(Rhs &&rhs) &noexcept {                                  \
+        assign(*this, std::forward<Rhs>(rhs));                             \
+        return *this;                                                      \
+    }                                                                      \
+    [[nodiscard]] explicit operator Expr<__VA_ARGS__>() const noexcept {   \
+        return Expr<__VA_ARGS__>{this->expression()};                      \
+    }                                                                      \
+    Ref &operator=(Ref rhs) &noexcept {                                    \
+        (*this) = Expr<__VA_ARGS__>{rhs};                                  \
+        return *this;                                                      \
+    }
 
+/**
+ * for scalar
+ * @tparam T
+ */
 template<typename T>
 struct Ref : ExprEnableStaticCast<Ref<T>>,
              ExprEnableBitwiseCast<Ref<T>> {
     static_assert(concepts::scalar<T>);
+    KTN_REF_COMMON(T)
+};
 
-private:
-    const Expression *_expression;
+template<typename T>
+struct Ref<Vector<T, 2>>
+    : detail::ExprEnableStaticCast<Ref<Vector<T, 2>>>,
+      detail::ExprEnableBitwiseCast<Ref<Vector<T, 2>>>,
+      detail::RefEnableSubscriptAccess<Ref<Vector<T, 2>>> {
+    KTN_REF_COMMON(Vector<T, 2>)
+};
 
-public:
-    explicit Ref(const Expression *e) noexcept : _expression{e} {}
-    [[nodiscard]] auto expression() const noexcept { return _expression; }
-    Ref(Ref &&) noexcept = default;
-    Ref(const Ref &) noexcept = default;
-    template<typename Rhs>
-    Ref &operator=(Rhs &&rhs) &noexcept {
-        assign(*this, std::forward<Rhs>(rhs));
-        return *this;
-    }
-    [[nodiscard]] explicit operator Expr<T>() const noexcept { return Expr<T>{this->expression()}; }
-    Ref &operator=(Ref rhs) &noexcept {
-        (*this) = Expr<T>{rhs};
-        return *this;
-    }
+template<typename T>
+struct Ref<Vector<T, 3>>
+    : detail::ExprEnableStaticCast<Ref<Vector<T, 3>>>,
+      detail::ExprEnableBitwiseCast<Ref<Vector<T, 3>>>,
+      detail::RefEnableSubscriptAccess<Ref<Vector<T, 3>>> {
+    KTN_REF_COMMON(Vector<T, 3>)
+};
 
-    template<size_t i>
-    [[nodiscard]] auto get() const noexcept {
-        static_assert(i == 0u);
-        return *this;
-    }
+template<typename T>
+struct Ref<Vector<T, 4>>
+    : detail::ExprEnableStaticCast<Ref<Vector<T, 4>>>,
+      detail::ExprEnableBitwiseCast<Ref<Vector<T, 4>>>,
+      detail::RefEnableSubscriptAccess<Ref<Vector<T, 4>>> {
+    KTN_REF_COMMON(Vector<T, 4>)
+};
+
+template<size_t N>
+struct Ref<Matrix<N>>
+    : detail::ExprEnableStaticCast<Ref<Matrix<N>>>,
+      detail::ExprEnableBitwiseCast<Ref<Matrix<N>>>,
+      detail::RefEnableSubscriptAccess<Ref<Matrix<N>>> {
+    KTN_REF_COMMON(Matrix<N>)
 };
 
 }// namespace detail
