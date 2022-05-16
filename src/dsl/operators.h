@@ -10,7 +10,7 @@
 
 #define KTN_MAKE_DSL_UNARY_OPERATOR(op, tag)                                                   \
     template<typename T>                                                                       \
-        requires katana::is_dsl_v<T>                                                           \
+    requires katana::is_dsl_v<T>                                                               \
     [[nodiscard]] inline auto operator op(T &&expr) noexcept {                                 \
         using Ret = std::remove_cvref_t<decltype(op std::declval<katana::expr_value_t<T>>())>; \
         return katana::def<Ret>(                                                               \
@@ -28,7 +28,7 @@ KTN_MAKE_DSL_UNARY_OPERATOR(~, BIT_NOT)
 namespace katana {
 
 template<typename Lhs, typename Rhs>
-    requires any_dsl_v<Lhs, Rhs> && is_basic_v<expr_value_t<Lhs>> && is_basic_v<expr_value_t<Rhs>>
+requires any_dsl_v<Lhs, Rhs> && is_basic_v<expr_value_t<Lhs>> && is_basic_v<expr_value_t<Rhs>>
 [[nodiscard]] inline auto operator+(Lhs &&lhs, Rhs &&rhs) noexcept {
 }
 

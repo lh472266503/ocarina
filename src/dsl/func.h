@@ -70,7 +70,7 @@ private:
     katana::shared_ptr<FunctionBuilder> _builder;
 
 public:
-    template<typename Func, KTN_REQUIRES(is_callable<std::remove_cvref_t<Func>>::value)>
+    template<typename Func>
     explicit Callable(Func &&func) noexcept
         : _builder(FunctionBuilder::define_callable([&] {
               static_assert(std::is_invocable_v<Func, detail::prototype_to_var<Args>...>);

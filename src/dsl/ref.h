@@ -20,7 +20,8 @@ namespace detail {
 
 template<typename T>
 struct RefEnableSubscriptAccess {
-    template<typename Index, KTN_REQUIRES(is_integral_expr_v<Index>)>
+    template<typename Index>
+    requires is_integral_expr_v<Index>
     [[nodiscard]] auto operator[](Index &&index) const &noexcept {
         auto self = def<T>(static_cast<const T *>(this)->expression());
         using Element = std::remove_cvref_t<decltype(std::declval<expr_value_t<T>>()[0])>;
@@ -30,9 +31,9 @@ struct RefEnableSubscriptAccess {
     }
 
     //todo
-    //    template<typename Index, KTN_REQUIRES(is_integral_expr_v<Index>)>
+    //    template<typename Index>
+    //    requires is_integral_expr_v<Index>
     //    [[nodiscard]] auto operator[](Index &&index) &noexcept {
-    //
     //    }
 };
 
