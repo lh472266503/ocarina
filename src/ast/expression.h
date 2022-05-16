@@ -60,17 +60,17 @@ private:
     Tag _tag;
 
 protected:
-    KTN_NODISCARD virtual uint64_t _compute_hash() const noexcept = 0;
+    [[nodiscard]] virtual uint64_t _compute_hash() const noexcept = 0;
     mutable Usage _usage{Usage::NONE};
     virtual void _mark(Usage usage) const noexcept = 0;
 
 public:
     explicit Expression(Tag tag, const Type *type) noexcept : _type{type}, _tag{tag} {}
     virtual ~Expression() noexcept = default;
-    KTN_NODISCARD uint64_t hash() const noexcept;
-    KTN_NODISCARD auto type() const noexcept { return _type; }
-    KTN_NODISCARD auto usage() const noexcept { return _usage; }
-    KTN_NODISCARD auto tag() const noexcept { return _tag; }
+    [[nodiscard]] uint64_t hash() const noexcept;
+    [[nodiscard]] auto type() const noexcept { return _type; }
+    [[nodiscard]] auto usage() const noexcept { return _usage; }
+    [[nodiscard]] auto tag() const noexcept { return _tag; }
     virtual void accept(ExprVisitor &) const = 0;
     void mark(Usage usage) const noexcept;
 };
@@ -86,8 +86,8 @@ private:
 public:
     UnaryExpr(const Type *type, UnaryOp op, const Expression *expression)
         : Expression(Tag::UNARY, type), _op(op), _operand(expression) {}
-    KTN_NODISCARD auto operand() const noexcept { return _operand; }
-    KTN_NODISCARD auto op() const noexcept { return _op; }
+    [[nodiscard]] auto operand() const noexcept { return _operand; }
+    [[nodiscard]] auto op() const noexcept { return _op; }
     KTN_MAKE_EXPRESSION_ACCEPT_VISITOR
 };
 
@@ -103,9 +103,9 @@ public:
         _lhs->mark(Usage::READ);
         _rhs->mark(Usage::READ);
     }
-    KTN_NODISCARD auto lhs() const noexcept { return _lhs; }
-    KTN_NODISCARD auto rhs() const noexcept { return _rhs; }
-    KTN_NODISCARD auto op() const noexcept { return _op; }
+    [[nodiscard]] auto lhs() const noexcept { return _lhs; }
+    [[nodiscard]] auto rhs() const noexcept { return _rhs; }
+    [[nodiscard]] auto op() const noexcept { return _op; }
     KTN_MAKE_EXPRESSION_ACCEPT_VISITOR
 };
 
@@ -121,8 +121,8 @@ public:
         _index->mark(Usage::READ);
     }
 
-    KTN_NODISCARD const Expression *range() const noexcept { return _range; }
-    KTN_NODISCARD const Expression *index() const noexcept { return _index; }
+    [[nodiscard]] const Expression *range() const noexcept { return _range; }
+    [[nodiscard]] const Expression *index() const noexcept { return _index; }
     KTN_MAKE_EXPRESSION_ACCEPT_VISITOR
 };
 
@@ -151,7 +151,7 @@ private:
 public:
     LiteralExpr(const Type *type, value_type value)
         : Expression(Tag::LITERAL, type), _value(std::move(value)) {}
-    KTN_NODISCARD decltype(auto) value() const noexcept { return _value; }
+    [[nodiscard]] decltype(auto) value() const noexcept { return _value; }
     KTN_MAKE_EXPRESSION_ACCEPT_VISITOR
 };
 

@@ -6,7 +6,6 @@
 
 #include "core/header.h"
 
-
 namespace katana {
 
 template<typename... T>
@@ -22,7 +21,8 @@ template<typename... T>
 constexpr auto always_true_v = always_true<T...>::value;
 
 template<typename T>
-requires std::is_enum_v<T> KTN_NODISCARD constexpr auto to_underlying(T e) noexcept {
+requires std::is_enum_v<T>
+[[nodiscard]] constexpr auto to_underlying(T e) noexcept {
     return static_cast<std::underlying_type_t<T>>(e);
 }
 

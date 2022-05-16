@@ -66,14 +66,14 @@ private:
     Tag _tag;
 
 private:
-    KTN_NODISCARD virtual uint64_t _compute_hash() const noexcept = 0;
+    [[nodiscard]] virtual uint64_t _compute_hash() const noexcept = 0;
 
 public:
     explicit Statement(Tag tag) noexcept : _tag{tag} {}
-    KTN_NODISCARD auto tag() const noexcept { return _tag; }
+    [[nodiscard]] auto tag() const noexcept { return _tag; }
     virtual void accept(StmtVisitor &) const = 0;
     virtual ~Statement() noexcept = default;
-    KTN_NODISCARD uint64_t hash() const noexcept {
+    [[nodiscard]] uint64_t hash() const noexcept {
         if (!_hash_computed) {
             using namespace std::string_view_literals;
             uint64_t h = _compute_hash();
@@ -89,7 +89,7 @@ private:
     katana::vector<const Statement *> _statements;
 
 private:
-    KTN_NODISCARD uint64_t _compute_hash() const noexcept override {
+    [[nodiscard]] uint64_t _compute_hash() const noexcept override {
         auto h = Hash64::default_seed;
         for (auto &&s : _statements) { h = hash64(s->hash(), h); }
         return h;
@@ -97,7 +97,7 @@ private:
 
 public:
     ScopeStmt() noexcept : Statement(Tag::SCOPE) {}
-    KTN_NODISCARD auto statements() const noexcept { return katana::span(_statements); }
+    [[nodiscard]] auto statements() const noexcept { return katana::span(_statements); }
     void append(const Statement *stmt) noexcept { _statements.push_back(stmt); }
     KTN_MAKE_STATEMENT_ACCEPT_VISITOR
 };

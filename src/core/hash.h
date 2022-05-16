@@ -13,7 +13,7 @@
 namespace katana {
 namespace detail {
 
-KTN_NODISCARD inline auto xxh3_hash64(const void *data, size_t size, uint64_t seed) noexcept {
+[[nodiscard]] inline auto xxh3_hash64(const void *data, size_t size, uint64_t seed) noexcept {
     return XXH3_64bits_withSeed(data, size, seed);
 }
 
@@ -29,7 +29,7 @@ concept hashable_with_hash_code_method = requires(T x) {
 
 }// namespace detail
 
-KTN_NODISCARD KTN_CORE_API std::string_view hash_to_string(uint64_t hash) noexcept;
+[[nodiscard]] KTN_CORE_API std::string_view hash_to_string(uint64_t hash) noexcept;
 
 class Hash64 {
 public:
@@ -44,7 +44,7 @@ public:
         : _seed{seed} {}
 
     template<typename T>
-    KTN_NODISCARD uint64_t operator()(T &&s) const noexcept {
+    [[nodiscard]] uint64_t operator()(T &&s) const noexcept {
         if constexpr (katana::detail::hashable_with_hash_method<T>) {
             return (*this)(std::forward<T>(s).hash());
         } else if constexpr (detail::hashable_with_hash_code_method<T>) {
@@ -71,7 +71,7 @@ public:
 };
 
 template<typename T>
-KTN_NODISCARD inline uint64_t hash64(T &&v, uint64_t seed = Hash64::default_seed) noexcept {
+[[nodiscard]] inline uint64_t hash64(T &&v, uint64_t seed = Hash64::default_seed) noexcept {
     return Hash64{seed}(std::forward<T>(v));
 }
 

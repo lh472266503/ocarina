@@ -52,13 +52,13 @@ struct is_callable<Callable<T>> : std::true_type {};
 namespace detail {
 
 template<typename VarTuple, typename TagTuple, typename T, size_t... i>
-KTN_NODISCARD auto create_argument_tuple_impl(T tuple, std::index_sequence<i...>) {
+[[nodiscard]] auto create_argument_tuple_impl(T tuple, std::index_sequence<i...>) {
 }
 
 }// namespace detail
 
 template<typename VarTuple, typename TagTuple, typename T>
-KTN_NODISCARD auto create_argument_tuple(T tuple) {
+[[nodiscard]] auto create_argument_tuple(T tuple) {
     return detail::create_argument_tuple_impl<VarTuple, TagTuple>(tuple, std::make_index_sequence<std::tuple_size_v<VarTuple>>());
 }
 

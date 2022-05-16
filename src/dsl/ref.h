@@ -21,7 +21,7 @@ namespace detail {
 template<typename T>
 struct RefEnableSubscriptAccess {
     template<typename Index, KTN_REQUIRES(is_integral_expr_v<Index>)>
-    KTN_NODISCARD auto operator[](Index &&index) const &noexcept {
+    [[nodiscard]] auto operator[](Index &&index) const &noexcept {
         auto self = def<T>(static_cast<const T *>(this)->expression());
         using Element = std::remove_cvref_t<decltype(std::declval<expr_value_t<T>>()[0])>;
         return def<Element>(katana::FunctionBuilder::current()->access(
@@ -31,7 +31,7 @@ struct RefEnableSubscriptAccess {
 
     //todo
     //    template<typename Index, KTN_REQUIRES(is_integral_expr_v<Index>)>
-    //    KTN_NODISCARD auto operator[](Index &&index) &noexcept {
+    //    [[nodiscard]] auto operator[](Index &&index) &noexcept {
     //
     //    }
 };
@@ -39,7 +39,7 @@ struct RefEnableSubscriptAccess {
 template<typename T>
 struct RefEnableGetMemberByIndex {
     template<size_t i>
-    KTN_NODISCARD auto get() const noexcept {
+    [[nodiscard]] auto get() const noexcept {
         static_assert(i < dimension_v<expr_value_t<T>>);
         auto self = const_cast<T *>(static_cast<const T *>(this));
         return Ref((*self)[static_cast<uint>(i)]);

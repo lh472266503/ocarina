@@ -84,12 +84,12 @@ template<typename T, size_t>
 using array_to_tuple_element_t = T;
 
 template<typename T, size_t N, size_t... i>
-KTN_NODISCARD constexpr auto array_to_tuple_impl(std::array<T, N> array, std::index_sequence<i...>) noexcept {
+[[nodiscard]] constexpr auto array_to_tuple_impl(std::array<T, N> array, std::index_sequence<i...>) noexcept {
     return static_cast<std::tuple<array_to_tuple_element_t<T, i>...>>(std::tuple(array[i]...));
 }
 
 template<typename T, size_t N>
-KTN_NODISCARD constexpr auto array_to_tuple_impl(std::array<T, N> array = {}) noexcept {
+[[nodiscard]] constexpr auto array_to_tuple_impl(std::array<T, N> array = {}) noexcept {
     return array_to_tuple_impl(array, std::make_index_sequence<N>());
 }
 
@@ -280,53 +280,53 @@ private:
 
 public:
     template<typename T>
-    KTN_NODISCARD static const Type *of() noexcept;
+    [[nodiscard]] static const Type *of() noexcept;
 
     template<typename T>
-    KTN_NODISCARD static auto of(T &&) noexcept { return of<std::remove_cvref_t<T>>(); }
+    [[nodiscard]] static auto of(T &&) noexcept { return of<std::remove_cvref_t<T>>(); }
 
-    KTN_NODISCARD static const Type *from(std::string_view description) noexcept;
+    [[nodiscard]] static const Type *from(std::string_view description) noexcept;
 
-    KTN_NODISCARD static const Type *find(uint64_t hash) noexcept;
+    [[nodiscard]] static const Type *find(uint64_t hash) noexcept;
 
-    KTN_NODISCARD static const Type *at(uint32_t uid) noexcept;
+    [[nodiscard]] static const Type *at(uint32_t uid) noexcept;
 
-    KTN_NODISCARD static size_t count() noexcept;
+    [[nodiscard]] static size_t count() noexcept;
 
-    KTN_NODISCARD bool operator==(const Type &rhs) const noexcept { return _hash == rhs._hash; }
-    KTN_NODISCARD bool operator!=(const Type &rhs) const noexcept { return !(*this == rhs); }
-    KTN_NODISCARD bool operator<(const Type &rhs) const noexcept { return _index < rhs._index; }
-    KTN_NODISCARD constexpr size_t index() const noexcept { return _index; }
-    KTN_NODISCARD constexpr uint64_t hash() const noexcept { return _hash; }
-    KTN_NODISCARD constexpr size_t size() const noexcept { return _size; }
-    KTN_NODISCARD constexpr size_t alignment() const noexcept { return _alignment; }
-    KTN_NODISCARD constexpr Tag tag() const noexcept { return _tag; }
-    KTN_NODISCARD auto description() const noexcept { return katana::string_view{_description}; }
+    [[nodiscard]] bool operator==(const Type &rhs) const noexcept { return _hash == rhs._hash; }
+    [[nodiscard]] bool operator!=(const Type &rhs) const noexcept { return !(*this == rhs); }
+    [[nodiscard]] bool operator<(const Type &rhs) const noexcept { return _index < rhs._index; }
+    [[nodiscard]] constexpr size_t index() const noexcept { return _index; }
+    [[nodiscard]] constexpr uint64_t hash() const noexcept { return _hash; }
+    [[nodiscard]] constexpr size_t size() const noexcept { return _size; }
+    [[nodiscard]] constexpr size_t alignment() const noexcept { return _alignment; }
+    [[nodiscard]] constexpr Tag tag() const noexcept { return _tag; }
+    [[nodiscard]] auto description() const noexcept { return katana::string_view{_description}; }
 
-    KTN_NODISCARD constexpr size_t dimension() const noexcept {
+    [[nodiscard]] constexpr size_t dimension() const noexcept {
         assert(is_array() || is_vector() || is_matrix() || is_texture());
         return _dimension;
     }
 
-    KTN_NODISCARD katana::span<const Type *const> members() const noexcept;
-    KTN_NODISCARD const Type *element() const noexcept;
+    [[nodiscard]] katana::span<const Type *const> members() const noexcept;
+    [[nodiscard]] const Type *element() const noexcept;
 
-    KTN_NODISCARD constexpr bool is_scalar() const noexcept {
+    [[nodiscard]] constexpr bool is_scalar() const noexcept {
         return _tag == Tag::BOOL || _tag == Tag::FLOAT || _tag == Tag::INT || _tag == Tag::UINT;
     }
 
-    KTN_NODISCARD constexpr auto is_basic() const noexcept {
+    [[nodiscard]] constexpr auto is_basic() const noexcept {
         return is_scalar() || is_vector() || is_matrix();
     }
 
-    KTN_NODISCARD constexpr bool is_array() const noexcept { return _tag == Tag::ARRAY; }
-    KTN_NODISCARD constexpr bool is_vector() const noexcept { return _tag == Tag::VECTOR; }
-    KTN_NODISCARD constexpr bool is_matrix() const noexcept { return _tag == Tag::MATRIX; }
-    KTN_NODISCARD constexpr bool is_structure() const noexcept { return _tag == Tag::STRUCTURE; }
-    KTN_NODISCARD constexpr bool is_buffer() const noexcept { return _tag == Tag::BUFFER; }
-    KTN_NODISCARD constexpr bool is_texture() const noexcept { return _tag == Tag::TEXTURE; }
-    KTN_NODISCARD constexpr bool is_bindless_array() const noexcept { return _tag == Tag::BINDLESS_ARRAY; }
-    KTN_NODISCARD constexpr bool is_accel() const noexcept { return _tag == Tag::ACCEL; }
+    [[nodiscard]] constexpr bool is_array() const noexcept { return _tag == Tag::ARRAY; }
+    [[nodiscard]] constexpr bool is_vector() const noexcept { return _tag == Tag::VECTOR; }
+    [[nodiscard]] constexpr bool is_matrix() const noexcept { return _tag == Tag::MATRIX; }
+    [[nodiscard]] constexpr bool is_structure() const noexcept { return _tag == Tag::STRUCTURE; }
+    [[nodiscard]] constexpr bool is_buffer() const noexcept { return _tag == Tag::BUFFER; }
+    [[nodiscard]] constexpr bool is_texture() const noexcept { return _tag == Tag::TEXTURE; }
+    [[nodiscard]] constexpr bool is_bindless_array() const noexcept { return _tag == Tag::BINDLESS_ARRAY; }
+    [[nodiscard]] constexpr bool is_accel() const noexcept { return _tag == Tag::ACCEL; }
 };
 
 }// namespace katana

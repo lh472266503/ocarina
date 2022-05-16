@@ -30,10 +30,10 @@ public:
     using Constant = Function::Constant;
 
 protected:
-    KTN_NODISCARD static katana::vector<FunctionBuilder *> &_function_stack() noexcept;
+    [[nodiscard]] static katana::vector<FunctionBuilder *> &_function_stack() noexcept;
     void _add_statement(const Statement *statement) noexcept;
-    KTN_NODISCARD const RefExpr *_builtin(Variable::Tag tag) noexcept;
-    KTN_NODISCARD const RefExpr *_ref(Variable::Tag tag) noexcept;
+    [[nodiscard]] const RefExpr *_builtin(Variable::Tag tag) noexcept;
+    [[nodiscard]] const RefExpr *_ref(Variable::Tag tag) noexcept;
     void _void_expr(const Expression *expr) noexcept;
 
 private:
@@ -45,7 +45,7 @@ private:
     }
 
 public:
-    KTN_NODISCARD static FunctionBuilder *current() noexcept;
+    [[nodiscard]] static FunctionBuilder *current() noexcept;
 
     template<typename Func>
     static auto define_callable(Func &&func) noexcept {
@@ -57,19 +57,19 @@ public:
         return _define(Tag::KERNEL, std::forward<Func>(func));
     }
 
-    KTN_NODISCARD const CastExpr *cast(const Type *type, CastOp cast_op, const Expression *expression) noexcept;
+    [[nodiscard]] const CastExpr *cast(const Type *type, CastOp cast_op, const Expression *expression) noexcept;
 
-    KTN_NODISCARD const UnaryExpr *unary(const Type *type, UnaryOp op, const Expression *expression) noexcept;
+    [[nodiscard]] const UnaryExpr *unary(const Type *type, UnaryOp op, const Expression *expression) noexcept;
 
-    KTN_NODISCARD const BinaryExpr *binary(const Type *type, const Expression *lhs, const Expression *rhs, BinaryOp op) noexcept;
+    [[nodiscard]] const BinaryExpr *binary(const Type *type, const Expression *lhs, const Expression *rhs, BinaryOp op) noexcept;
 
-    KTN_NODISCARD const RefExpr *argument(const Type *type) noexcept;
+    [[nodiscard]] const RefExpr *argument(const Type *type) noexcept;
 
-    KTN_NODISCARD const RefExpr *reference(const Type *type) noexcept;
+    [[nodiscard]] const RefExpr *reference(const Type *type) noexcept;
 
-    KTN_NODISCARD const LiteralExpr *literal(const Type *type, LiteralExpr *literal_expr) noexcept;
+    [[nodiscard]] const LiteralExpr *literal(const Type *type, LiteralExpr *literal_expr) noexcept;
 
-    KTN_NODISCARD const AccessExpr *access(const Type *type, const Expression *range, const Expression *index) noexcept;
+    [[nodiscard]] const AccessExpr *access(const Type *type, const Expression *range, const Expression *index) noexcept;
 
     void break_() noexcept;
 
@@ -79,15 +79,15 @@ public:
 
     void assign(const Expression *lhs, const Expression *rhs) noexcept;
 
-    KTN_NODISCARD IfStmt *if_(const Expression *condition) noexcept;
+    [[nodiscard]] IfStmt *if_(const Expression *condition) noexcept;
 
-    KTN_NODISCARD SwitchStmt *switch_(const Expression *expression) noexcept;
+    [[nodiscard]] SwitchStmt *switch_(const Expression *expression) noexcept;
 
-    KTN_NODISCARD SwitchCaseStmt *case_(const Statement *statement) noexcept;
+    [[nodiscard]] SwitchCaseStmt *case_(const Statement *statement) noexcept;
 
-    KTN_NODISCARD SwitchDefaultStmt *default_() noexcept;
+    [[nodiscard]] SwitchDefaultStmt *default_() noexcept;
 
-    KTN_NODISCARD ForStmt *for_(const RefExpr *var, const Expression *condition, const Expression *update) noexcept;
+    [[nodiscard]] ForStmt *for_(const RefExpr *var, const Expression *condition, const Expression *update) noexcept;
 };
 
 }// namespace katana

@@ -138,7 +138,7 @@ struct is_valid_reflection<S, std::tuple<M...>, std::integer_sequence<I, os...>>
                   "layouts on different platforms.");
 
 private:
-    KTN_NODISCARD static constexpr bool _check() noexcept {
+    [[nodiscard]] static constexpr bool _check() noexcept {
         constexpr auto count = sizeof...(M);
         static_assert(sizeof...(os) == count);
         constexpr std::array<size_t, count> sizes{sizeof(M)...};

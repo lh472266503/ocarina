@@ -2,7 +2,6 @@
 // Created by Zero on 24/04/2022.
 //
 
-
 #pragma once
 
 #include <filesystem>
@@ -11,8 +10,6 @@
 #include <cstddef>
 #include <tuple>
 #include <type_traits>
-
-#define KTN_NODISCARD [[nodiscard]]
 
 #ifdef KTN_AST_EXPORT_DLL
 #define KTN_AST_API __declspec(dllexport)

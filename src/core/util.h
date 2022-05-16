@@ -10,19 +10,19 @@
 namespace katana {
 
 template<typename T, typename U, KTN_REQUIRES(is_integral_v<T> &&is_integral_v<U>)>
-KTN_NODISCARD static constexpr auto mem_offset(T offset, U alignment) noexcept {
+[[nodiscard]] static constexpr auto mem_offset(T offset, U alignment) noexcept {
     return (offset + alignment - 1u) / alignment * alignment;
 }
 
 template<typename T>
 requires concepts::multiply_able<T>
-    KTN_NODISCARD constexpr auto sqr(T v) {
+    [[nodiscard]] constexpr auto sqr(T v) {
     return v * v;
 }
 
 template<int n, typename T>
 requires concepts::multiply_able<T>
-    KTN_NODISCARD constexpr T Pow(T v) {
+    [[nodiscard]] constexpr T Pow(T v) {
     if constexpr (n < 0) {
         return 1.f / Pow<-n>(v);
     } else if constexpr (n == 1) {
@@ -35,15 +35,15 @@ requires concepts::multiply_able<T>
 }
 
 inline namespace size_literals {
-    KTN_NODISCARD constexpr auto operator""_kb(size_t bytes) noexcept {
+    [[nodiscard]] constexpr auto operator""_kb(size_t bytes) noexcept {
     return static_cast<size_t>(bytes * 1024u);
 }
 
-KTN_NODISCARD constexpr auto operator""_mb(size_t bytes) noexcept {
+[[nodiscard]] constexpr auto operator""_mb(size_t bytes) noexcept {
     return static_cast<size_t>(bytes * sqr(1024u));
 }
 
-KTN_NODISCARD constexpr auto operator""_gb(size_t bytes) noexcept {
+[[nodiscard]] constexpr auto operator""_gb(size_t bytes) noexcept {
     return static_cast<size_t>(bytes * Pow<3>(1024u));
 }
 }// namespace size_literals

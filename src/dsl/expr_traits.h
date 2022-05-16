@@ -146,8 +146,8 @@ constexpr auto is_dsl_v = is_dsl<T>::value;
 template<typename... T>
 using any_dsl = std::disjunction<is_dsl<T>...>;
 
-template<typename T>
-constexpr auto any_dsl_v = any_dsl<T>::value;
+template<typename... T>
+constexpr auto any_dsl_v = any_dsl<T...>::value;
 
 template<typename... T>
 using all_dsl = std::conjunction<is_dsl<T>...>;

@@ -32,11 +32,11 @@ private:
 public:
     Function() noexcept = default;
     explicit Function(const detail::FunctionBuilder *builder) noexcept : _builder{builder} {}
-    KTN_NODISCARD katana::span<const Variable> builtin_variables() const noexcept;
-    KTN_NODISCARD katana::span<const Constant> constants() const noexcept;
-    KTN_NODISCARD katana::span<const Variable> arguments() const noexcept;
-    KTN_NODISCARD uint3 block_size() const noexcept;
-    KTN_NODISCARD const Type *return_type() const noexcept;
+    [[nodiscard]] katana::span<const Variable> builtin_variables() const noexcept;
+    [[nodiscard]] katana::span<const Constant> constants() const noexcept;
+    [[nodiscard]] katana::span<const Variable> arguments() const noexcept;
+    [[nodiscard]] uint3 block_size() const noexcept;
+    [[nodiscard]] const Type *return_type() const noexcept;
 };
 
 }// namespace katana

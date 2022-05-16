@@ -53,8 +53,8 @@ struct Vector : public detail::VectorStorage<T, N> {
                   "Invalid vector type");
     static_assert(N == 2 || N == 3 || N == 4, "Invalid vector dimension");
     using Storage::VectorStorage;
-    KTN_NODISCARD constexpr T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
-    KTN_NODISCARD constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
+    [[nodiscard]] constexpr T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
+    [[nodiscard]] constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
 };
 
 #define SYCAMORE_MAKE_VECTOR_TYPES(T) \
@@ -85,8 +85,8 @@ struct Matrix<2> {
     constexpr Matrix(const float2 c0, const float2 c1) noexcept
         : cols{c0, c1} {}
 
-    KTN_NODISCARD constexpr float2 &operator[](size_t i) noexcept { return cols[i]; }
-    KTN_NODISCARD constexpr const float2 &operator[](size_t i) const noexcept { return cols[i]; }
+    [[nodiscard]] constexpr float2 &operator[](size_t i) noexcept { return cols[i]; }
+    [[nodiscard]] constexpr const float2 &operator[](size_t i) const noexcept { return cols[i]; }
 };
 
 template<>
@@ -100,8 +100,8 @@ struct Matrix<3> {
     constexpr Matrix(const float3 c0, const float3 c1, const float3 c2) noexcept
         : cols{c0, c1, c2} {}
 
-    KTN_NODISCARD constexpr float3 &operator[](size_t i) noexcept { return cols[i]; }
-    KTN_NODISCARD constexpr const float3 &operator[](size_t i) const noexcept { return cols[i]; }
+    [[nodiscard]] constexpr float3 &operator[](size_t i) noexcept { return cols[i]; }
+    [[nodiscard]] constexpr const float3 &operator[](size_t i) const noexcept { return cols[i]; }
 };
 
 template<>
@@ -118,8 +118,8 @@ struct Matrix<4> {
     constexpr Matrix(const float4 c0, const float4 c1, const float4 c2, const float4 c3) noexcept
         : cols{c0, c1, c2, c3} {}
 
-    KTN_NODISCARD constexpr float4 &operator[](size_t i) noexcept { return cols[i]; }
-    KTN_NODISCARD constexpr const float4 &operator[](size_t i) const noexcept { return cols[i]; }
+    [[nodiscard]] constexpr float4 &operator[](size_t i) noexcept { return cols[i]; }
+    [[nodiscard]] constexpr const float4 &operator[](size_t i) const noexcept { return cols[i]; }
 };
 
 using float2x2 = Matrix<2>;
@@ -133,29 +133,29 @@ using basic_types = std::tuple<
     bool4, float4, int4, uint4,
     float2x2, float3x3, float4x4>;
 
-KTN_NODISCARD constexpr bool any(const bool2 v) noexcept { return v.x || v.y; }
-KTN_NODISCARD constexpr bool any(const bool3 v) noexcept { return v.x || v.y || v.z; }
-KTN_NODISCARD constexpr bool any(const bool4 v) noexcept { return v.x || v.y || v.z || v.w; }
+[[nodiscard]] constexpr bool any(const bool2 v) noexcept { return v.x || v.y; }
+[[nodiscard]] constexpr bool any(const bool3 v) noexcept { return v.x || v.y || v.z; }
+[[nodiscard]] constexpr bool any(const bool4 v) noexcept { return v.x || v.y || v.z || v.w; }
 
-KTN_NODISCARD constexpr bool all(const bool2 v) noexcept { return v.x && v.y; }
-KTN_NODISCARD constexpr bool all(const bool3 v) noexcept { return v.x && v.y && v.z; }
-KTN_NODISCARD constexpr bool all(const bool4 v) noexcept { return v.x && v.y && v.z && v.w; }
+[[nodiscard]] constexpr bool all(const bool2 v) noexcept { return v.x && v.y; }
+[[nodiscard]] constexpr bool all(const bool3 v) noexcept { return v.x && v.y && v.z; }
+[[nodiscard]] constexpr bool all(const bool4 v) noexcept { return v.x && v.y && v.z && v.w; }
 
-KTN_NODISCARD constexpr bool none(const bool2 v) noexcept { return !any(v); }
-KTN_NODISCARD constexpr bool none(const bool3 v) noexcept { return !any(v); }
-KTN_NODISCARD constexpr bool none(const bool4 v) noexcept { return !any(v); }
+[[nodiscard]] constexpr bool none(const bool2 v) noexcept { return !any(v); }
+[[nodiscard]] constexpr bool none(const bool3 v) noexcept { return !any(v); }
+[[nodiscard]] constexpr bool none(const bool4 v) noexcept { return !any(v); }
 
 }// namespace katana
 
 template<typename T, size_t N>
 requires katana::is_number_v<T>
-    KTN_NODISCARD constexpr auto operator+(const katana::Vector<T, N> v) noexcept {
+[[nodiscard]] constexpr auto operator+(const katana::Vector<T, N> v) noexcept {
     return v;
 }
 
 template<typename T, size_t N>
 requires katana::is_number_v<T>
-    KTN_NODISCARD constexpr auto operator-(const katana::Vector<T, N> v) noexcept {
+[[nodiscard]] constexpr auto operator-(const katana::Vector<T, N> v) noexcept {
     using R = katana::Vector<T, N>;
     if constexpr (N == 2) {
         return R{-v.x, -v.y};
@@ -167,7 +167,7 @@ requires katana::is_number_v<T>
 }
 
 template<typename T, size_t N>
-KTN_NODISCARD constexpr auto operator!(const katana::Vector<T, N> v) noexcept {
+[[nodiscard]] constexpr auto operator!(const katana::Vector<T, N> v) noexcept {
     if constexpr (N == 2u) {
         return katana::bool2{!v.x, !v.y};
     } else if constexpr (N == 3u) {
@@ -179,7 +179,7 @@ KTN_NODISCARD constexpr auto operator!(const katana::Vector<T, N> v) noexcept {
 
 template<typename T, size_t N>
 requires katana::is_integral_v<T>
-    KTN_NODISCARD constexpr auto operator~(const katana::Vector<T, N> v) noexcept {
+[[nodiscard]] constexpr auto operator~(const katana::Vector<T, N> v) noexcept {
     using R = katana::Vector<T, N>;
     if constexpr (N == 2) {
         return R{~v.x, ~v.y};
@@ -193,7 +193,7 @@ requires katana::is_integral_v<T>
 #define KTN_MAKE_VECTOR_BINARY_OPERATOR(op, ...)                           \
     template<typename T, size_t N>                                         \
     requires __VA_ARGS__                                                   \
-        KTN_NODISCARD constexpr auto                                       \
+        [[nodiscard]] constexpr auto                                       \
         operator op(                                                       \
             katana::Vector<T, N> lhs, katana::Vector<T, N> rhs) noexcept { \
         if constexpr (N == 2) {                                            \
@@ -215,13 +215,13 @@ requires katana::is_integral_v<T>
     }                                                                      \
     template<typename T, size_t N>                                         \
     requires __VA_ARGS__                                                   \
-        KTN_NODISCARD constexpr auto                                       \
+        [[nodiscard]] constexpr auto                                       \
         operator op(katana::Vector<T, N> lhs, T rhs) noexcept {            \
         return lhs op katana::Vector<T, N>{rhs};                           \
     }                                                                      \
     template<typename T, size_t N>                                         \
     requires __VA_ARGS__                                                   \
-        KTN_NODISCARD constexpr auto                                       \
+        [[nodiscard]] constexpr auto                                       \
         operator op(T lhs, katana::Vector<T, N> rhs) noexcept {            \
         return katana::Vector<T, N>{lhs} op rhs;                           \
     }
@@ -269,7 +269,7 @@ KTN_MAKE_VECTOR_ASSIGN_OPERATOR(^=, std::negation_v<katana::is_floating_point<T>
 #define KTN_MAKE_VECTOR_LOGIC_OPERATOR(op, ...)                            \
     template<typename T, size_t N>                                         \
     requires __VA_ARGS__                                                   \
-        KTN_NODISCARD constexpr auto                                       \
+        [[nodiscard]] constexpr auto                                       \
         operator op(                                                       \
             katana::Vector<T, N> lhs, katana::Vector<T, N> rhs) noexcept { \
         if constexpr (N == 2) {                                            \
@@ -291,13 +291,13 @@ KTN_MAKE_VECTOR_ASSIGN_OPERATOR(^=, std::negation_v<katana::is_floating_point<T>
     }                                                                      \
     template<typename T, size_t N>                                         \
     requires __VA_ARGS__                                                   \
-        KTN_NODISCARD constexpr auto                                       \
+        [[nodiscard]] constexpr auto                                       \
         operator op(katana::Vector<T, N> lhs, T rhs) noexcept {            \
         return lhs op katana::Vector<T, N>{rhs};                           \
     }                                                                      \
     template<typename T, size_t N>                                         \
     requires __VA_ARGS__                                                   \
-        KTN_NODISCARD constexpr auto                                       \
+        [[nodiscard]] constexpr auto                                       \
         operator op(T lhs, katana::Vector<T, N> rhs) noexcept {            \
         return katana::Vector<T, N>{lhs} op rhs;                           \
     }
@@ -312,132 +312,132 @@ KTN_MAKE_VECTOR_LOGIC_OPERATOR(>=, katana::is_number_v<T>)
 
 #undef KTN_MAKE_VECTOR_LOGIC_OPERATOR
 
-KTN_NODISCARD constexpr auto operator*(const katana::float2x2 m, float s) noexcept {
+[[nodiscard]] constexpr auto operator*(const katana::float2x2 m, float s) noexcept {
     return katana::float2x2{m[0] * s, m[1] * s};
 }
 
-KTN_NODISCARD constexpr auto operator*(float s, const katana::float2x2 m) noexcept {
+[[nodiscard]] constexpr auto operator*(float s, const katana::float2x2 m) noexcept {
     return m * s;
 }
 
-KTN_NODISCARD constexpr auto operator/(const katana::float2x2 m, float s) noexcept {
+[[nodiscard]] constexpr auto operator/(const katana::float2x2 m, float s) noexcept {
     return m * (1.0f / s);
 }
 
-KTN_NODISCARD constexpr auto operator*(const katana::float2x2 m, const katana::float2 v) noexcept {
+[[nodiscard]] constexpr auto operator*(const katana::float2x2 m, const katana::float2 v) noexcept {
     return v.x * m[0] + v.y * m[1];
 }
 
-KTN_NODISCARD constexpr auto operator*(const katana::float2x2 lhs, const katana::float2x2 rhs) noexcept {
+[[nodiscard]] constexpr auto operator*(const katana::float2x2 lhs, const katana::float2x2 rhs) noexcept {
     return katana::float2x2{lhs * rhs[0], lhs * rhs[1]};
 }
 
-KTN_NODISCARD constexpr auto operator+(const katana::float2x2 lhs, const katana::float2x2 rhs) noexcept {
+[[nodiscard]] constexpr auto operator+(const katana::float2x2 lhs, const katana::float2x2 rhs) noexcept {
     return katana::float2x2{lhs[0] + rhs[0], lhs[1] + rhs[1]};
 }
 
-KTN_NODISCARD constexpr auto operator-(const katana::float2x2 lhs, const katana::float2x2 rhs) noexcept {
+[[nodiscard]] constexpr auto operator-(const katana::float2x2 lhs, const katana::float2x2 rhs) noexcept {
     return katana::float2x2{lhs[0] - rhs[0], lhs[1] - rhs[1]};
 }
 
-KTN_NODISCARD constexpr auto operator*(const katana::float3x3 m, float s) noexcept {
+[[nodiscard]] constexpr auto operator*(const katana::float3x3 m, float s) noexcept {
     return katana::float3x3{m[0] * s, m[1] * s, m[2] * s};
 }
 
-KTN_NODISCARD constexpr auto operator*(float s, const katana::float3x3 m) noexcept {
+[[nodiscard]] constexpr auto operator*(float s, const katana::float3x3 m) noexcept {
     return m * s;
 }
 
-KTN_NODISCARD constexpr auto operator/(const katana::float3x3 m, float s) noexcept {
+[[nodiscard]] constexpr auto operator/(const katana::float3x3 m, float s) noexcept {
     return m * (1.0f / s);
 }
 
-KTN_NODISCARD constexpr auto operator*(const katana::float3x3 m, const katana::float3 v) noexcept {
+[[nodiscard]] constexpr auto operator*(const katana::float3x3 m, const katana::float3 v) noexcept {
     return v.x * m[0] + v.y * m[1] + v.z * m[2];
 }
 
-KTN_NODISCARD constexpr auto operator*(const katana::float3x3 lhs, const katana::float3x3 rhs) noexcept {
+[[nodiscard]] constexpr auto operator*(const katana::float3x3 lhs, const katana::float3x3 rhs) noexcept {
     return katana::float3x3{lhs * rhs[0], lhs * rhs[1], lhs * rhs[2]};
 }
 
-KTN_NODISCARD constexpr auto operator+(const katana::float3x3 lhs, const katana::float3x3 rhs) noexcept {
+[[nodiscard]] constexpr auto operator+(const katana::float3x3 lhs, const katana::float3x3 rhs) noexcept {
     return katana::float3x3{lhs[0] + rhs[0], lhs[1] + rhs[1], lhs[2] + rhs[2]};
 }
 
-KTN_NODISCARD constexpr auto operator-(const katana::float3x3 lhs, const katana::float3x3 rhs) noexcept {
+[[nodiscard]] constexpr auto operator-(const katana::float3x3 lhs, const katana::float3x3 rhs) noexcept {
     return katana::float3x3{lhs[0] - rhs[0], lhs[1] - rhs[1], lhs[2] - rhs[2]};
 }
 
-KTN_NODISCARD constexpr auto operator*(const katana::float4x4 m, float s) noexcept {
+[[nodiscard]] constexpr auto operator*(const katana::float4x4 m, float s) noexcept {
     return katana::float4x4{m[0] * s, m[1] * s, m[2] * s, m[3] * s};
 }
 
-KTN_NODISCARD constexpr auto operator*(float s, const katana::float4x4 m) noexcept {
+[[nodiscard]] constexpr auto operator*(float s, const katana::float4x4 m) noexcept {
     return m * s;
 }
 
-KTN_NODISCARD constexpr auto operator/(const katana::float4x4 m, float s) noexcept {
+[[nodiscard]] constexpr auto operator/(const katana::float4x4 m, float s) noexcept {
     return m * (1.0f / s);
 }
 
-KTN_NODISCARD constexpr auto operator*(const katana::float4x4 m, const katana::float4 v) noexcept {
+[[nodiscard]] constexpr auto operator*(const katana::float4x4 m, const katana::float4 v) noexcept {
     return v.x * m[0] + v.y * m[1] + v.z * m[2] + v.w * m[3];
 }
 
-KTN_NODISCARD constexpr auto operator*(const katana::float4x4 lhs, const katana::float4x4 rhs) noexcept {
+[[nodiscard]] constexpr auto operator*(const katana::float4x4 lhs, const katana::float4x4 rhs) noexcept {
     return katana::float4x4{lhs * rhs[0], lhs * rhs[1], lhs * rhs[2], lhs * rhs[3]};
 }
 
-KTN_NODISCARD constexpr auto operator+(const katana::float4x4 lhs, const katana::float4x4 rhs) noexcept {
+[[nodiscard]] constexpr auto operator+(const katana::float4x4 lhs, const katana::float4x4 rhs) noexcept {
     return katana::float4x4{lhs[0] + rhs[0], lhs[1] + rhs[1], lhs[2] + rhs[2], lhs[3] + rhs[3]};
 }
 
-KTN_NODISCARD constexpr auto operator-(const katana::float4x4 lhs, const katana::float4x4 rhs) noexcept {
+[[nodiscard]] constexpr auto operator-(const katana::float4x4 lhs, const katana::float4x4 rhs) noexcept {
     return katana::float4x4{lhs[0] - rhs[0], lhs[1] - rhs[1], lhs[2] - rhs[2], lhs[3] - rhs[3]};
 }
 
 namespace katana {
 #define KTN_MAKE_TYPE_N(type)                                                                                                \
-    KTN_NODISCARD constexpr auto make_##type##2(type s = {}) noexcept { return type##2(s); }                                 \
-    KTN_NODISCARD constexpr auto make_##type##2(type x, type y) noexcept { return type##2(x, y); }                           \
+    [[nodiscard]] constexpr auto make_##type##2(type s = {}) noexcept { return type##2(s); }                                 \
+    [[nodiscard]] constexpr auto make_##type##2(type x, type y) noexcept { return type##2(x, y); }                           \
     template<typename T>                                                                                                     \
-    KTN_NODISCARD constexpr auto make_##type##2(Vector<T, 2> v) noexcept {                                                   \
+    [[nodiscard]] constexpr auto make_##type##2(Vector<T, 2> v) noexcept {                                                   \
         return type##2(                                                                                                      \
             static_cast<type>(v.x),                                                                                          \
             static_cast<type>(v.y));                                                                                         \
     }                                                                                                                        \
-    KTN_NODISCARD constexpr auto make_##type##2(type##3 v) noexcept { return type##2(v.x, v.y); }                            \
-    KTN_NODISCARD constexpr auto make_##type##2(type##4 v) noexcept { return type##2(v.x, v.y); }                            \
+    [[nodiscard]] constexpr auto make_##type##2(type##3 v) noexcept { return type##2(v.x, v.y); }                            \
+    [[nodiscard]] constexpr auto make_##type##2(type##4 v) noexcept { return type##2(v.x, v.y); }                            \
                                                                                                                              \
-    KTN_NODISCARD constexpr auto make_##type##3(type s = {}) noexcept { return type##3(s); }                                 \
-    KTN_NODISCARD constexpr auto make_##type##3(type x, type y, type z) noexcept { return type##3(x, y, z); }                \
+    [[nodiscard]] constexpr auto make_##type##3(type s = {}) noexcept { return type##3(s); }                                 \
+    [[nodiscard]] constexpr auto make_##type##3(type x, type y, type z) noexcept { return type##3(x, y, z); }                \
     template<typename T>                                                                                                     \
-    KTN_NODISCARD constexpr auto make_##type##3(Vector<T, 3> v) noexcept {                                                   \
+    [[nodiscard]] constexpr auto make_##type##3(Vector<T, 3> v) noexcept {                                                   \
         return type##3(                                                                                                      \
             static_cast<type>(v.x),                                                                                          \
             static_cast<type>(v.y),                                                                                          \
             static_cast<type>(v.z));                                                                                         \
     }                                                                                                                        \
-    KTN_NODISCARD constexpr auto make_##type##3(type##2 v, type z) noexcept { return type##3(v.x, v.y, z); }                 \
-    KTN_NODISCARD constexpr auto make_##type##3(type x, type##2 v) noexcept { return type##3(x, v.x, v.y); }                 \
-    KTN_NODISCARD constexpr auto make_##type##3(type##4 v) noexcept { return type##3(v.x, v.y, v.z); }                       \
+    [[nodiscard]] constexpr auto make_##type##3(type##2 v, type z) noexcept { return type##3(v.x, v.y, z); }                 \
+    [[nodiscard]] constexpr auto make_##type##3(type x, type##2 v) noexcept { return type##3(x, v.x, v.y); }                 \
+    [[nodiscard]] constexpr auto make_##type##3(type##4 v) noexcept { return type##3(v.x, v.y, v.z); }                       \
                                                                                                                              \
-    KTN_NODISCARD constexpr auto make_##type##4(type s = {}) noexcept { return type##4(s); }                                 \
-    KTN_NODISCARD constexpr auto make_##type##4(type x, type y, type z, type w) noexcept { return type##4(x, y, z, w); }     \
+    [[nodiscard]] constexpr auto make_##type##4(type s = {}) noexcept { return type##4(s); }                                 \
+    [[nodiscard]] constexpr auto make_##type##4(type x, type y, type z, type w) noexcept { return type##4(x, y, z, w); }     \
     template<typename T>                                                                                                     \
-    KTN_NODISCARD constexpr auto make_##type##4(Vector<T, 4> v) noexcept {                                                   \
+    [[nodiscard]] constexpr auto make_##type##4(Vector<T, 4> v) noexcept {                                                   \
         return type##4(                                                                                                      \
             static_cast<type>(v.x),                                                                                          \
             static_cast<type>(v.y),                                                                                          \
             static_cast<type>(v.z),                                                                                          \
             static_cast<type>(v.w));                                                                                         \
     }                                                                                                                        \
-    KTN_NODISCARD constexpr auto make_##type##4(type##2 v, type z, type w) noexcept { return type##4(v.x, v.y, z, w); }      \
-    KTN_NODISCARD constexpr auto make_##type##4(type x, type##2 v, type w) noexcept { return type##4(x, v.x, v.y, w); }      \
-    KTN_NODISCARD constexpr auto make_##type##4(type x, type y, type##2 v) noexcept { return type##4(x, y, v.x, v.y); }      \
-    KTN_NODISCARD constexpr auto make_##type##4(type##2 xy, type##2 zw) noexcept { return type##4(xy.x, xy.y, zw.x, zw.y); } \
-    KTN_NODISCARD constexpr auto make_##type##4(type##3 v, type w) noexcept { return type##4(v.x, v.y, v.z, w); }            \
-    KTN_NODISCARD constexpr auto make_##type##4(type x, type##3 v) noexcept { return type##4(x, v.x, v.y, v.z); }
+    [[nodiscard]] constexpr auto make_##type##4(type##2 v, type z, type w) noexcept { return type##4(v.x, v.y, z, w); }      \
+    [[nodiscard]] constexpr auto make_##type##4(type x, type##2 v, type w) noexcept { return type##4(x, v.x, v.y, w); }      \
+    [[nodiscard]] constexpr auto make_##type##4(type x, type y, type##2 v) noexcept { return type##4(x, y, v.x, v.y); }      \
+    [[nodiscard]] constexpr auto make_##type##4(type##2 xy, type##2 zw) noexcept { return type##4(xy.x, xy.y, zw.x, zw.y); } \
+    [[nodiscard]] constexpr auto make_##type##4(type##3 v, type w) noexcept { return type##4(v.x, v.y, v.z, w); }            \
+    [[nodiscard]] constexpr auto make_##type##4(type x, type##3 v) noexcept { return type##4(x, v.x, v.y, v.z); }
 
 KTN_MAKE_TYPE_N(bool)
 KTN_MAKE_TYPE_N(float)
@@ -445,47 +445,47 @@ KTN_MAKE_TYPE_N(int)
 KTN_MAKE_TYPE_N(uint)
 #undef KTN_MAKE_TYPE_N
 
-KTN_NODISCARD constexpr auto make_float2x2(float s = 1.0f) noexcept {
+[[nodiscard]] constexpr auto make_float2x2(float s = 1.0f) noexcept {
     return float2x2{float2{s, 0.0f},
                     float2{0.0f, s}};
 }
 
-KTN_NODISCARD constexpr auto make_float2x2(
+[[nodiscard]] constexpr auto make_float2x2(
     float m00, float m01,
     float m10, float m11) noexcept {
     return float2x2{float2{m00, m01},
                     float2{m10, m11}};
 }
 
-KTN_NODISCARD constexpr auto make_float2x2(float2 c0, float2 c1) noexcept {
+[[nodiscard]] constexpr auto make_float2x2(float2 c0, float2 c1) noexcept {
     return float2x2{c0, c1};
 }
 
-KTN_NODISCARD constexpr auto make_float2x2(float2x2 m) noexcept {
+[[nodiscard]] constexpr auto make_float2x2(float2x2 m) noexcept {
     return m;
 }
 
-KTN_NODISCARD constexpr auto make_float2x2(float3x3 m) noexcept {
+[[nodiscard]] constexpr auto make_float2x2(float3x3 m) noexcept {
     return float2x2{float2{m[0].x, m[0].y},
                     float2{m[1].x, m[1].y}};
 }
 
-KTN_NODISCARD constexpr auto make_float2x2(float4x4 m) noexcept {
+[[nodiscard]] constexpr auto make_float2x2(float4x4 m) noexcept {
     return float2x2{float2{m[0].x, m[0].y},
                     float2{m[1].x, m[1].y}};
 }
 
-KTN_NODISCARD constexpr auto make_float3x3(float s = 1.0f) noexcept {
+[[nodiscard]] constexpr auto make_float3x3(float s = 1.0f) noexcept {
     return float3x3{float3{s, 0.0f, 0.0f},
                     float3{0.0f, s, 0.0f},
                     float3{0.0f, 0.0f, s}};
 }
 
-KTN_NODISCARD constexpr auto make_float3x3(float3 c0, float3 c1, float3 c2) noexcept {
+[[nodiscard]] constexpr auto make_float3x3(float3 c0, float3 c1, float3 c2) noexcept {
     return float3x3{c0, c1, c2};
 }
 
-KTN_NODISCARD constexpr auto make_float3x3(
+[[nodiscard]] constexpr auto make_float3x3(
     float m00, float m01, float m02,
     float m10, float m11, float m12,
     float m20, float m21, float m22) noexcept {
@@ -494,34 +494,34 @@ KTN_NODISCARD constexpr auto make_float3x3(
                     float3{m20, m21, m22}};
 }
 
-KTN_NODISCARD constexpr auto make_float3x3(float2x2 m) noexcept {
+[[nodiscard]] constexpr auto make_float3x3(float2x2 m) noexcept {
     return float3x3{make_float3(m[0], 0.0f),
                     make_float3(m[1], 0.0f),
                     make_float3(0.f, 0.f, 1.0f)};
 }
 
-KTN_NODISCARD constexpr auto make_float3x3(float3x3 m) noexcept {
+[[nodiscard]] constexpr auto make_float3x3(float3x3 m) noexcept {
     return m;
 }
 
-KTN_NODISCARD constexpr auto make_float3x3(float4x4 m) noexcept {
+[[nodiscard]] constexpr auto make_float3x3(float4x4 m) noexcept {
     return float3x3{make_float3(m[0]),
                     make_float3(m[1]),
                     make_float3(m[2])};
 }
 
-KTN_NODISCARD constexpr auto make_float4x4(float s = 1.0f) noexcept {
+[[nodiscard]] constexpr auto make_float4x4(float s = 1.0f) noexcept {
     return float4x4{float4{s, 0.0f, 0.0f, 0.0f},
                     float4{0.0f, s, 0.0f, 0.0f},
                     float4{0.0f, 0.0f, s, 0.0f},
                     float4{0.0f, 0.0f, 0.0f, s}};
 }
 
-KTN_NODISCARD constexpr auto make_float4x4(float4 c0, float4 c1, float4 c2, float4 c3) noexcept {
+[[nodiscard]] constexpr auto make_float4x4(float4 c0, float4 c1, float4 c2, float4 c3) noexcept {
     return float4x4{c0, c1, c2, c3};
 }
 
-KTN_NODISCARD constexpr auto make_float4x4(
+[[nodiscard]] constexpr auto make_float4x4(
     float m00, float m01, float m02, float m03,
     float m10, float m11, float m12, float m13,
     float m20, float m21, float m22, float m23,
@@ -532,21 +532,21 @@ KTN_NODISCARD constexpr auto make_float4x4(
                     float4{m30, m31, m32, m33}};
 }
 
-KTN_NODISCARD constexpr auto make_float4x4(float2x2 m) noexcept {
+[[nodiscard]] constexpr auto make_float4x4(float2x2 m) noexcept {
     return float4x4{make_float4(m[0], 0.0f, 0.0f),
                     make_float4(m[1], 0.0f, 0.0f),
                     float4{0.0f, 0.0f, 1.0f, 0.0f},
                     float4{0.0f, 0.0f, 0.0f, 1.0f}};
 }
 
-KTN_NODISCARD constexpr auto make_float4x4(float3x3 m) noexcept {
+[[nodiscard]] constexpr auto make_float4x4(float3x3 m) noexcept {
     return float4x4{make_float4(m[0], 0.0f),
                     make_float4(m[1], 0.0f),
                     make_float4(m[2], 0.0f),
                     float4{0.0f, 0.0f, 0.0f, 1.0f}};
 }
 
-KTN_NODISCARD constexpr auto make_float4x4(float4x4 m) noexcept {
+[[nodiscard]] constexpr auto make_float4x4(float4x4 m) noexcept {
     return m;
 }
 
