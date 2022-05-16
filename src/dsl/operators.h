@@ -26,6 +26,8 @@ KTN_MAKE_DSL_UNARY_OPERATOR(-, NEGATIVE)
 KTN_MAKE_DSL_UNARY_OPERATOR(!, NOT)
 KTN_MAKE_DSL_UNARY_OPERATOR(~, BIT_NOT)
 
+#undef KTN_MAKE_DSL_UNARY_OPERATOR
+
 #define KTN_MAKE_DSL_BINARY_OPERATOR(op, tag)                                            \
     template<typename Lhs, typename Rhs>                                                 \
     requires katana::any_dsl_v<Lhs, Rhs> &&                                              \
@@ -66,3 +68,28 @@ KTN_MAKE_DSL_BINARY_OPERATOR(<, LESS)
 KTN_MAKE_DSL_BINARY_OPERATOR(<=, LESS_EQUAL)
 KTN_MAKE_DSL_BINARY_OPERATOR(>, GREATER)
 KTN_MAKE_DSL_BINARY_OPERATOR(>=, GREATER_EQUAL)
+
+#undef KTN_MAKE_DSL_BINARY_OPERATOR
+
+#define KTN_MAKE_DSL_ASSIGN_OP(op)                                                    \
+    template<typename Lhs, typename Rhs>                                              \
+    requires requires {                                                               \
+        std::declval<Lhs &>() op## = std::declval<katana::expr_value_t<Rhs>>();       \
+    }                                                                                 \
+    void operator+=(katana::Var<Lhs> lhs, Rhs &&rhs) {                                \
+        auto x = lhs op std::forward<Rhs>(rhs);                                       \
+        katana::FunctionBuilder::current()->assign(lhs.expression(), x.expression()); \
+    }
+
+KTN_MAKE_DSL_ASSIGN_OP(+)
+KTN_MAKE_DSL_ASSIGN_OP(-)
+KTN_MAKE_DSL_ASSIGN_OP(*)
+KTN_MAKE_DSL_ASSIGN_OP(/)
+KTN_MAKE_DSL_ASSIGN_OP(|)
+KTN_MAKE_DSL_ASSIGN_OP(%)
+KTN_MAKE_DSL_ASSIGN_OP(&)
+KTN_MAKE_DSL_ASSIGN_OP(>>)
+KTN_MAKE_DSL_ASSIGN_OP(<<)
+KTN_MAKE_DSL_ASSIGN_OP(^)
+
+#undef KTN_MAKE_DSL_ASSIGN_OP
