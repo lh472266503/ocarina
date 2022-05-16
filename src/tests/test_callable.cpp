@@ -3,6 +3,7 @@
 //
 
 #include "dsl/common.h"
+#include "core/concepts.h"
 
 using namespace katana;
 

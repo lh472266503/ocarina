@@ -4,11 +4,8 @@
 
 #pragma once
 
-#include <span>
-#include <atomic>
-#include <concepts>
-#include <type_traits>
-#include <string_view>
+#include "basic_types.h"
+#include "basic_traits.h"
 #include "stl.h"
 
 namespace katana::concepts {
@@ -91,7 +88,6 @@ concept vector3 = is_vector3_v<T>;
 template<typename T>
 concept vector4 = is_vector4_v<T>;
 
-
 template<typename T>
 concept bool_vector = is_bool_vector_v<T>;
 
@@ -139,6 +135,30 @@ concept same = is_same_v<T...>;
 template<typename A, typename B>
 concept different = !same<A, B>;
 
+template<typename A, typename B>
+concept plus_able = requires(A a, B b) {
+    a + b;
+};
+
+template<typename A, typename B>
+concept subtract_able = requires(A a, B b) {
+    a - b;
+};
+
+template<typename A, typename B = A>
+concept multiply_able = requires(A a, B b) {
+    a * b;
+};
+
+template<typename A, typename B = A>
+concept divide_able = requires(A a, B b) {
+    a / b;
+};
+
+template<typename A, typename B = A>
+concept mod_able = requires(A a, B b) {
+    a % b;
+};
 
 
 }// namespace katana::concepts
