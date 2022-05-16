@@ -5,10 +5,12 @@
 #pragma once
 
 #include "core/basic_types.h"
-#include "ast/expression.h"
+#include "dsl/expr_traits.h"
 #include "ast/function_builder.h"
 
 namespace katana {
+
+struct Expression;
 
 template<typename T>
 KTN_NODISCARD inline Var<expr_value_t<T>> def(T &&x) noexcept;  // implement in builtin.h
@@ -38,7 +40,6 @@ struct ExprEnableBitwiseCast {
         return def(katana::FunctionBuilder::current()->cast(Type::of<ExprDest>(), CastOp::BITWISE, src));
     }
 };
-}// namespace detail
 
 template<typename T>
 KTN_NODISCARD decltype(auto) extract_expression(T &&v) noexcept {
@@ -48,6 +49,9 @@ KTN_NODISCARD decltype(auto) extract_expression(T &&v) noexcept {
         return katana::FunctionBuilder::current()->literal(Type::of<T>(), std::forward<T>(v));
     }
 }
+
+}// namespace detail
+
 
 template<typename T>
 class Expr {

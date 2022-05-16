@@ -57,7 +57,11 @@ public:
         return _define(Tag::KERNEL, std::forward<Func>(func));
     }
 
-    KTN_NODISCARD const CastExpr *cast(const Type *type, CastOp cast_op, const Expression *expression);
+    KTN_NODISCARD const CastExpr *cast(const Type *type, CastOp cast_op, const Expression *expression) noexcept;
+
+    KTN_NODISCARD const UnaryExpr *unary(const Type *type, UnaryOp op, const Expression *expression) noexcept;
+
+    KTN_NODISCARD const BinaryExpr *binary(const Type *type, const Expression *lhs, const Expression *rhs, BinaryOp op) noexcept;
 
     KTN_NODISCARD const RefExpr *argument(const Type *type) noexcept;
 

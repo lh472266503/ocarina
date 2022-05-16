@@ -13,6 +13,7 @@ add_subdirectory(rt)
 add_library(katana-all INTERFACE)
 target_link_libraries(katana-all INTERFACE
         katana-ext
+        katana-dsl
         katana-ast
         katana-rt
         katana-core)

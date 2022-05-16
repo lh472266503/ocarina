@@ -5,7 +5,11 @@
 #include "dsl/common.h"
 #include "core/concepts.h"
 //#include "core/util.h"
+#include "dsl/operators.h"
 #include <iostream>
+
+
+
 using std::cout;
 using std::endl;
 using namespace katana;
