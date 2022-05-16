@@ -64,9 +64,13 @@ public:                                                                    \
     Expr(const Expr &expr) noexcept = default;                             \
     Expr &operator=(Expr) noexcept = delete;
 
+/// expr for scalar
 template<typename T>
-struct Expr {
+struct Expr
+    : detail::ExprEnableBitwiseCast<Expr<T>>,
+      detail::ExprEnableStaticCast<Expr<T>> {
     static_assert(concepts::scalar<T>);
     KTN_EXPR_COMMON(t)
 };
+
 }// namespace katana
