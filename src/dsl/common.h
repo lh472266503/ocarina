@@ -8,4 +8,5 @@
 #include "expr_traits.h"
 #include "expr.h"
 #include "var.h"
+#include "func.h"
 #include "struct.h"

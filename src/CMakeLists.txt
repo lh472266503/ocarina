@@ -9,16 +9,18 @@ add_subdirectory(core)
 add_subdirectory(ast)
 add_subdirectory(dsl)
 add_subdirectory(rt)
-add_subdirectory(tests)
 
 add_library(katana-all INTERFACE)
 target_link_libraries(katana-all INTERFACE
         katana-ext
         katana-ast
+        katana-rt
         katana-core)
 
 add_executable(katana main.cpp)
 target_link_libraries(katana katana-all)
+
+add_subdirectory(tests)
 
 set_target_properties(katana PROPERTIES
         PUBLIC_HEADER "${HEADER_FILES}"
