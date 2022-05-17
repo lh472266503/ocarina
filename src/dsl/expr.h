@@ -64,13 +64,19 @@ public:                                                                    \
     Expr(const Expr &expr) noexcept = default;                             \
     Expr &operator=(Expr) noexcept = delete;
 
+#define KTN_EXPR_LITERAL(...)                              \
+    explicit Expr(__VA_ARGS__ &&literal) noexcept          \
+        : _expression(FunctionBuilder::current()->literal( \
+              Type::of<T>(), literal)) {}
+
 /// expr for scalar
 template<typename T>
 struct Expr
     : detail::ExprEnableBitwiseCast<Expr<T>>,
       detail::ExprEnableStaticCast<Expr<T>> {
     static_assert(concepts::scalar<T>);
-    KTN_EXPR_COMMON(t)
+    KTN_EXPR_COMMON(T)
+    KTN_EXPR_LITERAL(T)
 };
 
 }// namespace katana
