@@ -57,16 +57,14 @@ public:                                                                    \
     Ref(Ref &&) noexcept = default;                                        \
     Ref(const Ref &) noexcept = default;                                   \
     template<typename Rhs>                                                 \
-    Ref &operator=(Rhs &&rhs) &noexcept {                                  \
+    void operator=(Rhs &&rhs) &noexcept {                                  \
         assign(*this, std::forward<Rhs>(rhs));                             \
-        return *this;                                                      \
     }                                                                      \
     [[nodiscard]] explicit operator Expr<__VA_ARGS__>() const noexcept {   \
         return Expr<__VA_ARGS__>{this->expression()};                      \
     }                                                                      \
-    Ref &operator=(Ref rhs) &noexcept {                                    \
+    void operator=(Ref rhs) &noexcept {                                    \
         (*this) = Expr<__VA_ARGS__>{rhs};                                  \
-        return *this;                                                      \
     }
 
 /**
@@ -115,6 +113,8 @@ struct Ref<Matrix<N>>
       RefEnableSubscriptAccess<Ref<Matrix<N>>> {
     KTN_REF_COMMON(Matrix<N>)
 };
+
+#undef KTN_REF_COMMON
 
 }// namespace detail
 
