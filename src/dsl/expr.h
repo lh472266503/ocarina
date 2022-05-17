@@ -59,7 +59,7 @@ struct ExprEnableGetMemberByIndex {
     template<size_t i>
     [[nodiscard]] auto get() const noexcept {
         static_assert(i < dimension_v<expr_value_t<T>>);
-        return (static_cast<const T*>(this))[static_cast<uint>(i)];
+        return (static_cast<const T *>(this))[static_cast<uint>(i)];
     }
 };
 
@@ -99,6 +99,13 @@ struct Expr
     static_assert(concepts::scalar<T>);
     KTN_EXPR_COMMON(T)
     KTN_EXPR_LITERAL(T)
+};
+
+template<typename T, size_t N>
+struct Expr<std::array<T, N>>
+    : detail::ExprEnableSubscriptAccess<std::array<T, N>>,
+      detail::ExprEnableGetMemberByIndex<std::array<T, N>> {
+    KTN_EXPR_COMMON(std::array<T, N>)
 };
 
 }// namespace katana
