@@ -42,6 +42,28 @@ struct ExprEnableBitwiseCast {
 };
 
 template<typename T>
+struct ExprEnableSubscriptAccess {
+    template<typename Index>
+    requires is_integral_expr_v<Index>
+    [[nodiscard]] auto operator[](Index &&index) const &noexcept {
+        auto self = def<T>(static_cast<const T *>(this)->expression());
+        using Element = std::remove_cvref_t<decltype(std::declval<expr_value_t<T>>()[0])>;
+        return def<Element>(katana::FunctionBuilder::current()->access(
+            Type::of<Element>(), self.expression(),
+            extract_expression(std::forward<Index>(index))));
+    }
+};
+
+template<typename T>
+struct ExprEnableGetMemberByIndex {
+    template<size_t i>
+    [[nodiscard]] auto get() const noexcept {
+        static_assert(i < dimension_v<expr_value_t<T>>);
+        return (static_cast<const T*>(this))[static_cast<uint>(i)];
+    }
+};
+
+template<typename T>
 [[nodiscard]] decltype(auto) extract_expression(T &&v) noexcept {
     if constexpr (is_dsl_v<T>) {
         return std::forward<T>(v).expression();
