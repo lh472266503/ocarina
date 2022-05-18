@@ -108,4 +108,31 @@ struct Expr<std::array<T, N>>
     KTN_EXPR_COMMON(std::array<T, N>)
 };
 
+template<typename T>
+struct Expr<Vector<T, 2>>
+    : detail::ExprEnableSubscriptAccess<Vector<T, 2>>,
+      detail::ExprEnableGetMemberByIndex<Vector<T, 2>>,
+      detail::ExprEnableStaticCast<Vector<T, 2>>,
+      detail::ExprEnableBitwiseCast<Vector<T, 2>> {
+    KTN_EXPR_COMMON(Vector<T, 2>)
+};
+
+template<typename T>
+struct Expr<Vector<T, 3>>
+    : detail::ExprEnableSubscriptAccess<Vector<T, 3>>,
+    detail::ExprEnableGetMemberByIndex<Vector<T, 3>>,
+    detail::ExprEnableStaticCast<Vector<T, 3>>,
+    detail::ExprEnableBitwiseCast<Vector<T, 3>> {
+    KTN_EXPR_COMMON(Vector<T, 3>)
+};
+
+template<typename T>
+struct Expr<Vector<T, 4>>
+    : detail::ExprEnableSubscriptAccess<Vector<T, 4>>,
+    detail::ExprEnableGetMemberByIndex<Vector<T, 4>>,
+    detail::ExprEnableStaticCast<Vector<T, 4>>,
+    detail::ExprEnableBitwiseCast<Vector<T, 4>> {
+    KTN_EXPR_COMMON(Vector<T, 4>)
+};
+
 }// namespace katana
