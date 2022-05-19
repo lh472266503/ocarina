@@ -6,6 +6,7 @@
 
 #include "core/basic_types.h"
 #include "dsl/expr_traits.h"
+#include "dsl/expr_base.h"
 #include "ast/function_builder.h"
 
 namespace katana {

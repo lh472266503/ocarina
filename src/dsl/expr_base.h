@@ -1,0 +1,126 @@
+//
+// Created by Zero on 19/05/2022.
+//
+
+#pragma once
+
+#include "core/stl.h"
+#include "core/concepts.h"
+#include "core/basic_traits.h"
+#include "expr_traits.h"
+#include "ast/function_builder.h"
+
+namespace katana {
+
+namespace detail {
+
+template<typename T>
+struct EnableSubscriptAccess {
+    template<typename Index>
+    requires is_integral_expr_v<Index>
+    [[nodiscard]] auto operator[](Index &&index) const noexcept {
+        auto self = def<T>(static_cast<const T *>(this)->expression());
+        using Element = std::remove_cvref_t<decltype(std::declval<expr_value_t<T>>()[0])>;
+        return def<Element>(katana::FunctionBuilder::current()->access(
+            Type::of<Element>(), self.expression(),
+            extract_expression(std::forward<Index>(index))));
+    }
+
+    //todo
+    //    template<typename Index>
+    //    requires is_integral_expr_v<Index>
+    //    [[nodiscard]] auto operator[](Index &&index) &noexcept {
+    //    }
+};
+
+template<typename T>
+struct EnableGetMemberByIndex {
+    template<size_t i>
+    [[nodiscard]] auto get() const noexcept {
+        static_assert(i < dimension_v<expr_value_t<T>>);
+        auto self = const_cast<T *>(static_cast<const T *>(this));
+        return (*self)[static_cast<uint>(i)];
+    }
+};
+
+template<typename T>
+struct EnableStaticCast {
+    template<typename Dest>
+    requires concepts::static_convertible<expr_value_t<T>, expr_value_t<Dest>>
+    [[nodiscard]] auto cast() const noexcept {
+        auto src = def(*static_cast<const T *>(this));
+        using ExprDest = expr_value_t<Dest>;
+        return def(katana::FunctionBuilder::current()->cast(Type::of<ExprDest>(), CastOp::STATIC, src));
+    }
+};
+
+template<typename T>
+struct EnableBitwiseCast {
+    template<class Dest>
+    requires concepts::bitwise_convertible<expr_value_t<T>, expr_value_t<Dest>>
+    [[nodiscard]] auto bit_cast() const noexcept {
+        auto src = def(*static_cast<const T *>(this));
+        using ExprDest = expr_value_t<Dest>;
+        return def(katana::FunctionBuilder::current()->cast(Type::of<ExprDest>(), CastOp::BITWISE, src));
+    }
+};
+
+#define KTN_EXPR_BASE_COMMON(...)                                          \
+private:                                                                   \
+    const Expression *_expression{nullptr};                                \
+                                                                           \
+public:                                                                    \
+    explicit ExprBase(const Expression *e) noexcept : _expression{e} {}    \
+    [[nodiscard]] auto expression() const noexcept { return _expression; } \
+    ExprBase(ExprBase &&) noexcept = default;                              \
+    ExprBase(const ExprBase &) noexcept = default;                         \
+    template<typename Rhs>                                                 \
+    void operator=(Rhs &&rhs) &noexcept {                                  \
+        assign(*this, std::forward<Rhs>(rhs));                             \
+    }
+
+template<typename T>
+struct ExprBase
+    : detail::EnableBitwiseCast<T>,
+      detail::EnableStaticCast<T> {
+    static_assert(is_scalar_v<T>);
+    KTN_EXPR_BASE_COMMON(T)
+};
+
+template<typename T>
+struct ExprBase<Vector<T, 2>>
+    : EnableStaticCast<ExprBase<Vector<T, 2>>>,
+      EnableBitwiseCast<ExprBase<Vector<T, 2>>>,
+      EnableGetMemberByIndex<ExprBase<Vector<T, 2>>>,
+      EnableSubscriptAccess<ExprBase<Vector<T, 2>>> {
+    KTN_EXPR_BASE_COMMON(Vector<T, 2>)
+};
+
+template<typename T>
+struct ExprBase<Vector<T, 3>>
+    : EnableStaticCast<ExprBase<Vector<T, 3>>>,
+      EnableBitwiseCast<ExprBase<Vector<T, 3>>>,
+      EnableGetMemberByIndex<ExprBase<Vector<T, 3>>>,
+      EnableSubscriptAccess<ExprBase<Vector<T, 3>>> {
+    KTN_EXPR_BASE_COMMON(Vector<T, 3>)
+};
+
+template<typename T>
+struct ExprBase<Vector<T, 4>>
+    : EnableStaticCast<ExprBase<Vector<T, 4>>>,
+      EnableBitwiseCast<ExprBase<Vector<T, 4>>>,
+      EnableGetMemberByIndex<ExprBase<Vector<T, 4>>>,
+      EnableSubscriptAccess<ExprBase<Vector<T, 4>>> {
+    KTN_EXPR_BASE_COMMON(Vector<T, 4>)
+};
+
+template<typename T, size_t N>
+struct ExprBase<std::array<T, N>>
+    : EnableSubscriptAccess<std::array<T, N>>,
+      EnableGetMemberByIndex<std::array<T, N>> {
+    KTN_EXPR_BASE_COMMON(std::array<T, N>)
+};
+
+}
+
+}// namespace katana::detail
