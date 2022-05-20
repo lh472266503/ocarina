@@ -65,61 +65,63 @@ struct EnableBitwiseCast {
     }
 };
 
-#define KTN_EXPR_BASE_COMMON(...)                                          \
+#define KTN_COMPUTABLE_COMMON(...)                                         \
 private:                                                                   \
     const Expression *_expression{nullptr};                                \
                                                                            \
 public:                                                                    \
-    explicit ExprBase(const Expression *e) noexcept : _expression{e} {}    \
+    explicit Computable(const Expression *e) noexcept : _expression{e} {}  \
     [[nodiscard]] auto expression() const noexcept { return _expression; } \
-    ExprBase(ExprBase &&) noexcept = default;                              \
-    ExprBase(const ExprBase &) noexcept = default;                         \
+    Computable(Computable &&) noexcept = default;                          \
+    Computable(const Computable &) noexcept = default;                     \
     template<typename Rhs>                                                 \
     void operator=(Rhs &&rhs) &noexcept {                                  \
         assign(*this, std::forward<Rhs>(rhs));                             \
     }
 
 template<typename T>
-struct ExprBase
+struct Computable
     : detail::EnableBitwiseCast<T>,
       detail::EnableStaticCast<T> {
     static_assert(is_scalar_v<T>);
-    KTN_EXPR_BASE_COMMON(T)
+    KTN_COMPUTABLE_COMMON(T)
 };
 
 template<typename T>
-struct ExprBase<Vector<T, 2>>
-    : EnableStaticCast<ExprBase<Vector<T, 2>>>,
-      EnableBitwiseCast<ExprBase<Vector<T, 2>>>,
-      EnableGetMemberByIndex<ExprBase<Vector<T, 2>>>,
-      EnableSubscriptAccess<ExprBase<Vector<T, 2>>> {
-    KTN_EXPR_BASE_COMMON(Vector<T, 2>)
+struct Computable<Vector<T, 2>>
+    : EnableStaticCast<Computable<Vector<T, 2>>>,
+      EnableBitwiseCast<Computable<Vector<T, 2>>>,
+      EnableGetMemberByIndex<Computable<Vector<T, 2>>>,
+      EnableSubscriptAccess<Computable<Vector<T, 2>>> {
+    KTN_COMPUTABLE_COMMON(Vector<T, 2>)
 };
 
 template<typename T>
-struct ExprBase<Vector<T, 3>>
-    : EnableStaticCast<ExprBase<Vector<T, 3>>>,
-      EnableBitwiseCast<ExprBase<Vector<T, 3>>>,
-      EnableGetMemberByIndex<ExprBase<Vector<T, 3>>>,
-      EnableSubscriptAccess<ExprBase<Vector<T, 3>>> {
-    KTN_EXPR_BASE_COMMON(Vector<T, 3>)
+struct Computable<Vector<T, 3>>
+    : EnableStaticCast<Computable<Vector<T, 3>>>,
+      EnableBitwiseCast<Computable<Vector<T, 3>>>,
+      EnableGetMemberByIndex<Computable<Vector<T, 3>>>,
+      EnableSubscriptAccess<Computable<Vector<T, 3>>> {
+    KTN_COMPUTABLE_COMMON(Vector<T, 3>)
 };
 
 template<typename T>
-struct ExprBase<Vector<T, 4>>
-    : EnableStaticCast<ExprBase<Vector<T, 4>>>,
-      EnableBitwiseCast<ExprBase<Vector<T, 4>>>,
-      EnableGetMemberByIndex<ExprBase<Vector<T, 4>>>,
-      EnableSubscriptAccess<ExprBase<Vector<T, 4>>> {
-    KTN_EXPR_BASE_COMMON(Vector<T, 4>)
+struct Computable<Vector<T, 4>>
+    : EnableStaticCast<Computable<Vector<T, 4>>>,
+      EnableBitwiseCast<Computable<Vector<T, 4>>>,
+      EnableGetMemberByIndex<Computable<Vector<T, 4>>>,
+      EnableSubscriptAccess<Computable<Vector<T, 4>>> {
+    KTN_COMPUTABLE_COMMON(Vector<T, 4>)
 };
 
 template<typename T, size_t N>
-struct ExprBase<std::array<T, N>>
+struct Computable<std::array<T, N>>
     : EnableSubscriptAccess<std::array<T, N>>,
       EnableGetMemberByIndex<std::array<T, N>> {
-    KTN_EXPR_BASE_COMMON(std::array<T, N>)
+    KTN_COMPUTABLE_COMMON(std::array<T, N>)
 };
+
+#undef KTN_COMPUTABLE_COMMON
 
 }
 
