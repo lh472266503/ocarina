@@ -71,6 +71,8 @@ public:
 
     [[nodiscard]] const AccessExpr *access(const Type *type, const Expression *range, const Expression *index) noexcept;
 
+    [[nodiscard]] const MemberExpr *member(const Type *type, const Expression *obj, size_t index) noexcept;
+
     void break_() noexcept;
 
     void continue_() noexcept;

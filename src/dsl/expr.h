@@ -32,4 +32,9 @@ template<typename T>
 
 }// namespace detail
 
+template<typename ...T>
+[[nodiscard]] inline auto compose(T &&...v) noexcept {
+
+}
+
 }// namespace katana
