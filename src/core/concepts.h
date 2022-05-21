@@ -61,7 +61,7 @@ template<typename T>
 concept pointer = std::is_pointer_v<T>;
 
 template<typename T>
-concept non_pointer = std::negation_v<std::is_pointer<T>>;
+concept non_pointer = !std::is_pointer_v<T>;
 
 template<typename T>
 concept container = requires(T a) {
@@ -146,7 +146,7 @@ concept subtract_able = requires(A a, B b) {
 
 template<typename A, typename B = A>
 concept multiply_able = requires(A a, B b) {
-    a * b;
+    a *b;
 };
 
 template<typename A, typename B = A>
@@ -158,6 +158,5 @@ template<typename A, typename B = A>
 concept mod_able = requires(A a, B b) {
     a % b;
 };
-
 
 }// namespace katana::concepts

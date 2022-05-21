@@ -73,6 +73,8 @@ public:
 
     [[nodiscard]] const MemberExpr *member(const Type *type, const Expression *obj, size_t index) noexcept;
 
+    [[nodiscard]] const RefExpr *local(const Type *) noexcept;
+
     void break_() noexcept;
 
     void continue_() noexcept;

@@ -6,12 +6,33 @@
 
 #include "core/stl.h"
 #include "computable.h"
+#include "arg.h"
 #include "core/basic_types.h"
 
 namespace katana {
 
+template<typename Lhs, typename Rhs>
+inline void assign(Lhs &&lhs, Rhs &&rhs) noexcept;// implement in stmt.h
+
 template<typename T>
-class Var : public detail::Computable<T> {
+struct Var : public detail::Computable<T> {
+    static_assert(std::is_trivially_destructible_v<T>);
+
+    explicit Var(const Expression *expression) noexcept
+        : detail::Computable<T>(expression) {}
+
+    Var() noexcept : Var(FunctionBuilder::current()->local(Type::of<T>())) {}
+
+    template<typename Arg>
+    requires concepts::non_pointer<std::remove_cvref_t<Arg>>
+    Var(Arg &&arg) : Var() {
+        assign(*this, std::forward<Arg>(arg));
+    }
+
+    explicit Var(detail::ArgumentCreation) noexcept
+        : Var(FunctionBuilder::current()->argument(Type::of<T>())) {}
+    explicit Var(detail::ReferenceArgumentCreation) noexcept
+        : Var(FunctionBuilder::current()->reference(Type::of<T>())) {}
 };
 
 }// namespace katana

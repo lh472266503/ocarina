@@ -67,7 +67,7 @@ struct prototype_to_callable_invocation<const T &> {
 };
 
 template<typename T>
-struct Ref;
+struct Computable;
 
 template<typename T>
 struct expr_value_impl {
@@ -80,7 +80,7 @@ struct expr_value_impl<Expr<T>> {
 };
 
 template<typename T>
-struct expr_value_impl<Ref<T>> {
+struct expr_value_impl<Computable<T>> {
     using type = T;
 };
 
@@ -127,7 +127,7 @@ template<typename T>
 struct is_dsl_impl : std::false_type {};
 
 template<typename T>
-struct is_dsl_impl<Ref<T>> : std::true_type {};
+struct is_dsl_impl<Computable<T>> : std::true_type {};
 
 template<typename T>
 struct is_dsl_impl<Expr<T>> : std::true_type {};

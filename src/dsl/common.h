@@ -7,6 +7,6 @@
 #include "builtin.h"
 #include "expr_traits.h"
 #include "expr.h"
-#include "var.h"
+#include "stmt.h"
 #include "func.h"
 #include "struct.h"

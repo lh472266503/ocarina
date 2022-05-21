@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace katana {
+namespace katana::detail {
 struct ArgumentCreation {};
 struct ReferenceArgumentCreation {};
-}// namespace katana
+}// namespace katana::detail

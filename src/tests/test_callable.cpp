@@ -14,13 +14,17 @@ using std::cout;
 using std::endl;
 using namespace katana;
 
+class ttt {
+~ttt() {}
+};
+
 int main() {
 
 //    auto callable = [](Var<int> a, Var<int> b) {
 //        return a + b;
 //    };
 
-
+cout << std::is_trivially_destructible_v<ttt>;
 
     return 0;
 }
