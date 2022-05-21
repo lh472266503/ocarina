@@ -50,20 +50,7 @@ KTN_MAKE_DSL_UNARY_OPERATOR(~, BIT_NOT)
             katana::BinaryOp::tag));                                                    \
     }
 
-template<typename Lhs, typename Rhs>
-requires katana::any_dsl_v<Lhs, Rhs> && katana::is_basic_v<katana::expr_value_t<Lhs>> && katana::is_basic_v<katana::expr_value_t<Rhs>>
-[[nodiscard]] inline auto operator+(Lhs &&lhs, Rhs &&rhs) noexcept {
-    using namespace std::string_view_literals;
-    static constexpr bool is_logic_op = "+" == "||"sv || "+" == "&&"sv;
-    static constexpr bool is_bit_op = "+" == "|"sv || "+" == "&"sv || "+" == "^"sv;
-    static constexpr bool is_bool_lhs = katana::is_boolean_expr_v<Lhs>;
-    static constexpr bool is_bool_rhs = katana::is_boolean_expr_v<Rhs>;
-    using NormalRet = std::remove_cvref_t<decltype(std::declval<katana::expr_value_t<Lhs>>() + std::declval<katana::expr_value_t<Rhs>>())>;
-    using Ret = std::conditional_t<is_bool_lhs && is_logic_op, bool, NormalRet>;
-    return def<Ret>(katana::FunctionBuilder::current()->binary(katana::Type::of<Ret>(), katana::detail::extract_expression(std::forward<Lhs>(lhs)), katana::detail::extract_expression(std::forward<Rhs>(rhs)), katana::BinaryOp::ADD));
-}
-
-//KTN_MAKE_DSL_BINARY_OPERATOR(+, ADD)
+KTN_MAKE_DSL_BINARY_OPERATOR(+, ADD)
 KTN_MAKE_DSL_BINARY_OPERATOR(-, SUB)
 KTN_MAKE_DSL_BINARY_OPERATOR(*, MUL)
 KTN_MAKE_DSL_BINARY_OPERATOR(/, DIV)

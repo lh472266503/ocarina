@@ -121,6 +121,13 @@ struct Computable<std::array<T, N>>
     KTN_COMPUTABLE_COMMON(std::array<T, N>)
 };
 
+template<size_t N>
+struct Computable<Matrix<N>>
+    : EnableGetMemberByIndex<Matrix<N>>,
+      EnableSubscriptAccess<Matrix<N>> {
+    KTN_COMPUTABLE_COMMON(Matrix<N>)
+};
+
 #undef KTN_COMPUTABLE_COMMON
 
 }
