@@ -150,7 +150,7 @@ private:
 
 public:
     LiteralExpr(const Type *type, value_type value)
-        : Expression(Tag::LITERAL, type), _value(std::move(value)) {}
+        : Expression(Tag::LITERAL, type), _value(value) {}
     [[nodiscard]] decltype(auto) value() const noexcept { return _value; }
     KTN_MAKE_EXPRESSION_ACCEPT_VISITOR
 };

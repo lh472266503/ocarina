@@ -10,9 +10,7 @@
 #include "expr_traits.h"
 #include "ast/function_builder.h"
 
-namespace katana {
-
-namespace detail {
+namespace katana::detail {
 
 template<typename T>
 struct EnableSubscriptAccess {
@@ -73,11 +71,7 @@ public:                                                                    \
     explicit Computable(const Expression *e) noexcept : _expression{e} {}  \
     [[nodiscard]] auto expression() const noexcept { return _expression; } \
     Computable(Computable &&) noexcept = default;                          \
-    Computable(const Computable &) noexcept = default;                     \
-    template<typename Rhs>                                                 \
-    void operator=(Rhs &&rhs) &noexcept {                                  \
-        assign(*this, std::forward<Rhs>(rhs));                             \
-    }
+    Computable(const Computable &) noexcept = default;
 
 template<typename T>
 struct Computable
@@ -128,7 +122,7 @@ struct Computable<Matrix<N>>
     KTN_COMPUTABLE_COMMON(Matrix<N>)
 };
 
-template<typename ...T>
+template<typename... T>
 struct Computable<std::tuple<T...>> {
     using Tuple = std::tuple<T...>;
     KTN_COMPUTABLE_COMMON(std::tuple<T...>)
@@ -140,7 +134,5 @@ struct Computable<std::tuple<T...>> {
 };
 
 #undef KTN_COMPUTABLE_COMMON
-
-}
 
 }// namespace katana::detail

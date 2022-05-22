@@ -24,8 +24,9 @@ struct Var : public detail::Computable<T> {
     Var() noexcept : Var(FunctionBuilder::current()->local(Type::of<T>())) {}
 
     template<typename Arg>
-    requires concepts::non_pointer<std::remove_cvref_t<Arg>>
-    Var(Arg &&arg) : Var() {
+    requires concepts::non_pointer<std::remove_cvref_t<Arg>> &&
+        concepts::different<Var<T>, std::remove_cvref_t<Arg>>
+        Var(Arg &&arg) : Var() {
         assign(*this, std::forward<Arg>(arg));
     }
 
@@ -33,6 +34,16 @@ struct Var : public detail::Computable<T> {
         : Var(FunctionBuilder::current()->argument(Type::of<T>())) {}
     explicit Var(detail::ReferenceArgumentCreation) noexcept
         : Var(FunctionBuilder::current()->reference(Type::of<T>())) {}
+
+    Var(Var &&) noexcept = default;
+
+    void operator=(Var &&rhs) &noexcept {
+        assign(*this, std::forward(rhs));
+    }
+
+    void operator=(const Var &rhs) &noexcept {
+        assign(*this, std::forward(rhs));
+    }
 };
 
 }// namespace katana
