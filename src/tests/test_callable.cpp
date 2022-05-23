@@ -20,11 +20,10 @@ class ttt {
 
 int main() {
 
-//    auto callable = [](Var<int> a, Var<int> b) {
-//        return a + b;
-//    };
+    Callable<int(int, int)> callable = [&](Var<int> a, Var<int> b) {
+        return a + b;
+    };
 
-cout << std::is_trivially_destructible_v<ttt>;
 
     return 0;
 }

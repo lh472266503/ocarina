@@ -16,6 +16,10 @@ namespace katana {
 
 class FunctionBuilder : public katana::enable_shared_from_this<FunctionBuilder>,
                         public concepts::Noncopyable {
+public:
+    using Tag = Function::Tag;
+    using Constant = Function::Constant;
+
 private:
     const Type *_ret{nullptr};
     katana::vector<katana::unique_ptr<Expression>> _all_expressions;
@@ -24,10 +28,7 @@ private:
     katana::vector<Variable> _builtin_variables;
     katana::vector<Variable> _arguments;
     katana::vector<katana::shared_ptr<const FunctionBuilder>> _used_custom_callables;
-
-public:
-    using Tag = Function::Tag;
-    using Constant = Function::Constant;
+    Tag _tag{};
 
 protected:
     [[nodiscard]] static katana::vector<FunctionBuilder *> &_function_stack() noexcept;
@@ -45,6 +46,13 @@ private:
     }
 
 public:
+    explicit FunctionBuilder(Tag tag = Tag::CALLABLE) : _tag(tag) {}
+    FunctionBuilder(FunctionBuilder &&) noexcept = delete;
+    FunctionBuilder(const FunctionBuilder &) noexcept = delete;
+    FunctionBuilder &operator=(FunctionBuilder &&) noexcept = delete;
+    FunctionBuilder &operator=(const FunctionBuilder &) noexcept = delete;
+    ~FunctionBuilder() noexcept {}
+
     [[nodiscard]] static FunctionBuilder *current() noexcept;
 
     template<typename Func>

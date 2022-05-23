@@ -53,6 +53,7 @@ namespace detail {
 
 template<typename VarTuple, typename TagTuple, typename T, size_t... i>
 [[nodiscard]] auto create_argument_tuple_impl(T tuple, std::index_sequence<i...>) {
+
 }
 
 }// namespace detail
@@ -67,18 +68,18 @@ class Callable<Ret(Args...)> {
     static_assert(std::negation_v<std::disjunction<std::is_pointer<Args>...>>);
 
 private:
-    katana::shared_ptr<FunctionBuilder> _builder;
+    katana::shared_ptr<const FunctionBuilder> _builder;
 
 public:
     template<typename Func>
-    explicit Callable(Func &&func) noexcept
+    Callable(Func func) noexcept
         : _builder(FunctionBuilder::define_callable([&] {
               static_assert(std::is_invocable_v<Func, detail::prototype_to_var<Args>...>);
               using arg_tuple = std::tuple<Args...>;
               using var_tuple = std::tuple<Var<std::remove_cvref_t<Args>>...>;
               using tag_tuple = std::tuple<prototype_to_creation_tag_t<Args>...>;
 
-              auto args = create_argument_tuple<var_tuple, tag_tuple>(std::tuple());
+//              auto args = create_argument_tuple<var_tuple, tag_tuple>(std::tuple());
           })) {
     }
     //    template<typename Func>
