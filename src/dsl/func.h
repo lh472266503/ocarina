@@ -110,7 +110,7 @@ template<typename R, typename... Args>
 using function_signature = R(Args...);
 
 template<typename T>
-struct canonical_signature {};
+struct canonical_signature;
 
 template<typename Ret, typename... Args>
 struct canonical_signature<Ret(Args...)> {
@@ -120,6 +120,10 @@ struct canonical_signature<Ret(Args...)> {
 template<typename Ret, typename... Args>
 struct canonical_signature<Ret (*)(Args...)>
     : canonical_signature<Ret(Args...)> {};
+
+template<typename F>
+struct canonical_signature
+    : canonical_signature<decltype(&F::operator())> {};
 
 #define KTN_MAKE_MEMBER_FUNC_SIGNATURE(...)                       \
     template<typename Ret, typename Cls, typename... Args>        \
@@ -142,7 +146,8 @@ using canonical_signature_t = typename canonical_signature<T>::type;
 
 template<typename T>
 struct dsl_function {
-    using type = canonical_signature_t<std::remove_cvref_t<T>>;
+    using type = typename dsl_function<
+        canonical_signature_t<std::remove_cvref_t<T>>>::type;
 };
 
 template<typename Ret, typename... Args>
@@ -152,6 +157,17 @@ struct dsl_function<function_signature<Ret, Args...>> {
         definition_to_prototype<Args>...>;
 };
 
+template<typename T>
+struct dsl_function<Callable<T>> {
+    using type = T;
+};
+
+template<typename T>
+using dsl_function_t = typename dsl_function<T>::type;
+
 }// namespace detail
+
+template<typename T>
+Callable(T &&) -> Callable<detail::dsl_function_t<std::remove_cvref_t<T>>>;
 
 }// namespace katana

@@ -6,6 +6,7 @@
 #include "core/concepts.h"
 //#include "core/util.h"
 #include "dsl/operators.h"
+#include "dsl/func.h"
 #include <iostream>
 
 
@@ -20,9 +21,13 @@ class ttt {
 
 int main() {
 
-    Callable<int(int, int)> callable = [&](Var<int> a, Var<int> b) {
+    Callable callable = [&](Var<int> a, Var<int> b)->Var<int> {
         return a + b;
     };
+
+    auto cb = [](int, int) -> float {return 0.f;};
+
+    cout << typeid(detail::canonical_signature_t<decltype(cb)>).name();
 
 
     return 0;
