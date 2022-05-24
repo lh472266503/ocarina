@@ -8,6 +8,7 @@
 #include "type.h"
 #include "core/concepts.h"
 #include "usage.h"
+#include "variable.h"
 #include "op.h"
 
 namespace katana {
@@ -157,7 +158,7 @@ public:
 
 class RefExpr : public Expression {
 private:
-//    Variable _variable;
+    Variable _variable;
 
 public:
 };
