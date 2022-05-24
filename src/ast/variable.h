@@ -35,6 +35,9 @@ private:
     const Type *_type;
     uint32_t _uid;
     Tag _tag;
+
+public:
+    Variable() = default;
 };
 
 }// namespace katana

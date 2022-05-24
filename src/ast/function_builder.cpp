@@ -12,5 +12,8 @@ katana::vector<FunctionBuilder *> &FunctionBuilder::_function_stack() noexcept {
 FunctionBuilder *FunctionBuilder::current() noexcept {
     return _function_stack().back();
 }
+const RefExpr *FunctionBuilder::argument(const Type *type) noexcept {
+    return nullptr;
+}
 
 }// namespace katana

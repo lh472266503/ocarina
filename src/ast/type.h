@@ -280,7 +280,9 @@ private:
 
 public:
     template<typename T>
-    [[nodiscard]] static const Type *of() noexcept;
+    [[nodiscard]] static const Type *of() noexcept {
+        return nullptr;
+    }
 
     template<typename T>
     [[nodiscard]] static auto of(T &&) noexcept { return of<std::remove_cvref_t<T>>(); }

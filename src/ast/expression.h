@@ -155,4 +155,11 @@ public:
     KTN_MAKE_EXPRESSION_ACCEPT_VISITOR
 };
 
+class RefExpr : public Expression {
+private:
+//    Variable _variable;
+
+public:
+};
+
 }// namespace katana

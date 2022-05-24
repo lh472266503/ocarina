@@ -41,7 +41,7 @@ private:
     template<typename Func>
     static auto _define(Function::Tag tag, Func &&func) noexcept {
         auto builder = katana::make_shared<FunctionBuilder>(tag);
-
+        func();
         return katana::const_pointer_cast<const FunctionBuilder>(builder);
     }
 

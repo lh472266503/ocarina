@@ -76,6 +76,7 @@ namespace detail {
 
 template<typename VarTuple, typename TagTuple, typename T, size_t... i>
 [[nodiscard]] auto create_argument_tuple_impl(T tuple, std::index_sequence<i...>) {
+    (std::tuple_element_t<i, VarTuple>{std::tuple_element_t<i, TagTuple>{}}, ...);
 }
 
 }// namespace detail
@@ -101,7 +102,7 @@ public:
               using var_tuple = std::tuple<Var<std::remove_cvref_t<Args>>...>;
               using tag_tuple = std::tuple<detail::prototype_to_creation_tag_t<Args>...>;
 
-              //              auto args = create_argument_tuple<var_tuple, tag_tuple>(std::tuple());
+              create_argument_tuple<var_tuple, tag_tuple>(std::tuple());
           })) {
     }
     //    template<typename Func>
