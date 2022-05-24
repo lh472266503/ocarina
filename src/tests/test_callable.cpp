@@ -26,9 +26,7 @@ int main() {
     };
 
     auto cb = [](int, int) -> float {return 0.f;};
-
-    cout << typeid(detail::canonical_signature_t<decltype(cb)>).name();
-
+    cout << typeid(decltype(callable)).name();
 
     return 0;
 }

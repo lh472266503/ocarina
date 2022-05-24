@@ -37,6 +37,9 @@ struct definition_to_prototype<Var<T> &> {
 };
 
 template<typename T>
+using definition_to_prototype_t = typename definition_to_prototype<T>::type;
+
+template<typename T>
 struct prototype_to_creation_tag {
     using type = ArgumentCreation;
 };
@@ -50,10 +53,10 @@ template<typename T>
 struct prototype_to_creation_tag<T &> {
     using type = ReferenceArgumentCreation;
 };
-}// namespace detail
 
 template<typename T>
 using prototype_to_creation_tag_t = typename detail::prototype_to_creation_tag<T>::type;
+}// namespace detail
 
 template<typename T>
 class Callable {
@@ -96,7 +99,7 @@ public:
               static_assert(std::is_invocable_v<Func, detail::prototype_to_var<Args>...>);
               using arg_tuple = std::tuple<Args...>;
               using var_tuple = std::tuple<Var<std::remove_cvref_t<Args>>...>;
-              using tag_tuple = std::tuple<prototype_to_creation_tag_t<Args>...>;
+              using tag_tuple = std::tuple<detail::prototype_to_creation_tag_t<Args>...>;
 
               //              auto args = create_argument_tuple<var_tuple, tag_tuple>(std::tuple());
           })) {
@@ -154,7 +157,7 @@ template<typename Ret, typename... Args>
 struct dsl_function<function_signature<Ret, Args...>> {
     using type = function_signature<
         expr_value_t<Ret>,
-        definition_to_prototype<Args>...>;
+        definition_to_prototype_t<Args>...>;
 };
 
 template<typename T>
