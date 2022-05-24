@@ -13,7 +13,7 @@
 namespace katana {
 
 template<typename T>
-struct Expr;
+struct Computable;
 
 template<typename T>
 struct Var;
@@ -46,6 +46,11 @@ struct prototype_to_var {
     using type = Var<T>;
 };
 
+template<>
+struct prototype_to_var<void> {
+    using type = void;
+};
+
 template<typename T>
 struct prototype_to_var<T &> {
     using type = Var<T> &;
@@ -58,25 +63,22 @@ struct prototype_to_var<const T &> {
 
 template<typename T>
 struct prototype_to_callable_invocation {
-    using type = Expr<T>;
+    using type = Computable<T>;
 };
 
 template<typename T>
 struct prototype_to_callable_invocation<const T &> {
-    using type = Expr<T>;
+    using type = Computable<T>;
 };
-
-template<typename T>
-struct Computable;
 
 template<typename T>
 struct expr_value_impl {
     using type = T;
 };
 
-template<typename T>
-struct expr_value_impl<Expr<T>> {
-    using type = T;
+template<>
+struct expr_value_impl<void> {
+    using type = void;
 };
 
 template<typename T>

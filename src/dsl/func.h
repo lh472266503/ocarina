@@ -17,6 +17,26 @@ namespace katana {
 
 namespace detail {
 template<typename T>
+struct definition_to_prototype {
+    static_assert(always_false_v<T>, "Invalid type in function definition.");
+};
+
+template<typename T>
+struct definition_to_prototype<Var<T>> {
+    using type = T;
+};
+
+template<typename T>
+struct definition_to_prototype<const Var<T> &> {
+    using type = T;
+};
+
+template<typename T>
+struct definition_to_prototype<Var<T> &> {
+    using type = T &;
+};
+
+template<typename T>
 struct prototype_to_creation_tag {
     using type = ArgumentCreation;
 };
@@ -53,7 +73,6 @@ namespace detail {
 
 template<typename VarTuple, typename TagTuple, typename T, size_t... i>
 [[nodiscard]] auto create_argument_tuple_impl(T tuple, std::index_sequence<i...>) {
-
 }
 
 }// namespace detail
@@ -79,11 +98,60 @@ public:
               using var_tuple = std::tuple<Var<std::remove_cvref_t<Args>>...>;
               using tag_tuple = std::tuple<prototype_to_creation_tag_t<Args>...>;
 
-//              auto args = create_argument_tuple<var_tuple, tag_tuple>(std::tuple());
+              //              auto args = create_argument_tuple<var_tuple, tag_tuple>(std::tuple());
           })) {
     }
     //    template<typename Func>
     //    requires std:
 };
+
+namespace detail {
+template<typename R, typename... Args>
+using function_signature = R(Args...);
+
+template<typename T>
+struct canonical_signature {};
+
+template<typename Ret, typename... Args>
+struct canonical_signature<Ret(Args...)> {
+    using type = function_signature<Ret, Args...>;
+};
+
+template<typename Ret, typename... Args>
+struct canonical_signature<Ret (*)(Args...)>
+    : canonical_signature<Ret(Args...)> {};
+
+#define KTN_MAKE_MEMBER_FUNC_SIGNATURE(...)                       \
+    template<typename Ret, typename Cls, typename... Args>        \
+    struct canonical_signature<Ret (Cls::*)(Args...) __VA_ARGS__> \
+        : canonical_signature<Ret(Args...)> {};
+
+KTN_MAKE_MEMBER_FUNC_SIGNATURE()
+KTN_MAKE_MEMBER_FUNC_SIGNATURE(const)
+KTN_MAKE_MEMBER_FUNC_SIGNATURE(volatile)
+KTN_MAKE_MEMBER_FUNC_SIGNATURE(noexcept)
+KTN_MAKE_MEMBER_FUNC_SIGNATURE(const noexcept)
+KTN_MAKE_MEMBER_FUNC_SIGNATURE(const volatile)
+KTN_MAKE_MEMBER_FUNC_SIGNATURE(volatile noexcept)
+KTN_MAKE_MEMBER_FUNC_SIGNATURE(const volatile noexcept)
+
+#undef KTN_MAKE_MEMBER_FUNC_SIGNATURE
+
+template<typename T>
+using canonical_signature_t = typename canonical_signature<T>::type;
+
+template<typename T>
+struct dsl_function {
+    using type = canonical_signature_t<std::remove_cvref_t<T>>;
+};
+
+template<typename Ret, typename... Args>
+struct dsl_function<function_signature<Ret, Args...>> {
+    using type = function_signature<
+        expr_value_t<Ret>,
+        definition_to_prototype<Args>...>;
+};
+
+}// namespace detail
 
 }// namespace katana
