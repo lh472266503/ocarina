@@ -73,7 +73,12 @@ public:
     [[nodiscard]] auto usage() const noexcept { return _usage; }
     [[nodiscard]] auto tag() const noexcept { return _tag; }
     virtual void accept(ExprVisitor &) const = 0;
-    void mark(Usage usage) const noexcept;
+    void mark(Usage usage) const noexcept {
+        if (auto a = to_underlying(_usage), u = a | to_underlying(usage); a != u) {
+            _usage = static_cast<Usage>(u);
+            _mark(usage);
+        }
+    }
 };
 
 #define KTN_MAKE_EXPRESSION_ACCEPT_VISITOR \
@@ -160,7 +165,17 @@ class RefExpr : public Expression {
 private:
     Variable _variable;
 
+protected:
+    void _mark(Usage usage) const noexcept override;
+    uint64_t _compute_hash() const noexcept override {
+        return hash64(_variable.hash());
+    }
+
 public:
+    explicit RefExpr(Variable v) noexcept
+        : Expression(Tag::REF, v.type()), _variable(v) {}
+    [[nodiscard]] auto variable() const noexcept { return _variable; }
+    KTN_MAKE_EXPRESSION_ACCEPT_VISITOR
 };
 
 }// namespace katana

@@ -4,6 +4,7 @@
 
 #include "expression.h"
 #include "core/hash.h"
+#include "function_builder.h"
 
 namespace katana {
 uint64_t Expression::hash() const noexcept {
@@ -16,4 +17,8 @@ uint64_t Expression::hash() const noexcept {
     return _hash;
 }
 
-}// namespace katana::ast
+void RefExpr::_mark(Usage usage) const noexcept {
+    FunctionBuilder::current()->mark_variable_usage(
+        _variable.uid(), usage);
+}
+}// namespace katana

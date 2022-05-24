@@ -27,6 +27,7 @@ private:
     katana::vector<ScopeStmt *> _scope_stack;//
     katana::vector<Variable> _builtin_variables;
     katana::vector<Variable> _arguments;
+    katana::vector<Usage> _variable_usages;
     katana::vector<katana::shared_ptr<const FunctionBuilder>> _used_custom_callables;
     Tag _tag{};
 
@@ -64,6 +65,8 @@ public:
     static auto define_kernel(Func &&func) noexcept {
         return _define(Tag::KERNEL, std::forward<Func>(func));
     }
+
+    void mark_variable_usage(uint uid, Usage usage) noexcept;
 
     [[nodiscard]] const CastExpr *cast(const Type *type, CastOp cast_op, const Expression *expression) noexcept;
 

@@ -12,6 +12,11 @@ katana::vector<FunctionBuilder *> &FunctionBuilder::_function_stack() noexcept {
 FunctionBuilder *FunctionBuilder::current() noexcept {
     return _function_stack().back();
 }
+void FunctionBuilder::mark_variable_usage(uint uid, Usage usage) noexcept {
+    auto old_usage = to_underlying(_variable_usages[uid]);
+    auto u = static_cast<Usage>(old_usage | to_underlying(usage));
+    _variable_usages[uid] = u;
+}
 const RefExpr *FunctionBuilder::argument(const Type *type) noexcept {
     return nullptr;
 }
