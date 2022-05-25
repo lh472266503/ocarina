@@ -37,6 +37,7 @@ protected:
     [[nodiscard]] const RefExpr *_builtin(Variable::Tag tag) noexcept;
     [[nodiscard]] const RefExpr *_ref(Variable::Tag tag) noexcept;
     void _void_expr(const Expression *expr) noexcept;
+    [[nodiscard]] uint _next_variable_uid() noexcept;
 
 private:
     template<typename Func>
@@ -76,7 +77,7 @@ public:
 
     [[nodiscard]] const RefExpr *argument(const Type *type) noexcept;
 
-    [[nodiscard]] const RefExpr *reference(const Type *type) noexcept;
+    [[nodiscard]] const RefExpr *reference_argument(const Type *type) noexcept;
 
     [[nodiscard]] const LiteralExpr *literal(const Type *type, LiteralExpr *literal_expr) noexcept;
 

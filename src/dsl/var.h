@@ -27,13 +27,13 @@ struct Var : public detail::Computable<T> {
     requires concepts::non_pointer<std::remove_cvref_t<Arg>> &&
         concepts::different<Var<T>, std::remove_cvref_t<Arg>>
         Var(Arg &&arg) : Var() {
-//        assign(*this, std::forward<Arg>(arg));
+        //        assign(*this, std::forward<Arg>(arg));
     }
 
     explicit Var(detail::ArgumentCreation) noexcept
         : Var(FunctionBuilder::current()->argument(Type::of<T>())) {}
     explicit Var(detail::ReferenceArgumentCreation) noexcept
-        : Var(FunctionBuilder::current()->reference(Type::of<T>())) {}
+        : Var(FunctionBuilder::current()->reference_argument(Type::of<T>())) {}
 
     Var(Var &&) noexcept = default;
 
