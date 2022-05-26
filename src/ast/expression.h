@@ -9,6 +9,7 @@
 #include "core/concepts.h"
 #include "usage.h"
 #include "variable.h"
+#include "function.h"
 #include "op.h"
 
 namespace katana {
@@ -175,6 +176,48 @@ public:
     explicit RefExpr(Variable v) noexcept
         : Expression(Tag::REF, v.type()), _variable(v) {}
     [[nodiscard]] auto variable() const noexcept { return _variable; }
+    KTN_MAKE_EXPRESSION_ACCEPT_VISITOR
+};
+
+class CallExpr : public Expression {
+public:
+    using ArgumentList = katana::vector<const Expression *>;
+
+private:
+    ArgumentList _arguments;
+    Function _custom;
+    CallOp _op;
+
+public:
+    CallExpr(const Type *type, Function func, ArgumentList args)
+        : Expression(Tag::CALL, type), _custom(func), _op(CallOp::CUSTOM), _arguments(std::move(args)) {}
+
+    CallExpr(const Type *type, CallOp op, ArgumentList args)
+        : Expression(Tag::CALL, type), _op(op), _arguments(std::move(args)) {}
+};
+
+class CastExpr : public Expression {
+private:
+    CastOp _cast_op;
+    const Expression *_expression;
+
+protected:
+    void _mark(Usage) const noexcept override {}
+    uint64_t _compute_hash() const noexcept override {
+        return hash64(_cast_op, _expression->hash());
+    }
+
+public:
+    CastExpr(const Type *type, CastOp op, const Expression *expression) noexcept
+        : Expression(Tag::CAST, type), _cast_op(op), _expression(expression) {
+        _expression->mark(Usage::READ);
+    }
+    [[nodiscard]] CastOp cast_op() const noexcept {
+        return _cast_op;
+    }
+    [[nodiscard]] const Expression *expression() const noexcept {
+        return _expression;
+    }
     KTN_MAKE_EXPRESSION_ACCEPT_VISITOR
 };
 
