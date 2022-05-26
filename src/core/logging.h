@@ -78,34 +78,34 @@ inline void error_if_not(bool predicate, Args &&...args) {
 }
 }// namespace katana::core
 
-#define SYCAMORE_SOURCE_LOCATION __FILE__ , ":", __LINE__
+#define KTN_SOURCE_LOCATION __FILE__ , ":", __LINE__
 
-#define SYCAMORE_DEBUG(...) \
+#define KTN_DEBUG(...) \
     ::katana::core::debug(__VA_ARGS__);
 
 #define SET_LOG_LEVEL(lv) \
     ::katana::core::set_log_level(spdlog::level::level_enum::lv);
 
-#define SYCAMORE_INFO(...) \
+#define KTN_INFO(...) \
     ::katana::core::info(__VA_ARGS__);
 
-#define SYCAMORE_WARNING(...) \
-    ::katana::core::warning(__VA_ARGS__, "\n    Source: ", SYCAMORE_SOURCE_LOCATION);
-#define SYCAMORE_WARNING_IF(...) \
-    ::katana::core::warning_if(__VA_ARGS__, "\n    Source: ", SYCAMORE_SOURCE_LOCATION);
-#define SYCAMORE_WARNING_IF_NOT(...) \
-    ::katana::core::warning_if_not(__VA_ARGS__, "\n    Source: ", SYCAMORE_SOURCE_LOCATION);
+#define KTN_WARNING(...) \
+    ::katana::core::warning(__VA_ARGS__, "\n    Source: ", KTN_SOURCE_LOCATION);
+#define KTN_WARNING_IF(...) \
+    ::katana::core::warning_if(__VA_ARGS__, "\n    Source: ", KTN_SOURCE_LOCATION);
+#define KTN_WARNING_IF_NOT(...) \
+    ::katana::core::warning_if_not(__VA_ARGS__, "\n    Source: ", KTN_SOURCE_LOCATION);
 
-#define SYCAMORE_EXCEPTION(...) \
-    ::katana::core::exception(__VA_ARGS__, "\n    Source: ", SYCAMORE_SOURCE_LOCATION);
-#define SYCAMORE_EXCEPTION_IF(...) \
-    ::katana::core::exception_if(__VA_ARGS__, "\n    Source: ", SYCAMORE_SOURCE_LOCATION);
-#define SYCAMORE_EXCEPTION_IF_NOT(...) \
-    ::katana::core::exception_if_not(__VA_ARGS__, "\n    Source: ", SYCAMORE_SOURCE_LOCATION);
+#define KTN_EXCEPTION(...) \
+    ::katana::core::exception(__VA_ARGS__, "\n    Source: ", KTN_SOURCE_LOCATION);
+#define KTN_EXCEPTION_IF(...) \
+    ::katana::core::exception_if(__VA_ARGS__, "\n    Source: ", KTN_SOURCE_LOCATION);
+#define KTN_EXCEPTION_IF_NOT(...) \
+    ::katana::core::exception_if_not(__VA_ARGS__, "\n    Source: ", KTN_SOURCE_LOCATION);
 
-#define SYCAMORE_ERROR(...) \
-    ::katana::core::error(__VA_ARGS__, "\n    Source: ", SYCAMORE_SOURCE_LOCATION);
-#define SYCAMORE_ERROR_IF(...) \
-    ::katana::core::error_if(__VA_ARGS__, "\n    Source: ", SYCAMORE_SOURCE_LOCATION);
-#define SYCAMORE_ERROR_IF_NOT(...) \
-    ::katana::core::error_if_not(__VA_ARGS__, "\n    Source: ", SYCAMORE_SOURCE_LOCATION);
+#define KTN_ERROR(...) \
+    ::katana::core::error(__VA_ARGS__, "\n    Source: ", KTN_SOURCE_LOCATION);
+#define KTN_ERROR_IF(...) \
+    ::katana::core::error_if(__VA_ARGS__, "\n    Source: ", KTN_SOURCE_LOCATION);
+#define KTN_ERROR_IF_NOT(...) \
+    ::katana::core::error_if_not(__VA_ARGS__, "\n    Source: ", KTN_SOURCE_LOCATION);

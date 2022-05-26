@@ -11,6 +11,7 @@
 #include "expression.h"
 #include "statement.h"
 #include "variable.h"
+#include "core/logging.h"
 
 namespace katana {
 
@@ -38,6 +39,13 @@ protected:
     [[nodiscard]] const RefExpr *_ref(Variable::Tag tag) noexcept;
     void _void_expr(const Expression *expr) noexcept;
     [[nodiscard]] uint _next_variable_uid() noexcept;
+    template<typename Expr, typename... Args>
+    [[nodiscard]] const Expr *_create_expression(Args &&...args) noexcept {
+        auto expression = katana::make_unique<Expr>(std::forward<Args>(args)...);
+        auto ret = expression.get();
+        _all_expressions.push_back(std::move(expression));
+        return ret;
+    }
 
 private:
     template<typename Func>
@@ -53,7 +61,9 @@ public:
     FunctionBuilder(const FunctionBuilder &) noexcept = delete;
     FunctionBuilder &operator=(FunctionBuilder &&) noexcept = delete;
     FunctionBuilder &operator=(const FunctionBuilder &) noexcept = delete;
-    ~FunctionBuilder() noexcept {}
+    ~FunctionBuilder() noexcept {
+        KTN_DEBUG("function builder was destructed");
+    }
 
     [[nodiscard]] static FunctionBuilder *current() noexcept;
 
