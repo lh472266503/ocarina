@@ -5,7 +5,8 @@
 #include "type_registry.h"
 
 namespace katana {
-namespace ast {
-
+TypeRegistry &TypeRegistry::instance() noexcept {
+    static TypeRegistry type_registry;
+    return type_registry;
 }
 }

@@ -36,7 +36,6 @@ protected:
     [[nodiscard]] static katana::vector<FunctionBuilder *> &_function_stack() noexcept;
     void _add_statement(const Statement *statement) noexcept;
     [[nodiscard]] const RefExpr *_builtin(Variable::Tag tag) noexcept;
-    [[nodiscard]] const RefExpr *_ref(Variable::Tag tag) noexcept;
     void _void_expr(const Expression *expr) noexcept;
     [[nodiscard]] uint _next_variable_uid() noexcept;
     template<typename Expr, typename... Args>
@@ -46,6 +45,7 @@ protected:
         _all_expressions.push_back(std::move(expression));
         return ret;
     }
+    [[nodiscard]] const RefExpr *_ref(Variable variable) noexcept;
 
 private:
     template<typename Func>

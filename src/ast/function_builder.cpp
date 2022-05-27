@@ -26,14 +26,20 @@ uint FunctionBuilder::_next_variable_uid() noexcept {
     return uid;
 }
 
+const RefExpr *FunctionBuilder::_ref(Variable variable) noexcept {
+    return _create_expression<RefExpr>(variable);
+}
+
 const RefExpr *FunctionBuilder::reference_argument(const Type *type) noexcept {
     Variable variable(type, Variable::Tag::REFERENCE, _next_variable_uid());
     _arguments.push_back(variable);
-    return nullptr;
+    return _ref(variable);
 }
 
 const RefExpr *FunctionBuilder::argument(const Type *type) noexcept {
-    return nullptr;
+    Variable variable(type, Variable::Tag::LOCAL, _next_variable_uid());
+    _arguments.push_back(variable);
+    return _ref(variable);
 }
 
 }// namespace katana
