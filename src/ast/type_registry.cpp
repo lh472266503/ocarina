@@ -9,4 +9,7 @@ TypeRegistry &TypeRegistry::instance() noexcept {
     static TypeRegistry type_registry;
     return type_registry;
 }
+const Type *TypeRegistry::from(katana::string_view desc) noexcept {
+    return nullptr;
+}
 }

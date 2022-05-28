@@ -7,7 +7,6 @@
 #include "core/basic_traits.h"
 #include "typeinfo"
 #include "core/hash.h"
-#include "ast/type.h"
 #include "core/string_util.h"
 #include "ast/type_registry.h"
 #include "dsl/common.h"
@@ -26,11 +25,12 @@ auto array_to_tuple(std::array<T, N> arr, std::index_sequence<i...>) {
 int main() {
     using namespace katana;
     std::array<float, 2> arr = {1, 2};
+
     std::tuple<float, float> tp = array_to_tuple(arr, std::make_index_sequence<2>());
     //    std::tuple<float, float> tp = std::tuple<float, float>(1,5);
     //    cout << typeid(tp).name() << endl;
     //    cout << typeid(struct_member_tuple<std::array<float, 2>>::type).name();
-    cout << detail::TypeDesc<decltype(tp)>::description() << endl;
+//    cout << detail::TypeDesc<decltype(tp)>::description() << endl;
     cout << detail::TypeDesc<Hit>::description() << endl;
     //    cout << typeid(katana::tuple_join_t<tuple<int, float, int>, tuple<int, float, uint>, int>).name() << endl;
     //    cout << typeid(canonical_layout<float2x2>::type).name() << endl;

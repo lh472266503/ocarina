@@ -169,11 +169,10 @@ public:
 template<typename S, typename M, typename I>
 static constexpr bool is_valid_reflection_v = detail::is_valid_reflection<S, M, I>::value;
 
-class Type;
-
-class TypeRegistry {
+class KTN_AST_API TypeRegistry {
 private:
-    katana::vector<katana::unique_ptr<Type>> _types;
+    //todo unique
+    katana::vector<katana::shared_ptr<Type>> _types;
     TypeRegistry() = default;
 
 public:
@@ -182,7 +181,7 @@ public:
     [[nodiscard]] const Type *from(katana::string_view desc) noexcept;
 
     [[nodiscard]] const Type *from(uint64_t hash) noexcept;
-    
+
     [[nodiscard]] size_t type_count() const noexcept;
 };
 

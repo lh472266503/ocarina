@@ -4,7 +4,6 @@
 
 #pragma once
 #include "core/basic_traits.h"
-#include "ast/type_registry.h"
 #include "dsl/struct.h"
 
 namespace katana {
