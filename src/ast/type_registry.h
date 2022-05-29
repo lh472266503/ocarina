@@ -172,17 +172,36 @@ static constexpr bool is_valid_reflection_v = detail::is_valid_reflection<S, M, 
 
 class KTN_AST_API TypeRegistry {
 private:
+    struct TypePtrHash {
+        using is_transparent = void;
+        [[nodiscard]] uint64_t operator()(const Type *type) const noexcept { return type->hash(); }
+        [[nodiscard]] uint64_t operator()(uint64_t hash) const noexcept { return hash; }
+    };
+
+    struct TypePtrEqual {
+        using is_transparent = void;
+        template<typename Lhs, typename Rhs>
+        [[nodiscard]] bool operator()(Lhs &&lhs, Rhs &&rhs) const noexcept {
+            constexpr TypePtrHash hash;
+            return hash(std::forward<Lhs>(lhs)) == hash(std::forward<Rhs>(rhs));
+        }
+    };
+
     katana::vector<katana::unique_ptr<Type>> _types;
-    katana::unordered_map<katana::string_view, const Type *> _name_to_type;
-    katana::unordered_map<uint64_t, const Type *> _hash_to_type;
+    katana::unordered_set<Type *, TypePtrHash, TypePtrEqual> _type_set;
     mutable std::mutex _mutex;
     TypeRegistry() = default;
+
+protected:
+    [[nodiscard]] static uint64_t _hash(katana::string_view desc) noexcept;
 
 public:
     TypeRegistry &operator=(const TypeRegistry &) = delete;
     TypeRegistry &operator=(TypeRegistry &&) = delete;
     [[nodiscard]] static TypeRegistry &instance() noexcept;
-    [[nodiscard]] const Type *from(katana::string_view desc) noexcept;
+    [[nodiscard]] bool is_exist(katana::string_view desc) const noexcept;
+    [[nodiscard]] bool is_exist(uint64_t hash) const noexcept;
+    [[nodiscard]] const Type *type_from(katana::string_view desc) noexcept;
     [[nodiscard]] const Type *type_at(uint i) const noexcept;
     [[nodiscard]] size_t type_count() const noexcept;
 };

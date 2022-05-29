@@ -12,11 +12,13 @@
 #include <span>
 #include <vector>
 #include <map>
+#include <set>
 #include <array>
 #include <iostream>
 #include <unordered_map>
 #include <memory>
 #include <string>
+#include <unordered_set>
 #include <string_view>
 
 namespace katana {
@@ -44,10 +46,12 @@ using std::allocator;
 using std::deque;
 using std::list;
 using std::map;
+using std::set;
 using std::monostate;
 using std::optional;
 using std::queue;
 using std::unordered_map;
+using std::unordered_set;
 using std::variant;
 
 using std::array;

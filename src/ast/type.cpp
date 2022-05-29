@@ -16,7 +16,7 @@ size_t Type::count() noexcept {
 }
 
 const Type *Type::from(std::string_view description) noexcept {
-    return TypeRegistry::instance().from(description);
+    return TypeRegistry::instance().type_from(description);
 }
 
 const Type *Type::at(uint32_t uid) noexcept {
