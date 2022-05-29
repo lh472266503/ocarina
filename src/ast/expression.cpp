@@ -3,7 +3,6 @@
 //
 
 #include "expression.h"
-#include "core/hash.h"
 #include "function_builder.h"
 
 namespace katana {

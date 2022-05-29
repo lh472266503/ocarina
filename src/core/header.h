@@ -5,8 +5,8 @@
 #pragma once
 
 #include <filesystem>
-#include <stdint.h>
 #include <cstdint>
+#include <cassert>
 #include <cstddef>
 #include <tuple>
 #include <type_traits>
@@ -34,4 +34,6 @@
 #else
 #define KTN_OFFSET_OF(type, member) offsetof(type, member)
 #endif
+
+#define KTN_ASSERT(args) assert(args)
 

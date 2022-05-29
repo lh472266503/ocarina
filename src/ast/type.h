@@ -8,7 +8,6 @@
 #include "core/basic_types.h"
 #include "core/stl.h"
 #include "core/macro_map.h"
-#include <cassert>
 
 namespace katana {
 
@@ -280,21 +279,14 @@ private:
 
 public:
     template<typename T>
-    [[nodiscard]] static const Type *of() noexcept {
-        return nullptr;
-    }
+    [[nodiscard]] static const Type *of() noexcept;
 
     template<typename T>
     [[nodiscard]] static auto of(T &&) noexcept { return of<std::remove_cvref_t<T>>(); }
-
     [[nodiscard]] static const Type *from(std::string_view description) noexcept;
-
     [[nodiscard]] static const Type *find(uint64_t hash) noexcept;
-
     [[nodiscard]] static const Type *at(uint32_t uid) noexcept;
-
     [[nodiscard]] static size_t count() noexcept;
-
     [[nodiscard]] bool operator==(const Type &rhs) const noexcept { return _hash == rhs._hash; }
     [[nodiscard]] bool operator!=(const Type &rhs) const noexcept { return !(*this == rhs); }
     [[nodiscard]] bool operator<(const Type &rhs) const noexcept { return _index < rhs._index; }
@@ -304,23 +296,11 @@ public:
     [[nodiscard]] constexpr size_t alignment() const noexcept { return _alignment; }
     [[nodiscard]] constexpr Tag tag() const noexcept { return _tag; }
     [[nodiscard]] auto description() const noexcept { return katana::string_view{_description}; }
-
-    [[nodiscard]] constexpr size_t dimension() const noexcept {
-        assert(is_array() || is_vector() || is_matrix() || is_texture());
-        return _dimension;
-    }
-
+    [[nodiscard]] constexpr size_t dimension() const noexcept;
     [[nodiscard]] katana::span<const Type *const> members() const noexcept;
     [[nodiscard]] const Type *element() const noexcept;
-
-    [[nodiscard]] constexpr bool is_scalar() const noexcept {
-        return _tag == Tag::BOOL || _tag == Tag::FLOAT || _tag == Tag::INT || _tag == Tag::UINT;
-    }
-
-    [[nodiscard]] constexpr auto is_basic() const noexcept {
-        return is_scalar() || is_vector() || is_matrix();
-    }
-
+    [[nodiscard]] constexpr bool is_scalar() const noexcept;
+    [[nodiscard]] constexpr auto is_basic() const noexcept;
     [[nodiscard]] constexpr bool is_array() const noexcept { return _tag == Tag::ARRAY; }
     [[nodiscard]] constexpr bool is_vector() const noexcept { return _tag == Tag::VECTOR; }
     [[nodiscard]] constexpr bool is_matrix() const noexcept { return _tag == Tag::MATRIX; }

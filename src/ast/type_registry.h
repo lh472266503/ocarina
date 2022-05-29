@@ -6,6 +6,7 @@
 
 #include "core/stl.h"
 #include "type.h"
+#include <mutex>
 #include "core/util.h"
 #include "core/string_util.h"
 
@@ -171,17 +172,18 @@ static constexpr bool is_valid_reflection_v = detail::is_valid_reflection<S, M, 
 
 class KTN_AST_API TypeRegistry {
 private:
-    //todo unique
-    katana::vector<katana::shared_ptr<Type>> _types;
+    katana::vector<katana::unique_ptr<Type>> _types;
+    katana::unordered_map<katana::string_view, const Type *> _name_to_type;
+    katana::unordered_map<uint64_t, const Type *> _hash_to_type;
+    mutable std::mutex _mutex;
     TypeRegistry() = default;
 
 public:
+    TypeRegistry &operator=(const TypeRegistry &) = delete;
+    TypeRegistry &operator=(TypeRegistry &&) = delete;
     [[nodiscard]] static TypeRegistry &instance() noexcept;
-
     [[nodiscard]] const Type *from(katana::string_view desc) noexcept;
-
-    [[nodiscard]] const Type *from(uint64_t hash) noexcept;
-
+    [[nodiscard]] const Type *type_at(uint i) const noexcept;
     [[nodiscard]] size_t type_count() const noexcept;
 };
 

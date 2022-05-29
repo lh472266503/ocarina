@@ -22,16 +22,24 @@ auto array_to_tuple(std::array<T, N> arr, std::index_sequence<i...>) {
     return ret;
 }
 
+const vector<const Type *> _members;
+
+katana::span<const Type *const> members() noexcept {
+    return katana::span(_members);
+}
+
+
 int main() {
     using namespace katana;
     std::array<float, 2> arr = {1, 2};
 
     std::tuple<float, float> tp = array_to_tuple(arr, std::make_index_sequence<2>());
+    cout << typeid(members()).name();
     //    std::tuple<float, float> tp = std::tuple<float, float>(1,5);
     //    cout << typeid(tp).name() << endl;
     //    cout << typeid(struct_member_tuple<std::array<float, 2>>::type).name();
 //    cout << detail::TypeDesc<decltype(tp)>::description() << endl;
-    cout << detail::TypeDesc<Hit>::description() << endl;
+//    cout << detail::TypeDesc<Hit>::description() << endl;
     //    cout << typeid(katana::tuple_join_t<tuple<int, float, int>, tuple<int, float, uint>, int>).name() << endl;
     //    cout << typeid(canonical_layout<float2x2>::type).name() << endl;
 }
