@@ -241,6 +241,8 @@ constexpr auto dimension_v = dimension<T>::value;
 
 class Type;
 
+class TypeRegistry;
+
 struct TypeVisitor {
     virtual void visit(const Type *) noexcept = 0;
 };
@@ -266,6 +268,7 @@ public:
 
         NONE
     };
+    friend class TypeRegistry;
 
 private:
     uint64_t _hash{0};

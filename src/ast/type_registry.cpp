@@ -6,13 +6,13 @@
 #include "core/hash.h"
 
 namespace katana {
-/*
- *
- */
+
 TypeRegistry &TypeRegistry::instance() noexcept {
     static TypeRegistry type_registry;
     return type_registry;
 }
+
+
 
 /*
  * TYPE: BASIC | ARRAY | VECTOR | MATRIX | STRUCT
@@ -22,16 +22,26 @@ TypeRegistry &TypeRegistry::instance() noexcept {
  * MATRIX: matrix<2> | matrix<3> | matrix<4>
  * STRUCT: struct<4,TYPE...> | struct<8,TYPE...> | struct<16,TYPE...>
  */
+const Type *TypeRegistry::parse_type(katana::string_view desc) noexcept {
+    using namespace std::string_view_literals;
+    auto find_identifier = [](katana::string_view desc) {
+        uint i = 0u;
+        for (; i < desc.size() && is_identifier(desc[i]); ++i) ;
+        return desc.substr(0, i);
+    };
+
+    katana::string_view identifier = find_identifier(desc);
+
+    return nullptr;
+}
+
 const Type *TypeRegistry::type_from(katana::string_view desc) noexcept {
     uint64_t hash = _hash(desc);
     if (auto iter = _type_set.find(hash); iter != _type_set.cend()) {
         return *iter;
     }
-
-    using namespace std::string_view_literals;
-
-
-    return nullptr;
+    const Type *type = parse_type(desc);
+    return type;
 }
 
 size_t TypeRegistry::type_count() const noexcept {

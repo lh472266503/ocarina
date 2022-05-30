@@ -8,4 +8,7 @@ set_target_properties(katana-dsl PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIG>/bin/"
         WINDOWS_EXPORT_ALL_SYMBOLS ON)
 target_compile_definitions(katana-dsl PRIVATE KTN_DSL_EXPORT_DLL=1)
-target_link_libraries(katana-dsl PUBLIC katana-ext)
+target_link_libraries(katana-dsl
+        PUBLIC
+        katana-ast
+        katana-ext)

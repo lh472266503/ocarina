@@ -107,6 +107,11 @@ struct TypeDesc<std::tuple<T...>> {
 
 };// namespace detail
 
+template<typename T>
+const Type *Type::of() noexcept {
+    return Type::from(detail::TypeDesc<T>::description());
+}
+
 /// make struct type description
 #define KTN_MAKE_STRUCT_MEMBER_FMT(member) ",{}"
 
@@ -199,6 +204,7 @@ public:
     TypeRegistry &operator=(const TypeRegistry &) = delete;
     TypeRegistry &operator=(TypeRegistry &&) = delete;
     [[nodiscard]] static TypeRegistry &instance() noexcept;
+    [[nodiscard]] const Type *parse_type(katana::string_view desc) noexcept;
     [[nodiscard]] bool is_exist(katana::string_view desc) const noexcept;
     [[nodiscard]] bool is_exist(uint64_t hash) const noexcept;
     [[nodiscard]] const Type *type_from(katana::string_view desc) noexcept;

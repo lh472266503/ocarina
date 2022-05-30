@@ -35,6 +35,10 @@ requires concepts::multiply_able<T>
     return n2 * n2 * Pow<n & 1>(v);
 }
 
+[[nodiscard]] bool is_identifier(char ch) noexcept {
+    return std::isalpha(ch) || ch == '_';
+}
+
 inline namespace size_literals {
 [[nodiscard]] constexpr auto operator""_kb(size_t bytes) noexcept {
     return static_cast<size_t>(bytes * 1024u);

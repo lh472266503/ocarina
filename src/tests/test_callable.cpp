@@ -26,7 +26,7 @@ int main() {
     };
 
     auto cb = [](int, int) -> float {return 0.f;};
-//    cout << typeid(decltype(callable)).name();
+    cout << typeid(decltype(callable)).name();
 
     return 0;
 }

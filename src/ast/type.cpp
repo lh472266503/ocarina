@@ -6,10 +6,7 @@
 #include "type_registry.h"
 
 namespace katana {
-template<typename T>
-const Type *Type::of() noexcept {
-    return Type::from(detail::TypeDesc<T>::decription());
-}
+
 
 size_t Type::count() noexcept {
     return TypeRegistry::instance().type_count();
