@@ -35,7 +35,7 @@ requires concepts::multiply_able<T>
     return n2 * n2 * Pow<n & 1>(v);
 }
 
-[[nodiscard]] bool is_identifier(char ch) noexcept {
+[[nodiscard]] inline bool is_identifier(char ch) noexcept {
     return std::isalpha(ch) || ch == '_';
 }
 
