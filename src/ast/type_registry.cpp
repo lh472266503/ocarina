@@ -5,6 +5,7 @@
 #include "type_registry.h"
 #include "core/hash.h"
 #include "core/util.h"
+#include "core/logging.h"
 
 namespace katana {
 
@@ -12,8 +13,6 @@ TypeRegistry &TypeRegistry::instance() noexcept {
     static TypeRegistry type_registry;
     return type_registry;
 }
-
-
 
 /*
  * TYPE: BASIC | ARRAY | VECTOR | MATRIX | STRUCT
@@ -25,14 +24,43 @@ TypeRegistry &TypeRegistry::instance() noexcept {
  */
 const Type *TypeRegistry::parse_type(katana::string_view desc) noexcept {
     using namespace std::string_view_literals;
-    auto find_identifier = [](katana::string_view desc) {
+    int cursor = 0;
+    auto find_identifier = [&cursor](katana::string_view desc) {
         uint i = 0u;
-        for (; i < desc.size() && is_identifier(desc[i]); ++i) ;
+        for (; i < desc.size() && is_identifier(desc[i]); ++i)
+            ;
+        cursor = i;
         return desc.substr(0, i);
     };
 
-    katana::string_view identifier = find_identifier(desc);
+    auto match = [&desc, &cursor](katana::string_view str) {
+        if (!desc.substr(cursor).starts_with(str)) [[unlikely]] {
+            KTN_ERROR("type error: expect '{}' from {}", str, desc);
+        }
+        cursor += static_cast<int>(str.size());
+    };
 
+    katana::string_view identifier = find_identifier(desc);
+    auto type = katana::make_unique<Type>();
+#define KTN_PARSE_BASIC_TYPE(T, TAG)   \
+    if (identifier == #T##sv) {        \
+        type->_size = sizeof(T);       \
+        type->_alignment = alignof(T); \
+        type->_description = #T;       \
+        type->_tag = Type::Tag::TAG;   \
+    } else
+
+    KTN_PARSE_BASIC_TYPE(int, INT)
+    KTN_PARSE_BASIC_TYPE(uint, UINT)
+    KTN_PARSE_BASIC_TYPE(bool, BOOL)
+    KTN_PARSE_BASIC_TYPE(float, FLOAT)
+
+#undef KTN_PARSE_BASIC_TYPE
+
+    if (identifier == "vector"sv) {
+        type->_tag = Type::Tag::VECTOR;
+        match("<");
+    }
 
     return nullptr;
 }

@@ -10,7 +10,7 @@ using namespace katana;
 int main() {
 
     decltype(auto) tr = TypeRegistry::instance();
-    tr.parse_type(detail::TypeDesc<std::tuple<int, float>>::description());
+    tr.parse_type(detail::TypeDesc<float3>::description());
 
     return 0;
 }
