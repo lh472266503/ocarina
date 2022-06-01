@@ -174,5 +174,18 @@ template<typename FMT, typename... Args>
     return katana::string{buffer.data(), buffer.size()};
 }
 
+[[nodiscard]] inline auto string_split(katana::string_view str, char ch) {
+    katana::vector<katana::string_view> ret;
+    int prev_cursor = 0;
+    for (int i = 0; i < str.size(); ++i) {
+        if (str[i] == ch) {
+            ret.push_back(str.substr(prev_cursor, i - prev_cursor));
+            prev_cursor = i + 1;
+        }
+    }
+    ret.push_back(str.substr(prev_cursor, str.size() - prev_cursor));
+    return ret;
+}
+
 }
 }// namespace katana::core

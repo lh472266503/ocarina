@@ -35,5 +35,5 @@
 #define KTN_OFFSET_OF(type, member) offsetof(type, member)
 #endif
 
-#define KTN_ASSERT(args) assert(args)
+#define KTN_ASSERT(...) assert(__VA_ARGS__)
 

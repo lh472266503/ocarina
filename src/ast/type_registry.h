@@ -176,7 +176,7 @@ template<typename S, typename M, typename I>
 static constexpr bool is_valid_reflection_v = detail::is_valid_reflection<S, M, I>::value;
 
 class KTN_AST_API TypeRegistry {
-private:
+public:
     struct TypePtrHash {
         using is_transparent = void;
         [[nodiscard]] uint64_t operator()(const Type *type) const noexcept { return type->hash(); }
@@ -210,6 +210,7 @@ public:
     [[nodiscard]] const Type *type_from(katana::string_view desc) noexcept;
     [[nodiscard]] const Type *type_at(uint i) const noexcept;
     [[nodiscard]] size_t type_count() const noexcept;
+    void add_type(katana::unique_ptr<Type> type);
 };
 
 };// namespace katana
