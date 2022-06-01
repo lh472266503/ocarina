@@ -199,9 +199,10 @@ public:
 
 private:
     [[nodiscard]] static uint64_t _hash(katana::string_view desc) noexcept;
-    void parse_vector(Type *type, katana::string_view desc) noexcept;
-    void parse_matrix(Type *type,katana::string_view desc) noexcept;
-    void parse_array(Type *type,katana::string_view desc) noexcept;
+    void parse_vector(Type *type, katana::string_view &desc) noexcept;
+    void parse_matrix(Type *type, katana::string_view &desc) noexcept;
+    void parse_array(Type *type, katana::string_view &desc) noexcept;
+    void parse_struct(Type *type, katana::string_view &desc) noexcept;
 
 public:
     TypeRegistry &operator=(const TypeRegistry &) = delete;

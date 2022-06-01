@@ -49,7 +49,7 @@ const Type *TypeRegistry::parse_type(katana::string_view desc) noexcept {
         return *iter;
     }
 
-    using namespace std::string_view_literals;
+    KTN_USING_SV
     auto find_identifier = [&desc]() -> katana::string_view {
         uint i = 0u;
         for (; i < desc.size() && is_identifier(desc[i]); ++i)
@@ -80,13 +80,21 @@ const Type *TypeRegistry::parse_type(katana::string_view desc) noexcept {
 
     if (identifier == "vector"sv) {
         parse_vector(type.get(), desc);
+    } else if (identifier == "matrix"sv) {
+        parse_matrix(type.get(), desc);
+    } else if (identifier == "array"sv) {
+        parse_array(type.get(), desc);
+    } else if (identifier == "struct"sv) {
+        parse_struct(type.get(), desc);
+    } else [[unlikely]] {
+        KTN_ERROR("invalid data type {}", desc);
     }
     const Type *ret = type.get();
     add_type(std::move(type));
     return ret;
 }
 
-void TypeRegistry::parse_vector(Type *type, katana::string_view desc) noexcept {
+void TypeRegistry::parse_vector(Type *type, katana::string_view &desc) noexcept {
     type->_tag = Type::Tag::VECTOR;
     auto [start, end] = bracket_matching(desc, '<', '>');
     auto content = desc.substr(start + 1, end - start - 1);
@@ -105,11 +113,31 @@ void TypeRegistry::parse_vector(Type *type, katana::string_view desc) noexcept {
     type->_alignment = type->size();
 }
 
-void TypeRegistry::parse_matrix(Type *type, katana::string_view desc) noexcept {
+void TypeRegistry::parse_matrix(Type *type, katana::string_view &desc) noexcept {
+    type->_tag = Type::Tag::MATRIX;
+    auto [start, end] = bracket_matching(desc, '<', '>');
+    auto dimension_str = desc.substr(start + 1, end - start - 1);
+    auto dimension = std::stoi(string(dimension_str));
+    type->_dimension = dimension;
+    type->_members.push_back(parse_type(katana::format("vector<float,{}>", dimension)));
 
+#define KTN_SIZE_ALIGN(dim)                      \
+    if (dimension == dim) {                      \
+        type->_size = sizeof(Matrix<dim>);       \
+        type->_alignment = alignof(Matrix<dim>); \
+    } else
+    KTN_SIZE_ALIGN(2)
+    KTN_SIZE_ALIGN(3)
+    KTN_SIZE_ALIGN(4) {
+        KTN_ERROR("invalid matrix dimension {}!", dimension)
+    }
+#undef KTN_SIZE_ALIGN
 }
 
-void TypeRegistry::parse_array(Type *type, katana::string_view desc) noexcept {
+void TypeRegistry::parse_struct(Type *type, string_view &desc) noexcept {
+}
+
+void TypeRegistry::parse_array(Type *type, katana::string_view &desc) noexcept {
 }
 
 void TypeRegistry::add_type(katana::unique_ptr<Type> type) {

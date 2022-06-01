@@ -17,13 +17,12 @@ int main() {
     using namespace std::string_view_literals;
     auto str = "123456789"sv;
 
-    func(str);
-    cout << alignof(bool3);
-
     decltype(auto) tr = TypeRegistry::instance();
-    tr.parse_type(detail::TypeDesc<float3>::description());
+    //    tr.parse_type(detail::TypeDesc<float3>::description());
     auto lst = string_split(",adf,fad,gre,ger,", ',');
-    tr.parse_type(detail::TypeDesc<int3>::description());
+    //    tr.parse_type(detail::TypeDesc<bool3>::description());
+    using Test = std::tuple<float, int, uint>;
+    tr.parse_type(detail::TypeDesc<Test>::description());
     for (auto iter = tr._type_set.begin(); iter != tr._type_set.end(); ++iter) {
         cout << (*iter)->description() << endl;
     }
