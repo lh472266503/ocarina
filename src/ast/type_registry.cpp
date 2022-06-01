@@ -79,19 +79,37 @@ const Type *TypeRegistry::parse_type(katana::string_view desc) noexcept {
 #undef KTN_PARSE_BASIC_TYPE
 
     if (identifier == "vector"sv) {
-        type->_tag = Type::Tag::VECTOR;
-        auto [start, end] = bracket_matching(desc, '<', '>');
-        auto content = desc.substr(start + 1, end - start - 1);
-        auto lst = string_split(content, ',');
-        KTN_ASSERT(lst.size() == 2);
-        auto type_str = lst[0];
-        auto dimension_str = lst[1];
-        type->_dimension = std::stoi(string(dimension_str));
-        type->_members.push_back(parse_type(string_view(type_str)));
+        parse_vector(type.get(), desc);
     }
     const Type *ret = type.get();
     add_type(std::move(type));
     return ret;
+}
+
+void TypeRegistry::parse_vector(Type *type, katana::string_view desc) noexcept {
+    type->_tag = Type::Tag::VECTOR;
+    auto [start, end] = bracket_matching(desc, '<', '>');
+    auto content = desc.substr(start + 1, end - start - 1);
+    auto lst = string_split(content, ',');
+    KTN_ASSERT(lst.size() == 2);
+    auto type_str = lst[0];
+    auto dimension_str = lst[1];
+    auto dimension = std::stoi(string(dimension_str));
+    type->_dimension = dimension;
+    type->_members.push_back(parse_type(string_view(type_str)));
+    auto member = type->_members[0];
+    if (!member->is_scalar()) [[unlikely]] {
+        KTN_ERROR("invalid vector element: {}!", member->description());
+    }
+    type->_size = member->size() * (dimension == 3 ? 4 : dimension);
+    type->_alignment = type->size();
+}
+
+void TypeRegistry::parse_matrix(Type *type, katana::string_view desc) noexcept {
+
+}
+
+void TypeRegistry::parse_array(Type *type, katana::string_view desc) noexcept {
 }
 
 void TypeRegistry::add_type(katana::unique_ptr<Type> type) {

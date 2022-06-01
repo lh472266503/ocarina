@@ -35,5 +35,7 @@
 #define KTN_OFFSET_OF(type, member) offsetof(type, member)
 #endif
 
+#define KTN_USING_SV using namespace std::string_view_literals;
+
 #define KTN_ASSERT(...) assert(__VA_ARGS__)
 

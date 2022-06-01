@@ -75,7 +75,7 @@ public:
     virtual ~Statement() noexcept = default;
     [[nodiscard]] uint64_t hash() const noexcept {
         if (!_hash_computed) {
-            using namespace std::string_view_literals;
+            KTN_USING_SV
             uint64_t h = _compute_hash();
             _hash = hash64(_tag, hash64(h, hash64("__hash_statement"sv)));
             _hash_computed = true;
