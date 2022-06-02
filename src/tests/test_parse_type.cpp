@@ -29,8 +29,8 @@ int main() {
     decltype(auto) tr = TypeRegistry::instance();
     //    tr.parse_type(detail::TypeDesc<float3>::description());
     auto lst = string_split(",adf,fad,gre,ger,", ',');
-    //    tr.parse_type(detail::TypeDesc<bool3>::description());
-//    using Test = katana::tuple<int,bool, bool, float3>;
+//        tr.parse_type(detail::TypeDesc<bool3>::description());
+//    using Test = katana::tuple<int,bool, bool>;
     using Test = float3x3;
     tr.parse_type(detail::TypeDesc<Test>::description());
 //    cout << detail::TypeDesc<Test>::description() << endl;

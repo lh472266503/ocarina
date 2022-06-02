@@ -15,8 +15,29 @@ TypeRegistry &TypeRegistry::instance() noexcept {
 }
 
 namespace detail {
-[[nodiscard]] bool is_identifier(char ch) noexcept {
+[[nodiscard]] bool is_letter(char ch) noexcept {
     return std::isalpha(ch) || ch == '_';
+}
+
+[[nodiscard]] bool is_letter_or_num(char ch) noexcept {
+    return std::isalnum(ch) || ch == '_';
+}
+
+[[nodiscard]] bool is_num(char ch) noexcept {
+    return ch >= '0' && ch <= '9';
+}
+
+[[nodiscard]] katana::string_view find_identifier(katana::string_view &str,
+                                                  bool check_start_with_num = false) {
+    uint i = 0u;
+    for (; i < str.size() && is_letter_or_num(str[i]); ++i)
+        ;
+    auto ret = str.substr(0, i);
+    if (is_num(ret[0]) && check_start_with_num) [[unlikely]] {
+        KTN_ERROR_FORMAT("invalid identifier {} !", ret)
+    }
+    str = str.substr(i);
+    return ret;
 }
 
 [[nodiscard]] std::pair<int, int> bracket_matching(katana::string_view str, char l, char r) {
@@ -42,24 +63,27 @@ namespace detail {
 
 [[nodiscard]] auto find_content(katana::string_view &str, char l = '<', char r = '>') {
     katana::vector<katana::string_view> ret;
+    KTN_USING_SV
     auto prev_token = str.find_first_of(l);
     constexpr auto token = ',';
-    for (int i = 0; i < str.size(); ++i) {
-        auto ch = str[i];
-        if (ch == token) {
+    str = str.substr(prev_token + 1);
+    while (true) {
+        auto content = find_identifier(str);
+        if (content.starts_with("vector") ||
+            content.starts_with("struct") ||
+            content.starts_with("matrix")) {
+            auto [start, end] = bracket_matching(str, l, r);
+        }
+        auto new_cursor = str.find_first_of(token) + 1;
+        str = str.substr(new_cursor);
+        ret.push_back(content);
+        if (str[0] == r) {
+            break;
         }
     }
     return ret;
 }
 
-[[nodiscard]] katana::string_view find_identifier(katana::string_view &desc) {
-    uint i = 0u;
-    for (; i < desc.size() && is_identifier(desc[i]); ++i)
-        ;
-    auto ret = desc.substr(0, i);
-    desc = desc.substr(i);
-    return ret;
-}
 }// namespace detail
 
 /*
@@ -81,7 +105,7 @@ const Type *TypeRegistry::parse_type(katana::string_view desc) noexcept {
     auto type = katana::make_unique<Type>();
     type->_description = desc;
     type->_hash = hash;
-    katana::string_view identifier = detail::find_identifier(desc);
+    katana::string_view identifier = detail::find_identifier(desc, true);
 #define KTN_PARSE_BASIC_TYPE(T, TAG)   \
     if (identifier == #T##sv) {        \
         type->_size = sizeof(T);       \
@@ -97,16 +121,16 @@ const Type *TypeRegistry::parse_type(katana::string_view desc) noexcept {
 
 #undef KTN_PARSE_BASIC_TYPE
 
-    if (identifier == "vector"sv) {
+    if (identifier.starts_with("vector")) {
         parse_vector(type.get(), desc);
-    } else if (identifier == "matrix"sv) {
+    } else if (identifier.starts_with("matrix")) {
         parse_matrix(type.get(), desc);
-    } else if (identifier == "array"sv) {
+    } else if (identifier.starts_with("array")) {
         parse_array(type.get(), desc);
-    } else if (identifier == "struct"sv) {
+    } else if (identifier.starts_with("struct")) {
         parse_struct(type.get(), desc);
     } else [[unlikely]] {
-        KTN_ERROR("invalid data type {}", desc);
+        KTN_ERROR("invalid data type ", desc);
     }
     const Type *ret = type.get();
     add_type(std::move(type));
@@ -157,6 +181,8 @@ void TypeRegistry::parse_matrix(Type *type, katana::string_view &desc) noexcept 
 void TypeRegistry::parse_struct(Type *type, string_view &desc) noexcept {
     type->_tag = Type::Tag::STRUCTURE;
     auto [start, end] = detail::bracket_matching(desc, '<', '>');
+//    auto type_lst = detail::find_content(desc);
+
     auto content = desc.substr(start + 1, end - start - 1);
     auto lst = string_split(content, ',');
     auto alignment_str = lst[0];
