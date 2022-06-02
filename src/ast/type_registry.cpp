@@ -14,6 +14,11 @@ TypeRegistry &TypeRegistry::instance() noexcept {
     return type_registry;
 }
 
+namespace detail {
+[[nodiscard]] bool is_identifier(char ch) noexcept {
+    return std::isalpha(ch) || ch == '_';
+}
+
 [[nodiscard]] std::pair<int, int> bracket_matching(katana::string_view str, char l, char r) {
     int start = 0;
     int end = 0;
@@ -35,6 +40,28 @@ TypeRegistry &TypeRegistry::instance() noexcept {
     return std::make_pair(start, end);
 }
 
+[[nodiscard]] auto find_content(katana::string_view &str, char l = '<', char r = '>') {
+    katana::vector<katana::string_view> ret;
+    auto prev_token = str.find_first_of(l);
+    constexpr auto token = ',';
+    for (int i = 0; i < str.size(); ++i) {
+        auto ch = str[i];
+        if (ch == token) {
+        }
+    }
+    return ret;
+}
+
+[[nodiscard]] katana::string_view find_identifier(katana::string_view &desc) {
+    uint i = 0u;
+    for (; i < desc.size() && is_identifier(desc[i]); ++i)
+        ;
+    auto ret = desc.substr(0, i);
+    desc = desc.substr(i);
+    return ret;
+}
+}// namespace detail
+
 /*
  * TYPE: BASIC | ARRAY | VECTOR | MATRIX | STRUCT
  * BASIC: int | uint | bool | float
@@ -50,19 +77,11 @@ const Type *TypeRegistry::parse_type(katana::string_view desc) noexcept {
     }
 
     KTN_USING_SV
-    auto find_identifier = [&desc]() -> katana::string_view {
-        uint i = 0u;
-        for (; i < desc.size() && is_identifier(desc[i]); ++i)
-            ;
-        auto ret = desc.substr(0, i);
-        desc = desc.substr(i);
-        return ret;
-    };
 
     auto type = katana::make_unique<Type>();
     type->_description = desc;
     type->_hash = hash;
-    katana::string_view identifier = find_identifier();
+    katana::string_view identifier = detail::find_identifier(desc);
 #define KTN_PARSE_BASIC_TYPE(T, TAG)   \
     if (identifier == #T##sv) {        \
         type->_size = sizeof(T);       \
@@ -96,7 +115,7 @@ const Type *TypeRegistry::parse_type(katana::string_view desc) noexcept {
 
 void TypeRegistry::parse_vector(Type *type, katana::string_view &desc) noexcept {
     type->_tag = Type::Tag::VECTOR;
-    auto [start, end] = bracket_matching(desc, '<', '>');
+    auto [start, end] = detail::bracket_matching(desc, '<', '>');
     auto content = desc.substr(start + 1, end - start - 1);
     auto lst = string_split(content, ',');
     KTN_ASSERT(lst.size() == 2);
@@ -104,7 +123,7 @@ void TypeRegistry::parse_vector(Type *type, katana::string_view &desc) noexcept 
     auto dimension_str = lst[1];
     auto dimension = std::stoi(string(dimension_str));
     type->_dimension = dimension;
-    type->_members.push_back(parse_type(string_view(type_str)));
+    type->_members.push_back(parse_type(type_str));
     auto member = type->_members[0];
     if (!member->is_scalar()) [[unlikely]] {
         KTN_ERROR("invalid vector element: {}!", member->description());
@@ -115,11 +134,12 @@ void TypeRegistry::parse_vector(Type *type, katana::string_view &desc) noexcept 
 
 void TypeRegistry::parse_matrix(Type *type, katana::string_view &desc) noexcept {
     type->_tag = Type::Tag::MATRIX;
-    auto [start, end] = bracket_matching(desc, '<', '>');
+    auto [start, end] = detail::bracket_matching(desc, '<', '>');
     auto dimension_str = desc.substr(start + 1, end - start - 1);
     auto dimension = std::stoi(string(dimension_str));
     type->_dimension = dimension;
-    type->_members.push_back(parse_type(katana::format("vector<float,{}>", dimension)));
+    auto tmp_desc = katana::format("vector<float,{}>", dimension);
+    type->_members.push_back(parse_type((tmp_desc)));
 
 #define KTN_SIZE_ALIGN(dim)                      \
     if (dimension == dim) {                      \
@@ -136,7 +156,7 @@ void TypeRegistry::parse_matrix(Type *type, katana::string_view &desc) noexcept 
 
 void TypeRegistry::parse_struct(Type *type, string_view &desc) noexcept {
     type->_tag = Type::Tag::STRUCTURE;
-    auto [start, end] = bracket_matching(desc, '<', '>');
+    auto [start, end] = detail::bracket_matching(desc, '<', '>');
     auto content = desc.substr(start + 1, end - start - 1);
     auto lst = string_split(content, ',');
     auto alignment_str = lst[0];
