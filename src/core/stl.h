@@ -20,6 +20,7 @@
 #include <string>
 #include <unordered_set>
 #include <string_view>
+#include <EASTL/tuple.h>
 
 namespace katana {
 

@@ -23,3 +23,6 @@ target_compile_definitions(fmt-header-only INTERFACE
         FMT_USE_NOEXCEPT=1)
 
 target_link_libraries(katana-ext PUBLIC fmt::fmt-header-only)
+
+add_subdirectory(EASTL)
+target_link_libraries(katana-ext PUBLIC EASTL)

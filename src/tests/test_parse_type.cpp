@@ -4,6 +4,7 @@
 
 #include "ast/type_registry.h"
 #include "core/stl.h"
+//#include "e"
 
 using namespace katana;
 using std::cout;
@@ -29,8 +30,8 @@ int main() {
     //    tr.parse_type(detail::TypeDesc<float3>::description());
     auto lst = string_split(",adf,fad,gre,ger,", ',');
     //    tr.parse_type(detail::TypeDesc<bool3>::description());
-//    using Test = std::tuple<int,bool, bool>;
-    using Test = aaaa;
+    using Test = eastl::tuple<bool, bool,int>;
+//    using Test = aaaa;
 //    tr.parse_type(detail::TypeDesc<Test>::description());
 //    cout << detail::TypeDesc<Test>::description() << endl;
 cout << sizeof (Test) << endl ;
