@@ -153,7 +153,7 @@ void TypeRegistry::parse_vector(Type *type, katana::string_view &desc) noexcept 
     auto dimension = std::stoi(string(dimension_str));
     type->_dimension = dimension;
     type->_members.push_back(parse_type(type_str));
-    auto member = type->_members[0];
+    auto member = type->_members.front();
     if (!member->is_scalar()) [[unlikely]] {
         KTN_ERROR("invalid vector element: {}!", member->description());
     }
@@ -185,7 +185,6 @@ void TypeRegistry::parse_matrix(Type *type, katana::string_view &desc) noexcept 
 
 void TypeRegistry::parse_struct(Type *type, string_view &desc) noexcept {
     type->_tag = Type::Tag::STRUCTURE;
-    auto [start, end] = detail::bracket_matching(desc, '<', '>');
     auto lst = detail::find_content(desc);
     auto alignment_str = lst[0];
     auto alignment = std::stoi(string(alignment_str));
@@ -202,6 +201,16 @@ void TypeRegistry::parse_struct(Type *type, string_view &desc) noexcept {
 }
 
 void TypeRegistry::parse_array(Type *type, katana::string_view &desc) noexcept {
+    type->_tag = Type::Tag::ARRAY;
+    auto lst = detail::find_content(desc);
+    auto type_str = lst[0];
+    auto len = std::stoi(string(lst[1]));
+    const Type *element_type = parse_type(type_str);
+    type->_members.push_back(element_type);
+    auto alignment = element_type->alignment();
+    auto size = element_type->size() * len;
+    type->_alignment = alignment;
+    type->_size = size;
 }
 
 void TypeRegistry::add_type(katana::unique_ptr<Type> type) {

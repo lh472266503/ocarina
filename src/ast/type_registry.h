@@ -92,6 +92,20 @@ struct TypeDesc<float4x4> {
     }
 };
 
+template<typename T, size_t N>
+struct TypeDesc<std::array<T, N>> {
+    static_assert(alignof(T) >= 4u);
+    static katana::string_view description() noexcept {
+        static thread_local auto s = katana::format(
+            FMT_STRING("array<{},{}>"),
+            TypeDesc<T>::description(), N);
+        return s;
+    }
+};
+
+template<typename T, size_t N>
+struct TypeDesc<T[N]> : public TypeDesc<std::array<T, N>> {};
+
 template<typename... T>
 struct TypeDesc<katana::tuple<T...>> {
     static katana::string_view description() noexcept {
