@@ -18,7 +18,7 @@ using namespace std;
 template<typename T, size_t N, size_t... i>
 auto array_to_tuple(std::array<T, N> arr, std::index_sequence<i...>) {
     //    ((cout << arr[i]),...);
-    auto ret = std::tuple<remove_cvref_t<decltype(arr[i])>...>(arr[i]...);
+    auto ret = katana::tuple<remove_cvref_t<decltype(arr[i])>...>(arr[i]...);
     return ret;
 }
 
@@ -32,8 +32,8 @@ katana::span<const Type *const> members() noexcept {
 int main() {
     using namespace katana;
     std::array<float, 2> arr = {1, 2};
-    std::tuple<float, float> tp = array_to_tuple(arr, std::make_index_sequence<2>());
-    //    std::tuple<float, float> tp = std::tuple<float, float>(1,5);
+    katana::tuple<float, float> tp = array_to_tuple(arr, std::make_index_sequence<2>());
+    //    katana::tuple<float, float> tp = katana::tuple<float, float>(1,5);
     //    cout << typeid(tp).name() << endl;
     //    cout << typeid(struct_member_tuple<std::array<float, 2>>::type).name();
     cout << detail::TypeDesc<decltype(tp)>::description() << endl;

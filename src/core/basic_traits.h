@@ -5,6 +5,7 @@
 #pragma once
 
 #include "core/header.h"
+#include "core/stl.h"
 
 namespace katana {
 

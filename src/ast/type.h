@@ -63,7 +63,7 @@ template<typename T>
 struct is_tuple : std::false_type {};
 
 template<typename... T>
-struct is_tuple<std::tuple<T...>> : std::true_type {};
+struct is_tuple<katana::tuple<T...>> : std::true_type {};
 
 template<typename T>
 constexpr auto is_tuple_v = is_tuple<T>::value;
@@ -72,7 +72,7 @@ template<typename T>
 struct is_struct : std::false_type {};
 
 template<typename... T>
-struct is_struct<std::tuple<T...>> : std::true_type {};
+struct is_struct<katana::tuple<T...>> : std::true_type {};
 
 template<typename T>
 constexpr auto is_struct_v = is_struct<T>::value;
@@ -84,7 +84,7 @@ using array_to_tuple_element_t = T;
 
 template<typename T, size_t N, size_t... i>
 [[nodiscard]] constexpr auto array_to_tuple_impl(std::array<T, N> array, std::index_sequence<i...>) noexcept {
-    return static_cast<std::tuple<array_to_tuple_element_t<T, i>...>>(std::tuple(array[i]...));
+    return static_cast<katana::tuple<array_to_tuple_element_t<T, i>...>>(katana::tuple(array[i]...));
 }
 
 template<typename T, size_t N>
@@ -96,12 +96,12 @@ template<typename T, size_t N>
 
 template<typename T>
 struct struct_member_tuple {
-    using type = std::tuple<T>;
+    using type = katana::tuple<T>;
 };
 
 template<typename... T>
-struct struct_member_tuple<std::tuple<T...>> {
-    using type = std::tuple<T...>;
+struct struct_member_tuple<katana::tuple<T...>> {
+    using type = katana::tuple<T...>;
 };
 
 template<typename T, size_t N>
@@ -134,7 +134,7 @@ struct struct_member_tuple<Matrix<N>> {
     template<>                                                                           \
     struct katana::struct_member_tuple<S> {                                              \
         using this_type = Hit;                                                           \
-        using type = std::tuple<MAP_LIST(KTN_MEMBER_TYPE_MAP, ##__VA_ARGS__)>;           \
+        using type = katana::tuple<MAP_LIST(KTN_MEMBER_TYPE_MAP, ##__VA_ARGS__)>;           \
         using offset = std::index_sequence<MAP_LIST(KTN_TYPE_OFFSET_OF, ##__VA_ARGS__)>; \
         static_assert(is_valid_reflection_v<this_type, type, offset>,                    \
                       "may be order of members is wrong!");                              \
@@ -150,32 +150,32 @@ struct canonical_layout {
 
 template<>
 struct canonical_layout<float> {
-    using type = std::tuple<float>;
+    using type = katana::tuple<float>;
 };
 
 template<>
 struct canonical_layout<bool> {
-    using type = std::tuple<bool>;
+    using type = katana::tuple<bool>;
 };
 
 template<>
 struct canonical_layout<int> {
-    using type = std::tuple<int>;
+    using type = katana::tuple<int>;
 };
 
 template<>
 struct canonical_layout<uint> {
-    using type = std::tuple<uint>;
+    using type = katana::tuple<uint>;
 };
 
 template<typename T>
-struct canonical_layout<std::tuple<T>> {
+struct canonical_layout<katana::tuple<T>> {
     using type = typename canonical_layout<T>::type;
 };
 
 template<typename... T>
-struct canonical_layout<std::tuple<T...>> {
-    using type = std::tuple<typename canonical_layout<T>::type...>;
+struct canonical_layout<katana::tuple<T...>> {
+    using type = katana::tuple<typename canonical_layout<T>::type...>;
 };
 
 template<typename T>
@@ -187,13 +187,13 @@ struct tuple_join {
 };
 
 template<typename... T, typename... U>
-struct tuple_join<std::tuple<T...>, U...> {
-    using type = std::tuple<T..., U...>;
+struct tuple_join<katana::tuple<T...>, U...> {
+    using type = katana::tuple<T..., U...>;
 };
 
 template<typename... A, typename... B, typename... C>
-struct tuple_join<std::tuple<A...>, std::tuple<B...>, C...> {
-    using type = typename tuple_join<std::tuple<A..., B...>, C...>::type;
+struct tuple_join<katana::tuple<A...>, katana::tuple<B...>, C...> {
+    using type = typename tuple_join<katana::tuple<A..., B...>, C...>::type;
 };
 
 template<typename... T>
@@ -227,7 +227,7 @@ struct dimension_impl<Matrix<N>> {
 };
 
 template<typename... T>
-struct dimension_impl<std::tuple<T...>> {
+struct dimension_impl<katana::tuple<T...>> {
     static constexpr auto value = sizeof...(T);
 };
 

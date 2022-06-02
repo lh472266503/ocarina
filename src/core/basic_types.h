@@ -126,7 +126,7 @@ using float2x2 = Matrix<2>;
 using float3x3 = Matrix<3>;
 using float4x4 = Matrix<4>;
 
-using basic_types = std::tuple<
+using basic_types = katana::tuple<
     bool, float, int, uint,
     bool2, float2, int2, uint2,
     bool3, float3, int3, uint3,

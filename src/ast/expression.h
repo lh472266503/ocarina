@@ -140,7 +140,7 @@ struct literal_value {
 };
 
 template<typename... T>
-struct literal_value<std::tuple<T...>> {
+struct literal_value<katana::tuple<T...>> {
     using type = katana::variant<T...>;
 };
 }// namespace detail

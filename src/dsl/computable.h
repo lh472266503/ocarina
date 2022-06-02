@@ -123,12 +123,12 @@ struct Computable<Matrix<N>>
 };
 
 template<typename... T>
-struct Computable<std::tuple<T...>> {
-    using Tuple = std::tuple<T...>;
-    KTN_COMPUTABLE_COMMON(std::tuple<T...>)
+struct Computable<katana::tuple<T...>> {
+    using Tuple = katana::tuple<T...>;
+    KTN_COMPUTABLE_COMMON(katana::tuple<T...>)
     template<size_t i>
     [[nodiscard]] auto get() const noexcept {
-        using Elm = std::tuple_element_t<i, Tuple>;
+        using Elm = katana::tuple_element_t<i, Tuple>;
         return Computable<Elm>(katana::FunctionBuilder::current(Type::of<Elm>(), expression(), i));
     }
 };

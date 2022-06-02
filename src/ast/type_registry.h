@@ -93,10 +93,10 @@ struct TypeDesc<float4x4> {
 };
 
 template<typename... T>
-struct TypeDesc<std::tuple<T...>> {
+struct TypeDesc<katana::tuple<T...>> {
     static katana::string_view description() noexcept {
         static thread_local katana::string str = []() -> katana::string {
-            auto ret = katana::format("struct<{}", alignof(std::tuple<T...>));
+            auto ret = katana::format("struct<{}", alignof(katana::tuple<T...>));
             (ret.append(",").append(TypeDesc<T>::description()), ...);
             ret.append(">");
             return ret;
@@ -136,7 +136,7 @@ template<typename S, typename Members, typename offsets>
 struct is_valid_reflection : std::false_type {};
 
 template<typename S, typename... M, typename I, I... os>
-struct is_valid_reflection<S, std::tuple<M...>, std::integer_sequence<I, os...>> {
+struct is_valid_reflection<S, katana::tuple<M...>, std::integer_sequence<I, os...>> {
     static_assert(((!is_struct_v<M>)&&...));
     static_assert((!is_bool_vector_v<M> && ...),
                   "Boolean vectors are not allowed in DSL "

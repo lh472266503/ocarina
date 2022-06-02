@@ -76,14 +76,14 @@ namespace detail {
 
 template<typename VarTuple, typename TagTuple, typename T, size_t... i>
 [[nodiscard]] auto create_argument_tuple_impl(T tuple, std::index_sequence<i...>) {
-    (std::tuple_element_t<i, VarTuple>{std::tuple_element_t<i, TagTuple>{}}, ...);
+    (katana::tuple_element_t<i, VarTuple>{katana::tuple_element_t<i, TagTuple>{}}, ...);
 }
 
 }// namespace detail
 
 template<typename VarTuple, typename TagTuple, typename T>
 [[nodiscard]] auto create_argument_tuple(T tuple) {
-    return detail::create_argument_tuple_impl<VarTuple, TagTuple>(tuple, std::make_index_sequence<std::tuple_size_v<VarTuple>>());
+    return detail::create_argument_tuple_impl<VarTuple, TagTuple>(tuple, std::make_index_sequence<katana::tuple_size_v<VarTuple>>());
 }
 
 template<typename Ret, typename... Args>
@@ -98,11 +98,11 @@ public:
     Callable(Func func) noexcept
         : _builder(FunctionBuilder::define_callable([&] {
               static_assert(std::is_invocable_v<Func, detail::prototype_to_var<Args>...>);
-              using arg_tuple = std::tuple<Args...>;
-              using var_tuple = std::tuple<Var<std::remove_cvref_t<Args>>...>;
-              using tag_tuple = std::tuple<detail::prototype_to_creation_tag_t<Args>...>;
+              using arg_tuple = katana::tuple<Args...>;
+              using var_tuple = katana::tuple<Var<std::remove_cvref_t<Args>>...>;
+              using tag_tuple = katana::tuple<detail::prototype_to_creation_tag_t<Args>...>;
 
-              create_argument_tuple<var_tuple, tag_tuple>(std::tuple());
+              create_argument_tuple<var_tuple, tag_tuple>(katana::tuple());
           })) {
     }
     //    template<typename Func>
