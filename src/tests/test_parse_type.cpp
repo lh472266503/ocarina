@@ -30,7 +30,7 @@ int main() {
     //    tr.parse_type(detail::TypeDesc<float3>::description());
     auto lst = string_split(",adf,fad,gre,ger,", ',');
     //    tr.parse_type(detail::TypeDesc<bool3>::description());
-    using Test = eastl::tuple<bool, bool,int>;
+    using Test = katana::tuple<int,bool, bool>;
 //    using Test = aaaa;
 //    tr.parse_type(detail::TypeDesc<Test>::description());
 //    cout << detail::TypeDesc<Test>::description() << endl;

@@ -57,11 +57,11 @@ using std::unordered_set;
 
 
 // tuple
-using std::tuple;
-using std::tuple_size;
-using std::tuple_size_v;
-using std::tuple_element;
-using std::tuple_element_t;
+using eastl::tuple;
+using eastl::tuple_size;
+using eastl::tuple_size_v;
+using eastl::tuple_element;
+using eastl::tuple_element_t;
 
 // other
 using std::monostate;
