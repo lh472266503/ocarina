@@ -110,9 +110,8 @@ const Type *TypeRegistry::parse_type(katana::string_view desc) noexcept {
     auto type = katana::make_unique<Type>();
     type->_description = desc;
     type->_hash = hash;
-    katana::string_view identifier = detail::find_identifier(desc, true);
 #define KTN_PARSE_BASIC_TYPE(T, TAG)   \
-    if (identifier == #T##sv) {        \
+    if (desc == #T##sv) {              \
         type->_size = sizeof(T);       \
         type->_alignment = alignof(T); \
         type->_description = #T;       \
@@ -126,14 +125,14 @@ const Type *TypeRegistry::parse_type(katana::string_view desc) noexcept {
 
 #undef KTN_PARSE_BASIC_TYPE
 
-    if (identifier.starts_with("vector")) {
-        parse_vector(type.get(), identifier);
-    } else if (identifier.starts_with("matrix")) {
-        parse_matrix(type.get(), identifier);
-    } else if (identifier.starts_with("array")) {
-        parse_array(type.get(), identifier);
-    } else if (identifier.starts_with("struct")) {
-        parse_struct(type.get(), identifier);
+    if (desc.starts_with("vector")) {
+        parse_vector(type.get(), desc);
+    } else if (desc.starts_with("matrix")) {
+        parse_matrix(type.get(), desc);
+    } else if (desc.starts_with("array")) {
+        parse_array(type.get(), desc);
+    } else if (desc.starts_with("struct")) {
+        parse_struct(type.get(), desc);
     } else [[unlikely]] {
         KTN_ERROR("invalid data type ", desc);
     }
