@@ -21,7 +21,7 @@ class ttt {
 
 int main() {
 
-    Callable callable = [&](Var<int> a, Var<int &> b)->Var<int> {
+    Callable callable = [&](Var<int> a, Var<int> b)->Var<int> {
         return a + b;
     };
 
