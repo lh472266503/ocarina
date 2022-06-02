@@ -147,8 +147,8 @@ void TypeRegistry::parse_struct(Type *type, string_view &desc) noexcept {
         auto type_str = lst[i];
         type->_members.push_back(parse_type(type_str));
         auto member = type->_members[i - 1];
-        uint ofs = mem_offset(size, member->alignment());
-        size += ofs;
+        size = mem_offset(size, member->alignment());
+        size += member->size();
     }
     type->_size = mem_offset(size, type->alignment());
 }

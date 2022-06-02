@@ -31,13 +31,10 @@ int main() {
     auto lst = string_split(",adf,fad,gre,ger,", ',');
     //    tr.parse_type(detail::TypeDesc<bool3>::description());
     using Test = katana::tuple<int,bool, bool>;
-//    using Test = aaaa;
-//    tr.parse_type(detail::TypeDesc<Test>::description());
+    tr.parse_type(detail::TypeDesc<Test>::description());
 //    cout << detail::TypeDesc<Test>::description() << endl;
-cout << sizeof (Test) << endl ;
-cout << alignof(Test) << endl;
-//    for (auto iter = tr._type_set.begin(); iter != tr._type_set.end(); ++iter) {
-//        cout << (*iter)->description() << endl;
-//    }
+    for (auto iter = tr._type_set.begin(); iter != tr._type_set.end(); ++iter) {
+        cout << (*iter)->description() << endl;
+    }
     return 0;
 }
