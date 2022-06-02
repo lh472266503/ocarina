@@ -141,7 +141,7 @@ const Type *TypeRegistry::parse_type(katana::string_view desc) noexcept {
     return ret;
 }
 
-void TypeRegistry::parse_vector(Type *type, katana::string_view &desc) noexcept {
+void TypeRegistry::parse_vector(Type *type, katana::string_view desc) noexcept {
     type->_tag = Type::Tag::VECTOR;
     auto [start, end] = detail::bracket_matching(desc, '<', '>');
     auto content = desc.substr(start + 1, end - start - 1);
@@ -160,7 +160,7 @@ void TypeRegistry::parse_vector(Type *type, katana::string_view &desc) noexcept 
     type->_alignment = type->size();
 }
 
-void TypeRegistry::parse_matrix(Type *type, katana::string_view &desc) noexcept {
+void TypeRegistry::parse_matrix(Type *type, katana::string_view desc) noexcept {
     type->_tag = Type::Tag::MATRIX;
     auto [start, end] = detail::bracket_matching(desc, '<', '>');
     auto dimension_str = desc.substr(start + 1, end - start - 1);
@@ -182,7 +182,7 @@ void TypeRegistry::parse_matrix(Type *type, katana::string_view &desc) noexcept 
 #undef KTN_SIZE_ALIGN
 }
 
-void TypeRegistry::parse_struct(Type *type, string_view &desc) noexcept {
+void TypeRegistry::parse_struct(Type *type, string_view desc) noexcept {
     type->_tag = Type::Tag::STRUCTURE;
     auto lst = detail::find_content(desc);
     auto alignment_str = lst[0];
@@ -199,7 +199,7 @@ void TypeRegistry::parse_struct(Type *type, string_view &desc) noexcept {
     type->_size = mem_offset(size, type->alignment());
 }
 
-void TypeRegistry::parse_array(Type *type, katana::string_view &desc) noexcept {
+void TypeRegistry::parse_array(Type *type, katana::string_view desc) noexcept {
     type->_tag = Type::Tag::ARRAY;
     auto lst = detail::find_content(desc);
     auto type_str = lst[0];
@@ -209,6 +209,7 @@ void TypeRegistry::parse_array(Type *type, katana::string_view &desc) noexcept {
     auto alignment = element_type->alignment();
     auto size = element_type->size() * len;
     type->_alignment = alignment;
+    type->_dimension = len;
     type->_size = size;
 }
 
