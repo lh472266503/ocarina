@@ -135,6 +135,22 @@ void TypeRegistry::parse_matrix(Type *type, katana::string_view &desc) noexcept 
 }
 
 void TypeRegistry::parse_struct(Type *type, string_view &desc) noexcept {
+    type->_tag = Type::Tag::STRUCTURE;
+    auto [start, end] = bracket_matching(desc, '<', '>');
+    auto content = desc.substr(start + 1, end - start - 1);
+    auto lst = string_split(content, ',');
+    auto alignment_str = lst[0];
+    auto alignment = std::stoi(string(alignment_str));
+    type->_alignment = alignment;
+    auto size = 0u;
+    for (int i = 1; i < lst.size(); ++i) {
+        auto type_str = lst[i];
+        type->_members.push_back(parse_type(type_str));
+        auto member = type->_members[i - 1];
+        uint ofs = mem_offset(size, member->alignment());
+        size += ofs;
+    }
+    type->_size = mem_offset(size, type->alignment());
 }
 
 void TypeRegistry::parse_array(Type *type, katana::string_view &desc) noexcept {
