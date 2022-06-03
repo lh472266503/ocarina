@@ -96,7 +96,7 @@ template<typename T, size_t N>
 
 template<typename T>
 struct struct_member_tuple {
-    using type = katana::tuple<T>;
+    using type = T;
 };
 
 template<typename... T>
@@ -134,7 +134,7 @@ struct struct_member_tuple<Matrix<N>> {
     template<>                                                                           \
     struct katana::struct_member_tuple<S> {                                              \
         using this_type = Hit;                                                           \
-        using type = katana::tuple<MAP_LIST(KTN_MEMBER_TYPE_MAP, ##__VA_ARGS__)>;           \
+        using type = katana::tuple<MAP_LIST(KTN_MEMBER_TYPE_MAP, ##__VA_ARGS__)>;        \
         using offset = std::index_sequence<MAP_LIST(KTN_TYPE_OFFSET_OF, ##__VA_ARGS__)>; \
         static_assert(is_valid_reflection_v<this_type, type, offset>,                    \
                       "may be order of members is wrong!");                              \
@@ -146,26 +146,6 @@ using struct_member_tuple_t = typename struct_member_tuple<T>::type;
 template<typename T>
 struct canonical_layout {
     using type = struct_member_tuple_t<T>;
-};
-
-template<>
-struct canonical_layout<float> {
-    using type = katana::tuple<float>;
-};
-
-template<>
-struct canonical_layout<bool> {
-    using type = katana::tuple<bool>;
-};
-
-template<>
-struct canonical_layout<int> {
-    using type = katana::tuple<int>;
-};
-
-template<>
-struct canonical_layout<uint> {
-    using type = katana::tuple<uint>;
 };
 
 template<typename T>
@@ -180,6 +160,25 @@ struct canonical_layout<katana::tuple<T...>> {
 
 template<typename T>
 using canonical_layout_t = typename canonical_layout<T>::type;
+
+namespace detail {
+
+template<typename ...T>
+struct linear_layout_impl {
+    using type = katana::tuple<T...>;
+};
+
+template<typename ...T>
+struct linear_layout_impl<katana::tuple<T...>> {
+    using type = katana::tuple<T...>;
+};
+
+//template<typename ...A, typename ...B>
+//struct linear_layout_impl<katana::tuple<A...>> {
+//
+//}
+
+};// namespace detail
 
 template<typename... T>
 struct tuple_join {

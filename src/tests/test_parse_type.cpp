@@ -34,9 +34,11 @@ int main() {
     using Test2 = std::array<Test, 5>;
     tr.parse_type(detail::TypeDesc<Test2>::description());
 //        cout << detail::TypeDesc<Test2>::description() << endl;
-    for (auto iter = tr._type_set.begin(); iter != tr._type_set.end(); ++iter) {
-        cout << (*iter)->description() << endl;
-    }
+//    for (auto iter = tr._type_set.begin(); iter != tr._type_set.end(); ++iter) {
+//        cout << (*iter)->description() << endl;
+//    }
+//    cout << typeid(canonical_layout_t<tuple<float>>).name() << endl;
+    cout << typeid(detail::linear_layout_impl<tuple<int, float>>::type).name();
 
     return 0;
 }
