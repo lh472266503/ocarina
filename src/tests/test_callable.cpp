@@ -19,11 +19,13 @@ class ttt {
 ~ttt() {}
 };
 
+Var<int> func(Var<int> a, Var<int> b) {
+    return a + b;
+}
+
 int main() {
 
-    Callable callable = [&](Var<int> a, Var<int> b)->Var<int> {
-        return a + b;
-    };
+    Callable callable = func;
 
     auto cb = [](int, int) -> float {return 0.f;};
     cout << typeid(decltype(callable)).name();

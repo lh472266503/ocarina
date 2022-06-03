@@ -50,5 +50,8 @@ const RefExpr *FunctionBuilder::argument(const Type *type) noexcept {
     _arguments.push_back(variable);
     return _ref(variable);
 }
+const BinaryExpr *FunctionBuilder::binary(const Type *type, const Expression *lhs, const Expression *rhs, BinaryOp op) noexcept {
+    return _create_expression<BinaryExpr>(type,op, lhs, rhs);
+}
 
 }// namespace katana

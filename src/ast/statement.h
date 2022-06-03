@@ -126,7 +126,7 @@ public:
 
 class KTN_AST_API ReturnStmt : public Statement {
 private:
-    const Expression *_expression;
+    const Expression *_expression{nullptr};
 
 private:
     uint64_t _compute_hash() const noexcept override {
@@ -134,7 +134,8 @@ private:
     }
 
 public:
-    ReturnStmt() noexcept : Statement(Tag::RETURN) {}
+    ReturnStmt() noexcept
+        : Statement(Tag::RETURN) {}
     KTN_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 

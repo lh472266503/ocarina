@@ -110,6 +110,11 @@ public:
         _lhs->mark(Usage::READ);
         _rhs->mark(Usage::READ);
     }
+    [[nodiscard]] uint64_t _compute_hash() const noexcept override {
+        return 0;
+    }
+    void _mark(Usage usage) const noexcept override {
+    }
     [[nodiscard]] auto lhs() const noexcept { return _lhs; }
     [[nodiscard]] auto rhs() const noexcept { return _rhs; }
     [[nodiscard]] auto op() const noexcept { return _op; }
