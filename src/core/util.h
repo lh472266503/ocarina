@@ -16,13 +16,13 @@ requires is_integral_v<T> && is_integral_v<U>
 }
 
 template<typename T>
-requires concepts::multiply_able<T>
+requires concepts::multiply_able<T, T>
 [[nodiscard]] constexpr auto sqr(T v) {
     return v * v;
 }
 
 template<int n, typename T>
-requires concepts::multiply_able<T>
+requires concepts::multiply_able<T, T>
 [[nodiscard]] constexpr T Pow(T v) {
     if constexpr (n < 0) {
         return 1.f / Pow<-n>(v);

@@ -134,29 +134,57 @@ concept same = is_same_v<T...>;
 template<typename A, typename B>
 concept different = !same<A, B>;
 
-template<typename A, typename B>
-concept plus_able = requires(A a, B b) {
-    a + b;
-};
+#define KTN_UNARY_OP_CONCEPT(op_name, op) \
+    template<typename T>                  \
+    concept op_name = requires(T t) {     \
+        op t;                             \
+    };
+KTN_UNARY_OP_CONCEPT(positive_able, +)
+KTN_UNARY_OP_CONCEPT(negative_able, -)
+KTN_UNARY_OP_CONCEPT(not_able, !)
+KTN_UNARY_OP_CONCEPT(bit_not_able, ~)
+#undef KTN_UNARY_OP_CONCEPT
 
-template<typename A, typename B>
-concept subtract_able = requires(A a, B b) {
-    a - b;
-};
+#define KTN_BINARY_OP_CONCEPT(op_name, op) \
+    template<typename A, typename B>       \
+    concept op_name = requires(A a, B b) { \
+        a op b;                            \
+    };
 
-template<typename A, typename B = A>
-concept multiply_able = requires(A a, B b) {
-    a *b;
-};
+KTN_BINARY_OP_CONCEPT(plus_able, +)
+KTN_BINARY_OP_CONCEPT(minus_able, -)
+KTN_BINARY_OP_CONCEPT(multiply_able, *)
+KTN_BINARY_OP_CONCEPT(divide_able, /)
+KTN_BINARY_OP_CONCEPT(mod_able, %)
+KTN_BINARY_OP_CONCEPT(bit_and_able, &)
+KTN_BINARY_OP_CONCEPT(bit_or_able, |)
+KTN_BINARY_OP_CONCEPT(bit_xor_able, ^)
+KTN_BINARY_OP_CONCEPT(shift_left_able, <<)
+KTN_BINARY_OP_CONCEPT(shift_right_able, >>)
+KTN_BINARY_OP_CONCEPT(and_able, &&)
+KTN_BINARY_OP_CONCEPT(or_able, ||)
+KTN_BINARY_OP_CONCEPT(equal_able, ==)
+KTN_BINARY_OP_CONCEPT(ne_able, !=)
+KTN_BINARY_OP_CONCEPT(lt_able, <)
+KTN_BINARY_OP_CONCEPT(gt_able, >)
+KTN_BINARY_OP_CONCEPT(ge_able, >=)
+KTN_BINARY_OP_CONCEPT(le_able, <=)
 
-template<typename A, typename B = A>
-concept divide_able = requires(A a, B b) {
-    a / b;
-};
+KTN_BINARY_OP_CONCEPT(assign_able, =)
+KTN_BINARY_OP_CONCEPT(plus_assign_able, +=)
+KTN_BINARY_OP_CONCEPT(minus_assign_able, -=)
+KTN_BINARY_OP_CONCEPT(mult_assign_able, *=)
+KTN_BINARY_OP_CONCEPT(div_assign_able, /=)
+KTN_BINARY_OP_CONCEPT(mod_assign_able, %=)
+KTN_BINARY_OP_CONCEPT(bit_and_assign_able, &=)
+KTN_BINARY_OP_CONCEPT(bit_or_assign_able, |=)
+KTN_BINARY_OP_CONCEPT(bit_xor_assign_able, ^=)
+KTN_BINARY_OP_CONCEPT(shift_left_assign_able, <<=)
+KTN_BINARY_OP_CONCEPT(shift_right_assign_able, >>=)
 
-template<typename A, typename B = A>
-concept mod_able = requires(A a, B b) {
-    a % b;
-};
+#undef KTN_BINARY_OP_CONCEPT
+
+template<typename Lhs, typename Rhs>
+concept access_able = requires(Lhs lhs, Rhs rhs) { lhs[rhs]; };
 
 }// namespace katana::concepts

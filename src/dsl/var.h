@@ -27,7 +27,7 @@ struct Var : public detail::Computable<T> {
     requires concepts::non_pointer<std::remove_cvref_t<Arg>> &&
         concepts::different<Var<T>, std::remove_cvref_t<Arg>>
         Var(Arg &&arg) : Var() {
-        //        assign(*this, std::forward<Arg>(arg));
+        assign(*this, std::forward<Arg>(arg));
     }
 
     explicit Var(detail::ArgumentCreation) noexcept
