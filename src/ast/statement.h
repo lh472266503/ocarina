@@ -16,9 +16,9 @@ class ScopeStmt;
 class BreakStmt;
 class ContinueStmt;
 class ReturnStmt;
+class ExprStmt;
 class IfStmt;
 class LoopStmt;
-class ExprStmt;
 class SwitchStmt;
 class SwitchCaseStmt;
 class SwitchDefaultStmt;
@@ -104,7 +104,7 @@ public:
 
 class KTN_AST_API BreakStmt : public Statement {
 private:
-    uint64_t _compute_hash() const noexcept override {
+    [[nodiscard]] uint64_t _compute_hash() const noexcept override {
         return Hash64::default_seed;
     }
 
@@ -115,7 +115,7 @@ public:
 
 class KTN_AST_API ContinueStmt : public Statement {
 private:
-    uint64_t _compute_hash() const noexcept override {
+    [[nodiscard]] uint64_t _compute_hash() const noexcept override {
         return Hash64::default_seed;
     }
 
@@ -129,13 +129,29 @@ private:
     const Expression *_expression{nullptr};
 
 private:
-    uint64_t _compute_hash() const noexcept override {
+    [[nodiscard]] uint64_t _compute_hash() const noexcept override {
         return hash64(_expression == nullptr ? 0ull : _expression->hash());
     }
 
 public:
-    ReturnStmt() noexcept
-        : Statement(Tag::RETURN) {}
+    explicit ReturnStmt(const Expression *expr = nullptr) noexcept
+        : Statement(Tag::RETURN), _expression(expr) {}
+    KTN_MAKE_STATEMENT_ACCEPT_VISITOR
+};
+
+class ExprStmt : public Statement {
+private:
+    const Expression *_expression{nullptr};
+
+private:
+    [[nodiscard]] uint64_t _compute_hash() const noexcept override {
+        return hash64(_expression == nullptr ? 0ull : _expression->hash());
+    }
+
+public:
+    explicit ExprStmt(const Expression *expr = nullptr) noexcept
+        : Statement(Tag::EXPR), _expression(expr) {}
+    const Expression *expression() const { return _expression; }
     KTN_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 

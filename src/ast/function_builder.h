@@ -34,10 +34,19 @@ private:
 
 protected:
     [[nodiscard]] static katana::vector<FunctionBuilder *> &_function_stack() noexcept;
-    void _add_statement(const Statement *statement) noexcept;
     [[nodiscard]] const RefExpr *_builtin(Variable::Tag tag) noexcept;
     void _void_expr(const Expression *expr) noexcept;
     [[nodiscard]] uint _next_variable_uid() noexcept;
+    [[nodiscard]] const RefExpr *_ref(Variable variable) noexcept;
+
+    template<typename Stmt, typename... Args>
+    [[nodiscard]] const Stmt *_create_statement(Args &&...args) noexcept {
+        auto statement = katana::make_unique<Stmt>(std::forward<Args>(args)...);
+        auto ret = statement.get();
+        _all_statements.push_back(std::move(statement));
+        return ret;
+    }
+
     template<typename Expr, typename... Args>
     [[nodiscard]] const Expr *_create_expression(Args &&...args) noexcept {
         auto expression = katana::make_unique<Expr>(std::forward<Args>(args)...);
@@ -45,7 +54,6 @@ protected:
         _all_expressions.push_back(std::move(expression));
         return ret;
     }
-    [[nodiscard]] const RefExpr *_ref(Variable variable) noexcept;
 
 private:
     template<typename Func>
@@ -58,6 +66,16 @@ private:
     }
 
 public:
+    template<typename Func>
+    static auto define_callable(Func &&func) noexcept {
+        return _define(Tag::CALLABLE, std::forward<Func>(func));
+    }
+
+    template<typename Func>
+    static auto define_kernel(Func &&func) noexcept {
+        return _define(Tag::KERNEL, std::forward<Func>(func));
+    }
+
     explicit FunctionBuilder(Tag tag = Tag::CALLABLE) : _tag(tag) {}
     FunctionBuilder(FunctionBuilder &&) noexcept = delete;
     FunctionBuilder(const FunctionBuilder &) noexcept = delete;
@@ -69,14 +87,6 @@ public:
     [[nodiscard]] static FunctionBuilder *current() noexcept;
     static void push(FunctionBuilder *builder) noexcept;
     static void pop(FunctionBuilder *builder) noexcept;
-    template<typename Func>
-    static auto define_callable(Func &&func) noexcept {
-        return _define(Tag::CALLABLE, std::forward<Func>(func));
-    }
-    template<typename Func>
-    static auto define_kernel(Func &&func) noexcept {
-        return _define(Tag::KERNEL, std::forward<Func>(func));
-    }
     void mark_variable_usage(uint uid, Usage usage) noexcept;
     [[nodiscard]] const CastExpr *cast(const Type *type, CastOp cast_op, const Expression *expression) noexcept;
     [[nodiscard]] const UnaryExpr *unary(const Type *type, UnaryOp op, const Expression *expression) noexcept;
@@ -86,7 +96,7 @@ public:
     [[nodiscard]] const LiteralExpr *literal(const Type *type, LiteralExpr *literal_expr) noexcept;
     [[nodiscard]] const AccessExpr *access(const Type *type, const Expression *range, const Expression *index) noexcept;
     [[nodiscard]] const MemberExpr *member(const Type *type, const Expression *obj, size_t index) noexcept;
-    [[nodiscard]] const RefExpr *local(const Type *) noexcept;
+    [[nodiscard]] const RefExpr *local(const Type *type) noexcept;
     void break_() noexcept;
     void continue_() noexcept;
     void return_(const Expression *expression = nullptr) noexcept;
