@@ -92,7 +92,27 @@ template<typename T, size_t N>
     return array_to_tuple_impl(array, std::make_index_sequence<N>());
 }
 
+};// namespace detail
+
+namespace detail {
+template<typename T>
+struct to_tuple {
+    using type = T;
+};
+
+template<typename T, size_t N>
+struct to_tuple<katana::array<T, N>> {
+    using type = decltype(detail::array_to_tuple_impl<typename to_tuple<T>::type , N>());
+};
+
+template<typename... T>
+struct to_tuple<katana::tuple<T...>> {
+    using type = katana::tuple<T ...>;
+};
 }// namespace detail
+
+template<typename T>
+using to_tuple_t = typename detail::to_tuple<T>::type;
 
 template<typename T>
 struct struct_member_tuple {
@@ -107,7 +127,7 @@ struct struct_member_tuple<katana::tuple<T...>> {
 template<typename T, size_t N>
 struct struct_member_tuple<std::array<T, N>> {
     using type = std::remove_pointer_t<
-        decltype(detail::array_to_tuple_impl<T, N>())>;
+        decltype(detail::array_to_tuple_impl<to_tuple_t<T>, N>())>;
 };
 
 template<typename T, size_t N>
