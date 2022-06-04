@@ -36,11 +36,8 @@ Var<int> func(Var<int> a, Var<int> b) {
 int main() {
     Callable callable = func;
 
-    cout << is_smart_pointer<katana::shared_ptr<int>>::value;
-    cout << typeid(std::void_t<decltype(std::declval<katana::shared_ptr<int>>().operator->()),
-        decltype(std::declval<katana::shared_ptr<int>>().get())>).name();
-//    auto cb = [](int, int) -> float { return 0.f; };
-//    cout << typeid(decltype(callable)).name();
+    auto cb = [](int, int) -> float { return 0.f; };
+    cout << typeid(decltype(callable)).name();
 
     return 0;
 }
