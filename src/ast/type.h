@@ -175,6 +175,7 @@ struct canonical_layout<katana::tuple<T...>> {
 template<typename T>
 using canonical_layout_t = typename canonical_layout<T>::type;
 
+/// tuple join
 template<typename... T>
 struct tuple_join {
     static_assert(always_false_v<T...>);
@@ -192,6 +193,26 @@ struct tuple_join<katana::tuple<A...>, katana::tuple<B...>, C...> {
 
 template<typename... T>
 using tuple_join_t = typename tuple_join<T...>::type;
+
+namespace detail {
+template<typename A, typename B>
+struct linear_layout_impl {
+    using type = katana::tuple<B>;
+};
+
+template<typename... A, typename... B>
+struct linear_layout_impl<katana::tuple<A...>, katana::tuple<B...>> {
+    using type = tuple_join_t<katana::tuple<A...>,
+                              typename linear_layout_impl<katana::tuple<>, B>::type...>;
+};
+
+};// namespace detail
+
+template<typename T>
+using linear_layout = detail::linear_layout_impl<katana::tuple<>, canonical_layout_t<T>>;
+
+template<typename T>
+using linear_layout_t = typename linear_layout<T>::type;
 
 namespace detail {
 

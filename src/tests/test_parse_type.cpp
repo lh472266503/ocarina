@@ -37,8 +37,9 @@ int main() {
 //    for (auto iter = tr._type_set.begin(); iter != tr._type_set.end(); ++iter) {
 //        cout << (*iter)->description() << endl;
 //    }
-//    cout << typeid(canonical_layout_t<tuple<float>>).name() << endl;
-    cout << typeid(detail::linear_layout_impl<tuple<int, float>>::type).name();
-
+//    auto tp = std::tuple(1, 1.f, false);
+cout << typeid(linear_layout_t<array<array<array<float, 2>, 2>, 2>>).name() << endl;
+//cout << typeid(linear_layout_t<tuple<int, tuple<bool, float>>>).name();
+//    cout << typeid(to_tuple_t<int>).name() << endl;
     return 0;
 }
