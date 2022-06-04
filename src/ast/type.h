@@ -22,7 +22,7 @@ struct array_dimension<T[N]> {
 };
 
 template<typename T, size_t N>
-struct array_dimension<std::array<T, N>> {
+struct array_dimension<katana::array<T, N>> {
     static constexpr auto value = N;
 };
 
@@ -40,7 +40,7 @@ struct array_element<T[N]> {
 };
 
 template<typename T, size_t N>
-struct array_element<std::array<T, N>> {
+struct array_element<katana::array<T, N>> {
     using type = T;
 };
 
@@ -54,7 +54,7 @@ template<typename T, size_t N>
 class is_array<T[N]> : public std::true_type {};
 
 template<typename T, size_t N>
-class is_array<std::array<T, N>> : public std::true_type {};
+class is_array<katana::array<T, N>> : public std::true_type {};
 
 template<typename T>
 constexpr auto is_array_v = is_array<T>::value;
@@ -96,23 +96,23 @@ template<typename T, size_t N>
 
 namespace detail {
 template<typename T>
-struct to_tuple {
+struct array_to_tuple {
     using type = T;
 };
 
 template<typename T, size_t N>
-struct to_tuple<katana::array<T, N>> {
-    using type = decltype(detail::array_to_tuple_impl<typename to_tuple<T>::type , N>());
+struct array_to_tuple<katana::array<T, N>> {
+    using type = decltype(detail::array_to_tuple_impl<typename array_to_tuple<T>::type, N>());
 };
 
 template<typename... T>
-struct to_tuple<katana::tuple<T...>> {
-    using type = katana::tuple<T ...>;
+struct array_to_tuple<katana::tuple<T...>> {
+    using type = katana::tuple<T...>;
 };
 }// namespace detail
 
 template<typename T>
-using to_tuple_t = typename detail::to_tuple<T>::type;
+using array_to_tuple_t = typename detail::array_to_tuple<T>::type;
 
 template<typename T>
 struct struct_member_tuple {
@@ -125,24 +125,23 @@ struct struct_member_tuple<katana::tuple<T...>> {
 };
 
 template<typename T, size_t N>
-struct struct_member_tuple<std::array<T, N>> {
-    using type = std::remove_pointer_t<
-        decltype(detail::array_to_tuple_impl<to_tuple_t<T>, N>())>;
+struct struct_member_tuple<katana::array<T, N>> {
+    using type = array_to_tuple_t<katana::array<T, N>>;
 };
 
 template<typename T, size_t N>
 struct struct_member_tuple<T[N]> {
-    using type = typename struct_member_tuple<std::array<T, N>>::type;
+    using type = typename struct_member_tuple<katana::array<T, N>>::type;
 };
 
 template<typename T, size_t N>
 struct struct_member_tuple<Vector<T, N>> {
-    using type = typename struct_member_tuple<std::array<T, N>>::type;
+    using type = typename struct_member_tuple<katana::array<T, N>>::type;
 };
 
 template<size_t N>
 struct struct_member_tuple<Matrix<N>> {
-    using type = typename struct_member_tuple<std::array<Vector<float, N>, N>>::type;
+    using type = typename struct_member_tuple<katana::array<Vector<float, N>, N>>::type;
 };
 
 /// make struct reflection
@@ -207,7 +206,7 @@ struct dimension_impl<T[N]> {
 };
 
 template<typename T, size_t N>
-struct dimension_impl<std::array<T, N>> {
+struct dimension_impl<katana::array<T, N>> {
     static constexpr auto value = N;
 };
 
