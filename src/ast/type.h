@@ -83,12 +83,12 @@ template<typename T, size_t>
 using array_to_tuple_element_t = T;
 
 template<typename T, size_t N, size_t... i>
-[[nodiscard]] constexpr auto array_to_tuple_impl(std::array<T, N> array, std::index_sequence<i...>) noexcept {
-    return static_cast<katana::tuple<array_to_tuple_element_t<T, i>...>>(katana::tuple(array[i]...));
+[[nodiscard]] constexpr auto array_to_tuple_impl(katana::array<T, N> array, std::index_sequence<i...>) noexcept {
+    return katana::tuple<array_to_tuple_element_t<T, i>...>(array[i]...);
 }
 
 template<typename T, size_t N>
-[[nodiscard]] constexpr auto array_to_tuple_impl(std::array<T, N> array = {}) noexcept {
+[[nodiscard]] constexpr auto array_to_tuple_impl(katana::array<T, N> array = {}) noexcept {
     return array_to_tuple_impl(array, std::make_index_sequence<N>());
 }
 
@@ -148,11 +148,6 @@ struct canonical_layout {
     using type = struct_member_tuple_t<T>;
 };
 
-template<typename T>
-struct canonical_layout<katana::tuple<T>> {
-    using type = typename canonical_layout<T>::type;
-};
-
 template<typename... T>
 struct canonical_layout<katana::tuple<T...>> {
     using type = katana::tuple<typename canonical_layout<T>::type...>;
@@ -160,25 +155,6 @@ struct canonical_layout<katana::tuple<T...>> {
 
 template<typename T>
 using canonical_layout_t = typename canonical_layout<T>::type;
-
-namespace detail {
-
-template<typename ...T>
-struct linear_layout_impl {
-    using type = katana::tuple<T...>;
-};
-
-template<typename ...T>
-struct linear_layout_impl<katana::tuple<T...>> {
-    using type = katana::tuple<T...>;
-};
-
-//template<typename ...A, typename ...B>
-//struct linear_layout_impl<katana::tuple<A...>> {
-//
-//}
-
-};// namespace detail
 
 template<typename... T>
 struct tuple_join {
