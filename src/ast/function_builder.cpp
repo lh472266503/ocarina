@@ -63,5 +63,8 @@ const RefExpr *FunctionBuilder::local(const Type *type) noexcept {
 void FunctionBuilder::return_(const Expression *expression) noexcept {
     _create_statement<ReturnStmt>(expression);
 }
+void FunctionBuilder::assign(const RefExpr *lhs, const Expression *rhs) noexcept {
+
+}
 
 }// namespace katana

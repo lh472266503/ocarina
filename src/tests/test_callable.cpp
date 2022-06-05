@@ -21,12 +21,13 @@ class ttt {
 
 
 Var<int> func(Var<int> &a, Var<int> b) {
-    return a + b;
+    Var<int> c ;
+    return (a + b) * c;
 }
 
 int main() {
     Callable callable = func;
-    
+
     cout << typeid(decltype(callable)).name();
 
     return 0;

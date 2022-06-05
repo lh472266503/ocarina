@@ -17,12 +17,12 @@ class BreakStmt;
 class ContinueStmt;
 class ReturnStmt;
 class ExprStmt;
+class AssignStmt;
 class IfStmt;
 class LoopStmt;
 class SwitchStmt;
 class SwitchCaseStmt;
 class SwitchDefaultStmt;
-class AssignStmt;
 class ForStmt;
 
 struct StmtVisitor {
@@ -153,6 +153,10 @@ public:
         : Statement(Tag::EXPR), _expression(expr) {}
     const Expression *expression() const { return _expression; }
     KTN_MAKE_STATEMENT_ACCEPT_VISITOR
+};
+
+class AssignStmt : public Statement {
+
 };
 
 }// namespace katana
