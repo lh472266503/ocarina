@@ -66,5 +66,11 @@ void FunctionBuilder::return_(const Expression *expression) noexcept {
 void FunctionBuilder::assign(const Expression *lhs, const Expression *rhs) noexcept {
     _create_statement<AssignStmt>(lhs, rhs);
 }
+const UnaryExpr *FunctionBuilder::unary(const Type *type, UnaryOp op, const Expression *expression) noexcept {
+    return _create_expression<UnaryExpr>(type, op, expression);
+}
+const CastExpr *FunctionBuilder::cast(const Type *type, CastOp cast_op, const Expression *expression) noexcept {
+    return _create_expression<CastExpr>(type, cast_op, expression);
+}
 
 }// namespace katana

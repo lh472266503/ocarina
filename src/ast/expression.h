@@ -90,6 +90,10 @@ private:
     const Expression *_operand;
     UnaryOp _op;
 
+private:
+    [[nodiscard]] uint64_t _compute_hash() const noexcept override {
+        return hash64(_op, _operand->hash());
+    }
 public:
     UnaryExpr(const Type *type, UnaryOp op, const Expression *expression)
         : Expression(Tag::UNARY, type), _op(op), _operand(expression) {}
