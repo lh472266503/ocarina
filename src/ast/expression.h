@@ -64,7 +64,7 @@ private:
 protected:
     [[nodiscard]] virtual uint64_t _compute_hash() const noexcept = 0;
     mutable Usage _usage{Usage::NONE};
-    virtual void _mark(Usage usage) const noexcept = 0;
+    virtual void _mark(Usage usage) const noexcept {};
 
 public:
     explicit Expression(Tag tag, const Type *type) noexcept : _type{type}, _tag{tag} {}
@@ -113,8 +113,6 @@ public:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override {
         return 0;
     }
-    void _mark(Usage usage) const noexcept override {
-    }
     [[nodiscard]] auto lhs() const noexcept { return _lhs; }
     [[nodiscard]] auto rhs() const noexcept { return _rhs; }
     [[nodiscard]] auto op() const noexcept { return _op; }
@@ -159,6 +157,9 @@ public:
 
 private:
     value_type _value;
+
+private:
+    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
     LiteralExpr(const Type *type, value_type value)

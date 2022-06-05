@@ -93,7 +93,7 @@ public:
     [[nodiscard]] const BinaryExpr *binary(const Type *type, const Expression *lhs, const Expression *rhs, BinaryOp op) noexcept;
     [[nodiscard]] const RefExpr *argument(const Type *type) noexcept;
     [[nodiscard]] const RefExpr *reference_argument(const Type *type) noexcept;
-    [[nodiscard]] const LiteralExpr *literal(const Type *type, LiteralExpr *literal_expr) noexcept;
+    [[nodiscard]] const LiteralExpr *literal(const Type *type, LiteralExpr::value_type value) noexcept;
     [[nodiscard]] const AccessExpr *access(const Type *type, const Expression *range, const Expression *index) noexcept;
     [[nodiscard]] const MemberExpr *member(const Type *type, const Expression *obj, size_t index) noexcept;
     [[nodiscard]] const RefExpr *local(const Type *type) noexcept;

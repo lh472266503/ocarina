@@ -20,4 +20,8 @@ void RefExpr::_mark(Usage usage) const noexcept {
     FunctionBuilder::current()->mark_variable_usage(
         _variable.uid(), usage);
 }
+
+uint64_t LiteralExpr::_compute_hash() const noexcept {
+    return katana::visit([&](auto &&arg) { return hash64(std::forward<decltype(arg)>(arg)); }, _value);
+}
 }// namespace katana

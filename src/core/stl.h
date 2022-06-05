@@ -66,5 +66,6 @@ using eastl::tuple_element_t;
 // other
 using std::monostate;
 using std::variant;
+using std::visit;
 
 }// namespace katana
