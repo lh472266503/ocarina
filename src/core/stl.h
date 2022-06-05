@@ -24,6 +24,10 @@
 
 namespace katana {
 
+// io
+using std::cout;
+using std::endl;
+
 // ptr
 using std::const_pointer_cast;
 using std::dynamic_pointer_cast;
@@ -62,6 +66,13 @@ using eastl::tuple_size;
 using eastl::tuple_size_v;
 using eastl::tuple_element;
 using eastl::tuple_element_t;
+
+// sequence
+using std::make_index_sequence;
+using std::make_integer_sequence;
+using std::index_sequence;
+using std::integer_sequence;
+using std::index_sequence_for;
 
 // other
 using std::monostate;

@@ -62,6 +62,9 @@ struct prototype_to_var<const T &> {
 };
 
 template<typename T>
+using prototype_to_var_t = typename prototype_to_var<T>::type;
+
+template<typename T>
 struct prototype_to_callable_invocation {
     using type = Computable<T>;
 };
