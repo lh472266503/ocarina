@@ -20,18 +20,14 @@ class ttt {
 
 
 
-Var<int> func(Var<int> a, Var<int> b) {
+Var<int> func(Var<int> &a, Var<int> b) {
     return a + b;
 }
 
 int main() {
     Callable callable = func;
-
-    LiteralExpr::value_type a = false;
-
-    a = 1.f;
-//    auto cb = [](int, int) -> float { return 0.f; };
-//    cout << typeid(decltype(callable)).name();
+    
+    cout << typeid(decltype(callable)).name();
 
     return 0;
 }

@@ -40,7 +40,7 @@ protected:
     [[nodiscard]] const RefExpr *_ref(Variable variable) noexcept;
 
     template<typename Stmt, typename... Args>
-    [[nodiscard]] const Stmt *_create_statement(Args &&...args) noexcept {
+    const Stmt *_create_statement(Args &&...args) noexcept {
         auto statement = katana::make_unique<Stmt>(std::forward<Args>(args)...);
         auto ret = statement.get();
         _all_statements.push_back(std::move(statement));
@@ -48,7 +48,7 @@ protected:
     }
 
     template<typename Expr, typename... Args>
-    [[nodiscard]] const Expr *_create_expression(Args &&...args) noexcept {
+    const Expr *_create_expression(Args &&...args) noexcept {
         auto expression = katana::make_unique<Expr>(std::forward<Args>(args)...);
         auto ret = expression.get();
         _all_expressions.push_back(std::move(expression));

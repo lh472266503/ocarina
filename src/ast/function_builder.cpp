@@ -60,4 +60,8 @@ const RefExpr *FunctionBuilder::local(const Type *type) noexcept {
     return _create_expression<RefExpr>(Variable(type, Variable::Tag::LOCAL, _next_variable_uid()));
 }
 
+void FunctionBuilder::return_(const Expression *expression) noexcept {
+    _create_statement<ReturnStmt>(expression);
+}
+
 }// namespace katana

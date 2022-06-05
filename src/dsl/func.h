@@ -76,7 +76,7 @@ namespace detail {
 
 template<typename VarTuple, typename TagTuple, typename T, size_t... i>
 [[nodiscard]] auto create_argument_definition_impl(T tuple, katana::index_sequence<i...>) {
-    (katana::tuple_element_t<i, VarTuple>{katana::tuple_element_t<i, TagTuple>{}}, ...);
+    return VarTuple(katana::tuple_element_t<i, VarTuple>{katana::tuple_element_t<i, TagTuple>{}}...);
 }
 
 }// namespace detail
@@ -86,6 +86,17 @@ template<typename VarTuple, typename TagTuple>
     return detail::create_argument_definition_impl<VarTuple, TagTuple>(katana::tuple(), katana::make_index_sequence<katana::tuple_size_v<VarTuple>>());
 }
 
+namespace detail {
+template<typename... Args, typename Func, size_t... i>
+auto create(Func &&func, katana::index_sequence<i...>) {
+    static_assert(std::is_invocable_v<Func, detail::prototype_to_var_t<Args>...>);
+    using var_tuple = katana::tuple<Var<std::remove_cvref_t<Args>>...>;
+    using tag_tuple = katana::tuple<detail::prototype_to_creation_tag_t<Args>...>;
+    auto args = create_argument_definition<var_tuple, tag_tuple>();
+    return func(std::forward<detail::prototype_to_var_t<Args>>(katana::get<i>(args))...);
+}
+}// namespace detail
+
 template<typename Ret, typename... Args>
 class Callable<Ret(Args...)> {
     static_assert(std::negation_v<std::disjunction<std::is_pointer<Args>...>>);
@@ -93,23 +104,16 @@ class Callable<Ret(Args...)> {
 private:
     katana::shared_ptr<const FunctionBuilder> _builder;
 
-    template<typename Func, size_t... i>
-    auto init(Func &&func, katana::index_sequence<i...>) {
-        cout << typeid(katana::tuple<detail::prototype_to_var_t<Args>...>).name();
-        static_assert(std::is_invocable_v<Func, detail::prototype_to_var_t<Args>...>);
-        using arg_tuple = katana::tuple<Args...>;
-        using var_tuple = katana::tuple<Var<std::remove_cvref_t<Args>>...>;
-        using tag_tuple = katana::tuple<detail::prototype_to_creation_tag_t<Args>...>;
-
-        create_argument_definition<var_tuple, tag_tuple>();
-        return func(detail::prototype_to_var_t<Args>()...);
-    }
-
 public:
     template<typename Func>
     Callable(Func &&func) noexcept
         : _builder(FunctionBuilder::define_callable([&] {
-              init(func, katana::index_sequence_for<Args...>());
+              if constexpr (std::is_same_v<void, Ret>) {
+                  detail::create<Args...>(func, katana::index_sequence_for<Args...>());
+              } else {
+                  auto ret = def(detail::create<Args...>(func, katana::index_sequence_for<Args...>()));
+                  FunctionBuilder::current()->return_(ret.expression());
+              }
           })) {}
     //    template<typename Func>
     //    requires std:

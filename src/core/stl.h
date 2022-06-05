@@ -66,6 +66,7 @@ using eastl::tuple_size;
 using eastl::tuple_size_v;
 using eastl::tuple_element;
 using eastl::tuple_element_t;
+using eastl::get;
 
 // sequence
 using std::make_index_sequence;
