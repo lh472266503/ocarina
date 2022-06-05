@@ -18,10 +18,8 @@ class ttt {
     ~ttt() {}
 };
 
-
-
 Var<int> func(Var<int> &a, Var<int> b) {
-    Var<int> c ;
+    Var<int> c = 5;
     return (a + b) * c;
 }
 

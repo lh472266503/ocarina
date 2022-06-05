@@ -100,7 +100,7 @@ public:
     void break_() noexcept;
     void continue_() noexcept;
     void return_(const Expression *expression = nullptr) noexcept;
-    void assign(const RefExpr *lhs, const Expression *rhs) noexcept;
+    void assign(const Expression *lhs, const Expression *rhs) noexcept;
     [[nodiscard]] IfStmt *if_(const Expression *condition) noexcept;
     [[nodiscard]] SwitchStmt *switch_(const Expression *expression) noexcept;
     [[nodiscard]] SwitchCaseStmt *case_(const Statement *statement) noexcept;
