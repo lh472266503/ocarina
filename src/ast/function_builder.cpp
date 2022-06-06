@@ -61,6 +61,9 @@ const RefExpr *FunctionBuilder::local(const Type *type) noexcept {
 }
 
 void FunctionBuilder::return_(const Expression *expression) noexcept {
+    if (expression) {
+        _ret = expression->type();
+    }
     _create_statement<ReturnStmt>(expression);
 }
 void FunctionBuilder::assign(const Expression *lhs, const Expression *rhs) noexcept {

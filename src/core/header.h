@@ -29,6 +29,18 @@
 #define KTN_DSL_API __declspec(dllimport)
 #endif
 
+#ifdef KTN_COMPILE_EXPORT_DLL
+#define KTN_COMPILE_API __declspec(dllexport)
+#else
+#define KTN_COMPILE_API __declspec(dllimport)
+#endif
+
+#ifdef KTN_RUNTIME_EXPORT_DLL
+#define KTN_RUNTIME_API __declspec(dllexport)
+#else
+#define KTN_RUNTIME_API __declspec(dllimport)
+#endif
+
 #ifdef _MSC_VER
 #define KTN_OFFSET_OF(type, member) __builtin_offsetof(type, member)
 #else

@@ -10,6 +10,8 @@ add_subdirectory(core)
 add_subdirectory(ast)
 add_subdirectory(dsl)
 add_subdirectory(rt)
+add_subdirectory(compile)
+add_subdirectory(runtime)
 
 add_library(katana-all INTERFACE)
 target_link_libraries(katana-all INTERFACE
@@ -17,6 +19,8 @@ target_link_libraries(katana-all INTERFACE
         katana-dsl
         katana-ast
         katana-rt
+        katana-compile
+        katana-runtime
         katana-core)
 
 add_executable(katana main.cpp)
