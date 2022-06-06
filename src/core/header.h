@@ -41,6 +41,12 @@
 #define KTN_RUNTIME_API __declspec(dllimport)
 #endif
 
+#ifdef KTN_BACKENDS_EXPORT_DLL
+#define KTN_BACKENDS_API __declspec(dllexport)
+#else
+#define KTN_BACKENDS_API __declspec(dllimport)
+#endif
+
 #ifdef _MSC_VER
 #define KTN_OFFSET_OF(type, member) __builtin_offsetof(type, member)
 #else

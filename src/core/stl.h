@@ -20,6 +20,7 @@
 #include <string>
 #include <unordered_set>
 #include <string_view>
+#include <filesystem>
 #include <EASTL/tuple.h>
 
 namespace katana {
@@ -79,5 +80,6 @@ using std::index_sequence_for;
 using std::monostate;
 using std::variant;
 using std::visit;
+namespace fs = std::filesystem;
 
 }// namespace katana
