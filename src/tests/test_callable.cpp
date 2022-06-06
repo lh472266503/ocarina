@@ -9,14 +9,12 @@
 #include "dsl/func.h"
 #include "ast/expression.h"
 #include <iostream>
+#include "runtime/device.h"
+
 
 using std::cout;
 using std::endl;
 using namespace katana;
-
-class ttt {
-    ~ttt() {}
-};
 
 Var<int> func(Var<int> a, Var<int> b) {
     return (a + b);
@@ -24,8 +22,6 @@ Var<int> func(Var<int> a, Var<int> b) {
 
 int main() {
     Callable callable = func;
-
-    cout << typeid(decltype(callable)).name();
 
     return 0;
 }

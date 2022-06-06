@@ -4,3 +4,14 @@
 
 
 #include "device.h"
+
+namespace katana {
+
+//struct Device::Impl {
+//
+//};
+
+//Device::Device() {
+////    _impl = katana::make_unique<Impl>();
+//}
+}

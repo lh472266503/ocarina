@@ -12,6 +12,7 @@ add_subdirectory(dsl)
 add_subdirectory(rt)
 add_subdirectory(compile)
 add_subdirectory(runtime)
+add_subdirectory(backends)
 
 add_library(katana-all INTERFACE)
 target_link_libraries(katana-all INTERFACE
