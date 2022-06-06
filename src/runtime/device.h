@@ -5,3 +5,9 @@
 #pragma once
 
 #include "core/header.h"
+
+namespace katana {
+class Device {
+
+};
+}// namespace katana

@@ -7,7 +7,5 @@
 #include "core/header.h"
 
 namespace katana {
-class Context {
 
-};
-}// namespace katana
+}
