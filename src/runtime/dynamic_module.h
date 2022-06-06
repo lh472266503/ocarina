@@ -6,11 +6,16 @@
 
 #include "core/header.h"
 #include "core/stl.h"
-#include "runtime/device.h"
+#include "core/concepts.h"
 
 namespace katana {
-class CUDADevice : public Device::Impl {
+class DynamicModule : public concepts::Noncopyable{
+public:
+    using handle_type = void *;
+
 private:
+    handle_type _handle{};
+
 public:
 };
 }// namespace katana

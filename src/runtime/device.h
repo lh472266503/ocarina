@@ -10,15 +10,15 @@
 namespace katana {
 class Device {
 public:
-    struct Impl;
+    struct Impl {
+
+    };
     using Handle = katana::unique_ptr<Impl>;
 
-private:
+protected:
     Handle _impl;
 
 public:
-    Device() {
-
-    }
+    Device();
 };
 }// namespace katana

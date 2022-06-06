@@ -7,11 +7,7 @@
 
 namespace katana {
 
-//struct Device::Impl {
-//
-//};
-
-//Device::Device() {
-////    _impl = katana::make_unique<Impl>();
-//}
+Device::Device() {
+    _impl = katana::make_unique<Impl>();
+}
 }
