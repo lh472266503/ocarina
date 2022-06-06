@@ -7,7 +7,7 @@
 #include "core/util.h"
 #include "core/logging.h"
 
-namespace katana {
+namespace nano {
 
 TypeRegistry &TypeRegistry::instance() noexcept {
     static TypeRegistry type_registry;
@@ -27,7 +27,7 @@ namespace detail {
     return ch >= '0' && ch <= '9';
 }
 
-[[nodiscard]] std::pair<int, int> bracket_matching(katana::string_view str, char l = '<', char r = '>') {
+[[nodiscard]] std::pair<int, int> bracket_matching(nano::string_view str, char l = '<', char r = '>') {
     int start = 0;
     int end = 0;
     int pair_count = 0;
@@ -48,9 +48,9 @@ namespace detail {
     return std::make_pair(start, end);
 }
 
-[[nodiscard]] katana::string_view find_identifier(katana::string_view &str,
+[[nodiscard]] nano::string_view find_identifier(nano::string_view &str,
                                                   bool check_start_with_num = false) {
-    KTN_USING_SV
+    NN_USING_SV
     uint i = 0u;
     for (; i < str.size() && is_letter_or_num(str[i]); ++i)
         ;
@@ -66,14 +66,14 @@ namespace detail {
         str = str.substr(i);
     }
     if (is_num(ret[0]) && check_start_with_num) [[unlikely]] {
-        KTN_ERROR_FORMAT("invalid identifier {} !", ret)
+        NN_ERROR_FORMAT("invalid identifier {} !", ret)
     }
     return ret;
 }
 
-[[nodiscard]] auto find_content(katana::string_view &str, char l = '<', char r = '>') {
-    katana::vector<katana::string_view> ret;
-    KTN_USING_SV
+[[nodiscard]] auto find_content(nano::string_view &str, char l = '<', char r = '>') {
+    nano::vector<nano::string_view> ret;
+    NN_USING_SV
     auto prev_token = str.find_first_of(l);
     constexpr auto token = ',';
     str = str.substr(prev_token + 1);
@@ -99,18 +99,18 @@ namespace detail {
  * MATRIX: matrix<2> | matrix<3> | matrix<4>
  * STRUCT: struct<4,TYPE...> | struct<8,TYPE...> | struct<16,TYPE...>
  */
-const Type *TypeRegistry::parse_type(katana::string_view desc) noexcept {
+const Type *TypeRegistry::parse_type(nano::string_view desc) noexcept {
     uint64_t hash = _hash(desc);
     if (auto iter = _type_set.find(hash); iter != _type_set.cend()) {
         return *iter;
     }
 
-    KTN_USING_SV
+    NN_USING_SV
 
-    auto type = katana::make_unique<Type>();
+    auto type = nano::make_unique<Type>();
     type->_description = desc;
     type->_hash = hash;
-#define KTN_PARSE_BASIC_TYPE(T, TAG)   \
+#define NN_PARSE_BASIC_TYPE(T, TAG)   \
     if (desc == #T##sv) {              \
         type->_size = sizeof(T);       \
         type->_alignment = alignof(T); \
@@ -118,12 +118,12 @@ const Type *TypeRegistry::parse_type(katana::string_view desc) noexcept {
         type->_tag = Type::Tag::TAG;   \
     } else
 
-    KTN_PARSE_BASIC_TYPE(int, INT)
-    KTN_PARSE_BASIC_TYPE(uint, UINT)
-    KTN_PARSE_BASIC_TYPE(bool, BOOL)
-    KTN_PARSE_BASIC_TYPE(float, FLOAT)
+    NN_PARSE_BASIC_TYPE(int, INT)
+    NN_PARSE_BASIC_TYPE(uint, UINT)
+    NN_PARSE_BASIC_TYPE(bool, BOOL)
+    NN_PARSE_BASIC_TYPE(float, FLOAT)
 
-#undef KTN_PARSE_BASIC_TYPE
+#undef NN_PARSE_BASIC_TYPE
 
     if (desc.starts_with("vector")) {
         parse_vector(type.get(), desc);
@@ -134,19 +134,19 @@ const Type *TypeRegistry::parse_type(katana::string_view desc) noexcept {
     } else if (desc.starts_with("struct")) {
         parse_struct(type.get(), desc);
     } else [[unlikely]] {
-        KTN_ERROR("invalid data type ", desc);
+        NN_ERROR("invalid data type ", desc);
     }
     const Type *ret = type.get();
     add_type(std::move(type));
     return ret;
 }
 
-void TypeRegistry::parse_vector(Type *type, katana::string_view desc) noexcept {
+void TypeRegistry::parse_vector(Type *type, nano::string_view desc) noexcept {
     type->_tag = Type::Tag::VECTOR;
     auto [start, end] = detail::bracket_matching(desc, '<', '>');
     auto content = desc.substr(start + 1, end - start - 1);
     auto lst = string_split(content, ',');
-    KTN_ASSERT(lst.size() == 2);
+    NN_ASSERT(lst.size() == 2);
     auto type_str = lst[0];
     auto dimension_str = lst[1];
     auto dimension = std::stoi(string(dimension_str));
@@ -154,32 +154,32 @@ void TypeRegistry::parse_vector(Type *type, katana::string_view desc) noexcept {
     type->_members.push_back(parse_type(type_str));
     auto member = type->_members.front();
     if (!member->is_scalar()) [[unlikely]] {
-        KTN_ERROR("invalid vector element: {}!", member->description());
+        NN_ERROR("invalid vector element: {}!", member->description());
     }
     type->_size = member->size() * (dimension == 3 ? 4 : dimension);
     type->_alignment = type->size();
 }
 
-void TypeRegistry::parse_matrix(Type *type, katana::string_view desc) noexcept {
+void TypeRegistry::parse_matrix(Type *type, nano::string_view desc) noexcept {
     type->_tag = Type::Tag::MATRIX;
     auto [start, end] = detail::bracket_matching(desc, '<', '>');
     auto dimension_str = desc.substr(start + 1, end - start - 1);
     auto dimension = std::stoi(string(dimension_str));
     type->_dimension = dimension;
-    auto tmp_desc = katana::format("vector<float,{}>", dimension);
+    auto tmp_desc = nano::format("vector<float,{}>", dimension);
     type->_members.push_back(parse_type((tmp_desc)));
 
-#define KTN_SIZE_ALIGN(dim)                      \
+#define NN_SIZE_ALIGN(dim)                      \
     if (dimension == dim) {                      \
         type->_size = sizeof(Matrix<dim>);       \
         type->_alignment = alignof(Matrix<dim>); \
     } else
-    KTN_SIZE_ALIGN(2)
-    KTN_SIZE_ALIGN(3)
-    KTN_SIZE_ALIGN(4) {
-        KTN_ERROR("invalid matrix dimension {}!", dimension)
+    NN_SIZE_ALIGN(2)
+    NN_SIZE_ALIGN(3)
+    NN_SIZE_ALIGN(4) {
+        NN_ERROR("invalid matrix dimension {}!", dimension)
     }
-#undef KTN_SIZE_ALIGN
+#undef NN_SIZE_ALIGN
 }
 
 void TypeRegistry::parse_struct(Type *type, string_view desc) noexcept {
@@ -199,7 +199,7 @@ void TypeRegistry::parse_struct(Type *type, string_view desc) noexcept {
     type->_size = mem_offset(size, type->alignment());
 }
 
-void TypeRegistry::parse_array(Type *type, katana::string_view desc) noexcept {
+void TypeRegistry::parse_array(Type *type, nano::string_view desc) noexcept {
     type->_tag = Type::Tag::ARRAY;
     auto lst = detail::find_content(desc);
     auto type_str = lst[0];
@@ -213,13 +213,13 @@ void TypeRegistry::parse_array(Type *type, katana::string_view desc) noexcept {
     type->_size = size;
 }
 
-void TypeRegistry::add_type(katana::unique_ptr<Type> type) {
+void TypeRegistry::add_type(nano::unique_ptr<Type> type) {
     _type_set.insert(type.get());
     type->_index = _types.size();
     _types.push_back(std::move(type));
 }
 
-const Type *TypeRegistry::type_from(katana::string_view desc) noexcept {
+const Type *TypeRegistry::type_from(nano::string_view desc) noexcept {
     return parse_type(desc);
 }
 
@@ -233,11 +233,11 @@ const Type *TypeRegistry::type_at(uint i) const noexcept {
     return _types[i].get();
 }
 
-uint64_t TypeRegistry::_hash(katana::string_view desc) noexcept {
+uint64_t TypeRegistry::_hash(nano::string_view desc) noexcept {
     using namespace std::string_view_literals;
     return hash64(desc, hash64("__hash_type"sv));
 }
-bool TypeRegistry::is_exist(katana::string_view desc) const noexcept {
+bool TypeRegistry::is_exist(nano::string_view desc) const noexcept {
     return is_exist(_hash(desc));
 }
 
@@ -245,4 +245,4 @@ bool TypeRegistry::is_exist(uint64_t hash) const noexcept {
     return _type_set.find(hash) != _type_set.cend();
 }
 
-}// namespace katana
+}// namespace nano

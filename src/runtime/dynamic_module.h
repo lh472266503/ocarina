@@ -8,7 +8,7 @@
 #include "core/stl.h"
 #include "core/concepts.h"
 
-namespace katana {
+namespace nano {
 class DynamicModule : public concepts::Noncopyable{
 public:
     using handle_type = void *;
@@ -18,4 +18,4 @@ private:
 
 public:
 };
-}// namespace katana
+}// namespace nano

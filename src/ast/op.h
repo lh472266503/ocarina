@@ -6,7 +6,7 @@
 
 #include "core/basic_types.h"
 
-namespace katana {
+namespace nano {
 
 enum struct UnaryOp : uint32_t {
     POSITIVE,
@@ -121,4 +121,4 @@ enum struct CallOp : uint32_t {
     COUNT
 };
 
-}// namespace katana
+}// namespace nano

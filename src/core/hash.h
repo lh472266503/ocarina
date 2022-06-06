@@ -10,7 +10,7 @@
 #include "basic_types.h"
 #include "concepts.h"
 
-namespace katana {
+namespace nano {
 namespace detail {
 
 [[nodiscard]] inline auto xxh3_hash64(const void *data, size_t size, uint64_t seed) noexcept {
@@ -29,7 +29,7 @@ concept hashable_with_hash_code_method = requires(T x) {
 
 }// namespace detail
 
-[[nodiscard]] KTN_CORE_API std::string_view hash_to_string(uint64_t hash) noexcept;
+[[nodiscard]] NN_CORE_API std::string_view hash_to_string(uint64_t hash) noexcept;
 
 class Hash64 {
 public:
@@ -45,7 +45,7 @@ public:
 
     template<typename T>
     [[nodiscard]] uint64_t operator()(T &&s) const noexcept {
-        if constexpr (katana::detail::hashable_with_hash_method<T>) {
+        if constexpr (nano::detail::hashable_with_hash_method<T>) {
             return (*this)(std::forward<T>(s).hash());
         } else if constexpr (detail::hashable_with_hash_code_method<T>) {
             return (*this)(std::forward<T>(s).hash_code());
@@ -56,7 +56,7 @@ public:
             auto x = s;
             return detail::xxh3_hash64(&x, sizeof(vector_element_t<T>) * 3u, _seed);
         } else if constexpr (is_matrix3_v<T>) {
-            auto x = katana::make_float4x4(s);
+            auto x = nano::make_float4x4(s);
             return (*this)(x);
         } else if constexpr (
             std::is_arithmetic_v<std::remove_cvref_t<T>> ||
@@ -75,4 +75,4 @@ template<typename T>
     return Hash64{seed}(std::forward<T>(v));
 }
 
-}// namespace katana
+}// namespace nano

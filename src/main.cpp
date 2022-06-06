@@ -12,32 +12,31 @@
 #include "dsl/common.h"
 #include "rt/hit.h"
 
-using namespace katana;
-using namespace std;
+using namespace nano;
 
 template<typename T, size_t N, size_t... i>
 auto array_to_tuple(std::array<T, N> arr, std::index_sequence<i...>) {
     //    ((cout << arr[i]),...);
-    auto ret = katana::tuple<remove_cvref_t<decltype(arr[i])>...>(arr[i]...);
+    auto ret = nano::tuple<std::remove_cvref_t<decltype(arr[i])>...>(arr[i]...);
     return ret;
 }
 
 const vector<const Type *> _members;
 
-katana::span<const Type *const> members() noexcept {
-    return katana::span(_members);
+nano::span<const Type *const> members() noexcept {
+    return nano::span(_members);
 }
 
 
 int main() {
-    using namespace katana;
+    using namespace nano;
     std::array<float, 2> arr = {1, 2};
-    katana::tuple<float, float> tp = array_to_tuple(arr, std::make_index_sequence<2>());
-    //    katana::tuple<float, float> tp = katana::tuple<float, float>(1,5);
+    nano::tuple<float, float> tp = array_to_tuple(arr, std::make_index_sequence<2>());
+    //    nano::tuple<float, float> tp = nano::tuple<float, float>(1,5);
     //    cout << typeid(tp).name() << endl;
     //    cout << typeid(struct_member_tuple<std::array<float, 2>>::type).name();
     cout << detail::TypeDesc<decltype(tp)>::description() << endl;
 //    cout << detail::TypeDesc<Hit>::description() << endl;
-    //    cout << typeid(katana::tuple_join_t<tuple<int, float, int>, tuple<int, float, uint>, int>).name() << endl;
+    //    cout << typeid(nano::tuple_join_t<tuple<int, float, int>, tuple<int, float, uint>, int>).name() << endl;
     //    cout << typeid(canonical_layout<float2x2>::type).name() << endl;
 }

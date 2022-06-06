@@ -10,13 +10,13 @@
 #include "type.h"
 #include "variable.h"
 
-namespace katana {
+namespace nano {
 
 namespace detail {
 class FunctionBuilder;
 }
 
-class KTN_AST_API Function {
+class NN_AST_API Function {
 public:
     enum struct Tag : uint {
         KERNEL,
@@ -32,11 +32,11 @@ private:
 public:
     Function() noexcept = default;
     explicit Function(const detail::FunctionBuilder *builder) noexcept : _builder{builder} {}
-    [[nodiscard]] katana::span<const Variable> builtin_variables() const noexcept;
-    [[nodiscard]] katana::span<const Constant> constants() const noexcept;
-    [[nodiscard]] katana::span<const Variable> arguments() const noexcept;
+    [[nodiscard]] nano::span<const Variable> builtin_variables() const noexcept;
+    [[nodiscard]] nano::span<const Constant> constants() const noexcept;
+    [[nodiscard]] nano::span<const Variable> arguments() const noexcept;
     [[nodiscard]] uint3 block_size() const noexcept;
     [[nodiscard]] const Type *return_type() const noexcept;
 };
 
-}// namespace katana
+}// namespace nano

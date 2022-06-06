@@ -7,7 +7,7 @@
 #include "var.h"
 #include "operators.h"
 
-namespace katana {
+namespace nano {
 
 template<typename Lhs, typename Rhs>
 inline void assign(Lhs &&lhs, Rhs &&rhs) noexcept {
@@ -21,4 +21,4 @@ inline void assign(Lhs &&lhs, Rhs &&rhs) noexcept {
     }
 }
 
-}// namespace katana
+}// namespace nano

@@ -7,7 +7,7 @@
 #include "core/stl.h"
 #include "core/hash.h"
 
-namespace katana {
+namespace nano {
 
 class Variable {
 public:
@@ -53,4 +53,4 @@ public:
     }
 };
 
-}// namespace katana
+}// namespace nano

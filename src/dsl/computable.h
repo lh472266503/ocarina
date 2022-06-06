@@ -10,7 +10,7 @@
 #include "expr_traits.h"
 #include "ast/function_builder.h"
 
-namespace katana::detail {
+namespace nano::detail {
 
 template<typename T>
 struct EnableSubscriptAccess {
@@ -19,7 +19,7 @@ struct EnableSubscriptAccess {
     [[nodiscard]] auto operator[](Index &&index) const noexcept {
         auto self = def<T>(static_cast<const T *>(this)->expression());
         using Element = std::remove_cvref_t<decltype(std::declval<expr_value_t<T>>()[0])>;
-        return def<Element>(katana::FunctionBuilder::current()->access(
+        return def<Element>(nano::FunctionBuilder::current()->access(
             Type::of<Element>(), self.expression(),
             extract_expression(std::forward<Index>(index))));
     }
@@ -48,7 +48,7 @@ struct EnableStaticCast {
     [[nodiscard]] auto cast() const noexcept {
         auto src = def(*static_cast<const T *>(this));
         using ExprDest = expr_value_t<Dest>;
-        return def(katana::FunctionBuilder::current()->cast(Type::of<ExprDest>(), CastOp::STATIC, src));
+        return def(nano::FunctionBuilder::current()->cast(Type::of<ExprDest>(), CastOp::STATIC, src));
     }
 };
 
@@ -59,11 +59,11 @@ struct EnableBitwiseCast {
     [[nodiscard]] auto bit_cast() const noexcept {
         auto src = def(*static_cast<const T *>(this));
         using ExprDest = expr_value_t<Dest>;
-        return def(katana::FunctionBuilder::current()->cast(Type::of<ExprDest>(), CastOp::BITWISE, src));
+        return def(nano::FunctionBuilder::current()->cast(Type::of<ExprDest>(), CastOp::BITWISE, src));
     }
 };
 
-#define KTN_COMPUTABLE_COMMON(...)                                         \
+#define NN_COMPUTABLE_COMMON(...)                                         \
 private:                                                                   \
     const Expression *_expression{nullptr};                                \
                                                                            \
@@ -78,7 +78,7 @@ struct Computable
     : detail::EnableBitwiseCast<T>,
       detail::EnableStaticCast<T> {
     static_assert(is_scalar_v<T>);
-    KTN_COMPUTABLE_COMMON(T)
+    NN_COMPUTABLE_COMMON(T)
 };
 
 template<typename T>
@@ -87,7 +87,7 @@ struct Computable<Vector<T, 2>>
       EnableBitwiseCast<Computable<Vector<T, 2>>>,
       EnableGetMemberByIndex<Computable<Vector<T, 2>>>,
       EnableSubscriptAccess<Computable<Vector<T, 2>>> {
-    KTN_COMPUTABLE_COMMON(Vector<T, 2>)
+    NN_COMPUTABLE_COMMON(Vector<T, 2>)
 };
 
 template<typename T>
@@ -96,7 +96,7 @@ struct Computable<Vector<T, 3>>
       EnableBitwiseCast<Computable<Vector<T, 3>>>,
       EnableGetMemberByIndex<Computable<Vector<T, 3>>>,
       EnableSubscriptAccess<Computable<Vector<T, 3>>> {
-    KTN_COMPUTABLE_COMMON(Vector<T, 3>)
+    NN_COMPUTABLE_COMMON(Vector<T, 3>)
 };
 
 template<typename T>
@@ -105,34 +105,34 @@ struct Computable<Vector<T, 4>>
       EnableBitwiseCast<Computable<Vector<T, 4>>>,
       EnableGetMemberByIndex<Computable<Vector<T, 4>>>,
       EnableSubscriptAccess<Computable<Vector<T, 4>>> {
-    KTN_COMPUTABLE_COMMON(Vector<T, 4>)
+    NN_COMPUTABLE_COMMON(Vector<T, 4>)
 };
 
 template<typename T, size_t N>
 struct Computable<std::array<T, N>>
     : EnableSubscriptAccess<std::array<T, N>>,
       EnableGetMemberByIndex<std::array<T, N>> {
-    KTN_COMPUTABLE_COMMON(std::array<T, N>)
+    NN_COMPUTABLE_COMMON(std::array<T, N>)
 };
 
 template<size_t N>
 struct Computable<Matrix<N>>
     : EnableGetMemberByIndex<Matrix<N>>,
       EnableSubscriptAccess<Matrix<N>> {
-    KTN_COMPUTABLE_COMMON(Matrix<N>)
+    NN_COMPUTABLE_COMMON(Matrix<N>)
 };
 
 template<typename... T>
-struct Computable<katana::tuple<T...>> {
-    using Tuple = katana::tuple<T...>;
-    KTN_COMPUTABLE_COMMON(katana::tuple<T...>)
+struct Computable<nano::tuple<T...>> {
+    using Tuple = nano::tuple<T...>;
+    NN_COMPUTABLE_COMMON(nano::tuple<T...>)
     template<size_t i>
     [[nodiscard]] auto get() const noexcept {
-        using Elm = katana::tuple_element_t<i, Tuple>;
-        return Computable<Elm>(katana::FunctionBuilder::current(Type::of<Elm>(), expression(), i));
+        using Elm = nano::tuple_element_t<i, Tuple>;
+        return Computable<Elm>(nano::FunctionBuilder::current(Type::of<Elm>(), expression(), i));
     }
 };
 
-#undef KTN_COMPUTABLE_COMMON
+#undef NN_COMPUTABLE_COMMON
 
-}// namespace katana::detail
+}// namespace nano::detail

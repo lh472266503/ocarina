@@ -6,6 +6,6 @@
 
 #include "core/header.h"
 
-namespace katana {
+namespace nano {
 
 }

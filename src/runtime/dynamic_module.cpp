@@ -4,6 +4,6 @@
 
 #include "dynamic_module.h"
 
-namespace katana {
+namespace nano {
 
 }

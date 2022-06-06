@@ -7,7 +7,7 @@
 #include "basic_types.h"
 #include "stl.h"
 
-namespace katana::concepts {
+namespace nano::concepts {
 
 struct Noncopyable {
     Noncopyable() noexcept = default;
@@ -25,12 +25,12 @@ concept iterable = requires(T v) {
 
 template<typename T>
 concept string_viewable = requires(T v) {
-    katana::string_view{v};
+    nano::string_view{v};
 };
 
 template<typename T>
 concept span_convertible = requires(T v) {
-    katana::span{v};
+    nano::span{v};
 };
 
 template<typename T, typename... Args>
@@ -134,57 +134,57 @@ concept same = is_same_v<T...>;
 template<typename A, typename B>
 concept different = !same<A, B>;
 
-#define KTN_UNARY_OP_CONCEPT(op_name, op) \
+#define NN_UNARY_OP_CONCEPT(op_name, op) \
     template<typename T>                  \
     concept op_name = requires(T t) {     \
         op t;                             \
     };
-KTN_UNARY_OP_CONCEPT(positive_able, +)
-KTN_UNARY_OP_CONCEPT(negative_able, -)
-KTN_UNARY_OP_CONCEPT(not_able, !)
-KTN_UNARY_OP_CONCEPT(bit_not_able, ~)
-#undef KTN_UNARY_OP_CONCEPT
+NN_UNARY_OP_CONCEPT(positive_able, +)
+NN_UNARY_OP_CONCEPT(negative_able, -)
+NN_UNARY_OP_CONCEPT(not_able, !)
+NN_UNARY_OP_CONCEPT(bit_not_able, ~)
+#undef NN_UNARY_OP_CONCEPT
 
-#define KTN_BINARY_OP_CONCEPT(op_name, op) \
+#define NN_BINARY_OP_CONCEPT(op_name, op) \
     template<typename A, typename B>       \
     concept op_name = requires(A a, B b) { \
         a op b;                            \
     };
 
-KTN_BINARY_OP_CONCEPT(plus_able, +)
-KTN_BINARY_OP_CONCEPT(minus_able, -)
-KTN_BINARY_OP_CONCEPT(multiply_able, *)
-KTN_BINARY_OP_CONCEPT(divide_able, /)
-KTN_BINARY_OP_CONCEPT(mod_able, %)
-KTN_BINARY_OP_CONCEPT(bit_and_able, &)
-KTN_BINARY_OP_CONCEPT(bit_or_able, |)
-KTN_BINARY_OP_CONCEPT(bit_xor_able, ^)
-KTN_BINARY_OP_CONCEPT(shift_left_able, <<)
-KTN_BINARY_OP_CONCEPT(shift_right_able, >>)
-KTN_BINARY_OP_CONCEPT(and_able, &&)
-KTN_BINARY_OP_CONCEPT(or_able, ||)
-KTN_BINARY_OP_CONCEPT(equal_able, ==)
-KTN_BINARY_OP_CONCEPT(ne_able, !=)
-KTN_BINARY_OP_CONCEPT(lt_able, <)
-KTN_BINARY_OP_CONCEPT(gt_able, >)
-KTN_BINARY_OP_CONCEPT(ge_able, >=)
-KTN_BINARY_OP_CONCEPT(le_able, <=)
+NN_BINARY_OP_CONCEPT(plus_able, +)
+NN_BINARY_OP_CONCEPT(minus_able, -)
+NN_BINARY_OP_CONCEPT(multiply_able, *)
+NN_BINARY_OP_CONCEPT(divide_able, /)
+NN_BINARY_OP_CONCEPT(mod_able, %)
+NN_BINARY_OP_CONCEPT(bit_and_able, &)
+NN_BINARY_OP_CONCEPT(bit_or_able, |)
+NN_BINARY_OP_CONCEPT(bit_xor_able, ^)
+NN_BINARY_OP_CONCEPT(shift_left_able, <<)
+NN_BINARY_OP_CONCEPT(shift_right_able, >>)
+NN_BINARY_OP_CONCEPT(and_able, &&)
+NN_BINARY_OP_CONCEPT(or_able, ||)
+NN_BINARY_OP_CONCEPT(equal_able, ==)
+NN_BINARY_OP_CONCEPT(ne_able, !=)
+NN_BINARY_OP_CONCEPT(lt_able, <)
+NN_BINARY_OP_CONCEPT(gt_able, >)
+NN_BINARY_OP_CONCEPT(ge_able, >=)
+NN_BINARY_OP_CONCEPT(le_able, <=)
 
-KTN_BINARY_OP_CONCEPT(assign_able, =)
-KTN_BINARY_OP_CONCEPT(plus_assign_able, +=)
-KTN_BINARY_OP_CONCEPT(minus_assign_able, -=)
-KTN_BINARY_OP_CONCEPT(mult_assign_able, *=)
-KTN_BINARY_OP_CONCEPT(div_assign_able, /=)
-KTN_BINARY_OP_CONCEPT(mod_assign_able, %=)
-KTN_BINARY_OP_CONCEPT(bit_and_assign_able, &=)
-KTN_BINARY_OP_CONCEPT(bit_or_assign_able, |=)
-KTN_BINARY_OP_CONCEPT(bit_xor_assign_able, ^=)
-KTN_BINARY_OP_CONCEPT(shift_left_assign_able, <<=)
-KTN_BINARY_OP_CONCEPT(shift_right_assign_able, >>=)
+NN_BINARY_OP_CONCEPT(assign_able, =)
+NN_BINARY_OP_CONCEPT(plus_assign_able, +=)
+NN_BINARY_OP_CONCEPT(minus_assign_able, -=)
+NN_BINARY_OP_CONCEPT(mult_assign_able, *=)
+NN_BINARY_OP_CONCEPT(div_assign_able, /=)
+NN_BINARY_OP_CONCEPT(mod_assign_able, %=)
+NN_BINARY_OP_CONCEPT(bit_and_assign_able, &=)
+NN_BINARY_OP_CONCEPT(bit_or_assign_able, |=)
+NN_BINARY_OP_CONCEPT(bit_xor_assign_able, ^=)
+NN_BINARY_OP_CONCEPT(shift_left_assign_able, <<=)
+NN_BINARY_OP_CONCEPT(shift_right_assign_able, >>=)
 
-#undef KTN_BINARY_OP_CONCEPT
+#undef NN_BINARY_OP_CONCEPT
 
 template<typename Lhs, typename Rhs>
 concept access_able = requires(Lhs lhs, Rhs rhs) { lhs[rhs]; };
 
-}// namespace katana::concepts
+}// namespace nano::concepts

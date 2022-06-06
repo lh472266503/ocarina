@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/Katana.iml" filepath="$PROJECT_DIR$/.idea/Katana.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/Katana2.iml" filepath="$PROJECT_DIR$/.idea/Katana2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/Nano.iml" filepath="$PROJECT_DIR$/.idea/Nano.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/Nano2.iml" filepath="$PROJECT_DIR$/.idea/Nano2.iml" />
     </modules>
   </component>
 </project>

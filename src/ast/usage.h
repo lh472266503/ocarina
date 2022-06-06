@@ -6,7 +6,7 @@
 
 #include <cstdint>
 
-namespace katana {
+namespace nano {
 
 enum struct Usage : uint32_t {
     NONE = 0u,

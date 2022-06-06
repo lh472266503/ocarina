@@ -14,22 +14,22 @@ add_subdirectory(compile)
 add_subdirectory(runtime)
 add_subdirectory(backends)
 
-add_library(katana-all INTERFACE)
-target_link_libraries(katana-all INTERFACE
-        katana-ext
-        katana-dsl
-        katana-ast
-        katana-rt
-        katana-compile
-        katana-runtime
-        katana-core)
+add_library(nano-all INTERFACE)
+target_link_libraries(nano-all INTERFACE
+        nano-ext
+        nano-dsl
+        nano-ast
+        nano-rt
+        nano-compile
+        nano-runtime
+        nano-core)
 
-add_executable(katana main.cpp)
-target_link_libraries(katana katana-all)
+add_executable(nano main.cpp)
+target_link_libraries(nano nano-all)
 
 add_subdirectory(tests)
 
-set_target_properties(katana PROPERTIES
+set_target_properties(nano PROPERTIES
         PUBLIC_HEADER "${HEADER_FILES}"
         LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIG>/bin/"
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIG>/bin/"

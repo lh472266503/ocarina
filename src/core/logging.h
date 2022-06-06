@@ -12,7 +12,7 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 
-namespace katana {
+namespace nano {
 inline namespace core {
 spdlog::logger &logger() noexcept;
 
@@ -76,46 +76,46 @@ inline void error_if_not(bool predicate, Args &&...args) {
     error_if(!predicate, std::forward<Args>(args)...);
 }
 }
-}// namespace katana::core
+}// namespace nano::core
 
-#define KTN_SOURCE_LOCATION __FILE__, ":", __LINE__
+#define NN_SOURCE_LOCATION __FILE__, ":", __LINE__
 
 #define SET_LOG_LEVEL(lv) \
-    ::katana::core::set_log_level(spdlog::level::level_enum::lv);
+    ::nano::core::set_log_level(spdlog::level::level_enum::lv);
 
-#define KTN_DEBUG(...) \
-    ::katana::core::debug(__VA_ARGS__);
-#define KTN_DEBUG_FORMAT(FMT, ...) \
-    KTN_DEBUG(katana::format(FMT, __VA_ARGS__));
+#define NN_DEBUG(...) \
+    ::nano::core::debug(__VA_ARGS__);
+#define NN_DEBUG_FORMAT(FMT, ...) \
+    NN_DEBUG(nano::format(FMT, __VA_ARGS__));
 
-#define KTN_INFO(...) \
-    ::katana::core::info(__VA_ARGS__);
-#define KTN_INFO_FORMAT(FMT, ...) \
-    KTN_INFO(katana::format(FMT, __VA_ARGS__));
+#define NN_INFO(...) \
+    ::nano::core::info(__VA_ARGS__);
+#define NN_INFO_FORMAT(FMT, ...) \
+    NN_INFO(nano::format(FMT, __VA_ARGS__));
 
-#define KTN_WARNING(...) \
-    ::katana::core::warning(__VA_ARGS__, "\n    Source: ", KTN_SOURCE_LOCATION);
-#define KTN_WARNING_IF(...) \
-    ::katana::core::warning_if(__VA_ARGS__, "\n    Source: ", KTN_SOURCE_LOCATION);
-#define KTN_WARNING_IF_NOT(...) \
-    ::katana::core::warning_if_not(__VA_ARGS__, "\n    Source: ", KTN_SOURCE_LOCATION);
-#define KTN_WARNING_FORMAT(FMT, ...) \
-    KTN_WARNING(katana::format(FMT, __VA_ARGS__));
+#define NN_WARNING(...) \
+    ::nano::core::warning(__VA_ARGS__, "\n    Source: ", NN_SOURCE_LOCATION);
+#define NN_WARNING_IF(...) \
+    ::nano::core::warning_if(__VA_ARGS__, "\n    Source: ", NN_SOURCE_LOCATION);
+#define NN_WARNING_IF_NOT(...) \
+    ::nano::core::warning_if_not(__VA_ARGS__, "\n    Source: ", NN_SOURCE_LOCATION);
+#define NN_WARNING_FORMAT(FMT, ...) \
+    NN_WARNING(nano::format(FMT, __VA_ARGS__));
 
-#define KTN_EXCEPTION(...) \
-    ::katana::core::exception(__VA_ARGS__, "\n    Source: ", KTN_SOURCE_LOCATION);
-#define KTN_EXCEPTION_IF(...) \
-    ::katana::core::exception_if(__VA_ARGS__, "\n    Source: ", KTN_SOURCE_LOCATION);
-#define KTN_EXCEPTION_IF_NOT(...) \
-    ::katana::core::exception_if_not(__VA_ARGS__, "\n    Source: ", KTN_SOURCE_LOCATION);
-#define KTN_EXCEPTION_FORMAT(FMT, ...) \
-    KTN_EXCEPTION(katana::format(FMT, __VA_ARGS__));
+#define NN_EXCEPTION(...) \
+    ::nano::core::exception(__VA_ARGS__, "\n    Source: ", NN_SOURCE_LOCATION);
+#define NN_EXCEPTION_IF(...) \
+    ::nano::core::exception_if(__VA_ARGS__, "\n    Source: ", NN_SOURCE_LOCATION);
+#define NN_EXCEPTION_IF_NOT(...) \
+    ::nano::core::exception_if_not(__VA_ARGS__, "\n    Source: ", NN_SOURCE_LOCATION);
+#define NN_EXCEPTION_FORMAT(FMT, ...) \
+    NN_EXCEPTION(nano::format(FMT, __VA_ARGS__));
 
-#define KTN_ERROR(...) \
-    ::katana::core::error(__VA_ARGS__, "\n    Source: ", KTN_SOURCE_LOCATION);
-#define KTN_ERROR_IF(...) \
-    ::katana::core::error_if(__VA_ARGS__, "\n    Source: ", KTN_SOURCE_LOCATION);
-#define KTN_ERROR_IF_NOT(...) \
-    ::katana::core::error_if_not(__VA_ARGS__, "\n    Source: ", KTN_SOURCE_LOCATION);
-#define KTN_ERROR_FORMAT(FMT, ...) \
-    KTN_ERROR(katana::format(FMT, __VA_ARGS__));
+#define NN_ERROR(...) \
+    ::nano::core::error(__VA_ARGS__, "\n    Source: ", NN_SOURCE_LOCATION);
+#define NN_ERROR_IF(...) \
+    ::nano::core::error_if(__VA_ARGS__, "\n    Source: ", NN_SOURCE_LOCATION);
+#define NN_ERROR_IF_NOT(...) \
+    ::nano::core::error_if_not(__VA_ARGS__, "\n    Source: ", NN_SOURCE_LOCATION);
+#define NN_ERROR_FORMAT(FMT, ...) \
+    NN_ERROR(nano::format(FMT, __VA_ARGS__));

@@ -11,49 +11,49 @@
 #include <tuple>
 #include <type_traits>
 
-#ifdef KTN_AST_EXPORT_DLL
-#define KTN_AST_API __declspec(dllexport)
+#ifdef NN_AST_EXPORT_DLL
+#define NN_AST_API __declspec(dllexport)
 #else
-#define KTN_AST_API __declspec(dllimport)
+#define NN_AST_API __declspec(dllimport)
 #endif
 
-#ifdef KTN_CORE_EXPORT_DLL
-#define KTN_CORE_API __declspec(dllexport)
+#ifdef NN_CORE_EXPORT_DLL
+#define NN_CORE_API __declspec(dllexport)
 #else
-#define KTN_CORE_API __declspec(dllimport)
+#define NN_CORE_API __declspec(dllimport)
 #endif
 
-#ifdef KTN_DSL_EXPORT_DLL
-#define KTN_DSL_API __declspec(dllexport)
+#ifdef NN_DSL_EXPORT_DLL
+#define NN_DSL_API __declspec(dllexport)
 #else
-#define KTN_DSL_API __declspec(dllimport)
+#define NN_DSL_API __declspec(dllimport)
 #endif
 
-#ifdef KTN_COMPILE_EXPORT_DLL
-#define KTN_COMPILE_API __declspec(dllexport)
+#ifdef NN_COMPILE_EXPORT_DLL
+#define NN_COMPILE_API __declspec(dllexport)
 #else
-#define KTN_COMPILE_API __declspec(dllimport)
+#define NN_COMPILE_API __declspec(dllimport)
 #endif
 
-#ifdef KTN_RUNTIME_EXPORT_DLL
-#define KTN_RUNTIME_API __declspec(dllexport)
+#ifdef NN_RUNTIME_EXPORT_DLL
+#define NN_RUNTIME_API __declspec(dllexport)
 #else
-#define KTN_RUNTIME_API __declspec(dllimport)
+#define NN_RUNTIME_API __declspec(dllimport)
 #endif
 
-#ifdef KTN_BACKENDS_EXPORT_DLL
-#define KTN_BACKENDS_API __declspec(dllexport)
+#ifdef NN_BACKENDS_EXPORT_DLL
+#define NN_BACKENDS_API __declspec(dllexport)
 #else
-#define KTN_BACKENDS_API __declspec(dllimport)
+#define NN_BACKENDS_API __declspec(dllimport)
 #endif
 
 #ifdef _MSC_VER
-#define KTN_OFFSET_OF(type, member) __builtin_offsetof(type, member)
+#define NN_OFFSET_OF(type, member) __builtin_offsetof(type, member)
 #else
-#define KTN_OFFSET_OF(type, member) offsetof(type, member)
+#define NN_OFFSET_OF(type, member) offsetof(type, member)
 #endif
 
-#define KTN_USING_SV using namespace std::string_view_literals;
+#define NN_USING_SV using namespace std::string_view_literals;
 
-#define KTN_ASSERT(...) assert(__VA_ARGS__)
+#define NN_ASSERT(...) assert(__VA_ARGS__)
 

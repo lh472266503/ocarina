@@ -9,7 +9,7 @@
 #include "arg.h"
 #include "core/basic_types.h"
 
-namespace katana {
+namespace nano {
 
 template<typename Lhs, typename Rhs>
 inline void assign(Lhs &&lhs, Rhs &&rhs) noexcept;// implement in stmt.h
@@ -49,4 +49,4 @@ struct Var : public detail::Computable<T> {
 template<typename T>
 Var(T &&) -> Var<expr_value_t<T>>;
 
-}// namespace katana
+}// namespace nano

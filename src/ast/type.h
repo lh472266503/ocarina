@@ -9,7 +9,7 @@
 #include "core/stl.h"
 #include "core/macro_map.h"
 
-namespace katana {
+namespace nano {
 
 template<typename T>
 struct array_dimension {
@@ -22,7 +22,7 @@ struct array_dimension<T[N]> {
 };
 
 template<typename T, size_t N>
-struct array_dimension<katana::array<T, N>> {
+struct array_dimension<nano::array<T, N>> {
     static constexpr auto value = N;
 };
 
@@ -40,7 +40,7 @@ struct array_element<T[N]> {
 };
 
 template<typename T, size_t N>
-struct array_element<katana::array<T, N>> {
+struct array_element<nano::array<T, N>> {
     using type = T;
 };
 
@@ -54,7 +54,7 @@ template<typename T, size_t N>
 class is_array<T[N]> : public std::true_type {};
 
 template<typename T, size_t N>
-class is_array<katana::array<T, N>> : public std::true_type {};
+class is_array<nano::array<T, N>> : public std::true_type {};
 
 template<typename T>
 constexpr auto is_array_v = is_array<T>::value;
@@ -63,7 +63,7 @@ template<typename T>
 struct is_tuple : std::false_type {};
 
 template<typename... T>
-struct is_tuple<katana::tuple<T...>> : std::true_type {};
+struct is_tuple<nano::tuple<T...>> : std::true_type {};
 
 template<typename T>
 constexpr auto is_tuple_v = is_tuple<T>::value;
@@ -72,7 +72,7 @@ template<typename T>
 struct is_struct : std::false_type {};
 
 template<typename... T>
-struct is_struct<katana::tuple<T...>> : std::true_type {};
+struct is_struct<nano::tuple<T...>> : std::true_type {};
 
 template<typename T>
 constexpr auto is_struct_v = is_struct<T>::value;
@@ -83,12 +83,12 @@ template<typename T, size_t>
 using array_to_tuple_element_t = T;
 
 template<typename T, size_t N, size_t... i>
-[[nodiscard]] constexpr auto array_to_tuple_impl(katana::array<T, N> array, std::index_sequence<i...>) noexcept {
-    return katana::tuple<array_to_tuple_element_t<T, i>...>(array[i]...);
+[[nodiscard]] constexpr auto array_to_tuple_impl(nano::array<T, N> array, std::index_sequence<i...>) noexcept {
+    return nano::tuple<array_to_tuple_element_t<T, i>...>(array[i]...);
 }
 
 template<typename T, size_t N>
-[[nodiscard]] constexpr auto array_to_tuple_impl(katana::array<T, N> array = {}) noexcept {
+[[nodiscard]] constexpr auto array_to_tuple_impl(nano::array<T, N> array = {}) noexcept {
     return array_to_tuple_impl(array, std::make_index_sequence<N>());
 }
 
@@ -101,13 +101,13 @@ struct array_to_tuple {
 };
 
 template<typename T, size_t N>
-struct array_to_tuple<katana::array<T, N>> {
+struct array_to_tuple<nano::array<T, N>> {
     using type = decltype(detail::array_to_tuple_impl<typename array_to_tuple<T>::type, N>());
 };
 
 template<typename... T>
-struct array_to_tuple<katana::tuple<T...>> {
-    using type = katana::tuple<T...>;
+struct array_to_tuple<nano::tuple<T...>> {
+    using type = nano::tuple<T...>;
 };
 }// namespace detail
 
@@ -120,41 +120,41 @@ struct struct_member_tuple {
 };
 
 template<typename... T>
-struct struct_member_tuple<katana::tuple<T...>> {
-    using type = katana::tuple<T...>;
+struct struct_member_tuple<nano::tuple<T...>> {
+    using type = nano::tuple<T...>;
 };
 
 template<typename T, size_t N>
-struct struct_member_tuple<katana::array<T, N>> {
-    using type = array_to_tuple_t<katana::array<T, N>>;
+struct struct_member_tuple<nano::array<T, N>> {
+    using type = array_to_tuple_t<nano::array<T, N>>;
 };
 
 template<typename T, size_t N>
 struct struct_member_tuple<T[N]> {
-    using type = typename struct_member_tuple<katana::array<T, N>>::type;
+    using type = typename struct_member_tuple<nano::array<T, N>>::type;
 };
 
 template<typename T, size_t N>
 struct struct_member_tuple<Vector<T, N>> {
-    using type = typename struct_member_tuple<katana::array<T, N>>::type;
+    using type = typename struct_member_tuple<nano::array<T, N>>::type;
 };
 
 template<size_t N>
 struct struct_member_tuple<Matrix<N>> {
-    using type = typename struct_member_tuple<katana::array<Vector<float, N>, N>>::type;
+    using type = typename struct_member_tuple<nano::array<Vector<float, N>, N>>::type;
 };
 
 /// make struct reflection
-#define KTN_MEMBER_TYPE_MAP(member) std::remove_cvref_t<decltype(this_type::member)>
-#define KTN_TYPE_OFFSET_OF(member) KTN_OFFSET_OF(this_type, member)
-#define KTN_MAKE_STRUCT_REFLECTION(S, ...)                                               \
+#define NN_MEMBER_TYPE_MAP(member) std::remove_cvref_t<decltype(this_type::member)>
+#define NN_TYPE_OFFSET_OF(member) NN_OFFSET_OF(this_type, member)
+#define NN_MAKE_STRUCT_REFLECTION(S, ...)                                               \
     template<>                                                                           \
-    struct katana::is_struct<S> : std::true_type {};                                     \
+    struct nano::is_struct<S> : std::true_type {};                                     \
     template<>                                                                           \
-    struct katana::struct_member_tuple<S> {                                              \
+    struct nano::struct_member_tuple<S> {                                              \
         using this_type = Hit;                                                           \
-        using type = katana::tuple<MAP_LIST(KTN_MEMBER_TYPE_MAP, ##__VA_ARGS__)>;        \
-        using offset = std::index_sequence<MAP_LIST(KTN_TYPE_OFFSET_OF, ##__VA_ARGS__)>; \
+        using type = nano::tuple<MAP_LIST(NN_MEMBER_TYPE_MAP, ##__VA_ARGS__)>;        \
+        using offset = std::index_sequence<MAP_LIST(NN_TYPE_OFFSET_OF, ##__VA_ARGS__)>; \
         static_assert(is_valid_reflection_v<this_type, type, offset>,                    \
                       "may be order of members is wrong!");                              \
     };
@@ -168,8 +168,8 @@ struct canonical_layout {
 };
 
 template<typename... T>
-struct canonical_layout<katana::tuple<T...>> {
-    using type = katana::tuple<typename canonical_layout<T>::type...>;
+struct canonical_layout<nano::tuple<T...>> {
+    using type = nano::tuple<typename canonical_layout<T>::type...>;
 };
 
 template<typename T>
@@ -182,13 +182,13 @@ struct tuple_join {
 };
 
 template<typename... T, typename... U>
-struct tuple_join<katana::tuple<T...>, U...> {
-    using type = katana::tuple<T..., U...>;
+struct tuple_join<nano::tuple<T...>, U...> {
+    using type = nano::tuple<T..., U...>;
 };
 
 template<typename... A, typename... B, typename... C>
-struct tuple_join<katana::tuple<A...>, katana::tuple<B...>, C...> {
-    using type = typename tuple_join<katana::tuple<A..., B...>, C...>::type;
+struct tuple_join<nano::tuple<A...>, nano::tuple<B...>, C...> {
+    using type = typename tuple_join<nano::tuple<A..., B...>, C...>::type;
 };
 
 template<typename... T>
@@ -197,19 +197,19 @@ using tuple_join_t = typename tuple_join<T...>::type;
 namespace detail {
 template<typename A, typename B>
 struct linear_layout_impl {
-    using type = katana::tuple<B>;
+    using type = nano::tuple<B>;
 };
 
 template<typename... A, typename... B>
-struct linear_layout_impl<katana::tuple<A...>, katana::tuple<B...>> {
-    using type = tuple_join_t<katana::tuple<A...>,
-                              typename linear_layout_impl<katana::tuple<>, B>::type...>;
+struct linear_layout_impl<nano::tuple<A...>, nano::tuple<B...>> {
+    using type = tuple_join_t<nano::tuple<A...>,
+                              typename linear_layout_impl<nano::tuple<>, B>::type...>;
 };
 
 };// namespace detail
 
 template<typename T>
-using linear_layout = detail::linear_layout_impl<katana::tuple<>, canonical_layout_t<T>>;
+using linear_layout = detail::linear_layout_impl<nano::tuple<>, canonical_layout_t<T>>;
 
 template<typename T>
 using linear_layout_t = typename linear_layout<T>::type;
@@ -227,7 +227,7 @@ struct dimension_impl<T[N]> {
 };
 
 template<typename T, size_t N>
-struct dimension_impl<katana::array<T, N>> {
+struct dimension_impl<nano::array<T, N>> {
     static constexpr auto value = N;
 };
 
@@ -242,7 +242,7 @@ struct dimension_impl<Matrix<N>> {
 };
 
 template<typename... T>
-struct dimension_impl<katana::tuple<T...>> {
+struct dimension_impl<nano::tuple<T...>> {
     static constexpr auto value = sizeof...(T);
 };
 
@@ -262,7 +262,7 @@ struct TypeVisitor {
     virtual void visit(const Type *) noexcept = 0;
 };
 
-class KTN_AST_API Type {
+class NN_AST_API Type {
 public:
     enum struct Tag : uint32_t {
         BOOL,
@@ -292,8 +292,8 @@ private:
     size_t _alignment{0};
     uint32_t _dimension{0};
     Tag _tag{Tag::NONE};
-    katana::string _description;
-    katana::vector<const Type *> _members;
+    nano::string _description;
+    nano::vector<const Type *> _members;
 
 public:
     template<typename T>
@@ -313,9 +313,9 @@ public:
     [[nodiscard]] constexpr size_t size() const noexcept { return _size; }
     [[nodiscard]] constexpr size_t alignment() const noexcept { return _alignment; }
     [[nodiscard]] constexpr Tag tag() const noexcept { return _tag; }
-    [[nodiscard]] auto description() const noexcept { return katana::string_view{_description}; }
+    [[nodiscard]] auto description() const noexcept { return nano::string_view{_description}; }
     [[nodiscard]] constexpr size_t dimension() const noexcept;
-    [[nodiscard]] katana::span<const Type *const> members() const noexcept;
+    [[nodiscard]] nano::span<const Type *const> members() const noexcept;
     [[nodiscard]] const Type *element() const noexcept;
     [[nodiscard]] constexpr bool is_scalar() const noexcept;
     [[nodiscard]] constexpr auto is_basic() const noexcept;
@@ -329,4 +329,4 @@ public:
     [[nodiscard]] constexpr bool is_accel() const noexcept { return _tag == Tag::ACCEL; }
 };
 
-}// namespace katana
+}// namespace nano

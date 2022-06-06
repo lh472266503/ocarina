@@ -13,9 +13,9 @@
 #include "variable.h"
 #include "core/logging.h"
 
-namespace katana {
+namespace nano {
 
-class FunctionBuilder : public katana::enable_shared_from_this<FunctionBuilder>,
+class FunctionBuilder : public nano::enable_shared_from_this<FunctionBuilder>,
                         public concepts::Noncopyable {
 public:
     using Tag = Function::Tag;
@@ -23,17 +23,17 @@ public:
 
 private:
     const Type *_ret{nullptr};
-    katana::vector<katana::unique_ptr<Expression>> _all_expressions;
-    katana::vector<katana::unique_ptr<Statement>> _all_statements;
-    katana::vector<ScopeStmt *> _scope_stack;//
-    katana::vector<Variable> _builtin_variables;
-    katana::vector<Variable> _arguments;
-    katana::vector<Usage> _variable_usages;
-    katana::vector<katana::shared_ptr<const FunctionBuilder>> _used_custom_callables;
+    nano::vector<nano::unique_ptr<Expression>> _all_expressions;
+    nano::vector<nano::unique_ptr<Statement>> _all_statements;
+    nano::vector<ScopeStmt *> _scope_stack;//
+    nano::vector<Variable> _builtin_variables;
+    nano::vector<Variable> _arguments;
+    nano::vector<Usage> _variable_usages;
+    nano::vector<nano::shared_ptr<const FunctionBuilder>> _used_custom_callables;
     Tag _tag{};
 
 protected:
-    [[nodiscard]] static katana::vector<FunctionBuilder *> &_function_stack() noexcept;
+    [[nodiscard]] static nano::vector<FunctionBuilder *> &_function_stack() noexcept;
     [[nodiscard]] const RefExpr *_builtin(Variable::Tag tag) noexcept;
     void _void_expr(const Expression *expr) noexcept;
     [[nodiscard]] uint _next_variable_uid() noexcept;
@@ -41,7 +41,7 @@ protected:
 
     template<typename Stmt, typename... Args>
     const Stmt *_create_statement(Args &&...args) noexcept {
-        auto statement = katana::make_unique<Stmt>(std::forward<Args>(args)...);
+        auto statement = nano::make_unique<Stmt>(std::forward<Args>(args)...);
         auto ret = statement.get();
         _all_statements.push_back(std::move(statement));
         return ret;
@@ -49,7 +49,7 @@ protected:
 
     template<typename Expr, typename... Args>
     const Expr *_create_expression(Args &&...args) noexcept {
-        auto expression = katana::make_unique<Expr>(std::forward<Args>(args)...);
+        auto expression = nano::make_unique<Expr>(std::forward<Args>(args)...);
         auto ret = expression.get();
         _all_expressions.push_back(std::move(expression));
         return ret;
@@ -58,11 +58,11 @@ protected:
 private:
     template<typename Func>
     static auto _define(Function::Tag tag, Func &&func) noexcept {
-        auto builder = katana::make_shared<FunctionBuilder>(tag);
+        auto builder = nano::make_shared<FunctionBuilder>(tag);
         push(builder.get());
         func();
         pop(builder.get());
-        return katana::const_pointer_cast<const FunctionBuilder>(builder);
+        return nano::const_pointer_cast<const FunctionBuilder>(builder);
     }
 
 public:
@@ -82,7 +82,7 @@ public:
     FunctionBuilder &operator=(FunctionBuilder &&) noexcept = delete;
     FunctionBuilder &operator=(const FunctionBuilder &) noexcept = delete;
     ~FunctionBuilder() noexcept {
-        KTN_DEBUG("function builder was destructed");
+        NN_DEBUG("function builder was destructed");
     }
     [[nodiscard]] static FunctionBuilder *current() noexcept;
     static void push(FunctionBuilder *builder) noexcept;
@@ -108,4 +108,4 @@ public:
     [[nodiscard]] ForStmt *for_(const RefExpr *var, const Expression *condition, const Expression *update) noexcept;
 };
 
-}// namespace katana
+}// namespace nano

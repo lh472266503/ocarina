@@ -9,7 +9,7 @@
 #include "dsl/computable.h"
 #include "ast/function_builder.h"
 
-namespace katana {
+namespace nano {
 
 struct Expression;
 
@@ -26,7 +26,7 @@ template<typename T>
     if constexpr (is_dsl_v<T>) {
         return std::forward<T>(v).expression();
     } else {
-        return katana::FunctionBuilder::current()->literal(Type::of<T>(), std::forward<T>(v));
+        return nano::FunctionBuilder::current()->literal(Type::of<T>(), std::forward<T>(v));
     }
 }
 
@@ -34,4 +34,4 @@ template<typename T>
 
 
 
-}// namespace katana
+}// namespace nano

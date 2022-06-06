@@ -13,6 +13,6 @@
 
 /// make struct extension
 
-#define KTN_STRUCT(S, ...) \
-    KTN_MAKE_STRUCT_REFLECTION(S, ##__VA_ARGS__) \
-    KTN_MAKE_STRUCT_DESC(S, ##__VA_ARGS__)
+#define NN_STRUCT(S, ...) \
+    NN_MAKE_STRUCT_REFLECTION(S, ##__VA_ARGS__) \
+    NN_MAKE_STRUCT_DESC(S, ##__VA_ARGS__)

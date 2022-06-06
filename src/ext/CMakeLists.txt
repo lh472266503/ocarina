@@ -1,6 +1,6 @@
 
-add_library(katana-ext SHARED empty.cpp)
-set_target_properties(katana-ext PROPERTIES
+add_library(nano-ext SHARED empty.cpp)
+set_target_properties(nano-ext PROPERTIES
         PUBLIC_HEADER "${HEADER_FILES}"
         LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIG>/bin/"
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIG>/bin/"
@@ -12,7 +12,7 @@ target_compile_definitions(xxhash INTERFACE XXH_INLINE_ALL)
 set_target_properties(xxhash PROPERTIES
         UNITY_BUILD OFF)
 
-target_link_libraries(katana-ext PUBLIC xxhash)
+target_link_libraries(nano-ext PUBLIC xxhash)
 
 set(FMT_OS OFF CACHE BOOL "" FORCE)
 add_subdirectory(fmt)
@@ -22,7 +22,7 @@ target_compile_definitions(fmt-header-only INTERFACE
         FMT_HEADER_ONLY=1
         FMT_USE_NOEXCEPT=1)
 
-target_link_libraries(katana-ext PUBLIC fmt::fmt-header-only)
+target_link_libraries(nano-ext PUBLIC fmt::fmt-header-only)
 
 add_subdirectory(EASTL)
-target_link_libraries(katana-ext PUBLIC EASTL)
+target_link_libraries(nano-ext PUBLIC EASTL)

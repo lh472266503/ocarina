@@ -13,7 +13,7 @@
 #include "expr_traits.h"
 #include "arg.h"
 
-namespace katana {
+namespace nano {
 
 namespace detail {
 template<typename T>
@@ -75,25 +75,25 @@ struct is_callable<Callable<T>> : std::true_type {};
 namespace detail {
 
 template<typename VarTuple, typename TagTuple, typename T, size_t... i>
-[[nodiscard]] auto create_argument_definition_impl(T tuple, katana::index_sequence<i...>) {
-    return VarTuple(katana::tuple_element_t<i, VarTuple>{katana::tuple_element_t<i, TagTuple>{}}...);
+[[nodiscard]] auto create_argument_definition_impl(T tuple, nano::index_sequence<i...>) {
+    return VarTuple(nano::tuple_element_t<i, VarTuple>{nano::tuple_element_t<i, TagTuple>{}}...);
 }
 
 }// namespace detail
 
 template<typename VarTuple, typename TagTuple>
 [[nodiscard]] auto create_argument_definition() {
-    return detail::create_argument_definition_impl<VarTuple, TagTuple>(katana::tuple(), katana::make_index_sequence<katana::tuple_size_v<VarTuple>>());
+    return detail::create_argument_definition_impl<VarTuple, TagTuple>(nano::tuple(), nano::make_index_sequence<nano::tuple_size_v<VarTuple>>());
 }
 
 namespace detail {
 template<typename... Args, typename Func, size_t... i>
-auto create(Func &&func, katana::index_sequence<i...>) {
+auto create(Func &&func, nano::index_sequence<i...>) {
     static_assert(std::is_invocable_v<Func, detail::prototype_to_var_t<Args>...>);
-    using var_tuple = katana::tuple<Var<std::remove_cvref_t<Args>>...>;
-    using tag_tuple = katana::tuple<detail::prototype_to_creation_tag_t<Args>...>;
+    using var_tuple = nano::tuple<Var<std::remove_cvref_t<Args>>...>;
+    using tag_tuple = nano::tuple<detail::prototype_to_creation_tag_t<Args>...>;
     auto args = create_argument_definition<var_tuple, tag_tuple>();
-    return func(std::forward<detail::prototype_to_var_t<Args>>(katana::get<i>(args))...);
+    return func(std::forward<detail::prototype_to_var_t<Args>>(nano::get<i>(args))...);
 }
 }// namespace detail
 
@@ -102,16 +102,16 @@ class Callable<Ret(Args...)> {
     static_assert(std::negation_v<std::disjunction<std::is_pointer<Args>...>>);
 
 private:
-    katana::shared_ptr<const FunctionBuilder> _builder;
+    nano::shared_ptr<const FunctionBuilder> _builder;
 
 public:
     template<typename Func>
     Callable(Func &&func) noexcept
         : _builder(FunctionBuilder::define_callable([&] {
               if constexpr (std::is_same_v<void, Ret>) {
-                  detail::create<Args...>(func, katana::index_sequence_for<Args...>());
+                  detail::create<Args...>(func, nano::index_sequence_for<Args...>());
               } else {
-                  auto ret = def(detail::create<Args...>(func, katana::index_sequence_for<Args...>()));
+                  auto ret = def(detail::create<Args...>(func, nano::index_sequence_for<Args...>()));
                   FunctionBuilder::current()->return_(ret.expression());
               }
           })) {}
@@ -139,21 +139,21 @@ template<typename F>
 struct canonical_signature
     : canonical_signature<decltype(&F::operator())> {};
 
-#define KTN_MAKE_MEMBER_FUNC_SIGNATURE(...)                       \
+#define NN_MAKE_MEMBER_FUNC_SIGNATURE(...)                       \
     template<typename Ret, typename Cls, typename... Args>        \
     struct canonical_signature<Ret (Cls::*)(Args...) __VA_ARGS__> \
         : canonical_signature<Ret(Args...)> {};
 
-KTN_MAKE_MEMBER_FUNC_SIGNATURE()
-KTN_MAKE_MEMBER_FUNC_SIGNATURE(const)
-KTN_MAKE_MEMBER_FUNC_SIGNATURE(volatile)
-KTN_MAKE_MEMBER_FUNC_SIGNATURE(noexcept)
-KTN_MAKE_MEMBER_FUNC_SIGNATURE(const noexcept)
-KTN_MAKE_MEMBER_FUNC_SIGNATURE(const volatile)
-KTN_MAKE_MEMBER_FUNC_SIGNATURE(volatile noexcept)
-KTN_MAKE_MEMBER_FUNC_SIGNATURE(const volatile noexcept)
+NN_MAKE_MEMBER_FUNC_SIGNATURE()
+NN_MAKE_MEMBER_FUNC_SIGNATURE(const)
+NN_MAKE_MEMBER_FUNC_SIGNATURE(volatile)
+NN_MAKE_MEMBER_FUNC_SIGNATURE(noexcept)
+NN_MAKE_MEMBER_FUNC_SIGNATURE(const noexcept)
+NN_MAKE_MEMBER_FUNC_SIGNATURE(const volatile)
+NN_MAKE_MEMBER_FUNC_SIGNATURE(volatile noexcept)
+NN_MAKE_MEMBER_FUNC_SIGNATURE(const volatile noexcept)
 
-#undef KTN_MAKE_MEMBER_FUNC_SIGNATURE
+#undef NN_MAKE_MEMBER_FUNC_SIGNATURE
 
 template<typename T>
 using canonical_signature_t = typename canonical_signature<T>::type;
@@ -184,4 +184,4 @@ using dsl_function_t = typename dsl_function<T>::type;
 template<typename T>
 Callable(T &&) -> Callable<detail::dsl_function_t<std::remove_cvref_t<T>>>;
 
-}// namespace katana
+}// namespace nano

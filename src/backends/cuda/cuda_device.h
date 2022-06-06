@@ -8,9 +8,9 @@
 #include "core/stl.h"
 #include "runtime/device.h"
 
-namespace katana {
+namespace nano {
 class CUDADevice : public Device::Impl {
 private:
 public:
 };
-}// namespace katana
+}// namespace nano

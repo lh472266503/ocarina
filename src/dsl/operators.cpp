@@ -4,6 +4,6 @@
 
 #include "operators.h"
 
-namespace katana {
+namespace nano {
 
 }

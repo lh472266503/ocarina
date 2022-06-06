@@ -7,13 +7,13 @@
 #include "core/header.h"
 #include "core/stl.h"
 
-namespace katana {
+namespace nano {
 class Device {
 public:
     struct Impl {
 
     };
-    using Handle = katana::unique_ptr<Impl>;
+    using Handle = nano::unique_ptr<Impl>;
 
 protected:
     Handle _impl;
@@ -21,4 +21,4 @@ protected:
 public:
     Device();
 };
-}// namespace katana
+}// namespace nano

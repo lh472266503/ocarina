@@ -7,7 +7,7 @@
 #include "core/header.h"
 #include "core/stl.h"
 
-namespace katana {
+namespace nano {
 
 template<typename... T>
 struct always_false : std::false_type {};
@@ -251,4 +251,4 @@ using is_basic = std::disjunction<is_scalar<T>, is_vector<T>, is_matrix<T>>;
 template<typename T>
 constexpr auto is_basic_v = is_basic<T>::value;
 
-}// namespace katana
+}// namespace nano

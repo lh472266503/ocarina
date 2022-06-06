@@ -6,7 +6,7 @@
 
 #include "basic_traits.h"
 
-namespace katana {
+namespace nano {
 
 namespace detail {
 template<typename T, size_t N>
@@ -126,7 +126,7 @@ using float2x2 = Matrix<2>;
 using float3x3 = Matrix<3>;
 using float4x4 = Matrix<4>;
 
-using basic_types = katana::tuple<
+using basic_types = nano::tuple<
     bool, float, int, uint,
     bool2, float2, int2, uint2,
     bool3, float3, int3, uint3,
@@ -145,18 +145,18 @@ using basic_types = katana::tuple<
 [[nodiscard]] constexpr bool none(const bool3 v) noexcept { return !any(v); }
 [[nodiscard]] constexpr bool none(const bool4 v) noexcept { return !any(v); }
 
-}// namespace katana
+}// namespace nano
 
 template<typename T, size_t N>
-requires katana::is_number_v<T>
-[[nodiscard]] constexpr auto operator+(const katana::Vector<T, N> v) noexcept {
+requires nano::is_number_v<T>
+[[nodiscard]] constexpr auto operator+(const nano::Vector<T, N> v) noexcept {
     return v;
 }
 
 template<typename T, size_t N>
-requires katana::is_number_v<T>
-[[nodiscard]] constexpr auto operator-(const katana::Vector<T, N> v) noexcept {
-    using R = katana::Vector<T, N>;
+requires nano::is_number_v<T>
+[[nodiscard]] constexpr auto operator-(const nano::Vector<T, N> v) noexcept {
+    using R = nano::Vector<T, N>;
     if constexpr (N == 2) {
         return R{-v.x, -v.y};
     } else if constexpr (N == 3) {
@@ -167,20 +167,20 @@ requires katana::is_number_v<T>
 }
 
 template<typename T, size_t N>
-[[nodiscard]] constexpr auto operator!(const katana::Vector<T, N> v) noexcept {
+[[nodiscard]] constexpr auto operator!(const nano::Vector<T, N> v) noexcept {
     if constexpr (N == 2u) {
-        return katana::bool2{!v.x, !v.y};
+        return nano::bool2{!v.x, !v.y};
     } else if constexpr (N == 3u) {
-        return katana::bool3{!v.x, !v.y, !v.z};
+        return nano::bool3{!v.x, !v.y, !v.z};
     } else {
-        return katana::bool3{!v.x, !v.y, !v.z, !v.w};
+        return nano::bool3{!v.x, !v.y, !v.z, !v.w};
     }
 }
 
 template<typename T, size_t N>
-requires katana::is_integral_v<T>
-[[nodiscard]] constexpr auto operator~(const katana::Vector<T, N> v) noexcept {
-    using R = katana::Vector<T, N>;
+requires nano::is_integral_v<T>
+[[nodiscard]] constexpr auto operator~(const nano::Vector<T, N> v) noexcept {
+    using R = nano::Vector<T, N>;
     if constexpr (N == 2) {
         return R{~v.x, ~v.y};
     } else if constexpr (N == 3) {
@@ -190,23 +190,23 @@ requires katana::is_integral_v<T>
     }
 }
 
-#define KTN_MAKE_VECTOR_BINARY_OPERATOR(op, ...)                           \
+#define NN_MAKE_VECTOR_BINARY_OPERATOR(op, ...)                           \
     template<typename T, size_t N>                                         \
     requires __VA_ARGS__                                                   \
         [[nodiscard]] constexpr auto                                       \
         operator op(                                                       \
-            katana::Vector<T, N> lhs, katana::Vector<T, N> rhs) noexcept { \
+            nano::Vector<T, N> lhs, nano::Vector<T, N> rhs) noexcept { \
         if constexpr (N == 2) {                                            \
-            return katana::Vector<T, 2>{                                   \
+            return nano::Vector<T, 2>{                                   \
                 lhs.x op rhs.x,                                            \
                 lhs.y op rhs.y};                                           \
         } else if constexpr (N == 3) {                                     \
-            return katana::Vector<T, 3>{                                   \
+            return nano::Vector<T, 3>{                                   \
                 lhs.x op rhs.x,                                            \
                 lhs.y op rhs.y,                                            \
                 lhs.z op rhs.z};                                           \
         } else {                                                           \
-            return katana::Vector<T, 4>{                                   \
+            return nano::Vector<T, 4>{                                   \
                 lhs.x op rhs.x,                                            \
                 lhs.y op rhs.y,                                            \
                 lhs.z op rhs.z,                                            \
@@ -216,32 +216,32 @@ requires katana::is_integral_v<T>
     template<typename T, size_t N>                                         \
     requires __VA_ARGS__                                                   \
         [[nodiscard]] constexpr auto                                       \
-        operator op(katana::Vector<T, N> lhs, T rhs) noexcept {            \
-        return lhs op katana::Vector<T, N>{rhs};                           \
+        operator op(nano::Vector<T, N> lhs, T rhs) noexcept {            \
+        return lhs op nano::Vector<T, N>{rhs};                           \
     }                                                                      \
     template<typename T, size_t N>                                         \
     requires __VA_ARGS__                                                   \
         [[nodiscard]] constexpr auto                                       \
-        operator op(T lhs, katana::Vector<T, N> rhs) noexcept {            \
-        return katana::Vector<T, N>{lhs} op rhs;                           \
+        operator op(T lhs, nano::Vector<T, N> rhs) noexcept {            \
+        return nano::Vector<T, N>{lhs} op rhs;                           \
     }
-KTN_MAKE_VECTOR_BINARY_OPERATOR(+, katana::is_number_v<T>)
-KTN_MAKE_VECTOR_BINARY_OPERATOR(-, katana::is_number_v<T>)
-KTN_MAKE_VECTOR_BINARY_OPERATOR(*, katana::is_number_v<T>)
-KTN_MAKE_VECTOR_BINARY_OPERATOR(/, katana::is_number_v<T>)
-KTN_MAKE_VECTOR_BINARY_OPERATOR(%, katana::is_integral_v<T>)
-KTN_MAKE_VECTOR_BINARY_OPERATOR(>>, katana::is_integral_v<T>)
-KTN_MAKE_VECTOR_BINARY_OPERATOR(<<, katana::is_integral_v<T>)
-KTN_MAKE_VECTOR_BINARY_OPERATOR(|, std::negation_v<katana::is_floating_point<T>>)
-KTN_MAKE_VECTOR_BINARY_OPERATOR(&, std::negation_v<katana::is_floating_point<T>>)
-KTN_MAKE_VECTOR_BINARY_OPERATOR(^, std::negation_v<katana::is_floating_point<T>>)
+NN_MAKE_VECTOR_BINARY_OPERATOR(+, nano::is_number_v<T>)
+NN_MAKE_VECTOR_BINARY_OPERATOR(-, nano::is_number_v<T>)
+NN_MAKE_VECTOR_BINARY_OPERATOR(*, nano::is_number_v<T>)
+NN_MAKE_VECTOR_BINARY_OPERATOR(/, nano::is_number_v<T>)
+NN_MAKE_VECTOR_BINARY_OPERATOR(%, nano::is_integral_v<T>)
+NN_MAKE_VECTOR_BINARY_OPERATOR(>>, nano::is_integral_v<T>)
+NN_MAKE_VECTOR_BINARY_OPERATOR(<<, nano::is_integral_v<T>)
+NN_MAKE_VECTOR_BINARY_OPERATOR(|, std::negation_v<nano::is_floating_point<T>>)
+NN_MAKE_VECTOR_BINARY_OPERATOR(&, std::negation_v<nano::is_floating_point<T>>)
+NN_MAKE_VECTOR_BINARY_OPERATOR(^, std::negation_v<nano::is_floating_point<T>>)
 
-#undef KTN_MAKE_VECTOR_BINARY_OPERATOR
+#undef NN_MAKE_VECTOR_BINARY_OPERATOR
 
-#define KTN_MAKE_VECTOR_ASSIGN_OPERATOR(op, ...)                        \
+#define NN_MAKE_VECTOR_ASSIGN_OPERATOR(op, ...)                        \
     template<typename T, size_t N>                                      \
     requires __VA_ARGS__ constexpr decltype(auto) operator op(          \
-        katana::Vector<T, N> &lhs, katana::Vector<T, N> rhs) noexcept { \
+        nano::Vector<T, N> &lhs, nano::Vector<T, N> rhs) noexcept { \
         lhs.x op rhs.x;                                                 \
         lhs.y op rhs.y;                                                 \
         if constexpr (N >= 3) { lhs.z op rhs.z; }                       \
@@ -250,39 +250,39 @@ KTN_MAKE_VECTOR_BINARY_OPERATOR(^, std::negation_v<katana::is_floating_point<T>>
     }                                                                   \
     template<typename T, size_t N>                                      \
     requires __VA_ARGS__ constexpr decltype(auto) operator op(          \
-        katana::Vector<T, N> &lhs, T rhs) noexcept {                    \
-        return (lhs op katana::Vector<T, N>{rhs});                      \
+        nano::Vector<T, N> &lhs, T rhs) noexcept {                    \
+        return (lhs op nano::Vector<T, N>{rhs});                      \
     }
-KTN_MAKE_VECTOR_ASSIGN_OPERATOR(+=, katana::is_number_v<T>)
-KTN_MAKE_VECTOR_ASSIGN_OPERATOR(-=, katana::is_number_v<T>)
-KTN_MAKE_VECTOR_ASSIGN_OPERATOR(*=, katana::is_number_v<T>)
-KTN_MAKE_VECTOR_ASSIGN_OPERATOR(/=, katana::is_number_v<T>)
-KTN_MAKE_VECTOR_ASSIGN_OPERATOR(%=, katana::is_integral_v<T>)
-KTN_MAKE_VECTOR_ASSIGN_OPERATOR(<<=, katana::is_integral_v<T>)
-KTN_MAKE_VECTOR_ASSIGN_OPERATOR(>>=, katana::is_integral_v<T>)
-KTN_MAKE_VECTOR_ASSIGN_OPERATOR(|=, std::negation_v<katana::is_floating_point<T>>)
-KTN_MAKE_VECTOR_ASSIGN_OPERATOR(&=, std::negation_v<katana::is_floating_point<T>>)
-KTN_MAKE_VECTOR_ASSIGN_OPERATOR(^=, std::negation_v<katana::is_floating_point<T>>)
+NN_MAKE_VECTOR_ASSIGN_OPERATOR(+=, nano::is_number_v<T>)
+NN_MAKE_VECTOR_ASSIGN_OPERATOR(-=, nano::is_number_v<T>)
+NN_MAKE_VECTOR_ASSIGN_OPERATOR(*=, nano::is_number_v<T>)
+NN_MAKE_VECTOR_ASSIGN_OPERATOR(/=, nano::is_number_v<T>)
+NN_MAKE_VECTOR_ASSIGN_OPERATOR(%=, nano::is_integral_v<T>)
+NN_MAKE_VECTOR_ASSIGN_OPERATOR(<<=, nano::is_integral_v<T>)
+NN_MAKE_VECTOR_ASSIGN_OPERATOR(>>=, nano::is_integral_v<T>)
+NN_MAKE_VECTOR_ASSIGN_OPERATOR(|=, std::negation_v<nano::is_floating_point<T>>)
+NN_MAKE_VECTOR_ASSIGN_OPERATOR(&=, std::negation_v<nano::is_floating_point<T>>)
+NN_MAKE_VECTOR_ASSIGN_OPERATOR(^=, std::negation_v<nano::is_floating_point<T>>)
 
-#undef KTN_MAKE_VECTOR_ASSIGN_OPERATOR
+#undef NN_MAKE_VECTOR_ASSIGN_OPERATOR
 
-#define KTN_MAKE_VECTOR_LOGIC_OPERATOR(op, ...)                            \
+#define NN_MAKE_VECTOR_LOGIC_OPERATOR(op, ...)                            \
     template<typename T, size_t N>                                         \
     requires __VA_ARGS__                                                   \
         [[nodiscard]] constexpr auto                                       \
         operator op(                                                       \
-            katana::Vector<T, N> lhs, katana::Vector<T, N> rhs) noexcept { \
+            nano::Vector<T, N> lhs, nano::Vector<T, N> rhs) noexcept { \
         if constexpr (N == 2) {                                            \
-            return katana::bool2{                                          \
+            return nano::bool2{                                          \
                 lhs.x op rhs.x,                                            \
                 lhs.y op rhs.y};                                           \
         } else if constexpr (N == 3) {                                     \
-            return katana::bool3{                                          \
+            return nano::bool3{                                          \
                 lhs.x op rhs.x,                                            \
                 lhs.y op rhs.y,                                            \
                 lhs.z op rhs.z};                                           \
         } else {                                                           \
-            return katana::bool4{                                          \
+            return nano::bool4{                                          \
                 lhs.x op rhs.x,                                            \
                 lhs.y op rhs.y,                                            \
                 lhs.z op rhs.z,                                            \
@@ -292,112 +292,112 @@ KTN_MAKE_VECTOR_ASSIGN_OPERATOR(^=, std::negation_v<katana::is_floating_point<T>
     template<typename T, size_t N>                                         \
     requires __VA_ARGS__                                                   \
         [[nodiscard]] constexpr auto                                       \
-        operator op(katana::Vector<T, N> lhs, T rhs) noexcept {            \
-        return lhs op katana::Vector<T, N>{rhs};                           \
+        operator op(nano::Vector<T, N> lhs, T rhs) noexcept {            \
+        return lhs op nano::Vector<T, N>{rhs};                           \
     }                                                                      \
     template<typename T, size_t N>                                         \
     requires __VA_ARGS__                                                   \
         [[nodiscard]] constexpr auto                                       \
-        operator op(T lhs, katana::Vector<T, N> rhs) noexcept {            \
-        return katana::Vector<T, N>{lhs} op rhs;                           \
+        operator op(T lhs, nano::Vector<T, N> rhs) noexcept {            \
+        return nano::Vector<T, N>{lhs} op rhs;                           \
     }
-KTN_MAKE_VECTOR_LOGIC_OPERATOR(||, katana::is_boolean_v<T>)
-KTN_MAKE_VECTOR_LOGIC_OPERATOR(&&, katana::is_boolean_v<T>)
-KTN_MAKE_VECTOR_LOGIC_OPERATOR(==, true)
-KTN_MAKE_VECTOR_LOGIC_OPERATOR(!=, true)
-KTN_MAKE_VECTOR_LOGIC_OPERATOR(<, katana::is_number_v<T>)
-KTN_MAKE_VECTOR_LOGIC_OPERATOR(>, katana::is_number_v<T>)
-KTN_MAKE_VECTOR_LOGIC_OPERATOR(<=, katana::is_number_v<T>)
-KTN_MAKE_VECTOR_LOGIC_OPERATOR(>=, katana::is_number_v<T>)
+NN_MAKE_VECTOR_LOGIC_OPERATOR(||, nano::is_boolean_v<T>)
+NN_MAKE_VECTOR_LOGIC_OPERATOR(&&, nano::is_boolean_v<T>)
+NN_MAKE_VECTOR_LOGIC_OPERATOR(==, true)
+NN_MAKE_VECTOR_LOGIC_OPERATOR(!=, true)
+NN_MAKE_VECTOR_LOGIC_OPERATOR(<, nano::is_number_v<T>)
+NN_MAKE_VECTOR_LOGIC_OPERATOR(>, nano::is_number_v<T>)
+NN_MAKE_VECTOR_LOGIC_OPERATOR(<=, nano::is_number_v<T>)
+NN_MAKE_VECTOR_LOGIC_OPERATOR(>=, nano::is_number_v<T>)
 
-#undef KTN_MAKE_VECTOR_LOGIC_OPERATOR
+#undef NN_MAKE_VECTOR_LOGIC_OPERATOR
 
-[[nodiscard]] constexpr auto operator*(const katana::float2x2 m, float s) noexcept {
-    return katana::float2x2{m[0] * s, m[1] * s};
+[[nodiscard]] constexpr auto operator*(const nano::float2x2 m, float s) noexcept {
+    return nano::float2x2{m[0] * s, m[1] * s};
 }
 
-[[nodiscard]] constexpr auto operator*(float s, const katana::float2x2 m) noexcept {
+[[nodiscard]] constexpr auto operator*(float s, const nano::float2x2 m) noexcept {
     return m * s;
 }
 
-[[nodiscard]] constexpr auto operator/(const katana::float2x2 m, float s) noexcept {
+[[nodiscard]] constexpr auto operator/(const nano::float2x2 m, float s) noexcept {
     return m * (1.0f / s);
 }
 
-[[nodiscard]] constexpr auto operator*(const katana::float2x2 m, const katana::float2 v) noexcept {
+[[nodiscard]] constexpr auto operator*(const nano::float2x2 m, const nano::float2 v) noexcept {
     return v.x * m[0] + v.y * m[1];
 }
 
-[[nodiscard]] constexpr auto operator*(const katana::float2x2 lhs, const katana::float2x2 rhs) noexcept {
-    return katana::float2x2{lhs * rhs[0], lhs * rhs[1]};
+[[nodiscard]] constexpr auto operator*(const nano::float2x2 lhs, const nano::float2x2 rhs) noexcept {
+    return nano::float2x2{lhs * rhs[0], lhs * rhs[1]};
 }
 
-[[nodiscard]] constexpr auto operator+(const katana::float2x2 lhs, const katana::float2x2 rhs) noexcept {
-    return katana::float2x2{lhs[0] + rhs[0], lhs[1] + rhs[1]};
+[[nodiscard]] constexpr auto operator+(const nano::float2x2 lhs, const nano::float2x2 rhs) noexcept {
+    return nano::float2x2{lhs[0] + rhs[0], lhs[1] + rhs[1]};
 }
 
-[[nodiscard]] constexpr auto operator-(const katana::float2x2 lhs, const katana::float2x2 rhs) noexcept {
-    return katana::float2x2{lhs[0] - rhs[0], lhs[1] - rhs[1]};
+[[nodiscard]] constexpr auto operator-(const nano::float2x2 lhs, const nano::float2x2 rhs) noexcept {
+    return nano::float2x2{lhs[0] - rhs[0], lhs[1] - rhs[1]};
 }
 
-[[nodiscard]] constexpr auto operator*(const katana::float3x3 m, float s) noexcept {
-    return katana::float3x3{m[0] * s, m[1] * s, m[2] * s};
+[[nodiscard]] constexpr auto operator*(const nano::float3x3 m, float s) noexcept {
+    return nano::float3x3{m[0] * s, m[1] * s, m[2] * s};
 }
 
-[[nodiscard]] constexpr auto operator*(float s, const katana::float3x3 m) noexcept {
+[[nodiscard]] constexpr auto operator*(float s, const nano::float3x3 m) noexcept {
     return m * s;
 }
 
-[[nodiscard]] constexpr auto operator/(const katana::float3x3 m, float s) noexcept {
+[[nodiscard]] constexpr auto operator/(const nano::float3x3 m, float s) noexcept {
     return m * (1.0f / s);
 }
 
-[[nodiscard]] constexpr auto operator*(const katana::float3x3 m, const katana::float3 v) noexcept {
+[[nodiscard]] constexpr auto operator*(const nano::float3x3 m, const nano::float3 v) noexcept {
     return v.x * m[0] + v.y * m[1] + v.z * m[2];
 }
 
-[[nodiscard]] constexpr auto operator*(const katana::float3x3 lhs, const katana::float3x3 rhs) noexcept {
-    return katana::float3x3{lhs * rhs[0], lhs * rhs[1], lhs * rhs[2]};
+[[nodiscard]] constexpr auto operator*(const nano::float3x3 lhs, const nano::float3x3 rhs) noexcept {
+    return nano::float3x3{lhs * rhs[0], lhs * rhs[1], lhs * rhs[2]};
 }
 
-[[nodiscard]] constexpr auto operator+(const katana::float3x3 lhs, const katana::float3x3 rhs) noexcept {
-    return katana::float3x3{lhs[0] + rhs[0], lhs[1] + rhs[1], lhs[2] + rhs[2]};
+[[nodiscard]] constexpr auto operator+(const nano::float3x3 lhs, const nano::float3x3 rhs) noexcept {
+    return nano::float3x3{lhs[0] + rhs[0], lhs[1] + rhs[1], lhs[2] + rhs[2]};
 }
 
-[[nodiscard]] constexpr auto operator-(const katana::float3x3 lhs, const katana::float3x3 rhs) noexcept {
-    return katana::float3x3{lhs[0] - rhs[0], lhs[1] - rhs[1], lhs[2] - rhs[2]};
+[[nodiscard]] constexpr auto operator-(const nano::float3x3 lhs, const nano::float3x3 rhs) noexcept {
+    return nano::float3x3{lhs[0] - rhs[0], lhs[1] - rhs[1], lhs[2] - rhs[2]};
 }
 
-[[nodiscard]] constexpr auto operator*(const katana::float4x4 m, float s) noexcept {
-    return katana::float4x4{m[0] * s, m[1] * s, m[2] * s, m[3] * s};
+[[nodiscard]] constexpr auto operator*(const nano::float4x4 m, float s) noexcept {
+    return nano::float4x4{m[0] * s, m[1] * s, m[2] * s, m[3] * s};
 }
 
-[[nodiscard]] constexpr auto operator*(float s, const katana::float4x4 m) noexcept {
+[[nodiscard]] constexpr auto operator*(float s, const nano::float4x4 m) noexcept {
     return m * s;
 }
 
-[[nodiscard]] constexpr auto operator/(const katana::float4x4 m, float s) noexcept {
+[[nodiscard]] constexpr auto operator/(const nano::float4x4 m, float s) noexcept {
     return m * (1.0f / s);
 }
 
-[[nodiscard]] constexpr auto operator*(const katana::float4x4 m, const katana::float4 v) noexcept {
+[[nodiscard]] constexpr auto operator*(const nano::float4x4 m, const nano::float4 v) noexcept {
     return v.x * m[0] + v.y * m[1] + v.z * m[2] + v.w * m[3];
 }
 
-[[nodiscard]] constexpr auto operator*(const katana::float4x4 lhs, const katana::float4x4 rhs) noexcept {
-    return katana::float4x4{lhs * rhs[0], lhs * rhs[1], lhs * rhs[2], lhs * rhs[3]};
+[[nodiscard]] constexpr auto operator*(const nano::float4x4 lhs, const nano::float4x4 rhs) noexcept {
+    return nano::float4x4{lhs * rhs[0], lhs * rhs[1], lhs * rhs[2], lhs * rhs[3]};
 }
 
-[[nodiscard]] constexpr auto operator+(const katana::float4x4 lhs, const katana::float4x4 rhs) noexcept {
-    return katana::float4x4{lhs[0] + rhs[0], lhs[1] + rhs[1], lhs[2] + rhs[2], lhs[3] + rhs[3]};
+[[nodiscard]] constexpr auto operator+(const nano::float4x4 lhs, const nano::float4x4 rhs) noexcept {
+    return nano::float4x4{lhs[0] + rhs[0], lhs[1] + rhs[1], lhs[2] + rhs[2], lhs[3] + rhs[3]};
 }
 
-[[nodiscard]] constexpr auto operator-(const katana::float4x4 lhs, const katana::float4x4 rhs) noexcept {
-    return katana::float4x4{lhs[0] - rhs[0], lhs[1] - rhs[1], lhs[2] - rhs[2], lhs[3] - rhs[3]};
+[[nodiscard]] constexpr auto operator-(const nano::float4x4 lhs, const nano::float4x4 rhs) noexcept {
+    return nano::float4x4{lhs[0] - rhs[0], lhs[1] - rhs[1], lhs[2] - rhs[2], lhs[3] - rhs[3]};
 }
 
-namespace katana {
-#define KTN_MAKE_TYPE_N(type)                                                                                                \
+namespace nano {
+#define NN_MAKE_TYPE_N(type)                                                                                                \
     [[nodiscard]] constexpr auto make_##type##2(type s = {}) noexcept { return type##2(s); }                                 \
     [[nodiscard]] constexpr auto make_##type##2(type x, type y) noexcept { return type##2(x, y); }                           \
     template<typename T>                                                                                                     \
@@ -439,11 +439,11 @@ namespace katana {
     [[nodiscard]] constexpr auto make_##type##4(type##3 v, type w) noexcept { return type##4(v.x, v.y, v.z, w); }            \
     [[nodiscard]] constexpr auto make_##type##4(type x, type##3 v) noexcept { return type##4(x, v.x, v.y, v.z); }
 
-KTN_MAKE_TYPE_N(bool)
-KTN_MAKE_TYPE_N(float)
-KTN_MAKE_TYPE_N(int)
-KTN_MAKE_TYPE_N(uint)
-#undef KTN_MAKE_TYPE_N
+NN_MAKE_TYPE_N(bool)
+NN_MAKE_TYPE_N(float)
+NN_MAKE_TYPE_N(int)
+NN_MAKE_TYPE_N(uint)
+#undef NN_MAKE_TYPE_N
 
 [[nodiscard]] constexpr auto make_float2x2(float s = 1.0f) noexcept {
     return float2x2{float2{s, 0.0f},
@@ -550,4 +550,4 @@ KTN_MAKE_TYPE_N(uint)
     return m;
 }
 
-}// namespace katana
+}// namespace nano

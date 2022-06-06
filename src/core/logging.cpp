@@ -4,11 +4,11 @@
 
 #include "logging.h"
 
-namespace katana {
+namespace nano {
 inline namespace core {
 spdlog::logger &logger() noexcept {
     static auto ret = spdlog::stdout_color_mt("console");
     return *ret;
 }
 }
-}// namespace katana::core
+}// namespace nano::core

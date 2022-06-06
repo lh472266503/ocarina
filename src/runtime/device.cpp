@@ -5,9 +5,9 @@
 
 #include "device.h"
 
-namespace katana {
+namespace nano {
 
 Device::Device() {
-    _impl = katana::make_unique<Impl>();
+    _impl = nano::make_unique<Impl>();
 }
 }

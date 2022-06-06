@@ -5,7 +5,7 @@
 
 #include "func.h"
 
-namespace katana {
+namespace nano {
 namespace dsl {
 
 }

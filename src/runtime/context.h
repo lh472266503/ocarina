@@ -9,18 +9,18 @@
 #include "core/concepts.h"
 #include "device.h"
 
-namespace katana {
+namespace nano {
 class Context final : public concepts::Noncopyable{
 private:
     struct Impl;
-    katana::unique_ptr<Impl> _impl;
+    nano::unique_ptr<Impl> _impl;
 public:
     explicit Context(const fs::path &program) noexcept;
     ~Context() noexcept;
-    void load_module_function(const fs::path &path, katana::string_view module_name);
+    void load_module_function(const fs::path &path, nano::string_view module_name);
     [[nodiscard]] const fs::path &runtime_directory() const noexcept;
     [[nodiscard]] const fs::path &cache_directory() const noexcept;
-    [[nodiscard]] Device create_device(katana::string_view backend_name,
-                                       katana::string_view property = "{}") noexcept;
+    [[nodiscard]] Device create_device(nano::string_view backend_name,
+                                       nano::string_view property = "{}") noexcept;
 };
-}// namespace katana
+}// namespace nano

@@ -6,11 +6,11 @@
 #include "core/stl.h"
 //#include "e"
 
-using namespace katana;
+using namespace nano;
 using std::cout;
 using std::endl;
 
-void func(katana::string_view &str) {
+void func(nano::string_view &str) {
     str = str.substr(2);
 }
 
@@ -29,7 +29,7 @@ int main() {
     //    tr.parse_type(detail::TypeDesc<float3>::description());
     auto lst = string_split(",adf,fad,gre,ger,", ',');
     //        tr.parse_type(detail::TypeDesc<bool3>::description());
-    using Test = katana::tuple<float3x3, int, bool, uint>;
+    using Test = nano::tuple<float3x3, int, bool, uint>;
 //        using Test = float3x3;
     using Test2 = std::array<Test, 5>;
     tr.parse_type(detail::TypeDesc<Test2>::description());
