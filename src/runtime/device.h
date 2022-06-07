@@ -9,16 +9,14 @@
 
 namespace nano {
 class Device {
-public:
-    struct Impl {
-
-    };
-    using Handle = nano::unique_ptr<Impl>;
-
 protected:
-    Handle _impl;
-
 public:
     Device();
+    // buffer
+    [[nodiscard]] virtual uint64_t create_buffer(size_t size_bytes) noexcept = 0;
+    virtual void destroy_buffer(uint64_t handle) noexcept = 0;
+    // stream
+    [[nodiscard]] virtual uint64_t create_stream() noexcept = 0;
+    virtual void destroy_stream(uint64_t handle) noexcept = 0;
 };
 }// namespace nano

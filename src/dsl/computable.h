@@ -63,7 +63,7 @@ struct EnableBitwiseCast {
     }
 };
 
-#define NN_COMPUTABLE_COMMON(...)                                         \
+#define NN_COMPUTABLE_COMMON(...)                                          \
 private:                                                                   \
     const Expression *_expression{nullptr};                                \
                                                                            \

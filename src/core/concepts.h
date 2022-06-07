@@ -135,9 +135,9 @@ template<typename A, typename B>
 concept different = !same<A, B>;
 
 #define NN_UNARY_OP_CONCEPT(op_name, op) \
-    template<typename T>                  \
-    concept op_name = requires(T t) {     \
-        op t;                             \
+    template<typename T>                 \
+    concept op_name = requires(T t) {    \
+        op t;                            \
     };
 NN_UNARY_OP_CONCEPT(positive_able, +)
 NN_UNARY_OP_CONCEPT(negative_able, -)
@@ -145,7 +145,7 @@ NN_UNARY_OP_CONCEPT(not_able, !)
 NN_UNARY_OP_CONCEPT(bit_not_able, ~)
 #undef NN_UNARY_OP_CONCEPT
 
-#define NN_BINARY_OP_CONCEPT(op_name, op) \
+#define NN_BINARY_OP_CONCEPT(op_name, op)  \
     template<typename A, typename B>       \
     concept op_name = requires(A a, B b) { \
         a op b;                            \

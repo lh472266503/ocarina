@@ -9,10 +9,10 @@
 #include "dsl/expr.h"
 #include "ast/op.h"
 
-#define NN_MAKE_DSL_UNARY_OPERATOR(op, tag)                                                   \
-    template<typename T>                                                                       \
+#define NN_MAKE_DSL_UNARY_OPERATOR(op, tag)                                                  \
+    template<typename T>                                                                     \
     requires nano::is_dsl_v<T>                                                               \
-    [[nodiscard]] inline auto operator op(T &&expr) noexcept {                                 \
+    [[nodiscard]] inline auto operator op(T &&expr) noexcept {                               \
         using Ret = std::remove_cvref_t<decltype(op std::declval<nano::expr_value_t<T>>())>; \
         return nano::def<Ret>(                                                               \
             nano::FunctionBuilder::current()->unary(                                         \
@@ -28,26 +28,26 @@ NN_MAKE_DSL_UNARY_OPERATOR(~, BIT_NOT)
 
 #undef NN_MAKE_DSL_UNARY_OPERATOR
 
-#define NN_MAKE_DSL_BINARY_OPERATOR(op, tag)                                           \
+#define NN_MAKE_DSL_BINARY_OPERATOR(op, tag)                                            \
     template<typename Lhs, typename Rhs>                                                \
-    requires nano::any_dsl_v<Lhs, Rhs> &&                                             \
-        nano::is_basic_v<nano::expr_value_t<Lhs>> &&                                \
-        nano::is_basic_v<nano::expr_value_t<Rhs>>                                   \
+    requires nano::any_dsl_v<Lhs, Rhs> &&                                               \
+        nano::is_basic_v<nano::expr_value_t<Lhs>> &&                                    \
+        nano::is_basic_v<nano::expr_value_t<Rhs>>                                       \
     [[nodiscard]] inline auto operator op(Lhs &&lhs, Rhs &&rhs) noexcept {              \
         using namespace std::string_view_literals;                                      \
         static constexpr bool is_logic_op = #op == "||"sv || #op == "&&"sv;             \
         static constexpr bool is_bit_op = #op == "|"sv || #op == "&"sv || #op == "^"sv; \
-        static constexpr bool is_bool_lhs = nano::is_boolean_expr_v<Lhs>;             \
-        static constexpr bool is_bool_rhs = nano::is_boolean_expr_v<Rhs>;             \
+        static constexpr bool is_bool_lhs = nano::is_boolean_expr_v<Lhs>;               \
+        static constexpr bool is_bool_rhs = nano::is_boolean_expr_v<Rhs>;               \
         using NormalRet = std::remove_cvref_t<                                          \
-            decltype(std::declval<nano::expr_value_t<Lhs>>() op                       \
-                         std::declval<nano::expr_value_t<Rhs>>())>;                   \
+            decltype(std::declval<nano::expr_value_t<Lhs>>() op                         \
+                         std::declval<nano::expr_value_t<Rhs>>())>;                     \
         using Ret = std::conditional_t<is_bool_lhs && is_logic_op, bool, NormalRet>;    \
-        return def<Ret>(nano::FunctionBuilder::current()->binary(                     \
-            nano::Type::of<Ret>(),                                                    \
-            nano::detail::extract_expression(std::forward<Lhs>(lhs)),                 \
-            nano::detail::extract_expression(std::forward<Rhs>(rhs)),                 \
-            nano::BinaryOp::tag));                                                    \
+        return def<Ret>(nano::FunctionBuilder::current()->binary(                       \
+            nano::Type::of<Ret>(),                                                      \
+            nano::detail::extract_expression(std::forward<Lhs>(lhs)),                   \
+            nano::detail::extract_expression(std::forward<Rhs>(rhs)),                   \
+            nano::BinaryOp::tag));                                                      \
     }
 
 NN_MAKE_DSL_BINARY_OPERATOR(+, ADD)
@@ -71,13 +71,13 @@ NN_MAKE_DSL_BINARY_OPERATOR(>=, GREATER_EQUAL)
 
 #undef NN_MAKE_DSL_BINARY_OPERATOR
 
-#define NN_MAKE_DSL_ASSIGN_OP(op)                                                    \
-    template<typename Lhs, typename Rhs>                                              \
-    requires requires {                                                               \
+#define NN_MAKE_DSL_ASSIGN_OP(op)                                                   \
+    template<typename Lhs, typename Rhs>                                            \
+    requires requires {                                                             \
         std::declval<Lhs &>() op## = std::declval<nano::expr_value_t<Rhs>>();       \
-    }                                                                                 \
+    }                                                                               \
     void operator+=(nano::Var<Lhs> lhs, Rhs &&rhs) {                                \
-        auto x = lhs op std::forward<Rhs>(rhs);                                       \
+        auto x = lhs op std::forward<Rhs>(rhs);                                     \
         nano::FunctionBuilder::current()->assign(lhs.expression(), x.expression()); \
     }
 
