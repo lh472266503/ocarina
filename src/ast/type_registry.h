@@ -30,16 +30,16 @@ struct TypeDesc {
     static_assert(always_false_v<T>, "Invalid type.");
 };
 
-#define NN_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(S, tag)   \
-    template<>                                                        \
-    struct TypeDesc<S> {                                              \
+#define OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(S, tag)     \
+    template<>                                                         \
+    struct TypeDesc<S> {                                               \
         static constexpr ocarina::string_view description() noexcept { \
-            using namespace std::string_view_literals;                \
-            return #S##sv;                                            \
-        }                                                             \
-    };                                                                \
-    template<>                                                        \
-    struct TypeDesc<Vector<S, 2>> {                                   \
+            using namespace std::string_view_literals;                 \
+            return #S##sv;                                             \
+        }                                                              \
+    };                                                                 \
+    template<>                                                         \
+    struct TypeDesc<Vector<S, 2>> {                                    \
         static constexpr ocarina::string_view description() noexcept { \
             using namespace std::string_view_literals;                \
             return "vector<" #S ",2>"sv;                              \
@@ -49,23 +49,23 @@ struct TypeDesc {
     struct TypeDesc<Vector<S, 3>> {                                   \
         static constexpr ocarina::string_view description() noexcept { \
             using namespace std::string_view_literals;                \
-            return "vector<" #S ",3>"sv;                              \
-        }                                                             \
-    };                                                                \
-    template<>                                                        \
-    struct TypeDesc<Vector<S, 4>> {                                   \
+            return "vector<" #S ",3>"sv;                               \
+        }                                                              \
+    };                                                                 \
+    template<>                                                         \
+    struct TypeDesc<Vector<S, 4>> {                                    \
         static constexpr ocarina::string_view description() noexcept { \
-            using namespace std::string_view_literals;                \
-            return "vector<" #S ",4>"sv;                              \
-        }                                                             \
+            using namespace std::string_view_literals;                 \
+            return "vector<" #S ",4>"sv;                               \
+        }                                                              \
     };
 
-NN_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(bool, BOOL)
-NN_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(float, FLOAT)
-NN_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(int, INT32)
-NN_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(uint, UINT32)
+OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(bool, BOOL)
+OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(float, FLOAT)
+OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(int, INT32)
+OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(uint, UINT32)
 
-#undef NN_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION
+#undef OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION
 
 /// matrices
 template<>
@@ -127,22 +127,22 @@ const Type *Type::of() noexcept {
 }
 
 /// make struct type description
-#define NN_MAKE_STRUCT_MEMBER_FMT(member) ",{}"
+#define OC_MAKE_STRUCT_MEMBER_FMT(member) ",{}"
 
-#define NN_MAKE_STRUCT_MEMBER_DESC(member) \
+#define OC_MAKE_STRUCT_MEMBER_DESC(member) \
     ocarina::detail::TypeDesc<std::remove_cvref_t<decltype(this_type::member)>>::description()
 
-#define NN_MAKE_STRUCT_DESC(S, ...)                                                        \
-    template<>                                                                              \
-    struct ocarina::detail::TypeDesc<S> {                                                    \
-        using this_type = S;                                                                \
-        static ocarina::string_view description() noexcept {                                 \
-            static thread_local ocarina::string s = ocarina::format(                          \
-                FMT_STRING("struct<{}" MAP(NN_MAKE_STRUCT_MEMBER_FMT, ##__VA_ARGS__) ">"), \
-                alignof(this_type),                                                         \
-                MAP_LIST(NN_MAKE_STRUCT_MEMBER_DESC, ##__VA_ARGS__));                      \
-            return s;                                                                       \
-        }                                                                                   \
+#define OC_MAKE_STRUCT_DESC(S, ...)                                                        \
+    template<>                                                                             \
+    struct ocarina::detail::TypeDesc<S> {                                                  \
+        using this_type = S;                                                               \
+        static ocarina::string_view description() noexcept {                               \
+            static thread_local ocarina::string s = ocarina::format(                       \
+                FMT_STRING("struct<{}" MAP(OC_MAKE_STRUCT_MEMBER_FMT, ##__VA_ARGS__) ">"), \
+                alignof(this_type),                                                        \
+                MAP_LIST(OC_MAKE_STRUCT_MEMBER_DESC, ##__VA_ARGS__));                      \
+            return s;                                                                      \
+        }                                                                                  \
     };
 
 namespace detail {
@@ -189,7 +189,7 @@ public:
 template<typename S, typename M, typename I>
 static constexpr bool is_valid_reflection_v = detail::is_valid_reflection<S, M, I>::value;
 
-class NN_AST_API TypeRegistry {
+class OC_AST_API TypeRegistry {
 public:
     struct TypePtrHash {
         using is_transparent = void;

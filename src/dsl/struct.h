@@ -13,6 +13,6 @@
 
 /// make struct extension
 
-#define NN_STRUCT(S, ...) \
-    NN_MAKE_STRUCT_REFLECTION(S, ##__VA_ARGS__) \
-    NN_MAKE_STRUCT_DESC(S, ##__VA_ARGS__)
+#define OC_STRUCT(S, ...) \
+    OC_MAKE_STRUCT_REFLECTION(S, ##__VA_ARGS__) \
+    OC_MAKE_STRUCT_DESC(S, ##__VA_ARGS__)

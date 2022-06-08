@@ -25,7 +25,7 @@ ocarina::span<const Type *const> Type::members() const noexcept {
 }
 
 constexpr size_t Type::dimension() const noexcept {
-    NN_ASSERT(is_array() || is_vector() || is_matrix() || is_texture());
+    OC_ASSERT(is_array() || is_vector() || is_matrix() || is_texture());
     return _dimension;
 }
 

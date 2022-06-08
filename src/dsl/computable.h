@@ -63,7 +63,7 @@ struct EnableBitwiseCast {
     }
 };
 
-#define NN_COMPUTABLE_COMMON(...)                                          \
+#define OC_COMPUTABLE_COMMON(...)                                          \
 private:                                                                   \
     const Expression *_expression{nullptr};                                \
                                                                            \
@@ -78,7 +78,7 @@ struct Computable
     : detail::EnableBitwiseCast<T>,
       detail::EnableStaticCast<T> {
     static_assert(is_scalar_v<T>);
-    NN_COMPUTABLE_COMMON(T)
+    OC_COMPUTABLE_COMMON(T)
 };
 
 template<typename T>
@@ -87,7 +87,7 @@ struct Computable<Vector<T, 2>>
       EnableBitwiseCast<Computable<Vector<T, 2>>>,
       EnableGetMemberByIndex<Computable<Vector<T, 2>>>,
       EnableSubscriptAccess<Computable<Vector<T, 2>>> {
-    NN_COMPUTABLE_COMMON(Vector<T, 2>)
+    OC_COMPUTABLE_COMMON(Vector<T, 2>)
 };
 
 template<typename T>
@@ -96,7 +96,7 @@ struct Computable<Vector<T, 3>>
       EnableBitwiseCast<Computable<Vector<T, 3>>>,
       EnableGetMemberByIndex<Computable<Vector<T, 3>>>,
       EnableSubscriptAccess<Computable<Vector<T, 3>>> {
-    NN_COMPUTABLE_COMMON(Vector<T, 3>)
+    OC_COMPUTABLE_COMMON(Vector<T, 3>)
 };
 
 template<typename T>
@@ -105,27 +105,27 @@ struct Computable<Vector<T, 4>>
       EnableBitwiseCast<Computable<Vector<T, 4>>>,
       EnableGetMemberByIndex<Computable<Vector<T, 4>>>,
       EnableSubscriptAccess<Computable<Vector<T, 4>>> {
-    NN_COMPUTABLE_COMMON(Vector<T, 4>)
+    OC_COMPUTABLE_COMMON(Vector<T, 4>)
 };
 
 template<typename T, size_t N>
 struct Computable<std::array<T, N>>
     : EnableSubscriptAccess<std::array<T, N>>,
       EnableGetMemberByIndex<std::array<T, N>> {
-    NN_COMPUTABLE_COMMON(std::array<T, N>)
+    OC_COMPUTABLE_COMMON(std::array<T, N>)
 };
 
 template<size_t N>
 struct Computable<Matrix<N>>
     : EnableGetMemberByIndex<Matrix<N>>,
       EnableSubscriptAccess<Matrix<N>> {
-    NN_COMPUTABLE_COMMON(Matrix<N>)
+    OC_COMPUTABLE_COMMON(Matrix<N>)
 };
 
 template<typename... T>
 struct Computable<ocarina::tuple<T...>> {
     using Tuple = ocarina::tuple<T...>;
-    NN_COMPUTABLE_COMMON(ocarina::tuple<T...>)
+    OC_COMPUTABLE_COMMON(ocarina::tuple<T...>)
     template<size_t i>
     [[nodiscard]] auto get() const noexcept {
         using Elm = ocarina::tuple_element_t<i, Tuple>;
@@ -133,6 +133,6 @@ struct Computable<ocarina::tuple<T...>> {
     }
 };
 
-#undef NN_COMPUTABLE_COMMON
+#undef OC_COMPUTABLE_COMMON
 
 }// namespace ocarina::detail

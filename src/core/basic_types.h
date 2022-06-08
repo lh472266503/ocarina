@@ -190,7 +190,7 @@ requires ocarina::is_integral_v<T>
     }
 }
 
-#define NN_MAKE_VECTOR_BINARY_OPERATOR(op, ...)                           \
+#define OC_MAKE_VECTOR_BINARY_OPERATOR(op, ...)                           \
     template<typename T, size_t N>                                         \
     requires __VA_ARGS__                                                   \
         [[nodiscard]] constexpr auto                                       \
@@ -225,20 +225,20 @@ requires ocarina::is_integral_v<T>
         operator op(T lhs, ocarina::Vector<T, N> rhs) noexcept {            \
         return ocarina::Vector<T, N>{lhs} op rhs;                           \
     }
-NN_MAKE_VECTOR_BINARY_OPERATOR(+, ocarina::is_number_v<T>)
-NN_MAKE_VECTOR_BINARY_OPERATOR(-, ocarina::is_number_v<T>)
-NN_MAKE_VECTOR_BINARY_OPERATOR(*, ocarina::is_number_v<T>)
-NN_MAKE_VECTOR_BINARY_OPERATOR(/, ocarina::is_number_v<T>)
-NN_MAKE_VECTOR_BINARY_OPERATOR(%, ocarina::is_integral_v<T>)
-NN_MAKE_VECTOR_BINARY_OPERATOR(>>, ocarina::is_integral_v<T>)
-NN_MAKE_VECTOR_BINARY_OPERATOR(<<, ocarina::is_integral_v<T>)
-NN_MAKE_VECTOR_BINARY_OPERATOR(|, std::negation_v<ocarina::is_floating_point<T>>)
-NN_MAKE_VECTOR_BINARY_OPERATOR(&, std::negation_v<ocarina::is_floating_point<T>>)
-NN_MAKE_VECTOR_BINARY_OPERATOR(^, std::negation_v<ocarina::is_floating_point<T>>)
+OC_MAKE_VECTOR_BINARY_OPERATOR(+, ocarina::is_number_v<T>)
+OC_MAKE_VECTOR_BINARY_OPERATOR(-, ocarina::is_number_v<T>)
+OC_MAKE_VECTOR_BINARY_OPERATOR(*, ocarina::is_number_v<T>)
+OC_MAKE_VECTOR_BINARY_OPERATOR(/, ocarina::is_number_v<T>)
+OC_MAKE_VECTOR_BINARY_OPERATOR(%, ocarina::is_integral_v<T>)
+OC_MAKE_VECTOR_BINARY_OPERATOR(>>, ocarina::is_integral_v<T>)
+OC_MAKE_VECTOR_BINARY_OPERATOR(<<, ocarina::is_integral_v<T>)
+OC_MAKE_VECTOR_BINARY_OPERATOR(|, std::negation_v<ocarina::is_floating_point<T>>)
+OC_MAKE_VECTOR_BINARY_OPERATOR(&, std::negation_v<ocarina::is_floating_point<T>>)
+OC_MAKE_VECTOR_BINARY_OPERATOR(^, std::negation_v<ocarina::is_floating_point<T>>)
 
-#undef NN_MAKE_VECTOR_BINARY_OPERATOR
+#undef OC_MAKE_VECTOR_BINARY_OPERATOR
 
-#define NN_MAKE_VECTOR_ASSIGN_OPERATOR(op, ...)                        \
+#define OC_MAKE_VECTOR_ASSIGN_OPERATOR(op, ...)                        \
     template<typename T, size_t N>                                      \
     requires __VA_ARGS__ constexpr decltype(auto) operator op(          \
         ocarina::Vector<T, N> &lhs, ocarina::Vector<T, N> rhs) noexcept { \
@@ -253,20 +253,20 @@ NN_MAKE_VECTOR_BINARY_OPERATOR(^, std::negation_v<ocarina::is_floating_point<T>>
         ocarina::Vector<T, N> &lhs, T rhs) noexcept {                    \
         return (lhs op ocarina::Vector<T, N>{rhs});                      \
     }
-NN_MAKE_VECTOR_ASSIGN_OPERATOR(+=, ocarina::is_number_v<T>)
-NN_MAKE_VECTOR_ASSIGN_OPERATOR(-=, ocarina::is_number_v<T>)
-NN_MAKE_VECTOR_ASSIGN_OPERATOR(*=, ocarina::is_number_v<T>)
-NN_MAKE_VECTOR_ASSIGN_OPERATOR(/=, ocarina::is_number_v<T>)
-NN_MAKE_VECTOR_ASSIGN_OPERATOR(%=, ocarina::is_integral_v<T>)
-NN_MAKE_VECTOR_ASSIGN_OPERATOR(<<=, ocarina::is_integral_v<T>)
-NN_MAKE_VECTOR_ASSIGN_OPERATOR(>>=, ocarina::is_integral_v<T>)
-NN_MAKE_VECTOR_ASSIGN_OPERATOR(|=, std::negation_v<ocarina::is_floating_point<T>>)
-NN_MAKE_VECTOR_ASSIGN_OPERATOR(&=, std::negation_v<ocarina::is_floating_point<T>>)
-NN_MAKE_VECTOR_ASSIGN_OPERATOR(^=, std::negation_v<ocarina::is_floating_point<T>>)
+OC_MAKE_VECTOR_ASSIGN_OPERATOR(+=, ocarina::is_number_v<T>)
+OC_MAKE_VECTOR_ASSIGN_OPERATOR(-=, ocarina::is_number_v<T>)
+OC_MAKE_VECTOR_ASSIGN_OPERATOR(*=, ocarina::is_number_v<T>)
+OC_MAKE_VECTOR_ASSIGN_OPERATOR(/=, ocarina::is_number_v<T>)
+OC_MAKE_VECTOR_ASSIGN_OPERATOR(%=, ocarina::is_integral_v<T>)
+OC_MAKE_VECTOR_ASSIGN_OPERATOR(<<=, ocarina::is_integral_v<T>)
+OC_MAKE_VECTOR_ASSIGN_OPERATOR(>>=, ocarina::is_integral_v<T>)
+OC_MAKE_VECTOR_ASSIGN_OPERATOR(|=, std::negation_v<ocarina::is_floating_point<T>>)
+OC_MAKE_VECTOR_ASSIGN_OPERATOR(&=, std::negation_v<ocarina::is_floating_point<T>>)
+OC_MAKE_VECTOR_ASSIGN_OPERATOR(^=, std::negation_v<ocarina::is_floating_point<T>>)
 
-#undef NN_MAKE_VECTOR_ASSIGN_OPERATOR
+#undef OC_MAKE_VECTOR_ASSIGN_OPERATOR
 
-#define NN_MAKE_VECTOR_LOGIC_OPERATOR(op, ...)                            \
+#define OC_MAKE_VECTOR_LOGIC_OPERATOR(op, ...)                            \
     template<typename T, size_t N>                                         \
     requires __VA_ARGS__                                                   \
         [[nodiscard]] constexpr auto                                       \
@@ -301,16 +301,16 @@ NN_MAKE_VECTOR_ASSIGN_OPERATOR(^=, std::negation_v<ocarina::is_floating_point<T>
         operator op(T lhs, ocarina::Vector<T, N> rhs) noexcept {            \
         return ocarina::Vector<T, N>{lhs} op rhs;                           \
     }
-NN_MAKE_VECTOR_LOGIC_OPERATOR(||, ocarina::is_boolean_v<T>)
-NN_MAKE_VECTOR_LOGIC_OPERATOR(&&, ocarina::is_boolean_v<T>)
-NN_MAKE_VECTOR_LOGIC_OPERATOR(==, true)
-NN_MAKE_VECTOR_LOGIC_OPERATOR(!=, true)
-NN_MAKE_VECTOR_LOGIC_OPERATOR(<, ocarina::is_number_v<T>)
-NN_MAKE_VECTOR_LOGIC_OPERATOR(>, ocarina::is_number_v<T>)
-NN_MAKE_VECTOR_LOGIC_OPERATOR(<=, ocarina::is_number_v<T>)
-NN_MAKE_VECTOR_LOGIC_OPERATOR(>=, ocarina::is_number_v<T>)
+OC_MAKE_VECTOR_LOGIC_OPERATOR(||, ocarina::is_boolean_v<T>)
+OC_MAKE_VECTOR_LOGIC_OPERATOR(&&, ocarina::is_boolean_v<T>)
+OC_MAKE_VECTOR_LOGIC_OPERATOR(==, true)
+OC_MAKE_VECTOR_LOGIC_OPERATOR(!=, true)
+OC_MAKE_VECTOR_LOGIC_OPERATOR(<, ocarina::is_number_v<T>)
+OC_MAKE_VECTOR_LOGIC_OPERATOR(>, ocarina::is_number_v<T>)
+OC_MAKE_VECTOR_LOGIC_OPERATOR(<=, ocarina::is_number_v<T>)
+OC_MAKE_VECTOR_LOGIC_OPERATOR(>=, ocarina::is_number_v<T>)
 
-#undef NN_MAKE_VECTOR_LOGIC_OPERATOR
+#undef OC_MAKE_VECTOR_LOGIC_OPERATOR
 
 [[nodiscard]] constexpr auto operator*(const ocarina::float2x2 m, float s) noexcept {
     return ocarina::float2x2{m[0] * s, m[1] * s};
@@ -397,7 +397,7 @@ NN_MAKE_VECTOR_LOGIC_OPERATOR(>=, ocarina::is_number_v<T>)
 }
 
 namespace ocarina {
-#define NN_MAKE_TYPE_N(type)                                                                                                \
+#define OC_MAKE_TYPE_N(type)                                                                                                \
     [[nodiscard]] constexpr auto make_##type##2(type s = {}) noexcept { return type##2(s); }                                 \
     [[nodiscard]] constexpr auto make_##type##2(type x, type y) noexcept { return type##2(x, y); }                           \
     template<typename T>                                                                                                     \
@@ -439,11 +439,11 @@ namespace ocarina {
     [[nodiscard]] constexpr auto make_##type##4(type##3 v, type w) noexcept { return type##4(v.x, v.y, v.z, w); }            \
     [[nodiscard]] constexpr auto make_##type##4(type x, type##3 v) noexcept { return type##4(x, v.x, v.y, v.z); }
 
-NN_MAKE_TYPE_N(bool)
-NN_MAKE_TYPE_N(float)
-NN_MAKE_TYPE_N(int)
-NN_MAKE_TYPE_N(uint)
-#undef NN_MAKE_TYPE_N
+OC_MAKE_TYPE_N(bool)
+OC_MAKE_TYPE_N(float)
+OC_MAKE_TYPE_N(int)
+OC_MAKE_TYPE_N(uint)
+#undef OC_MAKE_TYPE_N
 
 [[nodiscard]] constexpr auto make_float2x2(float s = 1.0f) noexcept {
     return float2x2{float2{s, 0.0f},

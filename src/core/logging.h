@@ -78,44 +78,44 @@ inline void error_if_not(bool predicate, Args &&...args) {
 }
 }// namespace ocarina::core
 
-#define NN_SOURCE_LOCATION __FILE__, ":", __LINE__
+#define OC_SOURCE_LOCATION __FILE__, ":", __LINE__
 
 #define SET_LOG_LEVEL(lv) \
     ::ocarina::core::set_log_level(spdlog::level::level_enum::lv);
 
-#define NN_DEBUG(...) \
+#define OC_DEBUG(...) \
     ::ocarina::core::debug(__VA_ARGS__);
-#define NN_DEBUG_FORMAT(FMT, ...) \
-    NN_DEBUG(ocarina::format(FMT, __VA_ARGS__));
+#define OC_DEBUG_FORMAT(FMT, ...) \
+    OC_DEBUG(ocarina::format(FMT, __VA_ARGS__));
 
-#define NN_INFO(...) \
+#define OC_INFO(...) \
     ::ocarina::core::info(__VA_ARGS__);
-#define NN_INFO_FORMAT(FMT, ...) \
-    NN_INFO(ocarina::format(FMT, __VA_ARGS__));
+#define OC_INFO_FORMAT(FMT, ...) \
+    OC_INFO(ocarina::format(FMT, __VA_ARGS__));
 
-#define NN_WARNING(...) \
-    ::ocarina::core::warning(__VA_ARGS__, "\n    Source: ", NN_SOURCE_LOCATION);
-#define NN_WARNING_IF(...) \
-    ::ocarina::core::warning_if(__VA_ARGS__, "\n    Source: ", NN_SOURCE_LOCATION);
-#define NN_WARNING_IF_NOT(...) \
-    ::ocarina::core::warning_if_not(__VA_ARGS__, "\n    Source: ", NN_SOURCE_LOCATION);
-#define NN_WARNING_FORMAT(FMT, ...) \
-    NN_WARNING(ocarina::format(FMT, __VA_ARGS__));
+#define OC_WARNING(...) \
+    ::ocarina::core::warning(__VA_ARGS__, "\n    Source: ", OC_SOURCE_LOCATION);
+#define OC_WARNING_IF(...) \
+    ::ocarina::core::warning_if(__VA_ARGS__, "\n    Source: ", OC_SOURCE_LOCATION);
+#define OC_WARNING_IF_NOT(...) \
+    ::ocarina::core::warning_if_not(__VA_ARGS__, "\n    Source: ", OC_SOURCE_LOCATION);
+#define OC_WARNING_FORMAT(FMT, ...) \
+    OC_WARNING(ocarina::format(FMT, __VA_ARGS__));
 
-#define NN_EXCEPTION(...) \
-    ::ocarina::core::exception(__VA_ARGS__, "\n    Source: ", NN_SOURCE_LOCATION);
-#define NN_EXCEPTION_IF(...) \
-    ::ocarina::core::exception_if(__VA_ARGS__, "\n    Source: ", NN_SOURCE_LOCATION);
-#define NN_EXCEPTION_IF_NOT(...) \
-    ::ocarina::core::exception_if_not(__VA_ARGS__, "\n    Source: ", NN_SOURCE_LOCATION);
-#define NN_EXCEPTION_FORMAT(FMT, ...) \
-    NN_EXCEPTION(ocarina::format(FMT, __VA_ARGS__));
+#define OC_EXCEPTION(...) \
+    ::ocarina::core::exception(__VA_ARGS__, "\n    Source: ", OC_SOURCE_LOCATION);
+#define OC_EXCEPTION_IF(...) \
+    ::ocarina::core::exception_if(__VA_ARGS__, "\n    Source: ", OC_SOURCE_LOCATION);
+#define OC_EXCEPTION_IF_NOT(...) \
+    ::ocarina::core::exception_if_not(__VA_ARGS__, "\n    Source: ", OC_SOURCE_LOCATION);
+#define OC_EXCEPTION_FORMAT(FMT, ...) \
+    OC_EXCEPTION(ocarina::format(FMT, __VA_ARGS__));
 
-#define NN_ERROR(...) \
-    ::ocarina::core::error(__VA_ARGS__, "\n    Source: ", NN_SOURCE_LOCATION);
-#define NN_ERROR_IF(...) \
-    ::ocarina::core::error_if(__VA_ARGS__, "\n    Source: ", NN_SOURCE_LOCATION);
-#define NN_ERROR_IF_NOT(...) \
-    ::ocarina::core::error_if_not(__VA_ARGS__, "\n    Source: ", NN_SOURCE_LOCATION);
-#define NN_ERROR_FORMAT(FMT, ...) \
-    NN_ERROR(ocarina::format(FMT, __VA_ARGS__));
+#define OC_ERROR(...) \
+    ::ocarina::core::error(__VA_ARGS__, "\n    Source: ", OC_SOURCE_LOCATION);
+#define OC_ERROR_IF(...) \
+    ::ocarina::core::error_if(__VA_ARGS__, "\n    Source: ", OC_SOURCE_LOCATION);
+#define OC_ERROR_IF_NOT(...) \
+    ::ocarina::core::error_if_not(__VA_ARGS__, "\n    Source: ", OC_SOURCE_LOCATION);
+#define OC_ERROR_FORMAT(FMT, ...) \
+    OC_ERROR(ocarina::format(FMT, __VA_ARGS__));

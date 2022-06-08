@@ -16,7 +16,7 @@ namespace detail {
 class FunctionBuilder;
 }
 
-class NN_AST_API Function {
+class OC_AST_API Function {
 public:
     enum struct Tag : uint {
         KERNEL,

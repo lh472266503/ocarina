@@ -40,10 +40,10 @@ struct StmtVisitor {
     virtual void visit(const ForStmt *) = 0;
 };
 
-#define NN_MAKE_STATEMENT_ACCEPT_VISITOR \
+#define OC_MAKE_STATEMENT_ACCEPT_VISITOR \
     void accept(StmtVisitor &visitor) const override { visitor.visit(this); }
 
-class NN_AST_API Statement : public concepts::Noncopyable {
+class OC_AST_API Statement : public concepts::Noncopyable {
 public:
     enum struct Tag : uint32_t {
         SCOPE,
@@ -75,7 +75,7 @@ public:
     virtual ~Statement() noexcept = default;
     [[nodiscard]] uint64_t hash() const noexcept {
         if (!_hash_computed) {
-            NN_USING_SV
+            OC_USING_SV
             uint64_t h = _compute_hash();
             _hash = hash64(_tag, hash64(h, hash64("__hash_statement"sv)));
             _hash_computed = true;
@@ -84,7 +84,7 @@ public:
     }
 };
 
-class NN_AST_API ScopeStmt : public Statement {
+class OC_AST_API ScopeStmt : public Statement {
 private:
     ocarina::vector<const Statement *> _statements;
 
@@ -99,10 +99,10 @@ public:
     ScopeStmt() noexcept : Statement(Tag::SCOPE) {}
     [[nodiscard]] auto statements() const noexcept { return ocarina::span(_statements); }
     void append(const Statement *stmt) noexcept { _statements.push_back(stmt); }
-    NN_MAKE_STATEMENT_ACCEPT_VISITOR
+    OC_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 
-class NN_AST_API BreakStmt : public Statement {
+class OC_AST_API BreakStmt : public Statement {
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override {
         return Hash64::default_seed;
@@ -110,10 +110,10 @@ private:
 
 public:
     BreakStmt() noexcept : Statement{Tag::BREAK} {}
-    NN_MAKE_STATEMENT_ACCEPT_VISITOR
+    OC_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 
-class NN_AST_API ContinueStmt : public Statement {
+class OC_AST_API ContinueStmt : public Statement {
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override {
         return Hash64::default_seed;
@@ -121,10 +121,10 @@ private:
 
 public:
     ContinueStmt() noexcept : Statement(Tag::CONTINUE) {}
-    NN_MAKE_STATEMENT_ACCEPT_VISITOR
+    OC_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 
-class NN_AST_API ReturnStmt : public Statement {
+class OC_AST_API ReturnStmt : public Statement {
 private:
     const Expression *_expression{nullptr};
 
@@ -136,7 +136,7 @@ private:
 public:
     explicit ReturnStmt(const Expression *expr = nullptr) noexcept
         : Statement(Tag::RETURN), _expression(expr) {}
-    NN_MAKE_STATEMENT_ACCEPT_VISITOR
+    OC_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 
 class ExprStmt : public Statement {
@@ -152,7 +152,7 @@ public:
     explicit ExprStmt(const Expression *expr = nullptr) noexcept
         : Statement(Tag::EXPR), _expression(expr) {}
     const Expression *expression() const { return _expression; }
-    NN_MAKE_STATEMENT_ACCEPT_VISITOR
+    OC_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 
 class AssignStmt : public Statement {
@@ -172,7 +172,7 @@ public:
         : Statement(Tag::ASSIGN), _lhs(lhs), _rhs(rhs) {}
     [[nodiscard]] auto lhs() const noexcept { return _lhs; }
     [[nodiscard]] auto rhs() const noexcept { return _rhs; }
-    NN_MAKE_STATEMENT_ACCEPT_VISITOR
+    OC_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 
 }// namespace ocarina

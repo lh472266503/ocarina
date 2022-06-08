@@ -9,7 +9,7 @@
 #include "dsl/expr.h"
 #include "ast/op.h"
 
-#define NN_MAKE_DSL_UNARY_OPERATOR(op, tag)                                                     \
+#define OC_MAKE_DSL_UNARY_OPERATOR(op, tag)                                                     \
     template<typename T>                                                                        \
     requires ocarina::is_dsl_v<T>                                                               \
     [[nodiscard]] inline auto operator op(T &&expr) noexcept {                                  \
@@ -21,14 +21,14 @@
                 ocarina::detail::extract_expression(std::forward<T>(expr))));                   \
     }
 
-NN_MAKE_DSL_UNARY_OPERATOR(+, POSITIVE)
-NN_MAKE_DSL_UNARY_OPERATOR(-, NEGATIVE)
-NN_MAKE_DSL_UNARY_OPERATOR(!, NOT)
-NN_MAKE_DSL_UNARY_OPERATOR(~, BIT_NOT)
+OC_MAKE_DSL_UNARY_OPERATOR(+, POSITIVE)
+OC_MAKE_DSL_UNARY_OPERATOR(-, NEGATIVE)
+OC_MAKE_DSL_UNARY_OPERATOR(!, NOT)
+OC_MAKE_DSL_UNARY_OPERATOR(~, BIT_NOT)
 
-#undef NN_MAKE_DSL_UNARY_OPERATOR
+#undef OC_MAKE_DSL_UNARY_OPERATOR
 
-#define NN_MAKE_DSL_BINARY_OPERATOR(op, tag)                                            \
+#define OC_MAKE_DSL_BINARY_OPERATOR(op, tag)                                            \
     template<typename Lhs, typename Rhs>                                                \
     requires ocarina::any_dsl_v<Lhs, Rhs> &&                                            \
         ocarina::is_basic_v<ocarina::expr_value_t<Lhs>> &&                              \
@@ -50,28 +50,28 @@ NN_MAKE_DSL_UNARY_OPERATOR(~, BIT_NOT)
             ocarina::BinaryOp::tag));                                                   \
     }
 
-NN_MAKE_DSL_BINARY_OPERATOR(+, ADD)
-NN_MAKE_DSL_BINARY_OPERATOR(-, SUB)
-NN_MAKE_DSL_BINARY_OPERATOR(*, MUL)
-NN_MAKE_DSL_BINARY_OPERATOR(/, DIV)
-NN_MAKE_DSL_BINARY_OPERATOR(%, MOD)
-NN_MAKE_DSL_BINARY_OPERATOR(&, BIT_AND)
-NN_MAKE_DSL_BINARY_OPERATOR(|, BIT_OR)
-NN_MAKE_DSL_BINARY_OPERATOR(^, BIT_XOR)
-NN_MAKE_DSL_BINARY_OPERATOR(<<, SHL)
-NN_MAKE_DSL_BINARY_OPERATOR(>>, SHR)
-NN_MAKE_DSL_BINARY_OPERATOR(&&, AND)
-NN_MAKE_DSL_BINARY_OPERATOR(||, OR)
-NN_MAKE_DSL_BINARY_OPERATOR(==, EQUAL)
-NN_MAKE_DSL_BINARY_OPERATOR(!=, NOT_EQUAL)
-NN_MAKE_DSL_BINARY_OPERATOR(<, LESS)
-NN_MAKE_DSL_BINARY_OPERATOR(<=, LESS_EQUAL)
-NN_MAKE_DSL_BINARY_OPERATOR(>, GREATER)
-NN_MAKE_DSL_BINARY_OPERATOR(>=, GREATER_EQUAL)
+OC_MAKE_DSL_BINARY_OPERATOR(+, ADD)
+OC_MAKE_DSL_BINARY_OPERATOR(-, SUB)
+OC_MAKE_DSL_BINARY_OPERATOR(*, MUL)
+OC_MAKE_DSL_BINARY_OPERATOR(/, DIV)
+OC_MAKE_DSL_BINARY_OPERATOR(%, MOD)
+OC_MAKE_DSL_BINARY_OPERATOR(&, BIT_AND)
+OC_MAKE_DSL_BINARY_OPERATOR(|, BIT_OR)
+OC_MAKE_DSL_BINARY_OPERATOR(^, BIT_XOR)
+OC_MAKE_DSL_BINARY_OPERATOR(<<, SHL)
+OC_MAKE_DSL_BINARY_OPERATOR(>>, SHR)
+OC_MAKE_DSL_BINARY_OPERATOR(&&, AND)
+OC_MAKE_DSL_BINARY_OPERATOR(||, OR)
+OC_MAKE_DSL_BINARY_OPERATOR(==, EQUAL)
+OC_MAKE_DSL_BINARY_OPERATOR(!=, NOT_EQUAL)
+OC_MAKE_DSL_BINARY_OPERATOR(<, LESS)
+OC_MAKE_DSL_BINARY_OPERATOR(<=, LESS_EQUAL)
+OC_MAKE_DSL_BINARY_OPERATOR(>, GREATER)
+OC_MAKE_DSL_BINARY_OPERATOR(>=, GREATER_EQUAL)
 
-#undef NN_MAKE_DSL_BINARY_OPERATOR
+#undef OC_MAKE_DSL_BINARY_OPERATOR
 
-#define NN_MAKE_DSL_ASSIGN_OP(op)                                                      \
+#define OC_MAKE_DSL_ASSIGN_OP(op)                                                      \
     template<typename Lhs, typename Rhs>                                               \
     requires requires {                                                                \
         std::declval<Lhs &>() op## = std::declval<ocarina::expr_value_t<Rhs>>();       \
@@ -81,15 +81,15 @@ NN_MAKE_DSL_BINARY_OPERATOR(>=, GREATER_EQUAL)
         ocarina::FunctionBuilder::current()->assign(lhs.expression(), x.expression()); \
     }
 
-NN_MAKE_DSL_ASSIGN_OP(+)
-NN_MAKE_DSL_ASSIGN_OP(-)
-NN_MAKE_DSL_ASSIGN_OP(*)
-NN_MAKE_DSL_ASSIGN_OP(/)
-NN_MAKE_DSL_ASSIGN_OP(|)
-NN_MAKE_DSL_ASSIGN_OP(%)
-NN_MAKE_DSL_ASSIGN_OP(&)
-NN_MAKE_DSL_ASSIGN_OP(>>)
-NN_MAKE_DSL_ASSIGN_OP(<<)
-NN_MAKE_DSL_ASSIGN_OP(^)
+OC_MAKE_DSL_ASSIGN_OP(+)
+OC_MAKE_DSL_ASSIGN_OP(-)
+OC_MAKE_DSL_ASSIGN_OP(*)
+OC_MAKE_DSL_ASSIGN_OP(/)
+OC_MAKE_DSL_ASSIGN_OP(|)
+OC_MAKE_DSL_ASSIGN_OP(%)
+OC_MAKE_DSL_ASSIGN_OP(&)
+OC_MAKE_DSL_ASSIGN_OP(>>)
+OC_MAKE_DSL_ASSIGN_OP(<<)
+OC_MAKE_DSL_ASSIGN_OP(^)
 
-#undef NN_MAKE_DSL_ASSIGN_OP
+#undef OC_MAKE_DSL_ASSIGN_OP

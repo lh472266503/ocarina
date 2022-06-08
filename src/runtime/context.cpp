@@ -18,7 +18,7 @@ Context::Context(const fs::path &program) noexcept
 }
 
 Context::~Context() noexcept {
-    NN_INFO("context was destructed !");
+    OC_INFO("context was destructed !");
 }
 const fs::path &Context::runtime_directory() const noexcept {
     return _impl->runtime_directory;

@@ -7,5 +7,5 @@ set_target_properties(ocarina-backends-cuda PROPERTIES
         LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIG>/bin/"
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIG>/bin/"
         WINDOWS_EXPORT_ALL_SYMBOLS ON)
-target_compile_definitions(ocarina-backends-cuda PRIVATE NN_BACKENDS_EXPORT_DLL=1)
+target_compile_definitions(ocarina-backends-cuda PRIVATE OC_BACKENDS_EXPORT_DLL=1)
 target_link_libraries(ocarina-backends-cuda PUBLIC ocarina-core)

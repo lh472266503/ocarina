@@ -11,49 +11,49 @@
 #include <tuple>
 #include <type_traits>
 
-#ifdef NN_AST_EXPORT_DLL
-#define NN_AST_API __declspec(dllexport)
+#ifdef OC_AST_EXPORT_DLL
+#define OC_AST_API __declspec(dllexport)
 #else
-#define NN_AST_API __declspec(dllimport)
+#define OC_AST_API __declspec(dllimport)
 #endif
 
-#ifdef NN_CORE_EXPORT_DLL
-#define NN_CORE_API __declspec(dllexport)
+#ifdef OC_CORE_EXPORT_DLL
+#define OC_CORE_API __declspec(dllexport)
 #else
-#define NN_CORE_API __declspec(dllimport)
+#define OC_CORE_API __declspec(dllimport)
 #endif
 
-#ifdef NN_DSL_EXPORT_DLL
-#define NN_DSL_API __declspec(dllexport)
+#ifdef OC_DSL_EXPORT_DLL
+#define OC_DSL_API __declspec(dllexport)
 #else
-#define NN_DSL_API __declspec(dllimport)
+#define OC_DSL_API __declspec(dllimport)
 #endif
 
-#ifdef NN_COMPILE_EXPORT_DLL
-#define NN_COMPILE_API __declspec(dllexport)
+#ifdef OC_COMPILE_EXPORT_DLL
+#define OC_COMPILE_API __declspec(dllexport)
 #else
-#define NN_COMPILE_API __declspec(dllimport)
+#define OC_COMPILE_API __declspec(dllimport)
 #endif
 
-#ifdef NN_RUNTIME_EXPORT_DLL
-#define NN_RUNTIME_API __declspec(dllexport)
+#ifdef OC_RUNTIME_EXPORT_DLL
+#define OC_RUNTIME_API __declspec(dllexport)
 #else
-#define NN_RUNTIME_API __declspec(dllimport)
+#define OC_RUNTIME_API __declspec(dllimport)
 #endif
 
-#ifdef NN_BACKENDS_EXPORT_DLL
-#define NN_BACKENDS_API __declspec(dllexport)
+#ifdef OC_BACKENDS_EXPORT_DLL
+#define OC_BACKENDS_API __declspec(dllexport)
 #else
-#define NN_BACKENDS_API __declspec(dllimport)
+#define OC_BACKENDS_API __declspec(dllimport)
 #endif
 
 #ifdef _MSC_VER
-#define NN_OFFSET_OF(type, member) __builtin_offsetof(type, member)
+#define OC_OFFSET_OF(type, member) __builtin_offsetof(type, member)
 #else
-#define NN_OFFSET_OF(type, member) offsetof(type, member)
+#define OC_OFFSET_OF(type, member) offsetof(type, member)
 #endif
 
-#define NN_USING_SV using namespace std::string_view_literals;
+#define OC_USING_SV using namespace std::string_view_literals;
 
-#define NN_ASSERT(...) assert(__VA_ARGS__)
+#define OC_ASSERT(...) assert(__VA_ARGS__)
 

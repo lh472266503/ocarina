@@ -145,16 +145,16 @@ struct struct_member_tuple<Matrix<N>> {
 };
 
 /// make struct reflection
-#define NN_MEMBER_TYPE_MAP(member) std::remove_cvref_t<decltype(this_type::member)>
-#define NN_TYPE_OFFSET_OF(member) NN_OFFSET_OF(this_type, member)
-#define NN_MAKE_STRUCT_REFLECTION(S, ...)                                               \
+#define OC_MEMBER_TYPE_MAP(member) std::remove_cvref_t<decltype(this_type::member)>
+#define OC_TYPE_OFFSET_OF(member) OC_OFFSET_OF(this_type, member)
+#define OC_MAKE_STRUCT_REFLECTION(S, ...)                                               \
     template<>                                                                           \
     struct ocarina::is_struct<S> : std::true_type {};                                     \
     template<>                                                                           \
     struct ocarina::struct_member_tuple<S> {                                              \
         using this_type = Hit;                                                           \
-        using type = ocarina::tuple<MAP_LIST(NN_MEMBER_TYPE_MAP, ##__VA_ARGS__)>;        \
-        using offset = std::index_sequence<MAP_LIST(NN_TYPE_OFFSET_OF, ##__VA_ARGS__)>; \
+        using type = ocarina::tuple<MAP_LIST(OC_MEMBER_TYPE_MAP, ##__VA_ARGS__)>;        \
+        using offset = std::index_sequence<MAP_LIST(OC_TYPE_OFFSET_OF, ##__VA_ARGS__)>; \
         static_assert(is_valid_reflection_v<this_type, type, offset>,                    \
                       "may be order of members is wrong!");                              \
     };
@@ -262,7 +262,7 @@ struct TypeVisitor {
     virtual void visit(const Type *) noexcept = 0;
 };
 
-class NN_AST_API Type {
+class OC_AST_API Type {
 public:
     enum struct Tag : uint32_t {
         BOOL,

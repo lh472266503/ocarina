@@ -50,7 +50,7 @@ namespace detail {
 
 [[nodiscard]] ocarina::string_view find_identifier(ocarina::string_view &str,
                                                   bool check_start_with_num = false) {
-    NN_USING_SV
+    OC_USING_SV
     uint i = 0u;
     for (; i < str.size() && is_letter_or_num(str[i]); ++i)
         ;
@@ -66,14 +66,14 @@ namespace detail {
         str = str.substr(i);
     }
     if (is_num(ret[0]) && check_start_with_num) [[unlikely]] {
-        NN_ERROR_FORMAT("invalid identifier {} !", ret)
+        OC_ERROR_FORMAT("invalid identifier {} !", ret)
     }
     return ret;
 }
 
 [[nodiscard]] auto find_content(ocarina::string_view &str, char l = '<', char r = '>') {
     ocarina::vector<ocarina::string_view> ret;
-    NN_USING_SV
+    OC_USING_SV
     auto prev_token = str.find_first_of(l);
     constexpr auto token = ',';
     str = str.substr(prev_token + 1);
@@ -105,12 +105,12 @@ const Type *TypeRegistry::parse_type(ocarina::string_view desc) noexcept {
         return *iter;
     }
 
-    NN_USING_SV
+    OC_USING_SV
 
     auto type = ocarina::make_unique<Type>();
     type->_description = desc;
     type->_hash = hash;
-#define NN_PARSE_BASIC_TYPE(T, TAG)   \
+#define OC_PARSE_BASIC_TYPE(T, TAG)   \
     if (desc == #T##sv) {              \
         type->_size = sizeof(T);       \
         type->_alignment = alignof(T); \
@@ -118,12 +118,12 @@ const Type *TypeRegistry::parse_type(ocarina::string_view desc) noexcept {
         type->_tag = Type::Tag::TAG;   \
     } else
 
-    NN_PARSE_BASIC_TYPE(int, INT)
-    NN_PARSE_BASIC_TYPE(uint, UINT)
-    NN_PARSE_BASIC_TYPE(bool, BOOL)
-    NN_PARSE_BASIC_TYPE(float, FLOAT)
+    OC_PARSE_BASIC_TYPE(int, INT)
+    OC_PARSE_BASIC_TYPE(uint, UINT)
+    OC_PARSE_BASIC_TYPE(bool, BOOL)
+    OC_PARSE_BASIC_TYPE(float, FLOAT)
 
-#undef NN_PARSE_BASIC_TYPE
+#undef OC_PARSE_BASIC_TYPE
 
     if (desc.starts_with("vector")) {
         parse_vector(type.get(), desc);
@@ -134,7 +134,7 @@ const Type *TypeRegistry::parse_type(ocarina::string_view desc) noexcept {
     } else if (desc.starts_with("struct")) {
         parse_struct(type.get(), desc);
     } else [[unlikely]] {
-        NN_ERROR("invalid data type ", desc);
+        OC_ERROR("invalid data type ", desc);
     }
     const Type *ret = type.get();
     add_type(std::move(type));
@@ -146,7 +146,7 @@ void TypeRegistry::parse_vector(Type *type, ocarina::string_view desc) noexcept 
     auto [start, end] = detail::bracket_matching(desc, '<', '>');
     auto content = desc.substr(start + 1, end - start - 1);
     auto lst = string_split(content, ',');
-    NN_ASSERT(lst.size() == 2);
+    OC_ASSERT(lst.size() == 2);
     auto type_str = lst[0];
     auto dimension_str = lst[1];
     auto dimension = std::stoi(string(dimension_str));
@@ -154,7 +154,7 @@ void TypeRegistry::parse_vector(Type *type, ocarina::string_view desc) noexcept 
     type->_members.push_back(parse_type(type_str));
     auto member = type->_members.front();
     if (!member->is_scalar()) [[unlikely]] {
-        NN_ERROR("invalid vector element: {}!", member->description());
+        OC_ERROR("invalid vector element: {}!", member->description());
     }
     type->_size = member->size() * (dimension == 3 ? 4 : dimension);
     type->_alignment = type->size();
@@ -169,17 +169,17 @@ void TypeRegistry::parse_matrix(Type *type, ocarina::string_view desc) noexcept 
     auto tmp_desc = ocarina::format("vector<float,{}>", dimension);
     type->_members.push_back(parse_type((tmp_desc)));
 
-#define NN_SIZE_ALIGN(dim)                      \
+#define OC_SIZE_ALIGN(dim)                      \
     if (dimension == dim) {                      \
         type->_size = sizeof(Matrix<dim>);       \
         type->_alignment = alignof(Matrix<dim>); \
     } else
-    NN_SIZE_ALIGN(2)
-    NN_SIZE_ALIGN(3)
-    NN_SIZE_ALIGN(4) {
-        NN_ERROR("invalid matrix dimension {}!", dimension)
+    OC_SIZE_ALIGN(2)
+    OC_SIZE_ALIGN(3)
+    OC_SIZE_ALIGN(4) {
+        OC_ERROR("invalid matrix dimension {}!", dimension)
     }
-#undef NN_SIZE_ALIGN
+#undef OC_SIZE_ALIGN
 }
 
 void TypeRegistry::parse_struct(Type *type, string_view desc) noexcept {

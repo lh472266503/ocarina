@@ -139,21 +139,21 @@ template<typename F>
 struct canonical_signature
     : canonical_signature<decltype(&F::operator())> {};
 
-#define NN_MAKE_MEMBER_FUNC_SIGNATURE(...)                       \
+#define OC_MAKE_MEMBER_FUNC_SIGNATURE(...)                       \
     template<typename Ret, typename Cls, typename... Args>        \
     struct canonical_signature<Ret (Cls::*)(Args...) __VA_ARGS__> \
         : canonical_signature<Ret(Args...)> {};
 
-NN_MAKE_MEMBER_FUNC_SIGNATURE()
-NN_MAKE_MEMBER_FUNC_SIGNATURE(const)
-NN_MAKE_MEMBER_FUNC_SIGNATURE(volatile)
-NN_MAKE_MEMBER_FUNC_SIGNATURE(noexcept)
-NN_MAKE_MEMBER_FUNC_SIGNATURE(const noexcept)
-NN_MAKE_MEMBER_FUNC_SIGNATURE(const volatile)
-NN_MAKE_MEMBER_FUNC_SIGNATURE(volatile noexcept)
-NN_MAKE_MEMBER_FUNC_SIGNATURE(const volatile noexcept)
+OC_MAKE_MEMBER_FUNC_SIGNATURE()
+OC_MAKE_MEMBER_FUNC_SIGNATURE(const)
+OC_MAKE_MEMBER_FUNC_SIGNATURE(volatile)
+OC_MAKE_MEMBER_FUNC_SIGNATURE(noexcept)
+OC_MAKE_MEMBER_FUNC_SIGNATURE(const noexcept)
+OC_MAKE_MEMBER_FUNC_SIGNATURE(const volatile)
+OC_MAKE_MEMBER_FUNC_SIGNATURE(volatile noexcept)
+OC_MAKE_MEMBER_FUNC_SIGNATURE(const volatile noexcept)
 
-#undef NN_MAKE_MEMBER_FUNC_SIGNATURE
+#undef OC_MAKE_MEMBER_FUNC_SIGNATURE
 
 template<typename T>
 using canonical_signature_t = typename canonical_signature<T>::type;

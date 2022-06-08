@@ -82,7 +82,7 @@ public:
     FunctionBuilder &operator=(FunctionBuilder &&) noexcept = delete;
     FunctionBuilder &operator=(const FunctionBuilder &) noexcept = delete;
     ~FunctionBuilder() noexcept {
-        NN_DEBUG("function builder was destructed");
+        OC_DEBUG("function builder was destructed");
     }
     [[nodiscard]] static FunctionBuilder *current() noexcept;
     static void push(FunctionBuilder *builder) noexcept;

@@ -7,7 +7,7 @@ set_target_properties(ocarina-dsl PROPERTIES
         LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIG>/bin/"
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIG>/bin/"
         WINDOWS_EXPORT_ALL_SYMBOLS ON)
-target_compile_definitions(ocarina-dsl PRIVATE NN_DSL_EXPORT_DLL=1)
+target_compile_definitions(ocarina-dsl PRIVATE OC_DSL_EXPORT_DLL=1)
 target_link_libraries(ocarina-dsl
         PUBLIC
         ocarina-ast)

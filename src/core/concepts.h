@@ -134,55 +134,55 @@ concept same = is_same_v<T...>;
 template<typename A, typename B>
 concept different = !same<A, B>;
 
-#define NN_UNARY_OP_CONCEPT(op_name, op) \
+#define OC_UNARY_OP_CONCEPT(op_name, op) \
     template<typename T>                 \
     concept op_name = requires(T t) {    \
         op t;                            \
     };
-NN_UNARY_OP_CONCEPT(positive_able, +)
-NN_UNARY_OP_CONCEPT(negative_able, -)
-NN_UNARY_OP_CONCEPT(not_able, !)
-NN_UNARY_OP_CONCEPT(bit_not_able, ~)
-#undef NN_UNARY_OP_CONCEPT
+OC_UNARY_OP_CONCEPT(positive_able, +)
+OC_UNARY_OP_CONCEPT(negative_able, -)
+OC_UNARY_OP_CONCEPT(not_able, !)
+OC_UNARY_OP_CONCEPT(bit_not_able, ~)
+#undef OC_UNARY_OP_CONCEPT
 
-#define NN_BINARY_OP_CONCEPT(op_name, op)  \
+#define OC_BINARY_OP_CONCEPT(op_name, op)  \
     template<typename A, typename B>       \
     concept op_name = requires(A a, B b) { \
         a op b;                            \
     };
 
-NN_BINARY_OP_CONCEPT(plus_able, +)
-NN_BINARY_OP_CONCEPT(minus_able, -)
-NN_BINARY_OP_CONCEPT(multiply_able, *)
-NN_BINARY_OP_CONCEPT(divide_able, /)
-NN_BINARY_OP_CONCEPT(mod_able, %)
-NN_BINARY_OP_CONCEPT(bit_and_able, &)
-NN_BINARY_OP_CONCEPT(bit_or_able, |)
-NN_BINARY_OP_CONCEPT(bit_xor_able, ^)
-NN_BINARY_OP_CONCEPT(shift_left_able, <<)
-NN_BINARY_OP_CONCEPT(shift_right_able, >>)
-NN_BINARY_OP_CONCEPT(and_able, &&)
-NN_BINARY_OP_CONCEPT(or_able, ||)
-NN_BINARY_OP_CONCEPT(equal_able, ==)
-NN_BINARY_OP_CONCEPT(ne_able, !=)
-NN_BINARY_OP_CONCEPT(lt_able, <)
-NN_BINARY_OP_CONCEPT(gt_able, >)
-NN_BINARY_OP_CONCEPT(ge_able, >=)
-NN_BINARY_OP_CONCEPT(le_able, <=)
+OC_BINARY_OP_CONCEPT(plus_able, +)
+OC_BINARY_OP_CONCEPT(minus_able, -)
+OC_BINARY_OP_CONCEPT(multiply_able, *)
+OC_BINARY_OP_CONCEPT(divide_able, /)
+OC_BINARY_OP_CONCEPT(mod_able, %)
+OC_BINARY_OP_CONCEPT(bit_and_able, &)
+OC_BINARY_OP_CONCEPT(bit_or_able, |)
+OC_BINARY_OP_CONCEPT(bit_xor_able, ^)
+OC_BINARY_OP_CONCEPT(shift_left_able, <<)
+OC_BINARY_OP_CONCEPT(shift_right_able, >>)
+OC_BINARY_OP_CONCEPT(and_able, &&)
+OC_BINARY_OP_CONCEPT(or_able, ||)
+OC_BINARY_OP_CONCEPT(equal_able, ==)
+OC_BINARY_OP_CONCEPT(ne_able, !=)
+OC_BINARY_OP_CONCEPT(lt_able, <)
+OC_BINARY_OP_CONCEPT(gt_able, >)
+OC_BINARY_OP_CONCEPT(ge_able, >=)
+OC_BINARY_OP_CONCEPT(le_able, <=)
 
-NN_BINARY_OP_CONCEPT(assign_able, =)
-NN_BINARY_OP_CONCEPT(plus_assign_able, +=)
-NN_BINARY_OP_CONCEPT(minus_assign_able, -=)
-NN_BINARY_OP_CONCEPT(mult_assign_able, *=)
-NN_BINARY_OP_CONCEPT(div_assign_able, /=)
-NN_BINARY_OP_CONCEPT(mod_assign_able, %=)
-NN_BINARY_OP_CONCEPT(bit_and_assign_able, &=)
-NN_BINARY_OP_CONCEPT(bit_or_assign_able, |=)
-NN_BINARY_OP_CONCEPT(bit_xor_assign_able, ^=)
-NN_BINARY_OP_CONCEPT(shift_left_assign_able, <<=)
-NN_BINARY_OP_CONCEPT(shift_right_assign_able, >>=)
+OC_BINARY_OP_CONCEPT(assign_able, =)
+OC_BINARY_OP_CONCEPT(plus_assign_able, +=)
+OC_BINARY_OP_CONCEPT(minus_assign_able, -=)
+OC_BINARY_OP_CONCEPT(mult_assign_able, *=)
+OC_BINARY_OP_CONCEPT(div_assign_able, /=)
+OC_BINARY_OP_CONCEPT(mod_assign_able, %=)
+OC_BINARY_OP_CONCEPT(bit_and_assign_able, &=)
+OC_BINARY_OP_CONCEPT(bit_or_assign_able, |=)
+OC_BINARY_OP_CONCEPT(bit_xor_assign_able, ^=)
+OC_BINARY_OP_CONCEPT(shift_left_assign_able, <<=)
+OC_BINARY_OP_CONCEPT(shift_right_assign_able, >>=)
 
-#undef NN_BINARY_OP_CONCEPT
+#undef OC_BINARY_OP_CONCEPT
 
 template<typename Lhs, typename Rhs>
 concept access_able = requires(Lhs lhs, Rhs rhs) { lhs[rhs]; };

@@ -82,7 +82,7 @@ public:
     }
 };
 
-#define NN_MAKE_EXPRESSION_ACCEPT_VISITOR \
+#define OC_MAKE_EXPRESSION_ACCEPT_VISITOR \
     void accept(ExprVisitor &visitor) const override { visitor.visit(this); }
 
 class UnaryExpr : public Expression {
@@ -99,7 +99,7 @@ public:
         : Expression(Tag::UNARY, type), _op(op), _operand(expression) {}
     [[nodiscard]] auto operand() const noexcept { return _operand; }
     [[nodiscard]] auto op() const noexcept { return _op; }
-    NN_MAKE_EXPRESSION_ACCEPT_VISITOR
+    OC_MAKE_EXPRESSION_ACCEPT_VISITOR
 };
 
 class BinaryExpr : public Expression {
@@ -120,7 +120,7 @@ public:
     [[nodiscard]] auto lhs() const noexcept { return _lhs; }
     [[nodiscard]] auto rhs() const noexcept { return _rhs; }
     [[nodiscard]] auto op() const noexcept { return _op; }
-    NN_MAKE_EXPRESSION_ACCEPT_VISITOR
+    OC_MAKE_EXPRESSION_ACCEPT_VISITOR
 };
 
 class AccessExpr : public Expression {
@@ -137,7 +137,7 @@ public:
 
     [[nodiscard]] const Expression *range() const noexcept { return _range; }
     [[nodiscard]] const Expression *index() const noexcept { return _index; }
-    NN_MAKE_EXPRESSION_ACCEPT_VISITOR
+    OC_MAKE_EXPRESSION_ACCEPT_VISITOR
 };
 
 namespace detail {
@@ -169,7 +169,7 @@ public:
     LiteralExpr(const Type *type, value_type value)
         : Expression(Tag::LITERAL, type), _value(value) {}
     [[nodiscard]] decltype(auto) value() const noexcept { return _value; }
-    NN_MAKE_EXPRESSION_ACCEPT_VISITOR
+    OC_MAKE_EXPRESSION_ACCEPT_VISITOR
 };
 
 class RefExpr : public Expression {
@@ -186,7 +186,7 @@ public:
     explicit RefExpr(Variable v) noexcept
         : Expression(Tag::REF, v.type()), _variable(v) {}
     [[nodiscard]] auto variable() const noexcept { return _variable; }
-    NN_MAKE_EXPRESSION_ACCEPT_VISITOR
+    OC_MAKE_EXPRESSION_ACCEPT_VISITOR
 };
 
 class CallExpr : public Expression {
@@ -228,7 +228,7 @@ public:
     [[nodiscard]] const Expression *expression() const noexcept {
         return _expression;
     }
-    NN_MAKE_EXPRESSION_ACCEPT_VISITOR
+    OC_MAKE_EXPRESSION_ACCEPT_VISITOR
 };
 
 }// namespace ocarina
