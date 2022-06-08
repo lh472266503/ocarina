@@ -25,6 +25,53 @@
 
 namespace ocarina {
 
+namespace detail {
+OC_CORE_API void *allocator_allocate(size_t size, size_t alignment) noexcept;
+OC_CORE_API void allocator_deallocate(void *p, size_t alignment) noexcept;
+OC_CORE_API void *allocator_reallocate(void *p, size_t size, size_t alignment) noexcept;
+}// namespace detail
+
+template<typename T = std::byte>
+struct allocator {
+    using value_type = T;
+    constexpr allocator() noexcept = default;
+    template<typename U>
+    constexpr explicit allocator(allocator<U>) noexcept {}
+    [[nodiscard]] auto allocate(std::size_t n) const noexcept {
+        return static_cast<T *>(detail::allocator_allocate(sizeof(T) * n, alignof(T)));
+    }
+    void deallocate(T *p, size_t) const noexcept {
+        detail::allocator_deallocate(p, alignof(T));
+    }
+    template<typename R>
+    [[nodiscard]] constexpr bool operator==(allocator<R>) const noexcept {
+        return std::is_same_v<T, R>;
+    }
+};
+
+template<typename T>
+[[nodiscard]] inline auto allocate(size_t n = 1u) noexcept {
+    return allocator<T>{}.allocate(n);
+}
+
+template<typename T>
+inline void deallocate(T *p) noexcept {
+    allocator<T>{}.deallocate(p, 0u);
+}
+
+template<typename T, typename... Args>
+[[nodiscard]] inline auto new_with_allocator(Args &&...args) noexcept {
+    return std::construct_at(allocate<T>(), std::forward<Args>(args)...);
+}
+
+template<typename T>
+inline void delete_with_allocator(T *p) noexcept {
+    if (p != nullptr) {
+        std::destroy_at(p);
+        deallocate(p);
+    }
+}
+
 // io
 using std::cout;
 using std::endl;
@@ -50,7 +97,6 @@ using std::to_string;
 // range and container
 using std::span;
 using std::vector;
-using std::allocator;
 using std::deque;
 using std::list;
 using std::map;
