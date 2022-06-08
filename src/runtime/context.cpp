@@ -39,7 +39,7 @@ bool create_directory_if_necessary(const fs::path &path) {
 
 }// namespace detail
 
-Context::Context(const fs::path &path, string_view cache_dir) noexcept
+Context::Context(const fs::path &path, string_view cache_dir)
     : _impl(std::move(ocarina::make_unique<Impl>())) {
     _impl->runtime_directory = detail::create_runtime_directory(path);
     _impl->cache_directory = runtime_directory() / cache_dir;
