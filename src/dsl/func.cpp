@@ -6,7 +6,5 @@
 #include "func.h"
 
 namespace ocarina {
-namespace dsl {
 
-}
 }

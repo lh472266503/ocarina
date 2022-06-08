@@ -9,7 +9,7 @@
 #include "runtime/device.h"
 
 namespace ocarina {
-class CUDADevice : public Device::Impl {
+class CUDADevice : public Device {
 private:
 public:
 };

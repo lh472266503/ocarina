@@ -9,18 +9,18 @@
 #include "dsl/func.h"
 
 namespace ocarina {
-
+class Context;
 class Device {
 protected:
+    Context *_context{};
+
 public:
-    Device();
-    // buffer
+    explicit Device(Context *ctx) : _context(ctx) {}
+    [[nodiscard]] Context *context() const noexcept { return _context; }
     [[nodiscard]] virtual uint64_t create_buffer(size_t size_bytes) noexcept = 0;
     virtual void destroy_buffer(uint64_t handle) noexcept = 0;
-    // stream
     [[nodiscard]] virtual uint64_t create_stream() noexcept = 0;
     virtual void destroy_stream(uint64_t handle) noexcept = 0;
-
     virtual void compile(Function function) noexcept = 0;
 };
 }// namespace ocarina

@@ -11,7 +11,6 @@ Codegen::Scratch &Codegen::Scratch::operator<<(int v) noexcept {
 }
 Codegen::Scratch &Codegen::Scratch::operator<<(float v) noexcept {
     return *this << ocarina::to_string(v);
-    ;
 }
 Codegen::Scratch &Codegen::Scratch::operator<<(bool v) noexcept {
     return *this << ocarina::to_string(v);
