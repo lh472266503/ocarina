@@ -6,7 +6,7 @@
 #include "core/basic_traits.h"
 #include "dsl/struct.h"
 
-namespace nano {
+namespace ocarina {
 
 struct alignas(16) Hit {
     uint inst_id{};
@@ -14,6 +14,6 @@ struct alignas(16) Hit {
     float2 bary;
 };
 
-NN_STRUCT(nano::Hit, inst_id, prim_id, bary)
+NN_STRUCT(ocarina::Hit, inst_id, prim_id, bary)
 
-}// namespace nano
+}// namespace ocarina

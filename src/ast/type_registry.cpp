@@ -7,7 +7,7 @@
 #include "core/util.h"
 #include "core/logging.h"
 
-namespace nano {
+namespace ocarina {
 
 TypeRegistry &TypeRegistry::instance() noexcept {
     static TypeRegistry type_registry;
@@ -27,7 +27,7 @@ namespace detail {
     return ch >= '0' && ch <= '9';
 }
 
-[[nodiscard]] std::pair<int, int> bracket_matching(nano::string_view str, char l = '<', char r = '>') {
+[[nodiscard]] std::pair<int, int> bracket_matching(ocarina::string_view str, char l = '<', char r = '>') {
     int start = 0;
     int end = 0;
     int pair_count = 0;
@@ -48,7 +48,7 @@ namespace detail {
     return std::make_pair(start, end);
 }
 
-[[nodiscard]] nano::string_view find_identifier(nano::string_view &str,
+[[nodiscard]] ocarina::string_view find_identifier(ocarina::string_view &str,
                                                   bool check_start_with_num = false) {
     NN_USING_SV
     uint i = 0u;
@@ -71,8 +71,8 @@ namespace detail {
     return ret;
 }
 
-[[nodiscard]] auto find_content(nano::string_view &str, char l = '<', char r = '>') {
-    nano::vector<nano::string_view> ret;
+[[nodiscard]] auto find_content(ocarina::string_view &str, char l = '<', char r = '>') {
+    ocarina::vector<ocarina::string_view> ret;
     NN_USING_SV
     auto prev_token = str.find_first_of(l);
     constexpr auto token = ',';
@@ -99,7 +99,7 @@ namespace detail {
  * MATRIX: matrix<2> | matrix<3> | matrix<4>
  * STRUCT: struct<4,TYPE...> | struct<8,TYPE...> | struct<16,TYPE...>
  */
-const Type *TypeRegistry::parse_type(nano::string_view desc) noexcept {
+const Type *TypeRegistry::parse_type(ocarina::string_view desc) noexcept {
     uint64_t hash = _hash(desc);
     if (auto iter = _type_set.find(hash); iter != _type_set.cend()) {
         return *iter;
@@ -107,7 +107,7 @@ const Type *TypeRegistry::parse_type(nano::string_view desc) noexcept {
 
     NN_USING_SV
 
-    auto type = nano::make_unique<Type>();
+    auto type = ocarina::make_unique<Type>();
     type->_description = desc;
     type->_hash = hash;
 #define NN_PARSE_BASIC_TYPE(T, TAG)   \
@@ -141,7 +141,7 @@ const Type *TypeRegistry::parse_type(nano::string_view desc) noexcept {
     return ret;
 }
 
-void TypeRegistry::parse_vector(Type *type, nano::string_view desc) noexcept {
+void TypeRegistry::parse_vector(Type *type, ocarina::string_view desc) noexcept {
     type->_tag = Type::Tag::VECTOR;
     auto [start, end] = detail::bracket_matching(desc, '<', '>');
     auto content = desc.substr(start + 1, end - start - 1);
@@ -160,13 +160,13 @@ void TypeRegistry::parse_vector(Type *type, nano::string_view desc) noexcept {
     type->_alignment = type->size();
 }
 
-void TypeRegistry::parse_matrix(Type *type, nano::string_view desc) noexcept {
+void TypeRegistry::parse_matrix(Type *type, ocarina::string_view desc) noexcept {
     type->_tag = Type::Tag::MATRIX;
     auto [start, end] = detail::bracket_matching(desc, '<', '>');
     auto dimension_str = desc.substr(start + 1, end - start - 1);
     auto dimension = std::stoi(string(dimension_str));
     type->_dimension = dimension;
-    auto tmp_desc = nano::format("vector<float,{}>", dimension);
+    auto tmp_desc = ocarina::format("vector<float,{}>", dimension);
     type->_members.push_back(parse_type((tmp_desc)));
 
 #define NN_SIZE_ALIGN(dim)                      \
@@ -199,7 +199,7 @@ void TypeRegistry::parse_struct(Type *type, string_view desc) noexcept {
     type->_size = mem_offset(size, type->alignment());
 }
 
-void TypeRegistry::parse_array(Type *type, nano::string_view desc) noexcept {
+void TypeRegistry::parse_array(Type *type, ocarina::string_view desc) noexcept {
     type->_tag = Type::Tag::ARRAY;
     auto lst = detail::find_content(desc);
     auto type_str = lst[0];
@@ -213,13 +213,13 @@ void TypeRegistry::parse_array(Type *type, nano::string_view desc) noexcept {
     type->_size = size;
 }
 
-void TypeRegistry::add_type(nano::unique_ptr<Type> type) {
+void TypeRegistry::add_type(ocarina::unique_ptr<Type> type) {
     _type_set.insert(type.get());
     type->_index = _types.size();
     _types.push_back(std::move(type));
 }
 
-const Type *TypeRegistry::type_from(nano::string_view desc) noexcept {
+const Type *TypeRegistry::type_from(ocarina::string_view desc) noexcept {
     return parse_type(desc);
 }
 
@@ -233,11 +233,11 @@ const Type *TypeRegistry::type_at(uint i) const noexcept {
     return _types[i].get();
 }
 
-uint64_t TypeRegistry::_hash(nano::string_view desc) noexcept {
+uint64_t TypeRegistry::_hash(ocarina::string_view desc) noexcept {
     using namespace std::string_view_literals;
     return hash64(desc, hash64("__hash_type"sv));
 }
-bool TypeRegistry::is_exist(nano::string_view desc) const noexcept {
+bool TypeRegistry::is_exist(ocarina::string_view desc) const noexcept {
     return is_exist(_hash(desc));
 }
 
@@ -245,4 +245,4 @@ bool TypeRegistry::is_exist(uint64_t hash) const noexcept {
     return _type_set.find(hash) != _type_set.cend();
 }
 
-}// namespace nano
+}// namespace ocarina

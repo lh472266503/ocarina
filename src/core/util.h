@@ -7,7 +7,7 @@
 #include "basic_traits.h"
 #include "concepts.h"
 
-namespace nano {
+namespace ocarina {
 
 template<typename T, typename U>
 requires is_integral_v<T> && is_integral_v<U>
@@ -49,4 +49,4 @@ inline namespace size_literals {
 }
 }// namespace size_literals
 
-}// namespace nano
+}// namespace ocarina

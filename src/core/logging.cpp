@@ -4,11 +4,11 @@
 
 #include "logging.h"
 
-namespace nano {
+namespace ocarina {
 inline namespace core {
 spdlog::logger &logger() noexcept {
     static auto ret = spdlog::stdout_color_mt("console");
     return *ret;
 }
 }
-}// namespace nano::core
+}// namespace ocarina::core

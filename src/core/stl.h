@@ -23,7 +23,7 @@
 #include <filesystem>
 #include <EASTL/tuple.h>
 
-namespace nano {
+namespace ocarina {
 
 // io
 using std::cout;
@@ -82,4 +82,4 @@ using std::variant;
 using std::visit;
 namespace fs = std::filesystem;
 
-}// namespace nano
+}// namespace ocarina

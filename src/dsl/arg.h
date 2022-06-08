@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace nano::detail {
+namespace ocarina::detail {
 struct ArgumentCreation {};
 struct ReferenceArgumentCreation {};
-}// namespace nano::detail
+}// namespace ocarina::detail

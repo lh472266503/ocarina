@@ -7,7 +7,7 @@
 #include "core/stl.h"
 #include "core/hash.h"
 
-namespace nano {
+namespace ocarina {
 
 class Variable {
 public:
@@ -53,4 +53,4 @@ public:
     }
 };
 
-}// namespace nano
+}// namespace ocarina

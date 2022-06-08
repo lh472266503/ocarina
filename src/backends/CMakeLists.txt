@@ -1,5 +1,5 @@
 add_subdirectory(cuda)
 
-add_library(nano-backends INTERFACE)
-target_link_libraries(nano-backends INTERFACE
-        nano-backends-cuda)
+add_library(ocarina-backends INTERFACE)
+target_link_libraries(ocarina-backends INTERFACE
+        ocarina-backends-cuda)

@@ -4,6 +4,6 @@
 
 #include "device.h"
 
-namespace nano {
+namespace ocarina {
 
 }

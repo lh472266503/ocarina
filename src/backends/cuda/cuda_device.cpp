@@ -5,6 +5,6 @@
 #include "cuda_device.h"
 
 
-namespace nano {
+namespace ocarina {
 
 }

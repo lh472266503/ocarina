@@ -4,7 +4,7 @@
 
 #include "function_builder.h"
 
-namespace nano {
+namespace ocarina {
 
 void FunctionBuilder::push(FunctionBuilder *builder) noexcept {
     _function_stack().push_back(builder);
@@ -14,8 +14,8 @@ void FunctionBuilder::pop(FunctionBuilder *builder) noexcept {
     _function_stack().pop_back();
 }
 
-nano::vector<FunctionBuilder *> &FunctionBuilder::_function_stack() noexcept {
-    static thread_local nano::vector<FunctionBuilder *> stack;
+ocarina::vector<FunctionBuilder *> &FunctionBuilder::_function_stack() noexcept {
+    static thread_local ocarina::vector<FunctionBuilder *> stack;
     return stack;
 }
 
@@ -76,4 +76,4 @@ const CastExpr *FunctionBuilder::cast(const Type *type, CastOp cast_op, const Ex
     return _create_expression<CastExpr>(type, cast_op, expression);
 }
 
-}// namespace nano
+}// namespace ocarina

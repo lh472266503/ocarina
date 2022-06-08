@@ -14,22 +14,22 @@ add_subdirectory(compile)
 add_subdirectory(runtime)
 add_subdirectory(backends)
 
-add_library(nano-all INTERFACE)
-target_link_libraries(nano-all INTERFACE
-        nano-ext
-        nano-dsl
-        nano-ast
-        nano-rt
-        nano-compile
-        nano-runtime
-        nano-core)
+add_library(ocarina-all INTERFACE)
+target_link_libraries(ocarina-all INTERFACE
+        ocarina-ext
+        ocarina-dsl
+        ocarina-ast
+        ocarina-rt
+        ocarina-compile
+        ocarina-runtime
+        ocarina-core)
 
-add_executable(nano main.cpp)
-target_link_libraries(nano nano-all)
+add_executable(ocarina main.cpp)
+target_link_libraries(ocarina ocarina-all)
 
 add_subdirectory(tests)
 
-set_target_properties(nano PROPERTIES
+set_target_properties(ocarina PROPERTIES
         PUBLIC_HEADER "${HEADER_FILES}"
         LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIG>/bin/"
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIG>/bin/"

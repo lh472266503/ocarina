@@ -6,7 +6,7 @@
 
 #include <cstdint>
 
-namespace nano {
+namespace ocarina {
 
 enum struct Usage : uint32_t {
     NONE = 0u,

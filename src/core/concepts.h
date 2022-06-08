@@ -7,7 +7,7 @@
 #include "basic_types.h"
 #include "stl.h"
 
-namespace nano::concepts {
+namespace ocarina::concepts {
 
 struct Noncopyable {
     Noncopyable() noexcept = default;
@@ -25,12 +25,12 @@ concept iterable = requires(T v) {
 
 template<typename T>
 concept string_viewable = requires(T v) {
-    nano::string_view{v};
+    ocarina::string_view{v};
 };
 
 template<typename T>
 concept span_convertible = requires(T v) {
-    nano::span{v};
+    ocarina::span{v};
 };
 
 template<typename T, typename... Args>
@@ -187,4 +187,4 @@ NN_BINARY_OP_CONCEPT(shift_right_assign_able, >>=)
 template<typename Lhs, typename Rhs>
 concept access_able = requires(Lhs lhs, Rhs rhs) { lhs[rhs]; };
 
-}// namespace nano::concepts
+}// namespace ocarina::concepts

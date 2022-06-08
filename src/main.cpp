@@ -12,31 +12,30 @@
 #include "dsl/common.h"
 #include "rt/hit.h"
 
-using namespace nano;
+using namespace ocarina;
 
 template<typename T, size_t N, size_t... i>
 auto array_to_tuple(std::array<T, N> arr, std::index_sequence<i...>) {
     //    ((cout << arr[i]),...);
-    auto ret = nano::tuple<std::remove_cvref_t<decltype(arr[i])>...>(arr[i]...);
+    auto ret = ocarina::tuple<std::remove_cvref_t<decltype(arr[i])>...>(arr[i]...);
     return ret;
 }
 
 const vector<const Type *> _members;
 
-nano::span<const Type *const> members() noexcept {
-    return nano::span(_members);
+ocarina::span<const Type *const> members() noexcept {
+    return ocarina::span(_members);
 }
 
-
 int main() {
-    using namespace nano;
+    using namespace ocarina;
     std::array<float, 2> arr = {1, 2};
-    nano::tuple<float, float> tp = array_to_tuple(arr, std::make_index_sequence<2>());
-    //    nano::tuple<float, float> tp = nano::tuple<float, float>(1,5);
+    ocarina::tuple<float, float> tp = array_to_tuple(arr, std::make_index_sequence<2>());
+    //    ocarina::tuple<float, float> tp = ocarina::tuple<float, float>(1,5);
     //    cout << typeid(tp).name() << endl;
     //    cout << typeid(struct_member_tuple<std::array<float, 2>>::type).name();
     cout << detail::TypeDesc<decltype(tp)>::description() << endl;
-//    cout << detail::TypeDesc<Hit>::description() << endl;
-    //    cout << typeid(nano::tuple_join_t<tuple<int, float, int>, tuple<int, float, uint>, int>).name() << endl;
+    //    cout << detail::TypeDesc<Hit>::description() << endl;
+    //    cout << typeid(ocarina::tuple_join_t<tuple<int, float, int>, tuple<int, float, uint>, int>).name() << endl;
     //    cout << typeid(canonical_layout<float2x2>::type).name() << endl;
 }

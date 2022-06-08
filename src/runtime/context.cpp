@@ -6,15 +6,15 @@
 #include "core/logging.h"
 #include "dynamic_module.h"
 
-namespace nano {
+namespace ocarina {
 struct Context::Impl {
     fs::path runtime_directory;
     fs::path cache_directory;
-    nano::vector<DynamicModule> loaded_modules;
+    ocarina::vector<DynamicModule> loaded_modules;
 };
 
 Context::Context(const fs::path &program) noexcept
-    : _impl(std::move(nano::make_unique<Impl>())) {
+    : _impl(std::move(ocarina::make_unique<Impl>())) {
 }
 
 Context::~Context() noexcept {
@@ -26,6 +26,6 @@ const fs::path &Context::runtime_directory() const noexcept {
 const fs::path &Context::cache_directory() const noexcept {
     return _impl->cache_directory;
 }
-void Context::load_module_function(const fs::path &path, nano::string_view module_name) {
+void Context::load_module_function(const fs::path &path, ocarina::string_view module_name) {
 }
-}// namespace nano
+}// namespace ocarina

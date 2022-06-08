@@ -4,6 +4,6 @@
 
 #include "texture.h"
 
-namespace nano {
+namespace ocarina {
 
 }

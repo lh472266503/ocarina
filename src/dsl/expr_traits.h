@@ -10,7 +10,7 @@
 #include "ast/type.h"
 #include "core/basic_traits.h"
 
-namespace nano {
+namespace ocarina {
 
 template<typename T>
 struct Computable;
@@ -207,4 +207,4 @@ EXPR_VECTOR_TYPE_TRAITS(uint)
 
 #undef EXPR_VECTOR_TYPE_TRAITS
 
-}// namespace nano
+}// namespace ocarina

@@ -10,7 +10,7 @@
 #include "core/util.h"
 #include "core/string_util.h"
 
-namespace nano {
+namespace ocarina {
 template<typename T>
 class Buffer;
 
@@ -33,28 +33,28 @@ struct TypeDesc {
 #define NN_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(S, tag)   \
     template<>                                                        \
     struct TypeDesc<S> {                                              \
-        static constexpr nano::string_view description() noexcept { \
+        static constexpr ocarina::string_view description() noexcept { \
             using namespace std::string_view_literals;                \
             return #S##sv;                                            \
         }                                                             \
     };                                                                \
     template<>                                                        \
     struct TypeDesc<Vector<S, 2>> {                                   \
-        static constexpr nano::string_view description() noexcept { \
+        static constexpr ocarina::string_view description() noexcept { \
             using namespace std::string_view_literals;                \
             return "vector<" #S ",2>"sv;                              \
         }                                                             \
     };                                                                \
     template<>                                                        \
     struct TypeDesc<Vector<S, 3>> {                                   \
-        static constexpr nano::string_view description() noexcept { \
+        static constexpr ocarina::string_view description() noexcept { \
             using namespace std::string_view_literals;                \
             return "vector<" #S ",3>"sv;                              \
         }                                                             \
     };                                                                \
     template<>                                                        \
     struct TypeDesc<Vector<S, 4>> {                                   \
-        static constexpr nano::string_view description() noexcept { \
+        static constexpr ocarina::string_view description() noexcept { \
             using namespace std::string_view_literals;                \
             return "vector<" #S ",4>"sv;                              \
         }                                                             \
@@ -70,7 +70,7 @@ NN_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(uint, UINT32)
 /// matrices
 template<>
 struct TypeDesc<float2x2> {
-    static constexpr nano::string_view description() noexcept {
+    static constexpr ocarina::string_view description() noexcept {
         using namespace std::string_view_literals;
         return "matrix<2>"sv;
     }
@@ -78,7 +78,7 @@ struct TypeDesc<float2x2> {
 
 template<>
 struct TypeDesc<float3x3> {
-    static constexpr nano::string_view description() noexcept {
+    static constexpr ocarina::string_view description() noexcept {
         using namespace std::string_view_literals;
         return "matrix<3>"sv;
     }
@@ -86,7 +86,7 @@ struct TypeDesc<float3x3> {
 
 template<>
 struct TypeDesc<float4x4> {
-    static constexpr nano::string_view description() noexcept {
+    static constexpr ocarina::string_view description() noexcept {
         using namespace std::string_view_literals;
         return "matrix<4>"sv;
     }
@@ -95,8 +95,8 @@ struct TypeDesc<float4x4> {
 template<typename T, size_t N>
 struct TypeDesc<std::array<T, N>> {
     static_assert(alignof(T) >= 4u);
-    static nano::string_view description() noexcept {
-        static thread_local auto s = nano::format(
+    static ocarina::string_view description() noexcept {
+        static thread_local auto s = ocarina::format(
             FMT_STRING("array<{},{}>"),
             TypeDesc<T>::description(), N);
         return s;
@@ -107,10 +107,10 @@ template<typename T, size_t N>
 struct TypeDesc<T[N]> : public TypeDesc<std::array<T, N>> {};
 
 template<typename... T>
-struct TypeDesc<nano::tuple<T...>> {
-    static nano::string_view description() noexcept {
-        static thread_local nano::string str = []() -> nano::string {
-            auto ret = nano::format("struct<{}", alignof(nano::tuple<T...>));
+struct TypeDesc<ocarina::tuple<T...>> {
+    static ocarina::string_view description() noexcept {
+        static thread_local ocarina::string str = []() -> ocarina::string {
+            auto ret = ocarina::format("struct<{}", alignof(ocarina::tuple<T...>));
             (ret.append(",").append(TypeDesc<T>::description()), ...);
             ret.append(">");
             return ret;
@@ -130,14 +130,14 @@ const Type *Type::of() noexcept {
 #define NN_MAKE_STRUCT_MEMBER_FMT(member) ",{}"
 
 #define NN_MAKE_STRUCT_MEMBER_DESC(member) \
-    nano::detail::TypeDesc<std::remove_cvref_t<decltype(this_type::member)>>::description()
+    ocarina::detail::TypeDesc<std::remove_cvref_t<decltype(this_type::member)>>::description()
 
 #define NN_MAKE_STRUCT_DESC(S, ...)                                                        \
     template<>                                                                              \
-    struct nano::detail::TypeDesc<S> {                                                    \
+    struct ocarina::detail::TypeDesc<S> {                                                    \
         using this_type = S;                                                                \
-        static nano::string_view description() noexcept {                                 \
-            static thread_local nano::string s = nano::format(                          \
+        static ocarina::string_view description() noexcept {                                 \
+            static thread_local ocarina::string s = ocarina::format(                          \
                 FMT_STRING("struct<{}" MAP(NN_MAKE_STRUCT_MEMBER_FMT, ##__VA_ARGS__) ">"), \
                 alignof(this_type),                                                         \
                 MAP_LIST(NN_MAKE_STRUCT_MEMBER_DESC, ##__VA_ARGS__));                      \
@@ -150,7 +150,7 @@ template<typename S, typename Members, typename offsets>
 struct is_valid_reflection : std::false_type {};
 
 template<typename S, typename... M, typename I, I... os>
-struct is_valid_reflection<S, nano::tuple<M...>, std::integer_sequence<I, os...>> {
+struct is_valid_reflection<S, ocarina::tuple<M...>, std::integer_sequence<I, os...>> {
     static_assert(((!is_struct_v<M>)&&...));
     static_assert((!is_bool_vector_v<M> && ...),
                   "Boolean vectors are not allowed in DSL "
@@ -206,29 +206,29 @@ public:
         }
     };
 
-    nano::vector<nano::unique_ptr<Type>> _types;
-    nano::unordered_set<Type *, TypePtrHash, TypePtrEqual> _type_set;
+    ocarina::vector<ocarina::unique_ptr<Type>> _types;
+    ocarina::unordered_set<Type *, TypePtrHash, TypePtrEqual> _type_set;
     mutable std::mutex _mutex;
     TypeRegistry() = default;
 
 private:
-    [[nodiscard]] static uint64_t _hash(nano::string_view desc) noexcept;
-    void parse_vector(Type *type, nano::string_view desc) noexcept;
-    void parse_matrix(Type *type, nano::string_view desc) noexcept;
-    void parse_array(Type *type, nano::string_view desc) noexcept;
-    void parse_struct(Type *type, nano::string_view desc) noexcept;
+    [[nodiscard]] static uint64_t _hash(ocarina::string_view desc) noexcept;
+    void parse_vector(Type *type, ocarina::string_view desc) noexcept;
+    void parse_matrix(Type *type, ocarina::string_view desc) noexcept;
+    void parse_array(Type *type, ocarina::string_view desc) noexcept;
+    void parse_struct(Type *type, ocarina::string_view desc) noexcept;
 
 public:
     TypeRegistry &operator=(const TypeRegistry &) = delete;
     TypeRegistry &operator=(TypeRegistry &&) = delete;
     [[nodiscard]] static TypeRegistry &instance() noexcept;
-    [[nodiscard]] const Type *parse_type(nano::string_view desc) noexcept;
-    [[nodiscard]] bool is_exist(nano::string_view desc) const noexcept;
+    [[nodiscard]] const Type *parse_type(ocarina::string_view desc) noexcept;
+    [[nodiscard]] bool is_exist(ocarina::string_view desc) const noexcept;
     [[nodiscard]] bool is_exist(uint64_t hash) const noexcept;
-    [[nodiscard]] const Type *type_from(nano::string_view desc) noexcept;
+    [[nodiscard]] const Type *type_from(ocarina::string_view desc) noexcept;
     [[nodiscard]] const Type *type_at(uint i) const noexcept;
     [[nodiscard]] size_t type_count() const noexcept;
-    void add_type(nano::unique_ptr<Type> type);
+    void add_type(ocarina::unique_ptr<Type> type);
 };
 
-};// namespace nano
+};// namespace ocarina

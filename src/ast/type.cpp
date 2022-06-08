@@ -5,7 +5,7 @@
 #include "type.h"
 #include "type_registry.h"
 
-namespace nano {
+namespace ocarina {
 
 
 size_t Type::count() noexcept {
@@ -20,7 +20,7 @@ const Type *Type::at(uint32_t uid) noexcept {
     return TypeRegistry::instance().type_at(uid);
 }
 
-nano::span<const Type *const> Type::members() const noexcept {
+ocarina::span<const Type *const> Type::members() const noexcept {
     return {_members};
 }
 
@@ -37,4 +37,4 @@ constexpr bool Type::is_scalar() const noexcept {
     return _tag == Tag::BOOL || _tag == Tag::FLOAT || _tag == Tag::INT || _tag == Tag::UINT;
 }
 
-}// namespace nano
+}// namespace ocarina

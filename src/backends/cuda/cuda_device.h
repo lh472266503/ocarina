@@ -8,9 +8,9 @@
 #include "core/stl.h"
 #include "runtime/device.h"
 
-namespace nano {
+namespace ocarina {
 class CUDADevice : public Device::Impl {
 private:
 public:
 };
-}// namespace nano
+}// namespace ocarina

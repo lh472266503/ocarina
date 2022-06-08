@@ -13,7 +13,7 @@
 #include "expr_traits.h"
 #include "arg.h"
 
-namespace nano {
+namespace ocarina {
 
 namespace detail {
 template<typename T>
@@ -75,25 +75,25 @@ struct is_callable<Callable<T>> : std::true_type {};
 namespace detail {
 
 template<typename VarTuple, typename TagTuple, typename T, size_t... i>
-[[nodiscard]] auto create_argument_definition_impl(T tuple, nano::index_sequence<i...>) {
-    return VarTuple(nano::tuple_element_t<i, VarTuple>{nano::tuple_element_t<i, TagTuple>{}}...);
+[[nodiscard]] auto create_argument_definition_impl(T tuple, ocarina::index_sequence<i...>) {
+    return VarTuple(ocarina::tuple_element_t<i, VarTuple>{ocarina::tuple_element_t<i, TagTuple>{}}...);
 }
 
 }// namespace detail
 
 template<typename VarTuple, typename TagTuple>
 [[nodiscard]] auto create_argument_definition() {
-    return detail::create_argument_definition_impl<VarTuple, TagTuple>(nano::tuple(), nano::make_index_sequence<nano::tuple_size_v<VarTuple>>());
+    return detail::create_argument_definition_impl<VarTuple, TagTuple>(ocarina::tuple(), ocarina::make_index_sequence<ocarina::tuple_size_v<VarTuple>>());
 }
 
 namespace detail {
 template<typename... Args, typename Func, size_t... i>
-auto create(Func &&func, nano::index_sequence<i...>) {
+auto create(Func &&func, ocarina::index_sequence<i...>) {
     static_assert(std::is_invocable_v<Func, detail::prototype_to_var_t<Args>...>);
-    using var_tuple = nano::tuple<Var<std::remove_cvref_t<Args>>...>;
-    using tag_tuple = nano::tuple<detail::prototype_to_creation_tag_t<Args>...>;
+    using var_tuple = ocarina::tuple<Var<std::remove_cvref_t<Args>>...>;
+    using tag_tuple = ocarina::tuple<detail::prototype_to_creation_tag_t<Args>...>;
     auto args = create_argument_definition<var_tuple, tag_tuple>();
-    return func(std::forward<detail::prototype_to_var_t<Args>>(nano::get<i>(args))...);
+    return func(std::forward<detail::prototype_to_var_t<Args>>(ocarina::get<i>(args))...);
 }
 }// namespace detail
 
@@ -102,16 +102,16 @@ class Callable<Ret(Args...)> {
     static_assert(std::negation_v<std::disjunction<std::is_pointer<Args>...>>);
 
 private:
-    nano::shared_ptr<const FunctionBuilder> _builder;
+    ocarina::shared_ptr<const FunctionBuilder> _builder;
 
 public:
     template<typename Func>
     Callable(Func &&func) noexcept
         : _builder(FunctionBuilder::define_callable([&] {
               if constexpr (std::is_same_v<void, Ret>) {
-                  detail::create<Args...>(func, nano::index_sequence_for<Args...>());
+                  detail::create<Args...>(func, ocarina::index_sequence_for<Args...>());
               } else {
-                  auto ret = def(detail::create<Args...>(func, nano::index_sequence_for<Args...>()));
+                  auto ret = def(detail::create<Args...>(func, ocarina::index_sequence_for<Args...>()));
                   FunctionBuilder::current()->return_(ret.expression());
               }
           })) {}
@@ -184,4 +184,4 @@ using dsl_function_t = typename dsl_function<T>::type;
 template<typename T>
 Callable(T &&) -> Callable<detail::dsl_function_t<std::remove_cvref_t<T>>>;
 
-}// namespace nano
+}// namespace ocarina

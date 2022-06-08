@@ -7,7 +7,7 @@
 #include "core/header.h"
 #include "core/stl.h"
 
-namespace nano {
+namespace ocarina {
 class Device {
 protected:
 public:
@@ -19,4 +19,4 @@ public:
     [[nodiscard]] virtual uint64_t create_stream() noexcept = 0;
     virtual void destroy_stream(uint64_t handle) noexcept = 0;
 };
-}// namespace nano
+}// namespace ocarina

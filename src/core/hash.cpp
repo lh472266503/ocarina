@@ -6,7 +6,7 @@
 #include "stl.h"
 #include "fmt/core.h"
 
-namespace nano {
+namespace ocarina {
 
 string_view hash_to_string(uint64_t hash) noexcept {
     static thread_local std::array<char, 16u> temp;
@@ -14,4 +14,4 @@ string_view hash_to_string(uint64_t hash) noexcept {
     return string_view{temp.data(), temp.size()};
 }
 
-}// namespace nano
+}// namespace ocarina

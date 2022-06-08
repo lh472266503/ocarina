@@ -14,7 +14,7 @@
 
 using std::cout;
 using std::endl;
-using namespace nano;
+using namespace ocarina;
 
 Var<int> func(Var<int> a, Var<int> b) {
     return (a + b);

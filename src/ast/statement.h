@@ -10,7 +10,7 @@
 #include "core/hash.h"
 #include "expression.h"
 
-namespace nano {
+namespace ocarina {
 
 class ScopeStmt;
 class BreakStmt;
@@ -86,7 +86,7 @@ public:
 
 class NN_AST_API ScopeStmt : public Statement {
 private:
-    nano::vector<const Statement *> _statements;
+    ocarina::vector<const Statement *> _statements;
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override {
@@ -97,7 +97,7 @@ private:
 
 public:
     ScopeStmt() noexcept : Statement(Tag::SCOPE) {}
-    [[nodiscard]] auto statements() const noexcept { return nano::span(_statements); }
+    [[nodiscard]] auto statements() const noexcept { return ocarina::span(_statements); }
     void append(const Statement *stmt) noexcept { _statements.push_back(stmt); }
     NN_MAKE_STATEMENT_ACCEPT_VISITOR
 };
@@ -175,4 +175,4 @@ public:
     NN_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 
-}// namespace nano
+}// namespace ocarina

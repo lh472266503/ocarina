@@ -10,7 +10,7 @@
 #include "expr_traits.h"
 #include "ast/function_builder.h"
 
-namespace nano::detail {
+namespace ocarina::detail {
 
 template<typename T>
 struct EnableSubscriptAccess {
@@ -19,7 +19,7 @@ struct EnableSubscriptAccess {
     [[nodiscard]] auto operator[](Index &&index) const noexcept {
         auto self = def<T>(static_cast<const T *>(this)->expression());
         using Element = std::remove_cvref_t<decltype(std::declval<expr_value_t<T>>()[0])>;
-        return def<Element>(nano::FunctionBuilder::current()->access(
+        return def<Element>(ocarina::FunctionBuilder::current()->access(
             Type::of<Element>(), self.expression(),
             extract_expression(std::forward<Index>(index))));
     }
@@ -48,7 +48,7 @@ struct EnableStaticCast {
     [[nodiscard]] auto cast() const noexcept {
         auto src = def(*static_cast<const T *>(this));
         using ExprDest = expr_value_t<Dest>;
-        return def(nano::FunctionBuilder::current()->cast(Type::of<ExprDest>(), CastOp::STATIC, src));
+        return def(ocarina::FunctionBuilder::current()->cast(Type::of<ExprDest>(), CastOp::STATIC, src));
     }
 };
 
@@ -59,7 +59,7 @@ struct EnableBitwiseCast {
     [[nodiscard]] auto bit_cast() const noexcept {
         auto src = def(*static_cast<const T *>(this));
         using ExprDest = expr_value_t<Dest>;
-        return def(nano::FunctionBuilder::current()->cast(Type::of<ExprDest>(), CastOp::BITWISE, src));
+        return def(ocarina::FunctionBuilder::current()->cast(Type::of<ExprDest>(), CastOp::BITWISE, src));
     }
 };
 
@@ -123,16 +123,16 @@ struct Computable<Matrix<N>>
 };
 
 template<typename... T>
-struct Computable<nano::tuple<T...>> {
-    using Tuple = nano::tuple<T...>;
-    NN_COMPUTABLE_COMMON(nano::tuple<T...>)
+struct Computable<ocarina::tuple<T...>> {
+    using Tuple = ocarina::tuple<T...>;
+    NN_COMPUTABLE_COMMON(ocarina::tuple<T...>)
     template<size_t i>
     [[nodiscard]] auto get() const noexcept {
-        using Elm = nano::tuple_element_t<i, Tuple>;
-        return Computable<Elm>(nano::FunctionBuilder::current(Type::of<Elm>(), expression(), i));
+        using Elm = ocarina::tuple_element_t<i, Tuple>;
+        return Computable<Elm>(ocarina::FunctionBuilder::current(Type::of<Elm>(), expression(), i));
     }
 };
 
 #undef NN_COMPUTABLE_COMMON
 
-}// namespace nano::detail
+}// namespace ocarina::detail

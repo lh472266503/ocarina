@@ -12,7 +12,7 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 
-namespace nano {
+namespace ocarina {
 inline namespace core {
 spdlog::logger &logger() noexcept;
 
@@ -76,46 +76,46 @@ inline void error_if_not(bool predicate, Args &&...args) {
     error_if(!predicate, std::forward<Args>(args)...);
 }
 }
-}// namespace nano::core
+}// namespace ocarina::core
 
 #define NN_SOURCE_LOCATION __FILE__, ":", __LINE__
 
 #define SET_LOG_LEVEL(lv) \
-    ::nano::core::set_log_level(spdlog::level::level_enum::lv);
+    ::ocarina::core::set_log_level(spdlog::level::level_enum::lv);
 
 #define NN_DEBUG(...) \
-    ::nano::core::debug(__VA_ARGS__);
+    ::ocarina::core::debug(__VA_ARGS__);
 #define NN_DEBUG_FORMAT(FMT, ...) \
-    NN_DEBUG(nano::format(FMT, __VA_ARGS__));
+    NN_DEBUG(ocarina::format(FMT, __VA_ARGS__));
 
 #define NN_INFO(...) \
-    ::nano::core::info(__VA_ARGS__);
+    ::ocarina::core::info(__VA_ARGS__);
 #define NN_INFO_FORMAT(FMT, ...) \
-    NN_INFO(nano::format(FMT, __VA_ARGS__));
+    NN_INFO(ocarina::format(FMT, __VA_ARGS__));
 
 #define NN_WARNING(...) \
-    ::nano::core::warning(__VA_ARGS__, "\n    Source: ", NN_SOURCE_LOCATION);
+    ::ocarina::core::warning(__VA_ARGS__, "\n    Source: ", NN_SOURCE_LOCATION);
 #define NN_WARNING_IF(...) \
-    ::nano::core::warning_if(__VA_ARGS__, "\n    Source: ", NN_SOURCE_LOCATION);
+    ::ocarina::core::warning_if(__VA_ARGS__, "\n    Source: ", NN_SOURCE_LOCATION);
 #define NN_WARNING_IF_NOT(...) \
-    ::nano::core::warning_if_not(__VA_ARGS__, "\n    Source: ", NN_SOURCE_LOCATION);
+    ::ocarina::core::warning_if_not(__VA_ARGS__, "\n    Source: ", NN_SOURCE_LOCATION);
 #define NN_WARNING_FORMAT(FMT, ...) \
-    NN_WARNING(nano::format(FMT, __VA_ARGS__));
+    NN_WARNING(ocarina::format(FMT, __VA_ARGS__));
 
 #define NN_EXCEPTION(...) \
-    ::nano::core::exception(__VA_ARGS__, "\n    Source: ", NN_SOURCE_LOCATION);
+    ::ocarina::core::exception(__VA_ARGS__, "\n    Source: ", NN_SOURCE_LOCATION);
 #define NN_EXCEPTION_IF(...) \
-    ::nano::core::exception_if(__VA_ARGS__, "\n    Source: ", NN_SOURCE_LOCATION);
+    ::ocarina::core::exception_if(__VA_ARGS__, "\n    Source: ", NN_SOURCE_LOCATION);
 #define NN_EXCEPTION_IF_NOT(...) \
-    ::nano::core::exception_if_not(__VA_ARGS__, "\n    Source: ", NN_SOURCE_LOCATION);
+    ::ocarina::core::exception_if_not(__VA_ARGS__, "\n    Source: ", NN_SOURCE_LOCATION);
 #define NN_EXCEPTION_FORMAT(FMT, ...) \
-    NN_EXCEPTION(nano::format(FMT, __VA_ARGS__));
+    NN_EXCEPTION(ocarina::format(FMT, __VA_ARGS__));
 
 #define NN_ERROR(...) \
-    ::nano::core::error(__VA_ARGS__, "\n    Source: ", NN_SOURCE_LOCATION);
+    ::ocarina::core::error(__VA_ARGS__, "\n    Source: ", NN_SOURCE_LOCATION);
 #define NN_ERROR_IF(...) \
-    ::nano::core::error_if(__VA_ARGS__, "\n    Source: ", NN_SOURCE_LOCATION);
+    ::ocarina::core::error_if(__VA_ARGS__, "\n    Source: ", NN_SOURCE_LOCATION);
 #define NN_ERROR_IF_NOT(...) \
-    ::nano::core::error_if_not(__VA_ARGS__, "\n    Source: ", NN_SOURCE_LOCATION);
+    ::ocarina::core::error_if_not(__VA_ARGS__, "\n    Source: ", NN_SOURCE_LOCATION);
 #define NN_ERROR_FORMAT(FMT, ...) \
-    NN_ERROR(nano::format(FMT, __VA_ARGS__));
+    NN_ERROR(ocarina::format(FMT, __VA_ARGS__));

@@ -12,7 +12,7 @@
 #include "function.h"
 #include "op.h"
 
-namespace nano {
+namespace ocarina {
 
 class UnaryExpr;
 class BinaryExpr;
@@ -147,8 +147,8 @@ struct literal_value {
 };
 
 template<typename... T>
-struct literal_value<nano::tuple<T...>> {
-    using type = nano::variant<T...>;
+struct literal_value<ocarina::tuple<T...>> {
+    using type = ocarina::variant<T...>;
 };
 }// namespace detail
 
@@ -191,7 +191,7 @@ public:
 
 class CallExpr : public Expression {
 public:
-    using ArgumentList = nano::vector<const Expression *>;
+    using ArgumentList = ocarina::vector<const Expression *>;
 
 private:
     ArgumentList _arguments;
@@ -231,4 +231,4 @@ public:
     NN_MAKE_EXPRESSION_ACCEPT_VISITOR
 };
 
-}// namespace nano
+}// namespace ocarina

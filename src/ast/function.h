@@ -10,7 +10,7 @@
 #include "type.h"
 #include "variable.h"
 
-namespace nano {
+namespace ocarina {
 
 namespace detail {
 class FunctionBuilder;
@@ -32,11 +32,11 @@ private:
 public:
     Function() noexcept = default;
     explicit Function(const detail::FunctionBuilder *builder) noexcept : _builder{builder} {}
-    [[nodiscard]] nano::span<const Variable> builtin_variables() const noexcept;
-    [[nodiscard]] nano::span<const Constant> constants() const noexcept;
-    [[nodiscard]] nano::span<const Variable> arguments() const noexcept;
+    [[nodiscard]] ocarina::span<const Variable> builtin_variables() const noexcept;
+    [[nodiscard]] ocarina::span<const Constant> constants() const noexcept;
+    [[nodiscard]] ocarina::span<const Variable> arguments() const noexcept;
     [[nodiscard]] uint3 block_size() const noexcept;
     [[nodiscard]] const Type *return_type() const noexcept;
 };
 
-}// namespace nano
+}// namespace ocarina

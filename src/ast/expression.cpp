@@ -5,7 +5,7 @@
 #include "expression.h"
 #include "function_builder.h"
 
-namespace nano {
+namespace ocarina {
 uint64_t Expression::hash() const noexcept {
     if (!_hash_computed) {
         NN_USING_SV
@@ -22,6 +22,6 @@ void RefExpr::_mark(Usage usage) const noexcept {
 }
 
 uint64_t LiteralExpr::_compute_hash() const noexcept {
-    return nano::visit([&](auto &&arg) { return hash64(std::forward<decltype(arg)>(arg)); }, _value);
+    return ocarina::visit([&](auto &&arg) { return hash64(std::forward<decltype(arg)>(arg)); }, _value);
 }
-}// namespace nano
+}// namespace ocarina

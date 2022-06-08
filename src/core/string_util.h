@@ -14,7 +14,7 @@
 #include <fmt/format.h>
 #include "stl.h"
 
-namespace nano {
+namespace ocarina {
 inline namespace core {
 template<typename... Args>
 inline std::string serialize(Args &&...args) noexcept {
@@ -168,14 +168,14 @@ inline std::string string_printf(const char *fmt, Args... args) {
 
 template<typename FMT, typename... Args>
 [[nodiscard]] inline auto format(FMT &&f, Args &&...args) noexcept {
-    using memory_buffer = fmt::basic_memory_buffer<char, fmt::inline_buffer_size, nano::allocator<char>>;
+    using memory_buffer = fmt::basic_memory_buffer<char, fmt::inline_buffer_size, ocarina::allocator<char>>;
     memory_buffer buffer;
     fmt::format_to(std::back_inserter(buffer), std::forward<FMT>(f), std::forward<Args>(args)...);
-    return nano::string{buffer.data(), buffer.size()};
+    return ocarina::string{buffer.data(), buffer.size()};
 }
 
-[[nodiscard]] inline auto string_split(nano::string_view str, char ch) {
-    nano::vector<nano::string_view> ret;
+[[nodiscard]] inline auto string_split(ocarina::string_view str, char ch) {
+    ocarina::vector<ocarina::string_view> ret;
     int prev_cursor = 0;
     for (int i = 0; i < str.size(); ++i) {
         if (str[i] == ch) {
@@ -188,4 +188,4 @@ template<typename FMT, typename... Args>
 }
 
 }
-}// namespace nano::core
+}// namespace ocarina::core
