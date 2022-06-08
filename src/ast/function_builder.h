@@ -15,8 +15,7 @@
 
 namespace ocarina {
 
-class FunctionBuilder : public ocarina::enable_shared_from_this<FunctionBuilder>,
-                        public concepts::Noncopyable {
+class FunctionBuilder : public concepts::Noncopyable {
 public:
     using Tag = Function::Tag;
     using Constant = Function::Constant;

@@ -8,4 +8,4 @@ set_target_properties(ocarina-runtime PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIG>/bin/"
         WINDOWS_EXPORT_ALL_SYMBOLS ON)
 target_compile_definitions(ocarina-runtime PRIVATE OC_RUNTIME_EXPORT_DLL=1)
-target_link_libraries(ocarina-runtime PUBLIC ocarina-ast)
+target_link_libraries(ocarina-runtime PUBLIC ocarina-compile)

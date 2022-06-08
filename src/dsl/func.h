@@ -12,6 +12,7 @@
 #include "ast/function_builder.h"
 #include "expr_traits.h"
 #include "arg.h"
+#include "ast/function.h"
 
 namespace ocarina {
 
@@ -117,6 +118,10 @@ public:
           })) {}
     //    template<typename Func>
     //    requires std:
+
+    [[nodiscard]] Function function() const noexcept {
+        return Function(_builder.get());
+    }
 };
 
 namespace detail {
@@ -139,7 +144,7 @@ template<typename F>
 struct canonical_signature
     : canonical_signature<decltype(&F::operator())> {};
 
-#define OC_MAKE_MEMBER_FUNC_SIGNATURE(...)                       \
+#define OC_MAKE_MEMBER_FUNC_SIGNATURE(...)                        \
     template<typename Ret, typename Cls, typename... Args>        \
     struct canonical_signature<Ret (Cls::*)(Args...) __VA_ARGS__> \
         : canonical_signature<Ret(Args...)> {};
