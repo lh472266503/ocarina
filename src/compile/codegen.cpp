@@ -4,3 +4,41 @@
 
 #include "codegen.h"
 
+namespace ocarina {
+
+Codegen::Scratch &Codegen::Scratch::operator<<(int v) noexcept {
+    return *this << ocarina::to_string(v);
+}
+Codegen::Scratch &Codegen::Scratch::operator<<(float v) noexcept {
+    return *this << ocarina::to_string(v);
+    ;
+}
+Codegen::Scratch &Codegen::Scratch::operator<<(bool v) noexcept {
+    return *this << ocarina::to_string(v);
+}
+Codegen::Scratch &Codegen::Scratch::operator<<(ocarina::string_view v) noexcept {
+    _buffer.append(v);
+    return *this;
+}
+Codegen::Scratch &Codegen::Scratch::operator<<(ocarina::string v) noexcept {
+    return *this << string_view{v};
+}
+Codegen::Scratch &Codegen::Scratch::operator<<(const char *v) noexcept {
+    return *this << string_view{v};
+}
+void Codegen::Scratch::clear() noexcept {
+    _buffer.clear();
+}
+bool Codegen::Scratch::empty() const noexcept {
+    return _buffer.empty();
+}
+const char *Codegen::Scratch::c_str() const noexcept {
+    return _buffer.c_str();
+}
+size_t Codegen::Scratch::size() const noexcept {
+    return _buffer.size();
+}
+ocarina::string_view Codegen::Scratch::view() const noexcept {
+    return _buffer;
+}
+}// namespace ocarina

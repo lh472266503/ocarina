@@ -45,6 +45,7 @@ using std::weak_ptr;
 // string
 using std::string;
 using std::string_view;
+using std::to_string;
 
 // range and container
 using std::span;
