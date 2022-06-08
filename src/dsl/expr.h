@@ -32,6 +32,4 @@ template<typename T>
 
 }// namespace detail
 
-
-
 }// namespace ocarina
