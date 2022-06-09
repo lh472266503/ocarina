@@ -14,5 +14,6 @@ if (CUDAToolkit_FOUND)
 #    target_link_libraries(ocarina-backend-cuda PUBLIC ocarina-core)
 
     ocarina_add_backend(cuda SOURCES ${SOURCE_FILES})
+    target_link_libraries(ocarina-backend-cuda PRIVATE CUDA::cuda_driver CUDA::nvrtc)
 endif ()
 
