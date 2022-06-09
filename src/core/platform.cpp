@@ -56,4 +56,8 @@ void *dynamic_module_find_symbol(void *handle, ocarina::string_view name_view) n
     return reinterpret_cast<void *>(symbol);
 }
 
+ocarina::string dynamic_module_name(ocarina::string_view name) noexcept {
+    return ocarina::string(name) + ".dll";
+}
+
 }// namespace ocarina

@@ -12,4 +12,5 @@ namespace ocarina {
 void dynamic_module_destroy(void *handle) noexcept;
 [[nodiscard]] void *dynamic_module_find_symbol(void *handle,
                                                ocarina::string_view name) noexcept;
+[[nodiscard]] ocarina::string dynamic_module_name(ocarina::string_view name) noexcept;
 }// namespace ocarina

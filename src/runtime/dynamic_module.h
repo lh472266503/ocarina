@@ -9,14 +9,16 @@
 #include "core/concepts.h"
 
 namespace ocarina {
-class DynamicModule : public concepts::Noncopyable{
-public:
-    using handle_type = void *;
-
+class DynamicModule : public concepts::Noncopyable {
 private:
-    handle_type _handle{};
+    void *_handle{};
+    static ocarina::vector<fs::path> _search_path;
 
 public:
-
+    static void add_search_path(fs::path path) noexcept;
+    static void remove_search_path(fs::path path) noexcept;
+    static void clear_search_path() noexcept;
+    explicit DynamicModule(const string &name) noexcept;
+    DynamicModule(fs::path path, const string &name) noexcept;
 };
 }// namespace ocarina

@@ -6,14 +6,17 @@
 #include "core/logging.h"
 #include "dynamic_module.h"
 #include "device.h"
+#include "core/platform.h"
 
 namespace ocarina {
 struct Context::Impl {
     fs::path runtime_directory;
     fs::path cache_directory;
     ocarina::unique_ptr<Device> device;
-    ocarina::vector<DynamicModule> loaded_modules;
+    ocarina::map<string, DynamicModule> modules;
 };
+
+static constexpr string_view backend_prefix = "ocarina-backend-";
 
 namespace detail {
 [[nodiscard]] fs::path create_runtime_directory(fs::path path) noexcept {
@@ -37,6 +40,10 @@ bool create_directory_if_necessary(const fs::path &path) {
     return true;
 }
 
+DynamicModule load_module(const fs::path &path, const ocarina::string &module_name) {
+
+}
+
 }// namespace detail
 
 Context::Context(const fs::path &path, string_view cache_dir)
@@ -58,12 +65,16 @@ const fs::path &Context::cache_directory() const noexcept {
     return _impl->cache_directory;
 }
 
-void Context::load_module(const fs::path &path, ocarina::string_view module_name) {
+const DynamicModule *Context::obtain_module(string_view module_name) noexcept {
+    auto iter = _impl->modules.find(string(module_name));
+    auto ret = &iter->second;
+    if (iter == _impl->modules.cend()) {
 
+    }
+    return ret;
 }
 
-void Context::init_device(ocarina::string_view backend_name) noexcept {
-
+void Context::init_device(const ocarina::string &backend_name) noexcept {
 }
 
 Device *Context::device() noexcept {

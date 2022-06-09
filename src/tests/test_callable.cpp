@@ -27,6 +27,7 @@ int main(int argc, char *argv[]) {
     fs::path path(argv[0]);
     Context context(path.parent_path());
 
-    OC_INFO_FORMAT_WITH_LOCATION("WORI{}", 1);
+    context.init_device("cuda");
+
     return 0;
 }
