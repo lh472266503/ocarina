@@ -29,5 +29,7 @@ int main(int argc, char *argv[]) {
 
     context.init_device("cuda");
 
+    Device *device = context.device();
+
     return 0;
 }
