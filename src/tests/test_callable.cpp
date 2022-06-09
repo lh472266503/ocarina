@@ -9,7 +9,9 @@
 #include "dsl/func.h"
 #include "ast/expression.h"
 #include <iostream>
+#include <runtime/context.h>
 #include "runtime/device.h"
+#include "core/platform.h"
 
 
 using std::cout;
@@ -20,8 +22,11 @@ Var<int> func(Var<int> a, Var<int> b) {
     return (a + b) * a;
 }
 
-int main() {
+int main(int argc, char *argv[]) {
     Callable callable = func;
+    fs::path path(argv[0]);
+    Context context(path.parent_path());
 
+    OC_INFO_FORMAT_WITH_LOCATION("WORI{}", 1);
     return 0;
 }

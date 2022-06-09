@@ -18,7 +18,7 @@ private:
 public:
     explicit Context(const fs::path &path, string_view cache_dir = ".cache");
     ~Context() noexcept;
-    void load_module_function(const fs::path &path, ocarina::string_view module_name);
+    void load_module(const fs::path &path, ocarina::string_view module_name);
     [[nodiscard]] const fs::path &runtime_directory() const noexcept;
     [[nodiscard]] const fs::path &cache_directory() const noexcept;
     void init_device(ocarina::string_view backend_name) noexcept;

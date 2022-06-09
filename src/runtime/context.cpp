@@ -58,7 +58,7 @@ const fs::path &Context::cache_directory() const noexcept {
     return _impl->cache_directory;
 }
 
-void Context::load_module_function(const fs::path &path, ocarina::string_view module_name) {
+void Context::load_module(const fs::path &path, ocarina::string_view module_name) {
 
 }
 

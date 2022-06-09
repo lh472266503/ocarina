@@ -12,7 +12,6 @@ namespace ocarina {
 
 namespace detail {
 [[nodiscard]] ocarina::string win32_last_error_message() {
-    // Retrieve the system error message for the last-error code
     void *buffer = nullptr;
     auto err_code = GetLastError();
     FormatMessage(
@@ -43,6 +42,18 @@ void dynamic_module_destroy(void *handle) noexcept {
     if (handle != nullptr) {
         FreeLibrary(reinterpret_cast<HMODULE>(handle));
     }
+}
+
+void *dynamic_module_find_symbol(void *handle, ocarina::string_view name_view) noexcept {
+    static thread_local ocarina::string name;
+    name = name_view;
+    OC_INFO_FORMAT("Loading dynamic symbol: {}.", name);
+    auto symbol = GetProcAddress(reinterpret_cast<HMODULE>(handle), name.c_str());
+    if (symbol == nullptr) [[unlikely]] {
+        OC_INFO_FORMAT("Failed to load symbol '{}', reason: {}.",
+                       name, detail::win32_last_error_message());
+    }
+    return reinterpret_cast<void *>(symbol);
 }
 
 }// namespace ocarina

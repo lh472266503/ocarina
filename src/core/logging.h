@@ -78,7 +78,7 @@ inline void error_if_not(bool predicate, Args &&...args) {
 }
 }// namespace ocarina::core
 
-#define OC_SOURCE_LOCATION __FILE__, ":", __LINE__
+#define OC_SOURCE_LOCATION "\n", __FILE__, ":", __LINE__
 
 #define SET_LOG_LEVEL(lv) \
     ::ocarina::core::set_log_level(spdlog::level::level_enum::lv);
@@ -87,11 +87,19 @@ inline void error_if_not(bool predicate, Args &&...args) {
     ::ocarina::core::debug(__VA_ARGS__);
 #define OC_DEBUG_FORMAT(FMT, ...) \
     OC_DEBUG(ocarina::format(FMT, __VA_ARGS__));
+#define OC_DEBUG_WITH_LOCATION(...) \
+    OC_DEBUG(__VA_ARGS__, OC_SOURCE_LOCATION)
+#define OC_DEBUG_FORMAT_WITH_LOCATION(FMT, ...) \
+    OC_DEBUG(ocarina::format(FMT, __VA_ARGS__), OC_SOURCE_LOCATION);
 
 #define OC_INFO(...) \
     ::ocarina::core::info(__VA_ARGS__);
 #define OC_INFO_FORMAT(FMT, ...) \
     OC_INFO(ocarina::format(FMT, __VA_ARGS__));
+#define OC_INFO_WITH_LOCATION(...) \
+    OC_INFO(__VA_ARGS__, OC_SOURCE_LOCATION)
+#define OC_INFO_FORMAT_WITH_LOCATION(FMT, ...) \
+    OC_INFO(ocarina::format(FMT, __VA_ARGS__), OC_SOURCE_LOCATION);
 
 #define OC_WARNING(...) \
     ::ocarina::core::warning(__VA_ARGS__, "\n    Source: ", OC_SOURCE_LOCATION);
