@@ -8,30 +8,31 @@
 
 namespace ocarina {
 
-void DynamicModule::add_search_path(fs::path path) {
+void DynamicModule::add_search_path(fs::path path) noexcept{
     path = fs::canonical(path);
-    if (std::find(_search_path.begin(), _search_path.end(), path) == _search_path.end()) {
-        _search_path.push_back(path);
+    if (std::find(_search_path().begin(), _search_path().end(), path) == _search_path().end()) {
+        _search_path().push_back(path);
     }
 }
 
-void DynamicModule::remove_search_path(fs::path path) {
+void DynamicModule::remove_search_path(fs::path path) noexcept{
     path = fs::canonical(path);
-    auto iter = std::find(_search_path.begin(), _search_path.end(), path);
-    if (iter != _search_path.end()) {
-        _search_path.erase(iter);
+    auto iter = std::find(_search_path().begin(), _search_path().end(), path);
+    if (iter != _search_path().end()) {
+        _search_path().erase(iter);
     }
 }
 
 void DynamicModule::clear_search_path() noexcept {
-    _search_path.clear();
+    _search_path().clear();
 }
 
 DynamicModule::DynamicModule(const string &name) noexcept {
-    for (const auto &path : _search_path) {
+    for (const auto &path : _search_path()) {
         _handle = dynamic_module_load(path / name);
         if (_handle) {
-            OC_INFO_FORMAT_WITH_LOCATION("load {} in {}", name, path.string());
+            OC_INFO_FORMAT_WITH_LOCATION("load {} success", (path/ name).string());
+            return;
         }
     }
     OC_ERROR_FORMAT("load {} fail!", name);
@@ -45,6 +46,11 @@ DynamicModule::DynamicModule(fs::path path, const string &name) noexcept {
     } else {
         OC_ERROR_FORMAT("load {} fail in", (path / name).string());
     }
+}
+
+ocarina::vector<fs::path> &DynamicModule::_search_path() {
+    static ocarina::vector<fs::path> ret;
+    return ret;
 }
 
 }// namespace ocarina

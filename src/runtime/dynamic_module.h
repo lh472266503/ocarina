@@ -12,7 +12,7 @@ namespace ocarina {
 class DynamicModule : public concepts::Noncopyable {
 private:
     void *_handle{};
-    static ocarina::vector<fs::path> _search_path;
+    static ocarina::vector<fs::path>& _search_path();
 
 public:
     static void add_search_path(fs::path path) noexcept;

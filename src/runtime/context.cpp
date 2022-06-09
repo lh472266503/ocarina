@@ -40,8 +40,8 @@ bool create_directory_if_necessary(const fs::path &path) {
     return true;
 }
 
-DynamicModule load_module(const fs::path &path, const ocarina::string &module_name) {
-
+[[nodiscard]] ocarina::string backend_full_name(const string &name) {
+    return string(backend_prefix) + name;
 }
 
 }// namespace detail
@@ -50,6 +50,7 @@ Context::Context(const fs::path &path, string_view cache_dir)
     : _impl(std::move(ocarina::make_unique<Impl>())) {
     _impl->runtime_directory = detail::create_runtime_directory(path);
     _impl->cache_directory = runtime_directory() / cache_dir;
+    DynamicModule::add_search_path(runtime_directory());
     detail::create_directory_if_necessary(cache_directory());
 }
 
@@ -65,16 +66,22 @@ const fs::path &Context::cache_directory() const noexcept {
     return _impl->cache_directory;
 }
 
-const DynamicModule *Context::obtain_module(string_view module_name) noexcept {
-    auto iter = _impl->modules.find(string(module_name));
-    auto ret = &iter->second;
+const DynamicModule *Context::obtain_module(const string& module_name) noexcept {
+    auto iter = _impl->modules.find(module_name);
+    DynamicModule* ret = nullptr;
     if (iter == _impl->modules.cend()) {
-
+        DynamicModule d(module_name);
+        _impl->modules.insert(std::make_pair(string(module_name), std::move(d)));
+        ret = &_impl->modules.at(module_name);
+    } else {
+        ret = &iter->second;
     }
     return ret;
 }
 
 void Context::init_device(const ocarina::string &backend_name) noexcept {
+    auto d = obtain_module(dynamic_module_name(detail::backend_full_name(backend_name)));
+    int i = 0;
 }
 
 Device *Context::device() noexcept {

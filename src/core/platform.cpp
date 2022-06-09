@@ -31,7 +31,7 @@ void *dynamic_module_load(const fs::path &path) noexcept {
     auto path_string = path.string();
     auto module = LoadLibraryA(path_string.c_str());
     if (module == nullptr) [[unlikely]] {
-        OC_ERROR(
+        OC_ERROR_FORMAT(
             "Failed to load dynamic module '{}', reason: {}.",
             path_string, detail::win32_last_error_message());
     }
