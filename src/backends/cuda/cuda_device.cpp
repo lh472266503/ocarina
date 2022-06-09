@@ -15,7 +15,7 @@ void CUDADevice::compile(Function function) noexcept {
 }
 }// namespace ocarina
 
-OC_EXPORT_API ocarina::Device * create(ocarina::Context *context) {
+OC_EXPORT_API ocarina::Device *create(ocarina::Context *context) {
     return ocarina::new_with_allocator<ocarina::CUDADevice>(context);
 }
 
