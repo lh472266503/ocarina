@@ -8,6 +8,11 @@
 
 namespace ocarina {
 
+ocarina::vector<fs::path> &DynamicModule::_search_path() {
+    static ocarina::vector<fs::path> ret;
+    return ret;
+}
+
 void DynamicModule::add_search_path(fs::path path) noexcept{
     path = fs::canonical(path);
     if (std::find(_search_path().begin(), _search_path().end(), path) == _search_path().end()) {
@@ -47,10 +52,8 @@ DynamicModule::DynamicModule(fs::path path, const string &name) noexcept {
         OC_ERROR_FORMAT("load {} fail in", (path / name).string());
     }
 }
-
-ocarina::vector<fs::path> &DynamicModule::_search_path() {
-    static ocarina::vector<fs::path> ret;
-    return ret;
+void *DynamicModule::function_ptr(const string &func_name) const noexcept {
+    return dynamic_module_find_symbol(const_cast<void*>(_handle), func_name);
 }
 
 }// namespace ocarina

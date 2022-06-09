@@ -81,6 +81,7 @@ const DynamicModule *Context::obtain_module(const string& module_name) noexcept 
 
 void Context::init_device(const ocarina::string &backend_name) noexcept {
     auto d = obtain_module(dynamic_module_name(detail::backend_full_name(backend_name)));
+    auto p = d->function_ptr("create");
     int i = 0;
 }
 

@@ -20,5 +20,6 @@ public:
     static void clear_search_path() noexcept;
     explicit DynamicModule(const string &name) noexcept;
     DynamicModule(fs::path path, const string &name) noexcept;
+    void *function_ptr(const string &func_name) const noexcept;
 };
 }// namespace ocarina
