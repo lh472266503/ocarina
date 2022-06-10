@@ -7,16 +7,18 @@
 #include "core/header.h"
 #include "core/stl.h"
 #include "dsl/func.h"
+#include "core/concepts.h"
 
 namespace ocarina {
 class Context;
-class Device {
+class Device : public concepts::Noncopyable {
 protected:
     Context *_context{};
 
 public:
     using Creator = Device *(Context *);
     using Deleter = void(Device *);
+    using Handle = ocarina::shared_ptr<Device>;
 
 public:
     explicit Device(Context *ctx) : _context(ctx) {}

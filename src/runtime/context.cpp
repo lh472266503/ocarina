@@ -12,7 +12,7 @@ namespace ocarina {
 struct Context::Impl {
     fs::path runtime_directory;
     fs::path cache_directory;
-    ocarina::unique_ptr<Device> device;
+    Device::Handle device;
     ocarina::map<string, DynamicModule> modules;
 };
 
@@ -82,7 +82,8 @@ const DynamicModule *Context::obtain_module(const string& module_name) noexcept 
 void Context::init_device(const ocarina::string &backend_name) noexcept {
     auto d = obtain_module(dynamic_module_name(detail::backend_full_name(backend_name)));
     auto create_device = reinterpret_cast<Device::Creator*>(d->function_ptr("create"));
-    _impl->device.reset(create_device(this));
+    auto destroy_func = reinterpret_cast<Device::Deleter*>(d->function_ptr("destroy"));
+    _impl->device = Device::Handle(create_device(this), destroy_func);
 }
 
 Device *Context::device() noexcept {
