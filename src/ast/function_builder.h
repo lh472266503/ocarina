@@ -86,6 +86,7 @@ public:
     static void push(FunctionBuilder *builder) noexcept;
     static void pop(FunctionBuilder *builder) noexcept;
     void mark_variable_usage(uint uid, Usage usage) noexcept;
+    [[nodiscard]] ocarina::span<const Variable> arguments() const noexcept;
     [[nodiscard]] const CastExpr *cast(const Type *type, CastOp cast_op, const Expression *expression) noexcept;
     [[nodiscard]] const UnaryExpr *unary(const Type *type, UnaryOp op, const Expression *expression) noexcept;
     [[nodiscard]] const BinaryExpr *binary(const Type *type, const Expression *lhs, const Expression *rhs, BinaryOp op) noexcept;
@@ -99,6 +100,7 @@ public:
     void continue_() noexcept;
     void return_(const Expression *expression = nullptr) noexcept;
     void assign(const Expression *lhs, const Expression *rhs) noexcept;
+    [[nodiscard]] const Type*return_type() const noexcept;
     [[nodiscard]] IfStmt *if_(const Expression *condition) noexcept;
     [[nodiscard]] SwitchStmt *switch_(const Expression *expression) noexcept;
     [[nodiscard]] SwitchCaseStmt *case_(const Statement *statement) noexcept;

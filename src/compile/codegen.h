@@ -39,9 +39,9 @@ public:
     explicit Codegen(Scratch &scratch)
         : _scratch(scratch) {}
     virtual void emit(Function func) = 0;
-    Scratch& scratch() {
+    Scratch &scratch() {
         return _scratch;
     }
 };
 
-}
+}// namespace ocarina

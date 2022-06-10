@@ -75,5 +75,11 @@ const UnaryExpr *FunctionBuilder::unary(const Type *type, UnaryOp op, const Expr
 const CastExpr *FunctionBuilder::cast(const Type *type, CastOp cast_op, const Expression *expression) noexcept {
     return _create_expression<CastExpr>(type, cast_op, expression);
 }
+ocarina::span<const Variable> FunctionBuilder::arguments() const noexcept {
+    return _arguments;
+}
+const Type *FunctionBuilder::return_type() const noexcept {
+    return _ret;
+}
 
 }// namespace ocarina
