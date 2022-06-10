@@ -6,12 +6,13 @@
 
 namespace ocarina {
 
+void CUDADevice::compile(Function function) noexcept {
+
+}
 uint64_t CUDADevice::create_buffer(size_t bytes) noexcept {
     return 0;
 }
 void CUDADevice::destroy_buffer(uint64_t handle) noexcept {
-}
-void CUDADevice::compile(Function function) noexcept {
 }
 }// namespace ocarina
 

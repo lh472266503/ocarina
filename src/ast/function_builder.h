@@ -18,7 +18,6 @@ namespace ocarina {
 class FunctionBuilder : public concepts::Noncopyable {
 public:
     using Tag = Function::Tag;
-    using Constant = Function::Constant;
 
 private:
     const Type *_ret{nullptr};
