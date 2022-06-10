@@ -18,7 +18,7 @@ protected:
 public:
     using Creator = Device *(Context *);
     using Deleter = void(Device *);
-    using Handle = ocarina::shared_ptr<Device>;
+    using Handle = ocarina::unique_ptr<Device, Device::Deleter*>;
 
 public:
     explicit Device(Context *ctx) : _context(ctx) {}

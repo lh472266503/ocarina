@@ -14,6 +14,7 @@ struct Context::Impl {
     fs::path cache_directory;
     Device::Handle device;
     ocarina::map<string, DynamicModule> modules;
+    Impl() : device(Device::Handle(nullptr, nullptr)) {}
 };
 
 static constexpr string_view backend_prefix = "ocarina-backend-";
