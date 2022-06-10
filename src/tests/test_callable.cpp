@@ -11,6 +11,7 @@
 #include <iostream>
 #include <runtime/context.h>
 #include "runtime/device.h"
+#include "compile/cpp_codegen.h"
 #include "core/platform.h"
 
 
@@ -28,6 +29,8 @@ int main(int argc, char *argv[]) {
     Context context(path.parent_path());
 
     context.init_device("cuda");
+
+    CppCodegen codegen;
 
 //    Device *device = context.device();
 

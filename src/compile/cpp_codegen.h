@@ -48,6 +48,7 @@ protected:
 
 public:
     void emit(Function func) noexcept override;
+
 };
 
 }// namespace ocarina
