@@ -229,6 +229,7 @@ public:
     [[nodiscard]] const Type *type_at(uint i) const noexcept;
     [[nodiscard]] size_t type_count() const noexcept;
     void add_type(ocarina::unique_ptr<Type> type);
+    void for_each(TypeVisitor *visitor) const noexcept;
 };
 
 };// namespace ocarina

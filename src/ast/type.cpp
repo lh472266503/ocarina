@@ -33,6 +33,10 @@ constexpr auto Type::is_basic() const noexcept {
     return is_scalar() || is_vector() || is_matrix();
 }
 
+void Type::for_each(TypeVisitor *visitor) {
+    TypeRegistry::instance().for_each(visitor);
+}
+
 constexpr bool Type::is_scalar() const noexcept {
     return _tag == Tag::BOOL || _tag == Tag::FLOAT || _tag == Tag::INT || _tag == Tag::UINT;
 }

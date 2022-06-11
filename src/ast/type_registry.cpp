@@ -245,4 +245,8 @@ bool TypeRegistry::is_exist(uint64_t hash) const noexcept {
     return _type_set.find(hash) != _type_set.cend();
 }
 
+void TypeRegistry::for_each(TypeVisitor *visitor) const noexcept {
+
+}
+
 }// namespace ocarina

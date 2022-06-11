@@ -51,6 +51,7 @@ void CppCodegen::visit(const CastExpr *) noexcept {
 void CppCodegen::visit(const Type *) noexcept {
 }
 void CppCodegen::_emit_type_decl() noexcept {
+    Type::for_each(this);
 }
 void CppCodegen::_emit_variable_decl(Variable v) noexcept {
 }
@@ -65,5 +66,7 @@ void CppCodegen::_emit_indent() noexcept {
 void CppCodegen::_emit_statements(ocarina::span<const Statement *const> stmts) noexcept {
 }
 void CppCodegen::emit(Function func) noexcept {
+    _emit_type_decl();
+    _emit_function(func);
 }
 }

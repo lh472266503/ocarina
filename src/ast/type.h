@@ -296,6 +296,7 @@ private:
     ocarina::vector<const Type *> _members;
 
 public:
+    static void for_each(TypeVisitor *visitor);
     template<typename T>
     [[nodiscard]] static const Type *of() noexcept;
 
