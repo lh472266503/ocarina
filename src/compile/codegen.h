@@ -33,7 +33,7 @@ private:
 
 protected:
     Scratch _scratch;
-
+    int _indent{};
 public:
     Codegen() = default;
     explicit Codegen(Scratch &scratch)

@@ -87,6 +87,9 @@ public:
     static void pop(FunctionBuilder *builder) noexcept;
     void mark_variable_usage(uint uid, Usage usage) noexcept;
     [[nodiscard]] ocarina::span<const Variable> arguments() const noexcept;
+    [[nodiscard]] Tag tag() const noexcept;
+    [[nodiscard]] bool is_callable() const noexcept;
+    [[nodiscard]] bool is_kernel() const noexcept;
     [[nodiscard]] const CastExpr *cast(const Type *type, CastOp cast_op, const Expression *expression) noexcept;
     [[nodiscard]] const UnaryExpr *unary(const Type *type, UnaryOp op, const Expression *expression) noexcept;
     [[nodiscard]] const BinaryExpr *binary(const Type *type, const Expression *lhs, const Expression *rhs, BinaryOp op) noexcept;

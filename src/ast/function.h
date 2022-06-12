@@ -28,6 +28,9 @@ public:
     Function() noexcept = default;
     explicit Function(const FunctionBuilder *builder) noexcept : _builder{builder} {}
     [[nodiscard]] ocarina::span<const Variable> arguments() const noexcept;
+    [[nodiscard]] Tag tag() const noexcept;
+    [[nodiscard]] bool is_callable() const noexcept;
+    [[nodiscard]] bool is_kernel() const noexcept;
     [[nodiscard]] const Type *return_type() const noexcept;
 
 };

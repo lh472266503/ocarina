@@ -81,5 +81,16 @@ ocarina::span<const Variable> FunctionBuilder::arguments() const noexcept {
 const Type *FunctionBuilder::return_type() const noexcept {
     return _ret;
 }
+FunctionBuilder::Tag FunctionBuilder::tag() const noexcept {
+    return _tag;
+}
+
+bool FunctionBuilder::is_callable() const noexcept {
+    return tag() == Tag::CALLABLE;
+}
+
+bool FunctionBuilder::is_kernel() const noexcept {
+    return tag() == Tag::KERNEL;
+}
 
 }// namespace ocarina

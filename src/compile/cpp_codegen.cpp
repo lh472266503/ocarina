@@ -58,6 +58,9 @@ void CppCodegen::_emit_variable_decl(Variable v) noexcept {
 void CppCodegen::_emit_type_name(const Type *type) noexcept {
 }
 void CppCodegen::_emit_function(Function f) noexcept {
+    if (f.is_callable()) {
+        _scratch << "__device__";
+    }
 }
 void CppCodegen::_emit_variable_name(Variable v) noexcept {
 }

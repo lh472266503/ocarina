@@ -31,7 +31,8 @@ int main(int argc, char *argv[]) {
     context.init_device("cuda");
 
     CppCodegen codegen;
-
+    codegen.emit(callable.function());
+    cout << codegen.scratch().c_str();
 
 //    Device *device = context.device();
 
