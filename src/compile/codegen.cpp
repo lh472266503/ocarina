@@ -19,7 +19,7 @@ Codegen::Scratch &Codegen::Scratch::operator<<(ocarina::string_view v) noexcept 
     _buffer.append(v);
     return *this;
 }
-Codegen::Scratch &Codegen::Scratch::operator<<(ocarina::string v) noexcept {
+Codegen::Scratch &Codegen::Scratch::operator<<(const ocarina::string &v) noexcept {
     return *this << string_view{v};
 }
 Codegen::Scratch &Codegen::Scratch::operator<<(const char *v) noexcept {
@@ -39,5 +39,24 @@ size_t Codegen::Scratch::size() const noexcept {
 }
 ocarina::string_view Codegen::Scratch::view() const noexcept {
     return _buffer;
+}
+Codegen::Scratch &Codegen::Scratch::operator<<(uint v) noexcept {
+    return *this << ocarina::to_string(v);
+}
+Codegen::Scratch &Codegen::Scratch::operator<<(size_t v) noexcept {
+    return *this << ocarina::to_string(v);
+}
+
+void Codegen::_emit_newline() noexcept {
+    _scratch << "\n";
+}
+void Codegen::_emit_indent() noexcept {
+    static constexpr auto indent_str = "\t";
+    for (int i = 0; i < _indent; ++i) {
+        _scratch << indent_str;
+    }
+}
+void Codegen::_emit_space() noexcept {
+    _scratch << " ";
 }
 }// namespace ocarina

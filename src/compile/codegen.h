@@ -19,11 +19,13 @@ private:
     public:
         Scratch() = default;
         Scratch &operator<<(ocarina::string_view v) noexcept;
-        Scratch &operator<<(ocarina::string v) noexcept;
+        Scratch &operator<<(const ocarina::string& v) noexcept;
         Scratch &operator<<(const char *v) noexcept;
         Scratch &operator<<(int v) noexcept;
         Scratch &operator<<(float v) noexcept;
         Scratch &operator<<(bool v) noexcept;
+        Scratch &operator<<(uint v) noexcept;
+        Scratch &operator<<(size_t v) noexcept;
         void clear() noexcept;
         [[nodiscard]] const char *c_str() const noexcept;
         [[nodiscard]] ocarina::string_view view() const noexcept;
@@ -34,6 +36,11 @@ private:
 protected:
     Scratch _scratch;
     int _indent{};
+
+protected:
+    virtual void _emit_newline() noexcept;
+    virtual void _emit_indent() noexcept;
+    virtual void _emit_space() noexcept;
 public:
     Codegen() = default;
     explicit Codegen(Scratch &scratch)

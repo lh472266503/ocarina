@@ -56,11 +56,36 @@ void CppCodegen::_emit_type_decl() noexcept {
 void CppCodegen::_emit_variable_decl(Variable v) noexcept {
 }
 void CppCodegen::_emit_type_name(const Type *type) noexcept {
+    if (type == nullptr) {
+        _scratch << "void";
+    } else {
+        switch (type->tag()) {
+            case Type::Tag::BOOL: _scratch << "bool"; break;
+            case Type::Tag::FLOAT: _scratch << "float"; break;
+            case Type::Tag::INT: _scratch << "int"; break;
+            case Type::Tag::UINT: _scratch << "uint"; break;
+            case Type::Tag::VECTOR:
+                _emit_type_name(type->element());
+                _scratch << type->dimension();
+                break;
+            case Type::Tag::MATRIX: break;
+            case Type::Tag::ARRAY: break;
+            case Type::Tag::STRUCTURE: break;
+            case Type::Tag::BUFFER: break;
+            case Type::Tag::TEXTURE: break;
+            case Type::Tag::BINDLESS_ARRAY: break;
+            case Type::Tag::ACCEL: break;
+            case Type::Tag::NONE: break;
+        }
+    }
 }
 void CppCodegen::_emit_function(Function f) noexcept {
     if (f.is_callable()) {
         _scratch << "__device__";
     }
+    _emit_space();
+    _emit_type_name(f.return_type());
+    _emit_space();
 }
 void CppCodegen::_emit_variable_name(Variable v) noexcept {
 }
@@ -71,5 +96,6 @@ void CppCodegen::_emit_statements(ocarina::span<const Statement *const> stmts) n
 void CppCodegen::emit(Function func) noexcept {
     _emit_type_decl();
     _emit_function(func);
+    _emit_newline();
 }
 }

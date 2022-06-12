@@ -29,6 +29,10 @@ constexpr size_t Type::dimension() const noexcept {
     return _dimension;
 }
 
+const Type *Type::element() const noexcept {
+    return _members.front();
+}
+
 constexpr auto Type::is_basic() const noexcept {
     return is_scalar() || is_vector() || is_matrix();
 }
