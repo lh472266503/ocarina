@@ -33,6 +33,13 @@ public:
     [[nodiscard]] bool is_kernel() const noexcept;
     [[nodiscard]] const Type *return_type() const noexcept;
 
+private:
+    class Impl;
+    ocarina::shared_ptr<Impl> _impl{};
+
+public:
+    [[nodiscard]] const Impl *impl() const noexcept { return _impl.get(); }
+    [[nodiscard]] Impl *impl() noexcept { return _impl.get(); }
 };
 
 }// namespace ocarina
