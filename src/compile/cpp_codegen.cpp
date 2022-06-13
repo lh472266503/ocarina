@@ -79,7 +79,7 @@ void CppCodegen::_emit_type_name(const Type *type) noexcept {
         }
     }
 }
-void CppCodegen::_emit_function(Function f) noexcept {
+void CppCodegen::_emit_function(const Function &f) noexcept {
     if (f.is_callable()) {
         _scratch << "__device__";
     }
@@ -91,17 +91,25 @@ void CppCodegen::_emit_function(Function f) noexcept {
 }
 void CppCodegen::_emit_variable_name(Variable v) noexcept {
 }
-void CppCodegen::_emit_indent() noexcept {
-}
 void CppCodegen::_emit_statements(ocarina::span<const Statement *const> stmts) noexcept {
+    _scratch << "{\n";
+    _indent += 1;
 }
-void CppCodegen::_emit_body(Function f) noexcept {
+void CppCodegen::_emit_body(const Function &f) noexcept {
 
 }
-void CppCodegen::_emit_arguments(Function f) noexcept {
-
+void CppCodegen::_emit_arguments(const Function &f) noexcept {
+    _scratch << "(";
+    for (const auto &v : f.arguments()) {
+        _emit_type_name(v.type());
+        _scratch << " v" << v.uid() << ",";
+    }
+    if (!f.arguments().empty()) {
+        _scratch.pop_back();
+    }
+    _scratch << ") ";
 }
-void CppCodegen::emit(Function func) noexcept {
+void CppCodegen::emit(const Function &func) noexcept {
     _emit_type_decl();
     _emit_function(func);
     _emit_newline();

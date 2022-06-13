@@ -46,6 +46,9 @@ Codegen::Scratch &Codegen::Scratch::operator<<(uint v) noexcept {
 Codegen::Scratch &Codegen::Scratch::operator<<(size_t v) noexcept {
     return *this << ocarina::to_string(v);
 }
+void Codegen::Scratch::pop_back() noexcept {
+    _buffer.pop_back();
+}
 
 void Codegen::_emit_newline() noexcept {
     _scratch << "\n";

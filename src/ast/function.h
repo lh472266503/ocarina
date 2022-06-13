@@ -63,7 +63,6 @@ public:
         return _define(Tag::KERNEL, std::forward<Func>(func));
     }
     Function() noexcept = default;
-    explicit Function(const FunctionBuilder *builder) noexcept : _builder{builder} {}
     explicit Function(Tag tag) noexcept;
     void assign(const Expression *lhs, const Expression *rhs) noexcept;
     void mark_variable_usage(uint uid, Usage usage) noexcept;

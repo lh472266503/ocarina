@@ -67,10 +67,12 @@ public:
     }
     [[nodiscard]] const RefExpr *argument(const Type *type) noexcept {
         Variable variable(type, Variable::Tag::LOCAL, next_variable_uid());
+        _arguments.push_back(variable);
         return _ref(variable);
     }
     [[nodiscard]] const RefExpr *reference_argument(const Type *type) noexcept {
         Variable variable(type, Variable::Tag::REFERENCE, next_variable_uid());
+        _arguments.push_back(variable);
         return _ref(variable);
     }
     void return_(const Expression *expression) noexcept {
@@ -90,6 +92,7 @@ ocarina::vector<Function *> &Function::_function_stack() noexcept {
 }
 
 void Function::return_(const Expression *expression) noexcept {
+    _impl->return_(expression);
 }
 
 Function::Function(Function::Tag tag) noexcept
