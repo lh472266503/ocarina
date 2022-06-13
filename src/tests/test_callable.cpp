@@ -34,6 +34,8 @@ int main(int argc, char *argv[]) {
     codegen.emit(callable.function());
     cout << codegen.scratch().c_str();
 
+
+
 //    Device *device = context.device();
 
     return 0;

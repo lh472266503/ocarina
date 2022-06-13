@@ -86,12 +86,20 @@ void CppCodegen::_emit_function(Function f) noexcept {
     _emit_space();
     _emit_type_name(f.return_type());
     _emit_space();
+    _emit_arguments(f);
+    _emit_body(f);
 }
 void CppCodegen::_emit_variable_name(Variable v) noexcept {
 }
 void CppCodegen::_emit_indent() noexcept {
 }
 void CppCodegen::_emit_statements(ocarina::span<const Statement *const> stmts) noexcept {
+}
+void CppCodegen::_emit_body(Function f) noexcept {
+
+}
+void CppCodegen::_emit_arguments(Function f) noexcept {
+
 }
 void CppCodegen::emit(Function func) noexcept {
     _emit_type_decl();
