@@ -105,6 +105,8 @@ class Callable<Ret(Args...)> {
 private:
     ocarina::shared_ptr<const FunctionBuilder> _builder;
 
+    ocarina::shared_ptr<const Function> _function;
+
 public:
     template<typename Func>
     Callable(Func &&func) noexcept

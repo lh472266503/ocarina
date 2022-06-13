@@ -7,7 +7,7 @@
 
 namespace ocarina {
 
-class Function::Impl {
+class Function::Impl : public concepts::Noncopyable {
 private:
     const Type *_ret{nullptr};
     ocarina::vector<ocarina::unique_ptr<Expression>> _expressions;
@@ -74,6 +74,10 @@ public:
         _create_statement<AssignStmt>(lhs, rhs);
     }
 };
+
+Function::Function(Function::Tag tag) noexcept
+    : _impl(ocarina::make_shared<Impl>(tag)) {
+}
 
 ocarina::span<const Variable> Function::arguments() const noexcept {
     return _builder->arguments();

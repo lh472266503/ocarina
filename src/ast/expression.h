@@ -189,22 +189,7 @@ public:
     OC_MAKE_EXPRESSION_ACCEPT_VISITOR
 };
 
-class CallExpr : public Expression {
-public:
-    using ArgumentList = ocarina::vector<const Expression *>;
 
-private:
-    ArgumentList _arguments;
-    Function _custom;
-    CallOp _op;
-
-public:
-    CallExpr(const Type *type, Function func, ArgumentList args)
-        : Expression(Tag::CALL, type), _custom(func), _op(CallOp::CUSTOM), _arguments(std::move(args)) {}
-
-    CallExpr(const Type *type, CallOp op, ArgumentList args)
-        : Expression(Tag::CALL, type), _op(op), _arguments(std::move(args)) {}
-};
 
 class CastExpr : public Expression {
 private:

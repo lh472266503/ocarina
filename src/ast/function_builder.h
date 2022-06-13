@@ -23,17 +23,12 @@ private:
     const Type *_ret{nullptr};
     ocarina::vector<ocarina::unique_ptr<Expression>> _all_expressions;
     ocarina::vector<ocarina::unique_ptr<Statement>> _all_statements;
-    ocarina::vector<ScopeStmt *> _scope_stack;//
-    ocarina::vector<Variable> _builtin_variables;
     ocarina::vector<Variable> _arguments;
     ocarina::vector<Usage> _variable_usages;
-    ocarina::vector<ocarina::shared_ptr<const FunctionBuilder>> _used_custom_callables;
     Tag _tag{};
 
 protected:
     [[nodiscard]] static ocarina::vector<FunctionBuilder *> &_function_stack() noexcept;
-    [[nodiscard]] const RefExpr *_builtin(Variable::Tag tag) noexcept;
-    void _void_expr(const Expression *expr) noexcept;
     [[nodiscard]] uint _next_variable_uid() noexcept;
     [[nodiscard]] const RefExpr *_ref(Variable variable) noexcept;
 
