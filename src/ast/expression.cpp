@@ -17,7 +17,7 @@ uint64_t Expression::hash() const noexcept {
 }
 
 void RefExpr::_mark(Usage usage) const noexcept {
-    FunctionBuilder::current()->mark_variable_usage(
+    Function::current()->mark_variable_usage(
         _variable.uid(), usage);
 }
 

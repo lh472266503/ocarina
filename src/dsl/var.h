@@ -7,6 +7,7 @@
 #include "core/stl.h"
 #include "computable.h"
 #include "arg.h"
+#include "ast/function.h"
 #include "core/basic_types.h"
 
 namespace ocarina {
@@ -21,7 +22,7 @@ struct Var : public detail::Computable<T> {
     explicit Var(const Expression *expression) noexcept
         : detail::Computable<T>(expression) {}
 
-    Var() noexcept : Var(FunctionBuilder::current()->local(Type::of<T>())) {}
+    Var() noexcept : Var(Function::current()->local(Type::of<T>())) {}
 
     template<typename Arg>
     requires concepts::non_pointer<std::remove_cvref_t<Arg>> &&
@@ -31,9 +32,10 @@ struct Var : public detail::Computable<T> {
     }
 
     explicit Var(detail::ArgumentCreation) noexcept
-        : Var(FunctionBuilder::current()->argument(Type::of<T>())) {}
+        : Var(Function::current()->argument(Type::of<T>())) {
+    }
     explicit Var(detail::ReferenceArgumentCreation) noexcept
-        : Var(FunctionBuilder::current()->reference_argument(Type::of<T>())) {}
+        : Var(Function::current()->reference_argument(Type::of<T>())) {}
 
     Var(Var &&) noexcept = default;
 

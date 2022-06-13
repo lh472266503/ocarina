@@ -7,6 +7,7 @@
 #include "core/stl.h"
 #include "core/basic_types.h"
 #include "dsl/expr.h"
+#include "ast/function.h"
 #include "ast/op.h"
 
 #define OC_MAKE_DSL_UNARY_OPERATOR(op, tag)                                                     \
@@ -15,7 +16,7 @@
     [[nodiscard]] inline auto operator op(T &&expr) noexcept {                                  \
         using Ret = std::remove_cvref_t<decltype(op std::declval<ocarina::expr_value_t<T>>())>; \
         return ocarina::def<Ret>(                                                               \
-            ocarina::FunctionBuilder::current()->unary(                                         \
+            ocarina::Function::current()->unary(                                                \
                 ocarina::Type::of<Ret>(),                                                       \
                 ocarina::UnaryOp::tag,                                                          \
                 ocarina::detail::extract_expression(std::forward<T>(expr))));                   \
@@ -43,11 +44,11 @@ OC_MAKE_DSL_UNARY_OPERATOR(~, BIT_NOT)
             decltype(std::declval<ocarina::expr_value_t<Lhs>>() op                      \
                          std::declval<ocarina::expr_value_t<Rhs>>())>;                  \
         using Ret = std::conditional_t<is_bool_lhs && is_logic_op, bool, NormalRet>;    \
-        return def<Ret>(ocarina::FunctionBuilder::current()->binary(                    \
+        return def<Ret>(ocarina::Function::current()->binary(                           \
             ocarina::Type::of<Ret>(),                                                   \
+            ocarina::BinaryOp::tag,                                                     \
             ocarina::detail::extract_expression(std::forward<Lhs>(lhs)),                \
-            ocarina::detail::extract_expression(std::forward<Rhs>(rhs)),                \
-            ocarina::BinaryOp::tag));                                                   \
+            ocarina::detail::extract_expression(std::forward<Rhs>(rhs))));              \
     }
 
 OC_MAKE_DSL_BINARY_OPERATOR(+, ADD)
@@ -71,14 +72,14 @@ OC_MAKE_DSL_BINARY_OPERATOR(>=, GREATER_EQUAL)
 
 #undef OC_MAKE_DSL_BINARY_OPERATOR
 
-#define OC_MAKE_DSL_ASSIGN_OP(op)                                                      \
-    template<typename Lhs, typename Rhs>                                               \
-    requires requires {                                                                \
-        std::declval<Lhs &>() op## = std::declval<ocarina::expr_value_t<Rhs>>();       \
-    }                                                                                  \
-    void operator+=(ocarina::Var<Lhs> lhs, Rhs &&rhs) {                                \
-        auto x = lhs op std::forward<Rhs>(rhs);                                        \
-        ocarina::FunctionBuilder::current()->assign(lhs.expression(), x.expression()); \
+#define OC_MAKE_DSL_ASSIGN_OP(op)                                                \
+    template<typename Lhs, typename Rhs>                                         \
+    requires requires {                                                          \
+        std::declval<Lhs &>() op## = std::declval<ocarina::expr_value_t<Rhs>>(); \
+    }                                                                            \
+    void operator+=(ocarina::Var<Lhs> lhs, Rhs &&rhs) {                          \
+        auto x = lhs op std::forward<Rhs>(rhs);                                  \
+        ocarina::Function::current()->assign(lhs.expression(), x.expression());  \
     }
 
 OC_MAKE_DSL_ASSIGN_OP(+)

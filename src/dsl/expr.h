@@ -26,7 +26,7 @@ template<typename T>
     if constexpr (is_dsl_v<T>) {
         return std::forward<T>(v).expression();
     } else {
-        return ocarina::FunctionBuilder::current()->literal(Type::of<T>(), std::forward<T>(v));
+        return ocarina::Function::current()->literal(Type::of<T>(), std::forward<T>(v));
     }
 }
 

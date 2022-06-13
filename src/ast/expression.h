@@ -9,7 +9,6 @@
 #include "core/concepts.h"
 #include "usage.h"
 #include "variable.h"
-#include "function.h"
 #include "op.h"
 
 namespace ocarina {

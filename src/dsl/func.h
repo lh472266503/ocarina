@@ -115,7 +115,7 @@ public:
                   detail::create<Args...>(func, ocarina::index_sequence_for<Args...>());
               } else {
                   auto ret = def(detail::create<Args...>(func, ocarina::index_sequence_for<Args...>()));
-                  FunctionBuilder::current()->return_(ret.expression());
+                  Function::current()->return_(ret.expression());
               }
           })) {}
     //    template<typename Func>
