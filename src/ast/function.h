@@ -33,8 +33,10 @@ private:
     ocarina::shared_ptr<Impl> _impl{};
 
 private:
-    static ocarina::vector<Function *> _function_stack() noexcept;
-    static void _push(Function *f) { _function_stack().push_back(f); }
+    static ocarina::vector<Function *> &_function_stack() noexcept;
+    static void _push(Function *f) {
+        _function_stack().push_back(f);
+    }
     static void _pop(Function *f) {
         OC_ASSERT(f == _function_stack().back());
         _function_stack().pop_back();

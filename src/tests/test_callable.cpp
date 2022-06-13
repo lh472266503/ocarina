@@ -31,7 +31,8 @@ int main(int argc, char *argv[]) {
     context.init_device("cuda");
 
     CppCodegen codegen;
-    codegen.emit(callable.function());
+    auto f = callable.function();
+    codegen.emit(f);
     cout << codegen.scratch().c_str();
 
 

@@ -53,6 +53,11 @@ public:
     [[nodiscard]] Tag tag() const noexcept { return _tag; }
     [[nodiscard]] bool is_callable() const noexcept { return _tag == Tag::CALLABLE; }
     [[nodiscard]] bool is_kernel() const noexcept { return _tag == Tag::KERNEL; }
+    [[nodiscard]] const Type *return_type() const noexcept { return _ret; }
+    [[nodiscard]] ocarina::span<const Variable> arguments() const noexcept {
+        return _arguments;
+    }
+
     [[nodiscard]] uint64_t hash() const noexcept {
         if (!_hash_computed) {
             _hash = _compute_hash();
@@ -79,8 +84,8 @@ public:
     }
 };
 
-ocarina::vector<Function *> Function::_function_stack() noexcept {
-    static thread_local ocarina::vector<Function *> ret;
+ocarina::vector<Function *> &Function::_function_stack() noexcept {
+    static ocarina::vector<Function *> ret;
     return ret;
 }
 
@@ -121,23 +126,23 @@ void Function::mark_variable_usage(uint uid, Usage usage) noexcept {
 }
 
 ocarina::span<const Variable> Function::arguments() const noexcept {
-    return _builder->arguments();
+    return _impl->arguments();
 }
 
 const Type *Function::return_type() const noexcept {
-    return _builder->return_type();
+    return _impl->return_type();
 }
 
 Function::Tag Function::tag() const noexcept {
-    return _builder->tag();
+    return _impl->tag();
 }
 
 bool Function::is_callable() const noexcept {
-    return _builder->is_callable();
+    return _impl->is_callable();
 }
 
 bool Function::is_kernel() const noexcept {
-    return _builder->is_kernel();
+    return _impl->is_kernel();
 }
 void Function::assign(const Expression *lhs, const Expression *rhs) noexcept {
     _impl->assign(lhs, rhs);
