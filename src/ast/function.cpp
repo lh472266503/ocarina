@@ -29,13 +29,13 @@ private:
     }
 
 public:
+    explicit Impl(Tag tag = Tag::CALLABLE) : _tag(tag) {
+        push_scope();
+    }
     [[nodiscard]] uint next_variable_uid() noexcept {
         auto ret = _variable_usages.size();
         _variable_usages.push_back(Usage::NONE);
         return ret;
-    }
-    explicit Impl(Tag tag = Tag::CALLABLE) : _tag(tag) {
-        push_scope();
     }
     template<typename Expr, typename... Args>
     [[nodiscard]] const Expr *create_expression(Args &&...args) {
@@ -110,6 +110,10 @@ void Function::return_(const Expression *expression) noexcept {
 
 Function::Function(Function::Tag tag) noexcept
     : _impl(ocarina::make_shared<Impl>(tag)) {
+}
+
+const ScopeStmt *Function::body() const noexcept {
+    return _impl->_scope_stack.back();
 }
 
 const RefExpr *Function::argument(const Type *type) noexcept {

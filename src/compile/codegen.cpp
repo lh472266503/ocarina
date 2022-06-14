@@ -54,7 +54,7 @@ void Codegen::_emit_newline() noexcept {
     _scratch << "\n";
 }
 void Codegen::_emit_indent() noexcept {
-    static constexpr auto indent_str = "\t";
+    static constexpr auto indent_str = "    ";
     for (int i = 0; i < _indent; ++i) {
         _scratch << indent_str;
     }

@@ -86,6 +86,7 @@ void CppCodegen::_emit_function(const Function &f) noexcept {
     _emit_space();
     _emit_type_name(f.return_type());
     _emit_space();
+    _scratch << "function_" << f.hash();
     _emit_arguments(f);
     _emit_body(f);
 }
@@ -94,9 +95,13 @@ void CppCodegen::_emit_variable_name(Variable v) noexcept {
 void CppCodegen::_emit_statements(ocarina::span<const Statement *const> stmts) noexcept {
     _scratch << "{\n";
     _indent += 1;
+    _emit_indent();
+    _scratch << "return 0;";
+    _emit_newline();
+    _scratch << "}";
 }
 void CppCodegen::_emit_body(const Function &f) noexcept {
-
+    _emit_statements(f.body()->statements());
 }
 void CppCodegen::_emit_arguments(const Function &f) noexcept {
     _scratch << "(";
@@ -107,7 +112,7 @@ void CppCodegen::_emit_arguments(const Function &f) noexcept {
     if (!f.arguments().empty()) {
         _scratch.pop_back();
     }
-    _scratch << ") ";
+    _scratch << ")";
 }
 void CppCodegen::emit(const Function &func) noexcept {
     _emit_type_decl();
