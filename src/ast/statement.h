@@ -136,6 +136,7 @@ private:
 public:
     explicit ReturnStmt(const Expression *expr = nullptr) noexcept
         : Statement(Tag::RETURN), _expression(expr) {}
+    [[nodiscard]] const Expression *expression() const noexcept { return _expression;}
     OC_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 

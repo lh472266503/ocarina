@@ -3,52 +3,59 @@
 //
 
 #include "cpp_codegen.h"
+#include "ast/statement.h"
 
 namespace ocarina {
 
-void CppCodegen::visit(const BreakStmt *) noexcept {
+void CppCodegen::visit(const BreakStmt *stmt) noexcept {
 }
-void CppCodegen::visit(const ContinueStmt *) noexcept {
+void CppCodegen::visit(const ContinueStmt *stmt) noexcept {
 }
-void CppCodegen::visit(const ReturnStmt *) noexcept {
+void CppCodegen::visit(const ReturnStmt *stmt) noexcept {
+    _scratch << "return ";
+    if (stmt->expression()) {
+        stmt->expression()->accept(*this);
+    }
+    _scratch << ";";
 }
-void CppCodegen::visit(const ScopeStmt *) noexcept {
+void CppCodegen::visit(const ScopeStmt *stmt) noexcept {
 }
-void CppCodegen::visit(const IfStmt *) noexcept {
+void CppCodegen::visit(const IfStmt *stmt) noexcept {
 }
-void CppCodegen::visit(const LoopStmt *) noexcept {
+void CppCodegen::visit(const LoopStmt *stmt) noexcept {
 }
-void CppCodegen::visit(const ExprStmt *) noexcept {
+void CppCodegen::visit(const ExprStmt *stmt) noexcept {
 }
-void CppCodegen::visit(const SwitchStmt *) noexcept {
+void CppCodegen::visit(const SwitchStmt *stmt) noexcept {
 }
-void CppCodegen::visit(const SwitchCaseStmt *) noexcept {
+void CppCodegen::visit(const SwitchCaseStmt *stmt) noexcept {
 }
-void CppCodegen::visit(const SwitchDefaultStmt *) noexcept {
+void CppCodegen::visit(const SwitchDefaultStmt *stmt) noexcept {
 }
-void CppCodegen::visit(const AssignStmt *) noexcept {
+void CppCodegen::visit(const AssignStmt *stmt) noexcept {
 }
-void CppCodegen::visit(const ForStmt *) noexcept {
+void CppCodegen::visit(const ForStmt *stmt) noexcept {
 }
-void CppCodegen::visit(const UnaryExpr *) noexcept {
+void CppCodegen::visit(const UnaryExpr *expr) noexcept {
 }
-void CppCodegen::visit(const BinaryExpr *) noexcept {
+void CppCodegen::visit(const BinaryExpr *expr) noexcept {
+
 }
-void CppCodegen::visit(const MemberExpr *) noexcept {
+void CppCodegen::visit(const MemberExpr *expr) noexcept {
 }
-void CppCodegen::visit(const AccessExpr *) noexcept {
+void CppCodegen::visit(const AccessExpr *expr) noexcept {
 }
-void CppCodegen::visit(const LiteralExpr *) noexcept {
+void CppCodegen::visit(const LiteralExpr *expr) noexcept {
 }
-void CppCodegen::visit(const RefExpr *) noexcept {
+void CppCodegen::visit(const RefExpr *expr) noexcept {
 }
-void CppCodegen::visit(const ConstantExpr *) noexcept {
+void CppCodegen::visit(const ConstantExpr *expr) noexcept {
 }
-void CppCodegen::visit(const CallExpr *) noexcept {
+void CppCodegen::visit(const CallExpr *expr) noexcept {
 }
-void CppCodegen::visit(const CastExpr *) noexcept {
+void CppCodegen::visit(const CastExpr *expr) noexcept {
 }
-void CppCodegen::visit(const Type *) noexcept {
+void CppCodegen::visit(const Type *type) noexcept {
 }
 void CppCodegen::_emit_type_decl() noexcept {
     Type::for_each(this);
@@ -96,7 +103,9 @@ void CppCodegen::_emit_statements(ocarina::span<const Statement *const> stmts) n
     _scratch << "{\n";
     _indent += 1;
     _emit_indent();
-    _scratch << "return 0;";
+    for (const Statement *stmt : stmts) {
+        stmt->accept(*this);
+    }
     _emit_newline();
     _scratch << "}";
 }
@@ -119,4 +128,5 @@ void CppCodegen::emit(const Function &func) noexcept {
     _emit_function(func);
     _emit_newline();
 }
+
 }

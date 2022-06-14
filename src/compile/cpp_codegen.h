@@ -13,30 +13,30 @@ namespace ocarina {
 
 class CppCodegen : public Codegen, private ExprVisitor, private StmtVisitor, private TypeVisitor {
 protected:
-    void visit(const BreakStmt *) noexcept override;
-    void visit(const ContinueStmt *) noexcept override;
-    void visit(const ReturnStmt *) noexcept override;
-    void visit(const ScopeStmt *) noexcept override;
-    void visit(const IfStmt *) noexcept override;
-    void visit(const LoopStmt *) noexcept override;
-    void visit(const ExprStmt *) noexcept override;
-    void visit(const SwitchStmt *) noexcept override;
-    void visit(const SwitchCaseStmt *) noexcept override;
-    void visit(const SwitchDefaultStmt *) noexcept override;
-    void visit(const AssignStmt *) noexcept override;
-    void visit(const ForStmt *) noexcept override;
+    void visit(const BreakStmt *stmt) noexcept override;
+    void visit(const ContinueStmt *stmt) noexcept override;
+    void visit(const ReturnStmt *stmt) noexcept override;
+    void visit(const ScopeStmt *stmt) noexcept override;
+    void visit(const IfStmt *stmt) noexcept override;
+    void visit(const LoopStmt *stmt) noexcept override;
+    void visit(const ExprStmt *stmt) noexcept override;
+    void visit(const SwitchStmt *stmt) noexcept override;
+    void visit(const SwitchCaseStmt *stmt) noexcept override;
+    void visit(const SwitchDefaultStmt *stmt) noexcept override;
+    void visit(const AssignStmt *stmt) noexcept override;
+    void visit(const ForStmt *stmt) noexcept override;
 
-    void visit(const UnaryExpr *) noexcept override;
-    void visit(const BinaryExpr *) noexcept override;
-    void visit(const MemberExpr *) noexcept override;
-    void visit(const AccessExpr *) noexcept override;
-    void visit(const LiteralExpr *) noexcept override;
-    void visit(const RefExpr *) noexcept override;
-    void visit(const ConstantExpr *) noexcept override;
-    void visit(const CallExpr *) noexcept override;
-    void visit(const CastExpr *) noexcept override;
+    void visit(const UnaryExpr *expr) noexcept override;
+    void visit(const BinaryExpr *expr) noexcept override;
+    void visit(const MemberExpr *expr) noexcept override;
+    void visit(const AccessExpr *expr) noexcept override;
+    void visit(const LiteralExpr *expr) noexcept override;
+    void visit(const RefExpr *expr) noexcept override;
+    void visit(const ConstantExpr *expr) noexcept override;
+    void visit(const CallExpr *expr) noexcept override;
+    void visit(const CastExpr *expr) noexcept override;
 
-    void visit(const Type *) noexcept override;
+    void visit(const Type *type) noexcept override;
 
     virtual void _emit_type_decl() noexcept;
     virtual void _emit_variable_decl(Variable v) noexcept;
