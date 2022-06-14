@@ -14,9 +14,7 @@
 namespace ocarina {
 
 class FunctionBuilder;
-class Expression;
-class RefExpr;
-class LiteralExpr;
+class Statement;
 
 class OC_AST_API Function {
 public:
@@ -73,6 +71,7 @@ public:
     [[nodiscard]] const LiteralExpr *literal(const Type *type, LiteralExpr::value_type value) noexcept;
     [[nodiscard]] const BinaryExpr *binary(const Type *type, BinaryOp op, const Expression *lhs, const Expression *rhs) noexcept;
     [[nodiscard]] const UnaryExpr *unary(const Type *type, UnaryOp op, const Expression *expression) noexcept;
+    [[nodiscard]] ocarina::span<const Statement* const > statements() noexcept;
     [[nodiscard]] uint64_t hash() const noexcept;
     [[nodiscard]] ocarina::span<const Variable> arguments() const noexcept;
     [[nodiscard]] Tag tag() const noexcept;

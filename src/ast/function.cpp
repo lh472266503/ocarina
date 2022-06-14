@@ -10,13 +10,15 @@ namespace ocarina {
 class Function::Impl : public concepts::Noncopyable {
 private:
     const Type *_ret{nullptr};
-    ocarina::vector<ocarina::unique_ptr<Expression>> _expressions;
-    ocarina::vector<ocarina::unique_ptr<Statement>> _statements;
+    ocarina::vector<ocarina::unique_ptr<Expression>> _all_expressions;
+    ocarina::vector<ocarina::unique_ptr<Statement>> _all_statements;
     ocarina::vector<Variable> _arguments;
     ocarina::vector<Usage> _variable_usages;
+    ocarina::vector<ScopeStmt *> _scope_stack;
     mutable uint64_t _hash{0};
     mutable bool _hash_computed{false};
     Tag _tag{Tag::CALLABLE};
+    friend class Function;
 
 private:
     [[nodiscard]] const RefExpr *_ref(Variable variable) noexcept {
@@ -32,20 +34,31 @@ public:
         _variable_usages.push_back(Usage::NONE);
         return ret;
     }
-    explicit Impl(Tag tag = Tag::CALLABLE) : _tag(tag) {}
+    explicit Impl(Tag tag = Tag::CALLABLE) : _tag(tag) {
+        push_scope();
+    }
     template<typename Expr, typename... Args>
     [[nodiscard]] const Expr *create_expression(Args &&...args) {
         auto expr = ocarina::make_unique<Expr>(std::forward<Args>(args)...);
         auto ret = expr.get();
-        _expressions.push_back(std::move(expr));
+        _all_expressions.push_back(std::move(expr));
         return ret;
     }
     template<typename Stmt, typename... Args>
     const Stmt *_create_statement(Args &&...args) {
         auto stmt = ocarina::make_unique<Stmt>(std::forward<Args>(args)...);
         auto ret = stmt.get();
-        _statements.push_back(std::move(stmt));
+        _all_statements.push_back(std::move(stmt));
+        _scope_stack.back()->append(ret);
         return ret;
+    }
+    void push_scope() {
+        auto scope = ocarina::make_unique<ScopeStmt>();
+        _scope_stack.push_back(scope.get());
+        _all_statements.push_back(std::move(scope));
+    }
+    void pop_scope() {
+        _scope_stack.pop_back();
     }
     void mark_variable_usage(uint uid, Usage usage) noexcept {
         _variable_usages[uid] = usage;
@@ -109,7 +122,7 @@ const RefExpr *Function::reference_argument(const Type *type) noexcept {
 
 const Expression *Function::local(const Type *type) noexcept {
     return _impl->create_expression<RefExpr>(Variable(type, Variable::Tag::LOCAL,
-                                                       _impl->next_variable_uid()));
+                                                      _impl->next_variable_uid()));
 }
 
 const LiteralExpr *Function::literal(const Type *type, LiteralExpr::value_type value) noexcept {
