@@ -10,6 +10,7 @@
 #include "type.h"
 #include "variable.h"
 #include "expression.h"
+#include "ast/statement.h"
 
 namespace ocarina {
 
