@@ -3,7 +3,7 @@
 //
 
 #include "platform.h"
-#include <windows.h>
+#include "oc_windows.h"
 #include <dbghelp.h>
 #include "fmt/format.h"
 #include "core/logging.h"
