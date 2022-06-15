@@ -75,16 +75,38 @@ struct is_callable<Callable<T>> : std::true_type {};
 
 namespace detail {
 
-template<typename VarTuple, typename TagTuple, typename T, size_t... i>
-[[nodiscard]] auto create_argument_definition_impl(T tuple, ocarina::index_sequence<i...>) {
-    return VarTuple(ocarina::tuple_element_t<i, VarTuple>{ocarina::tuple_element_t<i, TagTuple>{}}...);
+template<typename T, typename... A>
+[[nodiscard]] auto tuple_insert(ocarina::tuple<A...> lst, T &&t) {
+    using ret_type = ocarina::tuple<T, A...>;
+    auto func = []<typename T,
+                   typename... A,
+                   size_t... i>(T && t,
+                                ocarina::tuple<A...> lst,
+                                std::index_sequence<i...>)
+                    ->ret_type {
+        return ret_type(std::forward<T>(t), std::move(ocarina::get<i>(lst))...);
+    };
+    return func(std::forward<T>(t), std::move(lst), std::index_sequence_for<A...>());
+}
+
+[[nodiscard]] inline ocarina::tuple<> create_argument_definition_impl(ocarina::tuple<> *var_tuple,
+                                                                      ocarina::tuple<> *tag_tuple) {
+    return {};
+}
+
+template<typename Var, typename... RestVar, typename Tag, typename... RestTag>
+[[nodiscard]] auto create_argument_definition_impl(ocarina::tuple<Var, RestVar...> *var_tuple,
+                                                   ocarina::tuple<Tag, RestTag...> *tag_tuple) {
+    return tuple_insert(std::move(create_argument_definition_impl(static_cast<tuple<RestVar...> *>(nullptr),
+                                                                  static_cast<tuple<RestTag...> *>(nullptr))),
+                        Var{Tag{}});
 }
 
 }// namespace detail
 
 template<typename VarTuple, typename TagTuple>
 [[nodiscard]] auto create_argument_definition() {
-    return detail::create_argument_definition_impl<VarTuple, TagTuple>(ocarina::tuple(), ocarina::make_index_sequence<ocarina::tuple_size_v<VarTuple>>());
+    return detail::create_argument_definition_impl(static_cast<VarTuple *>(nullptr), static_cast<TagTuple *>(nullptr));
 }
 
 namespace detail {
@@ -93,7 +115,6 @@ auto create(Func &&func, ocarina::index_sequence<i...>) {
     static_assert(std::is_invocable_v<Func, detail::prototype_to_var_t<Args>...>);
     using var_tuple = ocarina::tuple<Var<std::remove_cvref_t<Args>>...>;
     using tag_tuple = ocarina::tuple<detail::prototype_to_creation_tag_t<Args>...>;
-    auto a = tag_tuple {};
     auto args = create_argument_definition<var_tuple, tag_tuple>();
     return func(std::forward<detail::prototype_to_var_t<Args>>(ocarina::get<i>(args))...);
 }
