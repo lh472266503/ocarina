@@ -17,7 +17,12 @@ void CppCodegen::visit(const ReturnStmt *stmt) noexcept {
     }
 }
 void CppCodegen::visit(const ScopeStmt *stmt) noexcept {
+    _scratch << "{\n";
+    _indent += 1;
     _emit_statements(stmt->statements());
+    _indent -= 1;
+    _emit_indent();
+    _scratch << "}";
 }
 void CppCodegen::visit(const IfStmt *stmt) noexcept {
 }
@@ -133,17 +138,14 @@ void CppCodegen::_emit_variable_name(Variable v) noexcept {
     _scratch << "v" << v.uid();
 }
 void CppCodegen::_emit_statements(ocarina::span<const Statement *const> stmts) noexcept {
-    _scratch << "{\n";
-    _indent += 1;
+
     for (const Statement *stmt : stmts) {
         _emit_indent();
         stmt->accept(*this);
         _scratch << ";";
         _emit_newline();
     }
-    _indent -= 1;
-    _emit_indent();
-    _scratch << "}";
+
 }
 void CppCodegen::_emit_body(const Function &f) noexcept {
     f.body()->accept(*this);

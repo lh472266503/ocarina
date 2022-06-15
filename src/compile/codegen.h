@@ -35,17 +35,6 @@ private:
     };
 
 protected:
-    class AutoIndent {
-    private:
-        int &_indent;
-
-    public:
-        explicit AutoIndent(int &indent) : _indent(indent) { _indent += 1; }
-        ~AutoIndent() { _indent -= 1; }
-    };
-#define AUTO_INDENT AutoIndent __auto_indent(_indent);
-
-protected:
     Scratch _scratch;
     int _indent{};
 
