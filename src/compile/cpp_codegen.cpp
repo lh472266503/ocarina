@@ -3,7 +3,6 @@
 //
 
 #include "cpp_codegen.h"
-#include "ast/statement.h"
 
 namespace ocarina {
 
@@ -39,7 +38,30 @@ void CppCodegen::visit(const ForStmt *stmt) noexcept {
 void CppCodegen::visit(const UnaryExpr *expr) noexcept {
 }
 void CppCodegen::visit(const BinaryExpr *expr) noexcept {
-
+    _scratch << "(";
+    expr->lhs()->accept(*this);
+    switch (expr->op()) {
+        case BinaryOp::ADD: _scratch << "+"; break;
+        case BinaryOp::SUB: _scratch << "-"; break;
+        case BinaryOp::MUL: _scratch << "*"; break;
+        case BinaryOp::DIV: _scratch << "/"; break;
+        case BinaryOp::MOD: _scratch << "%"; break;
+        case BinaryOp::BIT_AND: _scratch << "&"; break;
+        case BinaryOp::BIT_OR: _scratch << "|"; break;
+        case BinaryOp::BIT_XOR: _scratch << "^"; break;
+        case BinaryOp::SHL: _scratch << "<<"; break;
+        case BinaryOp::SHR: _scratch << ">>"; break;
+        case BinaryOp::AND: _scratch << "&&"; break;
+        case BinaryOp::OR: _scratch << "||"; break;
+        case BinaryOp::LESS: _scratch << "<"; break;
+        case BinaryOp::GREATER: _scratch << ">"; break;
+        case BinaryOp::LESS_EQUAL: _scratch << "<="; break;
+        case BinaryOp::GREATER_EQUAL: _scratch << ">="; break;
+        case BinaryOp::EQUAL: _scratch << "="; break;
+        case BinaryOp::NOT_EQUAL: _scratch << "!="; break;
+    }
+    expr->rhs()->accept(*this);
+    _scratch << ")";
 }
 void CppCodegen::visit(const MemberExpr *expr) noexcept {
 }
@@ -48,6 +70,7 @@ void CppCodegen::visit(const AccessExpr *expr) noexcept {
 void CppCodegen::visit(const LiteralExpr *expr) noexcept {
 }
 void CppCodegen::visit(const RefExpr *expr) noexcept {
+    _scratch << "v" << expr->variable().uid();
 }
 void CppCodegen::visit(const ConstantExpr *expr) noexcept {
 }
