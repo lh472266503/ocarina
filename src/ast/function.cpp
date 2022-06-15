@@ -5,9 +5,13 @@
 #include "function.h"
 #include "function_builder.h"
 
-namespace ocarina {
+#ifdef NDEBUG
 
 #include "function_impl.h"
+
+#endif
+
+namespace ocarina {
 
 ocarina::vector<Function *> &Function::_function_stack() noexcept {
     static ocarina::vector<Function *> ret;

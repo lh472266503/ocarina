@@ -4,6 +4,10 @@
 
 #pragma once
 
+#include "ast/statement.h"
+
+namespace ocarina {
+
 class Function::Impl : public concepts::Noncopyable {
 private:
     const Type *_ret{nullptr};
@@ -95,3 +99,4 @@ public:
         _create_statement<AssignStmt>(lhs, rhs);
     }
 };
+}// namespace ocarina
