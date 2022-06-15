@@ -40,11 +40,11 @@ struct Var : public detail::Computable<T> {
     Var(Var &&) noexcept = default;
 
     void operator=(Var &&rhs) &noexcept {
-        assign(*this, std::forward(rhs));
+        assign(*this, std::forward<Var>(rhs));
     }
 
     void operator=(const Var &rhs) &noexcept {
-        assign(*this, std::forward(rhs));
+        assign(*this, std::forward<Var>(rhs));
     }
 };
 

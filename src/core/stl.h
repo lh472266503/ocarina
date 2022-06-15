@@ -107,7 +107,7 @@ using std::unordered_map;
 using std::array;
 using std::unordered_set;
 
-#if 0
+#if 1
 // tuple
 using eastl::tuple;
 using eastl::tuple_size;
