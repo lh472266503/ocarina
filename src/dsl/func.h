@@ -93,6 +93,7 @@ auto create(Func &&func, ocarina::index_sequence<i...>) {
     static_assert(std::is_invocable_v<Func, detail::prototype_to_var_t<Args>...>);
     using var_tuple = ocarina::tuple<Var<std::remove_cvref_t<Args>>...>;
     using tag_tuple = ocarina::tuple<detail::prototype_to_creation_tag_t<Args>...>;
+    auto a = tag_tuple {};
     auto args = create_argument_definition<var_tuple, tag_tuple>();
     return func(std::forward<detail::prototype_to_var_t<Args>>(ocarina::get<i>(args))...);
 }

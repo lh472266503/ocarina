@@ -84,6 +84,8 @@ void CppCodegen::_emit_type_decl() noexcept {
     Type::for_each(this);
 }
 void CppCodegen::_emit_variable_decl(Variable v) noexcept {
+    _emit_type_name(v.type());
+    _emit_variable_name(v);
 }
 void CppCodegen::_emit_type_name(const Type *type) noexcept {
     if (type == nullptr) {
@@ -108,6 +110,7 @@ void CppCodegen::_emit_type_name(const Type *type) noexcept {
             case Type::Tag::NONE: break;
         }
     }
+    _emit_space();
 }
 void CppCodegen::_emit_function(const Function &f) noexcept {
     if (f.is_callable()) {
@@ -115,12 +118,16 @@ void CppCodegen::_emit_function(const Function &f) noexcept {
     }
     _emit_space();
     _emit_type_name(f.return_type());
-    _emit_space();
     _scratch << "function_" << f.hash();
     _emit_arguments(f);
     _emit_body(f);
 }
 void CppCodegen::_emit_variable_name(Variable v) noexcept {
+    switch (v.tag()) {
+        case Variable::Tag::REFERENCE: _scratch << "&"; break;
+        default:break;
+    }
+    _scratch << "v" << v.uid();
 }
 void CppCodegen::_emit_statements(ocarina::span<const Statement *const> stmts) noexcept {
     _scratch << "{\n";
@@ -138,8 +145,8 @@ void CppCodegen::_emit_body(const Function &f) noexcept {
 void CppCodegen::_emit_arguments(const Function &f) noexcept {
     _scratch << "(";
     for (const auto &v : f.arguments()) {
-        _emit_type_name(v.type());
-        _scratch << " v" << v.uid() << ",";
+        _emit_variable_decl(v);
+        _scratch << ",";
     }
     if (!f.arguments().empty()) {
         _scratch.pop_back();

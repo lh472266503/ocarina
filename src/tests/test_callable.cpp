@@ -19,8 +19,8 @@ using std::cout;
 using std::endl;
 using namespace ocarina;
 
-Var<int> func(Var<int> a, Var<int> b) {
-    return (a + b) * a;
+Var<int> func(Var<int> a, Var<int> &b) {
+    return (a + b);
 }
 
 int main(int argc, char *argv[]) {

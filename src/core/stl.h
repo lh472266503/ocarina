@@ -107,7 +107,7 @@ using std::unordered_map;
 using std::array;
 using std::unordered_set;
 
-
+#if 0
 // tuple
 using eastl::tuple;
 using eastl::tuple_size;
@@ -115,7 +115,14 @@ using eastl::tuple_size_v;
 using eastl::tuple_element;
 using eastl::tuple_element_t;
 using eastl::get;
-
+#else
+using std::tuple;
+using std::tuple_size;
+using std::tuple_size_v;
+using std::tuple_element;
+using std::tuple_element_t;
+using std::get;
+#endif
 // sequence
 using std::make_index_sequence;
 using std::make_integer_sequence;
