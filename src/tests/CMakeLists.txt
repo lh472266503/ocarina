@@ -16,3 +16,12 @@ set_target_properties(test-parsetype PROPERTIES
         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
         WINDOWS_EXPORT_ALL_SYMBOLS ON)
+
+add_executable(test-expr test_expr.cpp)
+target_link_libraries(test-expr ocarina-all)
+
+set_target_properties(test-expr PROPERTIES
+        PUBLIC_HEADER "${HEADER_FILES}"
+        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+        WINDOWS_EXPORT_ALL_SYMBOLS ON)
