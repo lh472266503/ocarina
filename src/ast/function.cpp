@@ -3,7 +3,6 @@
 //
 
 #include "function.h"
-#include "function_builder.h"
 
 #ifdef NDEBUG
 
@@ -39,8 +38,10 @@ const RefExpr *Function::reference_argument(const Type *type) noexcept {
 }
 
 const Expression *Function::local(const Type *type) noexcept {
-    return _impl->create_expression<RefExpr>(Variable(type, Variable::Tag::LOCAL,
-                                                      _impl->next_variable_uid()));
+    auto ret = _impl->create_expression<RefExpr>(Variable(type, Variable::Tag::LOCAL,
+                                                          _impl->next_variable_uid()));
+    _impl->_local_variables.push_back(ret->variable());
+    return ret;
 }
 
 const LiteralExpr *Function::literal(const Type *type, LiteralExpr::value_type value) noexcept {

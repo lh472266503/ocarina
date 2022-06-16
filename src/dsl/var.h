@@ -44,7 +44,7 @@ struct Var : public detail::Computable<T> {
     }
 
     void operator=(const Var &rhs) &noexcept {
-        assign(*this, std::forward<Var>(rhs));
+        assign(*this, rhs);
     }
 };
 

@@ -3,7 +3,7 @@
 //
 
 #include "expression.h"
-#include "function_builder.h"
+#include "function.h"
 
 namespace ocarina {
 uint64_t Expression::hash() const noexcept {

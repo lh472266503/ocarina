@@ -78,7 +78,7 @@ void CppCodegen::visit(const AccessExpr *expr) noexcept {
 void CppCodegen::visit(const LiteralExpr *expr) noexcept {
 }
 void CppCodegen::visit(const RefExpr *expr) noexcept {
-    _scratch << "v" << expr->variable().uid();
+    _emit_variable_name(expr->variable());
 }
 void CppCodegen::visit(const ConstantExpr *expr) noexcept {
 }

@@ -7,7 +7,7 @@
 #include "core/basic_types.h"
 #include "dsl/expr_traits.h"
 #include "dsl/computable.h"
-#include "ast/function_builder.h"
+#include "ast/function.h"
 
 namespace ocarina {
 

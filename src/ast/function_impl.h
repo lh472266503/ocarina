@@ -16,6 +16,7 @@ private:
     ocarina::vector<Variable> _arguments;
     ocarina::vector<Usage> _variable_usages;
     ocarina::vector<ScopeStmt *> _scope_stack;
+    ocarina::vector<Variable> _local_variables;
     mutable uint64_t _hash{0};
     mutable bool _hash_computed{false};
     Tag _tag{Tag::CALLABLE};
@@ -71,7 +72,6 @@ public:
     [[nodiscard]] ocarina::span<const Variable> arguments() const noexcept {
         return _arguments;
     }
-
     [[nodiscard]] uint64_t hash() const noexcept {
         if (!_hash_computed) {
             _hash = _compute_hash();
