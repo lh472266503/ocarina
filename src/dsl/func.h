@@ -125,7 +125,6 @@ class Callable<Ret(Args...)> : public concepts::Noncopyable {
     static_assert(std::negation_v<std::disjunction<std::is_pointer<Args>...>>);
 
 private:
-    ocarina::shared_ptr<const FunctionBuilder> _builder;
 
     Function _function;
 

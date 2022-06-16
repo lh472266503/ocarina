@@ -13,7 +13,6 @@
 
 namespace ocarina {
 
-class FunctionBuilder;
 class Statement;
 class ScopeStmt;
 
@@ -23,9 +22,6 @@ public:
         KERNEL,
         CALLABLE,
     };
-
-private:
-    const FunctionBuilder *_builder{nullptr};
 
 private:
     class Impl;
