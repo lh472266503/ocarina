@@ -20,6 +20,7 @@ void CppCodegen::visit(const ReturnStmt *stmt) noexcept {
 void CppCodegen::visit(const ScopeStmt *stmt) noexcept {
     _scratch << "{\n";
     _indent += 1;
+    _emit_local_var_decl(stmt);
     _emit_statements(stmt->statements());
     _indent -= 1;
     _emit_indent();
@@ -105,8 +106,9 @@ void CppCodegen::_emit_variable_decl(Variable v) noexcept {
     _emit_variable_name(v);
 }
 
-void CppCodegen::_emit_local_var_decl(const Function &f) noexcept {
-    for (const auto &var : f.local_variables()) {
+void CppCodegen::_emit_local_var_decl(const ScopeStmt *scope) noexcept {
+    for (const auto &var : scope->local_vars()) {
+        _emit_indent();
         _emit_variable_decl(var);
         _scratch << ";\n";
     }

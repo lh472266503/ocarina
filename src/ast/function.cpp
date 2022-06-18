@@ -26,7 +26,11 @@ Function::Function(Function::Tag tag) noexcept
 }
 
 const ScopeStmt *Function::body() const noexcept {
-    return _impl->_scope_stack.back();
+    return _impl->_scope_stack.front();
+}
+
+ScopeStmt *Function::body() noexcept {
+    return _impl->_scope_stack.front();
 }
 
 const RefExpr *Function::argument(const Type *type) noexcept {
@@ -40,7 +44,7 @@ const RefExpr *Function::reference_argument(const Type *type) noexcept {
 const Expression *Function::local(const Type *type) noexcept {
     auto ret = _impl->create_expression<RefExpr>(Variable(type, Variable::Tag::LOCAL,
                                                           _impl->next_variable_uid()));
-    _impl->_local_variables.push_back(ret->variable());
+    body()->append(ret->variable());
     return ret;
 }
 
@@ -64,8 +68,8 @@ ocarina::span<const Variable> Function::arguments() const noexcept {
     return _impl->arguments();
 }
 
-ocarina::span<const Variable> Function::local_variables() const noexcept {
-    return _impl->local_variables();
+const ScopeStmt *Function::current_scope() const noexcept {
+    return _impl->current_scope();
 }
 
 const Type *Function::return_type() const noexcept {

@@ -69,9 +69,10 @@ public:
     [[nodiscard]] const BinaryExpr *binary(const Type *type, BinaryOp op, const Expression *lhs, const Expression *rhs) noexcept;
     [[nodiscard]] const UnaryExpr *unary(const Type *type, UnaryOp op, const Expression *expression) noexcept;
     [[nodiscard]] const ScopeStmt *body() const noexcept;
+    [[nodiscard]] ScopeStmt *body() noexcept;
     [[nodiscard]] uint64_t hash() const noexcept;
     [[nodiscard]] ocarina::span<const Variable> arguments() const noexcept;
-    [[nodiscard]] ocarina::span<const Variable> local_variables() const noexcept;
+    [[nodiscard]] const ScopeStmt *current_scope() const noexcept;
     [[nodiscard]] Tag tag() const noexcept;
     [[nodiscard]] bool is_callable() const noexcept;
     [[nodiscard]] bool is_kernel() const noexcept;

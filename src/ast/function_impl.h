@@ -16,7 +16,6 @@ private:
     ocarina::vector<Variable> _arguments;
     ocarina::vector<Usage> _variable_usages;
     ocarina::vector<ScopeStmt *> _scope_stack;
-    ocarina::vector<Variable> _local_variables;
     mutable uint64_t _hash{0};
     mutable bool _hash_computed{false};
     Tag _tag{Tag::CALLABLE};
@@ -62,6 +61,9 @@ public:
     void pop_scope() {
         _scope_stack.pop_back();
     }
+    [[nodiscard]] const ScopeStmt *current_scope() const noexcept {
+        return _scope_stack.back();
+    }
     void mark_variable_usage(uint uid, Usage usage) noexcept {
         _variable_usages[uid] = usage;
     }
@@ -71,9 +73,6 @@ public:
     [[nodiscard]] const Type *return_type() const noexcept { return _ret; }
     [[nodiscard]] ocarina::span<const Variable> arguments() const noexcept {
         return _arguments;
-    }
-    [[nodiscard]] ocarina::span<const Variable> local_variables() const noexcept {
-        return _local_variables;
     }
     [[nodiscard]] uint64_t hash() const noexcept {
         if (!_hash_computed) {
