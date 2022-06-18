@@ -10,6 +10,10 @@
 
 namespace ocarina {
 
+namespace detail {
+struct LiteralPrinter;
+}
+
 class Codegen {
 private:
     class Scratch {
@@ -37,6 +41,7 @@ private:
 protected:
     Scratch _scratch;
     int _indent{};
+    friend struct detail::LiteralPrinter;
 
 protected:
     virtual void _emit_newline() noexcept;

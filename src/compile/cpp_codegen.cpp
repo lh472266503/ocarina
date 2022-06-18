@@ -3,9 +3,22 @@
 //
 
 #include "cpp_codegen.h"
-#include "core/concepts.h"
 
 namespace ocarina {
+
+namespace detail {
+struct LiteralPrinter {
+    using Scratch = Codegen::Scratch;
+    Scratch &scratch;
+    explicit LiteralPrinter(Scratch &scratch) : scratch(scratch) {}
+    template<typename T>
+    void operator()(T v) {
+        if constexpr (ocarina::is_scalar_v<T>) {
+            scratch << v;
+        }
+    }
+};
+}// namespace detail
 
 void CppCodegen::visit(const BreakStmt *stmt) noexcept {
 }
@@ -79,12 +92,7 @@ void CppCodegen::visit(const AccessExpr *expr) noexcept {
 }
 void CppCodegen::visit(const LiteralExpr *expr) noexcept {
     ocarina::visit(
-        [&](auto &&args) {
-            using T = decltype(args);
-            if constexpr (ocarina::is_scalar_v<T>)  {
-                _scratch << args;
-            }
-        },
+        detail::LiteralPrinter(_scratch),
         expr->value());
 }
 void CppCodegen::visit(const RefExpr *expr) noexcept {
