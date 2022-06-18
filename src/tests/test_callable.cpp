@@ -20,7 +20,7 @@ using std::cout;
 using std::endl;
 using namespace ocarina;
 
-Var<int> func(Var<int> a, Var<float> b) {
+Var<int> func(Var<int> a, Var<int> b) {
     Var c = a + b;
     return c + c;
 }
@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
 //    auto t = detail::tuple_append(b, 10);
 
     CppCodegen codegen;
-    auto f = callable.function();
+    decltype(auto) f = callable.function();
     codegen.emit(f);
     cout << codegen.scratch().c_str();
 

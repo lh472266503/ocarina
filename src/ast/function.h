@@ -25,7 +25,7 @@ public:
 
 private:
     class Impl;
-    ocarina::shared_ptr<Impl> _impl{};
+    ocarina::unique_ptr<Impl> _impl{};
 
 private:
     static ocarina::vector<Function *> &_function_stack() noexcept;

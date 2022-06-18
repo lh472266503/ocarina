@@ -78,11 +78,9 @@ namespace detail {
 template<typename T, typename... A>
 [[nodiscard]] auto tuple_insert(ocarina::tuple<A...> lst, T &&t) {
     using ret_type = ocarina::tuple<T, A...>;
-    auto func = []<typename T,
-                   typename... A,
-                   size_t... i>(T && t,
-                                ocarina::tuple<A...> lst,
-                                std::index_sequence<i...>)
+    auto func = []<typename T, typename... A, size_t... i>(T && t,
+                                                           ocarina::tuple<A...> lst,
+                                                           std::index_sequence<i...>)
                     ->ret_type {
         return ret_type(std::forward<T>(t), std::move(ocarina::get<i>(lst))...);
     };
@@ -142,7 +140,7 @@ public:
     //    template<typename Func>
     //    requires std:
 
-    [[nodiscard]] Function function() const noexcept {
+    [[nodiscard]] const Function& function() const noexcept {
         return _function;
     }
 };

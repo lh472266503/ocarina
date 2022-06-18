@@ -22,7 +22,7 @@ void Function::return_(const Expression *expression) noexcept {
 }
 
 Function::Function(Function::Tag tag) noexcept
-    : _impl(ocarina::make_shared<Impl>(tag)) {
+    : _impl(ocarina::make_unique<Impl>(tag)) {
 }
 
 const ScopeStmt *Function::body() const noexcept {
