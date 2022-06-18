@@ -86,6 +86,7 @@ public:
 
 class OC_AST_API ScopeStmt : public Statement {
 private:
+    ocarina::vector<Variable> _local_vars;
     ocarina::vector<const Statement *> _statements;
 
 private:
@@ -97,8 +98,10 @@ private:
 
 public:
     ScopeStmt() noexcept : Statement(Tag::SCOPE) {}
-    [[nodiscard]] auto statements() const noexcept { return ocarina::span(_statements); }
+    [[nodiscard]] ocarina::span<const Variable> local_vars() const noexcept { return _local_vars; }
+    [[nodiscard]] ocarina::span<const Statement *const> statements() const noexcept { return _statements; }
     void append(const Statement *stmt) noexcept { _statements.push_back(stmt); }
+    void append(const Variable &variable) noexcept { _local_vars.push_back(variable); }
     OC_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 

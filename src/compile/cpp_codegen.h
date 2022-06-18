@@ -44,6 +44,7 @@ protected:
     virtual void _emit_function(const Function &f) noexcept;
     virtual void _emit_arguments(const Function &f) noexcept;
     virtual void _emit_body(const Function &f) noexcept;
+    virtual void _emit_local_var_decl(const Function &f) noexcept;
     virtual void _emit_variable_name(Variable v) noexcept;
     virtual void _emit_statements(ocarina::span<const Statement *const> stmts) noexcept;
 

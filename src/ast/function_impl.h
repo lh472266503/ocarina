@@ -72,6 +72,9 @@ public:
     [[nodiscard]] ocarina::span<const Variable> arguments() const noexcept {
         return _arguments;
     }
+    [[nodiscard]] ocarina::span<const Variable> local_variables() const noexcept {
+        return _local_variables;
+    }
     [[nodiscard]] uint64_t hash() const noexcept {
         if (!_hash_computed) {
             _hash = _compute_hash();

@@ -71,6 +71,7 @@ public:
     [[nodiscard]] const ScopeStmt *body() const noexcept;
     [[nodiscard]] uint64_t hash() const noexcept;
     [[nodiscard]] ocarina::span<const Variable> arguments() const noexcept;
+    [[nodiscard]] ocarina::span<const Variable> local_variables() const noexcept;
     [[nodiscard]] Tag tag() const noexcept;
     [[nodiscard]] bool is_callable() const noexcept;
     [[nodiscard]] bool is_kernel() const noexcept;

@@ -20,9 +20,9 @@ using std::cout;
 using std::endl;
 using namespace ocarina;
 
-Var<int> func(Var<int> a, Var<int> b) {
+Var<int> func(Var<int> a, Var<float> b) {
     Var c = a + b;
-    return c;
+    return c + c;
 }
 
 int main(int argc, char *argv[]) {

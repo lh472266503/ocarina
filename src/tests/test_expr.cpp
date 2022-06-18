@@ -42,6 +42,10 @@ public:
         x = other.x;
         return *this;
     }
+
+    ~var() {
+        cout << "destruct" << endl;
+    }
 };
 
 var def(int x) {
@@ -53,8 +57,11 @@ var operator+(const var &v1, const var &v2) {
 }
 
 int main() {
+
     var a;
     var b;
 
-    var c = a + b ;
+    var c;
+    c = a + b + a;
+    cout << "wori" << endl;
 }

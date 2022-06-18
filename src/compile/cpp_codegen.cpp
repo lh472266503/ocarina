@@ -3,6 +3,7 @@
 //
 
 #include "cpp_codegen.h"
+#include "core/concepts.h"
 
 namespace ocarina {
 
@@ -76,6 +77,14 @@ void CppCodegen::visit(const MemberExpr *expr) noexcept {
 void CppCodegen::visit(const AccessExpr *expr) noexcept {
 }
 void CppCodegen::visit(const LiteralExpr *expr) noexcept {
+    ocarina::visit(
+        [&](auto &&args) {
+            using T = decltype(args);
+            if constexpr (ocarina::is_scalar_v<T>)  {
+                _scratch << args;
+            }
+        },
+        expr->value());
 }
 void CppCodegen::visit(const RefExpr *expr) noexcept {
     _emit_variable_name(expr->variable());
@@ -95,6 +104,14 @@ void CppCodegen::_emit_variable_decl(Variable v) noexcept {
     _emit_type_name(v.type());
     _emit_variable_name(v);
 }
+
+void CppCodegen::_emit_local_var_decl(const Function &f) noexcept {
+    for (const auto &var : f.local_variables()) {
+        _emit_variable_decl(var);
+        _scratch << ";\n";
+    }
+}
+
 void CppCodegen::_emit_type_name(const Type *type) noexcept {
     if (type == nullptr) {
         _scratch << "void";

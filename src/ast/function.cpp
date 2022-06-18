@@ -64,6 +64,10 @@ ocarina::span<const Variable> Function::arguments() const noexcept {
     return _impl->arguments();
 }
 
+ocarina::span<const Variable> Function::local_variables() const noexcept {
+    return _impl->local_variables();
+}
+
 const Type *Function::return_type() const noexcept {
     return _impl->return_type();
 }
@@ -85,4 +89,5 @@ void Function::assign(const Expression *lhs, const Expression *rhs) noexcept {
 uint64_t Function::hash() const noexcept {
     return _impl->hash();
 }
+
 }// namespace ocarina
