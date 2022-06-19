@@ -59,15 +59,15 @@ public:
     }
     Function() noexcept = default;
     explicit Function(Tag tag) noexcept;
-    void assign(const Expression *lhs, const Expression *rhs) noexcept;
+    void assign(ConstExprPtr lhs, ConstExprPtr rhs) noexcept;
     void mark_variable_usage(uint uid, Usage usage) noexcept;
-    void return_(const Expression *expression) noexcept;
-    [[nodiscard]] const RefExpr *argument(const Type *type) noexcept;
-    [[nodiscard]] const RefExpr *reference_argument(const Type *type) noexcept;
-    [[nodiscard]] const Expression *local(const Type *type) noexcept;
-    [[nodiscard]] const LiteralExpr *literal(const Type *type, LiteralExpr::value_type value) noexcept;
-    [[nodiscard]] const BinaryExpr *binary(const Type *type, BinaryOp op, const Expression *lhs, const Expression *rhs) noexcept;
-    [[nodiscard]] const UnaryExpr *unary(const Type *type, UnaryOp op, const Expression *expression) noexcept;
+    void return_(ConstExprPtr expression) noexcept;
+    [[nodiscard]] ConstExprPtr argument(const Type *type) noexcept;
+    [[nodiscard]] ConstExprPtr reference_argument(const Type *type) noexcept;
+    [[nodiscard]] ConstExprPtr local(const Type *type) noexcept;
+    [[nodiscard]] ConstExprPtr literal(const Type *type, LiteralExpr::value_type value) noexcept;
+    [[nodiscard]] ConstExprPtr binary(const Type *type, BinaryOp op, ConstExprPtr lhs, ConstExprPtr rhs) noexcept;
+    [[nodiscard]] ConstExprPtr unary(const Type *type, UnaryOp op, ConstExprPtr expression) noexcept;
     [[nodiscard]] const ScopeStmt *body() const noexcept;
     [[nodiscard]] ScopeStmt *body() noexcept;
     [[nodiscard]] uint64_t hash() const noexcept;

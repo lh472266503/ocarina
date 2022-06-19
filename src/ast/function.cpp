@@ -17,7 +17,7 @@ ocarina::vector<Function *> &Function::_function_stack() noexcept {
     return ret;
 }
 
-void Function::return_(const Expression *expression) noexcept {
+void Function::return_(ConstExprPtr expression) noexcept {
     _impl->return_(expression);
 }
 
@@ -33,30 +33,30 @@ ScopeStmt *Function::body() noexcept {
     return _impl->_scope_stack.front();
 }
 
-const RefExpr *Function::argument(const Type *type) noexcept {
+ConstExprPtr Function::argument(const Type *type) noexcept {
     return _impl->argument(type);
 }
 
-const RefExpr *Function::reference_argument(const Type *type) noexcept {
+ConstExprPtr Function::reference_argument(const Type *type) noexcept {
     return _impl->reference_argument(type);
 }
 
-const Expression *Function::local(const Type *type) noexcept {
+ConstExprPtr Function::local(const Type *type) noexcept {
     auto ret = _impl->create_expression<RefExpr>(Variable(type, Variable::Tag::LOCAL,
                                                           _impl->next_variable_uid()));
     body()->append(ret->variable());
     return ret;
 }
 
-const LiteralExpr *Function::literal(const Type *type, LiteralExpr::value_type value) noexcept {
+ConstExprPtr Function::literal(const Type *type, LiteralExpr::value_type value) noexcept {
     return _impl->create_expression<LiteralExpr>(type, value);
 }
 
-const BinaryExpr *Function::binary(const Type *type, BinaryOp op, const Expression *lhs, const Expression *rhs) noexcept {
+ConstExprPtr Function::binary(const Type *type, BinaryOp op, ConstExprPtr lhs, ConstExprPtr rhs) noexcept {
     return _impl->create_expression<BinaryExpr>(type, op, lhs, rhs);
 }
 
-const UnaryExpr *Function::unary(const Type *type, UnaryOp op, const Expression *expression) noexcept {
+ConstExprPtr Function::unary(const Type *type, UnaryOp op, ConstExprPtr expression) noexcept {
     return _impl->create_expression<UnaryExpr>(type, op, expression);
 }
 
@@ -87,7 +87,7 @@ bool Function::is_callable() const noexcept {
 bool Function::is_kernel() const noexcept {
     return _impl->is_kernel();
 }
-void Function::assign(const Expression *lhs, const Expression *rhs) noexcept {
+void Function::assign(ConstExprPtr lhs, ConstExprPtr rhs) noexcept {
     _impl->assign(lhs, rhs);
 }
 uint64_t Function::hash() const noexcept {

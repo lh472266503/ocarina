@@ -16,7 +16,7 @@ template<typename T>
 }
 
 template<typename T>
-[[nodiscard]] inline Var<expr_value_t<T>> def(const Expression *expr) noexcept {
+[[nodiscard]] inline Var<expr_value_t<T>> def(ConstExprPtr expr) noexcept {
     return Var<expr_value_t<T>>(expr);
 }
 }// namespace ocarina

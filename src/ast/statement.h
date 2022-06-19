@@ -129,7 +129,7 @@ public:
 
 class OC_AST_API ReturnStmt : public Statement {
 private:
-    const Expression *_expression{nullptr};
+    ConstExprPtr _expression{nullptr};
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override {
@@ -137,15 +137,15 @@ private:
     }
 
 public:
-    explicit ReturnStmt(const Expression *expr = nullptr) noexcept
+    explicit ReturnStmt(ConstExprPtr expr = nullptr) noexcept
         : Statement(Tag::RETURN), _expression(expr) {}
-    [[nodiscard]] const Expression *expression() const noexcept { return _expression;}
+    [[nodiscard]] ConstExprPtr expression() const noexcept { return _expression;}
     OC_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 
 class ExprStmt : public Statement {
 private:
-    const Expression *_expression{nullptr};
+    ConstExprPtr _expression{nullptr};
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override {
@@ -153,16 +153,16 @@ private:
     }
 
 public:
-    explicit ExprStmt(const Expression *expr = nullptr) noexcept
+    explicit ExprStmt(ConstExprPtr expr = nullptr) noexcept
         : Statement(Tag::EXPR), _expression(expr) {}
-    const Expression *expression() const { return _expression; }
+    ConstExprPtr expression() const { return _expression; }
     OC_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 
 class AssignStmt : public Statement {
 private:
-    const Expression *_lhs{nullptr};
-    const Expression *_rhs{nullptr};
+    ConstExprPtr _lhs{nullptr};
+    ConstExprPtr _rhs{nullptr};
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override {
@@ -172,7 +172,7 @@ private:
     }
 
 public:
-    explicit AssignStmt(const Expression *lhs, const Expression *rhs)
+    explicit AssignStmt(ConstExprPtr lhs, ConstExprPtr rhs)
         : Statement(Tag::ASSIGN), _lhs(lhs), _rhs(rhs) {}
     [[nodiscard]] auto lhs() const noexcept { return _lhs; }
     [[nodiscard]] auto rhs() const noexcept { return _rhs; }

@@ -11,7 +11,7 @@ namespace ocarina {
 class Function::Impl : public concepts::Noncopyable {
 private:
     const Type *_ret{nullptr};
-    ocarina::vector<ocarina::unique_ptr<Expression>> _all_expressions;
+    ocarina::vector<ocarina::shared_ptr<Expression>> _all_expressions;
     ocarina::vector<ocarina::unique_ptr<Statement>> _all_statements;
     ocarina::vector<Variable> _arguments;
     ocarina::vector<Usage> _variable_usages;
@@ -22,7 +22,7 @@ private:
     friend class Function;
 
 private:
-    [[nodiscard]] const RefExpr *_ref(Variable variable) noexcept {
+    [[nodiscard]] ConstExprPtr _ref(Variable variable) noexcept {
         return create_expression<RefExpr>(variable);
     }
     [[nodiscard]] uint64_t _compute_hash() const noexcept {
@@ -39,8 +39,8 @@ public:
         return ret;
     }
     template<typename Expr, typename... Args>
-    [[nodiscard]] const Expr *create_expression(Args &&...args) {
-        auto expr = ocarina::make_unique<Expr>(std::forward<Args>(args)...);
+    [[nodiscard]] auto create_expression(Args &&...args) {
+        auto expr = ocarina::make_shared<Expr>(std::forward<Args>(args)...);
         auto ret = expr.get();
         _all_expressions.push_back(std::move(expr));
         return ret;
@@ -81,23 +81,23 @@ public:
         }
         return _hash;
     }
-    [[nodiscard]] const RefExpr *argument(const Type *type) noexcept {
+    [[nodiscard]] ConstExprPtr argument(const Type *type) noexcept {
         Variable variable(type, Variable::Tag::LOCAL, next_variable_uid());
         _arguments.push_back(variable);
         return _ref(variable);
     }
-    [[nodiscard]] const RefExpr *reference_argument(const Type *type) noexcept {
+    [[nodiscard]] ConstExprPtr reference_argument(const Type *type) noexcept {
         Variable variable(type, Variable::Tag::REFERENCE, next_variable_uid());
         _arguments.push_back(variable);
         return _ref(variable);
     }
-    void return_(const Expression *expression) noexcept {
+    void return_(ConstExprPtr expression) noexcept {
         if (expression) {
             _ret = expression->type();
         }
         _create_statement<ReturnStmt>(expression);
     }
-    void assign(const Expression *lhs, const Expression *rhs) noexcept {
+    void assign(ConstExprPtr lhs, ConstExprPtr rhs) noexcept {
         _create_statement<AssignStmt>(lhs, rhs);
     }
 };
