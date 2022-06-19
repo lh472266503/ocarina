@@ -14,12 +14,12 @@ bool ScopeStmt::is_reference(const Expression *expr) const noexcept {
     return ret;
 }
 bool ReturnStmt::is_reference(const Expression *expr) const noexcept {
-    return expr == _expression.get();
+    return expr == _expression;
 }
 bool ExprStmt::is_reference(const Expression *expr) const noexcept {
-    return expr == _expression.get();
+    return expr == _expression;
 }
 bool AssignStmt::is_reference(const Expression *expr) const noexcept {
-    return expr == _lhs.get() || expr == _rhs.get();
+    return expr == _lhs || expr == _rhs;
 }
 }// namespace ocarina

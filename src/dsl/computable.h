@@ -13,7 +13,7 @@ namespace ocarina {
 
 class Expression;
 using ExprPtr = Expression *;
-using ConstExprPtr  = ocarina::shared_ptr<const Expression>;
+using ConstExprPtr = const Expression *;
 
 namespace detail {
 

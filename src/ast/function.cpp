@@ -94,11 +94,7 @@ uint64_t Function::hash() const noexcept {
     return _impl->hash();
 }
 void Function::postprocess() noexcept {
-    for (auto &expr : _impl->_all_expressions) {
-        if (expr->is_arithmetic()) {
-            cout << "e-----" << expr.use_count() << endl;
-        }
-    }
+    
 }
 
 }// namespace ocarina

@@ -11,7 +11,7 @@ namespace ocarina {
 class Function::Impl : public concepts::Noncopyable {
 private:
     const Type *_ret{nullptr};
-    ocarina::vector<ocarina::shared_ptr<Expression>> _all_expressions;
+    ocarina::vector<ocarina::unique_ptr<Expression>> _all_expressions;
     ocarina::vector<ocarina::unique_ptr<Statement>> _all_statements;
     ocarina::vector<Variable> _arguments;
     ocarina::vector<Usage> _variable_usages;
@@ -40,9 +40,10 @@ public:
     }
     template<typename Expr, typename... Args>
     [[nodiscard]] auto create_expression(Args &&...args) {
-        auto expr = ocarina::make_shared<Expr>(std::forward<Args>(args)...);
-        _all_expressions.push_back(expr);
-        return expr;
+        auto expr = ocarina::make_unique<Expr>(std::forward<Args>(args)...);
+        auto ret = expr.get();
+        _all_expressions.push_back(std::move(expr));
+        return ret;
     }
     template<typename Stmt, typename... Args>
     const Stmt *_create_statement(Args &&...args) {
