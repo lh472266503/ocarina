@@ -41,9 +41,8 @@ public:
     template<typename Expr, typename... Args>
     [[nodiscard]] auto create_expression(Args &&...args) {
         auto expr = ocarina::make_shared<Expr>(std::forward<Args>(args)...);
-        auto ret = expr.get();
-        _all_expressions.push_back(std::move(expr));
-        return ret;
+        _all_expressions.push_back(expr);
+        return expr;
     }
     template<typename Stmt, typename... Args>
     const Stmt *_create_statement(Args &&...args) {

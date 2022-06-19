@@ -82,7 +82,7 @@ public:
 };
 
 using ExprPtr = Expression *;
-using ConstExprPtr  = const ExprPtr;
+using ConstExprPtr  = ocarina::shared_ptr<const Expression>;
 
 #define OC_MAKE_EXPRESSION_ACCEPT_VISITOR \
     void accept(ExprVisitor &visitor) const override { visitor.visit(this); }
