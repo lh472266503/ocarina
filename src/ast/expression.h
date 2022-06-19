@@ -72,6 +72,10 @@ public:
     [[nodiscard]] auto type() const noexcept { return _type; }
     [[nodiscard]] auto usage() const noexcept { return _usage; }
     [[nodiscard]] auto tag() const noexcept { return _tag; }
+    [[nodiscard]] bool is_ref() const noexcept { return tag() == Tag::REF; }
+    [[nodiscard]] bool is_arithmetic() const noexcept {
+        return tag() == Tag::BINARY || tag() == Tag::UNARY;
+    }
     virtual void accept(ExprVisitor &) const = 0;
     void mark(Usage usage) const noexcept {
         if (auto a = to_underlying(_usage), u = a | to_underlying(usage); a != u) {

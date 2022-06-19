@@ -73,6 +73,7 @@ public:
     [[nodiscard]] auto tag() const noexcept { return _tag; }
     virtual void accept(StmtVisitor &) const = 0;
     virtual ~Statement() noexcept = default;
+    [[nodiscard]] virtual bool is_reference(const Expression *expr) const noexcept = 0;
     [[nodiscard]] uint64_t hash() const noexcept {
         if (!_hash_computed) {
             OC_USING_SV
@@ -100,6 +101,7 @@ public:
     ScopeStmt() noexcept : Statement(Tag::SCOPE) {}
     [[nodiscard]] ocarina::span<const Variable> local_vars() const noexcept { return _local_vars; }
     [[nodiscard]] ocarina::span<const Statement *const> statements() const noexcept { return _statements; }
+    [[nodiscard]] bool is_reference(const Expression *expr) const noexcept override;
     void append(const Statement *stmt) noexcept { _statements.push_back(stmt); }
     void append(const Variable &variable) noexcept { _local_vars.push_back(variable); }
     OC_MAKE_STATEMENT_ACCEPT_VISITOR
@@ -113,6 +115,7 @@ private:
 
 public:
     BreakStmt() noexcept : Statement{Tag::BREAK} {}
+    [[nodiscard]] bool is_reference(const Expression * expr) const noexcept override { return false;}
     OC_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 
@@ -124,6 +127,7 @@ private:
 
 public:
     ContinueStmt() noexcept : Statement(Tag::CONTINUE) {}
+    [[nodiscard]] bool is_reference(const Expression * expr) const noexcept override { return false;}
     OC_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 
@@ -140,6 +144,7 @@ public:
     explicit ReturnStmt(ConstExprPtr expr = nullptr) noexcept
         : Statement(Tag::RETURN), _expression(expr) {}
     [[nodiscard]] ConstExprPtr expression() const noexcept { return _expression;}
+    [[nodiscard]] bool is_reference(const Expression *expr) const noexcept override;
     OC_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 
@@ -155,6 +160,7 @@ private:
 public:
     explicit ExprStmt(ConstExprPtr expr = nullptr) noexcept
         : Statement(Tag::EXPR), _expression(expr) {}
+    [[nodiscard]] bool is_reference(const Expression *expr) const noexcept override;
     ConstExprPtr expression() const { return _expression; }
     OC_MAKE_STATEMENT_ACCEPT_VISITOR
 };
@@ -176,6 +182,7 @@ public:
         : Statement(Tag::ASSIGN), _lhs(lhs), _rhs(rhs) {}
     [[nodiscard]] auto lhs() const noexcept { return _lhs; }
     [[nodiscard]] auto rhs() const noexcept { return _rhs; }
+    [[nodiscard]] bool is_reference(const Expression *expr) const noexcept override;
     OC_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 

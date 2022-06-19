@@ -42,6 +42,7 @@ private:
         _push(&ret);
         func();
         _pop(&ret);
+        ret.postprocess();
         return ret;
     }
 
@@ -77,6 +78,7 @@ public:
     [[nodiscard]] bool is_callable() const noexcept;
     [[nodiscard]] bool is_kernel() const noexcept;
     [[nodiscard]] const Type *return_type() const noexcept;
+    void postprocess() noexcept;
 };
 
 }// namespace ocarina
