@@ -39,6 +39,8 @@ struct Var : public detail::Computable<T> {
 
     Var(Var &&) noexcept = default;
 
+    Var(const Var &) noexcept = default;
+
     void operator=(Var &&rhs) &noexcept {
         assign(*this, std::forward<Var>(rhs));
     }

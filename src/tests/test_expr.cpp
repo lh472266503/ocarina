@@ -61,7 +61,6 @@ int main() {
     var a;
     var b;
 
-    var c;
-    c = a + b + a;
+    var c = a + b + a;
     cout << "wori" << endl;
 }

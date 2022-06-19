@@ -17,6 +17,7 @@ template<typename T>
 
 template<typename T>
 [[nodiscard]] inline Var<expr_value_t<T>> def(ConstExprPtr expr) noexcept {
-    return Var<expr_value_t<T>>(expr);
+    using RawType = expr_value_t<T>;
+    return Var<RawType>(detail::Computable<RawType>(expr));
 }
 }// namespace ocarina
