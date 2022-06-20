@@ -14,13 +14,16 @@
 #include "runtime/device.h"
 #include "compile/cpp_codegen.h"
 #include "core/platform.h"
-
+#include "dsl/syntax_sugar.h"
 
 using std::cout;
 using std::endl;
 using namespace ocarina;
 
 Var<int> func(Var<int> a, Var<int> b) {
+    $if (a == 1) {
+
+    }
     return (a + b) * (b - a);
 }
 

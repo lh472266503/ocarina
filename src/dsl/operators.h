@@ -50,19 +50,7 @@ OC_MAKE_DSL_UNARY_OPERATOR(~, BIT_NOT)
             ocarina::detail::extract_expression(std::forward<Lhs>(lhs)),                \
             ocarina::detail::extract_expression(std::forward<Rhs>(rhs))));              \
     }
-template<typename Lhs, typename Rhs>
-requires ocarina::any_dsl_v<Lhs, Rhs> && ocarina::is_basic_v<ocarina::expr_value_t<Lhs>> && ocarina::is_basic_v<ocarina::expr_value_t<Rhs>>
-[[nodiscard]] inline auto operator+(Lhs &&lhs, Rhs &&rhs) noexcept {
-    using namespace std::string_view_literals;
-    static constexpr bool is_logic_op = "+" == "||"sv || "+" == "&&"sv;
-    static constexpr bool is_bit_op = "+" == "|"sv || "+" == "&"sv || "+" == "^"sv;
-    static constexpr bool is_bool_lhs = ocarina::is_boolean_expr_v<Lhs>;
-    static constexpr bool is_bool_rhs = ocarina::is_boolean_expr_v<Rhs>;
-    using NormalRet = std::remove_cvref_t<decltype(std::declval<ocarina::expr_value_t<Lhs>>() + std::declval<ocarina::expr_value_t<Rhs>>())>;
-    using Ret = std::conditional_t<is_bool_lhs && is_logic_op, bool, NormalRet>;
-    return def<Ret>(ocarina::Function::current()->binary(ocarina::Type::of<Ret>(), ocarina::BinaryOp::ADD, ocarina::detail::extract_expression(std::forward<Lhs>(lhs)), ocarina::detail::extract_expression(std::forward<Rhs>(rhs))));
-}
-//OC_MAKE_DSL_BINARY_OPERATOR(+, ADD)
+OC_MAKE_DSL_BINARY_OPERATOR(+, ADD)
 OC_MAKE_DSL_BINARY_OPERATOR(-, SUB)
 OC_MAKE_DSL_BINARY_OPERATOR(*, MUL)
 OC_MAKE_DSL_BINARY_OPERATOR(/, DIV)
@@ -88,11 +76,10 @@ OC_MAKE_DSL_BINARY_OPERATOR(>=, GREATER_EQUAL)
     requires requires {                                                          \
         std::declval<Lhs &>() op## = std::declval<ocarina::expr_value_t<Rhs>>(); \
     }                                                                            \
-    void operator op##=(ocarina::Var<Lhs> lhs, Rhs &&rhs) {                       \
+    void operator op##=(ocarina::Var<Lhs> lhs, Rhs &&rhs) {                      \
         auto x = lhs op std::forward<Rhs>(rhs);                                  \
         ocarina::Function::current()->assign(lhs.expression(), x.expression());  \
     }
-
 
 OC_MAKE_DSL_ASSIGN_OP(+)
 OC_MAKE_DSL_ASSIGN_OP(-)
@@ -106,3 +93,9 @@ OC_MAKE_DSL_ASSIGN_OP(<<)
 OC_MAKE_DSL_ASSIGN_OP(^)
 
 #undef OC_MAKE_DSL_ASSIGN_OP
+
+namespace ocarina {
+template<typename Lhs, typename Rhs>
+[[nodiscard]] const Expression *operator==(Lhs &&lhs, Rhs &&rhs) {
+}
+}// namespace ocarina
