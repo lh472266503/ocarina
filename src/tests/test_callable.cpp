@@ -21,8 +21,7 @@ using std::endl;
 using namespace ocarina;
 
 Var<int> func(Var<int> a, Var<int> b) {
-//    Var c = a + b;
-    return (a + b) * b;
+    return (a + b) * (b - a);
 }
 
 int main(int argc, char *argv[]) {

@@ -88,10 +88,11 @@ OC_MAKE_DSL_BINARY_OPERATOR(>=, GREATER_EQUAL)
     requires requires {                                                          \
         std::declval<Lhs &>() op## = std::declval<ocarina::expr_value_t<Rhs>>(); \
     }                                                                            \
-    void operator+=(ocarina::Var<Lhs> lhs, Rhs &&rhs) {                          \
+    void operator op##=(ocarina::Var<Lhs> lhs, Rhs &&rhs) {                       \
         auto x = lhs op std::forward<Rhs>(rhs);                                  \
         ocarina::Function::current()->assign(lhs.expression(), x.expression());  \
     }
+
 
 OC_MAKE_DSL_ASSIGN_OP(+)
 OC_MAKE_DSL_ASSIGN_OP(-)
