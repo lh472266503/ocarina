@@ -55,7 +55,7 @@ public:
     }
 
     template<typename Stmt, typename... Args>
-    const Stmt *create_statement(Args &&...args) {
+    auto create_statement(Args &&...args) {
         auto stmt = ocarina::make_unique<Stmt>(std::forward<Args>(args)...);
         auto ret = stmt.get();
         _all_statements.push_back(std::move(stmt));

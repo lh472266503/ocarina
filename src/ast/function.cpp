@@ -60,6 +60,10 @@ ConstExprPtr Function::unary(const Type *type, UnaryOp op, ConstExprPtr expressi
     return _impl->create_expression<UnaryExpr>(type, op, expression);
 }
 
+IfStmt *Function::if_(ConstExprPtr expr) noexcept {
+    return _impl->create_statement<IfStmt>(expr);
+}
+
 void Function::mark_variable_usage(uint uid, Usage usage) noexcept {
     _impl->mark_variable_usage(uid, usage);
 }

@@ -15,6 +15,7 @@ namespace ocarina {
 
 class Statement;
 class ScopeStmt;
+class IfStmt;
 
 class OC_AST_API Function {
 public:
@@ -69,6 +70,7 @@ public:
     [[nodiscard]] ConstExprPtr literal(const Type *type, LiteralExpr::value_type value) noexcept;
     [[nodiscard]] ConstExprPtr binary(const Type *type, BinaryOp op, ConstExprPtr lhs, ConstExprPtr rhs) noexcept;
     [[nodiscard]] ConstExprPtr unary(const Type *type, UnaryOp op, ConstExprPtr expression) noexcept;
+    [[nodiscard]] IfStmt *if_(ConstExprPtr expr) noexcept;
     [[nodiscard]] const ScopeStmt *body() const noexcept;
     [[nodiscard]] ScopeStmt *body() noexcept;
     [[nodiscard]] uint64_t hash() const noexcept;

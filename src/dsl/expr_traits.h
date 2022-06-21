@@ -15,9 +15,11 @@ namespace ocarina {
 template<typename T>
 struct Var;
 
-namespace detail {
 template<typename T>
 struct Computable;
+
+namespace detail {
+
 /// var
 template<typename T>
 struct var_to_prototype {

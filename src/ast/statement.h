@@ -63,7 +63,7 @@ public:
 private:
     mutable uint64_t _hash{0u};
     mutable bool _hash_computed{false};
-    Tag _tag;
+    const Tag _tag;
 
 private:
     [[nodiscard]] virtual uint64_t _compute_hash() const noexcept = 0;
@@ -73,7 +73,7 @@ public:
     [[nodiscard]] auto tag() const noexcept { return _tag; }
     virtual void accept(StmtVisitor &) const = 0;
     virtual ~Statement() noexcept = default;
-    [[nodiscard]] virtual bool is_reference(const Expression *expr) const noexcept = 0;
+    [[nodiscard]] virtual bool is_reference(const Expression *expr) const noexcept { return false; }
     [[nodiscard]] uint64_t hash() const noexcept {
         if (!_hash_computed) {
             OC_USING_SV
@@ -193,6 +193,10 @@ private:
     ScopeStmt *_true_branch{};
     ScopeStmt *_false_branch{};
 
+private:
+    [[nodiscard]] uint64_t _compute_hash() const noexcept override {
+        return 0;
+    }
 public:
     IfStmt(ConstExprPtr condition) : Statement(Tag::IF), _condition(condition) {}
     [[nodiscard]] ConstExprPtr condition() const noexcept { return _condition; }
@@ -200,6 +204,7 @@ public:
     [[nodiscard]] const ScopeStmt *false_branch() const noexcept { return _false_branch; }
     [[nodiscard]] ScopeStmt *true_branch() noexcept { return _true_branch; }
     [[nodiscard]] ScopeStmt *false_branch() noexcept { return _false_branch; }
+    OC_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 
 }// namespace ocarina
