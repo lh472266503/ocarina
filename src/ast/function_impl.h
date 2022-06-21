@@ -22,6 +22,15 @@ private:
     friend class Function;
 
 private:
+    template<typename Expr, typename... Args>
+    [[nodiscard]] auto create_expression(Args &&...args) {
+        auto expr = ocarina::make_unique<Expr>(std::forward<Args>(args)...);
+        auto ret = expr.get();
+        _all_expressions.push_back(std::move(expr));
+        return ret;
+    }
+
+private:
     [[nodiscard]] ConstExprPtr _ref(Variable variable) noexcept {
         return create_expression<RefExpr>(variable);
     }
@@ -38,19 +47,19 @@ public:
         _variable_usages.push_back(Usage::NONE);
         return ret;
     }
-    template<typename Expr, typename... Args>
-    [[nodiscard]] auto create_expression(Args &&...args) {
-        auto expr = ocarina::make_unique<Expr>(std::forward<Args>(args)...);
-        auto ret = expr.get();
-        _all_expressions.push_back(std::move(expr));
-        return ret;
+    [[nodiscard]] const ScopeStmt *current_scope() const noexcept {
+        return _scope_stack.back();
     }
+    [[nodiscard]] ScopeStmt *current_scope() noexcept {
+        return _scope_stack.back();
+    }
+
     template<typename Stmt, typename... Args>
-    const Stmt *_create_statement(Args &&...args) {
+    const Stmt *create_statement(Args &&...args) {
         auto stmt = ocarina::make_unique<Stmt>(std::forward<Args>(args)...);
         auto ret = stmt.get();
         _all_statements.push_back(std::move(stmt));
-        _scope_stack.back()->append(ret);
+        current_scope()->add_stmt(ret);
         return ret;
     }
     void push_scope() {
@@ -60,9 +69,6 @@ public:
     }
     void pop_scope() {
         _scope_stack.pop_back();
-    }
-    [[nodiscard]] const ScopeStmt *current_scope() const noexcept {
-        return _scope_stack.back();
     }
     void mark_variable_usage(uint uid, Usage usage) noexcept {
         _variable_usages[uid] = usage;
@@ -95,10 +101,10 @@ public:
         if (expression) {
             _ret = expression->type();
         }
-        _create_statement<ReturnStmt>(expression);
+        create_statement<ReturnStmt>(expression);
     }
     void assign(ConstExprPtr lhs, ConstExprPtr rhs) noexcept {
-        _create_statement<AssignStmt>(lhs, rhs);
+        create_statement<AssignStmt>(lhs, rhs);
     }
 };
 }// namespace ocarina

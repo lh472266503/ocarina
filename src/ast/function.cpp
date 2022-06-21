@@ -44,7 +44,7 @@ ConstExprPtr Function::reference_argument(const Type *type) noexcept {
 ConstExprPtr Function::local(const Type *type) noexcept {
     auto ret = _impl->create_expression<RefExpr>(Variable(type, Variable::Tag::LOCAL,
                                                           _impl->next_variable_uid()));
-    body()->append(ret->variable());
+    body()->add_var(ret->variable());
     return ret;
 }
 

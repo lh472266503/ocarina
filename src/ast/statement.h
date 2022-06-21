@@ -103,8 +103,8 @@ public:
     [[nodiscard]] ocarina::span<const Statement *const> statements() const noexcept { return _statements; }
     [[nodiscard]] bool is_reference(const Expression *expr) const noexcept override;
     [[nodiscard]] bool empty() const noexcept { return _statements.empty(); }
-    void append(const Statement *stmt) noexcept { _statements.push_back(stmt); }
-    void append(const Variable &variable) noexcept { _local_vars.push_back(variable); }
+    void add_stmt(const Statement *stmt) noexcept { _statements.push_back(stmt); }
+    void add_var(const Variable &variable) noexcept { _local_vars.push_back(variable); }
     OC_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 
@@ -190,16 +190,16 @@ public:
 class IfStmt : public Statement {
 private:
     ConstExprPtr _condition{nullptr};
-    ScopeStmt _true_branch{};
-    ScopeStmt _false_branch{};
+    ScopeStmt *_true_branch{};
+    ScopeStmt *_false_branch{};
 
 public:
     IfStmt(ConstExprPtr condition) : Statement(Tag::IF), _condition(condition) {}
     [[nodiscard]] ConstExprPtr condition() const noexcept { return _condition; }
-    [[nodiscard]] const ScopeStmt *true_branch() const noexcept { return &_true_branch; }
-    [[nodiscard]] const ScopeStmt *false_branch() const noexcept { return &_false_branch; }
-    [[nodiscard]] ScopeStmt *true_branch() noexcept { return &_true_branch; }
-    [[nodiscard]] ScopeStmt *false_branch() noexcept { return &_false_branch; }
+    [[nodiscard]] const ScopeStmt *true_branch() const noexcept { return _true_branch; }
+    [[nodiscard]] const ScopeStmt *false_branch() const noexcept { return _false_branch; }
+    [[nodiscard]] ScopeStmt *true_branch() noexcept { return _true_branch; }
+    [[nodiscard]] ScopeStmt *false_branch() noexcept { return _false_branch; }
 };
 
 }// namespace ocarina
