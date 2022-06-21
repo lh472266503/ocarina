@@ -21,9 +21,7 @@ using std::endl;
 using namespace ocarina;
 
 Var<int> func(Var<int> a, Var<int> b) {
-    $if (a == 1) {
 
-    }
     return (a + b) * (b - a);
 }
 

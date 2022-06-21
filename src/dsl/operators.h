@@ -93,9 +93,3 @@ OC_MAKE_DSL_ASSIGN_OP(<<)
 OC_MAKE_DSL_ASSIGN_OP(^)
 
 #undef OC_MAKE_DSL_ASSIGN_OP
-
-namespace ocarina {
-template<typename Lhs, typename Rhs>
-[[nodiscard]] const Expression *operator==(Lhs &&lhs, Rhs &&rhs) {
-}
-}// namespace ocarina

@@ -4,6 +4,6 @@
 
 #pragma once
 
-#define $if if
+#define $if(...)
 
-#define $else
+#define $else(...)
