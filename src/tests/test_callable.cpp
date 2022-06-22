@@ -20,13 +20,14 @@ using std::endl;
 using namespace ocarina;
 
 Var<int> func(Var<int> a, Var<int> b) {
-    IfStmtBuilder::create(a == b) / [&] {
 
-    } % [&] {
-
+    $if(a == 1){
+        a = b;
+    } $else {
+        a = 99;
     };
 
-    return (a + b) * (b - a);
+    return a;
 }
 
 int main(int argc, char *argv[]) {

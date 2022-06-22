@@ -40,6 +40,14 @@ void CppCodegen::visit(const ScopeStmt *stmt) noexcept {
     _scratch << "}";
 }
 void CppCodegen::visit(const IfStmt *stmt) noexcept {
+    _scratch << "if (";
+    stmt->condition()->accept(*this);
+    _scratch << ") ";
+    stmt->true_branch()->accept(*this);
+    if (stmt->false_branch()) {
+        _scratch << " else ";
+        stmt->false_branch()->accept(*this);
+    }
 }
 void CppCodegen::visit(const LoopStmt *stmt) noexcept {
 }

@@ -4,6 +4,6 @@
 
 #pragma once
 
-#define $if(...)
-
-#define $else(...)
+#define $if(...) IfStmtBuilder::create(__VA_ARGS__) / [&]() noexcept
+#define $else % [&]() noexcept
+#define $elif(...) IfStmtBuilder::create(__VA_ARGS__) / [&]() noexcept

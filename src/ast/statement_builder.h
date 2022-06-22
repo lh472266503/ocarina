@@ -16,9 +16,9 @@ private:
     IfStmt *_if;
 
 public:
-    IfStmtBuilder(IfStmt *stmt) : _if(stmt) {}
+    explicit IfStmtBuilder(IfStmt *stmt) : _if(stmt) {}
 
-    static IfStmtBuilder &create(Computable<bool> condition) {
+    static IfStmtBuilder create(Computable<bool> condition) {
         IfStmtBuilder builder(Function::current()->if_(condition.expression()));
         return builder;
     }
