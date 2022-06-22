@@ -6,14 +6,26 @@
 
 namespace ocarina {
 
+namespace detail {
+
+template<typename T>
+[[nodiscard]] ocarina::string to_string(T &&t) noexcept {
+    if constexpr (std::is_same_v<bool, std::remove_cvref_t<T>>) {
+        return t ? "true" : "false";
+    }
+    return ocarina::to_string(std::forward<T>(t));
+}
+
+}
+
 Codegen::Scratch &Codegen::Scratch::operator<<(int v) noexcept {
-    return *this << ocarina::to_string(v);
+    return *this << detail::to_string(v);
 }
 Codegen::Scratch &Codegen::Scratch::operator<<(float v) noexcept {
-    return *this << ocarina::to_string(v);
+    return *this << detail::to_string(v);
 }
 Codegen::Scratch &Codegen::Scratch::operator<<(bool v) noexcept {
-    return *this << ocarina::to_string(v);
+    return *this << detail::to_string(v);
 }
 Codegen::Scratch &Codegen::Scratch::operator<<(ocarina::string_view v) noexcept {
     _buffer.append(v);
@@ -41,10 +53,10 @@ ocarina::string_view Codegen::Scratch::view() const noexcept {
     return _buffer;
 }
 Codegen::Scratch &Codegen::Scratch::operator<<(uint v) noexcept {
-    return *this << ocarina::to_string(v);
+    return *this << detail::to_string(v);
 }
 Codegen::Scratch &Codegen::Scratch::operator<<(size_t v) noexcept {
-    return *this << ocarina::to_string(v);
+    return *this << detail::to_string(v);
 }
 void Codegen::Scratch::pop_back() noexcept {
     _buffer.pop_back();

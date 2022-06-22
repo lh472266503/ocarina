@@ -18,7 +18,7 @@ private:
 public:
     explicit IfStmtBuilder(IfStmt *stmt) : _if(stmt) {}
 
-    static IfStmtBuilder create(Computable<bool> condition) {
+    static IfStmtBuilder create(const Computable<bool> &condition) {
         IfStmtBuilder builder(Function::current()->if_(condition.expression()));
         return builder;
     }

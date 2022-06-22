@@ -105,6 +105,7 @@ public:
     [[nodiscard]] ocarina::span<const Statement *const> statements() const noexcept { return _statements; }
     [[nodiscard]] bool is_reference(const Expression *expr) const noexcept override;
     [[nodiscard]] bool empty() const noexcept { return _statements.empty(); }
+    [[nodiscard]] auto size() const noexcept { return _statements.size(); }
     void add_stmt(const Statement *stmt) noexcept { _statements.push_back(stmt); }
     void add_var(const Variable &variable) noexcept { _local_vars.push_back(variable); }
     OC_MAKE_STATEMENT_ACCEPT_VISITOR
