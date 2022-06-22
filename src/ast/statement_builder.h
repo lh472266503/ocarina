@@ -13,22 +13,24 @@ class IfStmt;
 
 class IfStmtBuilder {
 private:
-    IfStmt * _if;
+    IfStmt *_if;
 
 public:
-    template<typename T>
-    IfStmtBuilder(Computable<T>&& expr) {
-        _if = Function::current()->if_(expr->expression());
+    IfStmtBuilder(IfStmt *stmt) : _if(stmt) {}
+
+    static IfStmtBuilder &create(Computable<bool> condition) {
+        IfStmtBuilder builder(Function::current()->if_(condition.expression()));
+        return builder;
     }
 
     template<typename TrueBranch>
-    IfStmtBuilder& operator / (TrueBranch &&true_branch) {
+    IfStmtBuilder &operator/(TrueBranch &&true_branch) {
         Function::current()->with(_if->true_branch(), std::forward<TrueBranch>(true_branch));
         return *this;
     }
 
     template<typename FalseBranch>
-    IfStmtBuilder& operator % (FalseBranch &&false_branch) {
+    IfStmtBuilder &operator%(FalseBranch &&false_branch) {
         Function::current()->with(_if->false_branch(), std::forward<FalseBranch>(false_branch));
         return *this;
     }

@@ -9,7 +9,6 @@
 #include "dsl/func.h"
 #include "ast/expression.h"
 #include <iostream>
-#include "ast/type.h"
 #include <runtime/context.h>
 #include "runtime/device.h"
 #include "compile/cpp_codegen.h"
@@ -21,7 +20,11 @@ using std::endl;
 using namespace ocarina;
 
 Var<int> func(Var<int> a, Var<int> b) {
-    Var x = a == b;
+    IfStmtBuilder::create(a == b) / [&] {
+
+    } % [&] {
+
+    };
 
     return (a + b) * (b - a);
 }

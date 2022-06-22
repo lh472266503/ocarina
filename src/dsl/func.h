@@ -9,10 +9,9 @@
 #include "var.h"
 #include "builtin.h"
 #include "expr.h"
-#include "ast/function.h"
+#include "ast/statement_builder.h"
 #include "expr_traits.h"
 #include "arg.h"
-#include "ast/function.h"
 
 namespace ocarina {
 
