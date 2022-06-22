@@ -184,8 +184,8 @@ public:
 class IfStmt : public Statement {
 private:
     const Expression *_condition{nullptr};
-    ScopeStmt *_true_branch{};
-    ScopeStmt *_false_branch{};
+    ScopeStmt _true_branch{};
+    ScopeStmt _false_branch{};
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override {
@@ -195,10 +195,10 @@ private:
 public:
     IfStmt(const Expression *condition) : Statement(Tag::IF), _condition(condition) {}
     [[nodiscard]] const Expression *condition() const noexcept { return _condition; }
-    [[nodiscard]] const ScopeStmt *true_branch() const noexcept { return _true_branch; }
-    [[nodiscard]] const ScopeStmt *false_branch() const noexcept { return _false_branch; }
-    [[nodiscard]] ScopeStmt *true_branch() noexcept { return _true_branch; }
-    [[nodiscard]] ScopeStmt *false_branch() noexcept { return _false_branch; }
+    [[nodiscard]] const ScopeStmt *true_branch() const noexcept { return &_true_branch; }
+    [[nodiscard]] const ScopeStmt *false_branch() const noexcept { return &_false_branch; }
+    [[nodiscard]] ScopeStmt *true_branch() noexcept { return &_true_branch; }
+    [[nodiscard]] ScopeStmt *false_branch() noexcept { return &_false_branch; }
     OC_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 

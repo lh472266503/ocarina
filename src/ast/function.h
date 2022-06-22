@@ -48,12 +48,7 @@ private:
         OC_ASSERT(f == _function_stack().back());
         _function_stack().pop_back();
     }
-    template<typename Func>
-    void with(ScopeStmt *scope, Func&& func) noexcept {
-        _scope_stack.push_back(scope);
-        func();
-        _scope_stack.pop_back();
-    }
+
     template<typename Func>
     static auto _define(Function::Tag tag, Func &&func) noexcept {
         auto ret = ocarina::make_unique<Function>(tag);
@@ -99,7 +94,12 @@ public:
     [[nodiscard]] ScopeStmt *current_scope() noexcept {
         return _scope_stack.back();
     }
-
+    template<typename Func>
+    void with(ScopeStmt *scope, Func&& func) noexcept {
+        _scope_stack.push_back(scope);
+        func();
+        _scope_stack.pop_back();
+    }
     [[nodiscard]] uint next_variable_uid() noexcept {
         auto ret = _variable_usages.size();
         _variable_usages.push_back(Usage::NONE);

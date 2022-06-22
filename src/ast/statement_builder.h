@@ -5,12 +5,33 @@
 #pragma once
 
 #include "dsl/var.h"
+#include "function.h"
+#include "expression.h"
 
 namespace ocarina {
 class IfStmt;
 
 class IfStmtBuilder {
 private:
+    IfStmt * _if;
+
+public:
+    template<typename T>
+    IfStmtBuilder(Computable<T>&& expr) {
+        _if = Function::current()->if_(expr->expression());
+    }
+
+    template<typename TrueBranch>
+    IfStmtBuilder& operator / (TrueBranch &&true_branch) {
+        Function::current()->with(_if->true_branch(), std::forward<TrueBranch>(true_branch));
+        return *this;
+    }
+
+    template<typename FalseBranch>
+    IfStmtBuilder& operator % (FalseBranch &&false_branch) {
+        Function::current()->with(_if->false_branch(), std::forward<FalseBranch>(false_branch));
+        return *this;
+    }
 };
 
 }// namespace ocarina
