@@ -24,7 +24,7 @@ Var<int> func(Var<int> a, Var<int> b) {
     $if(a == 1){
         a = b;
     } $else {
-        a = 99;
+        a = a + b;
     };
 
     return a;

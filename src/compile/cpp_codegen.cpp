@@ -44,7 +44,7 @@ void CppCodegen::visit(const IfStmt *stmt) noexcept {
     stmt->condition()->accept(*this);
     _scratch << ") ";
     stmt->true_branch()->accept(*this);
-    if (stmt->false_branch()) {
+    if (!stmt->false_branch()->empty()) {
         _scratch << " else ";
         stmt->false_branch()->accept(*this);
     }
