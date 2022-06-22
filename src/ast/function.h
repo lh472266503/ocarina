@@ -34,6 +34,7 @@ private:
     ocarina::vector<Variable> _arguments;
     ocarina::vector<Usage> _variable_usages;
     ocarina::vector<ScopeStmt *> _scope_stack;
+    ScopeStmt _body;
     mutable uint64_t _hash{0};
     mutable bool _hash_computed{false};
     Tag _tag{Tag::CALLABLE};
@@ -48,12 +49,17 @@ private:
         _function_stack().pop_back();
     }
     template<typename Func>
-    static auto _define(Function::Tag tag, Func &&func) noexcept {
-        auto ret = Function(tag);
-        _push(&ret);
+    void with(ScopeStmt *scope, Func&& func) noexcept {
+        _scope_stack.push_back(scope);
         func();
-        _pop(&ret);
-        ret.postprocess();
+        _scope_stack.pop_back();
+    }
+    template<typename Func>
+    static auto _define(Function::Tag tag, Func &&func) noexcept {
+        auto ret = ocarina::make_unique<Function>(tag);
+        _push(ret.get());
+        ret->with(ret->body(), std::forward<Func>(func));
+        _pop(ret.get());
         return ret;
     }
     template<typename Expr, typename... Args>
@@ -94,19 +100,12 @@ public:
         return _scope_stack.back();
     }
 
-    void push_scope() {
-        auto scope = ocarina::make_unique<ScopeStmt>();
-        _scope_stack.push_back(scope.get());
-        _all_statements.push_back(std::move(scope));
-    }
     [[nodiscard]] uint next_variable_uid() noexcept {
         auto ret = _variable_usages.size();
         _variable_usages.push_back(Usage::NONE);
         return ret;
     }
-    void pop_scope() {
-        _scope_stack.pop_back();
-    }
+
     void mark_variable_usage(uint uid, Usage usage) noexcept {
         _variable_usages[uid] = usage;
     }

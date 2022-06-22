@@ -124,24 +124,24 @@ class Callable<Ret(Args...)> : public concepts::Noncopyable {
 
 private:
 
-    Function _function;
+    ocarina::unique_ptr<Function> _function;
 
 public:
     template<typename Func>
     Callable(Func &&func) noexcept
-    : _function(Function::define_callable([&] {
+    : _function(std::move(Function::define_callable([&] {
               if constexpr (std::is_same_v<void, Ret>) {
                   detail::create<Args...>(func, ocarina::index_sequence_for<Args...>());
               } else {
                   auto ret = def(detail::create<Args...>(func, ocarina::index_sequence_for<Args...>()));
                   Function::current()->return_(ret.expression());
               }
-          })) {}
+          }))) {}
     //    template<typename Func>
     //    requires std:
 
     [[nodiscard]] const Function& function() const noexcept {
-        return _function;
+        return *_function;
     }
 };
 

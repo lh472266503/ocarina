@@ -3,7 +3,6 @@
 //
 
 #include "function.h"
-#include "expression.h"
 
 namespace ocarina {
 
@@ -20,16 +19,14 @@ void Function::return_(const Expression *expression) noexcept {
 }
 
 Function::Function(Function::Tag tag) noexcept
-    : _tag(tag) {
-    push_scope();
-}
+    : _tag(tag) {}
 
 const ScopeStmt *Function::body() const noexcept {
-    return _scope_stack.front();
+    return &_body;
 }
 
 ScopeStmt *Function::body() noexcept {
-    return _scope_stack.front();
+    return &_body;
 }
 
 const Expression *Function::argument(const Type *type) noexcept {
