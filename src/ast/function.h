@@ -55,18 +55,28 @@ private:
         return ret;
     }
     template<typename Expr, typename... Args>
-    [[nodiscard]] auto create_expression(Args &&...args) {
+    [[nodiscard]] auto _create_expression(Args &&...args) {
         auto expr = ocarina::make_unique<Expr>(std::forward<Args>(args)...);
         auto ret = expr.get();
         _all_expressions.push_back(std::move(expr));
         return ret;
     }
     [[nodiscard]] ConstExprPtr _ref(Variable variable) noexcept {
-        return create_expression<RefExpr>(variable);
+        return _create_expression<RefExpr>(variable);
+    }
+
+    template<typename Stmt, typename... Args>
+    auto _create_statement(Args &&...args) {
+        auto stmt = ocarina::make_unique<Stmt>(std::forward<Args>(args)...);
+        auto ret = stmt.get();
+        _all_statements.push_back(std::move(stmt));
+        current_scope()->add_stmt(ret);
+        return ret;
     }
     [[nodiscard]] uint64_t _compute_hash() const noexcept {
         return 6545689;
     }
+
 public:
     [[nodiscard]] static Function *current() noexcept {
         return _function_stack().back();
@@ -82,14 +92,6 @@ public:
         return _scope_stack.back();
     }
 
-    template<typename Stmt, typename... Args>
-    auto create_statement(Args &&...args) {
-        auto stmt = ocarina::make_unique<Stmt>(std::forward<Args>(args)...);
-        auto ret = stmt.get();
-        _all_statements.push_back(std::move(stmt));
-        current_scope()->add_stmt(ret);
-        return ret;
-    }
     void push_scope() {
         auto scope = ocarina::make_unique<ScopeStmt>();
         _scope_stack.push_back(scope.get());
@@ -128,7 +130,7 @@ public:
     [[nodiscard]] Tag tag() const noexcept { return _tag; }
     [[nodiscard]] bool is_callable() const noexcept { return _tag == Tag::CALLABLE; }
     [[nodiscard]] bool is_kernel() const noexcept { return _tag == Tag::KERNEL; }
-    [[nodiscard]] const Type *return_type() const noexcept;
+    [[nodiscard]] const Type *return_type() const noexcept { return _ret;}
     void postprocess() noexcept;
 };
 

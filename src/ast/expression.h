@@ -146,24 +146,9 @@ public:
     OC_MAKE_EXPRESSION_ACCEPT_VISITOR
 };
 
-namespace detail {
-template<typename T>
-struct literal_value {
-    static_assert(always_false_v<T>);
-};
-
-template<typename... T>
-struct literal_value<ocarina::tuple<T...>> {
-    using type = ocarina::variant<T...>;
-};
-}// namespace detail
-
-template<typename T>
-using literal_value_t = typename detail::literal_value<T>::type;
-
 class LiteralExpr : public Expression {
 public:
-    using value_type = literal_value_t<basic_types>;
+    using value_type = basic_literal_t;
 
 private:
     value_type _value;

@@ -21,7 +21,7 @@ void Function::return_(ConstExprPtr expression) noexcept {
     if (expression) {
         _ret = expression->type();
     }
-    create_statement<ReturnStmt>(expression);
+    _create_statement<ReturnStmt>(expression);
 }
 
 Function::Function(Function::Tag tag) noexcept
@@ -50,38 +50,34 @@ ConstExprPtr Function::reference_argument(const Type *type) noexcept {
 }
 
 ConstExprPtr Function::local(const Type *type) noexcept {
-    auto ret = create_expression<RefExpr>(Variable(type, Variable::Tag::LOCAL,
-                                                          next_variable_uid()));
+    auto ret = _create_expression<RefExpr>(Variable(type, Variable::Tag::LOCAL,
+                                                    next_variable_uid()));
     body()->add_var(ret->variable());
     return ret;
 }
 
 ConstExprPtr Function::literal(const Type *type, LiteralExpr::value_type value) noexcept {
-    return create_expression<LiteralExpr>(type, value);
+    return _create_expression<LiteralExpr>(type, value);
 }
 
 ConstExprPtr Function::binary(const Type *type, BinaryOp op, ConstExprPtr lhs, ConstExprPtr rhs) noexcept {
-    return create_expression<BinaryExpr>(type, op, lhs, rhs);
+    return _create_expression<BinaryExpr>(type, op, lhs, rhs);
 }
 
 ConstExprPtr Function::unary(const Type *type, UnaryOp op, ConstExprPtr expression) noexcept {
-    return create_expression<UnaryExpr>(type, op, expression);
+    return _create_expression<UnaryExpr>(type, op, expression);
 }
 
 IfStmt *Function::if_(ConstExprPtr expr) noexcept {
-    return create_statement<IfStmt>(expr);
+    return _create_statement<IfStmt>(expr);
 }
 
 ocarina::span<const Variable> Function::arguments() const noexcept {
     return _arguments;
 }
 
-const Type *Function::return_type() const noexcept {
-    return _ret;
-}
-
 void Function::assign(ConstExprPtr lhs, ConstExprPtr rhs) noexcept {
-    create_statement<AssignStmt>(lhs, rhs);
+    _create_statement<AssignStmt>(lhs, rhs);
 }
 uint64_t Function::hash() const noexcept {
     if (!_hash_computed) {

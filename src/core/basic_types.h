@@ -550,4 +550,21 @@ OC_MAKE_TYPE_N(uint)
     return m;
 }
 
+namespace detail {
+template<typename T>
+struct literal_value {
+    static_assert(always_false_v<T>);
+};
+
+template<typename... T>
+struct literal_value<ocarina::tuple<T...>> {
+    using type = ocarina::variant<T...>;
+};
+}// namespace detail
+
+template<typename T>
+using literal_value_t = typename detail::literal_value<T>::type;
+
+using basic_literal_t = literal_value_t<basic_types>;
+
 }// namespace ocarina
