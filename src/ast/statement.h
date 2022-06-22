@@ -8,7 +8,7 @@
 #include "core/concepts.h"
 #include "core/stl.h"
 #include "core/hash.h"
-#include "expression.h"
+#include "variable.h"
 
 namespace ocarina {
 
@@ -24,6 +24,8 @@ class SwitchStmt;
 class SwitchCaseStmt;
 class SwitchDefaultStmt;
 class ForStmt;
+
+class Expression;
 
 struct StmtVisitor {
     virtual void visit(const BreakStmt *) = 0;
@@ -134,52 +136,44 @@ public:
 
 class OC_AST_API ReturnStmt : public Statement {
 private:
-    ConstExprPtr _expression{nullptr};
+    const Expression *_expression{nullptr};
 
 private:
-    [[nodiscard]] uint64_t _compute_hash() const noexcept override {
-        return hash64(_expression == nullptr ? 0ull : _expression->hash());
-    }
+    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
-    explicit ReturnStmt(ConstExprPtr expr = nullptr) noexcept
+    explicit ReturnStmt(const Expression *expr = nullptr) noexcept
         : Statement(Tag::RETURN), _expression(expr) {}
-    [[nodiscard]] ConstExprPtr expression() const noexcept { return _expression;}
+    [[nodiscard]] const Expression *expression() const noexcept { return _expression; }
     [[nodiscard]] bool is_reference(const Expression *expr) const noexcept override;
     OC_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 
 class ExprStmt : public Statement {
 private:
-    ConstExprPtr _expression{nullptr};
+    const Expression *_expression{nullptr};
 
 private:
-    [[nodiscard]] uint64_t _compute_hash() const noexcept override {
-        return hash64(_expression == nullptr ? 0ull : _expression->hash());
-    }
+    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
-    explicit ExprStmt(ConstExprPtr expr = nullptr) noexcept
+    explicit ExprStmt(const Expression *expr = nullptr) noexcept
         : Statement(Tag::EXPR), _expression(expr) {}
     [[nodiscard]] bool is_reference(const Expression *expr) const noexcept override;
-    ConstExprPtr expression() const { return _expression; }
+    const Expression *expression() const { return _expression; }
     OC_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 
 class AssignStmt : public Statement {
 private:
-    ConstExprPtr _lhs{nullptr};
-    ConstExprPtr _rhs{nullptr};
+    const Expression *_lhs{nullptr};
+    const Expression *_rhs{nullptr};
 
 private:
-    [[nodiscard]] uint64_t _compute_hash() const noexcept override {
-        auto hl = _lhs->hash();
-        auto hr = _rhs->hash();
-        return hash64(hl, hr);
-    }
+    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
-    explicit AssignStmt(ConstExprPtr lhs, ConstExprPtr rhs)
+    explicit AssignStmt(const Expression *lhs, const Expression *rhs)
         : Statement(Tag::ASSIGN), _lhs(lhs), _rhs(rhs) {}
     [[nodiscard]] auto lhs() const noexcept { return _lhs; }
     [[nodiscard]] auto rhs() const noexcept { return _rhs; }
@@ -189,7 +183,7 @@ public:
 
 class IfStmt : public Statement {
 private:
-    ConstExprPtr _condition{nullptr};
+    const Expression *_condition{nullptr};
     ScopeStmt *_true_branch{};
     ScopeStmt *_false_branch{};
 
@@ -197,9 +191,10 @@ private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override {
         return 0;
     }
+
 public:
-    IfStmt(ConstExprPtr condition) : Statement(Tag::IF), _condition(condition) {}
-    [[nodiscard]] ConstExprPtr condition() const noexcept { return _condition; }
+    IfStmt(const Expression *condition) : Statement(Tag::IF), _condition(condition) {}
+    [[nodiscard]] const Expression *condition() const noexcept { return _condition; }
     [[nodiscard]] const ScopeStmt *true_branch() const noexcept { return _true_branch; }
     [[nodiscard]] const ScopeStmt *false_branch() const noexcept { return _false_branch; }
     [[nodiscard]] ScopeStmt *true_branch() noexcept { return _true_branch; }

@@ -85,15 +85,12 @@ public:
     }
 };
 
-using ExprPtr = Expression *;
-using ConstExprPtr  = const Expression *;
-
 #define OC_MAKE_EXPRESSION_ACCEPT_VISITOR \
     void accept(ExprVisitor &visitor) const override { visitor.visit(this); }
 
 class UnaryExpr : public Expression {
 private:
-    ConstExprPtr _operand;
+    const Expression * _operand;
     UnaryOp _op;
 
 private:
@@ -101,7 +98,7 @@ private:
         return hash64(_op, _operand->hash());
     }
 public:
-    UnaryExpr(const Type *type, UnaryOp op, ConstExprPtr expression)
+    UnaryExpr(const Type *type, UnaryOp op, const Expression * expression)
         : Expression(Tag::UNARY, type), _op(op), _operand(expression) {}
     [[nodiscard]] auto operand() const noexcept { return _operand; }
     [[nodiscard]] auto op() const noexcept { return _op; }
@@ -110,12 +107,12 @@ public:
 
 class BinaryExpr : public Expression {
 private:
-    ConstExprPtr _lhs;
-    ConstExprPtr _rhs;
+    const Expression * _lhs;
+    const Expression * _rhs;
     BinaryOp _op;
 
 public:
-    BinaryExpr(const Type *type, BinaryOp op, ConstExprPtr lhs, ConstExprPtr rhs) noexcept
+    BinaryExpr(const Type *type, BinaryOp op, const Expression * lhs, const Expression * rhs) noexcept
         : Expression{Tag::BINARY, type}, _lhs{lhs}, _rhs{rhs}, _op{op} {
         _lhs->mark(Usage::READ);
         _rhs->mark(Usage::READ);
@@ -131,18 +128,18 @@ public:
 
 class AccessExpr : public Expression {
 private:
-    ConstExprPtr _range;
-    ConstExprPtr _index;
+    const Expression * _range;
+    const Expression * _index;
 
 public:
-    AccessExpr(const Type *type, ConstExprPtr range, ConstExprPtr index)
+    AccessExpr(const Type *type, const Expression * range, const Expression * index)
         : Expression(Tag::ACCESS, type), _range(range), _index(index) {
         _range->mark(Usage::READ);
         _index->mark(Usage::READ);
     }
 
-    [[nodiscard]] ConstExprPtr range() const noexcept { return _range; }
-    [[nodiscard]] ConstExprPtr index() const noexcept { return _index; }
+    [[nodiscard]] const Expression * range() const noexcept { return _range; }
+    [[nodiscard]] const Expression * index() const noexcept { return _index; }
     OC_MAKE_EXPRESSION_ACCEPT_VISITOR
 };
 
@@ -185,7 +182,7 @@ public:
 class CastExpr : public Expression {
 private:
     CastOp _cast_op;
-    ConstExprPtr _expression;
+    const Expression * _expression;
 
 protected:
     void _mark(Usage) const noexcept override {}
@@ -194,14 +191,14 @@ protected:
     }
 
 public:
-    CastExpr(const Type *type, CastOp op, ConstExprPtr expression) noexcept
+    CastExpr(const Type *type, CastOp op, const Expression * expression) noexcept
         : Expression(Tag::CAST, type), _cast_op(op), _expression(expression) {
         _expression->mark(Usage::READ);
     }
     [[nodiscard]] CastOp cast_op() const noexcept {
         return _cast_op;
     }
-    [[nodiscard]] ConstExprPtr expression() const noexcept {
+    [[nodiscard]] const Expression * expression() const noexcept {
         return _expression;
     }
     OC_MAKE_EXPRESSION_ACCEPT_VISITOR

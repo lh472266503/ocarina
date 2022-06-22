@@ -3,12 +3,7 @@
 //
 
 #include "function.h"
-
-#ifdef NDEBUG
-
-#include "function_impl.h"
-
-#endif
+#include "expression.h"
 
 namespace ocarina {
 
@@ -17,7 +12,7 @@ ocarina::vector<Function *> &Function::_function_stack() noexcept {
     return ret;
 }
 
-void Function::return_(ConstExprPtr expression) noexcept {
+void Function::return_(const Expression *expression) noexcept {
     if (expression) {
         _ret = expression->type();
     }
@@ -37,38 +32,38 @@ ScopeStmt *Function::body() noexcept {
     return _scope_stack.front();
 }
 
-ConstExprPtr Function::argument(const Type *type) noexcept {
+const Expression *Function::argument(const Type *type) noexcept {
     Variable variable(type, Variable::Tag::LOCAL, next_variable_uid());
     _arguments.push_back(variable);
     return _ref(variable);
 }
 
-ConstExprPtr Function::reference_argument(const Type *type) noexcept {
+const Expression *Function::reference_argument(const Type *type) noexcept {
     Variable variable(type, Variable::Tag::REFERENCE, next_variable_uid());
     _arguments.push_back(variable);
     return _ref(variable);
 }
 
-ConstExprPtr Function::local(const Type *type) noexcept {
+const Expression *Function::local(const Type *type) noexcept {
     auto ret = _create_expression<RefExpr>(Variable(type, Variable::Tag::LOCAL,
                                                     next_variable_uid()));
     body()->add_var(ret->variable());
     return ret;
 }
 
-ConstExprPtr Function::literal(const Type *type, LiteralExpr::value_type value) noexcept {
+const Expression *Function::literal(const Type *type, LiteralExpr::value_type value) noexcept {
     return _create_expression<LiteralExpr>(type, value);
 }
 
-ConstExprPtr Function::binary(const Type *type, BinaryOp op, ConstExprPtr lhs, ConstExprPtr rhs) noexcept {
+const Expression *Function::binary(const Type *type, BinaryOp op, const Expression *lhs, const Expression *rhs) noexcept {
     return _create_expression<BinaryExpr>(type, op, lhs, rhs);
 }
 
-ConstExprPtr Function::unary(const Type *type, UnaryOp op, ConstExprPtr expression) noexcept {
+const Expression *Function::unary(const Type *type, UnaryOp op, const Expression *expression) noexcept {
     return _create_expression<UnaryExpr>(type, op, expression);
 }
 
-IfStmt *Function::if_(ConstExprPtr expr) noexcept {
+IfStmt *Function::if_(const Expression *expr) noexcept {
     return _create_statement<IfStmt>(expr);
 }
 
@@ -76,7 +71,7 @@ ocarina::span<const Variable> Function::arguments() const noexcept {
     return _arguments;
 }
 
-void Function::assign(ConstExprPtr lhs, ConstExprPtr rhs) noexcept {
+void Function::assign(const Expression *lhs, const Expression *rhs) noexcept {
     _create_statement<AssignStmt>(lhs, rhs);
 }
 uint64_t Function::hash() const noexcept {

@@ -6,6 +6,7 @@
 
 #include "core/stl.h"
 #include "core/hash.h"
+#include "type.h"
 
 namespace ocarina {
 

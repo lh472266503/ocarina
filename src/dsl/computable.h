@@ -12,9 +12,6 @@
 namespace ocarina {
 
 class Expression;
-using ExprPtr = Expression *;
-using ConstExprPtr = const Expression *;
-
 namespace detail {
 
 template<typename T>
@@ -72,10 +69,10 @@ struct EnableBitwiseCast {
 
 #define OC_COMPUTABLE_COMMON(...)                                          \
 private:                                                                   \
-    ConstExprPtr _expression{nullptr};                                     \
+    const Expression *_expression{nullptr};                                \
                                                                            \
 public:                                                                    \
-    explicit Computable(ConstExprPtr e) noexcept : _expression{e} {}       \
+    explicit Computable(const Expression *e) noexcept : _expression{e} {}  \
     [[nodiscard]] auto expression() const noexcept { return _expression; } \
     Computable(Computable &&) noexcept = default;                          \
     Computable(const Computable &) noexcept = default;

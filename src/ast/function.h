@@ -8,17 +8,19 @@
 #include "core/stl.h"
 #include "core/header.h"
 #include "type.h"
-#include "variable.h"
 #include "expression.h"
 #include "statement.h"
+#include "usage.h"
+#include "op.h"
 
 namespace ocarina {
 
 class Statement;
 class ScopeStmt;
+class RefExpr;
 class IfStmt;
 
-class OC_AST_API Function: public concepts::Noncopyable {
+class OC_AST_API Function : public concepts::Noncopyable {
 public:
     enum struct Tag : uint {
         KERNEL,
@@ -61,7 +63,7 @@ private:
         _all_expressions.push_back(std::move(expr));
         return ret;
     }
-    [[nodiscard]] ConstExprPtr _ref(Variable variable) noexcept {
+    [[nodiscard]] const Expression *_ref(Variable variable) noexcept {
         return _create_expression<RefExpr>(variable);
     }
 
@@ -114,15 +116,15 @@ public:
     }
     Function() noexcept = default;
     explicit Function(Tag tag) noexcept;
-    void assign(ConstExprPtr lhs, ConstExprPtr rhs) noexcept;
-    void return_(ConstExprPtr expression) noexcept;
-    [[nodiscard]] ConstExprPtr argument(const Type *type) noexcept;
-    [[nodiscard]] ConstExprPtr reference_argument(const Type *type) noexcept;
-    [[nodiscard]] ConstExprPtr local(const Type *type) noexcept;
-    [[nodiscard]] ConstExprPtr literal(const Type *type, LiteralExpr::value_type value) noexcept;
-    [[nodiscard]] ConstExprPtr binary(const Type *type, BinaryOp op, ConstExprPtr lhs, ConstExprPtr rhs) noexcept;
-    [[nodiscard]] ConstExprPtr unary(const Type *type, UnaryOp op, ConstExprPtr expression) noexcept;
-    [[nodiscard]] IfStmt *if_(ConstExprPtr expr) noexcept;
+    void assign(const Expression *lhs, const Expression *rhs) noexcept;
+    void return_(const Expression *expression) noexcept;
+    [[nodiscard]] const Expression *argument(const Type *type) noexcept;
+    [[nodiscard]] const Expression *reference_argument(const Type *type) noexcept;
+    [[nodiscard]] const Expression *local(const Type *type) noexcept;
+    [[nodiscard]] const Expression *literal(const Type *type, basic_literal_t value) noexcept;
+    [[nodiscard]] const Expression *binary(const Type *type, BinaryOp op, const Expression *lhs, const Expression *rhs) noexcept;
+    [[nodiscard]] const Expression *unary(const Type *type, UnaryOp op, const Expression *expression) noexcept;
+    [[nodiscard]] IfStmt *if_(const Expression *expr) noexcept;
     [[nodiscard]] const ScopeStmt *body() const noexcept;
     [[nodiscard]] ScopeStmt *body() noexcept;
     [[nodiscard]] uint64_t hash() const noexcept;
@@ -130,7 +132,7 @@ public:
     [[nodiscard]] Tag tag() const noexcept { return _tag; }
     [[nodiscard]] bool is_callable() const noexcept { return _tag == Tag::CALLABLE; }
     [[nodiscard]] bool is_kernel() const noexcept { return _tag == Tag::KERNEL; }
-    [[nodiscard]] const Type *return_type() const noexcept { return _ret;}
+    [[nodiscard]] const Type *return_type() const noexcept { return _ret; }
     void postprocess() noexcept;
 };
 
