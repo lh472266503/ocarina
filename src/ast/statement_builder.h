@@ -13,9 +13,9 @@ class IfStmt;
 
 class IfStmtBuilder {
 private:
-    IfStmt *_if;
-
+    IfStmt *_if{nullptr};
 public:
+    IfStmtBuilder() = default;
     explicit IfStmtBuilder(IfStmt *stmt) : _if(stmt) {}
 
     static IfStmtBuilder create(const Computable<bool> &condition) {
@@ -33,6 +33,15 @@ public:
     IfStmtBuilder &operator%(FalseBranch &&false_branch) {
         Function::current()->with(_if->false_branch(), std::forward<FalseBranch>(false_branch));
         return *this;
+    }
+
+    template<typename Condition>
+    auto operator*(const Condition &condition) {
+        IfStmtBuilder builder;
+        Function::current()->with(_if->false_branch(), [&](){
+            builder = create(condition);
+        });
+        return builder;
     }
 };
 

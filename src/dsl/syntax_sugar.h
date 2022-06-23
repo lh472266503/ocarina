@@ -6,4 +6,4 @@
 
 #define $if(...) IfStmtBuilder::create(__VA_ARGS__) / [&]() noexcept
 #define $else % [&]() noexcept
-#define $elif(...) IfStmtBuilder::create(__VA_ARGS__) / [&]() noexcept
+#define $elif(...) *(__VA_ARGS__) / [&]() noexcept

@@ -21,10 +21,16 @@ using namespace ocarina;
 
 Var<int> func(Var<int> a, Var<int> b) {
 
-    $if(a == 1){
+    Var cond = true;
+
+    $if(cond) {
         a = b;
+    } $elif(cond) {
+        a = b;
+    } $elif(cond) {
+        a = 1;
     } $else {
-        a = a + b;
+        a = 2;
     };
 
     return a;
