@@ -14,6 +14,11 @@ bool ScopeStmt::is_reference(const Expression *expr) const noexcept {
     }
     return ret;
 }
+uint64_t ScopeStmt::_compute_hash() const noexcept {
+    auto h = Hash64::default_seed;
+    for (auto &&s : _statements) { h = hash64(s->hash(), h); }
+    return h;
+}
 bool ReturnStmt::is_reference(const Expression *expr) const noexcept {
     return expr == _expression;
 }
@@ -38,5 +43,8 @@ uint64_t IfStmt::_compute_hash() const noexcept {
     auto ret = _condition->hash();
     ret = hash64(ret, true_branch()->hash());
     return hash64(ret, false_branch()->hash());;
+}
+uint64_t CommentStmt::_compute_hash() const noexcept {
+    return hash64(_string);
 }
 }// namespace ocarina

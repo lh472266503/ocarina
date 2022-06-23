@@ -39,8 +39,8 @@ public:
         return *this;
     }
 
-    template<typename Condition>
-    auto operator*(const Condition &condition) {
+    template<typename ElseIfCondition>
+    auto operator*(const ElseIfCondition &condition) {
         IfStmtBuilder builder;
         Function::current()->with(_if->false_branch(), [&]() {
             builder = create(condition);
@@ -48,6 +48,15 @@ public:
         return builder;
     }
 };
+}// namespace detail
+
+template<typename Condition>
+[[nodiscard]] decltype(auto) if_(const Condition &condition) {
+    return detail::IfStmtBuilder::create(condition);
+}
+
+inline void comment(ocarina::string_view str) {
+    Function::current()->comment(str);
 }
 
 }// namespace ocarina

@@ -137,6 +137,7 @@ public:
     [[nodiscard]] const Expression *binary(const Type *type, BinaryOp op, const Expression *lhs, const Expression *rhs) noexcept;
     [[nodiscard]] const Expression *unary(const Type *type, UnaryOp op, const Expression *expression) noexcept;
     [[nodiscard]] IfStmt *if_(const Expression *expr) noexcept;
+    CommentStmt *comment(ocarina::string_view string) noexcept;
     [[nodiscard]] const ScopeStmt *body() const noexcept;
     [[nodiscard]] ScopeStmt *body() noexcept;
     [[nodiscard]] uint64_t hash() const noexcept;

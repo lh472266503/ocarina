@@ -18,6 +18,7 @@ protected:
     void visit(const ReturnStmt *stmt) noexcept override;
     void visit(const ScopeStmt *stmt) noexcept override;
     void visit(const IfStmt *stmt) noexcept override;
+    void visit(const CommentStmt *stmt) noexcept override;
     void visit(const LoopStmt *stmt) noexcept override;
     void visit(const ExprStmt *stmt) noexcept override;
     void visit(const SwitchStmt *stmt) noexcept override;

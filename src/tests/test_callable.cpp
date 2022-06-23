@@ -14,6 +14,7 @@
 #include "compile/cpp_codegen.h"
 #include "core/platform.h"
 #include "dsl/syntax_sugar.h"
+#include "dsl/syntax.h"
 
 using std::cout;
 using std::endl;
@@ -24,17 +25,18 @@ Var<int> func(Var<int> a, Var<int> b) {
     Var cond = true;
 
     $if(cond) {
+        $comment(adsfadsf);
         a = b;
     }
     $elif(cond) {
         a = b;
-    }
-    $elif(cond) {
-        a = 1;
-    }
-    $else {
-        a = 2;
     };
+//    $elif(cond) {
+//        a = 1;
+//    }
+//    $else {
+//        a = 2;
+//    };
 
     return a;
 }

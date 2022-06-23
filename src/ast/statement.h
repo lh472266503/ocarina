@@ -41,6 +41,7 @@ struct StmtVisitor {
     virtual void visit(const SwitchDefaultStmt *) = 0;
     virtual void visit(const AssignStmt *) = 0;
     virtual void visit(const ForStmt *) = 0;
+    virtual void visit(const CommentStmt *) = 0;
 };
 
 #define OC_MAKE_STATEMENT_ACCEPT_VISITOR \
@@ -60,6 +61,7 @@ public:
         SWITCH_CASE,
         SWITCH_DEFAULT,
         ASSIGN,
+        COMMENT,
         FOR
     };
 
@@ -94,11 +96,7 @@ private:
     ocarina::vector<const Statement *> _statements;
 
 private:
-    [[nodiscard]] uint64_t _compute_hash() const noexcept override {
-        auto h = Hash64::default_seed;
-        for (auto &&s : _statements) { h = hash64(s->hash(), h); }
-        return h;
-    }
+    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
     ScopeStmt() noexcept : Statement(Tag::SCOPE) {}
@@ -151,7 +149,7 @@ public:
     OC_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 
-class ExprStmt : public Statement {
+class OC_AST_API ExprStmt : public Statement {
 private:
     const Expression *_expression{nullptr};
 
@@ -183,7 +181,7 @@ public:
     OC_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 
-class IfStmt : public Statement {
+class OC_AST_API IfStmt : public Statement {
 private:
     const Expression *_condition{nullptr};
     ScopeStmt _true_branch{};
@@ -202,8 +200,20 @@ public:
     OC_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 
-class CommentStmt : public Statement {
+class OC_AST_API CommentStmt : public Statement {
+private:
+    std::string_view _string;
 
+private:
+    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+
+public:
+    explicit CommentStmt(std::string_view str)
+        : Statement(Tag::COMMENT), _string(str) {}
+    [[nodiscard]] std::string_view string() const noexcept {
+        return _string;
+    }
+    OC_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 
 }// namespace ocarina

@@ -49,6 +49,11 @@ void CppCodegen::visit(const IfStmt *stmt) noexcept {
         stmt->false_branch()->accept(*this);
     }
 }
+
+void CppCodegen::visit(const CommentStmt *stmt) noexcept {
+    _scratch << "// " << stmt->string();
+}
+
 void CppCodegen::visit(const LoopStmt *stmt) noexcept {
 }
 void CppCodegen::visit(const ExprStmt *stmt) noexcept {
@@ -201,5 +206,4 @@ void CppCodegen::emit(const Function &func) noexcept {
     _emit_function(func);
     _emit_newline();
 }
-
 }
