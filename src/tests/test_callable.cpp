@@ -25,11 +25,14 @@ Var<int> func(Var<int> a, Var<int> b) {
 
     $if(cond) {
         a = b;
-    } $elif(cond) {
+    }
+    $elif(cond) {
         a = b;
-    } $elif(cond) {
+    }
+    $elif(cond) {
         a = 1;
-    } $else {
+    }
+    $else {
         a = 2;
     };
 
@@ -45,16 +48,14 @@ int main(int argc, char *argv[]) {
 
     context.init_device("cuda");
 
-//    auto t = detail::tuple_append(b, 10);
+    //    auto t = detail::tuple_append(b, 10);
 
     CppCodegen codegen;
     decltype(auto) f = callable.function();
     codegen.emit(f);
     cout << codegen.scratch().c_str();
 
-
-
-//    Device *device = context.device();
+    //    Device *device = context.device();
 
     return 0;
 }

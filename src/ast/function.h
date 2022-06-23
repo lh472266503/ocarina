@@ -79,6 +79,20 @@ private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept {
         return 6545689;
     }
+    class ScopeGuard {
+    private:
+        ocarina::vector<ScopeStmt *> &_scope_stack;
+        ScopeStmt *_scope;
+
+    public:
+        ScopeGuard(ocarina::vector<ScopeStmt *> &stack, ScopeStmt *scope)
+            : _scope_stack(stack), _scope(scope) {
+            _scope_stack.push_back(scope);
+        }
+        ~ScopeGuard() {
+            _scope_stack.pop_back();
+        }
+    };
 
 public:
     [[nodiscard]] static Function *current() noexcept {
@@ -95,10 +109,9 @@ public:
         return _scope_stack.back();
     }
     template<typename Func>
-    void with(ScopeStmt *scope, Func&& func) noexcept {
-        _scope_stack.push_back(scope);
-        func();
-        _scope_stack.pop_back();
+    decltype(auto) with(ScopeStmt *scope, Func&& func) noexcept {
+        ScopeGuard guard(_scope_stack, scope);
+        return func();
     }
     [[nodiscard]] uint next_variable_uid() noexcept {
         auto ret = _variable_usages.size();
