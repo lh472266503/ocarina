@@ -16,6 +16,7 @@ bool ScopeStmt::is_reference(const Expression *expr) const noexcept {
 }
 uint64_t ScopeStmt::_compute_hash() const noexcept {
     auto h = Hash64::default_seed;
+    for (auto &v : _local_vars) { h = hash64(v.hash(), h); }
     for (auto &&s : _statements) { h = hash64(s->hash(), h); }
     return h;
 }
