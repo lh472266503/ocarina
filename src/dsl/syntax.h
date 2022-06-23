@@ -61,7 +61,7 @@ public:
 
 template<typename Condition, typename TrueBranch>
 detail::IfStmtBuilder if_(Condition &&condition,
-                   TrueBranch &&true_branch) {
+                          TrueBranch &&true_branch) {
     return detail::IfStmtBuilder::create(std::forward<Condition>(condition)) / std::forward<TrueBranch>(true_branch);
 }
 

@@ -20,10 +20,10 @@ class ExprStmt;
 class AssignStmt;
 class IfStmt;
 class CommentStmt;
-class LoopStmt;
 class SwitchStmt;
 class SwitchCaseStmt;
 class SwitchDefaultStmt;
+class LoopStmt;
 class ForStmt;
 
 class Expression;
@@ -164,7 +164,7 @@ public:
     OC_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 
-class AssignStmt : public Statement {
+class OC_AST_API AssignStmt : public Statement {
 private:
     const Expression *_lhs{nullptr};
     const Expression *_rhs{nullptr};
@@ -210,9 +210,23 @@ private:
 public:
     explicit CommentStmt(std::string_view str)
         : Statement(Tag::COMMENT), _string(str) {}
-    [[nodiscard]] std::string_view string() const noexcept {
-        return _string;
-    }
+    [[nodiscard]] std::string_view string() const noexcept { return _string; }
+    OC_MAKE_STATEMENT_ACCEPT_VISITOR
+};
+
+class OC_AST_API SwitchStmt : public Statement {
+private:
+    const Expression *_expression;
+    ScopeStmt _body;
+
+private:
+    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+
+public:
+    explicit SwitchStmt(const Expression *expr)
+        : Statement(Tag::SWITCH), _expression(expr) {}
+    [[nodiscard]] auto expression() const noexcept { return _expression; }
+
     OC_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 

@@ -47,4 +47,9 @@ uint64_t IfStmt::_compute_hash() const noexcept {
 uint64_t CommentStmt::_compute_hash() const noexcept {
     return hash64(_string);
 }
+
+uint64_t SwitchStmt::_compute_hash() const noexcept {
+    auto ret = _expression->hash();
+    return hash64(ret, _body.hash());
+}
 }// namespace ocarina
