@@ -33,26 +33,36 @@ public:
         return *this;
     }
 
-    template<typename FalseBranch>
-    IfStmtBuilder &operator%(FalseBranch &&false_branch) {
-        Function::current()->with(_if->false_branch(), std::forward<FalseBranch>(false_branch));
-        return *this;
-    }
-
     template<typename ElseIfCondition>
-    auto operator*(const ElseIfCondition &condition) {
+    IfStmtBuilder operator*(ElseIfCondition &&condition) {
         IfStmtBuilder builder;
         Function::current()->with(_if->false_branch(), [&]() {
-            builder = create(condition);
+            builder = create(std::forward<ElseIfCondition>(condition));
         });
         return builder;
+    }
+
+    template<typename FalseBranch>
+    void operator%(FalseBranch &&false_branch) {
+        Function::current()->with(_if->false_branch(), std::forward<FalseBranch>(false_branch));
+    }
+
+    template<typename ElseIfCondition, typename TrueBranch>
+    IfStmtBuilder elif (ElseIfCondition &&condition, TrueBranch &&true_branch) {
+        return (*this) * std::forward<ElseIfCondition>(condition) / std::forward<TrueBranch>(true_branch);
+    }
+
+    template<typename FalseBranch>
+    void else_(FalseBranch &&false_branch) {
+        (*this) % std::forward<FalseBranch>(false_branch);
     }
 };
 }// namespace detail
 
-template<typename Condition>
-[[nodiscard]] decltype(auto) if_(const Condition &condition) {
-    return detail::IfStmtBuilder::create(condition);
+template<typename Condition, typename TrueBranch>
+detail::IfStmtBuilder if_(Condition &&condition,
+                   TrueBranch &&true_branch) {
+    return detail::IfStmtBuilder::create(std::forward<Condition>(condition)) / std::forward<TrueBranch>(true_branch);
 }
 
 inline void comment(ocarina::string_view str) {

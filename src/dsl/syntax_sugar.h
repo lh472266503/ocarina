@@ -8,4 +8,4 @@
 #define $else % [&]() noexcept
 #define $elif(...) *(__VA_ARGS__) / [&]() noexcept
 
-#define $comment(...) comment(#__VA_ARGS__)
+#define $comment(...) comment(#__VA_ARGS__);

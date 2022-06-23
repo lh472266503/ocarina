@@ -25,18 +25,27 @@ Var<int> func(Var<int> a, Var<int> b) {
     Var cond = true;
 
     $if(cond) {
-        $comment(adsfadsf);
+        $comment(adsfadsf)
         a = b;
     }
     $elif(cond) {
         a = b;
+    }
+    $elif(cond) {
+        a = 1;
+    }
+    $else {
+        a = 2;
     };
-//    $elif(cond) {
-//        a = 1;
-//    }
-//    $else {
-//        a = 2;
-//    };
+
+    if_(cond, [&] {
+        comment("this is comment");
+        a = 1;
+    }).elif (cond, [&] {
+        a = b;
+    }).else_([&]{
+        a = b;
+    });
 
     return a;
 }
