@@ -34,4 +34,9 @@ uint64_t AssignStmt::_compute_hash() const noexcept {
     auto hr = _rhs->hash();
     return hash64(hl, hr);
 }
+uint64_t IfStmt::_compute_hash() const noexcept {
+    auto ret = _condition->hash();
+    ret = hash64(ret, true_branch()->hash());
+    return hash64(ret, false_branch()->hash());;
+}
 }// namespace ocarina

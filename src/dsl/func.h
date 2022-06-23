@@ -9,7 +9,7 @@
 #include "var.h"
 #include "builtin.h"
 #include "expr.h"
-#include "ast/statement_builder.h"
+#include "syntax.h"
 #include "expr_traits.h"
 #include "arg.h"
 

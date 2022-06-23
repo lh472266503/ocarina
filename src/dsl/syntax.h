@@ -5,20 +5,24 @@
 #pragma once
 
 #include "dsl/var.h"
-#include "function.h"
-#include "expression.h"
+#include "ast/function.h"
+#include "ast/expression.h"
 
 namespace ocarina {
 class IfStmt;
 
+namespace detail {
+
 class IfStmtBuilder {
 private:
     IfStmt *_if{nullptr};
+
 public:
     IfStmtBuilder() = default;
     explicit IfStmtBuilder(IfStmt *stmt) : _if(stmt) {}
 
-    static IfStmtBuilder create(const Computable<bool> &condition) {
+    template<typename Condition>
+    static IfStmtBuilder create(const Condition &condition) {
         IfStmtBuilder builder(Function::current()->if_(condition.expression()));
         return builder;
     }
@@ -38,11 +42,12 @@ public:
     template<typename Condition>
     auto operator*(const Condition &condition) {
         IfStmtBuilder builder;
-        Function::current()->with(_if->false_branch(), [&](){
+        Function::current()->with(_if->false_branch(), [&]() {
             builder = create(condition);
         });
         return builder;
     }
 };
+}
 
 }// namespace ocarina
