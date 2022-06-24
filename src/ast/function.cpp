@@ -76,6 +76,10 @@ SwitchDefaultStmt *Function::switch_default() noexcept {
     return _create_statement<SwitchDefaultStmt>();
 }
 
+BreakStmt *Function::break_() noexcept {
+    return _create_statement<BreakStmt>();
+}
+
 CommentStmt *Function::comment(ocarina::string_view string) noexcept {
     return _create_statement<CommentStmt>(string);
 }

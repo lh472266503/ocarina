@@ -21,6 +21,7 @@ struct LiteralPrinter {
 }// namespace detail
 
 void CppCodegen::visit(const BreakStmt *stmt) noexcept {
+    _scratch << "break";
 }
 void CppCodegen::visit(const ContinueStmt *stmt) noexcept {
 }
@@ -65,6 +66,10 @@ void CppCodegen::visit(const SwitchStmt *stmt) noexcept {
     stmt->body()->accept(*this);
 }
 void CppCodegen::visit(const SwitchCaseStmt *stmt) noexcept {
+    _scratch << "case ";
+    stmt->expression()->accept(*this);
+    _scratch << ":";
+    stmt->body()->accept(*this);
 }
 void CppCodegen::visit(const SwitchDefaultStmt *stmt) noexcept {
 }
