@@ -76,9 +76,7 @@ private:
         current_scope()->add_stmt(ret);
         return ret;
     }
-    [[nodiscard]] uint64_t _compute_hash() const noexcept {
-        return 6545689;
-    }
+    [[nodiscard]] uint64_t _compute_hash() const noexcept;
     class ScopeGuard {
     private:
         ocarina::vector<ScopeStmt *> &_scope_stack;
@@ -138,7 +136,8 @@ public:
     [[nodiscard]] const Expression *unary(const Type *type, UnaryOp op, const Expression *expression) noexcept;
     [[nodiscard]] IfStmt *if_(const Expression *expr) noexcept;
     [[nodiscard]] SwitchStmt *switch_(const Expression *expr) noexcept;
-    [[nodiscard]] SwitchCaseStmt *switch_case(const LiteralExpr *expr) noexcept;
+    [[nodiscard]] SwitchCaseStmt *switch_case(const Expression *expr) noexcept;
+    BreakStmt *break_() noexcept;
     [[nodiscard]] SwitchDefaultStmt *switch_default() noexcept;
     CommentStmt *comment(ocarina::string_view string) noexcept;
     [[nodiscard]] const ScopeStmt *body() const noexcept;
@@ -149,7 +148,6 @@ public:
     [[nodiscard]] bool is_callable() const noexcept { return _tag == Tag::CALLABLE; }
     [[nodiscard]] bool is_kernel() const noexcept { return _tag == Tag::KERNEL; }
     [[nodiscard]] const Type *return_type() const noexcept { return _ret; }
-    void postprocess() noexcept;
 };
 
 }// namespace ocarina

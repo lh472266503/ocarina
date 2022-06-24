@@ -80,15 +80,7 @@ public:
     virtual void accept(StmtVisitor &) const = 0;
     virtual ~Statement() noexcept = default;
     [[nodiscard]] virtual bool is_reference(const Expression *expr) const noexcept { return false; }
-    [[nodiscard]] uint64_t hash() const noexcept {
-        if (!_hash_computed) {
-            OC_USING_SV
-            uint64_t h = _compute_hash();
-            _hash = hash64(_tag, hash64(h, hash64("__hash_statement"sv)));
-            _hash_computed = true;
-        }
-        return _hash;
-    }
+    [[nodiscard]] uint64_t hash() const noexcept;
 };
 
 class OC_AST_API ScopeStmt : public Statement {
@@ -234,13 +226,15 @@ public:
 
 class OC_AST_API SwitchCaseStmt : public Statement {
 private:
-    const LiteralExpr *_expr;
+    const Expression *_expr;
     ScopeStmt _body;
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
+    explicit SwitchCaseStmt(const Expression *expression)
+        : Statement(Tag::SWITCH_CASE), _expr(expression) {}
     [[nodiscard]] auto expression() const noexcept { return _expr; }
     [[nodiscard]] auto body() const noexcept { return &_body; }
     [[nodiscard]] auto body() noexcept { return &_body; }
@@ -255,6 +249,7 @@ private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
+    SwitchDefaultStmt() : Statement(Tag::SWITCH_DEFAULT) {}
     [[nodiscard]] auto body() const noexcept { return &_body; }
     [[nodiscard]] auto body() noexcept { return &_body; }
     OC_MAKE_STATEMENT_ACCEPT_VISITOR

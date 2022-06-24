@@ -68,6 +68,14 @@ SwitchStmt *Function::switch_(const Expression *expr) noexcept {
     return _create_statement<SwitchStmt>(expr);
 }
 
+SwitchCaseStmt *Function::switch_case(const Expression *expr) noexcept {
+    return _create_statement<SwitchCaseStmt>(expr);
+}
+
+SwitchDefaultStmt *Function::switch_default() noexcept {
+    return _create_statement<SwitchDefaultStmt>();
+}
+
 CommentStmt *Function::comment(ocarina::string_view string) noexcept {
     return _create_statement<CommentStmt>(string);
 }
@@ -79,15 +87,17 @@ ocarina::span<const Variable> Function::arguments() const noexcept {
 void Function::assign(const Expression *lhs, const Expression *rhs) noexcept {
     _create_statement<AssignStmt>(lhs, rhs);
 }
+
+uint64_t Function::_compute_hash() const noexcept {
+    return _body.hash();
+}
+
 uint64_t Function::hash() const noexcept {
     if (!_hash_computed) {
         _hash = _compute_hash();
+        _hash = hash64("__hash_function", _hash);
         _hash_computed = true;
     }
     return _hash;
 }
-void Function::postprocess() noexcept {
-    
-}
-
 }// namespace ocarina
