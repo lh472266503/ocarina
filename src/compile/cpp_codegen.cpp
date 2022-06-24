@@ -59,6 +59,10 @@ void CppCodegen::visit(const LoopStmt *stmt) noexcept {
 void CppCodegen::visit(const ExprStmt *stmt) noexcept {
 }
 void CppCodegen::visit(const SwitchStmt *stmt) noexcept {
+    _scratch << "switch (";
+    stmt->expression()->accept(*this);
+    _scratch<< ") ";
+    stmt->body()->accept(*this);
 }
 void CppCodegen::visit(const SwitchCaseStmt *stmt) noexcept {
 }

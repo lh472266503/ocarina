@@ -71,6 +71,9 @@ inline void comment(ocarina::string_view str) {
 
 namespace detail {
 
+class CaseStmtBuilder {
+};
+
 class SwitchStmtBuilder {
 private:
     SwitchStmt *_switch_stmt{nullptr};
@@ -80,34 +83,24 @@ public:
         : _switch_stmt(stmt) {}
 
     template<typename T>
-    requires concepts::switch_able<T>
+    requires concepts::switch_able<expr_value_t<T>>
     [[nodiscard]] static SwitchStmtBuilder create(T &&t) {
         SwitchStmtBuilder builder(Function::current()->switch_(t.expression()));
         return builder;
     }
 
-    template<typename Case>
-    [[nodiscard]] SwitchStmtBuilder &operator *(Case && func) {
-        Function::current()->with(_switch_stmt->body(), std::forward<Case>(func));
+    template<typename Body>
+    SwitchStmtBuilder &operator*(Body &&func) {
+        Function::current()->with(_switch_stmt->body(), std::forward<Body>(func));
         return *this;
-    }
-
-    template<typename Block>
-    SwitchStmtBuilder &operator / (Block &&block) {
-
-    }
-
-    template<typename Case>
-    SwitchStmtBuilder &case_(Case &&func) {
-        return (*this) * std::forward<Case>(func);
     }
 };
 
 }// namespace detail
 
-template<typename T>
-[[nodiscard]] detail::SwitchStmtBuilder switch_(T &&t) {
-    return detail::SwitchStmtBuilder::create(std::forward<T>(t));
+template<typename T, typename Body>
+detail::SwitchStmtBuilder switch_(T &&t, Body &&body) {
+    return detail::SwitchStmtBuilder::create(std::forward<T>(t)) * std::forward<Body>(body);
 }
 
 }// namespace ocarina

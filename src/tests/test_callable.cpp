@@ -23,12 +23,14 @@ using namespace ocarina;
 Var<int> func(Var<int> a, Var<int> b) {
 
     Var cond = 1;
-    static constexpr int c = 0;
-    switch (1) {
-        default:
-        case c:
-            break;
-    }
+
+//    $switch(a) {
+//
+//    };
+
+    switch_(a, [&]{
+
+    });
 
     //    $if(cond) {
 //        $comment(adsfadsf)
@@ -55,14 +57,10 @@ Var<int> func(Var<int> a, Var<int> b) {
 
 int main(int argc, char *argv[]) {
     Callable callable = func;
-    ocarina::tuple<int> a(1);
-    ocarina::tuple<int, int> b(3, 9);
     fs::path path(argv[0]);
     Context context(path.parent_path());
 
     context.init_device("cuda");
-
-    //    auto t = detail::tuple_append(b, 10);
 
     CppCodegen codegen;
     decltype(auto) f = callable.function();
