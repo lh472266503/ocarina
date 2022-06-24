@@ -32,6 +32,9 @@ Var<int> func(Var<int> a, Var<int> b) {
         $case(2) {
             $comment(9089)
         };
+        $default {
+            $comment(default_)
+        };
     };
 
     switch_(a, [&] {
@@ -40,10 +43,10 @@ Var<int> func(Var<int> a, Var<int> b) {
         });
     });
 
-    $if(1) {
-        $comment(adsfadsf)
-        a = b;
-    };
+//    $if(1) {
+//        $comment(adsfadsf)
+//        a = b;
+//    };
 
 //    $elif(cond) {
 //        a = b;

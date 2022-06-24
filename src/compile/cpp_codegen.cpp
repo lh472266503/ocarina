@@ -72,6 +72,8 @@ void CppCodegen::visit(const SwitchCaseStmt *stmt) noexcept {
     stmt->body()->accept(*this);
 }
 void CppCodegen::visit(const SwitchDefaultStmt *stmt) noexcept {
+    _scratch << "default:";
+    stmt->body()->accept(*this);
 }
 void CppCodegen::visit(const AssignStmt *stmt) noexcept {
     stmt->lhs()->accept(*this);

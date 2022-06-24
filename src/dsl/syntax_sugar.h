@@ -15,3 +15,4 @@
 #define $switch(...) detail::SwitchStmtBuilder::create(__VA_ARGS__) * [&]() noexcept
 #define $case(...) detail::CaseStmtBuilder::create(__VA_ARGS__) * [&]() noexcept
 #define $break break_()
+#define $default detail::DefaultStmtBuilder() * [&]() noexcept

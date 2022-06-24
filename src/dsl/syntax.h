@@ -114,6 +114,20 @@ public:
     }
 };
 
+class DefaultStmtBuilder {
+private:
+    SwitchDefaultStmt *_default_stmt{};
+
+public:
+    DefaultStmtBuilder() noexcept
+        : _default_stmt(Function::current()->switch_default()) {}
+
+    template<typename Body>
+    void operator*(Body &&body) noexcept {
+        Function::current()->with(_default_stmt->body(), std::forward<Body>(body));
+    }
+};
+
 }// namespace detail
 
 template<typename T, typename Body>
@@ -128,6 +142,11 @@ void case_(T &&t, Body &&body) noexcept {
 
 inline void break_() noexcept {
     Function::current()->break_();
+}
+
+template<typename Body>
+void default_(Body &&body) noexcept {
+    detail::DefaultStmtBuilder() * std::forward<Body>(body);
 }
 
 }// namespace ocarina
