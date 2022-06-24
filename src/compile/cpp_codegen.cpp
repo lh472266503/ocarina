@@ -24,6 +24,7 @@ void CppCodegen::visit(const BreakStmt *stmt) noexcept {
     _scratch << "break";
 }
 void CppCodegen::visit(const ContinueStmt *stmt) noexcept {
+    _scratch << "continue";
 }
 void CppCodegen::visit(const ReturnStmt *stmt) noexcept {
     _scratch << "return ";

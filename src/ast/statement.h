@@ -111,7 +111,6 @@ private:
 
 public:
     BreakStmt() noexcept : Statement{Tag::BREAK} {}
-    [[nodiscard]] bool is_reference(const Expression * expr) const noexcept override { return false;}
     OC_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 
@@ -123,7 +122,6 @@ private:
 
 public:
     ContinueStmt() noexcept : Statement(Tag::CONTINUE) {}
-    [[nodiscard]] bool is_reference(const Expression * expr) const noexcept override { return false;}
     OC_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 

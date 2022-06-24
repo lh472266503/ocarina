@@ -41,6 +41,9 @@ Var<int> func(Var<int> a, Var<int> b) {
         case_(2, [&] {
             $comment(adsfdsf)
         });
+        default_([&]{
+            $comment(90890887879)
+        });
     });
 
 //    $if(1) {

@@ -76,6 +76,10 @@ SwitchDefaultStmt *Function::switch_default() noexcept {
     return _create_statement<SwitchDefaultStmt>();
 }
 
+ContinueStmt *Function::continue_() noexcept {
+    return _create_statement<ContinueStmt>();
+}
+
 BreakStmt *Function::break_() noexcept {
     return _create_statement<BreakStmt>();
 }
