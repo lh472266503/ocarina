@@ -187,4 +187,10 @@ OC_BINARY_OP_CONCEPT(shift_right_assign_able, >>=)
 template<typename Lhs, typename Rhs>
 concept access_able = requires(Lhs lhs, Rhs rhs) { lhs[rhs]; };
 
+template<typename T>
+concept bool_able = requires(T t) { bool(t);};
+
+template<typename T>
+concept switch_able = std::is_enum_v<T> || ocarina::is_integral_v<T>;
+
 }// namespace ocarina::concepts

@@ -64,6 +64,10 @@ IfStmt *Function::if_(const Expression *expr) noexcept {
     return _create_statement<IfStmt>(expr);
 }
 
+SwitchStmt *Function::switch_(const Expression *expr) noexcept {
+    return _create_statement<SwitchStmt>(expr);
+}
+
 CommentStmt *Function::comment(ocarina::string_view string) noexcept {
     return _create_statement<CommentStmt>(string);
 }

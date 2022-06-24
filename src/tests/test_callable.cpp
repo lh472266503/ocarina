@@ -22,30 +22,33 @@ using namespace ocarina;
 
 Var<int> func(Var<int> a, Var<int> b) {
 
-    Var cond = true;
+    Var cond = 1;
+    static constexpr int c = 0;
+    switch (1) {
+        default:
+        case c:
+            break;
+    }
 
-    $if(cond) {
-        $comment(adsfadsf)
-        a = b;
-    }
-    $elif(cond) {
-        a = b;
-    }
-    $elif(cond) {
-        a = 1;
-    }
-    $else {
-        a = 2;
-    };
-
-    if_(cond, [&] {
-        comment("this is comment");
-        a = 1;
-    }).elif (cond, [&] {
-        a = b;
-    }).else_([&]{
-        a = b;
-    });
+    //    $if(cond) {
+//        $comment(adsfadsf)
+//        a = b;
+//    }
+//    $elif(cond) {
+//        a = b;
+//    }
+//    $else {
+//        a = 2;
+//    };
+//
+//    if_(cond, [&] {
+//        comment("this is comment");
+//        a = 1;
+//    }).elif_(cond, [&] {
+//          a = b;
+//      }).else_([&] {
+//        a = b;
+//    });
 
     return a;
 }

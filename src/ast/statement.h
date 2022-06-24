@@ -27,6 +27,7 @@ class LoopStmt;
 class ForStmt;
 
 class Expression;
+class LiteralExpr;
 
 struct StmtVisitor {
     virtual void visit(const BreakStmt *) = 0;
@@ -226,7 +227,36 @@ public:
     explicit SwitchStmt(const Expression *expr)
         : Statement(Tag::SWITCH), _expression(expr) {}
     [[nodiscard]] auto expression() const noexcept { return _expression; }
+    [[nodiscard]] auto body() const noexcept { return &_body; }
+    [[nodiscard]] auto body() noexcept { return &_body; }
+    OC_MAKE_STATEMENT_ACCEPT_VISITOR
+};
 
+class OC_AST_API SwitchCaseStmt : public Statement {
+private:
+    const LiteralExpr *_expr;
+    ScopeStmt _body;
+
+private:
+    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+
+public:
+    [[nodiscard]] auto expression() const noexcept { return _expr; }
+    [[nodiscard]] auto body() const noexcept { return &_body; }
+    [[nodiscard]] auto body() noexcept { return &_body; }
+    OC_MAKE_STATEMENT_ACCEPT_VISITOR
+};
+
+class OC_AST_API SwitchDefaultStmt : public Statement {
+private:
+    ScopeStmt _body;
+
+private:
+    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+
+public:
+    [[nodiscard]] auto body() const noexcept { return &_body; }
+    [[nodiscard]] auto body() noexcept { return &_body; }
     OC_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 

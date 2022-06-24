@@ -137,6 +137,9 @@ public:
     [[nodiscard]] const Expression *binary(const Type *type, BinaryOp op, const Expression *lhs, const Expression *rhs) noexcept;
     [[nodiscard]] const Expression *unary(const Type *type, UnaryOp op, const Expression *expression) noexcept;
     [[nodiscard]] IfStmt *if_(const Expression *expr) noexcept;
+    [[nodiscard]] SwitchStmt *switch_(const Expression *expr) noexcept;
+    [[nodiscard]] SwitchCaseStmt *switch_case(const LiteralExpr *expr) noexcept;
+    [[nodiscard]] SwitchDefaultStmt *switch_default() noexcept;
     CommentStmt *comment(ocarina::string_view string) noexcept;
     [[nodiscard]] const ScopeStmt *body() const noexcept;
     [[nodiscard]] ScopeStmt *body() noexcept;
