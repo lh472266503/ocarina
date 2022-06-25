@@ -256,7 +256,7 @@ public:
 class OC_AST_API ForStmt : public Statement {
 private:
     const Expression *_initial{};
-    const Expression *_condition{};
+    const Expression *_count{};
     const Expression *_step{};
     ScopeStmt _body;
 
@@ -264,10 +264,10 @@ private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
-    ForStmt(const Expression *init, const Expression *cond, const Expression *step)
-        : Statement(Tag::FOR), _initial(init), _condition(cond), _step(step) {}
+    ForStmt(const Expression *init, const Expression *count, const Expression *step)
+        : Statement(Tag::FOR), _initial(init), _count(count), _step(step) {}
     [[nodiscard]] auto initial() const noexcept { return _initial; }
-    [[nodiscard]] auto condition() const noexcept { return _condition; }
+    [[nodiscard]] auto count() const noexcept { return _count; }
     [[nodiscard]] auto step() const noexcept { return _step; }
     [[nodiscard]] auto body() const noexcept { return &_body; }
     [[nodiscard]] auto body() noexcept { return &_body; }

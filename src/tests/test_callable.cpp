@@ -28,14 +28,13 @@ Var<int> func(Var<int> a, Var<int> b) {
         a += 1;
         return a < 15;
     };
-//    while_(a < 5, [&] {
-//        a += 1;
-//        $comment(sddsfdfsa)
-//    });
+    //    while_(a < 5, [&] {
+    //        a += 1;
+    //        $comment(sddsfdfsa)
+    //    });
 
-    $while(cond) {
-        $comment(sddsfd-- -- -fsa)
-    };
+    $while(fun()){
+        $comment(sddsfd-- -- -fsa)};
 
     //    $switch(a) {
     //        $case(1) {
@@ -71,15 +70,36 @@ Var<int> func(Var<int> a, Var<int> b) {
 //    };
 //
 //    if_(cond, [&] {
-//        comment("this is comment");
-//        a = 1;
-//    }).elif_(cond, [&] {
-//          a = b;
-//      }).else_([&] {
-//        a = b;
-//    });
+    //        comment("this is comment");
+    //        a = 1;
+    //    }).elif_(cond, [&] {
+    //          a = b;
+    //      }).else_([&] {
+    //        a = b;
+    //    });
 
     return a;
+}
+
+class Te {
+public:
+    Te() {
+        cout << "ctor te" << endl;
+    }
+
+    ~Te() {
+        std::cout << "destructor Te" << endl;
+    }
+};
+
+int count() {
+    cout << "count" << endl;
+    return 3;
+}
+
+int step() {
+    cout << "step" << endl;
+    return 1;
 }
 
 int main(int argc, char *argv[]) {

@@ -80,6 +80,10 @@ LoopStmt *Function::loop() noexcept {
     return _create_statement<LoopStmt>();
 }
 
+ForStmt *Function::for_(const Expression *init, const Expression *count, const Expression *step) noexcept {
+    return _create_statement<ForStmt>(init, count, step);
+}
+
 void Function::continue_() noexcept {
     _create_statement<ContinueStmt>();
 }

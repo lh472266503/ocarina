@@ -166,7 +166,7 @@ public:
     }
 
     template<typename Func>
-    LoopStmtBuilder operator/(Func &&func) noexcept {
+    LoopStmtBuilder &operator/(Func &&func) noexcept {
         Function::current()->with(_loop->body(), std::forward<Func>(func));
         return *this;
     }
@@ -193,5 +193,25 @@ void while_(Condition &&cond, Body &&body) noexcept {
         body();
     };
 }
+
+namespace detail {
+class ForStmtBuilder {
+private:
+    ForStmt *_for_stmt;
+
+public:
+    explicit ForStmtBuilder(ForStmt *for_stmt) noexcept : _for_stmt(for_stmt) {}
+
+    template<typename... Args>
+    static ForStmtBuilder create(Args &&...args) noexcept {
+        return ForStmtBuilder(Function::current()->for_(extract_expression(std::forward<Args>(args))...));
+    }
+
+    template<typename Body>
+    void operator/(Body &&body) noexcept {
+        Function::current()->with(_for_stmt->body(), std::forward<Body>(body));
+    }
+};
+}// namespace detail
 
 }// namespace ocarina
