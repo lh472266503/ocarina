@@ -149,4 +149,8 @@ void default_(Body &&body) noexcept {
     detail::DefaultStmtBuilder() * std::forward<Body>(body);
 }
 
+inline void continue_() noexcept {
+    Function::current()->continue_();
+}
+
 }// namespace ocarina

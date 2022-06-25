@@ -46,17 +46,16 @@ Var<int> func(Var<int> a, Var<int> b) {
         });
     });
 
-//    $if(1) {
-//        $comment(adsfadsf)
-//        a = b;
-//    };
-
-//    $elif(cond) {
-//        a = b;
-//    }
-//    $else {
-//        a = 2;
-//    };
+    $if(1) {
+        $comment(adsfadsf)
+        a = b;
+    }
+    $elif(cond) {
+        a = b;
+    }
+    $else {
+        a = 2;
+    };
 //
 //    if_(cond, [&] {
 //        comment("this is comment");

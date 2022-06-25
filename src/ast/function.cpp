@@ -76,12 +76,12 @@ SwitchDefaultStmt *Function::switch_default() noexcept {
     return _create_statement<SwitchDefaultStmt>();
 }
 
-ContinueStmt *Function::continue_() noexcept {
-    return _create_statement<ContinueStmt>();
+void Function::continue_() noexcept {
+    _create_statement<ContinueStmt>();
 }
 
-BreakStmt *Function::break_() noexcept {
-    return _create_statement<BreakStmt>();
+void Function::break_() noexcept {
+    _create_statement<BreakStmt>();
 }
 
 CommentStmt *Function::comment(ocarina::string_view string) noexcept {
@@ -97,7 +97,12 @@ void Function::assign(const Expression *lhs, const Expression *rhs) noexcept {
 }
 
 uint64_t Function::_compute_hash() const noexcept {
-    return _body.hash();
+    auto ret = _ret->hash();
+    for (const Variable &v : _arguments) {
+        ret = hash64(ret, v.hash());
+    }
+    ret = hash64(ret, _body.hash());
+    return ret;
 }
 
 uint64_t Function::hash() const noexcept {

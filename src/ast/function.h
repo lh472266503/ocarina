@@ -137,9 +137,9 @@ public:
     [[nodiscard]] IfStmt *if_(const Expression *expr) noexcept;
     [[nodiscard]] SwitchStmt *switch_(const Expression *expr) noexcept;
     [[nodiscard]] SwitchCaseStmt *switch_case(const Expression *expr) noexcept;
-    BreakStmt *break_() noexcept;
+    void break_() noexcept;
     [[nodiscard]] SwitchDefaultStmt *switch_default() noexcept;
-    ContinueStmt *continue_() noexcept;
+    void continue_() noexcept;
     CommentStmt *comment(ocarina::string_view string) noexcept;
     [[nodiscard]] const ScopeStmt *body() const noexcept;
     [[nodiscard]] ScopeStmt *body() noexcept;
