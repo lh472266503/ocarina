@@ -203,7 +203,7 @@ public:
     explicit ForStmtBuilder(ForStmt *for_stmt) noexcept : _for_stmt(for_stmt) {}
 
     template<typename... Args>
-    static ForStmtBuilder create(Args &&...args) noexcept {
+    requires(concepts::integral<expr_value_t<Args>> &&...) static ForStmtBuilder create(Args &&...args) noexcept {
         return ForStmtBuilder(Function::current()->for_(extract_expression(std::forward<Args>(args))...));
     }
 
@@ -213,5 +213,9 @@ public:
     }
 };
 }// namespace detail
+
+template<typename Init, typename Count, typename Step, typename Body>
+decltype(auto) for_(Init &&init, Count &&count, Step &&step, Body &&body) {
+}
 
 }// namespace ocarina
