@@ -153,4 +153,29 @@ inline void continue_() noexcept {
     Function::current()->continue_();
 }
 
+namespace detail {
+class LoopStmtBuilder {
+private:
+    LoopStmt *_loop{};
+
+public:
+    explicit LoopStmtBuilder(LoopStmt *loop) noexcept : _loop(loop) {}
+
+    template<typename Expr>
+    static auto create(Expr &&expr) noexcept {
+        return LoopStmtBuilder(Function::current()->loop(extract_expression(std::forward<Expr>(expr))));
+    }
+
+    template<typename Body>
+    void operator*(Body &&body) noexcept {
+        Function::current()->with(_loop->body(), std::forward<Body>(body));
+    }
+};
+}// namespace detail
+
+template<typename Condition, typename Body>
+void loop(Condition &&cond, Body &&body) noexcept {
+    detail::LoopStmtBuilder::create(std::forward<Condition>(cond)) * std::forward<Body>(body);
+}
+
 }// namespace ocarina

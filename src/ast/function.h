@@ -139,6 +139,7 @@ public:
     [[nodiscard]] SwitchCaseStmt *switch_case(const Expression *expr) noexcept;
     void break_() noexcept;
     [[nodiscard]] SwitchDefaultStmt *switch_default() noexcept;
+    [[nodiscard]] LoopStmt *loop(const Expression *condition) noexcept;
     void continue_() noexcept;
     CommentStmt *comment(ocarina::string_view string) noexcept;
     [[nodiscard]] const ScopeStmt *body() const noexcept;

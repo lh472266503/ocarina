@@ -73,4 +73,15 @@ uint64_t SwitchDefaultStmt::_compute_hash() const noexcept {
     return _body.hash();
 }
 
+uint64_t ForStmt::_compute_hash() const noexcept {
+    auto ret = _initial->hash();
+    ret = hash64(ret, _condition->hash());
+    ret = hash64(ret, _step->hash());
+    return hash64(ret, _body.hash());
+}
+
+uint64_t LoopStmt::_compute_hash() const noexcept {
+    return hash64(_condition->hash(), _body.hash());
+}
+
 }// namespace ocarina
