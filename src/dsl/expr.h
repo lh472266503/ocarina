@@ -19,6 +19,15 @@ template<typename T>
 template<typename T>
 [[nodiscard]] inline Var<expr_value_t<T>> def(const Expression *expr) noexcept;// implement in builtin.h
 
+template<typename T>
+class Expr : public Computable<T> {
+public:
+    explicit Expr(const Expression *expression) noexcept
+        : Computable<T>(expression) {}
+
+
+};
+
 namespace detail {
 
 template<typename T>
