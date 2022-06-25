@@ -76,8 +76,8 @@ SwitchDefaultStmt *Function::switch_default() noexcept {
     return _create_statement<SwitchDefaultStmt>();
 }
 
-LoopStmt *Function::loop(const Expression *condition) noexcept {
-    return _create_statement<LoopStmt>(condition);
+LoopStmt *Function::loop() noexcept {
+    return _create_statement<LoopStmt>();
 }
 
 void Function::continue_() noexcept {

@@ -276,16 +276,13 @@ public:
 
 class OC_AST_API LoopStmt : public Statement {
 private:
-    const Expression *_condition{};
     ScopeStmt _body;
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
-    explicit LoopStmt(const Expression *cond)
-        : Statement(Tag::LOOP), _condition(cond) {}
-    [[nodiscard]] auto condition() const noexcept { return _condition; }
+    LoopStmt(): Statement(Tag::LOOP) {}
     [[nodiscard]] auto body() const noexcept { return &_body; }
     [[nodiscard]] auto body() noexcept { return &_body; }
     OC_MAKE_STATEMENT_ACCEPT_VISITOR

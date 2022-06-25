@@ -161,9 +161,8 @@ private:
 public:
     explicit LoopStmtBuilder(LoopStmt *loop) noexcept : _loop(loop) {}
 
-    template<typename Expr>
-    static auto create(Expr &&expr) noexcept {
-        return LoopStmtBuilder(Function::current()->loop(extract_expression(std::forward<Expr>(expr))));
+    static auto create() noexcept {
+        return LoopStmtBuilder(Function::current()->loop());
     }
 
     template<typename Body>
@@ -174,8 +173,19 @@ public:
 }// namespace detail
 
 template<typename Condition, typename Body>
-void loop(Condition &&cond, Body &&body) noexcept {
-    detail::LoopStmtBuilder::create(std::forward<Condition>(cond)) * std::forward<Body>(body);
+void while_(Condition &&cond, Body &&body) noexcept {
+    detail::LoopStmtBuilder::create() * [&]() noexcept {
+        if constexpr (std::is_invocable_v<Condition>) {
+            if_(!cond(), [&] {
+                break_();
+            });
+        } else {
+            if_(!cond, [&] {
+                break_();
+            });
+        }
+        body();
+    };
 }
 
 }// namespace ocarina

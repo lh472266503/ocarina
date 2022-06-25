@@ -57,6 +57,8 @@ void CppCodegen::visit(const CommentStmt *stmt) noexcept {
 }
 
 void CppCodegen::visit(const LoopStmt *stmt) noexcept {
+    _scratch << "while (1) ";
+    stmt->body()->accept(*this);
 }
 void CppCodegen::visit(const ExprStmt *stmt) noexcept {
 }
@@ -84,6 +86,15 @@ void CppCodegen::visit(const AssignStmt *stmt) noexcept {
 void CppCodegen::visit(const ForStmt *stmt) noexcept {
 }
 void CppCodegen::visit(const UnaryExpr *expr) noexcept {
+    switch (expr->op()) {
+        case UnaryOp::POSITIVE: _scratch << "+"; break;
+        case UnaryOp::NEGATIVE: _scratch << "-"; break;
+        case UnaryOp::NOT: _scratch << "!"; break;
+        case UnaryOp::BIT_NOT: _scratch << "~"; break;
+    }
+    _scratch << "(";
+    expr->operand()->accept(*this);
+    _scratch << ")";
 }
 void CppCodegen::visit(const BinaryExpr *expr) noexcept {
     _scratch << "(";

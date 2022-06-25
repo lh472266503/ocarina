@@ -24,38 +24,46 @@ Var<int> func(Var<int> a, Var<int> b) {
 
     Var cond(1);
 
-    $switch(a) {
-        $case(1) {
-            $comment(daf)
-            $break;
-        };
-        $case(2) {
-            $comment(9089)
-        };
-        $default {
-            $comment(default_)
-        };
+    auto fun = [&]() {
+        a += 1;
+        return a < 15;
     };
-
-    switch_(a, [&] {
-        case_(2, [&] {
-            $comment(adsfdsf)
-        });
-        default_([&]{
-            $comment(90890887879)
-        });
+    while_(fun, [&]{
+        $comment(sddsfdfsa)
     });
 
-    $if(1) {
-        $comment(adsfadsf)
-        a = b;
-    }
-    $elif(cond) {
-        a = b;
-    }
-    $else {
-        a = 2;
-    };
+//    $switch(a) {
+//        $case(1) {
+//            $comment(daf)
+//            $break;
+//        };
+//        $case(2) {
+//            $comment(9089)
+//        };
+//        $default {
+//            $comment(default_)
+//        };
+//    };
+//
+//    switch_(a, [&] {
+//        case_(2, [&] {
+//            $comment(adsfdsf)
+//        });
+//        default_([&]{
+//            $comment(90890887879)
+//        });
+//    });
+//
+//    $if(1) {
+//        $comment(adsfadsf)
+//        a = b;
+//    }
+//    $elif(cond) {
+//        a = b;
+//    }
+//    $else {
+//        a = 2;
+//    };
 //
 //    if_(cond, [&] {
 //        comment("this is comment");
