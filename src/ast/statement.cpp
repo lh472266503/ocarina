@@ -74,8 +74,8 @@ uint64_t SwitchDefaultStmt::_compute_hash() const noexcept {
 }
 
 uint64_t ForStmt::_compute_hash() const noexcept {
-    auto ret = _initial->hash();
-    ret = hash64(ret, _count->hash());
+    auto ret = _var->hash();
+    ret = hash64(ret, _condition->hash());
     ret = hash64(ret, _step->hash());
     return hash64(ret, _body.hash());
 }

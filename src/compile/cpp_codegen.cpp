@@ -84,6 +84,14 @@ void CppCodegen::visit(const AssignStmt *stmt) noexcept {
     stmt->rhs()->accept(*this);
 }
 void CppCodegen::visit(const ForStmt *stmt) noexcept {
+    _scratch << "for (;";
+    stmt->condition()->accept(*this);
+    _scratch << "; ";
+    stmt->var()->accept(*this);
+    _scratch << " += ";
+    stmt->step()->accept(*this);
+    _scratch << ")";
+    stmt->body()->accept(*this);
 }
 void CppCodegen::visit(const UnaryExpr *expr) noexcept {
     switch (expr->op()) {

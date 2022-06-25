@@ -22,19 +22,21 @@ using namespace ocarina;
 
 Var<int> func(Var<int> a, Var<int> b) {
 
-    Var cond(1);
-
-    auto fun = [&]() {
-        a += 1;
-        return a < 15;
-    };
+    //    Var cond(1);
+    for_(a, a < b, -1, [&] {
+        $comment(89080)
+    });
+    //    auto fun = [&]() {
+    //        a += 1;
+    //        return a < 15;
+    //    };
     //    while_(a < 5, [&] {
     //        a += 1;
     //        $comment(sddsfdfsa)
     //    });
 
-    $while(fun()){
-        $comment(sddsfd-- -- -fsa)};
+    //    $while(fun()){
+    //        $comment(sddsfd-- -- -fsa)};
 
     //    $switch(a) {
     //        $case(1) {
