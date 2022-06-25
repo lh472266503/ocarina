@@ -18,3 +18,8 @@
 #define $default detail::DefaultStmtBuilder() * [&]() noexcept
 #define $continue continue_()
 
+#define $while(cond) detail::LoopStmtBuilder::create() / [&]() noexcept { \
+    if_(!cond, [&] {                                                      \
+        break_();                                                         \
+    });                                                                   \
+} *[&]() noexcept

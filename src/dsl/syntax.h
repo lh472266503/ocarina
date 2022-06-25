@@ -165,6 +165,12 @@ public:
         return LoopStmtBuilder(Function::current()->loop());
     }
 
+    template<typename Func>
+    LoopStmtBuilder operator/(Func &&func) noexcept {
+        Function::current()->with(_loop->body(), std::forward<Func>(func));
+        return *this;
+    }
+
     template<typename Body>
     void operator*(Body &&body) noexcept {
         Function::current()->with(_loop->body(), std::forward<Body>(body));

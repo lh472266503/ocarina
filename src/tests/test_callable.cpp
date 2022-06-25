@@ -28,20 +28,25 @@ Var<int> func(Var<int> a, Var<int> b) {
         a += 1;
         return a < 15;
     };
-    while_(fun, [&]{
-        $comment(sddsfdfsa)
-    });
+//    while_(a < 5, [&] {
+//        a += 1;
+//        $comment(sddsfdfsa)
+//    });
 
-//    $switch(a) {
-//        $case(1) {
-//            $comment(daf)
-//            $break;
-//        };
-//        $case(2) {
-//            $comment(9089)
-//        };
-//        $default {
-//            $comment(default_)
+    $while(cond) {
+        $comment(sddsfd-- -- -fsa)
+    };
+
+    //    $switch(a) {
+    //        $case(1) {
+    //            $comment(daf)
+    //            $break;
+    //        };
+    //        $case(2) {
+    //            $comment(9089)
+    //        };
+    //        $default {
+    //            $comment(default_)
 //        };
 //    };
 //
