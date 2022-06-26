@@ -32,7 +32,8 @@ public:
         : Computable<T>(expression) {}
 
     template<typename Arg>
-    Expr(Arg &&arg) : Expr(arg.expression()) {}
+    requires concepts::non_pointer<std::remove_cvref_t<Arg>> && concepts::different<Expr<T>, std::remove_cvref_t<Arg>>
+    explicit Expr(Arg &&arg) : Expr(arg.expression()) {}
     Expr(const Expr &) = delete;
     Expr &operator=(const Expr &) = delete;
     Expr &operator=(Expr &&) = delete;

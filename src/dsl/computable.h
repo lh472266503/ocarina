@@ -72,8 +72,10 @@ private:                                                                   \
     const Expression *_expression{nullptr};                                \
                                                                            \
 public:                                                                    \
-    explicit Computable(const Expression *e) noexcept : _expression{e} {}  \
     [[nodiscard]] auto expression() const noexcept { return _expression; } \
+                                                                           \
+protected:                                                                 \
+    explicit Computable(const Expression *e) noexcept : _expression{e} {}  \
     Computable(Computable &&) noexcept = default;                          \
     Computable(const Computable &) noexcept = default;
 
