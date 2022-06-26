@@ -23,7 +23,6 @@ using namespace ocarina;
 template<typename T>
 T func(T a, T b) {
     T ret = (a + b) * b;
-    return ret;
     //    Var cond(1);
     //    for_(a, a < b, -1, [&] {
     //        $comment(89080)
@@ -51,16 +50,28 @@ T func(T a, T b) {
     //            $comment(default_)};
     //    };
     //
-    //    switch_(a, [&] {
-    //        case_(2, [&] {
-    //            $comment(adsfdsf)
-    //        });
-    //        default_([&] {
-    //            $comment(90890887879)
-    //        });
-    //    });
+    switch_(a, [&] {
+        case_(2, [&] {
+            $comment(adsfdsf)
+        });
+        default_([&] {
+            $comment(90890887879)
+        });
+    });
+
+    switch_(a)
+        .case_(2, [&] {
+            $comment(adsfdsf)
+            break_();
+        })
+        .case_(3, [&]{
+            $comment(456747567)
+        })
+        .default_([&]{
+            $comment(-------)
+        });
     //
-//    $if(1) {
+    //    $if(1) {
     //        $comment(adsfadsf)
     //            a = b;
     //    }
@@ -80,10 +91,30 @@ T func(T a, T b) {
     //        a = b;
     //    });
 
-    //    return a;
+    return a;
 }
 
+class Test {
+private:
+    int i{0};
+
+public:
+    using iterator = int;
+    int begin() {
+        return 0;
+    }
+
+    int operator++() {
+        return i++;
+    }
+
+    int end() {
+        return 5;
+    }
+};
+
 int main(int argc, char *argv[]) {
+
     Callable callable = func<Var<int>>;
     fs::path path(argv[0]);
     Context context(path.parent_path());
