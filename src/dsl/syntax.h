@@ -5,6 +5,7 @@
 #pragma once
 
 #include "dsl/var.h"
+#include "dsl/expr.h"
 #include "ast/function.h"
 
 namespace ocarina {
@@ -219,63 +220,72 @@ void while_(Condition &&cond, Body &&body) noexcept {
 }
 
 namespace detail {
+template<typename T = int>
 class ForStmtBuilder {
 private:
+    Var<T> _var;
+    Var<T> _begin;
+    Var<T> _end;
+    Var<T> _step;
     ForStmt *_for_stmt;
 
 public:
     explicit ForStmtBuilder(ForStmt *for_stmt) noexcept : _for_stmt(for_stmt) {}
 
-    template<typename... Args>
-    static ForStmtBuilder create(Args &&...args) noexcept {
-        return ForStmtBuilder(Function::current()->for_(extract_expression(std::forward<Args>(args))...));
+    ForStmtBuilder(const Var<T> &begin, const Var<T> &end, const Var<T> &step)
+        : _begin(begin),
+          _end(end),
+          _step(step) {
+        _var = _begin;
+        _for_stmt = Function::current()->for_(_var.expression(),
+                                              extract_expression(_var < _end),
+                                              _step.expression());
+    }
+
+    static ForStmtBuilder create(Var<T> var, const Expr<bool> &Condition, Var<T> step) noexcept {
+        return ForStmtBuilder(Function::current()->for_(
+            extract_expression(var),
+            extract_expression(Condition),
+            extract_expression(step)));
     }
 
     template<typename Body>
     void operator/(Body &&body) noexcept {
-        Function::current()->with(_for_stmt->body(), std::forward<Body>(body));
+        Function::current()->with(_for_stmt->body(), [&]() noexcept {
+            body(_var);
+        });
     }
 };
 }// namespace detail
 
 template<typename Count>
 requires concepts::integral<expr_value_t<Count>>
-    detail::ForStmtBuilder range(Count &&count)
-noexcept {
-    Var<int> var = 0;
-    Var<int> count_cp = def_expr(std::forward<Count>(count));
-    return detail::ForStmtBuilder::create(var, var < count_cp, 1);
+auto range(Count &&count) noexcept {
+    return detail::ForStmtBuilder<expr_value_t<Count>>(0, def_expr(std::forward<Count>(count)), 1);
+}
+
+template<typename Begin, typename End>
+requires concepts::integral<expr_value_t<Begin>>
+auto range(Begin &&begin, End &&end) noexcept {
+    return detail::ForStmtBuilder<expr_value_t<Begin>>(def_expr(std::forward<Begin>(begin)),
+                                                       def_expr(std::forward<End>(end)),
+                                                       1);
+}
+
+template<typename Begin, typename End, typename Step>
+requires concepts::integral<expr_value_t<Begin>>
+auto range(Begin &&begin, End &&end, Step &&step) noexcept {
+    return detail::ForStmtBuilder<expr_value_t<Begin>>(def_expr(std::forward<Begin>(begin)),
+                                                       def_expr(std::forward<End>(end)),
+                                                       def_expr(std::forward<Step>(step)));
 }
 
 template<typename Count, typename Body>
 requires concepts::integral<expr_value_t<Count>>
 void for_range(Count &&count, Body &&body) noexcept {
-    Var<int> var = 0;
-    Var<int> count_cp = def_expr(std::forward<Count>(count));
-    detail::ForStmtBuilder::create(var, var < count_cp, 1) / [&]() noexcept {
-        body(var);
-    };
+    range(std::forward<Count>(count)) / std::forward<Body>(body);
 }
 
-template<typename Begin, typename End, typename Body>
-requires concepts::all_integral<expr_value_t<Begin>, expr_value_t<End>>
-void for_range(Begin &&begin, End &&end, Body &&body) noexcept {
-    Var<int> var = def_expr(std::forward<Begin>(begin));
-    Var<int> end_cp = def_expr(std::forward<End>(end));
-    detail::ForStmtBuilder::create(var, var < end_cp, 1) / [&]() noexcept {
-        body(var);
-    };
-}
-
-template<typename Begin, typename End, typename Step, typename Body>
-requires concepts::all_integral<expr_value_t<Begin>, expr_value_t<End>, expr_value_t<Step>>
-void for_range(Begin &&begin, End &&end, Step &&step, Body &&body) noexcept {
-    Var<int> var = def_expr(std::forward<Begin>(begin));
-    Var<int> v_step = def_expr(std::forward<Step>(step));
-    Var<int> end_cp = def_expr(std::forward<End>(end));
-    detail::ForStmtBuilder::create(var, var < end_cp, v_step) / [&]() noexcept {
-        body(var);
-    };
-}
+//template<typename ...Args>
 
 }// namespace ocarina

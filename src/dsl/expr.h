@@ -25,19 +25,7 @@ template<typename T>
 template<typename T>
 [[nodiscard]] inline Expr<expr_value_t<T>> def_expr(const Expression *expr) noexcept;
 
-template<typename T>
-class Expr : public detail::Computable<T> {
-public:
-    explicit Expr(const Expression *expression) noexcept
-        : detail::Computable<T>(expression) {}
 
-    template<typename Arg>
-    requires concepts::non_pointer<std::remove_cvref_t<Arg>> && concepts::different<Expr<T>, std::remove_cvref_t<Arg>>
-    explicit Expr(Arg &&arg) : Expr(arg.expression()) {}
-    Expr(const Expr &) = delete;
-    Expr &operator=(const Expr &) = delete;
-    Expr &operator=(Expr &&) = delete;
-};
 
 namespace detail {
 
@@ -51,5 +39,19 @@ template<typename T>
 }
 
 }// namespace detail
+
+template<typename T>
+class Expr : public detail::Computable<T> {
+public:
+    explicit Expr(const Expression *expression) noexcept
+    : detail::Computable<T>(expression) {}
+    Expr() = default;
+    template<typename Arg>
+    requires concepts::non_pointer<std::remove_cvref_t<Arg>> && concepts::different<Expr<T>, std::remove_cvref_t<Arg>>
+    explicit Expr(Arg &&arg) : Expr(detail::extract_expression(std::forward<Arg>(arg))) {}
+    Expr(const Expr &) = delete;
+    Expr &operator=(const Expr &) = delete;
+    Expr &operator=(Expr &&) = delete;
+};
 
 }// namespace ocarina

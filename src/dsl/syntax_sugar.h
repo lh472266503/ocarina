@@ -24,3 +24,5 @@
         break_();                                                                    \
     });                                                                              \
 } *[&]() noexcept
+
+#define $for(v, ...) ::ocarina::range(__VA_ARGS__) / [&](auto v) noexcept

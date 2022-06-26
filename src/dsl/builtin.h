@@ -23,7 +23,11 @@ template<typename T>
 
 template<typename T>
 [[nodiscard]] inline Expr<expr_value_t<T>> def_expr(T &&x) noexcept {
-    return Expr<expr_value_t<T>>(std::forward<T>(x));
+    if constexpr (is_expr_v<std::remove_cvref_t<T>>) {
+        return def_expr<T>(x.expression());
+    } else {
+        return Expr<expr_value_t<T>>(std::forward<T>(x));
+    }
 }
 
 template<typename T>

@@ -22,11 +22,15 @@ using namespace ocarina;
 
 template<typename T>
 T func(T a, T b) {
-//    T ret = (a + b) * b;
+    //    T ret = (a + b) * b;
 
-    for_range(a,[&](auto x) {
-        a += x;
-    });
+    //    for_range(a,[&](auto x) {
+    //    $comment(---)
+    //    });
+
+    ::ocarina::range(a, 9 + b, 3 + a + b) / [&](auto v) noexcept {
+        v += 1;
+    };
 
     return a;
     //    Var cond(1);

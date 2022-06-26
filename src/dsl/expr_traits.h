@@ -146,7 +146,7 @@ template<typename T>
 struct is_expr<Expr<T>> : std::true_type {};
 
 template<typename T>
-using is_expr_v = typename is_expr<T>::value;
+constexpr auto is_expr_v = is_expr<T>::value;
 
 template<typename T>
 using is_dsl = typename detail::is_dsl_impl<std::remove_cvref_t<T>>::type;
