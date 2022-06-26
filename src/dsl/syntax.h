@@ -71,29 +71,6 @@ inline void comment(ocarina::string_view str) noexcept {
 
 namespace detail {
 
-
-class SwitchStmtBuilder {
-private:
-    SwitchStmt *_switch_stmt{nullptr};
-
-public:
-    explicit SwitchStmtBuilder(SwitchStmt *stmt)
-        : _switch_stmt(stmt) {}
-
-    template<typename T>
-    requires concepts::switch_able<expr_value_t<T>>
-    [[nodiscard]] static SwitchStmtBuilder create(T &&t) noexcept {
-        SwitchStmtBuilder builder(Function::current()->switch_(t.expression()));
-        return builder;
-    }
-
-    template<typename Body>
-    SwitchStmtBuilder &operator*(Body &&func) noexcept {
-        Function::current()->with(_switch_stmt->body(), std::forward<Body>(func));
-        return *this;
-    }
-};
-
 class CaseStmtBuilder {
 private:
     SwitchCaseStmt *_case_stmt{nullptr};
@@ -128,11 +105,53 @@ public:
     }
 };
 
+class SwitchStmtBuilder {
+private:
+    SwitchStmt *_switch_stmt{nullptr};
+
+public:
+    explicit SwitchStmtBuilder(SwitchStmt *stmt)
+        : _switch_stmt(stmt) {}
+
+    template<typename T>
+    requires concepts::switch_able<expr_value_t<T>>
+    [[nodiscard]] static SwitchStmtBuilder create(T &&t) noexcept {
+        SwitchStmtBuilder builder(Function::current()->switch_(t.expression()));
+        return builder;
+    }
+
+    template<typename CaseExpr, typename Body>
+    SwitchStmtBuilder &case_(CaseExpr &&case_expr, Body &&body) noexcept {
+        Function::current()->with(_switch_stmt->body(), [&] {
+            CaseStmtBuilder::create(std::forward<CaseExpr>(case_expr)) * std::forward<Body>(body);
+        });
+        return *this;
+    }
+
+    template<typename Body>
+    void default_(Body &&body) noexcept {
+        Function::current()->with(_switch_stmt->body(), [&] {
+            DefaultStmtBuilder() * std::forward<Body>(body);
+        });
+    }
+
+    template<typename Body>
+    SwitchStmtBuilder &operator*(Body &&func) &&noexcept {
+        Function::current()->with(_switch_stmt->body(), std::forward<Body>(func));
+        return *this;
+    }
+};
+
 }// namespace detail
 
 template<typename T, typename Body>
 void switch_(T &&t, Body &&body) noexcept {
     detail::SwitchStmtBuilder::create(std::forward<T>(t)) * std::forward<Body>(body);
+}
+
+template<typename T>
+decltype(auto) switch_(T &&t) noexcept {
+    return detail::SwitchStmtBuilder::create(std::forward<T>(t));
 }
 
 template<typename T, typename Body>
