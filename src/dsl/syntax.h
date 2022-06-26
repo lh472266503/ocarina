@@ -286,6 +286,23 @@ void for_range(Count &&count, Body &&body) noexcept {
     range(std::forward<Count>(count)) / std::forward<Body>(body);
 }
 
+template<typename Begin, typename End, typename Body>
+requires concepts::integral<expr_value_t<Begin>>
+void for_range(Begin &&begin, End &&end, Body &&body) noexcept {
+    range(std::forward<Begin>(begin),
+          std::forward<End>(end)) /
+        std::forward<Body>(body);
+}
+
+template<typename Begin, typename End, typename Step, typename Body>
+requires concepts::integral<expr_value_t<Begin>>
+void for_range(Begin &&begin, End &&end, Step &&step, Body &&body) noexcept {
+    range(std::forward<Begin>(begin),
+          std::forward<End>(end),
+          std::forward<Step>(step)) /
+        std::forward<Body>(body);
+}
+
 //template<typename ...Args>
 
 }// namespace ocarina
