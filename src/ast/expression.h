@@ -90,15 +90,14 @@ public:
 
 class UnaryExpr : public Expression {
 private:
-    const Expression * _operand;
+    const Expression *_operand;
     UnaryOp _op;
 
 private:
-    [[nodiscard]] uint64_t _compute_hash() const noexcept override {
-        return hash64(_op, _operand->hash());
-    }
+    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+
 public:
-    UnaryExpr(const Type *type, UnaryOp op, const Expression * expression)
+    UnaryExpr(const Type *type, UnaryOp op, const Expression *expression)
         : Expression(Tag::UNARY, type), _op(op), _operand(expression) {}
     [[nodiscard]] auto operand() const noexcept { return _operand; }
     [[nodiscard]] auto op() const noexcept { return _op; }
@@ -107,18 +106,18 @@ public:
 
 class BinaryExpr : public Expression {
 private:
-    const Expression * _lhs;
-    const Expression * _rhs;
+    const Expression *_lhs;
+    const Expression *_rhs;
     BinaryOp _op;
 
+private:
+    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+
 public:
-    BinaryExpr(const Type *type, BinaryOp op, const Expression * lhs, const Expression * rhs) noexcept
+    BinaryExpr(const Type *type, BinaryOp op, const Expression *lhs, const Expression *rhs) noexcept
         : Expression{Tag::BINARY, type}, _lhs{lhs}, _rhs{rhs}, _op{op} {
         _lhs->mark(Usage::READ);
         _rhs->mark(Usage::READ);
-    }
-    [[nodiscard]] uint64_t _compute_hash() const noexcept override {
-        return 0;
     }
     [[nodiscard]] auto lhs() const noexcept { return _lhs; }
     [[nodiscard]] auto rhs() const noexcept { return _rhs; }
@@ -128,18 +127,21 @@ public:
 
 class AccessExpr : public Expression {
 private:
-    const Expression * _range;
-    const Expression * _index;
+    const Expression *_range;
+    const Expression *_index;
+
+private:
+    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
-    AccessExpr(const Type *type, const Expression * range, const Expression * index)
+    AccessExpr(const Type *type, const Expression *range, const Expression *index)
         : Expression(Tag::ACCESS, type), _range(range), _index(index) {
         _range->mark(Usage::READ);
         _index->mark(Usage::READ);
     }
 
-    [[nodiscard]] const Expression * range() const noexcept { return _range; }
-    [[nodiscard]] const Expression * index() const noexcept { return _index; }
+    [[nodiscard]] const Expression *range() const noexcept { return _range; }
+    [[nodiscard]] const Expression *index() const noexcept { return _index; }
     OC_MAKE_EXPRESSION_ACCEPT_VISITOR
 };
 
@@ -164,10 +166,10 @@ class RefExpr : public Expression {
 private:
     Variable _variable;
 
-protected:
+private:
     void _mark(Usage usage) const noexcept override;
     uint64_t _compute_hash() const noexcept override {
-        return hash64(_variable.hash());
+        return _variable.hash();
     }
 
 public:
@@ -177,28 +179,26 @@ public:
     OC_MAKE_EXPRESSION_ACCEPT_VISITOR
 };
 
-
-
 class CastExpr : public Expression {
 private:
     CastOp _cast_op;
-    const Expression * _expression;
+    const Expression *_expression;
 
-protected:
+private:
     void _mark(Usage) const noexcept override {}
     uint64_t _compute_hash() const noexcept override {
         return hash64(_cast_op, _expression->hash());
     }
 
 public:
-    CastExpr(const Type *type, CastOp op, const Expression * expression) noexcept
+    CastExpr(const Type *type, CastOp op, const Expression *expression) noexcept
         : Expression(Tag::CAST, type), _cast_op(op), _expression(expression) {
         _expression->mark(Usage::READ);
     }
     [[nodiscard]] CastOp cast_op() const noexcept {
         return _cast_op;
     }
-    [[nodiscard]] const Expression * expression() const noexcept {
+    [[nodiscard]] const Expression *expression() const noexcept {
         return _expression;
     }
     OC_MAKE_EXPRESSION_ACCEPT_VISITOR

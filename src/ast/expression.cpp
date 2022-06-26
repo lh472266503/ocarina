@@ -24,4 +24,17 @@ void RefExpr::_mark(Usage usage) const noexcept {
 uint64_t LiteralExpr::_compute_hash() const noexcept {
     return ocarina::visit([&](auto &&arg) { return hash64(std::forward<decltype(arg)>(arg)); }, _value);
 }
+uint64_t AccessExpr::_compute_hash() const noexcept {
+    return hash64(_index->hash(), _range->hash());
+}
+uint64_t UnaryExpr::_compute_hash() const noexcept {
+    return hash64(_op, _operand->hash());
+}
+
+uint64_t BinaryExpr::_compute_hash() const noexcept {
+    auto ret = _lhs->hash();
+    ret = hash64(_op, ret);
+    ret = hash64(ret, _rhs->hash());
+    return ret;
+}
 }// namespace ocarina
