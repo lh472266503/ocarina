@@ -16,9 +16,6 @@ template<typename T>
 struct Var;
 
 template<typename T>
-struct Computable;
-
-template<typename T>
 struct Expr;
 
 namespace detail {
@@ -67,15 +64,6 @@ struct prototype_to_var<const T &> {
 template<typename T>
 using prototype_to_var_t = typename prototype_to_var<T>::type;
 
-template<typename T>
-struct prototype_to_callable_invocation {
-    using type = Computable<T>;
-};
-
-template<typename T>
-struct prototype_to_callable_invocation<const T &> {
-    using type = Computable<T>;
-};
 
 template<typename T>
 struct expr_value_impl {
@@ -85,11 +73,6 @@ struct expr_value_impl {
 template<>
 struct expr_value_impl<void> {
     using type = void;
-};
-
-template<typename T>
-struct expr_value_impl<Computable<T>> {
-    using type = T;
 };
 
 template<typename T>
@@ -138,9 +121,6 @@ namespace detail {
 
 template<typename T>
 struct is_dsl_impl : std::false_type {};
-
-template<typename T>
-struct is_dsl_impl<Computable<T>> : std::true_type {};
 
 template<typename T>
 struct is_dsl_impl<Expr<T>> : std::true_type {};

@@ -259,7 +259,7 @@ template<typename Begin, typename End, typename Body>
 requires concepts::all_integral<expr_value_t<Begin>, expr_value_t<End>>
 void for_range(Begin &&begin, End &&end, Body &&body) noexcept {
     Var<int> var = def_expr(std::forward<Begin>(begin));
-    detail::ForStmtBuilder::create(var, var < std::forward<End>(end), 1) / [&]() noexcept {
+    detail::ForStmtBuilder::create(var, var < def(std::forward<End>(end)), 1) / [&]() noexcept {
         body(var);
     };
 }
@@ -268,7 +268,8 @@ template<typename Begin, typename End, typename Step, typename Body>
 requires concepts::all_integral<expr_value_t<Begin>, expr_value_t<End>, expr_value_t<Step>>
 void for_range(Begin &&begin, End &&end, Step &&step, Body &&body) noexcept {
     Var<int> var = def_expr(std::forward<Begin>(begin));
-    detail::ForStmtBuilder::create(var, var < std::forward<End>(end), std::forward<Step>(step)) / [&]() noexcept {
+    Var<int> v_step = def_expr(std::forward<Step>(step));
+    detail::ForStmtBuilder::create(var, var < def(std::forward<End>(end)), v_step) / [&]() noexcept {
         body(var);
     };
 }
