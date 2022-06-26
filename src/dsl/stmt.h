@@ -16,8 +16,8 @@ inline void assign(Lhs &&lhs, Rhs &&rhs) noexcept {
         Function::current()->assign(
             detail::extract_expression(std::forward<Lhs>(lhs)),
             detail::extract_expression(std::forward<Rhs>(rhs)));
-    } else {
-
+    } else if constexpr (std::is_pointer_v<std::remove_cvref_t<Rhs>>) {
+        Function::current()->assign(detail::extract_expression(std::forward<Lhs>(lhs)), rhs);
     }
 }
 

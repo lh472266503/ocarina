@@ -32,15 +32,14 @@ T func(T a, T b) {
 //    ::ocarina::range(a, 9 + b, 3 + a + b) / [&](auto v) noexcept {
 //        v += 1;
 //    };
+    Var<float> f = a.cast<float>();
+    return a + f;
 
-//    $for(v, b, 9) {
-//        a += v;
-//    };
-    return a * 5.1f;
+    $for(v, b, 9) {
+        a += v;
+    };
+//    return a * 5.1f;
     //    Var cond(1);
-    //    for_(a, a < b, -1, [&] {
-    //        $comment(89080)
-    //    });
     //    auto fun = [&]() {
     //        a += 1;
     //        return a < 15;
@@ -64,14 +63,14 @@ T func(T a, T b) {
     //            $comment(default_)};
     //    };
     //
-//    switch_(a, [&] {
-//        case_(2, [&] {
-//            $comment(adsfdsf)
-//        });
-//        default_([&] {
-//            $comment(90890887879)
-//        });
-//    });
+    switch_(a, [&] {
+        case_(2, [&] {
+            $comment(adsfdsf)
+        });
+        default_([&] {
+            $comment(90890887879)
+        });
+    });
 //
 //    switch_(a)
 //        .case_(2, [&] {
@@ -85,16 +84,16 @@ T func(T a, T b) {
 //            $comment(-------)
 //        });
     //
-    //    $if(1) {
-    //        $comment(adsfadsf)
-    //            a = b;
-    //    }
-    //    $elif(cond) {
-    //        a = b;
-    //    }
-    //    $else {
-    //        a = 2;
-    //    };
+        $if(1) {
+            $comment(adsfadsf)
+                a = b;
+        }
+        $elif(a > b) {
+            a = b;
+        }
+        $else {
+            a = 2;
+        };
     //
     //    if_(cond, [&] {
     //        comment("this is comment");

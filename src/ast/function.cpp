@@ -60,6 +60,10 @@ const UnaryExpr *Function::unary(const Type *type, UnaryOp op, const Expression 
     return _create_expression<UnaryExpr>(type, op, expression);
 }
 
+const CastExpr *Function::cast(const Type *type, CastOp op, const Expression *expression) noexcept {
+    return _create_expression<CastExpr>(type, op, expression);
+}
+
 IfStmt *Function::if_(const Expression *expr) noexcept {
     return _create_statement<IfStmt>(expr);
 }

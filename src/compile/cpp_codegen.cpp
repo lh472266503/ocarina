@@ -147,6 +147,15 @@ void CppCodegen::visit(const ConstantExpr *expr) noexcept {
 void CppCodegen::visit(const CallExpr *expr) noexcept {
 }
 void CppCodegen::visit(const CastExpr *expr) noexcept {
+    switch (expr->cast_op()) {
+        case CastOp::STATIC: _scratch << "static_cast<";
+            break;
+        case CastOp::BITWISE: break;
+    }
+    _emit_type_name(expr->type());
+    _scratch << ">(";
+    expr->expression()->accept(*this);
+    _scratch << ")";
 }
 void CppCodegen::visit(const Type *type) noexcept {
 }

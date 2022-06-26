@@ -13,17 +13,7 @@ namespace ocarina {
 
 struct Expression;
 
-template<typename T>
-[[nodiscard]] inline Var<expr_value_t<T>> def(T &&x) noexcept;// implement in builtin.h
 
-template<typename T>
-[[nodiscard]] inline Var<expr_value_t<T>> def(const Expression *expr) noexcept;// implement in builtin.h
-
-template<typename T>
-[[nodiscard]] inline Expr<expr_value_t<T>> def_expr(T &&x) noexcept;
-
-template<typename T>
-[[nodiscard]] inline Expr<expr_value_t<T>> def_expr(const Expression *expr) noexcept;
 
 namespace detail {
 

@@ -12,8 +12,6 @@
 
 namespace ocarina {
 
-template<typename Lhs, typename Rhs>
-inline void assign(Lhs &&lhs, Rhs &&rhs) noexcept;// implement in stmt.h
 
 template<typename T>
 struct Var : public detail::Computable<T> {

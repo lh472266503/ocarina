@@ -8,15 +8,30 @@
 #include "core/concepts.h"
 #include "core/basic_traits.h"
 #include "expr_traits.h"
+#include "ast/function.h"
 
 namespace ocarina {
+
+template<typename Lhs, typename Rhs>
+inline void assign(Lhs &&lhs, Rhs &&rhs) noexcept;// implement in stmt.h
+
+template<typename T>
+[[nodiscard]] inline Var<expr_value_t<T>> def(T &&x) noexcept;// implement in builtin.h
+
+template<typename T>
+[[nodiscard]] inline Var<expr_value_t<T>> def(const Expression *expr) noexcept;// implement in builtin.h
+
+template<typename T>
+[[nodiscard]] inline Expr<expr_value_t<T>> def_expr(T &&x) noexcept;
+
+template<typename T>
+[[nodiscard]] inline Expr<expr_value_t<T>> def_expr(const Expression *expr) noexcept;
 
 class Expression;
 namespace detail {
 
 template<typename T>
 struct EnableSubscriptAccess {
-
 };
 
 template<typename T>
@@ -27,8 +42,11 @@ struct EnableGetMemberByIndex {
 template<typename T>
 struct EnableStaticCast {
     template<class Dest>
-    [[nodiscard]] auto cast() const noexcept {
-
+    [[nodiscard]] Var<Dest> cast() const noexcept {
+        Var<Dest> ret;
+        auto expr = Function::current()->cast(Type::of<Dest>(), CastOp::STATIC, static_cast<const T *>(this)->expression());
+        assign(ret, expr);
+        return ret;
     }
 };
 
@@ -51,8 +69,8 @@ protected:                                                                 \
 
 template<typename T>
 struct Computable
-    : detail::EnableBitwiseCast<T>,
-      detail::EnableStaticCast<T> {
+    : detail::EnableBitwiseCast<Computable<T>>,
+      detail::EnableStaticCast<Computable<T>> {
     static_assert(is_scalar_v<T>);
     OC_COMPUTABLE_COMMON(T)
 };
