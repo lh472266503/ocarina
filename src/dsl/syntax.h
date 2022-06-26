@@ -224,7 +224,6 @@ template<typename T = int>
 class ForStmtBuilder {
 private:
     Var<T> _var;
-    Var<T> _begin;
     Var<T> _end;
     Var<T> _step;
     ForStmt *_for_stmt;
@@ -233,10 +232,9 @@ public:
     explicit ForStmtBuilder(ForStmt *for_stmt) noexcept : _for_stmt(for_stmt) {}
 
     ForStmtBuilder(const Var<T> &begin, const Var<T> &end, const Var<T> &step)
-        : _begin(begin),
+        : _var(begin),
           _end(end),
           _step(step) {
-        _var = _begin;
         _for_stmt = Function::current()->for_(_var.expression(),
                                               extract_expression(_var < _end),
                                               _step.expression());
@@ -302,7 +300,5 @@ void for_range(Begin &&begin, End &&end, Step &&step, Body &&body) noexcept {
           std::forward<Step>(step)) /
         std::forward<Body>(body);
 }
-
-//template<typename ...Args>
 
 }// namespace ocarina

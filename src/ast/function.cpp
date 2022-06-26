@@ -30,20 +30,20 @@ ScopeStmt *Function::body() noexcept {
 }
 
 const Expression *Function::argument(const Type *type) noexcept {
-    Variable variable(type, Variable::Tag::LOCAL, next_variable_uid());
+    Variable variable(type, Variable::Tag::LOCAL, _next_variable_uid());
     _arguments.push_back(variable);
     return _ref(variable);
 }
 
 const Expression *Function::reference_argument(const Type *type) noexcept {
-    Variable variable(type, Variable::Tag::REFERENCE, next_variable_uid());
+    Variable variable(type, Variable::Tag::REFERENCE, _next_variable_uid());
     _arguments.push_back(variable);
     return _ref(variable);
 }
 
 const Expression *Function::local(const Type *type) noexcept {
     auto ret = _create_expression<RefExpr>(Variable(type, Variable::Tag::LOCAL,
-                                                    next_variable_uid()));
+                                                    _next_variable_uid()));
     _scope_stack.back()->add_var(ret->variable());
     return ret;
 }

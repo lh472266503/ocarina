@@ -49,6 +49,11 @@ private:
         _function_stack().pop_back();
     }
 
+    [[nodiscard]] uint _next_variable_uid() noexcept {
+        auto ret = _variable_usages.size();
+        _variable_usages.push_back(Usage::NONE);
+        return ret;
+    }
     template<typename Func>
     static auto _define(Function::Tag tag, Func &&func) noexcept {
         auto ret = ocarina::make_unique<Function>(tag);
@@ -110,11 +115,6 @@ public:
     decltype(auto) with(ScopeStmt *scope, Func&& func) noexcept {
         ScopeGuard guard(_scope_stack, scope);
         return func();
-    }
-    [[nodiscard]] uint next_variable_uid() noexcept {
-        auto ret = _variable_usages.size();
-        _variable_usages.push_back(Usage::NONE);
-        return ret;
     }
 
     void mark_variable_usage(uint uid, Usage usage) noexcept {
