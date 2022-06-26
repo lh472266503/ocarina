@@ -24,7 +24,7 @@ template<typename T>
 T func(T a, T b) {
 //    T ret = (a + b) * b;
 
-    for_range(a, b - a, b,[&](auto x) {
+    for_range(a,[&](auto x) {
         a += x;
     });
 

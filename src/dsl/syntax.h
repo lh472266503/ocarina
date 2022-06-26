@@ -243,14 +243,16 @@ requires concepts::integral<expr_value_t<Count>>
     detail::ForStmtBuilder range(Count &&count)
 noexcept {
     Var<int> var = 0;
-    return detail::ForStmtBuilder::create(var, var < std::forward<Count>(count), 1);
+    Var<int> count_cp = def_expr(std::forward<Count>(count));
+    return detail::ForStmtBuilder::create(var, var < count_cp, 1);
 }
 
 template<typename Count, typename Body>
 requires concepts::integral<expr_value_t<Count>>
 void for_range(Count &&count, Body &&body) noexcept {
     Var<int> var = 0;
-    detail::ForStmtBuilder::create(var, var < std::forward<Count>(count), 1) / [&]() noexcept {
+    Var<int> count_cp = def_expr(std::forward<Count>(count));
+    detail::ForStmtBuilder::create(var, var < count_cp, 1) / [&]() noexcept {
         body(var);
     };
 }
@@ -259,7 +261,8 @@ template<typename Begin, typename End, typename Body>
 requires concepts::all_integral<expr_value_t<Begin>, expr_value_t<End>>
 void for_range(Begin &&begin, End &&end, Body &&body) noexcept {
     Var<int> var = def_expr(std::forward<Begin>(begin));
-    detail::ForStmtBuilder::create(var, var < def(std::forward<End>(end)), 1) / [&]() noexcept {
+    Var<int> end_cp = def_expr(std::forward<End>(end));
+    detail::ForStmtBuilder::create(var, var < end_cp, 1) / [&]() noexcept {
         body(var);
     };
 }
@@ -269,7 +272,8 @@ requires concepts::all_integral<expr_value_t<Begin>, expr_value_t<End>, expr_val
 void for_range(Begin &&begin, End &&end, Step &&step, Body &&body) noexcept {
     Var<int> var = def_expr(std::forward<Begin>(begin));
     Var<int> v_step = def_expr(std::forward<Step>(step));
-    detail::ForStmtBuilder::create(var, var < def(std::forward<End>(end)), v_step) / [&]() noexcept {
+    Var<int> end_cp = def_expr(std::forward<End>(end));
+    detail::ForStmtBuilder::create(var, var < end_cp, v_step) / [&]() noexcept {
         body(var);
     };
 }
