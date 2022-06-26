@@ -18,6 +18,9 @@ struct Var;
 template<typename T>
 struct Computable;
 
+template<typename T>
+struct Expr;
+
 namespace detail {
 
 /// var
@@ -90,6 +93,11 @@ struct expr_value_impl<Computable<T>> {
 };
 
 template<typename T>
+struct expr_value_impl<Expr<T>> {
+    using type = T;
+};
+
+template<typename T>
 struct expr_value_impl<Var<T>> {
     using type = T;
 };
@@ -133,6 +141,9 @@ struct is_dsl_impl : std::false_type {};
 
 template<typename T>
 struct is_dsl_impl<Computable<T>> : std::true_type {};
+
+template<typename T>
+struct is_dsl_impl<Expr<T>> : std::true_type {};
 
 template<typename T>
 struct is_dsl_impl<Var<T>> : std::true_type {};

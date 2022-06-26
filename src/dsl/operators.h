@@ -44,12 +44,13 @@ OC_MAKE_DSL_UNARY_OPERATOR(~, BIT_NOT)
             decltype(std::declval<ocarina::expr_value_t<Lhs>>() op                      \
                          std::declval<ocarina::expr_value_t<Rhs>>())>;                  \
         using Ret = std::conditional_t<is_bool_lhs && is_logic_op, bool, NormalRet>;    \
-        return def<Ret>(ocarina::Function::current()->binary(                           \
+        return def_expr<Ret>(ocarina::Function::current()->binary(                      \
             ocarina::Type::of<Ret>(),                                                   \
             ocarina::BinaryOp::tag,                                                     \
             ocarina::detail::extract_expression(std::forward<Lhs>(lhs)),                \
             ocarina::detail::extract_expression(std::forward<Rhs>(rhs))));              \
     }
+
 OC_MAKE_DSL_BINARY_OPERATOR(+, ADD)
 OC_MAKE_DSL_BINARY_OPERATOR(-, SUB)
 OC_MAKE_DSL_BINARY_OPERATOR(*, MUL)

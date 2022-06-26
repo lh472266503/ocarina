@@ -25,7 +25,9 @@ public:
     explicit Expr(const Expression *expression) noexcept
         : Computable<T>(expression) {}
 
-
+    Expr(const Expr &) = delete;
+    Expr &operator=(const Expr &) = delete;
+    Expr &operator=(Expr &&) = delete;
 };
 
 namespace detail {
