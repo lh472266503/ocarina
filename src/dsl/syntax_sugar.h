@@ -6,20 +6,21 @@
 
 #include "syntax.h"
 
-#define $if(...) detail::IfStmtBuilder::create(__VA_ARGS__) / [&]() noexcept
+#define $if(...) ::ocarina::detail::IfStmtBuilder::create(__VA_ARGS__) / [&]() noexcept
 #define $else % [&]() noexcept
 #define $elif(...) *(__VA_ARGS__) / [&]() noexcept
 
-#define $comment(...) comment(#__VA_ARGS__);
+#define $comment(...) ::ocarina::comment(#__VA_ARGS__);
 
-#define $switch(...) detail::SwitchStmtBuilder::create(__VA_ARGS__) * [&]() noexcept
-#define $case(...) detail::CaseStmtBuilder::create(__VA_ARGS__) * [&]() noexcept
-#define $break break_()
-#define $default detail::DefaultStmtBuilder() * [&]() noexcept
-#define $continue continue_()
+#define $switch(...) ::ocarina::detail::SwitchStmtBuilder::create(__VA_ARGS__) *[&]() noexcept
+#define $case(...) ::ocarina::detail::CaseStmtBuilder::create(__VA_ARGS__) *[&]() noexcept
+#define $break ::ocarina::break_()
+#define $default ::ocarina::detail::DefaultStmtBuilder() *[&]() noexcept
+#define $continue ::ocarina::continue_()
 
-#define $while(cond) detail::LoopStmtBuilder::create() / [&]() noexcept { \
-    if_(!cond, [&] {                                                      \
-        break_();                                                         \
-    });                                                                   \
+#define $loop ::ocarina::detail::LoopStmtBuilder::create() *[&]() noexcept
+#define $while(cond) ::ocarina::detail::LoopStmtBuilder::create() / [&]() noexcept { \
+    if_(!cond, [&] {                                                                 \
+        break_();                                                                    \
+    });                                                                              \
 } *[&]() noexcept

@@ -178,6 +178,11 @@ public:
 };
 }// namespace detail
 
+template<typename Body>
+void loop(Body &&body) noexcept {
+    detail::LoopStmtBuilder::create() * std::forward<Body>(body);
+}
+
 template<typename Condition, typename Body>
 void while_(Condition &&cond, Body &&body) noexcept {
     detail::LoopStmtBuilder::create() * [&]() noexcept {

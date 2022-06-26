@@ -20,12 +20,14 @@ using std::cout;
 using std::endl;
 using namespace ocarina;
 
-Var<int> func(Var<int> a, Var<int> b) {
-
+template<typename T>
+T func(T a, T b) {
+    T ret = (a + b) * b;
+    return ret;
     //    Var cond(1);
-    for_(a, a < b, -1, [&] {
-        $comment(89080)
-    });
+    //    for_(a, a < b, -1, [&] {
+    //        $comment(89080)
+    //    });
     //    auto fun = [&]() {
     //        a += 1;
     //        return a < 15;
@@ -34,44 +36,42 @@ Var<int> func(Var<int> a, Var<int> b) {
     //        a += 1;
     //        $comment(sddsfdfsa)
     //    });
-
+    //
     //    $while(fun()){
     //        $comment(sddsfd-- -- -fsa)};
-
+    //
     //    $switch(a) {
     //        $case(1) {
     //            $comment(daf)
-    //            $break;
+    //                $break;
     //        };
-    //        $case(2) {
-    //            $comment(9089)
-    //        };
-    //        $default {
-    //            $comment(default_)
-//        };
-//    };
-//
-//    switch_(a, [&] {
-//        case_(2, [&] {
-//            $comment(adsfdsf)
-//        });
-//        default_([&]{
-//            $comment(90890887879)
-//        });
-//    });
-//
+    //        $case(2){
+    //            $comment(9089)};
+    //        $default{
+    //            $comment(default_)};
+    //    };
+    //
+    //    switch_(a, [&] {
+    //        case_(2, [&] {
+    //            $comment(adsfdsf)
+    //        });
+    //        default_([&] {
+    //            $comment(90890887879)
+    //        });
+    //    });
+    //
 //    $if(1) {
-//        $comment(adsfadsf)
-//        a = b;
-//    }
-//    $elif(cond) {
-//        a = b;
-//    }
-//    $else {
-//        a = 2;
-//    };
-//
-//    if_(cond, [&] {
+    //        $comment(adsfadsf)
+    //            a = b;
+    //    }
+    //    $elif(cond) {
+    //        a = b;
+    //    }
+    //    $else {
+    //        a = 2;
+    //    };
+    //
+    //    if_(cond, [&] {
     //        comment("this is comment");
     //        a = 1;
     //    }).elif_(cond, [&] {
@@ -80,32 +80,11 @@ Var<int> func(Var<int> a, Var<int> b) {
     //        a = b;
     //    });
 
-    return a;
-}
-
-class Te {
-public:
-    Te() {
-        cout << "ctor te" << endl;
-    }
-
-    ~Te() {
-        std::cout << "destructor Te" << endl;
-    }
-};
-
-int count() {
-    cout << "count" << endl;
-    return 3;
-}
-
-int step() {
-    cout << "step" << endl;
-    return 1;
+    //    return a;
 }
 
 int main(int argc, char *argv[]) {
-    Callable callable = func;
+    Callable callable = func<Var<int>>;
     fs::path path(argv[0]);
     Context context(path.parent_path());
 
