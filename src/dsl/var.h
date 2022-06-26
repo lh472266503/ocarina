@@ -16,11 +16,11 @@ template<typename Lhs, typename Rhs>
 inline void assign(Lhs &&lhs, Rhs &&rhs) noexcept;// implement in stmt.h
 
 template<typename T>
-struct Var : public Computable<T> {
+struct Var : public detail::Computable<T> {
     static_assert(std::is_trivially_destructible_v<T>);
 
-    explicit Var(const Expression * expression) noexcept
-        : Computable<T>(expression) {}
+    explicit Var(const Expression *expression) noexcept
+        : detail::Computable<T>(expression) {}
 
     Var() noexcept : Var(Function::current()->local(Type::of<T>())) {}
 

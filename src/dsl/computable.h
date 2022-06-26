@@ -65,8 +65,6 @@ struct EnableBitwiseCast {
     //    }
 };
 
-}// namespace detail
-
 #define OC_COMPUTABLE_COMMON(...)                                          \
 private:                                                                   \
     const Expression *_expression{nullptr};                                \
@@ -138,7 +136,8 @@ struct Computable<ocarina::tuple<T...>> {
     //        return Computable<Elm>(ocarina::FunctionBuilder::current(Type::of<Elm>(), expression(), i));
     //    }
 };
-
 #undef OC_COMPUTABLE_COMMON
+
+}// namespace detail
 
 }// namespace ocarina
