@@ -32,6 +32,11 @@ namespace detail {
 
 template<typename T>
 struct EnableSubscriptAccess {
+    template<typename Index>
+    requires concepts::integral<expr_value_t<Index>>
+    auto &operator[](Index &&index) &noexcept {
+
+    }
 };
 
 template<typename T>

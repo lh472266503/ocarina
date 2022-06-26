@@ -133,6 +133,8 @@ void CppCodegen::visit(const BinaryExpr *expr) noexcept {
 void CppCodegen::visit(const MemberExpr *expr) noexcept {
 }
 void CppCodegen::visit(const AccessExpr *expr) noexcept {
+    expr->range()->accept(*this);
+    
 }
 void CppCodegen::visit(const LiteralExpr *expr) noexcept {
     ocarina::visit(
