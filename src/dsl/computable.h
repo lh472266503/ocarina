@@ -42,17 +42,21 @@ struct EnableGetMemberByIndex {
 template<typename T>
 struct EnableStaticCast {
     template<class Dest>
-    [[nodiscard]] Var<Dest> cast() const noexcept {
-        Var<Dest> ret;
-        auto expr = Function::current()->cast(Type::of<Dest>(), CastOp::STATIC, static_cast<const T *>(this)->expression());
-        assign(ret, expr);
-        return ret;
+    [[nodiscard]] Expr<Dest> cast() const noexcept {
+        const CastExpr *expr = Function::current()->cast(Type::of<Dest>(), CastOp::STATIC,
+                                                         static_cast<const T *>(this)->expression());
+        return def_expr<Dest>(expr);
     }
 };
 
 template<typename T>
 struct EnableBitwiseCast {
-
+    template<class Dest>
+    [[nodiscard]] Expr<Dest> as() const noexcept {
+        const CastExpr *expr = Function::current()->cast(Type::of<Dest>(), CastOp::BITWISE,
+                                                         static_cast<const T *>(this)->expression());
+        return def_expr<Dest>(expr);
+    }
 };
 
 #define OC_COMPUTABLE_COMMON(...)                                          \

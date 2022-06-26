@@ -32,7 +32,7 @@ T func(T a, T b) {
 //    ::ocarina::range(a, 9 + b, 3 + a + b) / [&](auto v) noexcept {
 //        v += 1;
 //    };
-    Var<float> f = a.cast<float>();
+    Var<float> f = (a + b).as<float>();
     return a + f;
 
     $for(v, b, 9) {
