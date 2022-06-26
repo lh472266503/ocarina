@@ -29,34 +29,34 @@ ScopeStmt *Function::body() noexcept {
     return &_body;
 }
 
-const Expression *Function::argument(const Type *type) noexcept {
+const RefExpr *Function::argument(const Type *type) noexcept {
     Variable variable(type, Variable::Tag::LOCAL, _next_variable_uid());
     _arguments.push_back(variable);
     return _ref(variable);
 }
 
-const Expression *Function::reference_argument(const Type *type) noexcept {
+const RefExpr *Function::reference_argument(const Type *type) noexcept {
     Variable variable(type, Variable::Tag::REFERENCE, _next_variable_uid());
     _arguments.push_back(variable);
     return _ref(variable);
 }
 
-const Expression *Function::local(const Type *type) noexcept {
+const RefExpr *Function::local(const Type *type) noexcept {
     auto ret = _create_expression<RefExpr>(Variable(type, Variable::Tag::LOCAL,
                                                     _next_variable_uid()));
     _scope_stack.back()->add_var(ret->variable());
     return ret;
 }
 
-const Expression *Function::literal(const Type *type, LiteralExpr::value_type value) noexcept {
+const LiteralExpr *Function::literal(const Type *type, LiteralExpr::value_type value) noexcept {
     return _create_expression<LiteralExpr>(type, value);
 }
 
-const Expression *Function::binary(const Type *type, BinaryOp op, const Expression *lhs, const Expression *rhs) noexcept {
+const BinaryExpr *Function::binary(const Type *type, BinaryOp op, const Expression *lhs, const Expression *rhs) noexcept {
     return _create_expression<BinaryExpr>(type, op, lhs, rhs);
 }
 
-const Expression *Function::unary(const Type *type, UnaryOp op, const Expression *expression) noexcept {
+const UnaryExpr *Function::unary(const Type *type, UnaryOp op, const Expression *expression) noexcept {
     return _create_expression<UnaryExpr>(type, op, expression);
 }
 

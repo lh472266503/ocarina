@@ -15,6 +15,7 @@
 #include "core/platform.h"
 #include "dsl/syntax_sugar.h"
 #include "dsl/syntax.h"
+#include "core/util.h"
 
 using std::cout;
 using std::endl;
@@ -28,11 +29,14 @@ T func(T a, T b) {
     //    $comment(---)
     //    });
 
-    ::ocarina::range(a, 9 + b, 3 + a + b) / [&](auto v) noexcept {
-        v += 1;
-    };
+//    ::ocarina::range(a, 9 + b, 3 + a + b) / [&](auto v) noexcept {
+//        v += 1;
+//    };
 
-    return a;
+//    $for(v, b, 9) {
+//        a += v;
+//    };
+    return a * 5.1f;
     //    Var cond(1);
     //    for_(a, a < b, -1, [&] {
     //        $comment(89080)

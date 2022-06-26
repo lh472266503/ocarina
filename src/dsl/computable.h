@@ -16,53 +16,25 @@ namespace detail {
 
 template<typename T>
 struct EnableSubscriptAccess {
-    //    template<typename Index>
-    //    requires is_integral_expr_v<Index>
-    //    [[nodiscard]] auto operator[](Index &&index) const noexcept {
-    //        auto self = def<T>(static_cast<const T *>(this)->expression());
-    //        using Element = std::remove_cvref_t<decltype(std::declval<expr_value_t<T>>()[0])>;
-    //        return def<Element>(ocarina::FunctionBuilder::current()->access(
-    //            Type::of<Element>(), self.expression(),
-    //            extract_expression(std::forward<Index>(index))));
-    //    }
 
-    //todo
-    //    template<typename Index>
-    //    requires is_integral_expr_v<Index>
-    //    [[nodiscard]] auto operator[](Index &&index) &noexcept {
-    //    }
 };
 
 template<typename T>
 struct EnableGetMemberByIndex {
-    //    template<size_t i>
-    //    [[nodiscard]] auto get() const noexcept {
-    //        static_assert(i < dimension_v<expr_value_t<T>>);
-    //        auto self = const_cast<T *>(static_cast<const T *>(this));
-    //        return (*self)[static_cast<uint>(i)];
-    //    }
+
 };
 
 template<typename T>
 struct EnableStaticCast {
-    //    template<typename Dest>
-    //    requires concepts::static_convertible<expr_value_t<T>, expr_value_t<Dest>>
-    //    [[nodiscard]] auto cast() const noexcept {
-    //        auto src = def(*static_cast<const T *>(this));
-    //        using ExprDest = expr_value_t<Dest>;
-    //        return def(ocarina::FunctionBuilder::current()->cast(Type::of<ExprDest>(), CastOp::STATIC, src));
-    //    }
+    template<class Dest>
+    [[nodiscard]] auto cast() const noexcept {
+
+    }
 };
 
 template<typename T>
 struct EnableBitwiseCast {
-    //    template<class Dest>
-    //    requires concepts::bitwise_convertible<expr_value_t<T>, expr_value_t<Dest>>
-    //    [[nodiscard]] auto bit_cast() const noexcept {
-    //        auto src = def(*static_cast<const T *>(this));
-    //        using ExprDest = expr_value_t<Dest>;
-    //        return def(ocarina::FunctionBuilder::current()->cast(Type::of<ExprDest>(), CastOp::BITWISE, src));
-    //    }
+
 };
 
 #define OC_COMPUTABLE_COMMON(...)                                          \

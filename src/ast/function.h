@@ -69,7 +69,7 @@ private:
         _all_expressions.push_back(std::move(expr));
         return ret;
     }
-    [[nodiscard]] const Expression *_ref(Variable variable) noexcept {
+    [[nodiscard]] const RefExpr *_ref(Variable variable) noexcept {
         return _create_expression<RefExpr>(variable);
     }
 
@@ -128,12 +128,13 @@ public:
     explicit Function(Tag tag) noexcept;
     void assign(const Expression *lhs, const Expression *rhs) noexcept;
     void return_(const Expression *expression) noexcept;
-    [[nodiscard]] const Expression *argument(const Type *type) noexcept;
-    [[nodiscard]] const Expression *reference_argument(const Type *type) noexcept;
-    [[nodiscard]] const Expression *local(const Type *type) noexcept;
-    [[nodiscard]] const Expression *literal(const Type *type, basic_literal_t value) noexcept;
-    [[nodiscard]] const Expression *binary(const Type *type, BinaryOp op, const Expression *lhs, const Expression *rhs) noexcept;
-    [[nodiscard]] const Expression *unary(const Type *type, UnaryOp op, const Expression *expression) noexcept;
+    [[nodiscard]] const RefExpr *argument(const Type *type) noexcept;
+    [[nodiscard]] const RefExpr *reference_argument(const Type *type) noexcept;
+    [[nodiscard]] const RefExpr *local(const Type *type) noexcept;
+    [[nodiscard]] const LiteralExpr *literal(const Type *type, basic_literal_t value) noexcept;
+    [[nodiscard]] const BinaryExpr *binary(const Type *type, BinaryOp op, const Expression *lhs, const Expression *rhs) noexcept;
+    [[nodiscard]] const UnaryExpr *unary(const Type *type, UnaryOp op, const Expression *expression) noexcept;
+    [[nodiscard]] const CastExpr *cast(const Type *, CastOp op, const Expression *expression) noexcept;
     [[nodiscard]] IfStmt *if_(const Expression *expr) noexcept;
     [[nodiscard]] SwitchStmt *switch_(const Expression *expr) noexcept;
     [[nodiscard]] SwitchCaseStmt *switch_case(const Expression *expr) noexcept;
