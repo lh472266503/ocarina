@@ -134,7 +134,9 @@ void CppCodegen::visit(const MemberExpr *expr) noexcept {
 }
 void CppCodegen::visit(const AccessExpr *expr) noexcept {
     expr->range()->accept(*this);
-    
+    _scratch << "[";
+    expr->index()->accept(*this);
+    _scratch << "]";
 }
 void CppCodegen::visit(const LiteralExpr *expr) noexcept {
     ocarina::visit(

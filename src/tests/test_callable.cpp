@@ -11,7 +11,7 @@
 #include <iostream>
 #include <runtime/context.h>
 #include "runtime/device.h"
-#include "compile/cpp_codegen.h"
+#include "generator/cpp_codegen.h"
 #include "core/platform.h"
 #include "dsl/syntax_sugar.h"
 #include "dsl/syntax.h"
