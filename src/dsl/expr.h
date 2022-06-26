@@ -20,11 +20,19 @@ template<typename T>
 [[nodiscard]] inline Var<expr_value_t<T>> def(const Expression *expr) noexcept;// implement in builtin.h
 
 template<typename T>
+[[nodiscard]] inline Expr<expr_value_t<T>> def_expr(T &&x) noexcept;
+
+template<typename T>
+[[nodiscard]] inline Expr<expr_value_t<T>> def_expr(const Expression *expr) noexcept;
+
+template<typename T>
 class Expr : public Computable<T> {
 public:
     explicit Expr(const Expression *expression) noexcept
         : Computable<T>(expression) {}
 
+    template<typename Arg>
+    Expr(Arg &&arg) : Expr(arg.expression()) {}
     Expr(const Expr &) = delete;
     Expr &operator=(const Expr &) = delete;
     Expr &operator=(Expr &&) = delete;

@@ -238,12 +238,39 @@ public:
 };
 }// namespace detail
 
-template<typename Init, typename Cond, typename Step, typename Body>
-void for_(Init &&init, Cond &&cond, Step &&step, Body &&body) {
-    detail::ForStmtBuilder::create(std::forward<Init>(init),
-                                   std::forward<Cond>(cond),
-                                   std::forward<Step>(step)) /
-        std::forward<Body>(body);
+template<typename Count>
+requires concepts::integral<expr_value_t<Count>>
+    detail::ForStmtBuilder range(Count &&count)
+noexcept {
+    Var<int> var = 0;
+    return detail::ForStmtBuilder::create(var, var < std::forward<Count>(count), 1);
+}
+
+template<typename Count, typename Body>
+requires concepts::integral<expr_value_t<Count>>
+void for_range(Count &&count, Body &&body) noexcept {
+    Var<int> var = 0;
+    detail::ForStmtBuilder::create(var, var < std::forward<Count>(count), 1) / [&]() noexcept {
+        body(var);
+    };
+}
+
+template<typename Begin, typename End, typename Body>
+requires concepts::all_integral<expr_value_t<Begin>, expr_value_t<End>>
+void for_range(Begin &&begin, End &&end, Body &&body) noexcept {
+    Var<int> var = def_expr(std::forward<Begin>(begin));
+    detail::ForStmtBuilder::create(var, var < std::forward<End>(end), 1) / [&]() noexcept {
+        body(var);
+    };
+}
+
+template<typename Begin, typename End, typename Step, typename Body>
+requires concepts::all_integral<expr_value_t<Begin>, expr_value_t<End>, expr_value_t<Step>>
+void for_range(Begin &&begin, End &&end, Step &&step, Body &&body) noexcept {
+    Var<int> var = def_expr(std::forward<Begin>(begin));
+    detail::ForStmtBuilder::create(var, var < std::forward<End>(end), std::forward<Step>(step)) / [&]() noexcept {
+        body(var);
+    };
 }
 
 }// namespace ocarina

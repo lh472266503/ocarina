@@ -151,6 +151,24 @@ struct is_dsl_impl<Var<T>> : std::true_type {};
 }// namespace detail
 
 template<typename T>
+struct is_var : std::false_type {};
+
+template<typename T>
+struct is_var<Var<T>> : std::true_type {};
+
+template<typename T>
+using is_var_v = typename is_var<T>::value;
+
+template<typename T>
+struct is_expr : std::false_type {};
+
+template<typename T>
+struct is_expr<Expr<T>> : std::true_type {};
+
+template<typename T>
+using is_expr_v = typename is_expr<T>::value;
+
+template<typename T>
 using is_dsl = typename detail::is_dsl_impl<std::remove_cvref_t<T>>::type;
 
 template<typename T>

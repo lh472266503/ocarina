@@ -18,7 +18,12 @@ template<typename T>
 template<typename T>
 [[nodiscard]] inline Var<expr_value_t<T>> def(const Expression *expr) noexcept {
     using RawType = expr_value_t<T>;
-    return Var<RawType>(Computable<RawType>(expr));
+    return Var<RawType>(Expr<RawType>(expr));
+}
+
+template<typename T>
+[[nodiscard]] inline Expr<expr_value_t<T>> def_expr(T &&x) noexcept {
+    return Expr<expr_value_t<T>>(std::forward<T>(x));
 }
 
 template<typename T>
