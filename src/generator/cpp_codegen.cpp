@@ -167,6 +167,7 @@ void CppCodegen::_emit_type_decl() noexcept {
 }
 void CppCodegen::_emit_variable_decl(Variable v) noexcept {
     _emit_type_name(v.type());
+    _emit_space();
     _emit_variable_name(v);
 }
 
@@ -191,8 +192,13 @@ void CppCodegen::_emit_type_name(const Type *type) noexcept {
                 _emit_type_name(type->element());
                 _scratch << type->dimension();
                 break;
+            case Type::Tag::ARRAY:
+                _emit_type_name(type->element());
+                _scratch << "[";
+                _scratch << type->dimension();
+                _scratch << "]";
+                break;
             case Type::Tag::MATRIX: break;
-            case Type::Tag::ARRAY: break;
             case Type::Tag::STRUCTURE: break;
             case Type::Tag::BUFFER: break;
             case Type::Tag::TEXTURE: break;
@@ -201,7 +207,6 @@ void CppCodegen::_emit_type_name(const Type *type) noexcept {
             case Type::Tag::NONE: break;
         }
     }
-    _emit_space();
 }
 void CppCodegen::_emit_function(const Function &f) noexcept {
     if (f.is_callable()) {
@@ -209,6 +214,7 @@ void CppCodegen::_emit_function(const Function &f) noexcept {
     }
     _emit_space();
     _emit_type_name(f.return_type());
+    _emit_space();
     _scratch << "function_" << f.hash();
     _emit_arguments(f);
     _emit_body(f);

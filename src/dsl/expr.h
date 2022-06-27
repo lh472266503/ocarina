@@ -13,8 +13,6 @@ namespace ocarina {
 
 struct Expression;
 
-
-
 namespace detail {
 
 template<typename T>

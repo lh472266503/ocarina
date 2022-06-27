@@ -9,6 +9,7 @@
 #include "core/basic_traits.h"
 #include "expr_traits.h"
 #include "ast/function.h"
+#include <utility>
 
 namespace ocarina {
 
@@ -31,11 +32,21 @@ class Expression;
 namespace detail {
 
 template<typename T>
+[[nodiscard]] decltype(auto) extract_expression(T &&v) noexcept;
+
+template<typename T>
 struct EnableSubscriptAccess {
+
+    using element_type = std::remove_cvref_t<decltype(std::declval<expr_value_t<T>>()[0])>;
+
     template<typename Index>
     requires concepts::integral<expr_value_t<Index>>
-    auto &operator[](Index &&index) &noexcept {
+    auto operator[](Index &&index) noexcept {
 
+        const AccessExpr *expr = Function::current()->access(Type::of<element_type>(),
+                                                             static_cast<const T *>(this)->expression(),
+                                                             extract_expression(std::forward<Index>(index)));
+        return def_expr<element_type>(expr);
     }
 };
 
@@ -113,8 +124,8 @@ struct Computable<Vector<T, 4>>
 
 template<typename T, size_t N>
 struct Computable<std::array<T, N>>
-    : detail::EnableSubscriptAccess<std::array<T, N>>,
-      detail::EnableGetMemberByIndex<std::array<T, N>> {
+    : detail::EnableSubscriptAccess<Computable<std::array<T, N>>>,
+      detail::EnableGetMemberByIndex<Computable<std::array<T, N>>> {
     OC_COMPUTABLE_COMMON(std::array<T, N>)
 };
 
