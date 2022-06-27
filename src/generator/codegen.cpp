@@ -12,6 +12,8 @@ template<typename T>
 [[nodiscard]] ocarina::string to_string(T &&t) noexcept {
     if constexpr (std::is_same_v<bool, std::remove_cvref_t<T>>) {
         return t ? "true" : "false";
+    }else if constexpr (std::is_same_v<float, std::remove_cvref_t<T>>) {
+        return ocarina::to_string(std::forward<T>(t)) + "f";
     }
     return ocarina::to_string(std::forward<T>(t));
 }

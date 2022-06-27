@@ -28,15 +28,15 @@ auto func(T a, T b) {
     //    for_range(a,[&](auto x) {
     //    $comment(---)
     //    });
-
+//    a = 1.5f;
+//    return a + b * b + 1.f;
 //    ::ocarina::range(a, 9 + b, 3 + a + b) / [&](auto v) noexcept {
 //        v += 1;
 //    };
 //    Var<std::array<int, 5>> arr;
-    a = (a + a * b);
+//    a = (a + a * b);
 //    a = arr[0];
-    return a + a;
-
+//    return a + 1.5f;
 //    $for(v, b, 9) {
 //        a += v;
 //    };
@@ -65,15 +65,15 @@ auto func(T a, T b) {
     //            $comment(default_)};
     //    };
     //
-    switch_(a, [&] {
-        case_(2, [&] {
-            $comment(adsfdsf)
-        });
-        default_([&] {
-            $comment(90890887879)
-        });
-    });
-//
+//    switch_(a, [&] {
+//        case_(2, [&] {
+//            $comment(adsfdsf)
+//        });
+//        default_([&] {
+//            $comment(90890887879)
+//        });
+//    });
+////
 //    switch_(a)
 //        .case_(2, [&] {
 //            $comment(adsfdsf)
@@ -88,14 +88,17 @@ auto func(T a, T b) {
     //
         $if(1) {
             $comment(adsfadsf)
-                a = b;
         }
-        $elif(a > b) {
-            a = b;
+        $elif([&](){
+            a = b + 1;
+            return a > 0;
+        }()) {
+            $comment(adsfadsf)
         }
-        $else {
-            a = 2;
-        };
+//        $else {
+//            a = 2;
+//        }
+        ;
     //
     //    if_(cond, [&] {
     //        comment("this is comment");
@@ -115,7 +118,7 @@ int main(int argc, char *argv[]) {
     fs::path path(argv[0]);
     Context context(path.parent_path());
 
-    context.init_device("cuda");
+//    context.init_device("cuda");
 
     CppCodegen codegen;
     decltype(auto) f = callable.function();

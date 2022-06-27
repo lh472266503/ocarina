@@ -46,9 +46,15 @@ void CppCodegen::visit(const IfStmt *stmt) noexcept {
     stmt->condition()->accept(*this);
     _scratch << ") ";
     stmt->true_branch()->accept(*this);
-    if (!stmt->false_branch()->empty()) {
-        _scratch << " else ";
-        stmt->false_branch()->accept(*this);
+    auto false_branch = stmt->false_branch();
+    if (false_branch->empty()) {
+        return;
+    }
+    _scratch << " else ";
+    if (false_branch->size() == 1 && false_branch->statements()[0]->tag() == Statement::Tag::IF) {
+        false_branch->statements()[0]->accept(*this);
+    } else {
+        false_branch->accept(*this);
     }
 }
 

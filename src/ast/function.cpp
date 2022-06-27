@@ -113,7 +113,7 @@ void Function::assign(const Expression *lhs, const Expression *rhs) noexcept {
 }
 
 uint64_t Function::_compute_hash() const noexcept {
-    auto ret = _ret->hash();
+    auto ret = _ret ? _ret->hash() : 0;
     for (const Variable &v : _arguments) {
         ret = hash64(ret, v.hash());
     }
