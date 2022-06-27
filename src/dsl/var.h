@@ -43,8 +43,22 @@ struct Var : public detail::Computable<T> {
         assign(*this, std::forward<Var>(rhs));
     }
 
+    void operator=(Expr<T> &&rhs) &noexcept {
+        assign(*this, std::forward<Expr<T>>(rhs));
+    }
+
     void operator=(const Var &rhs) &noexcept {
         assign(*this, rhs);
+    }
+
+    void operator=(const Expr<T> &rhs) &noexcept {
+        assign(*this, rhs);
+    }
+
+    template<typename Arg>
+    requires concepts::assign_able<expr_value_t<std::remove_cvref_t<T>>, expr_value_t<Arg>>
+    void operator=(Arg &&arg) {
+        assign(*this, std::forward<Arg>(arg));
     }
 };
 

@@ -35,9 +35,9 @@ T func(T a, T b) {
     Var<float> f = a.cast<float>();
     return a + f;
 
-    $for(v, b, 9) {
-        a += v;
-    };
+//    $for(v, b, 9) {
+//        a += v;
+//    };
 //    return a * 5.1f;
     //    Var cond(1);
     //    auto fun = [&]() {
