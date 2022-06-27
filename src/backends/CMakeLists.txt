@@ -4,7 +4,7 @@ function(ocarina_add_backend name)
     target_link_libraries(ocarina-backend-${name} PRIVATE
             ocarina-ast
             ocarina-runtime
-            ocarina-compile)
+            ocarina-generator)
     add_dependencies(ocarina-backend ocarina-backend-${name})
     set_target_properties(ocarina-backend-${name} PROPERTIES
             UNITY_BUILD OFF

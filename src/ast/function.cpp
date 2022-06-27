@@ -64,6 +64,10 @@ const CastExpr *Function::cast(const Type *type, CastOp op, const Expression *ex
     return _create_expression<CastExpr>(type, op, expression);
 }
 
+const AccessExpr *Function::access(const Type *type, const Expression *range, const Expression *index) noexcept {
+    return _create_expression<AccessExpr>(type, range, index);
+}
+
 IfStmt *Function::if_(const Expression *expr) noexcept {
     return _create_statement<IfStmt>(expr);
 }

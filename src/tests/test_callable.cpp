@@ -11,7 +11,7 @@
 #include <iostream>
 #include <runtime/context.h>
 #include "runtime/device.h"
-#include "compile/cpp_codegen.h"
+#include "generator/cpp_codegen.h"
 #include "core/platform.h"
 #include "dsl/syntax_sugar.h"
 #include "dsl/syntax.h"
@@ -22,7 +22,7 @@ using std::endl;
 using namespace ocarina;
 
 template<typename T>
-T func(T a, T b) {
+auto func(T a, T b) {
     //    T ret = (a + b) * b;
 
     //    for_range(a,[&](auto x) {
@@ -32,8 +32,10 @@ T func(T a, T b) {
 //    ::ocarina::range(a, 9 + b, 3 + a + b) / [&](auto v) noexcept {
 //        v += 1;
 //    };
-    Var<float> f = a.cast<float>();
-    return a + f;
+//    Var<std::array<int, 5>> arr;
+    a = (a + a * b);
+//    a = arr[0];
+    return a + a;
 
 //    $for(v, b, 9) {
 //        a += v;
@@ -104,7 +106,7 @@ T func(T a, T b) {
     //        a = b;
     //    });
 
-    return a;
+//    return a;
 }
 
 int main(int argc, char *argv[]) {
