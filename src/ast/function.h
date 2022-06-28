@@ -34,6 +34,8 @@ private:
     ocarina::vector<Variable> _arguments;
     ocarina::vector<Usage> _variable_usages;
     ocarina::vector<ScopeStmt *> _scope_stack;
+    /// use for subscript access
+    ocarina::vector<ocarina::pair<std::byte *, size_t>> _temp_memory;
     ScopeStmt _body;
     mutable uint64_t _hash{0};
     mutable bool _hash_computed{false};
@@ -126,6 +128,17 @@ public:
     }
     Function() noexcept = default;
     explicit Function(Tag tag) noexcept;
+    ~Function() noexcept {
+        for (auto &mem : _temp_memory) {
+            delete_with_allocator(mem.first);
+        }
+    }
+    template<typename T, typename... Args>
+    T *create_temp_obj(Args &&...args) noexcept {
+        T *ptr = new_with_allocator<T>(std::forward<Args>(args)...);
+        _temp_memory.push_back(std::make_pair(reinterpret_cast<std::byte*>(ptr), sizeof(T)));
+        return ptr;
+    }
     void assign(const Expression *lhs, const Expression *rhs) noexcept;
     void return_(const Expression *expression) noexcept;
     [[nodiscard]] const RefExpr *argument(const Type *type) noexcept;
@@ -135,7 +148,7 @@ public:
     [[nodiscard]] const BinaryExpr *binary(const Type *type, BinaryOp op, const Expression *lhs, const Expression *rhs) noexcept;
     [[nodiscard]] const UnaryExpr *unary(const Type *type, UnaryOp op, const Expression *expression) noexcept;
     [[nodiscard]] const CastExpr *cast(const Type *type, CastOp op, const Expression *expression) noexcept;
-    [[nodiscard]] const AccessExpr *access(const Type *type, const Expression*range, const Expression *index) noexcept;
+    [[nodiscard]] const AccessExpr *access(const Type *type, const Expression *range, const Expression *index) noexcept;
     [[nodiscard]] IfStmt *if_(const Expression *expr) noexcept;
     [[nodiscard]] SwitchStmt *switch_(const Expression *expr) noexcept;
     [[nodiscard]] SwitchCaseStmt *switch_case(const Expression *expr) noexcept;

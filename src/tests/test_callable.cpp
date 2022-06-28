@@ -4,7 +4,6 @@
 
 #include "dsl/common.h"
 #include "core/concepts.h"
-//#include "core/util.h"
 #include "dsl/operators.h"
 #include "dsl/func.h"
 #include "ast/expression.h"
@@ -14,7 +13,6 @@
 #include "generator/cpp_codegen.h"
 #include "core/platform.h"
 #include "dsl/syntax_sugar.h"
-#include "dsl/syntax.h"
 #include "core/util.h"
 
 using std::cout;
@@ -23,9 +21,10 @@ using namespace ocarina;
 
 template<typename T>
 auto func(T a, T b) {
-
-//    Var f = 1.9f + a;
-    Var d = a + b;
+    Var<std::array<int ,6>> arr;
+    arr[1] =  b;
+    a = arr[1] + 1;
+    T d = a + b;
     T c = a + b * a + 1.5f;
     return c + d;
 }
