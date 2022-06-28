@@ -64,7 +64,6 @@ int main(int argc, char *argv[]) {
     Callable callable = func<Var<int>>;
     fs::path path(argv[0]);
     Context context(path.parent_path());
-
 //    context.init_device("cuda");
 
     CppCodegen codegen;

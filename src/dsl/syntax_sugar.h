@@ -20,7 +20,7 @@
 
 #define $loop ::ocarina::detail::LoopStmtBuilder::create() *[&]() noexcept
 #define $while(...) ::ocarina::detail::LoopStmtBuilder::create() / [&]() noexcept { \
-    if_(!__VA_ARGS__, [&] {                                                         \
+    if_(!(__VA_ARGS__), [&] {                                                       \
         break_();                                                                   \
     });                                                                             \
 } *[&]() noexcept
