@@ -19,10 +19,10 @@
 #define $continue ::ocarina::continue_()
 
 #define $loop ::ocarina::detail::LoopStmtBuilder::create() *[&]() noexcept
-#define $while(cond) ::ocarina::detail::LoopStmtBuilder::create() / [&]() noexcept { \
-    if_(!cond, [&] {                                                                 \
-        break_();                                                                    \
-    });                                                                              \
+#define $while(...) ::ocarina::detail::LoopStmtBuilder::create() / [&]() noexcept { \
+    if_(!__VA_ARGS__, [&] {                                                         \
+        break_();                                                                   \
+    });                                                                             \
 } *[&]() noexcept
 
 #define $for(v, ...) ::ocarina::range(__VA_ARGS__) / [&](auto v) noexcept

@@ -38,19 +38,23 @@ auto func(T a, T b) {
 //        $case(1) {
 //            $comment(1111)
 //            $break;
-//        };
-//        $case(2) {
-//            $comment(2222)
-//            $break;
-//        };
-//    };
+    //        };
+    //        $case(2) {
+    //            $comment(2222)
+    //            $break;
+    //        };
+    //    };
 
-//    $while(a > 10) {
-//        a -= 1;
-//    };
-    while_(a > 10, [&]{
+    //    $while(a > 10) {
+    //        a -= 1;
+    //    };
+    //    while_(a > 10, [&]{
+    //        a -= 1;
+    //    });
+
+    $while(a > 10) {
         a -= 1;
-    });
+    };
 
     return a + b;
 }
