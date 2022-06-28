@@ -49,7 +49,7 @@ auto func(T a, T b) {
 //        a -= 1;
 //    };
     while_(a > 10, [&]{
-//        a -= 1;
+        a -= 1;
     });
 
     return a + b;

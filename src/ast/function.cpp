@@ -44,7 +44,7 @@ const RefExpr *Function::reference_argument(const Type *type) noexcept {
 const RefExpr *Function::local(const Type *type) noexcept {
     auto ret = _create_expression<RefExpr>(Variable(type, Variable::Tag::LOCAL,
                                                     _next_variable_uid()));
-    _scope_stack.back()->add_var(ret->variable());
+    current_scope()->add_var(ret->variable());
     return ret;
 }
 
