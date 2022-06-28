@@ -172,9 +172,18 @@ void CppCodegen::_emit_type_decl() noexcept {
     Type::for_each(this);
 }
 void CppCodegen::_emit_variable_decl(Variable v) noexcept {
-    _emit_type_name(v.type());
-    _emit_space();
-    _emit_variable_name(v);
+    if (v.type()->is_scalar()) {
+        _emit_type_name(v.type());
+        _emit_space();
+        _emit_variable_name(v);
+    } else if (v.type()->is_array()) {
+        _emit_type_name(v.type()->element());
+        _emit_space();
+        _emit_variable_name(v);
+        _scratch << "[";
+        _scratch << v.type()->dimension();
+        _scratch << "]";
+    }
 }
 
 void CppCodegen::_emit_local_var_decl(const ScopeStmt *scope) noexcept {

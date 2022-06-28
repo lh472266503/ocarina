@@ -15,7 +15,7 @@
     requires ocarina::is_dsl_v<T>                                                               \
     [[nodiscard]] inline auto operator op(T &&expr) noexcept {                                  \
         using Ret = std::remove_cvref_t<decltype(op std::declval<ocarina::expr_value_t<T>>())>; \
-        return ocarina::def<Ret>(                                                               \
+        return ocarina::def_expr<Ret>(                                                          \
             ocarina::Function::current()->unary(                                                \
                 ocarina::Type::of<Ret>(),                                                       \
                 ocarina::UnaryOp::tag,                                                          \
