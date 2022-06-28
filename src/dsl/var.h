@@ -24,7 +24,7 @@ struct Var : public detail::Computable<T> {
 
     template<typename Arg>
     requires concepts::non_pointer<std::remove_cvref_t<Arg>> &&
-        concepts::different<Var<T>, std::remove_cvref_t<Arg>>
+    concepts::assign_able<expr_value_t<std::remove_cvref_t<T>>, expr_value_t<Arg>>
         Var(Arg &&arg) : Var() {
         assign(*this, std::forward<Arg>(arg));
     }
@@ -34,26 +34,6 @@ struct Var : public detail::Computable<T> {
     }
     explicit Var(detail::ReferenceArgumentCreation) noexcept
         : Var(Function::current()->reference_argument(Type::of<T>())) {}
-
-    Var(Var &&) noexcept = default;
-
-    Var(const Var &) noexcept = default;
-
-    void operator=(Var &&rhs) &noexcept {
-        assign(*this, std::forward<Var>(rhs));
-    }
-
-    void operator=(Expr<T> &&rhs) &noexcept {
-        assign(*this, std::forward<Expr<T>>(rhs));
-    }
-
-    void operator=(const Var &rhs) &noexcept {
-        assign(*this, rhs);
-    }
-
-    void operator=(const Expr<T> &rhs) &noexcept {
-        assign(*this, rhs);
-    }
 
     template<typename Arg>
     requires concepts::assign_able<expr_value_t<std::remove_cvref_t<T>>, expr_value_t<Arg>>

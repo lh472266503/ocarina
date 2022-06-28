@@ -22,11 +22,12 @@ using std::endl;
 using namespace ocarina;
 
 template<typename T>
-T func(T a, T b) {
+auto func(T a, T b) {
 
-    T f = 1.9f + a;
+//    Var f = 1.9f + a;
+    Var d = a + b;
     T c = a + b * a + 1.5f;
-    return c + c;
+    return c + d;
 }
 
 int main(int argc, char *argv[]) {
