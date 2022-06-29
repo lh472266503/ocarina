@@ -204,4 +204,21 @@ public:
     OC_MAKE_EXPRESSION_ACCEPT_VISITOR
 };
 
+class MemberExpr : public Expression {
+private:
+    const Expression *_parent{};
+    ocarina::string_view _field_name;
+
+private:
+    void _mark(Usage) const noexcept override {}
+    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+
+public:
+    MemberExpr(const Type *type, const Expression *parent, std::string_view name)
+        : Expression(Tag::MEMBER, type), _parent(parent), _field_name(name) {}
+    [[nodiscard]] const Expression *parent() const noexcept { return _parent; }
+    [[nodiscard]] ocarina::string_view field_name() const noexcept { return _field_name; }
+    OC_MAKE_EXPRESSION_ACCEPT_VISITOR
+};
+
 }// namespace ocarina

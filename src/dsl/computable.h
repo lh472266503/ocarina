@@ -112,6 +112,9 @@ struct Computable<Vector<T, 2>>
       detail::EnableGetMemberByIndex<Computable<Vector<T, 2>>>,
       detail::EnableSubscriptAccess<Computable<Vector<T, 2>>> {
     OC_COMPUTABLE_COMMON(Vector<T, 2>)
+public:
+    Var<T> x{Function::current()->vector_member(Type::of<T>(), expression(), "x")};
+    Var<T> y{Function::current()->vector_member(Type::of<T>(), expression(), "y")};
 };
 
 template<typename T>
@@ -121,6 +124,10 @@ struct Computable<Vector<T, 3>>
       detail::EnableGetMemberByIndex<Computable<Vector<T, 3>>>,
       detail::EnableSubscriptAccess<Computable<Vector<T, 3>>> {
     OC_COMPUTABLE_COMMON(Vector<T, 3>)
+public:
+    Var<T> x{Function::current()->vector_member(Type::of<T>(), expression(), "x")};
+    Var<T> y{Function::current()->vector_member(Type::of<T>(), expression(), "y")};
+    Var<T> z{Function::current()->vector_member(Type::of<T>(), expression(), "z")};
 };
 
 template<typename T>
@@ -130,6 +137,11 @@ struct Computable<Vector<T, 4>>
       detail::EnableGetMemberByIndex<Computable<Vector<T, 4>>>,
       detail::EnableSubscriptAccess<Computable<Vector<T, 4>>> {
     OC_COMPUTABLE_COMMON(Vector<T, 4>)
+public:
+    Var<T> x{Function::current()->vector_member(Type::of<T>(), expression(), "x")};
+    Var<T> y{Function::current()->vector_member(Type::of<T>(), expression(), "y")};
+    Var<T> z{Function::current()->vector_member(Type::of<T>(), expression(), "z")};
+    Var<T> w{Function::current()->vector_member(Type::of<T>(), expression(), "w")};
 };
 
 template<typename T, size_t N>
