@@ -192,7 +192,7 @@ void CppCodegen::_emit_local_var_decl(const ScopeStmt *scope) noexcept {
     for (const auto &var : scope->local_vars()) {
         _emit_indent();
         _emit_variable_decl(var);
-        _scratch << ";\n";
+        _scratch << "{};\n";
     }
 }
 

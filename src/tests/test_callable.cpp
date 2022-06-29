@@ -21,9 +21,11 @@ using namespace ocarina;
 
 template<typename T>
 auto func(T a, T b) {
-    Var<int2> vec;
-    vec.x = 9;
-    return a + b + vec.x;
+    Var<int2> v2;
+    Var<int2> v3;
+    v2.x = 9;
+    v3 = v2 + v2;
+    return a + b + v2.x;
     Var<std::array<int, 6>> arr;
     arr[1] = b;
     a = arr[1] + 1;
