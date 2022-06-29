@@ -21,23 +21,24 @@ using namespace ocarina;
 
 template<typename T>
 auto func(T a, T b) {
-//    Var<std::array<int ,6>> arr;
-//    arr[1] =  b;
-//    a = arr[1] + 1;
-//    T d = a + b;
-//    T c = a + b * a + 1.5f;
-//    $if(c + d > 0) {
-//        a = a + 9;
-//    } $else{
-//        a = a + 10;
-//    };
-//    $for(v, 9) {
-//        a = a + v;
-//    };
-//    $switch(a) {
-//        $case(1) {
-//            $comment(1111)
-//            $break;
+    //    Var<std::array<int ,6>> arr;
+    //    arr[1] =  b;
+    //    a = arr[1] + 1;
+    //    T d = a + b;
+    //    T c = a + b * a + 1.5f;
+    $if(a + b > 0) {
+        a = a + 9;
+    }$elif(a > 0) {
+        a += 3;
+    };
+    return a + b;
+    //    $for(v, 9) {
+    //        a = a + v;
+    //    };
+    //    $switch(a) {
+    //        $case(1) {
+    //            $comment(1111)
+    //            $break;
     //        };
     //        $case(2) {
     //            $comment(2222)
@@ -45,16 +46,12 @@ auto func(T a, T b) {
     //        };
     //    };
 
-    //    $while(a > 10) {
-    //        a -= 1;
-    //    };
-    //    while_(a > 10, [&]{
-    //        a -= 1;
-    //    });
-
-    $while(a > 10) {
-        a -= 1;
-    };
+    //        $while(a > 10) {
+    //            a -= 1;
+    //        };
+    //        while_(a > 10, [&]{
+    //            a -= 1;
+    //        });
 
     return a + b;
 }

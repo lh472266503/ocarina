@@ -8,7 +8,9 @@
 
 #define $if(...) ::ocarina::detail::IfStmtBuilder::create(__VA_ARGS__) / [&]() noexcept
 #define $else % [&]() noexcept
-#define $elif(...) *(__VA_ARGS__) / [&]() noexcept
+#define $elif(...) *[&] {                              \
+    return detail::IfStmtBuilder::create(__VA_ARGS__); \
+} / [&]
 
 #define $comment(...) ::ocarina::comment(#__VA_ARGS__);
 

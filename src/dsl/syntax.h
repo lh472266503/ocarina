@@ -33,14 +33,9 @@ public:
         return *this;
     }
 
-    template<typename ElseIfCondition>
-    requires concepts::bool_able<expr_value_t<ElseIfCondition>>
-        IfStmtBuilder operator*(ElseIfCondition &&condition) noexcept {
-        IfStmtBuilder builder;
-        Function::current()->with(_if->false_branch(), [&]() {
-            builder = create(std::forward<ElseIfCondition>(condition));
-        });
-        return builder;
+    template<typename Func>
+    IfStmtBuilder operator*(Func &&func) noexcept {
+        return Function::current()->with(_if->false_branch(), std::forward<Func>(func));;
     }
 
     template<typename FalseBranch>
@@ -48,9 +43,11 @@ public:
         Function::current()->with(_if->false_branch(), std::forward<FalseBranch>(false_branch));
     }
 
-    template<typename ElseIfCondition, typename TrueBranch>
-    IfStmtBuilder elif_(ElseIfCondition &&condition, TrueBranch &&true_branch) noexcept {
-        return (*this) * std::forward<ElseIfCondition>(condition) / std::forward<TrueBranch>(true_branch);
+    template<typename Condition, typename TrueBranch>
+    IfStmtBuilder elif_(Condition &&condition, TrueBranch &&true_branch) noexcept {
+        return (*this) * [&]{
+            return detail::IfStmtBuilder::create(std::forward<Condition>(condition));
+        } / std::forward<TrueBranch>(true_branch);
     }
 
     template<typename FalseBranch>
