@@ -63,12 +63,14 @@ int main(int argc, char *argv[]) {
     Callable callable = func<Var<int>>;
     fs::path path(argv[0]);
     Context context(path.parent_path());
-//    context.init_device("cuda");
+    //    context.init_device("cuda");
 
     CppCodegen codegen;
     decltype(auto) f = callable.function();
     codegen.emit(f);
-    cout << codegen.scratch().c_str();
+    int xxx= 0b1111;
+    cout << xxx << endl;
+//    cout << codegen.scratch().c_str();
 
     //    Device *device = context.device();
 

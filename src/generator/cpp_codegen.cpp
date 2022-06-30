@@ -138,7 +138,14 @@ void CppCodegen::visit(const BinaryExpr *expr) noexcept {
 }
 void CppCodegen::visit(const MemberExpr *expr) noexcept {
     expr->parent()->accept(*this);
-    _scratch << "." << expr->field_name();
+    if (expr->is_swizzle()) {
+        static constexpr std::string_view xyzw[] = {"x", "y", "z", "w"};
+        for (int i = 0; i < 4; ++i) {
+
+        }
+    } else {
+        _scratch << "." << expr->field_name();
+    }
 }
 void CppCodegen::visit(const AccessExpr *expr) noexcept {
     expr->range()->accept(*this);

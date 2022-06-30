@@ -113,8 +113,8 @@ struct Computable<Vector<T, 2>>
       detail::EnableSubscriptAccess<Computable<Vector<T, 2>>> {
     OC_COMPUTABLE_COMMON(Vector<T, 2>)
 public:
-    Var<T> x{Function::current()->vector_member(Type::of<T>(), expression(), "x")};
-    Var<T> y{Function::current()->vector_member(Type::of<T>(), expression(), "y")};
+    Var<T> x{Function::current()->swizzle(Type::of<T>(), expression(), 0b1000)};
+    Var<T> y{Function::current()->swizzle(Type::of<T>(), expression(), 0b0100)};
 };
 
 template<typename T>
