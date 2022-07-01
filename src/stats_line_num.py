@@ -19,7 +19,7 @@ for root,dirs,files in os.walk(os.path.join(os.getcwd(), "src")):
             continue
         if "tests" in fn:
             continue
-        if "stats.py" in fn:
+        if "stats_line_num.py" in fn:
             continue
         if "jitify" in fn:
             continue
@@ -40,13 +40,21 @@ for root,dirs,files in os.walk(os.path.join(os.getcwd(), "src")):
         num_file += 1
 
 
-print(count, num_file)
+# print(count, num_file)
         
-class C:
-    pass
-class A:
-    pass
-class B(A, C):
-    pass
-    
-print(issubclass(B,C))  
+
+a = 0b1 << 3
+
+def size(num):
+    ret = 0
+    for i in range(0, 4):
+
+        if num % 2 != 0:
+            ret += 1
+        print(num, i, num % 2)
+        num = num >> 1
+
+        
+    return ret
+
+(size(0b0010))
