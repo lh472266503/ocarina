@@ -19,10 +19,12 @@ using std::cout;
 using std::endl;
 using namespace ocarina;
 
+
+
+
 template<typename T>
-auto func(T a, T b) {
-    Var<int4> v2;
-    v2.xww();
+auto func(T a, T& b) {
+    b = a;
     return a + b;
     Var<std::array<int, 6>> arr;
     arr[1] = b;

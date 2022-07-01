@@ -185,6 +185,10 @@ void CppCodegen::_emit_variable_decl(Variable v) noexcept {
     if (v.type()->is_scalar() || v.type()->is_vector()) {
         _emit_type_name(v.type());
         _emit_space();
+        switch (v.tag()) {
+            case Variable::Tag::REFERENCE: _scratch << "&"; break;
+            default:break;
+        }
         _emit_variable_name(v);
     } else if (v.type()->is_array()) {
         _emit_type_name(v.type()->element());
@@ -245,10 +249,6 @@ void CppCodegen::_emit_function(const Function &f) noexcept {
     _emit_body(f);
 }
 void CppCodegen::_emit_variable_name(Variable v) noexcept {
-    switch (v.tag()) {
-        case Variable::Tag::REFERENCE: _scratch << "&"; break;
-        default:break;
-    }
     _scratch << "v" << v.uid();
 }
 void CppCodegen::_emit_statements(ocarina::span<const Statement *const> stmts) noexcept {
