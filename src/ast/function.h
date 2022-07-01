@@ -149,6 +149,8 @@ public:
     [[nodiscard]] const UnaryExpr *unary(const Type *type, UnaryOp op, const Expression *expression) noexcept;
     [[nodiscard]] const CastExpr *cast(const Type *type, CastOp op, const Expression *expression) noexcept;
     [[nodiscard]] const AccessExpr *access(const Type *type, const Expression *range, const Expression *index) noexcept;
+    [[nodiscard]] const MemberExpr *vector_member(const Type *type, const Expression *obj, ocarina::string_view name) noexcept;
+    [[nodiscard]] const MemberExpr *swizzle(const Type *type, const Expression *obj, uint8_t mask) noexcept;
     [[nodiscard]] IfStmt *if_(const Expression *expr) noexcept;
     [[nodiscard]] SwitchStmt *switch_(const Expression *expr) noexcept;
     [[nodiscard]] SwitchCaseStmt *switch_case(const Expression *expr) noexcept;

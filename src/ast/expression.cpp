@@ -37,4 +37,9 @@ uint64_t BinaryExpr::_compute_hash() const noexcept {
     ret = hash64(ret, _rhs->hash());
     return ret;
 }
+
+uint64_t MemberExpr::_compute_hash() const noexcept {
+    return hash64(_field_name, _parent->hash());
+}
+
 }// namespace ocarina

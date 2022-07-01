@@ -137,6 +137,15 @@ void CppCodegen::visit(const BinaryExpr *expr) noexcept {
     _scratch << ")";
 }
 void CppCodegen::visit(const MemberExpr *expr) noexcept {
+    expr->parent()->accept(*this);
+    if (expr->is_swizzle()) {
+        static constexpr std::string_view xyzw[] = {"x", "y", "z", "w"};
+        for (int i = 0; i < 4; ++i) {
+
+        }
+    } else {
+        _scratch << "." << expr->field_name();
+    }
 }
 void CppCodegen::visit(const AccessExpr *expr) noexcept {
     expr->range()->accept(*this);
@@ -172,7 +181,7 @@ void CppCodegen::_emit_type_decl() noexcept {
     Type::for_each(this);
 }
 void CppCodegen::_emit_variable_decl(Variable v) noexcept {
-    if (v.type()->is_scalar()) {
+    if (v.type()->is_scalar() || v.type()->is_vector()) {
         _emit_type_name(v.type());
         _emit_space();
         _emit_variable_name(v);
@@ -190,7 +199,7 @@ void CppCodegen::_emit_local_var_decl(const ScopeStmt *scope) noexcept {
     for (const auto &var : scope->local_vars()) {
         _emit_indent();
         _emit_variable_decl(var);
-        _scratch << ";\n";
+        _scratch << "{};\n";
     }
 }
 
