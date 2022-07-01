@@ -206,8 +206,9 @@ public:
 
 class MemberExpr : public Expression {
 private:
-    const Expression *_parent{};
-    uint8_t _swizzle_mask{};
+    const Expression *_parent{nullptr};
+    uint8_t _member_index{0};
+    uint8_t _swizzle_size{0};
     ocarina::string_view _field_name;
 
 private:
@@ -217,10 +218,12 @@ private:
 public:
     MemberExpr(const Type *type, const Expression *parent, std::string_view name)
         : Expression(Tag::MEMBER, type), _parent(parent), _field_name(name) {}
-    MemberExpr(const Type *type, const Expression *parent, uint8_t mask)
-        : Expression(Tag::MEMBER, type), _parent(parent), _swizzle_mask(mask) {}
-    [[nodiscard]] auto swizzle_mask() const noexcept { return _swizzle_mask; }
-    [[nodiscard]] bool is_swizzle() const noexcept { return _swizzle_mask != 0; }
+    MemberExpr(const Type *type, const Expression *parent, uint8_t mask, uint8_t swizzle_size)
+        : Expression(Tag::MEMBER, type), _parent(parent), _member_index(mask), _swizzle_size(swizzle_size) {}
+    [[nodiscard]] auto member_index() const noexcept { return _member_index; }
+    [[nodiscard]] bool is_swizzle() const noexcept { return _swizzle_size != 0; }
+    [[nodiscard]] int swizzle_size() const noexcept { return _swizzle_size; }
+    [[nodiscard]] int swizzle_index(int idx) const noexcept;
     [[nodiscard]] const Expression *parent() const noexcept { return _parent; }
     [[nodiscard]] ocarina::string_view field_name() const noexcept { return _field_name; }
     OC_MAKE_EXPRESSION_ACCEPT_VISITOR

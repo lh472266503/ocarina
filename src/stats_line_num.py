@@ -47,14 +47,13 @@ a = 0b1 << 3
 
 def size(num):
     ret = 0
-    for i in range(0, 4):
+    for i in range(3, -1, -1):
 
-        if num % 2 != 0:
+        if (num >> i) % 2 != 0:
             ret += 1
-        print(num, i, num % 2)
-        num = num >> 1
-
+        print((num >> i) % 2)
         
     return ret
 
-(size(0b0010))
+# print((0xff00000000 & 0x11) >> 32)
+print(0b0110)

@@ -23,7 +23,7 @@ template<typename T>
 auto func(T a, T b) {
     Var<int2> v2;
     Var<int2> v3;
-    v2.x = 9;
+    v2.y = 9;
     v3 = v2 + v2;
     return a + b + v2.x;
     Var<std::array<int, 6>> arr;
@@ -68,9 +68,7 @@ int main(int argc, char *argv[]) {
     CppCodegen codegen;
     decltype(auto) f = callable.function();
     codegen.emit(f);
-    int xxx= 0b1111;
-    cout << xxx << endl;
-//    cout << codegen.scratch().c_str();
+    cout << codegen.scratch().c_str();
 
     //    Device *device = context.device();
 

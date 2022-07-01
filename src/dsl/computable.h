@@ -113,8 +113,8 @@ struct Computable<Vector<T, 2>>
       detail::EnableSubscriptAccess<Computable<Vector<T, 2>>> {
     OC_COMPUTABLE_COMMON(Vector<T, 2>)
 public:
-    Var<T> x{Function::current()->swizzle(Type::of<T>(), expression(), 0b1000)};
-    Var<T> y{Function::current()->swizzle(Type::of<T>(), expression(), 0b0100)};
+    Var<T> x{Function::current()->swizzle(Type::of<T>(), expression(), 0, 1)};
+    Var<T> y{Function::current()->swizzle(Type::of<T>(), expression(), 1, 1)};
 };
 
 template<typename T>
@@ -125,9 +125,9 @@ struct Computable<Vector<T, 3>>
       detail::EnableSubscriptAccess<Computable<Vector<T, 3>>> {
     OC_COMPUTABLE_COMMON(Vector<T, 3>)
 public:
-    Var<T> x{Function::current()->vector_member(Type::of<T>(), expression(), "x")};
-    Var<T> y{Function::current()->vector_member(Type::of<T>(), expression(), "y")};
-    Var<T> z{Function::current()->vector_member(Type::of<T>(), expression(), "z")};
+    Var<T> x{Function::current()->swizzle(Type::of<T>(), expression(), 0, 1)};
+    Var<T> y{Function::current()->swizzle(Type::of<T>(), expression(), 1, 1)};
+    Var<T> z{Function::current()->swizzle(Type::of<T>(), expression(), 2, 1)};
 };
 
 template<typename T>
@@ -138,10 +138,10 @@ struct Computable<Vector<T, 4>>
       detail::EnableSubscriptAccess<Computable<Vector<T, 4>>> {
     OC_COMPUTABLE_COMMON(Vector<T, 4>)
 public:
-    Var<T> x{Function::current()->vector_member(Type::of<T>(), expression(), "x")};
-    Var<T> y{Function::current()->vector_member(Type::of<T>(), expression(), "y")};
-    Var<T> z{Function::current()->vector_member(Type::of<T>(), expression(), "z")};
-    Var<T> w{Function::current()->vector_member(Type::of<T>(), expression(), "w")};
+    Var<T> x{Function::current()->swizzle(Type::of<T>(), expression(), 0, 1)};
+    Var<T> y{Function::current()->swizzle(Type::of<T>(), expression(), 1, 1)};
+    Var<T> z{Function::current()->swizzle(Type::of<T>(), expression(), 2, 1)};
+    Var<T> w{Function::current()->swizzle(Type::of<T>(), expression(), 3, 1)};
 };
 
 template<typename T, size_t N>
