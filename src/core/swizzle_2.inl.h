@@ -2,6 +2,7 @@
 [[nodiscard]] constexpr auto xy() const noexcept { return Vector<T, 2>{x, y}; }
 [[nodiscard]] constexpr auto yx() const noexcept { return Vector<T, 2>{y, x}; }
 [[nodiscard]] constexpr auto yy() const noexcept { return Vector<T, 2>{y, y}; }
+
 [[nodiscard]] constexpr auto xxx() const noexcept { return Vector<T, 3>{x, x, x}; }
 [[nodiscard]] constexpr auto xxy() const noexcept { return Vector<T, 3>{x, x, y}; }
 [[nodiscard]] constexpr auto xyx() const noexcept { return Vector<T, 3>{x, y, x}; }
@@ -10,6 +11,7 @@
 [[nodiscard]] constexpr auto yxy() const noexcept { return Vector<T, 3>{y, x, y}; }
 [[nodiscard]] constexpr auto yyx() const noexcept { return Vector<T, 3>{y, y, x}; }
 [[nodiscard]] constexpr auto yyy() const noexcept { return Vector<T, 3>{y, y, y}; }
+
 [[nodiscard]] constexpr auto xxxx() const noexcept { return Vector<T, 4>{x, x, x, x}; }
 [[nodiscard]] constexpr auto xxxy() const noexcept { return Vector<T, 4>{x, x, x, y}; }
 [[nodiscard]] constexpr auto xxyx() const noexcept { return Vector<T, 4>{x, x, y, x}; }

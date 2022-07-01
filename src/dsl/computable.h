@@ -62,7 +62,6 @@ struct EnableSubscriptAccess {
 
 template<typename T>
 struct EnableGetMemberByIndex {
-
 };
 
 template<typename T>

@@ -6,11 +6,13 @@ def generate(file, dim):
     for x in entries:
         for y in entries:
             print(f"[[nodiscard]] constexpr auto {x}{y}() const noexcept {{ return Vector<T, 2>{{{x}, {y}}}; }}", file=file)
+    print("", file=file)
     for x in entries:
         for y in entries:
             for z in entries:
                 print(f"[[nodiscard]] constexpr auto {x}{y}{z}() const noexcept {{ return Vector<T, 3>{{{x}, {y}, {z}}}; }}",
                       file=file)
+    print("", file=file)    
     for x in entries:
         for y in entries:
             for z in entries:

@@ -7,6 +7,7 @@
 [[nodiscard]] constexpr auto zx() const noexcept { return Vector<T, 2>{z, x}; }
 [[nodiscard]] constexpr auto zy() const noexcept { return Vector<T, 2>{z, y}; }
 [[nodiscard]] constexpr auto zz() const noexcept { return Vector<T, 2>{z, z}; }
+
 [[nodiscard]] constexpr auto xxx() const noexcept { return Vector<T, 3>{x, x, x}; }
 [[nodiscard]] constexpr auto xxy() const noexcept { return Vector<T, 3>{x, x, y}; }
 [[nodiscard]] constexpr auto xxz() const noexcept { return Vector<T, 3>{x, x, z}; }
@@ -34,6 +35,7 @@
 [[nodiscard]] constexpr auto zzx() const noexcept { return Vector<T, 3>{z, z, x}; }
 [[nodiscard]] constexpr auto zzy() const noexcept { return Vector<T, 3>{z, z, y}; }
 [[nodiscard]] constexpr auto zzz() const noexcept { return Vector<T, 3>{z, z, z}; }
+
 [[nodiscard]] constexpr auto xxxx() const noexcept { return Vector<T, 4>{x, x, x, x}; }
 [[nodiscard]] constexpr auto xxxy() const noexcept { return Vector<T, 4>{x, x, x, y}; }
 [[nodiscard]] constexpr auto xxxz() const noexcept { return Vector<T, 4>{x, x, x, z}; }

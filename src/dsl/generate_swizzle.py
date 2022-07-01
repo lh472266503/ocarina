@@ -5,19 +5,20 @@ def generate(file, dim):
     entries = ["x", "y", "z", "w"][:dim]
     for i,x in enumerate(entries):
         for j,y in enumerate(entries):
-            str = f"[[nodiscard]] auto {x}{y}() {{ return def<Vector<T, 2>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x{i}{j},2));}}"
+            str = f"[[nodiscard]] auto {x}{y}() {{ return def<Vector<T, 2>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x{i}{j}, 2)); }}"
             print(str, file=file)
-            
+    print("", file=file)
     for i,x in enumerate(entries):
         for j,y in enumerate(entries):
             for k,z in enumerate(entries):
-                str = f"[[nodiscard]] auto {x}{y}{z}() {{ return def<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x{i}{j}{k},3));}}"
+                str = f"[[nodiscard]] auto {x}{y}{z}() {{ return def<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x{i}{j}{k}, 3)); }}"
                 print(str, file=file)
+    print("", file=file)
     for i,x in enumerate(entries):
         for j,y in enumerate(entries):
             for k,z in enumerate(entries):
                 for l,w in enumerate(entries):
-                    str = f"[[nodiscard]] auto {x}{y}{z}{w}() {{ return def<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(),  expression(), 0x{i}{j}{k}{l},4));}}"
+                    str = f"[[nodiscard]] auto {x}{y}{z}{w}() {{ return def<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x{i}{j}{k}{l}, 4)); }}"
                     print(str, file=file)
 
 

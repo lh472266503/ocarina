@@ -40,6 +40,4 @@ for root,dirs,files in os.walk(os.path.join(os.getcwd(), "src")):
         num_file += 1
 
 
-# print(count, num_file)
-
-print(0x0123)
+print(count, num_file)

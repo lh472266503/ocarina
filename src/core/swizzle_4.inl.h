@@ -14,6 +14,7 @@
 [[nodiscard]] constexpr auto wy() const noexcept { return Vector<T, 2>{w, y}; }
 [[nodiscard]] constexpr auto wz() const noexcept { return Vector<T, 2>{w, z}; }
 [[nodiscard]] constexpr auto ww() const noexcept { return Vector<T, 2>{w, w}; }
+
 [[nodiscard]] constexpr auto xxx() const noexcept { return Vector<T, 3>{x, x, x}; }
 [[nodiscard]] constexpr auto xxy() const noexcept { return Vector<T, 3>{x, x, y}; }
 [[nodiscard]] constexpr auto xxz() const noexcept { return Vector<T, 3>{x, x, z}; }
@@ -78,6 +79,7 @@
 [[nodiscard]] constexpr auto wwy() const noexcept { return Vector<T, 3>{w, w, y}; }
 [[nodiscard]] constexpr auto wwz() const noexcept { return Vector<T, 3>{w, w, z}; }
 [[nodiscard]] constexpr auto www() const noexcept { return Vector<T, 3>{w, w, w}; }
+
 [[nodiscard]] constexpr auto xxxx() const noexcept { return Vector<T, 4>{x, x, x, x}; }
 [[nodiscard]] constexpr auto xxxy() const noexcept { return Vector<T, 4>{x, x, x, y}; }
 [[nodiscard]] constexpr auto xxxz() const noexcept { return Vector<T, 4>{x, x, x, z}; }
