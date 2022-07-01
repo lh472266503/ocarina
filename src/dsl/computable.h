@@ -115,6 +115,7 @@ struct Computable<Vector<T, 2>>
 public:
     Var<T> x{Function::current()->swizzle(Type::of<T>(), expression(), 0, 1)};
     Var<T> y{Function::current()->swizzle(Type::of<T>(), expression(), 1, 1)};
+#include "swizzle_2.inl.h"
 };
 
 template<typename T>
@@ -128,6 +129,7 @@ public:
     Var<T> x{Function::current()->swizzle(Type::of<T>(), expression(), 0, 1)};
     Var<T> y{Function::current()->swizzle(Type::of<T>(), expression(), 1, 1)};
     Var<T> z{Function::current()->swizzle(Type::of<T>(), expression(), 2, 1)};
+#include "swizzle_3.inl.h"
 };
 
 template<typename T>
@@ -142,6 +144,7 @@ public:
     Var<T> y{Function::current()->swizzle(Type::of<T>(), expression(), 1, 1)};
     Var<T> z{Function::current()->swizzle(Type::of<T>(), expression(), 2, 1)};
     Var<T> w{Function::current()->swizzle(Type::of<T>(), expression(), 3, 1)};
+#include "swizzle_4.inl.h"
 };
 
 template<typename T, size_t N>

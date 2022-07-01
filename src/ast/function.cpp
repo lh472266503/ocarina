@@ -72,7 +72,7 @@ const MemberExpr *Function::vector_member(const Type *type, const Expression *ob
     return _create_expression<MemberExpr>(type, obj, name);
 }
 
-const MemberExpr *Function::swizzle(const Type *type, const Expression *obj, uint8_t mask, uint8_t swizzle_size) noexcept {
+const MemberExpr *Function::swizzle(const Type *type, const Expression *obj, uint16_t mask, uint16_t swizzle_size) noexcept {
     return _create_expression<MemberExpr>(type, obj, mask, swizzle_size);
 }
 

@@ -140,8 +140,9 @@ void CppCodegen::visit(const MemberExpr *expr) noexcept {
     expr->parent()->accept(*this);
     if (expr->is_swizzle()) {
         static constexpr std::string_view xyzw[] = {"x", "y", "z", "w"};
-        if (expr->swizzle_size() == 1) {
-            _scratch << "." << xyzw[expr->member_index()];
+        _scratch << ".";
+        for (int i = 0; i < expr->swizzle_size(); ++i) {
+            _scratch << xyzw[expr->swizzle_index(i)];
         }
     } else {
         _scratch << "." << expr->field_name();

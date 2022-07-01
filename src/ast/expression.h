@@ -207,8 +207,8 @@ public:
 class MemberExpr : public Expression {
 private:
     const Expression *_parent{nullptr};
-    uint8_t _member_index{0};
-    uint8_t _swizzle_size{0};
+    uint16_t _member_index{0};
+    uint16_t _swizzle_size{0};
     ocarina::string_view _field_name;
 
 private:
@@ -218,7 +218,7 @@ private:
 public:
     MemberExpr(const Type *type, const Expression *parent, std::string_view name)
         : Expression(Tag::MEMBER, type), _parent(parent), _field_name(name) {}
-    MemberExpr(const Type *type, const Expression *parent, uint8_t mask, uint8_t swizzle_size)
+    MemberExpr(const Type *type, const Expression *parent, uint16_t mask, uint16_t swizzle_size)
         : Expression(Tag::MEMBER, type), _parent(parent), _member_index(mask), _swizzle_size(swizzle_size) {}
     [[nodiscard]] auto member_index() const noexcept { return _member_index; }
     [[nodiscard]] bool is_swizzle() const noexcept { return _swizzle_size != 0; }

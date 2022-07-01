@@ -39,8 +39,10 @@ uint64_t BinaryExpr::_compute_hash() const noexcept {
 }
 
 int MemberExpr::swizzle_index(int idx) const noexcept {
-
-    return 0;
+    int shift = (_swizzle_size - 1 - idx) * 4;
+    auto mask = 0xf000 >> (idx * 4);
+    auto ret = (mask & _member_index) >> shift;
+    return ret;
 }
 
 uint64_t MemberExpr::_compute_hash() const noexcept {

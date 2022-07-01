@@ -150,7 +150,7 @@ public:
     [[nodiscard]] const CastExpr *cast(const Type *type, CastOp op, const Expression *expression) noexcept;
     [[nodiscard]] const AccessExpr *access(const Type *type, const Expression *range, const Expression *index) noexcept;
     [[nodiscard]] const MemberExpr *vector_member(const Type *type, const Expression *obj, ocarina::string_view name) noexcept;
-    [[nodiscard]] const MemberExpr *swizzle(const Type *type, const Expression *obj, uint8_t mask, uint8_t swizzle_size) noexcept;
+    [[nodiscard]] const MemberExpr *swizzle(const Type *type, const Expression *obj, uint16_t mask, uint16_t swizzle_size) noexcept;
     [[nodiscard]] IfStmt *if_(const Expression *expr) noexcept;
     [[nodiscard]] SwitchStmt *switch_(const Expression *expr) noexcept;
     [[nodiscard]] SwitchCaseStmt *switch_case(const Expression *expr) noexcept;
