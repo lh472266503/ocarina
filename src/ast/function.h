@@ -20,7 +20,7 @@ class ScopeStmt;
 class RefExpr;
 class IfStmt;
 
-class OC_AST_API Function : public concepts::Noncopyable {
+class OC_AST_API Function : public concepts::Noncopyable, public concepts::Definable {
 public:
     enum struct Tag : uint {
         KERNEL,

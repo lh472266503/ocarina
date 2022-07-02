@@ -8,6 +8,7 @@
 #include "core/basic_types.h"
 #include "core/stl.h"
 #include "core/macro_map.h"
+#include "core/concepts.h"
 
 namespace ocarina {
 
@@ -267,7 +268,7 @@ struct TypeVisitor {
     virtual void visit(const Type *) noexcept = 0;
 };
 
-class OC_AST_API Type {
+class OC_AST_API Type : public concepts::Noncopyable, public concepts::Definable {
 public:
     enum struct Tag : uint32_t {
         BOOL,
@@ -312,9 +313,6 @@ public:
     [[nodiscard]] static const Type *find(uint64_t hash) noexcept;
     [[nodiscard]] static const Type *at(uint32_t uid) noexcept;
     [[nodiscard]] static size_t count() noexcept;
-    [[nodiscard]] bool has_decl() const noexcept { return _has_decl; }
-    void decl() const noexcept { _has_decl = true; }
-    void un_decl() const noexcept { _has_decl = false; }
     [[nodiscard]] bool operator==(const Type &rhs) const noexcept { return _hash == rhs._hash; }
     [[nodiscard]] bool operator!=(const Type &rhs) const noexcept { return !(*this == rhs); }
     [[nodiscard]] bool operator<(const Type &rhs) const noexcept { return _index < rhs._index; }

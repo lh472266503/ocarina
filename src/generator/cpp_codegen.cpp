@@ -189,7 +189,7 @@ void CppCodegen::visit(const CastExpr *expr) noexcept {
     _scratch << ")";
 }
 void CppCodegen::visit(const Type *type) noexcept {
-    if (!type->is_structure() || type->has_decl()) { return; }
+    if (!type->is_structure() || type->has_defined()) { return; }
     _emit_struct_name(type->hash());
     _scratch << " { \n";
     _indent += 1;
@@ -204,7 +204,7 @@ void CppCodegen::visit(const Type *type) noexcept {
     _indent -= 1;
     _scratch << "};\n";
 
-    type->decl();
+    type->define();
 }
 
 void CppCodegen::_emit_types_decl() noexcept {
@@ -270,6 +270,9 @@ void CppCodegen::_emit_type_name(const Type *type) noexcept {
     }
 }
 void CppCodegen::_emit_function(const Function &f) noexcept {
+    if (f.has_defined()) {
+        return;
+    }
     if (f.is_callable()) {
         _scratch << "__device__";
     }
@@ -279,6 +282,7 @@ void CppCodegen::_emit_function(const Function &f) noexcept {
     _emit_func_name(f.hash());
     _emit_arguments(f);
     _emit_body(f);
+    f.define();
 }
 void CppCodegen::_emit_variable_name(Variable v) noexcept {
     _scratch << "v" << v.uid();
