@@ -7,27 +7,7 @@
 #include "ast/type_registry.h"
 #include "dsl/var.h"
 
-#define OC_MAKE_STRUCT_MEMBER(member) \
-    Var<std::remove_cvref_t<decltype(this_type::member)>> member{};
 
-#define OC_MAKE_COMPUTABLE_BODY(S, ...)                                        \
-    namespace detail {                                                         \
-    template<>                                                                 \
-    struct Computable<S> {                                                     \
-        using this_type = S;                                                   \
-        MAP(OC_MAKE_STRUCT_MEMBER, ##__VA_ARGS__)                              \
-    private:                                                                   \
-        const Expression *_expression{nullptr};                                \
-                                                                               \
-    public:                                                                    \
-        [[nodiscard]] auto expression() const noexcept { return _expression; } \
-                                                                               \
-    protected:                                                                 \
-        explicit Computable(const Expression *e) noexcept : _expression{e} {}  \
-        Computable(Computable &&) noexcept = default;                          \
-        Computable(const Computable &) noexcept = default;                     \
-    };                                                                         \
-    }
 #define OC_MAKE_VAR_BODY(S, ...)                                                                \
     template<>                                                                                  \
     struct Var<S> : public detail::Computable<S> {                                              \
@@ -59,4 +39,4 @@
     OC_MAKE_STRUCT_REFLECTION(S, ##__VA_ARGS__) \
     OC_MAKE_STRUCT_DESC(S, ##__VA_ARGS__)       \
     OC_MAKE_COMPUTABLE_BODY(S, ##__VA_ARGS__) \
-    OC_MAKE_VAR_BODY(S, ##__VA_ARGS__) \
+    OC_MAKE_VAR_BODY(S, ##__VA_ARGS__)

@@ -172,8 +172,19 @@ struct Computable<ocarina::tuple<T...>> {
     //        return Computable<Elm>(ocarina::FunctionBuilder::current(Type::of<Elm>(), expression(), i));
     //    }
 };
-#undef OC_COMPUTABLE_COMMON
 
+#define OC_MAKE_STRUCT_MEMBER(member) \
+    Var<std::remove_cvref_t<decltype(this_type::member)>> member{};
+
+#define OC_MAKE_COMPUTABLE_BODY(S, ...)           \
+    namespace detail {                            \
+    template<>                                    \
+    struct Computable<S> {                        \
+        using this_type = S;                      \
+        MAP(OC_MAKE_STRUCT_MEMBER, ##__VA_ARGS__) \
+        OC_COMPUTABLE_COMMON(S)                   \
+    };                                            \
+    }
 }// namespace detail
 
 }// namespace ocarina
