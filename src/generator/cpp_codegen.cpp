@@ -204,7 +204,7 @@ void CppCodegen::_emit_types_decl() noexcept {
 }
 
 void CppCodegen::_emit_variable_decl(Variable v) noexcept {
-    if (v.type()->is_scalar() || v.type()->is_vector()) {
+    if (!v.type()->is_array()) {
         _emit_type_name(v.type());
         _emit_space();
         switch (v.tag()) {
@@ -212,7 +212,7 @@ void CppCodegen::_emit_variable_decl(Variable v) noexcept {
             default:break;
         }
         _emit_variable_name(v);
-    } else if (v.type()->is_array()) {
+    } else {
         _emit_type_name(v.type()->element());
         _emit_space();
         _emit_variable_name(v);
