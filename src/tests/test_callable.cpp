@@ -14,6 +14,7 @@
 #include "core/platform.h"
 #include "dsl/syntax_sugar.h"
 #include "core/util.h"
+#include "rt/hit.h"
 
 using std::cout;
 using std::endl;
@@ -28,6 +29,7 @@ auto func(T a, T b) {
     Var<int3> arr;
     arr[1] = b;
     a = arr[1] + 1;
+    Var<Hit> hit;
 //    T d = a + b;
 //    T c = a + b * a + 1.5f;
     return a + b;
