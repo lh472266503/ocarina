@@ -38,9 +38,12 @@ private:
         [[nodiscard]] size_t size() const noexcept;
     };
 
+    int _indent{};
+
 protected:
     Scratch _scratch;
-    int _indent{};
+    void indent_inc() { _indent += 1; }
+    void indent_dec() { _indent -= 1; }
     friend struct detail::LiteralPrinter;
 
 protected:

@@ -34,10 +34,10 @@ void CppCodegen::visit(const ReturnStmt *stmt) noexcept {
 }
 void CppCodegen::visit(const ScopeStmt *stmt) noexcept {
     _scratch << "{\n";
-    _indent += 1;
+    indent_inc();
     _emit_local_var_define(stmt);
     _emit_statements(stmt->statements());
-    _indent -= 1;
+    indent_dec();
     _emit_indent();
     _scratch << "}";
 }
@@ -193,7 +193,7 @@ void CppCodegen::visit(const Type *type) noexcept {
     _scratch << "struct ";
     _emit_struct_name(type->hash());
     _scratch << " { \n";
-    _indent += 1;
+    indent_inc();
     for (int i = 0; i < type->members().size(); ++i) {
         const Type *member = type->members()[i];
         _emit_indent();
@@ -202,7 +202,7 @@ void CppCodegen::visit(const Type *type) noexcept {
         _emit_member_name(i);
         _scratch << "{};\n";
     }
-    _indent -= 1;
+    indent_dec();
     _scratch << "};\n";
 
     type->define();
