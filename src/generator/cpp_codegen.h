@@ -39,13 +39,13 @@ protected:
 
     void visit(const Type *type) noexcept override;
 
-    virtual void _emit_types_decl() noexcept;
-    virtual void _emit_variable_decl(Variable v) noexcept;
+    virtual void _emit_types_define() noexcept;
+    virtual void _emit_variable_define(Variable v) noexcept;
     virtual void _emit_type_name(const Type *type) noexcept;
     virtual void _emit_function(const Function &f) noexcept;
     virtual void _emit_arguments(const Function &f) noexcept;
     virtual void _emit_body(const Function &f) noexcept;
-    virtual void _emit_local_var_decl(const ScopeStmt *scope) noexcept;
+    virtual void _emit_local_var_define(const ScopeStmt *scope) noexcept;
     virtual void _emit_variable_name(Variable v) noexcept;
     virtual void _emit_statements(ocarina::span<const Statement *const> stmts) noexcept;
 

@@ -72,6 +72,12 @@ int main(int argc, char *argv[]) {
         a += 1;
         b += 1;
         Var<Hit> hit;
+        Var<float4x4> m4;
+
+        Var vec = m4[0];
+
+        Var<int[6]> arr;
+        arr[3] = 0;
         hit.bary.x = 0;
         add(a , a + 7 , 1);
         return a;

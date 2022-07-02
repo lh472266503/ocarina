@@ -35,7 +35,7 @@ void CppCodegen::visit(const ReturnStmt *stmt) noexcept {
 void CppCodegen::visit(const ScopeStmt *stmt) noexcept {
     _scratch << "{\n";
     _indent += 1;
-    _emit_local_var_decl(stmt);
+    _emit_local_var_define(stmt);
     _emit_statements(stmt->statements());
     _indent -= 1;
     _emit_indent();
@@ -190,6 +190,7 @@ void CppCodegen::visit(const CastExpr *expr) noexcept {
 }
 void CppCodegen::visit(const Type *type) noexcept {
     if (!type->is_structure() || type->has_defined()) { return; }
+    _scratch << "struct ";
     _emit_struct_name(type->hash());
     _scratch << " { \n";
     _indent += 1;
@@ -207,11 +208,11 @@ void CppCodegen::visit(const Type *type) noexcept {
     type->define();
 }
 
-void CppCodegen::_emit_types_decl() noexcept {
+void CppCodegen::_emit_types_define() noexcept {
     Type::for_each(this);
 }
 
-void CppCodegen::_emit_variable_decl(Variable v) noexcept {
+void CppCodegen::_emit_variable_define(Variable v) noexcept {
     if (!v.type()->is_array()) {
         _emit_type_name(v.type());
         _emit_space();
@@ -230,10 +231,10 @@ void CppCodegen::_emit_variable_decl(Variable v) noexcept {
     }
 }
 
-void CppCodegen::_emit_local_var_decl(const ScopeStmt *scope) noexcept {
+void CppCodegen::_emit_local_var_define(const ScopeStmt *scope) noexcept {
     for (const auto &var : scope->local_vars()) {
         _emit_indent();
-        _emit_variable_decl(var);
+        _emit_variable_define(var);
         _scratch << "{};\n";
     }
 }
@@ -257,7 +258,11 @@ void CppCodegen::_emit_type_name(const Type *type) noexcept {
                 _scratch << type->dimension();
                 _scratch << "]";
                 break;
-            case Type::Tag::MATRIX: break;
+            case Type::Tag::MATRIX: {
+                auto d = type->dimension();
+                _scratch << "float" << d << "x" << d;
+                break;
+            }
             case Type::Tag::STRUCTURE:
                 _emit_struct_name(type->hash());
                 break;
@@ -273,10 +278,6 @@ void CppCodegen::_emit_function(const Function &f) noexcept {
     if (f.has_defined()) {
         return;
     }
-    if (f.is_callable()) {
-        _scratch << "__device__";
-    }
-    _emit_space();
     _emit_type_name(f.return_type());
     _emit_space();
     _emit_func_name(f.hash());
@@ -303,7 +304,7 @@ void CppCodegen::_emit_body(const Function &f) noexcept {
 void CppCodegen::_emit_arguments(const Function &f) noexcept {
     _scratch << "(";
     for (const auto &v : f.arguments()) {
-        _emit_variable_decl(v);
+        _emit_variable_define(v);
         _scratch << ",";
     }
     if (!f.arguments().empty()) {
@@ -315,7 +316,7 @@ void CppCodegen::emit(const Function &func) noexcept {
     for (const auto &f : func.used_custom_func()) {
         emit(*f);
     }
-    _emit_types_decl();
+    _emit_types_define();
     _emit_function(func);
     _emit_newline();
 }

@@ -155,10 +155,17 @@ struct Computable<std::array<T, N>>
     OC_COMPUTABLE_COMMON(std::array<T, N>)
 };
 
+template<typename T, size_t N>
+struct Computable<T[N]>
+    : detail::EnableSubscriptAccess<Computable<T[N]>>,
+      detail::EnableGetMemberByIndex<Computable<T[N]>> {
+    OC_COMPUTABLE_COMMON(T[N])
+};
+
 template<size_t N>
 struct Computable<Matrix<N>>
-    : detail::EnableGetMemberByIndex<Matrix<N>>,
-      detail::EnableSubscriptAccess<Matrix<N>> {
+    : detail::EnableGetMemberByIndex<Computable<Matrix<N>>>,
+      detail::EnableSubscriptAccess<Computable<Matrix<N>>> {
     OC_COMPUTABLE_COMMON(Matrix<N>)
 };
 
@@ -166,18 +173,17 @@ template<typename... T>
 struct Computable<ocarina::tuple<T...>> {
     using Tuple = ocarina::tuple<T...>;
     OC_COMPUTABLE_COMMON(ocarina::tuple<T...>)
-    //    template<size_t i>
-    //    [[nodiscard]] auto get() const noexcept {
-    //        using Elm = ocarina::tuple_element_t<i, Tuple>;
-    //        return Computable<Elm>(ocarina::FunctionBuilder::current(Type::of<Elm>(), expression(), i));
-    //    }
+    template<size_t i>
+    [[nodiscard]] auto get() const noexcept {
+        using Elm = ocarina::tuple_element_t<i, Tuple>;
+        return def<Elm>(Function::current()->access(Type::of<Elm>(), expression(), i));
+    }
 };
 
-#define OC_MAKE_STRUCT_MEMBER(m)                                          \
-    Var<std::remove_cvref_t<decltype(this_type::m)>>                      \
-        m{Function::current()->member(Type::of<decltype(this_type::m)>(), \
-                                      expression(),                       \
-                                      ocarina::struct_member_tuple<Hit>::member_index(#m))};
+#define OC_MAKE_STRUCT_MEMBER(m)                                                                                        \
+    Var<std::remove_cvref_t<decltype(this_type::m)>>(m){Function::current()->member(Type::of<decltype(this_type::m)>(), \
+                                                                                    expression(),                       \
+                                                                                    ocarina::struct_member_tuple<Hit>::member_index(#m))};
 
 #define OC_MAKE_COMPUTABLE_BODY(S, ...)           \
     namespace detail {                            \
