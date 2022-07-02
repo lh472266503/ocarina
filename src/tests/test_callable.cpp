@@ -23,14 +23,13 @@ using namespace ocarina;
 
 
 template<typename T>
-auto func(T a, T& b) {
-    b = a;
-    return a + b;
-    Var<std::array<int, 6>> arr;
+auto func(T a, T b) {
+    Var<int3> arr;
     arr[1] = b;
     a = arr[1] + 1;
-    T d = a + b;
-    T c = a + b * a + 1.5f;
+//    T d = a + b;
+//    T c = a + b * a + 1.5f;
+    return a + b;
     $if(a + b > 0) {
         a = a + 9;
     }

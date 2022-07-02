@@ -23,6 +23,8 @@
 #include <filesystem>
 #include <EASTL/tuple.h>
 
+#define OC_FORWARD(arg) std::forward<decltype(arg)>(arg)
+
 namespace ocarina {
 
 namespace detail {

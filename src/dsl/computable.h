@@ -34,6 +34,8 @@ namespace detail {
 template<typename T>
 [[nodiscard]] decltype(auto) extract_expression(T &&v) noexcept;
 
+#define OC_EXPR(arg) ocarina::detail::extract_expression(std::forward<T>(arg))
+
 template<typename T>
 struct EnableSubscriptAccess {
 
@@ -44,7 +46,7 @@ struct EnableSubscriptAccess {
     auto operator[](Index &&index) const noexcept {
         const AccessExpr *expr = Function::current()->access(Type::of<element_type>(),
                                                              static_cast<const T *>(this)->expression(),
-                                                             extract_expression(std::forward<Index>(index)));
+                                                             OC_EXPR(index));
         return Var<element_type>(expr);
     }
 

@@ -12,7 +12,7 @@
 namespace ocarina {
 template<typename T>
 [[nodiscard]] inline Var<expr_value_t<T>> def(T &&x) noexcept {
-    return Var(std::forward<T>(x));
+    return Var(OC_FORWARD(x));
 }
 
 template<typename T>

@@ -229,4 +229,21 @@ public:
     OC_MAKE_EXPRESSION_ACCEPT_VISITOR
 };
 
+class CallExpr : public Expression {
+private:
+    ocarina::vector<const Expression *> _arguments;
+
+private:
+    void _mark(Usage) const noexcept override {}
+    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+
+public:
+    CallExpr(const Type *type, ocarina::vector<const Expression *> &&args)
+        : Expression(Tag::CALL, type), _arguments(std::move(args)) {}
+    [[nodiscard]] const ocarina::span<const Expression *const> arguments() const {
+        return _arguments;
+    }
+    OC_MAKE_EXPRESSION_ACCEPT_VISITOR
+};
+
 }// namespace ocarina
