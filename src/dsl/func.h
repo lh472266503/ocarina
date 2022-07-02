@@ -178,9 +178,9 @@ public:
     Callable(Func &&func) noexcept
         : _function(std::move(Function::define_callable([&] {
               if constexpr (std::is_same_v<void, Ret>) {
-                  detail::create<Args...>(func, ocarina::index_sequence_for<Args...>());
+                  detail::create<Args...>(OC_FORWARD(func), ocarina::index_sequence_for<Args...>());
               } else {
-                  decltype(auto) ret = detail::create<Args...>(func, ocarina::index_sequence_for<Args...>());
+                  decltype(auto) ret = detail::create<Args...>(OC_FORWARD(func), ocarina::index_sequence_for<Args...>());
                   Function::current()->return_(ret.expression());
               }
           }))) {}
