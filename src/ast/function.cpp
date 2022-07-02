@@ -68,12 +68,12 @@ const AccessExpr *Function::access(const Type *type, const Expression *range, co
     return _create_expression<AccessExpr>(type, range, index);
 }
 
-const MemberExpr *Function::vector_member(const Type *type, const Expression *obj, ocarina::string_view name) noexcept {
-    return _create_expression<MemberExpr>(type, obj, name);
-}
-
 const MemberExpr *Function::swizzle(const Type *type, const Expression *obj, uint16_t mask, uint16_t swizzle_size) noexcept {
     return _create_expression<MemberExpr>(type, obj, mask, swizzle_size);
+}
+
+const CallExpr *Function::call(const Type *type, ocarina::vector<const Expression *> args) noexcept {
+    return _create_expression<CallExpr>(type, std::move(args));
 }
 
 IfStmt *Function::if_(const Expression *expr) noexcept {

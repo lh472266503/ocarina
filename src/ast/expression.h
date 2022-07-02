@@ -240,7 +240,7 @@ private:
 public:
     CallExpr(const Type *type, ocarina::vector<const Expression *> &&args)
         : Expression(Tag::CALL, type), _arguments(std::move(args)) {}
-    [[nodiscard]] const ocarina::span<const Expression *const> arguments() const {
+    [[nodiscard]] ocarina::span<const Expression *const> arguments() const {
         return _arguments;
     }
     OC_MAKE_EXPRESSION_ACCEPT_VISITOR

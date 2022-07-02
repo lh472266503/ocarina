@@ -49,4 +49,11 @@ uint64_t MemberExpr::_compute_hash() const noexcept {
     return hash64(_field_name, _parent->hash());
 }
 
+uint64_t CallExpr::_compute_hash() const noexcept {
+    uint64_t ret = Hash64::default_seed;
+    for (const auto &arg : _arguments) {
+        ret = hash64(ret, arg->hash());
+    }
+    return ret;
+}
 }// namespace ocarina
