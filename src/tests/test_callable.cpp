@@ -62,14 +62,15 @@ int main(int argc, char *argv[]) {
 
     Callable callable = func<Var<int>>;
 
-    Callable add = [&](Var<int> a, Var<int> b) {
+    Callable add = [&](Var<int> a, Var<int> b ,Var<int>) {
         a = a + b;
+        return a;
     };
 
     Callable c1 = [&](Var<int> a, Var<int> b) {
         a += 1;
         b += 1;
-        add(a , 1.5f);
+        add(a , a + 7 , 1);
         return a;
 //        return a + b;
     };

@@ -58,6 +58,52 @@ template<typename T>
 using prototype_to_creation_tag_t = typename detail::prototype_to_creation_tag<T>::type;
 }// namespace detail
 
+namespace detail {
+template<typename R, typename... Args>
+using function_signature = R(Args...);
+
+template<typename T>
+struct canonical_signature;
+
+template<typename Ret, typename... Args>
+struct canonical_signature<Ret(Args...)> {
+    using type = function_signature<Ret, Args...>;
+};
+
+template<typename Ret, typename... Args>
+struct canonical_signature<Ret (*)(Args...)>
+    : canonical_signature<Ret(Args...)> {};
+
+template<typename F>
+struct canonical_signature
+    : canonical_signature<decltype(&F::operator())> {};
+
+#define OC_MAKE_MEMBER_FUNC_SIGNATURE(...)                        \
+    template<typename Ret, typename Cls, typename... Args>        \
+    struct canonical_signature<Ret (Cls::*)(Args...) __VA_ARGS__> \
+        : canonical_signature<Ret(Args...)> {};
+
+OC_MAKE_MEMBER_FUNC_SIGNATURE()
+OC_MAKE_MEMBER_FUNC_SIGNATURE(const)
+OC_MAKE_MEMBER_FUNC_SIGNATURE(volatile)
+OC_MAKE_MEMBER_FUNC_SIGNATURE(noexcept)
+OC_MAKE_MEMBER_FUNC_SIGNATURE(const noexcept)
+OC_MAKE_MEMBER_FUNC_SIGNATURE(const volatile)
+OC_MAKE_MEMBER_FUNC_SIGNATURE(volatile noexcept)
+OC_MAKE_MEMBER_FUNC_SIGNATURE(const volatile noexcept)
+
+#undef OC_MAKE_MEMBER_FUNC_SIGNATURE
+
+template<typename T>
+using canonical_signature_t = typename canonical_signature<T>::type;
+
+template<typename T>
+struct dsl_function {
+    using type = typename dsl_function<
+        canonical_signature_t<std::remove_cvref_t<T>>>::type;
+};
+}// namespace detail
+
 template<typename T>
 class Callable {
     static_assert(always_false_v<T>);
@@ -121,6 +167,9 @@ template<typename Ret, typename... Args>
 class Callable<Ret(Args...)> : public concepts::Noncopyable {
     static_assert(std::negation_v<std::disjunction<std::is_pointer<Args>...>>);
 
+public:
+    using signature = typename detail::canonical_signature_t<Ret(Args...)>;
+
 private:
     ocarina::unique_ptr<Function> _function;
 
@@ -136,7 +185,9 @@ public:
               }
           }))) {}
 
-    auto operator()(const Var<Args> &...args) const noexcept{
+    template<typename... A>
+    requires std::is_invocable_v<signature, expr_value_t<A>...>
+    auto operator()(A &&...args) const noexcept {
         const CallExpr *expr = Function::current()->call(Type::of<Ret>(), _function.get(), {(OC_EXPR(args))...});
         if constexpr (!std::is_same_v<std::remove_cvref_t<Ret>, void>) {
             return def<Ret>(expr);
@@ -151,49 +202,6 @@ public:
 };
 
 namespace detail {
-template<typename R, typename... Args>
-using function_signature = R(Args...);
-
-template<typename T>
-struct canonical_signature;
-
-template<typename Ret, typename... Args>
-struct canonical_signature<Ret(Args...)> {
-    using type = function_signature<Ret, Args...>;
-};
-
-template<typename Ret, typename... Args>
-struct canonical_signature<Ret (*)(Args...)>
-    : canonical_signature<Ret(Args...)> {};
-
-template<typename F>
-struct canonical_signature
-    : canonical_signature<decltype(&F::operator())> {};
-
-#define OC_MAKE_MEMBER_FUNC_SIGNATURE(...)                        \
-    template<typename Ret, typename Cls, typename... Args>        \
-    struct canonical_signature<Ret (Cls::*)(Args...) __VA_ARGS__> \
-        : canonical_signature<Ret(Args...)> {};
-
-OC_MAKE_MEMBER_FUNC_SIGNATURE()
-OC_MAKE_MEMBER_FUNC_SIGNATURE(const)
-OC_MAKE_MEMBER_FUNC_SIGNATURE(volatile)
-OC_MAKE_MEMBER_FUNC_SIGNATURE(noexcept)
-OC_MAKE_MEMBER_FUNC_SIGNATURE(const noexcept)
-OC_MAKE_MEMBER_FUNC_SIGNATURE(const volatile)
-OC_MAKE_MEMBER_FUNC_SIGNATURE(volatile noexcept)
-OC_MAKE_MEMBER_FUNC_SIGNATURE(const volatile noexcept)
-
-#undef OC_MAKE_MEMBER_FUNC_SIGNATURE
-
-template<typename T>
-using canonical_signature_t = typename canonical_signature<T>::type;
-
-template<typename T>
-struct dsl_function {
-    using type = typename dsl_function<
-        canonical_signature_t<std::remove_cvref_t<T>>>::type;
-};
 
 template<typename Ret, typename... Args>
 struct dsl_function<function_signature<Ret, Args...>> {
