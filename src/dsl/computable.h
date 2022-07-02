@@ -203,6 +203,7 @@ public:
                                                                                     ocarina::struct_member_tuple<Hit>::member_index(#m))};
 
 #define OC_MAKE_COMPUTABLE_BODY(S, ...)           \
+    namespace ocarina {                           \
     namespace detail {                            \
     template<>                                    \
     struct Computable<S> {                        \
@@ -211,14 +212,15 @@ public:
     public:                                       \
         MAP(OC_MAKE_STRUCT_MEMBER, ##__VA_ARGS__) \
     };                                            \
+    }                                             \
     }
 }// namespace detail
 
 template<typename T>
-struct Extension : public detail::Computable<T> {};
+struct Proxy : public detail::Computable<T> {};
 
 #define OC_MAKE_VAR_EXTENSION(S) \
     template<>                   \
-    struct Extension<S> : public detail::Computable<S>
+    struct ocarina::Proxy<S> : public ocarina::detail::Computable<S>
 
 }// namespace ocarina

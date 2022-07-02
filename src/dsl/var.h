@@ -28,8 +28,8 @@ struct Var : public detail::Computable<T> {
         Var(Arg &&arg) : Var() {
         assign(*this, std::forward<Arg>(arg));
     }
-    auto operator->() noexcept { return reinterpret_cast<Extension<T> *>(this); }
-    auto operator->() const noexcept { return reinterpret_cast<const Extension<T> *>(this); }
+    auto operator->() noexcept { return reinterpret_cast<Proxy<T> *>(this); }
+    auto operator->() const noexcept { return reinterpret_cast<const Proxy<T> *>(this); }
 
     explicit Var(detail::ArgumentCreation) noexcept
         : Var(Function::current()->argument(Type::of<T>())) {

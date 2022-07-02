@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
         a += 1;
         b += 1;
         Var<Hit> hit;
-        hit->print();
+        hit->init();
         Var<float4x4> m4;
         Var<ocarina::tuple<int, float>> tp;
         auto g0 = tp.get<0>();

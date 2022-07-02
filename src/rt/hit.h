@@ -14,11 +14,12 @@ struct alignas(16) Hit {
     float2 bary;
 };
 
-OC_STRUCT(ocarina::Hit, inst_id, prim_id, bary) {
-    void print() {
-        inst_id = 1.7f;
+}// namespace ocarina
+
+OC_STRUCT(ocarina::Hit, inst_id, prim_id, bary){
+    void init(){
+        inst_id = uint(-1);
+        prim_id = uint(-1);
     }
 };
 
-
-}// namespace ocarina
