@@ -72,6 +72,7 @@ int main(int argc, char *argv[]) {
         a += 1;
         b += 1;
         Var<Hit> hit;
+        hit.bary.x = 0;
         add(a , a + 7 , 1);
         return a;
 //        return a + b;

@@ -176,7 +176,8 @@ struct Computable<ocarina::tuple<T...>> {
 #define OC_MAKE_STRUCT_MEMBER(m)                                          \
     Var<std::remove_cvref_t<decltype(this_type::m)>>                      \
         m{Function::current()->member(Type::of<decltype(this_type::m)>(), \
-                                      expression(), #m)};
+                                      expression(),                       \
+                                      ocarina::struct_member_tuple<Hit>::member_index(#m))};
 
 #define OC_MAKE_COMPUTABLE_BODY(S, ...)           \
     namespace detail {                            \
