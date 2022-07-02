@@ -24,10 +24,12 @@ struct Var : public detail::Computable<T> {
 
     template<typename Arg>
     requires concepts::non_pointer<std::remove_cvref_t<Arg>> &&
-    concepts::assign_able<expr_value_t<std::remove_cvref_t<T>>, expr_value_t<Arg>>
+        concepts::assign_able<expr_value_t<std::remove_cvref_t<T>>, expr_value_t<Arg>>
         Var(Arg &&arg) : Var() {
         assign(*this, std::forward<Arg>(arg));
     }
+    auto operator->() noexcept { return reinterpret_cast<Extension<T> *>(this); }
+    auto operator->() const noexcept { return reinterpret_cast<const Extension<T> *>(this); }
 
     explicit Var(detail::ArgumentCreation) noexcept
         : Var(Function::current()->argument(Type::of<T>())) {

@@ -214,4 +214,11 @@ public:
     }
 }// namespace detail
 
+template<typename T>
+struct Extension : public detail::Computable<T> {};
+
+#define OC_MAKE_VAR_EXTENSION(S) \
+    template<>                   \
+    struct Extension<S> : public detail::Computable<S>
+
 }// namespace ocarina
