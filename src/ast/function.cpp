@@ -76,8 +76,8 @@ const MemberExpr *Function::swizzle(const Type *type, const Expression *obj, uin
     return _create_expression<MemberExpr>(type, obj, mask, swizzle_size);
 }
 
-const MemberExpr *Function::member(const Type *type, const Expression *obj, ocarina::string_view field_name) noexcept {
-    return _create_expression<MemberExpr>(type, obj, field_name);
+const MemberExpr *Function::member(const Type *type, const Expression *obj, int index) noexcept {
+    return _create_expression<MemberExpr>(type, obj, index, 0);
 }
 
 const CallExpr *Function::call(const Type *type, const Function *func,

@@ -85,6 +85,9 @@
  */
 #define MAP(f, ...) EVAL(MAP1(f, __VA_ARGS__, ()()(), ()()(), ()()(), 0))
 
+#define OC_STRINGIFY_IMPL(x) #x
+#define OC_STRINGIFY(x) OC_STRINGIFY_IMPL(x)
+
 /**
  * Applies the function macro `f` to each of the remaining parameters and
  * inserts commas between the results.

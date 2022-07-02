@@ -160,7 +160,7 @@ public:
     [[nodiscard]] const CastExpr *cast(const Type *type, CastOp op, const Expression *expression) noexcept;
     [[nodiscard]] const AccessExpr *access(const Type *type, const Expression *range, const Expression *index) noexcept;
     [[nodiscard]] const MemberExpr *swizzle(const Type *type, const Expression *obj, uint16_t mask, uint16_t swizzle_size) noexcept;
-    [[nodiscard]] const MemberExpr *member(const Type *type, const Expression *obj, ocarina::string_view field_name) noexcept;
+    [[nodiscard]] const MemberExpr *member(const Type *type, const Expression *obj, int index) noexcept;
     const CallExpr *call(const Type *type, const Function*func, ocarina::vector<const Expression *> args) noexcept;
     const CallExpr *call_builtin(const Type *type, CallOp op, ocarina::vector<const Expression *> args) noexcept;
     [[nodiscard]] IfStmt *if_(const Expression *expr) noexcept;

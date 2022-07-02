@@ -147,16 +147,21 @@ struct struct_member_tuple<Matrix<N>> {
 /// make struct reflection
 #define OC_MEMBER_TYPE_MAP(member) std::remove_cvref_t<decltype(this_type::member)>
 #define OC_TYPE_OFFSET_OF(member) OC_OFFSET_OF(this_type, member)
-#define OC_MAKE_STRUCT_REFLECTION(S, ...)                                               \
-    template<>                                                                           \
-    struct ocarina::is_struct<S> : std::true_type {};                                     \
-    template<>                                                                           \
-    struct ocarina::struct_member_tuple<S> {                                              \
-        using this_type = Hit;                                                           \
-        using type = ocarina::tuple<MAP_LIST(OC_MEMBER_TYPE_MAP, ##__VA_ARGS__)>;        \
-        using offset = std::index_sequence<MAP_LIST(OC_TYPE_OFFSET_OF, ##__VA_ARGS__)>; \
-        static_assert(is_valid_reflection_v<this_type, type, offset>,                    \
-                      "may be order of members is wrong!");                              \
+#define OC_MAKE_STRUCT_REFLECTION(S, ...)                                                         \
+    template<>                                                                                    \
+    struct ocarina::is_struct<S> : std::true_type {};                                             \
+    template<>                                                                                    \
+    struct ocarina::struct_member_tuple<S> {                                                      \
+        using this_type = Hit;                                                                    \
+        using type = ocarina::tuple<MAP_LIST(OC_MEMBER_TYPE_MAP, ##__VA_ARGS__)>;                 \
+        using offset = std::index_sequence<MAP_LIST(OC_TYPE_OFFSET_OF, ##__VA_ARGS__)>;           \
+        static_assert(is_valid_reflection_v<this_type, type, offset>,                             \
+                      "may be order of members is wrong!");                                       \
+                                                                                                  \
+        static constexpr auto member_index(ocarina::string_view name) {                           \
+            constexpr string_view members[] = {MAP_LIST(OC_STRINGIFY, __VA_ARGS__)};              \
+            return std::find(std::begin(members), std::end(members), name) - std::begin(members); \
+        }                                                                                         \
     };
 
 template<typename T>

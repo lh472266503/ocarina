@@ -50,6 +50,7 @@ protected:
 
     virtual void _emit_func_name(uint64_t hash) noexcept;
     virtual void _emit_struct_name(uint64_t hash) noexcept;
+    virtual void _emit_member_name(int index) noexcept;
 public:
     Codegen() = default;
     explicit Codegen(Scratch &scratch)

@@ -146,7 +146,8 @@ void CppCodegen::visit(const MemberExpr *expr) noexcept {
             _scratch << xyzw[expr->swizzle_index(i)];
         }
     } else {
-        _scratch << "." << expr->field_name();
+        _scratch << ".";
+        _emit_member_name(expr->member_index());
     }
 }
 void CppCodegen::visit(const AccessExpr *expr) noexcept {
