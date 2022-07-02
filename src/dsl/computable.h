@@ -56,7 +56,7 @@ struct EnableSubscriptAccess {
         auto f = Function::current();
         const AccessExpr *expr = f->access(Type::of<element_type>(),
                                            static_cast<const T *>(this)->expression(),
-                                           extract_expression(std::forward<Index>(index)));
+                                           OC_EXPR(index));
         Var<element_type> *ret = f->template create_temp_obj<Var<element_type>>(expr);
         return *ret;
     }
@@ -64,6 +64,22 @@ struct EnableSubscriptAccess {
 
 template<typename T>
 struct EnableGetMemberByIndex {
+    using element_type = std::remove_cvref_t<decltype(std::declval<expr_value_t<T>>()[0])>;
+    template<size_t i>
+    [[nodiscard]] auto get() const noexcept {
+        return def<element_type>(Function::current()->access(Type::of<element_type>(),
+                                                    OC_EXPR(*static_cast<const T *>(this)),
+                                                    OC_EXPR(i)));
+    }
+    template<size_t i>
+    auto &get() noexcept {
+        auto f = Function::current();
+        const AccessExpr *expr = f->access(Type::of<element_type>(),
+                                           OC_EXPR(*static_cast<const T *>(this)),
+                                           OC_EXPR(int(i)));
+        Var<element_type> *ret = f->template create_temp_obj<Var<element_type>>(expr);
+        return *ret;
+    }
 };
 
 template<typename T>
@@ -173,10 +189,11 @@ template<typename... T>
 struct Computable<ocarina::tuple<T...>> {
     using Tuple = ocarina::tuple<T...>;
     OC_COMPUTABLE_COMMON(ocarina::tuple<T...>)
+public:
     template<size_t i>
     [[nodiscard]] auto get() const noexcept {
         using Elm = ocarina::tuple_element_t<i, Tuple>;
-        return def<Elm>(Function::current()->access(Type::of<Elm>(), expression(), i));
+        return def<Elm>(Function::current()->member(Type::of<Elm>(), expression(), i));
     }
 };
 
