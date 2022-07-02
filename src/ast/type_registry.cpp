@@ -100,6 +100,9 @@ namespace detail {
  * STRUCT: struct<4,TYPE...> | struct<8,TYPE...> | struct<16,TYPE...>
  */
 const Type *TypeRegistry::parse_type(ocarina::string_view desc) noexcept {
+    if (desc == "void") {
+        return nullptr;
+    }
     uint64_t hash = _hash(desc);
     if (auto iter = _type_set.find(hash); iter != _type_set.cend()) {
         return *iter;
@@ -110,7 +113,7 @@ const Type *TypeRegistry::parse_type(ocarina::string_view desc) noexcept {
     auto type = ocarina::make_unique<Type>();
     type->_description = desc;
     type->_hash = hash;
-#define OC_PARSE_BASIC_TYPE(T, TAG)   \
+#define OC_PARSE_BASIC_TYPE(T, TAG)    \
     if (desc == #T##sv) {              \
         type->_size = sizeof(T);       \
         type->_alignment = alignof(T); \
@@ -134,11 +137,6 @@ const Type *TypeRegistry::parse_type(ocarina::string_view desc) noexcept {
         parse_array(type.get(), desc);
     } else if (desc.starts_with("struct")) {
         parse_struct(type.get(), desc);
-    } else if (desc.starts_with("void")){
-        type->_size = 0;
-        type->_alignment = 0;
-        type->_description = "void";
-        type->_tag = Type::Tag::NONE;
     } else {
         OC_ERROR("invalid data type ", desc);
     }
@@ -175,7 +173,7 @@ void TypeRegistry::parse_matrix(Type *type, ocarina::string_view desc) noexcept 
     auto tmp_desc = ocarina::format("vector<float,{}>", dimension);
     type->_members.push_back(parse_type((tmp_desc)));
 
-#define OC_SIZE_ALIGN(dim)                      \
+#define OC_SIZE_ALIGN(dim)                       \
     if (dimension == dim) {                      \
         type->_size = sizeof(Matrix<dim>);       \
         type->_alignment = alignof(Matrix<dim>); \
