@@ -86,16 +86,16 @@ struct EnableBitwiseCast {
     }
 };
 
-#define OC_COMPUTABLE_COMMON(...)                                          \
-private:                                                                   \
-    const Expression *_expression{nullptr};                                \
-                                                                           \
-public:                                                                    \
-    [[nodiscard]] auto expression() const noexcept { return _expression; } \
-                                                                           \
-protected:                                                                 \
-    explicit Computable(const Expression *e) noexcept : _expression{e} {}  \
-    Computable(Computable &&) noexcept = default;                          \
+#define OC_COMPUTABLE_COMMON(...)                                                       \
+private:                                                                                \
+    const Expression *_expression{nullptr};                                             \
+                                                                                        \
+public:                                                                                 \
+    [[nodiscard]] const Expression *expression() const noexcept { return _expression; } \
+                                                                                        \
+protected:                                                                              \
+    explicit Computable(const Expression *e) noexcept : _expression{e} {}               \
+    Computable(Computable &&) noexcept = default;                                       \
     Computable(const Computable &) noexcept = default;
 
 template<typename T>
@@ -173,17 +173,19 @@ struct Computable<ocarina::tuple<T...>> {
     //    }
 };
 
-#define OC_MAKE_STRUCT_MEMBER(member) \
-    Var<std::remove_cvref_t<decltype(this_type::member)>> \
-        member{};
+#define OC_MAKE_STRUCT_MEMBER(m)                                          \
+    Var<std::remove_cvref_t<decltype(this_type::m)>>                      \
+        m{Function::current()->member(Type::of<decltype(this_type::m)>(), \
+                                      expression(), #m)};
 
 #define OC_MAKE_COMPUTABLE_BODY(S, ...)           \
     namespace detail {                            \
     template<>                                    \
     struct Computable<S> {                        \
         using this_type = S;                      \
-        MAP(OC_MAKE_STRUCT_MEMBER, ##__VA_ARGS__) \
         OC_COMPUTABLE_COMMON(S)                   \
+    public:                                       \
+        MAP(OC_MAKE_STRUCT_MEMBER, ##__VA_ARGS__) \
     };                                            \
     }
 }// namespace detail

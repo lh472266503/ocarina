@@ -71,6 +71,7 @@ int main(int argc, char *argv[]) {
     Callable c1 = [&](Var<int> a, Var<int> b) {
         a += 1;
         b += 1;
+        Var<Hit> hit;
         add(a , a + 7 , 1);
         return a;
 //        return a + b;
@@ -83,7 +84,7 @@ int main(int argc, char *argv[]) {
     CppCodegen codegen;
     decltype(auto) f = c1.function();
     codegen.emit(f);
-//    cout << codegen.scratch().c_str();
+    cout << codegen.scratch().c_str();
 
     //    Device *device = context.device();
 
