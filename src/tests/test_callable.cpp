@@ -29,7 +29,6 @@ auto func(T a, T b) {
     Var<int3> arr;
     arr[1] = b;
     a = arr[1] + 1;
-    Var<Hit> hit;
 //    T d = a + b;
 //    T c = a + b * a + 1.5f;
     return a + b;
@@ -84,7 +83,7 @@ int main(int argc, char *argv[]) {
     CppCodegen codegen;
     decltype(auto) f = c1.function();
     codegen.emit(f);
-    cout << codegen.scratch().c_str();
+//    cout << codegen.scratch().c_str();
 
     //    Device *device = context.device();
 

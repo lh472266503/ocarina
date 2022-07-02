@@ -174,7 +174,8 @@ struct Computable<ocarina::tuple<T...>> {
 };
 
 #define OC_MAKE_STRUCT_MEMBER(member) \
-    Var<std::remove_cvref_t<decltype(this_type::member)>> member{};
+    Var<std::remove_cvref_t<decltype(this_type::member)>> \
+        member{};
 
 #define OC_MAKE_COMPUTABLE_BODY(S, ...)           \
     namespace detail {                            \
