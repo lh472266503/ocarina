@@ -294,6 +294,7 @@ private:
     Tag _tag{Tag::NONE};
     ocarina::string _description;
     ocarina::vector<const Type *> _members;
+    mutable bool _has_decl{false};
 
 public:
     static void for_each(TypeVisitor *visitor);
@@ -306,6 +307,9 @@ public:
     [[nodiscard]] static const Type *find(uint64_t hash) noexcept;
     [[nodiscard]] static const Type *at(uint32_t uid) noexcept;
     [[nodiscard]] static size_t count() noexcept;
+    [[nodiscard]] bool has_decl() const noexcept { return _has_decl; }
+    void decl() const noexcept { _has_decl = true; }
+    void un_decl() const noexcept { _has_decl = false; }
     [[nodiscard]] bool operator==(const Type &rhs) const noexcept { return _hash == rhs._hash; }
     [[nodiscard]] bool operator!=(const Type &rhs) const noexcept { return !(*this == rhs); }
     [[nodiscard]] bool operator<(const Type &rhs) const noexcept { return _index < rhs._index; }

@@ -39,7 +39,7 @@ protected:
 
     void visit(const Type *type) noexcept override;
 
-    virtual void _emit_type_decl() noexcept;
+    virtual void _emit_types_decl() noexcept;
     virtual void _emit_variable_decl(Variable v) noexcept;
     virtual void _emit_type_name(const Type *type) noexcept;
     virtual void _emit_function(const Function &f) noexcept;

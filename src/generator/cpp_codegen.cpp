@@ -188,10 +188,21 @@ void CppCodegen::visit(const CastExpr *expr) noexcept {
     _scratch << ")";
 }
 void CppCodegen::visit(const Type *type) noexcept {
+    if (!type->is_structure() || type->has_decl()) { return; }
+    _emit_struct_name(type->hash());
+    _scratch << " { \n";
+    for (const Type *member : type->members()) {
+
+    }
+    _scratch << "};\n";
+
+    type->decl();
 }
-void CppCodegen::_emit_type_decl() noexcept {
+
+void CppCodegen::_emit_types_decl() noexcept {
     Type::for_each(this);
 }
+
 void CppCodegen::_emit_variable_decl(Variable v) noexcept {
     if (v.type()->is_scalar() || v.type()->is_vector()) {
         _emit_type_name(v.type());
@@ -239,7 +250,9 @@ void CppCodegen::_emit_type_name(const Type *type) noexcept {
                 _scratch << "]";
                 break;
             case Type::Tag::MATRIX: break;
-            case Type::Tag::STRUCTURE: break;
+            case Type::Tag::STRUCTURE:
+                _emit_struct_name(type->hash());
+                break;
             case Type::Tag::BUFFER: break;
             case Type::Tag::TEXTURE: break;
             case Type::Tag::BINDLESS_ARRAY: break;
@@ -290,7 +303,7 @@ void CppCodegen::emit(const Function &func) noexcept {
     for (const auto &f : func.used_custom_func()) {
         emit(*f);
     }
-    _emit_type_decl();
+    _emit_types_decl();
     _emit_function(func);
     _emit_newline();
 }

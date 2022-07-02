@@ -250,7 +250,9 @@ bool TypeRegistry::is_exist(uint64_t hash) const noexcept {
 }
 
 void TypeRegistry::for_each(TypeVisitor *visitor) const noexcept {
-
+    for(const auto &t : _types) {
+        visitor->visit(t.get());
+    }
 }
 
 }// namespace ocarina
