@@ -192,9 +192,16 @@ void CppCodegen::visit(const Type *type) noexcept {
     if (!type->is_structure() || type->has_decl()) { return; }
     _emit_struct_name(type->hash());
     _scratch << " { \n";
-    for (const Type *member : type->members()) {
-
+    _indent += 1;
+    for (int i = 0; i < type->members().size(); ++i) {
+        const Type *member = type->members()[i];
+        _emit_indent();
+        _emit_type_name(member);
+        _emit_space();
+        _emit_member_name(i);
+        _scratch << "{};\n";
     }
+    _indent -= 1;
     _scratch << "};\n";
 
     type->decl();
