@@ -34,12 +34,13 @@ private:
     ocarina::vector<Variable> _arguments;
     ocarina::vector<Usage> _variable_usages;
     ocarina::vector<ScopeStmt *> _scope_stack;
-    /// use for subscript access
+    /// use for assignment subscript access
     ocarina::vector<ocarina::pair<std::byte *, size_t>> _temp_memory;
     ScopeStmt _body;
     mutable uint64_t _hash{0};
     mutable bool _hash_computed{false};
     Tag _tag{Tag::CALLABLE};
+    ocarina::set<const Function *> _used_custom_func;
 
 private:
     static ocarina::vector<Function *> &_function_stack() noexcept;
@@ -56,6 +57,7 @@ private:
         _variable_usages.push_back(Usage::NONE);
         return ret;
     }
+
     template<typename Func>
     static auto _define(Function::Tag tag, Func &&func) noexcept {
         auto ret = ocarina::make_unique<Function>(tag);
@@ -64,6 +66,7 @@ private:
         _pop(ret.get());
         return ret;
     }
+
     template<typename Expr, typename... Args>
     [[nodiscard]] auto _create_expression(Args &&...args) {
         auto expr = ocarina::make_unique<Expr>(std::forward<Args>(args)...);
@@ -74,6 +77,8 @@ private:
     [[nodiscard]] const RefExpr *_ref(Variable variable) noexcept {
         return _create_expression<RefExpr>(variable);
     }
+
+    void add_used_function(const Function *func) noexcept;
 
     template<typename Stmt, typename... Args>
     auto _create_statement(Args &&...args) {
@@ -139,6 +144,11 @@ public:
         _temp_memory.emplace_back(reinterpret_cast<std::byte*>(ptr), sizeof(T));
         return ptr;
     }
+
+    [[nodiscard]] auto used_custom_func() const noexcept {
+        return _used_custom_func;
+    }
+
     void assign(const Expression *lhs, const Expression *rhs) noexcept;
     void return_(const Expression *expression) noexcept;
     [[nodiscard]] const RefExpr *argument(const Type *type) noexcept;

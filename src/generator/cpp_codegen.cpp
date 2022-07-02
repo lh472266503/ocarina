@@ -255,7 +255,7 @@ void CppCodegen::_emit_function(const Function &f) noexcept {
     _emit_space();
     _emit_type_name(f.return_type());
     _emit_space();
-    _scratch << "function_" << f.hash();
+    _emit_func_name(f.hash());
     _emit_arguments(f);
     _emit_body(f);
 }
@@ -287,6 +287,9 @@ void CppCodegen::_emit_arguments(const Function &f) noexcept {
     _scratch << ")";
 }
 void CppCodegen::emit(const Function &func) noexcept {
+    for (const auto &f : func.used_custom_func()) {
+        emit(*f);
+    }
     _emit_type_decl();
     _emit_function(func);
     _emit_newline();

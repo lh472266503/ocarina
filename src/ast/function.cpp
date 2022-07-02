@@ -29,6 +29,10 @@ ScopeStmt *Function::body() noexcept {
     return &_body;
 }
 
+void Function::add_used_function(const Function *func) noexcept {
+    _used_custom_func.emplace(func);
+}
+
 const RefExpr *Function::argument(const Type *type) noexcept {
     Variable variable(type, Variable::Tag::LOCAL, _next_variable_uid());
     _arguments.push_back(variable);
@@ -74,6 +78,7 @@ const MemberExpr *Function::swizzle(const Type *type, const Expression *obj, uin
 
 const CallExpr *Function::call(const Type *type, const Function *func,
                                ocarina::vector<const Expression *> args) noexcept {
+    add_used_function(func);
     return _create_expression<CallExpr>(type, func, std::move(args));
 }
 
