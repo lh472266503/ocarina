@@ -67,6 +67,14 @@ OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(uint, UINT32)
 
 #undef OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION
 
+template<>
+struct TypeDesc<void> {
+    static constexpr ocarina::string_view description() noexcept {
+        using namespace std::string_view_literals;
+        return "void"sv;
+    }
+};
+
 /// matrices
 template<>
 struct TypeDesc<float2x2> {

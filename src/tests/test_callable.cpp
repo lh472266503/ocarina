@@ -19,8 +19,9 @@ using std::cout;
 using std::endl;
 using namespace ocarina;
 
-
-
+Var<int> add(Var<int> a, Var<int> b) {
+    return a + b;
+}
 
 template<typename T>
 auto func(T a, T b) {
@@ -60,12 +61,25 @@ auto func(T a, T b) {
 int main(int argc, char *argv[]) {
 
     Callable callable = func<Var<int>>;
+
+    Callable add = [&](Var<int> a, Var<int> b) {
+        a = a + b;
+    };
+
+    Callable c1 = [&](Var<int> a, Var<int> b) {
+        a += 1;
+        b += 1;
+        add(a , b);
+        return a;
+//        return a + b;
+    };
+
     fs::path path(argv[0]);
     Context context(path.parent_path());
     //    context.init_device("cuda");
 
     CppCodegen codegen;
-    decltype(auto) f = callable.function();
+    decltype(auto) f = c1.function();
     codegen.emit(f);
     cout << codegen.scratch().c_str();
 

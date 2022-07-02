@@ -136,7 +136,7 @@ public:
     template<typename T, typename... Args>
     T *create_temp_obj(Args &&...args) noexcept {
         T *ptr = new_with_allocator<T>(std::forward<Args>(args)...);
-        _temp_memory.push_back(std::make_pair(reinterpret_cast<std::byte*>(ptr), sizeof(T)));
+        _temp_memory.emplace_back(reinterpret_cast<std::byte*>(ptr), sizeof(T));
         return ptr;
     }
     void assign(const Expression *lhs, const Expression *rhs) noexcept;
@@ -150,10 +150,12 @@ public:
     [[nodiscard]] const CastExpr *cast(const Type *type, CastOp op, const Expression *expression) noexcept;
     [[nodiscard]] const AccessExpr *access(const Type *type, const Expression *range, const Expression *index) noexcept;
     [[nodiscard]] const MemberExpr *swizzle(const Type *type, const Expression *obj, uint16_t mask, uint16_t swizzle_size) noexcept;
-    [[nodiscard]] const CallExpr *call(const Type *type, ocarina::vector<const Expression *> args) noexcept;
+    const CallExpr *call(const Type *type, const Function*func, ocarina::vector<const Expression *> args) noexcept;
+    const CallExpr *call_builtin(const Type *type, CallOp op, ocarina::vector<const Expression *> args) noexcept;
     [[nodiscard]] IfStmt *if_(const Expression *expr) noexcept;
     [[nodiscard]] SwitchStmt *switch_(const Expression *expr) noexcept;
     [[nodiscard]] SwitchCaseStmt *switch_case(const Expression *expr) noexcept;
+    const ExprStmt * expr_statement(const Expression *expr) noexcept;
     void break_() noexcept;
     [[nodiscard]] SwitchDefaultStmt *switch_default() noexcept;
     [[nodiscard]] LoopStmt *loop() noexcept;

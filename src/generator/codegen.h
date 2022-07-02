@@ -48,6 +48,8 @@ protected:
     virtual void _emit_indent() noexcept;
     virtual void _emit_space() noexcept;
 
+    virtual void _emit_func_name(uint64_t hash) noexcept;
+    virtual void _emit_struct_name(uint64_t hash) noexcept;
 public:
     Codegen() = default;
     explicit Codegen(Scratch &scratch)

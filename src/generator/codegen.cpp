@@ -76,4 +76,13 @@ void Codegen::_emit_indent() noexcept {
 void Codegen::_emit_space() noexcept {
     _scratch << " ";
 }
+
+void Codegen::_emit_func_name(uint64_t hash) noexcept {
+    _scratch << "function_" << hash;
+}
+
+void Codegen::_emit_struct_name(uint64_t hash) noexcept {
+    _scratch << "structure_" << hash;
+}
+
 }// namespace ocarina

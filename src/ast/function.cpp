@@ -72,8 +72,14 @@ const MemberExpr *Function::swizzle(const Type *type, const Expression *obj, uin
     return _create_expression<MemberExpr>(type, obj, mask, swizzle_size);
 }
 
-const CallExpr *Function::call(const Type *type, ocarina::vector<const Expression *> args) noexcept {
-    return _create_expression<CallExpr>(type, std::move(args));
+const CallExpr *Function::call(const Type *type, const Function *func,
+                               ocarina::vector<const Expression *> args) noexcept {
+    return _create_expression<CallExpr>(type, func, std::move(args));
+}
+
+const CallExpr *Function::call_builtin(const Type *type, CallOp op,
+                                       ocarina::vector<const Expression *> args) noexcept {
+    return _create_expression<CallExpr>(type, op, std::move(args));
 }
 
 IfStmt *Function::if_(const Expression *expr) noexcept {
@@ -86,6 +92,10 @@ SwitchStmt *Function::switch_(const Expression *expr) noexcept {
 
 SwitchCaseStmt *Function::switch_case(const Expression *expr) noexcept {
     return _create_statement<SwitchCaseStmt>(expr);
+}
+
+const ExprStmt *Function::expr_statement(const Expression *expr) noexcept {
+    return _create_statement<ExprStmt>(expr);
 }
 
 SwitchDefaultStmt *Function::switch_default() noexcept {

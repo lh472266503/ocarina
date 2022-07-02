@@ -67,6 +67,7 @@ void CppCodegen::visit(const LoopStmt *stmt) noexcept {
     stmt->body()->accept(*this);
 }
 void CppCodegen::visit(const ExprStmt *stmt) noexcept {
+    stmt->expression()->accept(*this);
 }
 void CppCodegen::visit(const SwitchStmt *stmt) noexcept {
     _scratch << "switch (";
@@ -165,6 +166,16 @@ void CppCodegen::visit(const RefExpr *expr) noexcept {
 void CppCodegen::visit(const ConstantExpr *expr) noexcept {
 }
 void CppCodegen::visit(const CallExpr *expr) noexcept {
+    _emit_func_name(expr->function()->hash());
+    _scratch << "(";
+    for(const auto &arg : expr->arguments()) {
+        arg->accept(*this);
+        _scratch << ",";
+    }
+    if (!expr->arguments().empty()) {
+        _scratch.pop_back();
+    }
+    _scratch << ")";
 }
 void CppCodegen::visit(const CastExpr *expr) noexcept {
     switch (expr->cast_op()) {

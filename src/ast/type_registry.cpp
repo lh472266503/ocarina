@@ -123,6 +123,7 @@ const Type *TypeRegistry::parse_type(ocarina::string_view desc) noexcept {
     OC_PARSE_BASIC_TYPE(bool, BOOL)
     OC_PARSE_BASIC_TYPE(float, FLOAT)
 
+
 #undef OC_PARSE_BASIC_TYPE
 
     if (desc.starts_with("vector")) {
@@ -133,7 +134,12 @@ const Type *TypeRegistry::parse_type(ocarina::string_view desc) noexcept {
         parse_array(type.get(), desc);
     } else if (desc.starts_with("struct")) {
         parse_struct(type.get(), desc);
-    } else [[unlikely]] {
+    } else if (desc.starts_with("void")){
+        type->_size = 0;
+        type->_alignment = 0;
+        type->_description = "void";
+        type->_tag = Type::Tag::NONE;
+    } else {
         OC_ERROR("invalid data type ", desc);
     }
     const Type *ret = type.get();

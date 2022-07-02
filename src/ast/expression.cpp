@@ -50,7 +50,8 @@ uint64_t MemberExpr::_compute_hash() const noexcept {
 }
 
 uint64_t CallExpr::_compute_hash() const noexcept {
-    uint64_t ret = Hash64::default_seed;
+    uint64_t ret = _function ? _function->hash() : Hash64::default_seed;
+    ret = hash64(_call_op, ret);
     for (const auto &arg : _arguments) {
         ret = hash64(ret, arg->hash());
     }

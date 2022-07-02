@@ -34,7 +34,7 @@ namespace detail {
 template<typename T>
 [[nodiscard]] decltype(auto) extract_expression(T &&v) noexcept;
 
-#define OC_EXPR(arg) ocarina::detail::extract_expression(std::forward<T>(arg))
+#define OC_EXPR(arg) ocarina::detail::extract_expression(OC_FORWARD(arg))
 
 template<typename T>
 struct EnableSubscriptAccess {

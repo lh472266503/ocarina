@@ -136,9 +136,13 @@ public:
               }
           }))) {}
 
-    template<typename... Arguments>
-    auto operator()() {
-
+    auto operator()(const Var<Args> &...args) const noexcept{
+        const CallExpr *expr = Function::current()->call(Type::of<Ret>(), _function.get(), {(OC_EXPR(args))...});
+        if constexpr (!std::is_same_v<std::remove_cvref_t<Ret>, void>) {
+            return def<Ret>(expr);
+        } else {
+            Function::current()->expr_statement(expr);
+        }
     }
 
     [[nodiscard]] const Function &function() const noexcept {

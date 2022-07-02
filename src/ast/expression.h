@@ -23,6 +23,8 @@ class ConstantExpr;
 class CallExpr;
 class CastExpr;
 
+class Function;
+
 struct ExprVisitor {
     virtual void visit(const UnaryExpr *) = 0;
     virtual void visit(const BinaryExpr *) = 0;
@@ -232,17 +234,26 @@ public:
 class CallExpr : public Expression {
 private:
     ocarina::vector<const Expression *> _arguments;
+    const Function *_function{};
+    CallOp _call_op{CallOp::CUSTOM};
 
 private:
     void _mark(Usage) const noexcept override {}
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
-    CallExpr(const Type *type, ocarina::vector<const Expression *> &&args)
-        : Expression(Tag::CALL, type), _arguments(std::move(args)) {}
-    [[nodiscard]] ocarina::span<const Expression *const> arguments() const {
-        return _arguments;
-    }
+    CallExpr(const Type *type, const Function *func,
+             ocarina::vector<const Expression *> &&args)
+        : Expression(Tag::CALL, type),
+          _function(func),
+          _arguments(std::move(args)) {}
+    CallExpr(const Type *type, CallOp op,
+             ocarina::vector<const Expression *> &&args)
+        : Expression(Tag::CALL, type), _call_op(op),
+          _arguments(std::move(args)) {}
+    [[nodiscard]] ocarina::span<const Expression *const> arguments() const noexcept { return _arguments; }
+    [[nodiscard]] auto call_op() const noexcept { return _call_op; }
+    [[nodiscard]] auto function() const noexcept { return _function; }
     OC_MAKE_EXPRESSION_ACCEPT_VISITOR
 };
 
