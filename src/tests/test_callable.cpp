@@ -29,8 +29,8 @@ auto func(T a, T b) {
     Var<int3> arr;
     arr[1] = b;
     a = arr[1] + 1;
-//    T d = a + b;
-//    T c = a + b * a + 1.5f;
+    //    T d = a + b;
+    //    T c = a + b * a + 1.5f;
     return a + b;
     $if(a + b > 0) {
         a = a + 9;
@@ -63,7 +63,7 @@ int main(int argc, char *argv[]) {
 
     Callable callable = func<Var<int>>;
 
-    Callable add = [&](Var<int> a, Var<int> b ,Var<int>) {
+    Callable add = [&](Var<int> a, Var<int> b, Var<int>) {
         a = a + b;
         return a;
     };
@@ -74,8 +74,9 @@ int main(int argc, char *argv[]) {
         };
         Var<Hit> hit;
         hit->init();
-        $if(hit->is_miss()) {
+        $if(hit->is_miss()){
             $comment(miss)
+
         };
         Var<float4x4> m4;
         Var<ocarina::tuple<int, float>> tp;
@@ -84,19 +85,19 @@ int main(int argc, char *argv[]) {
         Var<int[6]> arr;
         arr[3] = 0;
 
-        return add(a , a + 7 , 1);
+        return add(a, a + 7, 1);
     };
 
     fs::path path(argv[0]);
     Context context(path.parent_path());
-        context.init_device("cuda");
+    context.init_device("cuda");
 
     CppCodegen codegen;
     decltype(auto) f = c1.function();
     codegen.emit(f);
     cout << codegen.scratch().c_str();
 
-        Device *device = context.device();
+    Device *device = context.device();
 
     return 0;
 }

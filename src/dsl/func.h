@@ -206,14 +206,27 @@ public:
 template<size_t Dim = 1, typename... Args>
 class Kernel : public FuncWrapper {
 public:
+    static constexpr auto dimension = Dim;
+    static_assert(Dim >= 1 && Dim <= 3, "dimension of kernel must be in range[1, 3]!");
+
+public:
     using signature = typename detail::canonical_signature_t<void(Args...)>;
 
     template<typename Func>
     Kernel(Func &&func) noexcept
         : FuncWrapper(std::move(Function::define_kernel([&] {
-
+              detail::create<Args...>(OC_FORWARD(func), ocarina::index_sequence_for<Args...>());
           }))) {}
 };
+
+template<typename... Args>
+using Kernel1D = Kernel<1, Args...>;
+
+template<typename... Args>
+using Kernel2D = Kernel<2, Args...>;
+
+template<typename... Args>
+using Kernel3D = Kernel<3, Args...>;
 
 namespace detail {
 
@@ -236,5 +249,8 @@ using dsl_function_t = typename dsl_function<T>::type;
 
 template<typename T>
 Callable(T &&) -> Callable<detail::dsl_function_t<std::remove_cvref_t<T>>>;
+
+template<typename T>
+Kernel(T &&) -> Kernel<1, detail::dsl_function_t<std::remove_cvref_t<T>>>;
 
 }// namespace ocarina
