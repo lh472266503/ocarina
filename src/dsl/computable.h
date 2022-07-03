@@ -29,6 +29,7 @@ template<typename T>
 [[nodiscard]] inline Expr<expr_value_t<T>> def_expr(const Expression *expr) noexcept;
 
 class Expression;
+
 namespace detail {
 
 template<typename T>
@@ -102,16 +103,16 @@ struct EnableBitwiseCast {
     }
 };
 
-#define OC_COMPUTABLE_COMMON(...)                                                       \
-private:                                                                                \
-    const Expression *_expression{nullptr};                                             \
-                                                                                        \
-public:                                                                                 \
-    [[nodiscard]] const Expression *expression() const noexcept { return _expression; } \
-                                                                                        \
-protected:                                                                              \
-    explicit Computable(const Expression *e) noexcept : _expression{e} {}               \
-    Computable(Computable &&) noexcept = default;                                       \
+#define OC_COMPUTABLE_COMMON(...)                                                                   \
+private:                                                                                            \
+    const Expression *_expression{nullptr};                                                         \
+                                                                                                    \
+public:                                                                                             \
+    [[nodiscard]] const Expression *expression() const noexcept { return _expression; }             \
+                                                                                                    \
+protected:                                                                                          \
+    explicit Computable(const Expression *e) noexcept : _expression{e} {}                           \
+    Computable(Computable &&) noexcept = default;                                                   \
     Computable(const Computable &) noexcept = default;
 
 template<typename T>
@@ -119,7 +120,7 @@ struct Computable
     : detail::EnableBitwiseCast<Computable<T>>,
       detail::EnableStaticCast<Computable<T>> {
     static_assert(is_scalar_v<T>);
-    OC_COMPUTABLE_COMMON(T)
+    OC_COMPUTABLE_COMMON(Computable<T>)
 };
 
 template<typename T>
@@ -128,7 +129,7 @@ struct Computable<Vector<T, 2>>
       detail::EnableBitwiseCast<Computable<Vector<T, 2>>>,
       detail::EnableGetMemberByIndex<Computable<Vector<T, 2>>>,
       detail::EnableSubscriptAccess<Computable<Vector<T, 2>>> {
-    OC_COMPUTABLE_COMMON(Vector<T, 2>)
+    OC_COMPUTABLE_COMMON(Computable<Vector<T, 2>>)
 public:
     Var<T> x{Function::current()->swizzle(Type::of<T>(), expression(), 0, 1)};
     Var<T> y{Function::current()->swizzle(Type::of<T>(), expression(), 1, 1)};
@@ -141,7 +142,7 @@ struct Computable<Vector<T, 3>>
       detail::EnableBitwiseCast<Computable<Vector<T, 3>>>,
       detail::EnableGetMemberByIndex<Computable<Vector<T, 3>>>,
       detail::EnableSubscriptAccess<Computable<Vector<T, 3>>> {
-    OC_COMPUTABLE_COMMON(Vector<T, 3>)
+    OC_COMPUTABLE_COMMON(Computable<Vector<T, 3>>)
 public:
     Var<T> x{Function::current()->swizzle(Type::of<T>(), expression(), 0, 1)};
     Var<T> y{Function::current()->swizzle(Type::of<T>(), expression(), 1, 1)};
@@ -155,7 +156,7 @@ struct Computable<Vector<T, 4>>
       detail::EnableBitwiseCast<Computable<Vector<T, 4>>>,
       detail::EnableGetMemberByIndex<Computable<Vector<T, 4>>>,
       detail::EnableSubscriptAccess<Computable<Vector<T, 4>>> {
-    OC_COMPUTABLE_COMMON(Vector<T, 4>)
+    OC_COMPUTABLE_COMMON(Computable<Vector<T, 4>>)
 public:
     Var<T> x{Function::current()->swizzle(Type::of<T>(), expression(), 0, 1)};
     Var<T> y{Function::current()->swizzle(Type::of<T>(), expression(), 1, 1)};
@@ -168,27 +169,27 @@ template<typename T, size_t N>
 struct Computable<std::array<T, N>>
     : detail::EnableSubscriptAccess<Computable<std::array<T, N>>>,
       detail::EnableGetMemberByIndex<Computable<std::array<T, N>>> {
-    OC_COMPUTABLE_COMMON(std::array<T, N>)
+    OC_COMPUTABLE_COMMON(Computable<std::array<T, N>>)
 };
 
 template<typename T, size_t N>
 struct Computable<T[N]>
     : detail::EnableSubscriptAccess<Computable<T[N]>>,
       detail::EnableGetMemberByIndex<Computable<T[N]>> {
-    OC_COMPUTABLE_COMMON(T[N])
+    OC_COMPUTABLE_COMMON(Computable<T[N]>)
 };
 
 template<size_t N>
 struct Computable<Matrix<N>>
     : detail::EnableGetMemberByIndex<Computable<Matrix<N>>>,
       detail::EnableSubscriptAccess<Computable<Matrix<N>>> {
-    OC_COMPUTABLE_COMMON(Matrix<N>)
+    OC_COMPUTABLE_COMMON(Computable<Matrix<N>>)
 };
 
 template<typename... T>
 struct Computable<ocarina::tuple<T...>> {
     using Tuple = ocarina::tuple<T...>;
-    OC_COMPUTABLE_COMMON(ocarina::tuple<T...>)
+    OC_COMPUTABLE_COMMON(Computable<ocarina::tuple<T...>>)
 public:
     template<size_t i>
     [[nodiscard]] auto get() const noexcept {
@@ -217,10 +218,10 @@ public:
 }// namespace detail
 
 template<typename T>
-struct Proxy : public detail::Computable<T> {};
+struct Proxy : public ocarina::detail::Computable<T> {};
 
-#define OC_MAKE_VAR_EXTENSION(S) \
-    template<>                   \
+#define OC_MAKE_PROXY(S) \
+    template<>           \
     struct ocarina::Proxy<S> : public ocarina::detail::Computable<S>
 
 }// namespace ocarina
