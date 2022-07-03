@@ -89,14 +89,14 @@ int main(int argc, char *argv[]) {
 
     fs::path path(argv[0]);
     Context context(path.parent_path());
-    //    context.init_device("cuda");
+        context.init_device("cuda");
 
     CppCodegen codegen;
     decltype(auto) f = c1.function();
     codegen.emit(f);
     cout << codegen.scratch().c_str();
 
-    //    Device *device = context.device();
+        Device *device = context.device();
 
     return 0;
 }

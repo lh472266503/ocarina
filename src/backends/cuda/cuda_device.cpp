@@ -6,8 +6,12 @@
 
 namespace ocarina {
 
-void CUDADevice::compile(const Function &function) noexcept {
+CUDADevice::CUDADevice(Context *context)
+    : Device(context) {
 
+}
+
+void CUDADevice::compile(const Function &function) noexcept {
 }
 uint64_t CUDADevice::create_buffer(size_t bytes) noexcept {
     return 0;
