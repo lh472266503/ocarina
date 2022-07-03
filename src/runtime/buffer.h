@@ -4,8 +4,12 @@
 
 #pragma once
 
-#include "core/header.h"
+#include "resource.h"
 
 namespace ocarina {
+template<typename T>
+class Buffer : public Resource {
+public:
 
+};
 }

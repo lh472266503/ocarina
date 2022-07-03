@@ -203,8 +203,16 @@ public:
     }
 };
 
-template<size_t Dim = 1>
+template<size_t Dim = 1, typename... Args>
 class Kernel : public FuncWrapper {
+public:
+    using signature = typename detail::canonical_signature_t<void(Args...)>;
+
+    template<typename Func>
+    Kernel(Func &&func) noexcept
+        : FuncWrapper(std::move(Function::define_kernel([&] {
+
+          }))) {}
 };
 
 namespace detail {

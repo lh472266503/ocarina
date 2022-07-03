@@ -19,7 +19,7 @@ public:
         : Device(context) {}
     [[nodiscard]] uint64_t create_buffer(size_t bytes) noexcept override;
     void destroy_buffer(uint64_t handle) noexcept override;
-    void compile(Function function) noexcept override;
+    void compile(const Function &function) noexcept override;
 };
 }// namespace ocarina
 
