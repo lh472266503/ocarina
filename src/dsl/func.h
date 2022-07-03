@@ -172,6 +172,25 @@ public:
     [[nodiscard]] const Function &function() const noexcept { return *_function; }
 };
 
+namespace detail {
+
+template<typename Ret, typename... Args>
+struct dsl_function<function_signature<Ret, Args...>> {
+    using type = function_signature<
+        expr_value_t<Ret>,
+        definition_to_prototype_t<Args>...>;
+};
+
+template<typename T>
+struct dsl_function<Callable<T>> {
+    using type = T;
+};
+
+template<typename T>
+using dsl_function_t = typename dsl_function<T>::type;
+
+}// namespace detail
+
 template<typename Ret, typename... Args>
 class Callable<Ret(Args...)> : public FuncWrapper {
     static_assert(std::negation_v<std::disjunction<std::is_pointer<Args>...>>);
@@ -203,6 +222,9 @@ public:
     }
 };
 
+template<typename T>
+Callable(T &&) -> Callable<detail::dsl_function_t<std::remove_cvref_t<T>>>;
+
 template<size_t Dim = 1, typename... Args>
 class Kernel : public FuncWrapper {
 public:
@@ -219,38 +241,27 @@ public:
           }))) {}
 };
 
-template<typename... Args>
-using Kernel1D = Kernel<1, Args...>;
+#define OC_MAKE_KERNEL(dim)                                                               \
+    template<typename... Args>                                                            \
+    class Kernel##dim##D : public Kernel<dim, Args...> {                                  \
+    public:                                                                               \
+        template<typename Func>                                                           \
+        Kernel##dim##D(Func &&func) noexcept                                              \
+            : Kernel<dim, Args...>(std::forward<Func>(func)) {}                           \
+    };                                                                                    \
+    template<typename T>                                                                  \
+    Kernel##dim##D(T &&)->Kernel##dim##D<detail::dsl_function_t<std::remove_cvref_t<T>>>; \
+    namespace detail {                                                                    \
+    template<typename T>                                                                  \
+    struct dsl_function<Kernel##dim##D<T>> {                                              \
+        using type = T;                                                                   \
+    };                                                                                    \
+    }
 
-template<typename... Args>
-using Kernel2D = Kernel<2, Args...>;
+OC_MAKE_KERNEL(1)
+OC_MAKE_KERNEL(2)
+OC_MAKE_KERNEL(3)
 
-template<typename... Args>
-using Kernel3D = Kernel<3, Args...>;
-
-namespace detail {
-
-template<typename Ret, typename... Args>
-struct dsl_function<function_signature<Ret, Args...>> {
-    using type = function_signature<
-        expr_value_t<Ret>,
-        definition_to_prototype_t<Args>...>;
-};
-
-template<typename T>
-struct dsl_function<Callable<T>> {
-    using type = T;
-};
-
-template<typename T>
-using dsl_function_t = typename dsl_function<T>::type;
-
-}// namespace detail
-
-template<typename T>
-Callable(T &&) -> Callable<detail::dsl_function_t<std::remove_cvref_t<T>>>;
-
-template<typename T>
-Kernel(T &&) -> Kernel<1, detail::dsl_function_t<std::remove_cvref_t<T>>>;
+#undef OC_MAKE_KERNEL
 
 }// namespace ocarina
