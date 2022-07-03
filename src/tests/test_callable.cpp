@@ -73,6 +73,9 @@ int main(int argc, char *argv[]) {
         b += 1;
         Var<Hit> hit;
         hit->init();
+        $if(hit->is_miss()) {
+            $comment(miss)
+        };
         Var<float4x4> m4;
         Var<ocarina::tuple<int, float>> tp;
         auto g0 = tp.get<0>();
