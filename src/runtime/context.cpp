@@ -4,18 +4,14 @@
 
 #include "context.h"
 #include "core/logging.h"
-#include "dynamic_module.h"
-#include "device.h"
-#include "core/platform.h"
+
+#ifdef NDEBUG
+
+#include "context_impl.h"
+
+#endif
 
 namespace ocarina {
-struct Context::Impl {
-    fs::path runtime_directory;
-    fs::path cache_directory;
-    Device::Handle device;
-    ocarina::map<string, DynamicModule> modules;
-    Impl() : device(Device::Handle(nullptr, nullptr)) {}
-};
 
 static constexpr string_view backend_prefix = "ocarina-backend-";
 

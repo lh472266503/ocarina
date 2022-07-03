@@ -23,6 +23,15 @@ public:
     const DynamicModule *obtain_module(const string& module_name) noexcept;
     void init_device(const ocarina::string& backend_name) noexcept;
     [[nodiscard]] const Device *device() const noexcept;
+    [[nodiscard]] handle_ty handle() const noexcept;
+    void set_handle(handle_ty handle) noexcept;
     [[nodiscard]] Device *device() noexcept;
 };
+
 }// namespace ocarina
+
+#ifndef NDEBUG
+
+#include "context_impl.h"
+
+#endif
