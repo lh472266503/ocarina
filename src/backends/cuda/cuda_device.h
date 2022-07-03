@@ -13,9 +13,9 @@
 namespace ocarina {
 class CUDADevice : public Device {
 private:
-    CUdeviceptr _handle{};
-    CUstream _stream{};
-
+    CUdevice _cu_device{};
+    CUstream _cu_stream{};
+    CUcontext _cu_ctx{};
 public:
     explicit CUDADevice(Context *context);
     [[nodiscard]] handle_ty create_buffer(size_t bytes) noexcept override;
