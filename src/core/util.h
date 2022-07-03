@@ -49,4 +49,25 @@ inline namespace size_literals {
 }
 }// namespace size_literals
 
+class Clock {
+public:
+    using SystemClock = std::chrono::high_resolution_clock;
+    using Tick = std::chrono::high_resolution_clock::time_point;
+
+private:
+    Tick _last;
+
+public:
+    Clock() noexcept : _last{SystemClock::now()} {}
+    void start() noexcept { _last = SystemClock::now(); }
+    [[nodiscard]] auto elapse_ms() const noexcept {
+        auto curr = SystemClock::now();
+        using namespace std::chrono_literals;
+        return (curr - _last) / 1ns * 1e-6;
+    }
+    [[nodiscard]] auto elapse_s() const noexcept {
+        return elapse_ms() * 1000;
+    }
+};
+
 }// namespace ocarina
