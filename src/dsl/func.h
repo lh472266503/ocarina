@@ -163,20 +163,26 @@ auto create(Func &&func, ocarina::index_sequence<i...>) {
 }
 }// namespace detail
 
+class FuncWrapper : public concepts::Noncopyable {
+protected:
+    ocarina::unique_ptr<Function> _function;
+    explicit FuncWrapper(ocarina::unique_ptr<Function> f) : _function(std::move(f)) {}
+
+public:
+    [[nodiscard]] const Function &function() const noexcept { return *_function; }
+};
+
 template<typename Ret, typename... Args>
-class Callable<Ret(Args...)> : public concepts::Noncopyable {
+class Callable<Ret(Args...)> : public FuncWrapper {
     static_assert(std::negation_v<std::disjunction<std::is_pointer<Args>...>>);
 
 public:
     using signature = typename detail::canonical_signature_t<Ret(Args...)>;
 
-private:
-    ocarina::unique_ptr<Function> _function;
-
 public:
     template<typename Func>
     Callable(Func &&func) noexcept
-        : _function(std::move(Function::define_callable([&] {
+        : FuncWrapper(std::move(Function::define_callable([&] {
               if constexpr (std::is_same_v<void, Ret>) {
                   detail::create<Args...>(OC_FORWARD(func), ocarina::index_sequence_for<Args...>());
               } else {
@@ -195,10 +201,10 @@ public:
             Function::current()->expr_statement(expr);
         }
     }
+};
 
-    [[nodiscard]] const Function &function() const noexcept {
-        return *_function;
-    }
+template<size_t Dim = 1>
+class Kernel : public FuncWrapper {
 };
 
 namespace detail {

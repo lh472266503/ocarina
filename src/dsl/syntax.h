@@ -226,22 +226,15 @@ private:
     ForStmt *_for_stmt;
 
 public:
-    explicit ForStmtBuilder(ForStmt *for_stmt) noexcept : _for_stmt(for_stmt) {}
-
     ForStmtBuilder(const Var<T> &begin, const Var<T> &end, const Var<T> &step)
         : _var(begin),
           _end(end),
           _step(step) {
+        const Expression *cmp = Function::current()->binary(Type::of<bool>(), BinaryOp::LESS,
+                                                            _var.expression(), _end.expression());
         _for_stmt = Function::current()->for_(_var.expression(),
-                                              extract_expression(_var < _end),
+                                              cmp,
                                               _step.expression());
-    }
-
-    static ForStmtBuilder create(Var<T> var, const Expr<bool> &Condition, Var<T> step) noexcept {
-        return ForStmtBuilder(Function::current()->for_(
-            extract_expression(var),
-            extract_expression(Condition),
-            extract_expression(step)));
     }
 
     template<typename Body>
@@ -262,17 +255,17 @@ auto range(Count &&count) noexcept {
 template<typename Begin, typename End>
 requires concepts::integral<expr_value_t<Begin>>
 auto range(Begin &&begin, End &&end) noexcept {
-    return detail::ForStmtBuilder<expr_value_t<Begin>>(def_expr(std::forward<Begin>(begin)),
-                                                       def_expr(std::forward<End>(end)),
-                                                       1);
+    return detail::ForStmtBuilder<expr_value_t<End>>(def_expr(std::forward<Begin>(begin)),
+                                                     def_expr(std::forward<End>(end)),
+                                                     1);
 }
 
 template<typename Begin, typename End, typename Step>
 requires concepts::integral<expr_value_t<Begin>>
 auto range(Begin &&begin, End &&end, Step &&step) noexcept {
-    return detail::ForStmtBuilder<expr_value_t<Begin>>(def_expr(std::forward<Begin>(begin)),
-                                                       def_expr(std::forward<End>(end)),
-                                                       def_expr(std::forward<Step>(step)));
+    return detail::ForStmtBuilder<expr_value_t<End>>(def_expr(std::forward<Begin>(begin)),
+                                                     def_expr(std::forward<End>(end)),
+                                                     def_expr(std::forward<Step>(step)));
 }
 
 template<typename Count, typename Body>

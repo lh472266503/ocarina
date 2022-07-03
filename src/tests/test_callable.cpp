@@ -69,8 +69,9 @@ int main(int argc, char *argv[]) {
     };
 
     Callable c1 = [&](Var<int> a, Var<int> b) {
-        a += 1;
-        b += 1;
+        $for(v, 9) {
+            a = a + v;
+        };
         Var<Hit> hit;
         hit->init();
         $if(hit->is_miss()) {
@@ -78,15 +79,12 @@ int main(int argc, char *argv[]) {
         };
         Var<float4x4> m4;
         Var<ocarina::tuple<int, float>> tp;
-        auto g0 = tp.get<0>();
         Var vec = m4.get<3>();
         m4.get<3>() = vec;
         Var<int[6]> arr;
         arr[3] = 0;
-//        hit.bary.x = 0;
-        add(a , a + 7 , 1);
-        return a;
-//        return a + b;
+
+        return add(a , a + 7 , 1);
     };
 
     fs::path path(argv[0]);
