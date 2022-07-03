@@ -5,12 +5,13 @@
 #pragma once
 
 #include "core/stl.h"
+#include "core/concepts.h"
 
 namespace ocarina {
 
 using handle_ty = uint64_t;
 
-class Resource {
+class Resource : public concepts::Noncopyable {
 public:
     enum Tag : uint8_t {
         BUFFER,

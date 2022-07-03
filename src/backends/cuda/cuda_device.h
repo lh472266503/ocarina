@@ -18,7 +18,7 @@ private:
     CUcontext _cu_ctx{};
 public:
     explicit CUDADevice(Context *context);
-    [[nodiscard]] handle_ty create_buffer(size_t bytes) noexcept override;
+    [[nodiscard]] handle_ty create_raw_buffer(size_t bytes) noexcept override;
     void destroy_buffer(handle_ty handle) noexcept override;
     void compile(const Function &function) noexcept override;
 };

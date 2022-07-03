@@ -16,10 +16,10 @@ CUDADevice::CUDADevice(Context *context)
 
 void CUDADevice::compile(const Function &function) noexcept {
 }
-uint64_t CUDADevice::create_buffer(size_t bytes) noexcept {
+handle_ty CUDADevice::create_raw_buffer(size_t bytes) noexcept {
     return 0;
 }
-void CUDADevice::destroy_buffer(uint64_t handle) noexcept {
+void CUDADevice::destroy_buffer(handle_ty handle) noexcept {
 }
 }// namespace ocarina
 

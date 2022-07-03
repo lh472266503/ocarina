@@ -18,10 +18,10 @@ template<typename T>
 class BufferView;
 
 template<typename T>
-class Image;
+class Texture;
 
 template<typename T>
-class ImageView;
+class TextureView;
 
 namespace detail {
 
@@ -41,14 +41,14 @@ struct TypeDesc {
     template<>                                                         \
     struct TypeDesc<Vector<S, 2>> {                                    \
         static constexpr ocarina::string_view description() noexcept { \
-            using namespace std::string_view_literals;                \
-            return "vector<" #S ",2>"sv;                              \
-        }                                                             \
-    };                                                                \
-    template<>                                                        \
-    struct TypeDesc<Vector<S, 3>> {                                   \
+            using namespace std::string_view_literals;                 \
+            return "vector<" #S ",2>"sv;                               \
+        }                                                              \
+    };                                                                 \
+    template<>                                                         \
+    struct TypeDesc<Vector<S, 3>> {                                    \
         static constexpr ocarina::string_view description() noexcept { \
-            using namespace std::string_view_literals;                \
+            using namespace std::string_view_literals;                 \
             return "vector<" #S ",3>"sv;                               \
         }                                                              \
     };                                                                 \
