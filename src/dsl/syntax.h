@@ -11,6 +11,46 @@
 namespace ocarina {
 
 namespace detail {
+template<typename Lhs, typename Rhs>
+inline void assign(Lhs &&lhs, Rhs &&rhs) noexcept {
+    static_assert(tuple_size_v<linear_layout_t<Lhs>> == tuple_size_v<linear_layout_t<Rhs>>);
+    if constexpr (concepts::assign_able<expr_value_t<Lhs>, expr_value_t<Rhs>>) {
+        Function::current()->assign(
+            detail::extract_expression(std::forward<Lhs>(lhs)),
+            detail::extract_expression(std::forward<Rhs>(rhs)));
+    } else if constexpr (std::is_pointer_v<std::remove_cvref_t<Rhs>>) {
+        Function::current()->assign(detail::extract_expression(std::forward<Lhs>(lhs)), rhs);
+    }
+}
+}// namespace detail
+
+template<typename T>
+[[nodiscard]] inline Var<expr_value_t<T>> def(T &&x) noexcept {
+    return Var(OC_FORWARD(x));
+}
+
+template<typename T>
+[[nodiscard]] inline Var<expr_value_t<T>> def(const Expression *expr) noexcept {
+    using RawType = expr_value_t<T>;
+    return Var<RawType>(Expr<RawType>(expr));
+}
+
+template<typename T>
+[[nodiscard]] inline Expr<expr_value_t<T>> def_expr(T &&x) noexcept {
+    if constexpr (is_expr_v<std::remove_cvref_t<T>>) {
+        return def_expr<T>(x.expression());
+    } else {
+        return Expr<expr_value_t<T>>(std::forward<T>(x));
+    }
+}
+
+template<typename T>
+[[nodiscard]] inline Expr<expr_value_t<T>> def_expr(const Expression *expr) noexcept {
+    using RawType = expr_value_t<T>;
+    return Expr<RawType>(expr);
+}
+
+namespace detail {
 
 class IfStmtBuilder {
 private:
@@ -35,7 +75,8 @@ public:
 
     template<typename Func>
     IfStmtBuilder operator*(Func &&func) noexcept {
-        return Function::current()->with(_if->false_branch(), std::forward<Func>(func));;
+        return Function::current()->with(_if->false_branch(), std::forward<Func>(func));
+        ;
     }
 
     template<typename FalseBranch>
@@ -45,7 +86,7 @@ public:
 
     template<typename Condition, typename TrueBranch>
     IfStmtBuilder elif_(Condition &&condition, TrueBranch &&true_branch) noexcept {
-        return (*this) * [&]{
+        return (*this) * [&] {
             return detail::IfStmtBuilder::create(std::forward<Condition>(condition));
         } / std::forward<TrueBranch>(true_branch);
     }

@@ -26,7 +26,7 @@ struct Var : public detail::Computable<T> {
     requires concepts::non_pointer<std::remove_cvref_t<Arg>> &&
         concepts::assign_able<expr_value_t<std::remove_cvref_t<T>>, expr_value_t<Arg>>
         Var(Arg &&arg) : Var() {
-        assign(*this, std::forward<Arg>(arg));
+        detail::assign(*this, std::forward<Arg>(arg));
     }
     auto operator->() noexcept { return reinterpret_cast<Proxy<T> *>(this); }
     auto operator->() const noexcept { return reinterpret_cast<const Proxy<T> *>(this); }
@@ -40,7 +40,7 @@ struct Var : public detail::Computable<T> {
     template<typename Arg>
     requires concepts::assign_able<expr_value_t<std::remove_cvref_t<T>>, expr_value_t<Arg>>
     void operator=(Arg &&arg) {
-        assign(*this, std::forward<Arg>(arg));
+        detail::assign(*this, std::forward<Arg>(arg));
     }
 };
 

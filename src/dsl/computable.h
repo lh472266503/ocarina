@@ -13,20 +13,22 @@
 
 namespace ocarina {
 
+namespace detail {
 template<typename Lhs, typename Rhs>
-inline void assign(Lhs &&lhs, Rhs &&rhs) noexcept;// implement in stmt.h
+inline void assign(Lhs &&lhs, Rhs &&rhs) noexcept;// implement in syntax.h
+}
 
 template<typename T>
-[[nodiscard]] inline Var<expr_value_t<T>> def(T &&x) noexcept;// implement in builtin.h
+[[nodiscard]] inline Var<expr_value_t<T>> def(T &&x) noexcept;// implement in syntax.h
 
 template<typename T>
-[[nodiscard]] inline Var<expr_value_t<T>> def(const Expression *expr) noexcept;// implement in builtin.h
+[[nodiscard]] inline Var<expr_value_t<T>> def(const Expression *expr) noexcept;// implement in syntax.h
 
 template<typename T>
-[[nodiscard]] inline Expr<expr_value_t<T>> def_expr(T &&x) noexcept;
+[[nodiscard]] inline Expr<expr_value_t<T>> def_expr(T &&x) noexcept;// implement in syntax.h
 
 template<typename T>
-[[nodiscard]] inline Expr<expr_value_t<T>> def_expr(const Expression *expr) noexcept;
+[[nodiscard]] inline Expr<expr_value_t<T>> def_expr(const Expression *expr) noexcept;// implement in syntax.h
 
 class Expression;
 
@@ -69,8 +71,8 @@ struct EnableGetMemberByIndex {
     template<size_t i>
     [[nodiscard]] auto get() const noexcept {
         return def<element_type>(Function::current()->access(Type::of<element_type>(),
-                                                    OC_EXPR(*static_cast<const T *>(this)),
-                                                    OC_EXPR(i)));
+                                                             OC_EXPR(*static_cast<const T *>(this)),
+                                                             OC_EXPR(i)));
     }
     template<size_t i>
     auto &get() noexcept {
@@ -103,16 +105,16 @@ struct EnableBitwiseCast {
     }
 };
 
-#define OC_COMPUTABLE_COMMON(...)                                                                   \
-private:                                                                                            \
-    const Expression *_expression{nullptr};                                                         \
-                                                                                                    \
-public:                                                                                             \
-    [[nodiscard]] const Expression *expression() const noexcept { return _expression; }             \
-                                                                                                    \
-protected:                                                                                          \
-    explicit Computable(const Expression *e) noexcept : _expression{e} {}                           \
-    Computable(Computable &&) noexcept = default;                                                   \
+#define OC_COMPUTABLE_COMMON(...)                                                       \
+private:                                                                                \
+    const Expression *_expression{nullptr};                                             \
+                                                                                        \
+public:                                                                                 \
+    [[nodiscard]] const Expression *expression() const noexcept { return _expression; } \
+                                                                                        \
+protected:                                                                              \
+    explicit Computable(const Expression *e) noexcept : _expression{e} {}               \
+    Computable(Computable &&) noexcept = default;                                       \
     Computable(const Computable &) noexcept = default;
 
 template<typename T>
