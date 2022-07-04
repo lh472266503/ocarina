@@ -17,7 +17,12 @@ public:
         : Resource(Tag::BUFFER, handle),
           _size_in_bytes(size) {}
     [[nodiscard]] auto size_in_bytes() const noexcept { return _size_in_bytes; }
+    void download(void *host_ptr, size_t size, size_t offset) noexcept;
+    void upload(const void *host_ptr, size_t size, size_t offset) noexcept;
+};
 
+template<typename T>
+class Buffer : public RawBuffer {
 };
 
 }// namespace ocarina

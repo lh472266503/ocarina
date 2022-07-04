@@ -14,15 +14,10 @@ int main(int argc, char *argv[]) {
         return a + b;
     };
 
-
     fs::path path(argv[0]);
     Context context(path.parent_path());
     context.init_device("cuda");
 
-//    CppCodegen codegen;
-
-
-    cout << typeid(detail::dsl_function_t<decltype(add)>).name();
 
     return 0;
 }
