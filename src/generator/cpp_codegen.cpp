@@ -191,8 +191,11 @@ void CppCodegen::visit(const CastExpr *expr) noexcept {
 void CppCodegen::visit(const Type *type) noexcept {
     if (!type->is_structure() || type->has_defined()) { return; }
     _scratch << "struct ";
+    _scratch << "alignas(";
+    _scratch << type->alignment();
+    _scratch << ") ";
     _emit_struct_name(type->hash());
-    _scratch << " { \n";
+    _scratch << " {\n";
     indent_inc();
     for (int i = 0; i < type->members().size(); ++i) {
         const Type *member = type->members()[i];
