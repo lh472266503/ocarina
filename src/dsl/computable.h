@@ -218,7 +218,9 @@ public:
 }// namespace detail
 
 template<typename T>
-struct Proxy : public ocarina::detail::Computable<T> {};
+struct Proxy : public ocarina::detail::Computable<T> {
+    static_assert(ocarina::always_false_v<T>, "proxy is invalid !");
+};
 
 #define OC_MAKE_PROXY(S) \
     template<>           \
