@@ -61,7 +61,7 @@ inline void exception_if_not(bool predicate, Args &&...args) {
 }
 
 template<typename... Args>
-[[noreturn]] inline void error(Args &&...args) {
+inline void error(Args &&...args) {
     logger().error(serialize(std::forward<Args>(args)...));
     exit(-1);
 }
@@ -127,3 +127,4 @@ inline void error_if_not(bool predicate, Args &&...args) {
     ::ocarina::core::error_if_not(__VA_ARGS__, "\n    Source: ", OC_SOURCE_LOCATION);
 #define OC_ERROR_FORMAT(FMT, ...) \
     OC_ERROR(ocarina::format(FMT, __VA_ARGS__));
+    
