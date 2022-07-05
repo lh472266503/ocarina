@@ -90,7 +90,7 @@ public:
 #define OC_MAKE_EXPRESSION_ACCEPT_VISITOR \
     void accept(ExprVisitor &visitor) const override { visitor.visit(this); }
 
-class UnaryExpr : public Expression {
+class OC_AST_API UnaryExpr : public Expression {
 private:
     const Expression *_operand;
     UnaryOp _op;
@@ -106,7 +106,7 @@ public:
     OC_MAKE_EXPRESSION_ACCEPT_VISITOR
 };
 
-class BinaryExpr : public Expression {
+class OC_AST_API BinaryExpr : public Expression {
 private:
     const Expression *_lhs;
     const Expression *_rhs;
@@ -127,7 +127,7 @@ public:
     OC_MAKE_EXPRESSION_ACCEPT_VISITOR
 };
 
-class AccessExpr : public Expression {
+class OC_AST_API AccessExpr : public Expression {
 private:
     const Expression *_range;
     const Expression *_index;
@@ -147,7 +147,7 @@ public:
     OC_MAKE_EXPRESSION_ACCEPT_VISITOR
 };
 
-class LiteralExpr : public Expression {
+class OC_AST_API LiteralExpr : public Expression {
 public:
     using value_type = basic_literal_t;
 
@@ -164,7 +164,7 @@ public:
     OC_MAKE_EXPRESSION_ACCEPT_VISITOR
 };
 
-class RefExpr : public Expression {
+class OC_AST_API RefExpr : public Expression {
 private:
     Variable _variable;
 
@@ -181,7 +181,7 @@ public:
     OC_MAKE_EXPRESSION_ACCEPT_VISITOR
 };
 
-class CastExpr : public Expression {
+class OC_AST_API CastExpr : public Expression {
 private:
     CastOp _cast_op;
     const Expression *_expression;
@@ -227,7 +227,7 @@ public:
     OC_MAKE_EXPRESSION_ACCEPT_VISITOR
 };
 
-class CallExpr : public Expression {
+class OC_AST_API CallExpr : public Expression {
 private:
     ocarina::vector<const Expression *> _arguments;
     const Function *_function{};
