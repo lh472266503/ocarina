@@ -3,7 +3,7 @@
 //
 
 #pragma once
-
+#include "core/logging.h"
 
 #define OC_CUDA_CHECK(EXPR)                                                                                  \
     [&] {                                                                                                    \
@@ -25,4 +25,3 @@
         }                                                                             \
     }()
 
-    
