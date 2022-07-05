@@ -14,7 +14,7 @@
 
 namespace ocarina {
 inline namespace core {
-spdlog::logger &logger() noexcept;
+OC_CORE_API spdlog::logger &logger() noexcept;
 
 inline void set_log_level(spdlog::level::level_enum lvl) noexcept {
     logger().set_level(lvl);
@@ -46,7 +46,7 @@ inline void warning_if_not(bool predicate, Args &&...args) noexcept {
 }
 
 template<typename... Args>
-inline void exception(Args &&...args) {
+[[noreturn]]inline void exception(Args &&...args) {
     throw std::runtime_error{serialize(std::forward<Args>(args)...)};
 }
 
@@ -61,7 +61,7 @@ inline void exception_if_not(bool predicate, Args &&...args) {
 }
 
 template<typename... Args>
-inline void error(Args &&...args) {
+[[noreturn]] inline void error(Args &&...args) {
     logger().error(serialize(std::forward<Args>(args)...));
     exit(-1);
 }
