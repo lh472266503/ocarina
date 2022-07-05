@@ -14,6 +14,8 @@
 #include <map>
 #include <set>
 #include <array>
+#include <list>
+#include <optional>
 #include <iostream>
 #include <unordered_map>
 #include <memory>

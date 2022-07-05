@@ -68,13 +68,13 @@ struct EnableSubscriptAccess {
 template<typename T>
 struct EnableGetMemberByIndex {
     using element_type = std::remove_cvref_t<decltype(std::declval<expr_value_t<T>>()[0])>;
-    template<size_t i>
+    template<int i>
     [[nodiscard]] auto get() const noexcept {
         return def<element_type>(Function::current()->access(Type::of<element_type>(),
                                                              OC_EXPR(*static_cast<const T *>(this)),
                                                              OC_EXPR(i)));
     }
-    template<size_t i>
+    template<int i>
     auto &get() noexcept {
         auto f = Function::current();
         const AccessExpr *expr = f->access(Type::of<element_type>(),
