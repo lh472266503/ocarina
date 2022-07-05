@@ -3,11 +3,13 @@
 //
 
 #include "cuda_device.h"
+#include "core/logging.h"
 
 namespace ocarina {
 
 CUDADevice::CUDADevice(Context *context)
     : Device(context) {
+
     OC_CU_CHECK(cuInit(0));
     OC_CU_CHECK(cuDeviceGet(&_cu_device, 0));
     OC_CU_CHECK(cuCtxCreate(&_cu_ctx, 0, _cu_device));

@@ -123,11 +123,11 @@ namespace detail {
 template<typename T, typename... A>
 [[nodiscard]] auto tuple_insert(ocarina::tuple<A...> lst, T &&t) {
     using ret_type = ocarina::tuple<T, A...>;
-    auto func = []<typename T, typename... A, size_t... i>(T && t,
-                                                           ocarina::tuple<A...> lst,
+    auto func = []<typename TT, typename... AA, size_t... i>(TT && t,
+                                                           ocarina::tuple<AA...> lst,
                                                            std::index_sequence<i...>)
                     ->ret_type {
-        return ret_type(std::forward<T>(t), std::move(ocarina::get<i>(lst))...);
+        return ret_type(std::forward<TT>(t), std::move(ocarina::get<i>(lst))...);
     };
     return func(std::forward<T>(t), std::move(lst), std::index_sequence_for<A...>());
 }

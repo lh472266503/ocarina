@@ -8,9 +8,9 @@
 #include "core/stl.h"
 
 namespace ocarina {
-[[nodiscard]] void *dynamic_module_load(const fs::path &path) noexcept;
+[[nodiscard]]OC_CORE_API void *dynamic_module_load(const fs::path &path) noexcept;
 void dynamic_module_destroy(void *handle) noexcept;
-[[nodiscard]] void *dynamic_module_find_symbol(void *handle,
+[[nodiscard]]OC_CORE_API void *dynamic_module_find_symbol(void *handle,
                                                ocarina::string_view name) noexcept;
-[[nodiscard]] ocarina::string dynamic_module_name(ocarina::string_view name) noexcept;
+[[nodiscard]]OC_CORE_API ocarina::string dynamic_module_name(ocarina::string_view name) noexcept;
 }// namespace ocarina

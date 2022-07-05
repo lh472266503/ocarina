@@ -42,7 +42,7 @@ enum struct CastOp : uint32_t {
     BITWISE
 };
 
-class Expression : public concepts::Noncopyable {
+class OC_AST_API Expression : public concepts::Noncopyable {
 public:
     enum struct Tag : uint32_t {
         UNARY,
@@ -206,7 +206,7 @@ public:
     OC_MAKE_EXPRESSION_ACCEPT_VISITOR
 };
 
-class MemberExpr : public Expression {
+class OC_AST_API MemberExpr : public Expression {
 private:
     const Expression *_parent{nullptr};
     uint16_t _member_index{0};
