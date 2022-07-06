@@ -90,7 +90,7 @@ int main(int argc, char *argv[]) {
 
     fs::path path(argv[0]);
     Context context(path.parent_path());
-//    context.init_device("cuda");
+    context.init_device("cuda");
 
     CppCodegen codegen;
     decltype(auto) f = c1.function();

@@ -13,7 +13,12 @@
 
 namespace ocarina {
 
-static constexpr string_view backend_prefix = "ocarina-backend-";
+    
+#ifdef _MSC_VER
+    static constexpr string_view backend_prefix = "ocarina-backend-";
+#else
+    static constexpr string_view backend_prefix = "libocarina-backend-";
+#endif
 
 namespace detail {
 [[nodiscard]] fs::path create_runtime_directory(fs::path path) noexcept {
