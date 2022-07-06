@@ -21,9 +21,8 @@ public:
     [[nodiscard]] const fs::path &runtime_directory() const noexcept;
     [[nodiscard]] const fs::path &cache_directory() const noexcept;
     const DynamicModule *obtain_module(const string& module_name) noexcept;
-    void init_device(const ocarina::string& backend_name) noexcept;
-    [[nodiscard]] const Device *device() const noexcept;
-    [[nodiscard]] Device *device() noexcept;
+    [[nodiscard]] Device create_device(const string &backend_name) noexcept;
+
 };
 
 }// namespace ocarina

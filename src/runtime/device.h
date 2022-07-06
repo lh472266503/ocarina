@@ -14,23 +14,31 @@
 namespace ocarina {
 class Context;
 class Device : public concepts::Noncopyable {
-protected:
-    Context *_context{};
+public:
+    class Impl : public concepts::Noncopyable {
+    private:
+        Context *_context{};
+        friend class Device;
+
+    public:
+        explicit Impl(Context *ctx) : _context(ctx) {}
+        [[nodiscard]] virtual handle_ty create_buffer(size_t size) noexcept = 0;
+        virtual void destroy_buffer(handle_ty handle) noexcept = 0;
+        virtual void compile(const Function &function) noexcept = 0;
+    };
+
+    using Creator = Device::Impl *(Context *);
+    using Deleter = void(Device::Impl *);
+    using Handle = ocarina::unique_ptr<Device::Impl, Device::Deleter *>;
+
+private:
+    Handle _impl;
 
 public:
-    using Creator = Device *(Context *);
-    using Deleter = void(Device *);
-    using Handle = ocarina::unique_ptr<Device, Device::Deleter*>;
-
-public:
-    explicit Device(Context *ctx) : _context(ctx) {}
-    [[nodiscard]] Context *context() const noexcept { return _context; }
-    [[nodiscard]] virtual uint64_t create_raw_buffer(size_t size_bytes) noexcept = 0;
+    explicit Device(Handle impl) : _impl(std::move(impl)) {}
+    [[nodiscard]] Context *context() const noexcept { return _impl->_context; }
     template<typename T>
     [[nodiscard]] Buffer<T> create_buffer(size_t size) noexcept {
-
     }
-    virtual void destroy_buffer(uint64_t handle) noexcept = 0;
-    virtual void compile(const Function &function) noexcept = 0;
 };
 }// namespace ocarina

@@ -4,7 +4,7 @@
 
 #include "context.h"
 #include "core/logging.h"
-
+#include "device.h"
 #ifdef NDEBUG
 
 #include "context_impl.h"
@@ -81,19 +81,11 @@ const DynamicModule *Context::obtain_module(const string& module_name) noexcept 
     return ret;
 }
 
-void Context::init_device(const ocarina::string &backend_name) noexcept {
+Device Context::create_device(const string &backend_name) noexcept {
     auto d = obtain_module(dynamic_module_name(detail::backend_full_name(backend_name)));
-    auto create_device = reinterpret_cast<Device::Creator*>(d->function_ptr("create"));
-    auto destroy_func = reinterpret_cast<Device::Deleter*>(d->function_ptr("destroy"));
-    _impl->device = Device::Handle(create_device(this), destroy_func);
-}
-
-Device *Context::device() noexcept {
-    return _impl->device.get();
-}
-
-const Device *Context::device() const noexcept {
-    return _impl->device.get();
+    auto create_device = reinterpret_cast<Device::Creator *>(d->function_ptr("create"));
+    auto destroy_func = reinterpret_cast<Device::Deleter *>(d->function_ptr("destroy"));
+    return Device{Device::Handle{create_device(this), destroy_func}};
 }
 
 }// namespace ocarina
