@@ -20,6 +20,10 @@ handle_ty CUDADevice::create_buffer(size_t size) noexcept {
 void CUDADevice::destroy_buffer(handle_ty handle) noexcept {
 }
 
+void CUDADevice::destroy_texture(handle_ty handle) noexcept {
+    
+}
+
 void CUDADevice::compile(const Function &function) noexcept {
 }
 }// namespace ocarina
