@@ -17,7 +17,7 @@ public:
         TEXTURE
     };
 
-private:
+protected:
     Tag _tag;
     handle_ty _handle{};
     Device::Impl *_device{nullptr};
