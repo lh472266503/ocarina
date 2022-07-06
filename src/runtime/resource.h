@@ -22,11 +22,16 @@ private:
     handle_ty _handle{};
     Device::Impl *_device{nullptr};
 
+protected:
+    void _destroy();
+
 public:
     Resource(Device::Impl *device, Tag tag, handle_ty handle)
         : _device(device), _tag(tag), _handle(handle) {}
     [[nodiscard]] Tag tag() const noexcept { return _tag; }
     [[nodiscard]] handle_ty handle() const noexcept { return _handle; }
-    ~Resource();
+    ~Resource() {
+        _destroy();
+    }
 };
 }// namespace ocarina
