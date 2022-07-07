@@ -28,10 +28,10 @@ void CUDADevice::compile(const Function &function) noexcept {
 }
 }// namespace ocarina
 
-OC_EXPORT_API ocarina::Device::Impl *create(ocarina::Context *context) {
+OC_EXPORT_API ocarina::CUDADevice *create(ocarina::Context *context) {
     return ocarina::new_with_allocator<ocarina::CUDADevice>(context);
 }
 
-OC_EXPORT_API void destroy(ocarina::Device::Impl *device) {
+OC_EXPORT_API void destroy(ocarina::CUDADevice *device) {
     ocarina::delete_with_allocator(device);
 }
