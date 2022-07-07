@@ -32,6 +32,6 @@ OC_EXPORT_API ocarina::Device::Impl *create(ocarina::Context *context) {
     return ocarina::new_with_allocator<ocarina::CUDADevice>(context);
 }
 
-OC_EXPORT_API void destroy(ocarina::Device *device) {
+OC_EXPORT_API void destroy(ocarina::Device::Impl *device) {
     ocarina::delete_with_allocator(device);
 }
