@@ -3,3 +3,12 @@
 //
 
 #pragma once
+
+#include "resource.h"
+
+namespace ocarina {
+
+class Stream : public Resource {
+};
+
+}// namespace ocarina
