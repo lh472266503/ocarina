@@ -17,6 +17,9 @@ CUDADevice::CUDADevice(Context *context)
 handle_ty CUDADevice::create_buffer(size_t size) noexcept {
     return 0;
 }
+handle_ty CUDADevice::create_stream() noexcept {
+    return 0;
+}
 void CUDADevice::destroy_buffer(handle_ty handle) noexcept {
 }
 
