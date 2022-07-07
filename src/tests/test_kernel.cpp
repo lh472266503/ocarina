@@ -16,8 +16,6 @@ int main(int argc, char *argv[]) {
 
     fs::path path(argv[0]);
     Context context(path.parent_path());
-    context.init_device("cuda");
-
 
     return 0;
 }

@@ -21,6 +21,7 @@ public:
     explicit CUDADevice(Context *context);
     void destroy_buffer(handle_ty handle) noexcept override;
     void destroy_texture(handle_ty handle) noexcept override;
+    void destroy_stream(handle_ty handle) noexcept override;
     [[nodiscard]] handle_ty create_buffer(size_t size) noexcept override;
     void compile(const Function &function) noexcept override;
 };

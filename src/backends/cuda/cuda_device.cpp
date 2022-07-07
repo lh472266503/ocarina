@@ -21,7 +21,9 @@ void CUDADevice::destroy_buffer(handle_ty handle) noexcept {
 }
 
 void CUDADevice::destroy_texture(handle_ty handle) noexcept {
+}
 
+void CUDADevice::destroy_stream(handle_ty handle) noexcept {
 }
 
 void CUDADevice::compile(const Function &function) noexcept {

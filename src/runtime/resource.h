@@ -15,7 +15,8 @@ class Resource : public concepts::Noncopyable {
 public:
     enum Tag : uint8_t {
         BUFFER,
-        TEXTURE
+        TEXTURE,
+        STREAM
     };
 
 protected:
