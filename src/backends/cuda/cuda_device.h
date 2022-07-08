@@ -22,7 +22,19 @@ private:
         CUcontext _ctx{};
 
     public:
-        
+        explicit ContextGuard(CUcontext handle)
+            : _ctx(handle) {
+            OC_CU_CHECK(cuCtxPushCurrent(_ctx));
+        }
+        ~ContextGuard() {
+            CUcontext ctx = nullptr;
+            OC_CU_CHECK(cuCtxPopCurrent(&ctx));
+            if (ctx != _ctx) [[unlikely]] {
+                OC_ERROR_FORMAT(
+                    "Invalid CUDA context {} (expected {}).",
+                    fmt::ptr(ctx), fmt::ptr(_ctx));
+            }
+        }
     };
 
 public:
@@ -30,7 +42,15 @@ public:
     [[nodiscard]] handle_ty create_buffer(size_t size) noexcept override;
     template<typename Func>
     auto bind_handle(Func &&func) noexcept {
-
+        ContextGuard cg(_cu_ctx);
+        return func();
+    }
+    template<typename Func>
+    auto bind_handle_sync(Func &&func) noexcept {
+        std::mutex mutex;
+        std::unique_lock lock(mutex);
+        ContextGuard cg(_cu_ctx);
+        return func();
     }
     void destroy_buffer(handle_ty handle) noexcept override;
     void destroy_texture(handle_ty handle) noexcept override;
