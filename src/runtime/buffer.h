@@ -41,15 +41,13 @@ private:
     size_t _size{};
 
 public:
-    Buffer(Device::Impl *device, handle_ty handle, size_t size)
-        : Resource(device, Tag::BUFFER, handle),
+    Buffer(Device::Impl *device, size_t size)
+        : Resource(device, Tag::BUFFER, device->create_buffer(size)),
           _size(size) {}
 
     [[nodiscard]] BufferView<T> view(size_t offset, size_t size) {
         return BufferView<T>(_handle, offset, size, _size);
     }
-
-
 };
 
 }// namespace ocarina

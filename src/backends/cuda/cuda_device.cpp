@@ -11,8 +11,7 @@ CUDADevice::CUDADevice(Context *context)
     : Device::Impl(context) {
     OC_CU_CHECK(cuInit(0));
     OC_CU_CHECK(cuDeviceGet(&_cu_device, 0));
-    OC_CU_CHECK(cuCtxCreate(&_cu_ctx, 0, _cu_device));
-    OC_CU_CHECK(cuCtxSetCurrent(_cu_ctx));
+    OC_CU_CHECK(cuDevicePrimaryCtxRetain(&_cu_ctx, _cu_device));
 }
 handle_ty CUDADevice::create_buffer(size_t size) noexcept {
     return 0;

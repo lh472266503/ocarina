@@ -17,9 +17,21 @@ private:
     CUstream _cu_stream{};
     CUcontext _cu_ctx{};
 
+    class ContextGuard {
+    private:
+        CUcontext _ctx{};
+
+    public:
+        
+    };
+
 public:
     explicit CUDADevice(Context *context);
     [[nodiscard]] handle_ty create_buffer(size_t size) noexcept override;
+    template<typename Func>
+    auto bind_handle(Func &&func) noexcept {
+
+    }
     void destroy_buffer(handle_ty handle) noexcept override;
     void destroy_texture(handle_ty handle) noexcept override;
     [[nodiscard]] handle_ty create_stream() noexcept override;

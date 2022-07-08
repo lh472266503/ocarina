@@ -44,7 +44,7 @@ public:
     [[nodiscard]] Context *context() const noexcept { return _impl->_context; }
     template<typename T>
     [[nodiscard]] Buffer<T> create_buffer(size_t size) noexcept {
-
+        return Buffer<T>(_impl.get(), size);
     }
 };
 }// namespace ocarina
