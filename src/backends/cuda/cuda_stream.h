@@ -3,3 +3,11 @@
 //
 
 #pragma once
+
+#include "core/stl.h"
+
+namespace ocarina {
+class CUDAStream {
+
+};
+}

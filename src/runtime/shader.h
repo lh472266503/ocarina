@@ -2,4 +2,4 @@
 // Created by Zero on 09/07/2022.
 //
 
-#include "cuda_stream.h"
+#pragma once

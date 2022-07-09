@@ -9,11 +9,15 @@
 namespace ocarina {
 
 class Stream : public Resource {
-private:
+public:
+    class Impl {
+
+    };
 
 public:
     Stream(Device::Impl *device, handle_ty handle)
         : Resource(device, Tag::STREAM, handle) {}
+
 
 };
 
