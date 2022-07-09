@@ -7,13 +7,18 @@
 #include "core/header.h"
 #include "core/stl.h"
 #include "dsl/func.h"
-#include "texture.h"
 #include "core/concepts.h"
 
 namespace ocarina {
 class Context;
+
 template<typename T>
 class Buffer;
+
+template<size_t dimension, typename... Args>
+class Shader;
+
+class Stream;
 
 class Device : public concepts::Noncopyable {
 public:
@@ -38,6 +43,10 @@ public:
 
 private:
     Handle _impl;
+    template<typename T, typename... Args>
+    [[nodiscard]] auto _create(Args &&...args) noexcept {
+        return T(this->_impl.get(), std::forward<Args>(args)...);
+    }
 
 public:
     explicit Device(Handle impl) : _impl(std::move(impl)) {}
@@ -46,5 +55,6 @@ public:
     [[nodiscard]] Buffer<T> create_buffer(size_t size) noexcept {
         return Buffer<T>(_impl.get(), size);
     }
+    [[nodiscard]] Stream create_stream() noexcept;
 };
 }// namespace ocarina

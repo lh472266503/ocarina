@@ -15,6 +15,7 @@
 #include "dsl/syntax_sugar.h"
 #include "core/util.h"
 #include "rt/hit.h"
+#include "runtime/stream.h"
 
 using std::cout;
 using std::endl;
@@ -92,12 +93,13 @@ int main(int argc, char *argv[]) {
     Context context(path.parent_path());
     Device device = context.create_device("cuda");
 
+    Stream stream = device.create_stream();
+
     CppCodegen codegen;
     decltype(auto) f = c1.function();
     codegen.emit(f);
     cout << codegen.scratch().c_str();
 
-//    Device *device = context.device();
 
     return 0;
 }

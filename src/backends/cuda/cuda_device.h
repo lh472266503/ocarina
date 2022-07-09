@@ -14,7 +14,6 @@ namespace ocarina {
 class CUDADevice : public Device::Impl {
 private:
     CUdevice _cu_device{};
-    CUstream _cu_stream{};
     CUcontext _cu_ctx{};
 
     class ContextGuard {

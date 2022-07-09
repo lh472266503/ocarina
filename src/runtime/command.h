@@ -5,6 +5,7 @@
 #pragma once
 
 #include "core/stl.h"
+#include "resource.h"
 
 namespace ocarina {
 

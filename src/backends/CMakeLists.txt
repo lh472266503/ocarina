@@ -14,7 +14,7 @@ function(ocarina_add_backend name)
             DEBUG_POSTFIX "")
 endfunction()
 
-add_library(ocarina-backend INTERFACE)
+add_library(ocarina-backend INTERFACE cuda/cuda_commad_visitor.h cuda/cuda_command_visitor.cpp)
 
 add_subdirectory(cuda)
 

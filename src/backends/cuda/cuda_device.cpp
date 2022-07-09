@@ -4,6 +4,7 @@
 
 #include "cuda_device.h"
 #include "core/logging.h"
+#include "cuda_stream.h"
 
 namespace ocarina {
 
@@ -13,6 +14,7 @@ CUDADevice::CUDADevice(Context *context)
     OC_CU_CHECK(cuDeviceGet(&_cu_device, 0));
     OC_CU_CHECK(cuDevicePrimaryCtxRetain(&_cu_ctx, _cu_device));
 }
+
 handle_ty CUDADevice::create_buffer(size_t size) noexcept {
     return bind_handle([&] {
         handle_ty handle;
@@ -20,13 +22,14 @@ handle_ty CUDADevice::create_buffer(size_t size) noexcept {
         return handle;
     });
 }
+
 handle_ty CUDADevice::create_stream() noexcept {
-    return bind_handle([&]{
-        handle_ty handle;
-        OC_CU_CHECK(cuStreamCreate(reinterpret_cast<CUstream *>(&handle), CU_STREAM_DEFAULT));
-        return handle;
+    return bind_handle([&] {
+        CUDAStream *stream = ocarina::new_with_allocator<CUDAStream>();
+        return reinterpret_cast<handle_ty>(stream);
     });
 }
+
 void CUDADevice::destroy_buffer(handle_ty handle) noexcept {
 }
 

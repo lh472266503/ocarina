@@ -16,6 +16,7 @@ private:
 
 public:
     CUDAStream() noexcept;
+
     ~CUDAStream() noexcept;
 
     void synchronize() noexcept override {

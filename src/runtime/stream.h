@@ -20,23 +20,20 @@ public:
 
 private:
     ocarina::vector<Command *> _commands;
-    Impl *_impl{};
 
 public:
-    explicit Stream(Device::Impl *device)
-        : Resource(device, Tag::STREAM,
-                   device->create_stream()) {}
+    explicit Stream(Device::Impl *device);
+
+    [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
+    [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(_handle); }
 
     Stream &operator<<(Command *command) noexcept {
-
     }
 
     Stream &synchronize() noexcept {
-
     }
 
     void flush() noexcept {
-
     }
 };
 
