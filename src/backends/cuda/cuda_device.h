@@ -40,12 +40,12 @@ public:
     explicit CUDADevice(Context *context);
     [[nodiscard]] handle_ty create_buffer(size_t size) noexcept override;
     template<typename Func>
-    auto bind_handle(Func &&func) noexcept {
+    decltype(auto) bind_handle(Func &&func) noexcept {
         ContextGuard cg(_cu_ctx);
         return func();
     }
     template<typename Func>
-    auto bind_handle_sync(Func &&func) noexcept {
+    decltype(auto) bind_handle_sync(Func &&func) noexcept {
         std::mutex mutex;
         std::unique_lock lock(mutex);
         ContextGuard cg(_cu_ctx);

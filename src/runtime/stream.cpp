@@ -4,7 +4,9 @@
 
 #include "stream.h"
 #include "device.h"
+
 namespace ocarina {
-Stream::Stream(Device::Impl *device) : Resource(device, Tag::STREAM,
-                                                device->create_stream()) {}
+Stream::Stream(Device::Impl *device)
+    : Resource(device, Tag::STREAM,
+               device->create_stream()) {}
 }// namespace ocarina
