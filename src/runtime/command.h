@@ -22,6 +22,7 @@ class Command {
 public:
     virtual ~Command() noexcept = default;
     virtual void accept(CommandVisitor &visitor) const noexcept = 0;
+    virtual void recycle() noexcept = 0;
 };
 
 #define OC_MAKE_CMD_VISITOR_ACCEPT \
@@ -36,6 +37,8 @@ private:
 
 public:
     OC_MAKE_CMD_VISITOR_ACCEPT
+
+    void recycle() noexcept override {}
 };
 
 class BufferDownloadCommand final : public Command {
@@ -47,6 +50,8 @@ private:
 
 public:
     OC_MAKE_CMD_VISITOR_ACCEPT
+
+    void recycle() noexcept override {}
 };
 
 }// namespace ocarina

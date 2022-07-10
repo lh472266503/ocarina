@@ -6,9 +6,10 @@
 
 #include "resource.h"
 #include "device.h"
+#include "command_queue.h"
+
 namespace ocarina {
 
-class Command;
 
 class Stream : public Resource {
 public:
@@ -19,7 +20,7 @@ public:
     };
 
 private:
-    ocarina::vector<Command *> _commands;
+    CommandQueue _command_queue;
 
 public:
     explicit Stream(Device::Impl *device);
