@@ -13,7 +13,7 @@ template<typename T>
 class Pool : public concepts::Noncopyable {
 public:
     static constexpr size_t element_count = 32;
-    static constexpr bool trivially = std::is_trivially_constructible_v<T>;
+    static constexpr bool trivially = std::is_trivially_destructible_v<T>;
 
 private:
     ocarina::vector<T *> _blocks;

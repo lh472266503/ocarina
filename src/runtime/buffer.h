@@ -28,10 +28,11 @@ public:
         return BufferView<T>(_handle, _offset + offset, size, _total_size);
     }
 
-    void upload(const void *data, size_t size) {
+    Command *upload(const void *data, size_t size) {
+
     }
 
-    void download(void *data, size_t size) {
+    Command *download(void *data, size_t size) {
     }
 };
 
