@@ -24,15 +24,18 @@ public:
     BufferView(handle_ty handle, size_t total_size)
         : _handle(handle), _offset(0), _total_size(total_size), _size(total_size) {}
 
-    [[nodiscard]] BufferView<T> subview(size_t offset, size_t size) {
+    [[nodiscard]] BufferView<T> subview(size_t offset, size_t size) const noexcept {
         return BufferView<T>(_handle, _offset + offset, size, _total_size);
     }
 
-    Command *upload(const void *data, size_t size) {
-
+    [[nodiscard]] Command *upload(const void *data, size_t size = 0) const noexcept {
+        size = size == 0 ? _size : size;
+        return BufferUploadCommand::create(data, _offset, _handle, size);
     }
 
-    Command *download(void *data, size_t size) {
+    [[nodiscard]] Command *download(void *data, size_t size = 0) const noexcept {
+        size = size == 0 ? _size : size;
+        return BufferDownloadCommand::create(data, _offset, _handle, size);
     }
 };
 
@@ -46,8 +49,18 @@ public:
         : Resource(device, Tag::BUFFER, device->create_buffer(size)),
           _size(size) {}
 
-    [[nodiscard]] BufferView<T> view(size_t offset, size_t size) {
+    [[nodiscard]] BufferView<T> view(size_t offset, size_t size) const noexcept {
         return BufferView<T>(_handle, offset, size, _size);
+    }
+
+    template<typename... Args>
+    [[nodiscard]] Command *upload(Args &&...args) const noexcept {
+        return view(0, _size).upload(OC_FORWARD(args)...);
+    }
+
+    template<typename... Args>
+    [[nodiscard]] Command *download(Args &&...args) const noexcept {
+        return view(0, _size).download(OC_FORWARD(args)...);
     }
 };
 

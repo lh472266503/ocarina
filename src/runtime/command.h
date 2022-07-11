@@ -39,14 +39,17 @@ OC_MAKE_COMMAND_POOL_FUNCS_DECL
     void recycle() noexcept override { OC_COMMAND_POOL_FUNC(CMD).recycle(this); }
 #define OC_MAKE_CMD_CREATOR(CMD)                                      \
     template<typename... Args>                                        \
-    static CMD *create(Args &&...args) {                              \
+    static CMD *create(Args &&...args) noexcept {                     \
         return OC_COMMAND_POOL_FUNC(CMD).create(OC_FORWARD(args)...); \
     }
+#define OC_MAKE_CMD_CLONE_FUNC(CMD) \
+    CMD *clone() noexcept { return CMD::create(*this); }
 
 #define OC_MAKE_CMD_COMMON_FUNC(CMD) \
     OC_MAKE_RECYCLE_FUNC(CMD)        \
     OC_MAKE_CMD_VISITOR_ACCEPT(CMD)  \
-    OC_MAKE_CMD_CREATOR(CMD)
+    OC_MAKE_CMD_CREATOR(CMD)         \
+    OC_MAKE_CMD_CLONE_FUNC(CMD)
 
 class CommandVisitor {
 public:
@@ -69,6 +72,12 @@ private:
     size_t _size_in_bytes{};
 
 public:
+    BufferUploadCommand(const void *hp, size_t ofs, ptr_t dp, size_t size)
+        : _host_ptr(hp), _offset(ofs), _device_ptr(dp), _size_in_bytes(size) {}
+    [[nodiscard]] const void *host_ptr() const noexcept { return _host_ptr; }
+    [[nodiscard]] size_t offset() const noexcept { return _offset; }
+    [[nodiscard]] ptr_t device_ptr() const noexcept { return _device_ptr; }
+    [[nodiscard]] size_t size_in_bytes() const noexcept { return _size_in_bytes; }
     OC_MAKE_CMD_COMMON_FUNC(BufferUploadCommand)
 };
 
@@ -80,6 +89,12 @@ private:
     size_t _size_in_bytes{};
 
 public:
+    BufferDownloadCommand(void *hp, size_t ofs, ptr_t dp, size_t size)
+        : _host_ptr(hp), _offset(ofs), _device_ptr(dp), _size_in_bytes(size) {}
+    [[nodiscard]] void *host_ptr() noexcept { return _host_ptr; }
+    [[nodiscard]] size_t offset() const noexcept { return _offset; }
+    [[nodiscard]] ptr_t device_ptr() const noexcept { return _device_ptr; }
+    [[nodiscard]] size_t size_in_bytes() const noexcept { return _size_in_bytes; }
     OC_MAKE_CMD_COMMON_FUNC(BufferDownloadCommand)
 };
 

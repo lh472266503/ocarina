@@ -17,4 +17,9 @@ void CommandQueue::pop_back() {
     _commands.pop_back();
 }
 
+void CommandQueue::clear() noexcept{
+    recycle();
+    _commands.clear();
+}
+
 }// namespace ocarina

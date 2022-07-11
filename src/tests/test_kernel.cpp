@@ -8,6 +8,7 @@
 #include "generator/cpp_codegen.h"
 #include "runtime/device.h"
 #include "runtime/stream.h"
+#include "runtime/command.h"
 
 using namespace ocarina;
 
@@ -20,6 +21,9 @@ int main(int argc, char *argv[]) {
     Context context(path.parent_path());
     Device device = context.create_device("cuda");
     Stream stream = device.create_stream();
+
+    auto cmd = BufferUploadCommand::create(nullptr, 0, 0, 0);
+
 
     return 0;
 }

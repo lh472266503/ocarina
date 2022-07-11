@@ -25,6 +25,7 @@ public:
         return _commands.emplace_back(OC_FORWARD(args)...);
     }
     void pop_back();
+    void clear() noexcept;
     void recycle() noexcept;
 };
 
