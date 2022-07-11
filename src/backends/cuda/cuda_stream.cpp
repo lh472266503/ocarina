@@ -19,7 +19,13 @@ CUDAStream::~CUDAStream() noexcept {
 }
 
 void CUDAStream::commit() noexcept {
-
+    CUDACommandVisitor cmd_visitor;
+    for (auto &cmd : _command_queue) {
+        cmd->accept(cmd_visitor);
+    }
 }
-
+void CUDAStream::synchronize() noexcept {
+}
+void CUDAStream::barrier() noexcept {
+}
 }// namespace ocarina

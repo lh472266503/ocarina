@@ -28,6 +28,10 @@ public:
     auto emplace_back(Args &&...args) {
         return _commands.emplace_back(OC_FORWARD(args)...);
     }
+    [[nodiscard]] auto begin() const noexcept { return _commands.begin(); }
+    [[nodiscard]] auto begin() noexcept { return _commands.begin(); }
+    [[nodiscard]] auto end() const noexcept { return _commands.end(); }
+    [[nodiscard]] auto end() noexcept { return _commands.end(); }
     void pop_back();
     void clear() noexcept;
     void recycle() noexcept;
