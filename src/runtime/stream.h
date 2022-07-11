@@ -10,32 +10,28 @@
 
 namespace ocarina {
 
-
 class Stream : public Resource {
 public:
     class Impl {
+    protected:
+        CommandQueue _command_queue;
+
+    public:
         virtual void synchronize() noexcept = 0;
         virtual void barrier() noexcept = 0;
-        virtual void flush() noexcept = 0;
+        virtual void commit() noexcept = 0;
+        virtual void add_command(Command *cmd) noexcept = 0;
     };
-
-private:
-    CommandQueue _command_queue;
 
 public:
     explicit Stream(Device::Impl *device);
-
     [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
     [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(_handle); }
-
-    Stream &operator<<(Command *command) noexcept {
-    }
-
-    Stream &synchronize() noexcept {
-    }
-
-    void flush() noexcept {
-    }
+    Stream &operator<<(Command *command) noexcept;
+    Stream &operator<<(CommandQueue::Synchronize) noexcept;
+    Stream &operator<<(CommandQueue::Commit) noexcept;
+    Stream &synchronize() noexcept;
+    void commit() noexcept;
 };
 
 }// namespace ocarina

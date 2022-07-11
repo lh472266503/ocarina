@@ -10,17 +10,21 @@ namespace ocarina {
 class Command;
 
 class CommandQueue {
+public:
+    struct Commit {};
+    struct Synchronize {};
+
 private:
     ocarina::vector<Command *> _commands{};
 
 public:
     CommandQueue() = default;
     ~CommandQueue() { recycle(); }
-    template<typename ...Args>
+    template<typename... Args>
     auto push_back(Args &&...args) {
         return _commands.push_back(OC_FORWARD(args)...);
     }
-    template<typename ...Args>
+    template<typename... Args>
     auto emplace_back(Args &&...args) {
         return _commands.emplace_back(OC_FORWARD(args)...);
     }

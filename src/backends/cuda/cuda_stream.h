@@ -19,13 +19,16 @@ public:
 
     ~CUDAStream() noexcept;
 
+    void add_command(Command *cmd) noexcept override {
+        _command_queue.push_back(cmd);
+    }
+
     void synchronize() noexcept override {
     }
 
     void barrier() noexcept override {
     }
 
-    void flush() noexcept override {
-    }
+    void commit() noexcept override;
 };
 }// namespace ocarina
