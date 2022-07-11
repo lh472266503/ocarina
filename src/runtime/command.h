@@ -37,10 +37,16 @@ OC_MAKE_COMMAND_POOL_FUNCS_DECL
     void accept(CommandVisitor &visitor) const noexcept override { visitor.visit(this); }
 #define OC_MAKE_RECYCLE_FUNC(CMD) \
     void recycle() noexcept override { OC_COMMAND_POOL_FUNC(CMD).recycle(this); }
+#define OC_MAKE_CMD_CREATOR(CMD)                                      \
+    template<typename... Args>                                        \
+    static CMD *create(Args &&...args) {                              \
+        return OC_COMMAND_POOL_FUNC(CMD).create(OC_FORWARD(args)...); \
+    }
 
 #define OC_MAKE_CMD_COMMON_FUNC(CMD) \
     OC_MAKE_RECYCLE_FUNC(CMD)        \
-    OC_MAKE_CMD_VISITOR_ACCEPT(CMD)
+    OC_MAKE_CMD_VISITOR_ACCEPT(CMD)  \
+    OC_MAKE_CMD_CREATOR(CMD)
 
 class CommandVisitor {
 public:
