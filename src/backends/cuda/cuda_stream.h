@@ -23,7 +23,6 @@ public:
         _command_queue.push_back(cmd);
     }
 
-    void synchronize() noexcept override;
     void barrier() noexcept override;
     void commit() noexcept override;
 };

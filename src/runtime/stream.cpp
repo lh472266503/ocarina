@@ -15,19 +15,10 @@ Stream &Stream::operator<<(Command *command) noexcept {
     return *this;
 }
 
-Stream &Stream::synchronize() noexcept {
-    impl()->synchronize();
-    return *this;
-}
-
 void Stream::commit() noexcept {
     impl()->commit();
 }
 
-Stream &Stream::operator<<(CommandQueue::Synchronize) noexcept {
-    synchronize();
-    return *this;
-}
 Stream &Stream::operator<<(CommandQueue::Commit) noexcept {
     commit();
     return *this;

@@ -164,8 +164,6 @@ void CppCodegen::visit(const LiteralExpr *expr) noexcept {
 void CppCodegen::visit(const RefExpr *expr) noexcept {
     _emit_variable_name(expr->variable());
 }
-void CppCodegen::visit(const ConstantExpr *expr) noexcept {
-}
 void CppCodegen::visit(const CallExpr *expr) noexcept {
     _emit_func_name(expr->function()->hash());
     _scratch << "(";

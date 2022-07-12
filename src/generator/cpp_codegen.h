@@ -33,7 +33,6 @@ protected:
     void visit(const AccessExpr *expr) noexcept override;
     void visit(const LiteralExpr *expr) noexcept override;
     void visit(const RefExpr *expr) noexcept override;
-    void visit(const ConstantExpr *expr) noexcept override;
     void visit(const CallExpr *expr) noexcept override;
     void visit(const CastExpr *expr) noexcept override;
 

@@ -31,7 +31,6 @@ struct ExprVisitor {
     virtual void visit(const AccessExpr *) = 0;
     virtual void visit(const LiteralExpr *) = 0;
     virtual void visit(const RefExpr *) = 0;
-    virtual void visit(const ConstantExpr *) = 0;
     virtual void visit(const CallExpr *) = 0;
     virtual void visit(const CastExpr *) = 0;
 };

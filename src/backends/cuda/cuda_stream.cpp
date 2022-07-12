@@ -24,8 +24,7 @@ void CUDAStream::commit() noexcept {
         cmd->accept(cmd_visitor);
     }
 }
-void CUDAStream::synchronize() noexcept {
-}
+
 void CUDAStream::barrier() noexcept {
 }
 }// namespace ocarina
