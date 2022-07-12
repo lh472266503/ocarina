@@ -11,4 +11,7 @@ void CUDACommandVisitor::visit(const BufferUploadCommand *cmd) noexcept {
 void CUDACommandVisitor::visit(const BufferDownloadCommand *cmd) noexcept {
 }
 
+void CUDACommandVisitor::visit(const SynchronizeCommand *cmd) noexcept {
+}
+
 }// namespace ocarina

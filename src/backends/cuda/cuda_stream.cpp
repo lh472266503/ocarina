@@ -19,7 +19,7 @@ CUDAStream::~CUDAStream() noexcept {
 }
 
 void CUDAStream::commit() noexcept {
-    CUDACommandVisitor cmd_visitor;
+    CUDACommandVisitor cmd_visitor{_stream};
     for (auto &cmd : _command_queue) {
         cmd->accept(cmd_visitor);
     }

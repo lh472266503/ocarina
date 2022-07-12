@@ -10,9 +10,10 @@
 
 namespace ocarina {
 
-#define OC_RUNTIME_CMD   \
-    BufferUploadCommand, \
-        BufferDownloadCommand
+#define OC_RUNTIME_CMD         \
+    BufferUploadCommand,       \
+        BufferDownloadCommand, \
+        SynchronizeCommand
 
 /// forward declare
 #define OC_MAKE_CMD_FWD_DECL(CMD) class CMD;
@@ -96,6 +97,11 @@ public:
     [[nodiscard]] ptr_t device_ptr() const noexcept { return _device_ptr; }
     [[nodiscard]] size_t size_in_bytes() const noexcept { return _size_in_bytes; }
     OC_MAKE_CMD_COMMON_FUNC(BufferDownloadCommand)
+};
+
+class SynchronizeCommand final : public Command {
+public:
+    OC_MAKE_CMD_COMMON_FUNC(SynchronizeCommand)
 };
 
 }// namespace ocarina
