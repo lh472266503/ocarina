@@ -54,12 +54,12 @@ public:
     }
 
     template<typename... Args>
-    [[nodiscard]] Command *upload(Args &&...args) const noexcept {
+    [[nodiscard]] BufferUploadCommand *upload(Args &&...args) const noexcept {
         return view(0, _size).upload(OC_FORWARD(args)...);
     }
 
     template<typename... Args>
-    [[nodiscard]] Command *download(Args &&...args) const noexcept {
+    [[nodiscard]] BufferDownloadCommand *download(Args &&...args) const noexcept {
         return view(0, _size).download(OC_FORWARD(args)...);
     }
 };
