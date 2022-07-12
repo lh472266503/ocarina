@@ -28,14 +28,14 @@ public:
         return BufferView<T>(_handle, _offset + offset, size, _total_size);
     }
 
-    [[nodiscard]] Command *upload(const void *data, size_t size = 0) const noexcept {
+    [[nodiscard]] BufferUploadCommand *upload(const void *data, size_t size = 0) const noexcept {
         size = size == 0 ? _size : size;
-        return BufferUploadCommand::create(data, _offset, _handle, size);
+        return BufferUploadCommand::create(data, _offset, _handle, size * sizeof(T));
     }
 
-    [[nodiscard]] Command *download(void *data, size_t size = 0) const noexcept {
+    [[nodiscard]] BufferDownloadCommand *download(void *data, size_t size = 0) const noexcept {
         size = size == 0 ? _size : size;
-        return BufferDownloadCommand::create(data, _offset, _handle, size);
+        return BufferDownloadCommand::create(data, _offset, _handle, size * sizeof(T));
     }
 };
 
