@@ -19,7 +19,6 @@ class MemberExpr;
 class AccessExpr;
 class LiteralExpr;
 class RefExpr;
-class ConstantExpr;
 class CallExpr;
 class CastExpr;
 
