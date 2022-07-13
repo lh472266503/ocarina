@@ -50,7 +50,7 @@ private:
 
 public:
     Buffer(Device::Impl *device, size_t size)
-        : Resource(device, Tag::BUFFER, device->create_buffer(size)),
+        : Resource(device, Tag::BUFFER, device->create_buffer(size * sizeof(T))),
           _size(size) {}
 
     [[nodiscard]] BufferView<T> view(size_t offset, size_t size) const noexcept {
