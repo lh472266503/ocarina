@@ -10,6 +10,10 @@
 
 namespace ocarina {
 
+struct Commit {
+    std::function<void(void*)> callback;
+};
+
 class Stream : public Resource {
 public:
     class Impl {
@@ -27,8 +31,7 @@ public:
     [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
     [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(_handle); }
     Stream &operator<<(Command *command) noexcept;
-    Stream &operator<<(CommandQueue::Commit) noexcept;
-    Stream &synchronize() noexcept;
+    Stream &operator<<(Commit) noexcept;
     void commit() noexcept;
 };
 

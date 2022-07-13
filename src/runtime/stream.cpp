@@ -19,7 +19,7 @@ void Stream::commit() noexcept {
     impl()->commit();
 }
 
-Stream &Stream::operator<<(CommandQueue::Commit) noexcept {
+Stream &Stream::operator<<(Commit) noexcept {
     commit();
     return *this;
 }

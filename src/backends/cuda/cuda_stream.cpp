@@ -26,5 +26,8 @@ void CUDAStream::commit() noexcept {
 }
 
 void CUDAStream::barrier() noexcept {
+    constexpr CUevent_wait_flags_enum flags = CU_EVENT_WAIT_DEFAULT;
+    OC_CU_CHECK(cuEventRecord(_event, _stream));
+    OC_CU_CHECK(cuStreamWaitEvent(_stream, _event, flags));
 }
 }// namespace ocarina

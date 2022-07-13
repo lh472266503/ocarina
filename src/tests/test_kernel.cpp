@@ -6,9 +6,7 @@
 #include "dsl/common.h"
 #include "runtime/context.h"
 #include "generator/cpp_codegen.h"
-#include "runtime/device.h"
-#include "runtime/stream.h"
-#include "runtime/command.h"
+#include "runtime/common.h"
 
 using namespace ocarina;
 
@@ -22,7 +20,14 @@ int main(int argc, char *argv[]) {
     Device device = context.create_device("cuda");
     Stream stream = device.create_stream();
 
-    auto cmd = BufferUploadCommand::create(nullptr, 0, 0, 0);
+    Buffer<float> f_buffer = device.create_buffer<float>(10);
+
+    ocarina::vector<float> v;
+    for (int i = 0; i < 10; ++i) {
+        v.push_back(i);
+    }
+    stream << f_buffer.upload(v.data()) << synchronize();
+
 
 
     return 0;

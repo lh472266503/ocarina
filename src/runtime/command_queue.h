@@ -10,9 +10,6 @@ namespace ocarina {
 class Command;
 
 class CommandQueue {
-public:
-    struct Commit {};
-    struct Synchronize {};
 
 private:
     ocarina::vector<Command *> _commands{};
