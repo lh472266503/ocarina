@@ -104,4 +104,8 @@ public:
     OC_MAKE_CMD_COMMON_FUNC(SynchronizeCommand)
 };
 
+[[nodiscard]] inline SynchronizeCommand *synchronize() noexcept {
+    return SynchronizeCommand::create();
+}
+
 }// namespace ocarina
