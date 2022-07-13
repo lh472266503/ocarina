@@ -15,12 +15,12 @@ Stream &Stream::operator<<(Command *command) noexcept {
     return *this;
 }
 
-void Stream::commit() noexcept {
-    impl()->commit();
+void Stream::commit(const Commit &commit) noexcept {
+    impl()->commit(commit);
 }
 
-Stream &Stream::operator<<(Commit) noexcept {
-    commit();
+Stream &Stream::operator<<(const Commit &cmt) noexcept {
+    commit(cmt);
     return *this;
 }
 }// namespace ocarina

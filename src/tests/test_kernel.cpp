@@ -27,8 +27,9 @@ int main(int argc, char *argv[]) {
         v.push_back(i);
     }
     stream << f_buffer.upload(v.data()) << synchronize();
-
-
+    stream << commit([&](void*) -> int{
+        return 0;
+    });
 
     return 0;
 }

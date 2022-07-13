@@ -24,6 +24,6 @@ public:
     }
 
     void barrier() noexcept override;
-    void commit() noexcept override;
+    void commit(const Commit &cmt) noexcept override;
 };
 }// namespace ocarina

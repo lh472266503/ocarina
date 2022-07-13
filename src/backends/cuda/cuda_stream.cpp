@@ -18,7 +18,7 @@ CUDAStream::~CUDAStream() noexcept {
     OC_CU_CHECK(cuEventDestroy(_event));
 }
 
-void CUDAStream::commit() noexcept {
+void CUDAStream::commit(const Commit &commit) noexcept {
     CUDACommandVisitor cmd_visitor{_stream};
     for (auto &cmd : _command_queue) {
         cmd->accept(cmd_visitor);
