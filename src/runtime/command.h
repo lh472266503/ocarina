@@ -90,7 +90,7 @@ private:
 public:
     BufferDownloadCommand(void *hp, ptr_t dp, size_t size)
         : _host_ptr(hp), _device_ptr(dp), _size_in_bytes(size) {}
-    [[nodiscard]] void *host_ptr() noexcept { return _host_ptr; }
+    [[nodiscard]] void *host_ptr() const noexcept { return _host_ptr; }
     [[nodiscard]] ptr_t device_ptr() const noexcept { return _device_ptr; }
     [[nodiscard]] size_t size_in_bytes() const noexcept { return _size_in_bytes; }
     OC_MAKE_CMD_COMMON_FUNC(BufferDownloadCommand)

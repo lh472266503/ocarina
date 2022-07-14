@@ -14,9 +14,14 @@ void CUDACommandVisitor::visit(const BufferUploadCommand *cmd) noexcept {
 }
 
 void CUDACommandVisitor::visit(const BufferDownloadCommand *cmd) noexcept {
+    cuMemcpyDtoHAsync(cmd->host_ptr(),
+                      cmd->device_ptr(),
+                      cmd->size_in_bytes(),
+                      _stream);
 }
 
 void CUDACommandVisitor::visit(const SynchronizeCommand *cmd) noexcept {
+    OC_CU_CHECK(cuStreamSynchronize(_stream));
 }
 
 }// namespace ocarina
