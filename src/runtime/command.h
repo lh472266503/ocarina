@@ -68,15 +68,13 @@ public:
 class BufferUploadCommand final : public Command {
 private:
     const void *_host_ptr{};
-    size_t _offset{};
     ptr_t _device_ptr{};
     size_t _size_in_bytes{};
 
 public:
-    BufferUploadCommand(const void *hp, size_t ofs, ptr_t dp, size_t size)
-        : _host_ptr(hp), _offset(ofs), _device_ptr(dp), _size_in_bytes(size) {}
+    BufferUploadCommand(const void *hp, ptr_t dp, size_t size)
+        : _host_ptr(hp), _device_ptr(dp), _size_in_bytes(size) {}
     [[nodiscard]] const void *host_ptr() const noexcept { return _host_ptr; }
-    [[nodiscard]] size_t offset() const noexcept { return _offset; }
     [[nodiscard]] ptr_t device_ptr() const noexcept { return _device_ptr; }
     [[nodiscard]] size_t size_in_bytes() const noexcept { return _size_in_bytes; }
     OC_MAKE_CMD_COMMON_FUNC(BufferUploadCommand)
@@ -90,10 +88,9 @@ private:
     size_t _size_in_bytes{};
 
 public:
-    BufferDownloadCommand(void *hp, size_t ofs, ptr_t dp, size_t size)
-        : _host_ptr(hp), _offset(ofs), _device_ptr(dp), _size_in_bytes(size) {}
+    BufferDownloadCommand(void *hp, ptr_t dp, size_t size)
+        : _host_ptr(hp), _device_ptr(dp), _size_in_bytes(size) {}
     [[nodiscard]] void *host_ptr() noexcept { return _host_ptr; }
-    [[nodiscard]] size_t offset() const noexcept { return _offset; }
     [[nodiscard]] ptr_t device_ptr() const noexcept { return _device_ptr; }
     [[nodiscard]] size_t size_in_bytes() const noexcept { return _size_in_bytes; }
     OC_MAKE_CMD_COMMON_FUNC(BufferDownloadCommand)

@@ -11,6 +11,9 @@ namespace ocarina {
 
 template<typename T>
 class BufferView {
+public:
+    static constexpr size_t element_size = sizeof(T);
+
 private:
     handle_ty _handle{};
     size_t _offset{};
@@ -28,23 +31,21 @@ public:
         return BufferView<T>(_handle, _offset + offset, size, _total_size);
     }
 
-    [[nodiscard]] BufferUploadCommand *upload(const void *data, size_t offset = 0, size_t size = 0) const noexcept {
-        size = size == 0 ? _size : size;
-        offset *= sizeof(T);
-        return BufferUploadCommand::create(data, offset,
-                                           _handle + _offset * sizeof(T),
-                                           size * sizeof(T));
+    [[nodiscard]] BufferUploadCommand *upload(const void *data) const noexcept {
+        return BufferUploadCommand::create(data, _handle + _offset * element_size,
+                                           _size * element_size);
     }
 
-    [[nodiscard]] BufferDownloadCommand *download(void *data, size_t offset = 0, size_t size = 0) const noexcept {
-        size = size == 0 ? _size : size;
-        offset *= sizeof(T);
-        return BufferDownloadCommand::create(data, offset, _handle, size * sizeof(T));
+    [[nodiscard]] BufferDownloadCommand *download(void *data) const noexcept {
+        return BufferDownloadCommand::create(data, _handle + _offset * element_size,
+                                             _size * element_size);
     }
 };
 
 template<typename T>
 class Buffer : public Resource {
+public:
+    static constexpr size_t element_size = sizeof(T);
 private:
     size_t _size{};
 
@@ -67,5 +68,54 @@ public:
         return view(0, _size).download(OC_FORWARD(args)...);
     }
 };
+
+namespace detail {
+
+template<typename T>
+struct is_buffer_impl : std::false_type {};
+
+template<typename T>
+struct is_buffer_impl<Buffer<T>> : std::true_type {};
+
+template<typename T>
+struct is_buffer_view_impl : std::false_type {};
+
+template<typename T>
+struct is_buffer_view_impl<BufferView<T>> : std::true_type {};
+
+template<typename T>
+struct buffer_element_impl {
+    using type = T;
+};
+
+template<typename T>
+struct buffer_element_impl<Buffer<T>> {
+    using type = T;
+};
+
+template<typename T>
+struct buffer_element_impl<BufferView<T>> {
+    using type = T;
+};
+
+}// namespace detail
+
+template<typename T>
+using is_buffer = detail::is_buffer_impl<std::remove_cvref_t<T>>;
+
+template<typename T>
+using is_buffer_view = detail::is_buffer_view_impl<std::remove_cvref_t<T>>;
+
+template<typename T>
+using is_buffer_or_view = std::disjunction<is_buffer<T>, is_buffer_view<T>>;
+
+template<typename T>
+constexpr auto is_buffer_v = is_buffer<T>::value;
+
+template<typename T>
+constexpr auto is_buffer_view_v = is_buffer_view<T>::value;
+
+template<typename T>
+constexpr auto is_buffer_or_view_v = is_buffer_or_view<T>::value;
 
 }// namespace ocarina
