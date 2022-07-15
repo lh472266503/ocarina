@@ -16,7 +16,7 @@
         [nodiscard]] inline auto                                                                \
     operator op(T &&expr) noexcept {                                                            \
         using Ret = std::remove_cvref_t<decltype(op std::declval<ocarina::expr_value_t<T>>())>; \
-        return ocarina::expr<Ret>(                                                              \
+        return ocarina::make_expr<Ret>(                                                         \
             ocarina::Function::current()->unary(                                                \
                 ocarina::Type::of<Ret>(),                                                       \
                 ocarina::UnaryOp::tag,                                                          \
@@ -46,7 +46,7 @@ OC_MAKE_DSL_UNARY_OPERATOR(~, BIT_NOT)
             decltype(std::declval<ocarina::expr_value_t<Lhs>>() op                      \
                          std::declval<ocarina::expr_value_t<Rhs>>())>;                  \
         using Ret = std::conditional_t<is_bool_lhs && is_logic_op, bool, NormalRet>;    \
-        return ocarina::expr<Ret>(ocarina::Function::current()->binary(                 \
+        return ocarina::make_expr<Ret>(ocarina::Function::current()->binary(            \
             ocarina::Type::of<Ret>(),                                                   \
             ocarina::BinaryOp::tag,                                                     \
             ocarina::detail::extract_expression(std::forward<Lhs>(lhs)),                \

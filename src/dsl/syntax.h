@@ -36,16 +36,16 @@ template<typename T>
 }
 
 template<typename T>
-[[nodiscard]] inline Expr<expr_value_t<T>> expr(T &&x) noexcept {
+[[nodiscard]] inline Expr<expr_value_t<T>> make_expr(T &&x) noexcept {
     if constexpr (is_expr_v<std::remove_cvref_t<T>>) {
-        return expr<T>(x.expression());
+        return make_expr<T>(x.expression());
     } else {
         return Expr<expr_value_t<T>>(std::forward<T>(x));
     }
 }
 
 template<typename T>
-[[nodiscard]] inline Expr<expr_value_t<T>> expr(const Expression *expr) noexcept {
+[[nodiscard]] inline Expr<expr_value_t<T>> make_expr(const Expression *expr) noexcept {
     using RawType = expr_value_t<T>;
     return Expr<RawType>(expr);
 }
@@ -290,23 +290,23 @@ public:
 template<typename Count>
 requires concepts::integral<expr_value_t<Count>>
 auto range(Count &&count) noexcept {
-    return detail::ForStmtBuilder<expr_value_t<Count>>(0, expr(std::forward<Count>(count)), 1);
+    return detail::ForStmtBuilder<expr_value_t<Count>>(0, make_expr(std::forward<Count>(count)), 1);
 }
 
 template<typename Begin, typename End>
 requires concepts::integral<expr_value_t<Begin>>
 auto range(Begin &&begin, End &&end) noexcept {
-    return detail::ForStmtBuilder<expr_value_t<End>>(expr(std::forward<Begin>(begin)),
-                                                     expr(std::forward<End>(end)),
+    return detail::ForStmtBuilder<expr_value_t<End>>(make_expr(std::forward<Begin>(begin)),
+                                                     make_expr(std::forward<End>(end)),
                                                      1);
 }
 
 template<typename Begin, typename End, typename Step>
 requires concepts::integral<expr_value_t<Begin>>
 auto range(Begin &&begin, End &&end, Step &&step) noexcept {
-    return detail::ForStmtBuilder<expr_value_t<End>>(expr(std::forward<Begin>(begin)),
-                                                     expr(std::forward<End>(end)),
-                                                     expr(std::forward<Step>(step)));
+    return detail::ForStmtBuilder<expr_value_t<End>>(make_expr(std::forward<Begin>(begin)),
+                                                     make_expr(std::forward<End>(end)),
+                                                     make_expr(std::forward<Step>(step)));
 }
 
 template<typename Count, typename Body>

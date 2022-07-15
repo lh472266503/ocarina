@@ -25,10 +25,10 @@ template<typename T>
 [[nodiscard]] inline Var<expr_value_t<T>> eval(const Expression *expr) noexcept;// implement in syntax.h
 
 template<typename T>
-[[nodiscard]] inline Expr<expr_value_t<T>> expr(T &&x) noexcept;// implement in syntax.h
+[[nodiscard]] inline Expr<expr_value_t<T>> make_expr(T &&x) noexcept;// implement in syntax.h
 
 template<typename T>
-[[nodiscard]] inline Expr<expr_value_t<T>> expr(const Expression *expr) noexcept;// implement in syntax.h
+[[nodiscard]] inline Expr<expr_value_t<T>> make_expr(const Expression *expr) noexcept;// implement in syntax.h
 
 class Expression;
 
@@ -91,7 +91,7 @@ struct EnableStaticCast {
     [[nodiscard]] Expr<Dest> cast() const noexcept {
         const CastExpr *expr = Function::current()->cast(Type::of<Dest>(), CastOp::STATIC,
                                                          static_cast<const T *>(this)->expression());
-        return expr<Dest>(expr);
+        return make_expr<Dest>(expr);
     }
 };
 
@@ -101,7 +101,7 @@ struct EnableBitwiseCast {
     [[nodiscard]] Expr<Dest> as() const noexcept {
         const CastExpr *expr = Function::current()->cast(Type::of<Dest>(), CastOp::BITWISE,
                                                          static_cast<const T *>(this)->expression());
-        return expr<Dest>(expr);
+        return make_expr<Dest>(expr);
     }
 };
 
