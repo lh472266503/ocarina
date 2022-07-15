@@ -16,7 +16,7 @@ private:
     CUevent _event{};
     CUDADevice *_device{};
 public:
-    CUDAStream(CUDADevice *device) noexcept;
+    explicit CUDAStream(CUDADevice *device) noexcept;
 
     ~CUDAStream() noexcept;
 

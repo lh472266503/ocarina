@@ -15,7 +15,8 @@ private:
     CUDADevice *_device{};
 
 public:
-    explicit CUDACommandVisitor(CUstream stream, CUDADevice *device) : _stream(stream), _device(device) {}
+    CUDACommandVisitor(CUstream stream, CUDADevice *device)
+        : _stream(stream), _device(device) {}
     void visit(const BufferUploadCommand *cmd) noexcept override;
     void visit(const BufferDownloadCommand *cmd) noexcept override;
     void visit(const SynchronizeCommand *cmd) noexcept override;
