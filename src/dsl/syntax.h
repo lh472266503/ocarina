@@ -25,27 +25,27 @@ inline void assign(Lhs &&lhs, Rhs &&rhs) noexcept {
 }// namespace detail
 
 template<typename T>
-[[nodiscard]] inline Var<expr_value_t<T>> def(T &&x) noexcept {
+[[nodiscard]] inline Var<expr_value_t<T>> eval(T &&x) noexcept {
     return Var(OC_FORWARD(x));
 }
 
 template<typename T>
-[[nodiscard]] inline Var<expr_value_t<T>> def(const Expression *expr) noexcept {
+[[nodiscard]] inline Var<expr_value_t<T>> eval(const Expression *expr) noexcept {
     using RawType = expr_value_t<T>;
     return Var<RawType>(Expr<RawType>(expr));
 }
 
 template<typename T>
-[[nodiscard]] inline Expr<expr_value_t<T>> def_expr(T &&x) noexcept {
+[[nodiscard]] inline Expr<expr_value_t<T>> expr(T &&x) noexcept {
     if constexpr (is_expr_v<std::remove_cvref_t<T>>) {
-        return def_expr<T>(x.expression());
+        return expr<T>(x.expression());
     } else {
         return Expr<expr_value_t<T>>(std::forward<T>(x));
     }
 }
 
 template<typename T>
-[[nodiscard]] inline Expr<expr_value_t<T>> def_expr(const Expression *expr) noexcept {
+[[nodiscard]] inline Expr<expr_value_t<T>> expr(const Expression *expr) noexcept {
     using RawType = expr_value_t<T>;
     return Expr<RawType>(expr);
 }
@@ -290,23 +290,23 @@ public:
 template<typename Count>
 requires concepts::integral<expr_value_t<Count>>
 auto range(Count &&count) noexcept {
-    return detail::ForStmtBuilder<expr_value_t<Count>>(0, def_expr(std::forward<Count>(count)), 1);
+    return detail::ForStmtBuilder<expr_value_t<Count>>(0, expr(std::forward<Count>(count)), 1);
 }
 
 template<typename Begin, typename End>
 requires concepts::integral<expr_value_t<Begin>>
 auto range(Begin &&begin, End &&end) noexcept {
-    return detail::ForStmtBuilder<expr_value_t<End>>(def_expr(std::forward<Begin>(begin)),
-                                                     def_expr(std::forward<End>(end)),
+    return detail::ForStmtBuilder<expr_value_t<End>>(expr(std::forward<Begin>(begin)),
+                                                     expr(std::forward<End>(end)),
                                                      1);
 }
 
 template<typename Begin, typename End, typename Step>
 requires concepts::integral<expr_value_t<Begin>>
 auto range(Begin &&begin, End &&end, Step &&step) noexcept {
-    return detail::ForStmtBuilder<expr_value_t<End>>(def_expr(std::forward<Begin>(begin)),
-                                                     def_expr(std::forward<End>(end)),
-                                                     def_expr(std::forward<Step>(step)));
+    return detail::ForStmtBuilder<expr_value_t<End>>(expr(std::forward<Begin>(begin)),
+                                                     expr(std::forward<End>(end)),
+                                                     expr(std::forward<Step>(step)));
 }
 
 template<typename Count, typename Body>

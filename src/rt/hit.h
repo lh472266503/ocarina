@@ -23,7 +23,7 @@ OC_STRUCT(ocarina::Hit, inst_id, prim_id, bary){
     }
 
     [[nodiscard]] auto is_miss() noexcept {
-        return def_expr(inst_id == uint(-1));
+        return expr(inst_id == uint(-1));
     }
 };
 

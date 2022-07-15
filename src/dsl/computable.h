@@ -19,16 +19,16 @@ inline void assign(Lhs &&lhs, Rhs &&rhs) noexcept;// implement in syntax.h
 }
 
 template<typename T>
-[[nodiscard]] inline Var<expr_value_t<T>> def(T &&x) noexcept;// implement in syntax.h
+[[nodiscard]] inline Var<expr_value_t<T>> eval(T &&x) noexcept;// implement in syntax.h
 
 template<typename T>
-[[nodiscard]] inline Var<expr_value_t<T>> def(const Expression *expr) noexcept;// implement in syntax.h
+[[nodiscard]] inline Var<expr_value_t<T>> eval(const Expression *expr) noexcept;// implement in syntax.h
 
 template<typename T>
-[[nodiscard]] inline Expr<expr_value_t<T>> def_expr(T &&x) noexcept;// implement in syntax.h
+[[nodiscard]] inline Expr<expr_value_t<T>> expr(T &&x) noexcept;// implement in syntax.h
 
 template<typename T>
-[[nodiscard]] inline Expr<expr_value_t<T>> def_expr(const Expression *expr) noexcept;// implement in syntax.h
+[[nodiscard]] inline Expr<expr_value_t<T>> expr(const Expression *expr) noexcept;// implement in syntax.h
 
 class Expression;
 
@@ -70,9 +70,9 @@ struct EnableGetMemberByIndex {
     using element_type = std::remove_cvref_t<decltype(std::declval<expr_value_t<T>>()[0])>;
     template<int i>
     [[nodiscard]] auto get() const noexcept {
-        return def<element_type>(Function::current()->access(Type::of<element_type>(),
-                                                             OC_EXPR(*static_cast<const T *>(this)),
-                                                             OC_EXPR(i)));
+        return eval<element_type>(Function::current()->access(Type::of<element_type>(),
+                                                              OC_EXPR(*static_cast<const T *>(this)),
+                                                              OC_EXPR(i)));
     }
     template<int i>
     auto &get() noexcept {
@@ -91,7 +91,7 @@ struct EnableStaticCast {
     [[nodiscard]] Expr<Dest> cast() const noexcept {
         const CastExpr *expr = Function::current()->cast(Type::of<Dest>(), CastOp::STATIC,
                                                          static_cast<const T *>(this)->expression());
-        return def_expr<Dest>(expr);
+        return expr<Dest>(expr);
     }
 };
 
@@ -101,7 +101,7 @@ struct EnableBitwiseCast {
     [[nodiscard]] Expr<Dest> as() const noexcept {
         const CastExpr *expr = Function::current()->cast(Type::of<Dest>(), CastOp::BITWISE,
                                                          static_cast<const T *>(this)->expression());
-        return def_expr<Dest>(expr);
+        return expr<Dest>(expr);
     }
 };
 
@@ -196,7 +196,7 @@ public:
     template<size_t i>
     [[nodiscard]] auto get() const noexcept {
         using Elm = ocarina::tuple_element_t<i, Tuple>;
-        return def<Elm>(Function::current()->member(Type::of<Elm>(), expression(), i));
+        return eval<Elm>(Function::current()->member(Type::of<Elm>(), expression(), i));
     }
 };
 
