@@ -16,7 +16,8 @@ public:
     enum Tag : uint8_t {
         BUFFER,
         TEXTURE,
-        STREAM
+        STREAM,
+        SHADER
     };
 
 protected:
