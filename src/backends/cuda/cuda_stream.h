@@ -9,13 +9,14 @@
 #include <cuda.h>
 
 namespace ocarina {
+class CUDADevice;
 class CUDAStream : public Stream::Impl {
 private:
     CUstream _stream{};
     CUevent _event{};
-
+    CUDADevice *_device{};
 public:
-    CUDAStream() noexcept;
+    CUDAStream(CUDADevice *device) noexcept;
 
     ~CUDAStream() noexcept;
 

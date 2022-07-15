@@ -83,7 +83,6 @@ public:
 class BufferDownloadCommand final : public Command {
 private:
     void *_host_ptr{};
-    size_t _offset{};
     ptr_t _device_ptr{};
     size_t _size_in_bytes{};
 

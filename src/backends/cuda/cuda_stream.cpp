@@ -5,10 +5,12 @@
 #include "cuda_stream.h"
 #include "cuda_command_visitor.h"
 #include "util.h"
+#include "cuda_device.h"
 
 namespace ocarina {
 
-CUDAStream::CUDAStream() noexcept {
+CUDAStream::CUDAStream(CUDADevice *device) noexcept
+    : _device(device) {
     OC_CU_CHECK(cuStreamCreate(&_stream, CU_STREAM_NON_BLOCKING));
     OC_CU_CHECK(cuEventCreate(&_event, CU_EVENT_DISABLE_TIMING));
 }
@@ -19,10 +21,11 @@ CUDAStream::~CUDAStream() noexcept {
 }
 
 void CUDAStream::commit(const Commit &commit) noexcept {
-    CUDACommandVisitor cmd_visitor{_stream};
+    CUDACommandVisitor cmd_visitor{_stream, _device};
     for (auto &cmd : _command_queue) {
         cmd->accept(cmd_visitor);
     }
+    _command_queue.clear();
 }
 
 void CUDAStream::barrier() noexcept {

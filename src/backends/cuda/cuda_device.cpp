@@ -25,7 +25,7 @@ handle_ty CUDADevice::create_buffer(size_t size) noexcept {
 
 handle_ty CUDADevice::create_stream() noexcept {
     return bind_handle([&] {
-        CUDAStream *stream = ocarina::new_with_allocator<CUDAStream>();
+        CUDAStream *stream = ocarina::new_with_allocator<CUDAStream>(this);
         return reinterpret_cast<handle_ty>(stream);
     });
 }

@@ -26,10 +26,24 @@ int main(int argc, char *argv[]) {
     for (int i = 0; i < 10; ++i) {
         v.push_back(i);
     }
-    stream << f_buffer.upload(v.data()) << synchronize();
-    stream << commit([&](void*) -> int{
-        return 0;
-    });
+    stream << f_buffer.upload(v.data());
+
+    stream << synchronize();
+
+    stream << commit();
+    for (int i = 0; i < 10; ++i) {
+        v[i] = 0;
+    }
+    for (int i = 0; i < 10; ++i) {
+        cout << v[i] << endl;
+    }
+    stream << f_buffer.download(v.data()) << synchronize();
+
+    stream << commit();
+
+    for (int i = 0; i < 10; ++i) {
+        cout << v[i] << endl;
+    }
 
     return 0;
 }
