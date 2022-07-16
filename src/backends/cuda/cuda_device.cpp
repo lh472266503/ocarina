@@ -39,8 +39,6 @@ void CUDADevice::destroy_texture(handle_ty handle) noexcept {
 void CUDADevice::destroy_stream(handle_ty handle) noexcept {
 }
 
-void CUDADevice::compile(const Function &function) noexcept {
-}
 }// namespace ocarina
 
 OC_EXPORT_API ocarina::CUDADevice *create(ocarina::Context *context) {
