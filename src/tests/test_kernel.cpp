@@ -39,6 +39,8 @@ int main(int argc, char *argv[]) {
     }
     stream << f_buffer.download(v.data()) << synchronize();
 
+
+
     stream << commit();
 
     for (int i = 0; i < 10; ++i) {

@@ -20,7 +20,6 @@ target_link_libraries(ocarina-all INTERFACE
         ocarina-dsl
         ocarina-ast
         ocarina-rt
-        ocarina-backend
         ocarina-generator
         ocarina-runtime
         ocarina-core)
