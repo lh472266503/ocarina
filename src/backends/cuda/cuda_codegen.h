@@ -8,5 +8,7 @@
 
 namespace ocarina {
 class CUDACodegen final : public CppCodegen {
+protected:
+    void _emit_function(const Function &f) noexcept override;
 };
 }// namespace ocarina
