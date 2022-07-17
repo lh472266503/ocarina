@@ -3,8 +3,8 @@
 //
 
 #include "cuda_device.h"
-#include "core/logging.h"
 #include "cuda_stream.h"
+#include "cuda_codegen.h"
 
 namespace ocarina {
 
@@ -31,6 +31,8 @@ handle_ty CUDADevice::create_stream() noexcept {
 }
 
 handle_ty CUDADevice::create_shader(const Function &function) noexcept {
+    CUDACodegen codegen;
+    codegen.emit(function);
     return {};
 }
 

@@ -21,6 +21,7 @@ target_link_libraries(ocarina-all INTERFACE
         ocarina-ast
         ocarina-rt
         ocarina-generator
+        ocarina-backend
         ocarina-runtime
         ocarina-core)
 

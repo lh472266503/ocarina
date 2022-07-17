@@ -11,7 +11,6 @@
 #include "expr.h"
 #include "syntax.h"
 #include "expr_traits.h"
-#include "arg.h"
 
 namespace ocarina {
 

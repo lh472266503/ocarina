@@ -6,12 +6,15 @@
 
 #include "core/stl.h"
 #include "computable.h"
-#include "arg.h"
 #include "ast/function.h"
 #include "core/basic_types.h"
 
 namespace ocarina {
 
+namespace detail {
+struct ArgumentCreation {};
+struct ReferenceArgumentCreation {};
+}// namespace ocarina::detail
 
 template<typename T>
 struct Var : public detail::Computable<T> {

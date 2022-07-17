@@ -7,6 +7,8 @@
 #include "builtin.h"
 #include "expr_traits.h"
 #include "expr.h"
+#include "var.h"
+#include "array.h"
 #include "syntax.h"
 #include "operators.h"
 #include "func.h"

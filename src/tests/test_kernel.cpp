@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
     };
 
     Kernel kn = [&](Var<float> a, Var<float> b) {
-
+        a = add(a , b + 6);
     };
 
 
