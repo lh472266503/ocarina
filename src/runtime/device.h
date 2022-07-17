@@ -15,7 +15,7 @@ class Context;
 template<typename T>
 class Buffer;
 
-template<size_t dimension, typename... Args>
+template<typename... Args>
 class Shader;
 
 class Stream;
@@ -56,8 +56,8 @@ public:
     }
     [[nodiscard]] Stream create_stream() noexcept;
 
-    template<size_t dim,typename ...Args>
-    [[nodiscard]] auto compile(const Kernel<dim,Args...> &kernel) noexcept {
+    template<typename ...Args>
+    [[nodiscard]] auto compile(const Kernel<Args...> &kernel) noexcept {
 
     }
 };

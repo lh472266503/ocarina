@@ -15,10 +15,19 @@ int main(int argc, char *argv[]) {
         return a + b;
     };
 
+    Kernel kn = [&](Var<float> a, Var<float> b) {
+
+    };
+
+
+
+
     fs::path path(argv[0]);
     Context context(path.parent_path());
     Device device = context.create_device("cuda");
     Stream stream = device.create_stream();
+
+    device.compile(kn);
 
     Buffer<float> f_buffer = device.create_buffer<float>(10);
 

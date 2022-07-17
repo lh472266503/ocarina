@@ -9,7 +9,7 @@
 
 namespace ocarina {
 
-template<size_t dimension, typename... Args>
+template<typename... Args>
 class Shader final : public Resource {
 public:
     enum Tag {
@@ -31,14 +31,5 @@ public:
         return *this;
     }
 };
-
-template<typename... Args>
-using Shader1D = Shader<1, Args...>;
-
-template<typename... Args>
-using Shader2D = Shader<2, Args...>;
-
-template<typename... Args>
-using Shader3D = Shader<3, Args...>;
 
 }// namespace ocarina

@@ -110,9 +110,6 @@ class Callable {
 };
 
 template<typename T>
-struct is_kernel : std::false_type {};
-
-template<typename T>
 struct is_callable : std::false_type {};
 
 template<typename T>
@@ -225,43 +222,36 @@ public:
 template<typename T>
 Callable(T &&) -> Callable<detail::dsl_function_t<std::remove_cvref_t<T>>>;
 
-template<size_t Dim = 1, typename... Args>
-class Kernel : public FuncWrapper {
-public:
-    static constexpr auto dimension = Dim;
-    static_assert(Dim >= 1 && Dim <= 3, "dimension of kernel must be in range[1, 3]!");
+template<typename T>
+class Kernel {
+    static_assert(always_false_v<T>);
+};
 
-public:
+template<typename T>
+struct is_kernel : std::false_type {};
+
+template<typename T>
+struct is_kernel<Kernel<T>> : std::true_type {};
+
+template<typename... Args>
+class Kernel<void(Args...)> : public FuncWrapper {
+private:
     using signature = typename detail::canonical_signature_t<void(Args...)>;
 
+public:
     template<typename Func>
     Kernel(Func &&func) noexcept
         : FuncWrapper(std::move(Function::define_kernel([&] {
               detail::create<Args...>(OC_FORWARD(func), ocarina::index_sequence_for<Args...>());
           }))) {}
+
+    template<typename... A>
+    requires std::is_invocable_v<signature, expr_value_t<A>...>
+    auto operator()(A &&...args) const noexcept {
+    }
 };
 
-#define OC_MAKE_KERNEL(dim)                                                               \
-    template<typename... Args>                                                            \
-    class Kernel##dim##D : public Kernel<dim, Args...> {                                  \
-    public:                                                                               \
-        template<typename Func>                                                           \
-        Kernel##dim##D(Func &&func) noexcept                                              \
-            : Kernel<dim, Args...>(std::forward<Func>(func)) {}                           \
-    };                                                                                    \
-    template<typename T>                                                                  \
-    Kernel##dim##D(T &&)->Kernel##dim##D<detail::dsl_function_t<std::remove_cvref_t<T>>>; \
-    namespace detail {                                                                    \
-    template<typename T>                                                                  \
-    struct dsl_function<Kernel##dim##D<T>> {                                              \
-        using type = T;                                                                   \
-    };                                                                                    \
-    }
-
-OC_MAKE_KERNEL(1)
-OC_MAKE_KERNEL(2)
-OC_MAKE_KERNEL(3)
-
-#undef OC_MAKE_KERNEL
+template<typename T>
+Kernel(T &&) -> Kernel<detail::dsl_function_t<std::remove_cvref_t<T>>>;
 
 }// namespace ocarina
