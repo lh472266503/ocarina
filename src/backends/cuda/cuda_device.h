@@ -53,7 +53,7 @@ public:
     }
     void destroy_buffer(handle_ty handle) noexcept override;
     void destroy_texture(handle_ty handle) noexcept override;
-    [[nodiscard]] handle_ty create_shader(ocarina::string_view str) noexcept override;
+    [[nodiscard]] handle_ty create_shader(const Function &function) noexcept override;
     [[nodiscard]] handle_ty create_stream() noexcept override;
     void destroy_stream(handle_ty handle) noexcept override;
 };
