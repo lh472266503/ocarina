@@ -18,6 +18,14 @@ class Buffer;
 template<typename... Args>
 class Shader;
 
+enum ShaderTag : uint8_t {
+    CS,
+    VS,
+    FS,
+    GS,
+    TS
+};
+
 class Stream;
 
 class Device : public concepts::Noncopyable {
@@ -58,8 +66,8 @@ public:
     [[nodiscard]] Stream create_stream() noexcept;
 
     template<typename ...Args>
-    [[nodiscard]] auto compile(const Kernel<Args...> &kernel) noexcept {
-
+    [[nodiscard]] auto compile(const Kernel<Args...> &kernel, ShaderTag tag = CS) noexcept {
+        return _create<Shader<Args...>>(kernel.function(), tag);
     }
 };
 }// namespace ocarina

@@ -12,20 +12,15 @@ namespace ocarina {
 template<typename... Args>
 class Shader final : public Resource {
 public:
-    enum Tag {
-        CS,
-        VS,
-        FS,
-        GS,
-        TS
-    };
+
+    using signature = typename detail::canonical_signature_t<void(Args...)>;
 
 private:
-    Tag _tag;
+    ShaderTag _shader_tag;
 
 public:
-    Shader(Device::Impl *device, const Function &function, Tag tag = CS) noexcept
-        : Resource(device, SHADER, device->create_shader(function)), _tag(tag) {}
+    Shader(Device::Impl *device, const Function &function, ShaderTag tag) noexcept
+    : Resource(device, SHADER, device->create_shader(function)), _shader_tag(tag) {}
 
     Shader &operator()(Args &&...args) noexcept {
         return *this;

@@ -27,7 +27,10 @@ int main(int argc, char *argv[]) {
     Device device = context.create_device("cuda");
     Stream stream = device.create_stream();
 
-    device.compile(kn);
+    auto sh = device.compile(kn);
+
+    cout << typeid(sh).name() << endl;
+    return 0;
 
     Buffer<float> f_buffer = device.create_buffer<float>(10);
 
