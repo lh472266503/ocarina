@@ -88,6 +88,7 @@ handle_ty CUDADevice::create_shader(const Function &function) noexcept {
 }
 
 void CUDADevice::destroy_buffer(handle_ty handle) noexcept {
+    OC_CU_CHECK(cuMemFree(handle));
 }
 
 void CUDADevice::destroy_texture(handle_ty handle) noexcept {
