@@ -72,7 +72,7 @@ void CppCodegen::visit(const ExprStmt *stmt) noexcept {
 void CppCodegen::visit(const SwitchStmt *stmt) noexcept {
     _scratch << "switch (";
     stmt->expression()->accept(*this);
-    _scratch<< ") ";
+    _scratch << ") ";
     stmt->body()->accept(*this);
 }
 void CppCodegen::visit(const SwitchCaseStmt *stmt) noexcept {
@@ -167,7 +167,7 @@ void CppCodegen::visit(const RefExpr *expr) noexcept {
 void CppCodegen::visit(const CallExpr *expr) noexcept {
     _emit_func_name(expr->function()->hash());
     _scratch << "(";
-    for(const auto &arg : expr->arguments()) {
+    for (const auto &arg : expr->arguments()) {
         arg->accept(*this);
         _scratch << ",";
     }
@@ -219,7 +219,7 @@ void CppCodegen::_emit_variable_define(Variable v) noexcept {
         _emit_space();
         switch (v.tag()) {
             case Variable::Tag::REFERENCE: _scratch << "&"; break;
-            default:break;
+            default: break;
         }
         _emit_variable_name(v);
     } else {
@@ -297,7 +297,6 @@ void CppCodegen::_emit_statements(ocarina::span<const Statement *const> stmts) n
         _scratch << ";";
         _emit_newline();
     }
-
 }
 void CppCodegen::_emit_body(const Function &f) noexcept {
     f.body()->accept(*this);
@@ -321,4 +320,4 @@ void CppCodegen::emit(const Function &func) noexcept {
     _emit_function(func);
     _emit_newline();
 }
-}
+}// namespace ocarina
