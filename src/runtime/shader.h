@@ -24,8 +24,8 @@ private:
     Tag _tag;
 
 public:
-    Shader(Device::Impl *device, handle_ty handle, Tag tag = CS) noexcept
-        : Resource(device, SHADER, handle), _tag(tag) {}
+    Shader(Device::Impl *device, ocarina::string_view str, Tag tag = CS) noexcept
+        : Resource(device, SHADER, device->create_shader(str)), _tag(tag) {}
 
     Shader &operator()(Args &&...args) noexcept {
         return *this;

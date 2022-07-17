@@ -30,6 +30,10 @@ handle_ty CUDADevice::create_stream() noexcept {
     });
 }
 
+handle_ty CUDADevice::create_shader(ocarina::string_view str) noexcept {
+    return {};
+}
+
 void CUDADevice::destroy_buffer(handle_ty handle) noexcept {
 }
 
