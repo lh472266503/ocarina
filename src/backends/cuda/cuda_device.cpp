@@ -9,7 +9,6 @@
 
 namespace ocarina {
 
-
 #define CUDA_NVRTC_OPTIONS \
     "-std=c++11",          \
         "-arch",           \
@@ -79,7 +78,7 @@ handle_ty CUDADevice::create_shader(const Function &function) noexcept {
 
     ocarina::string ptx = detail::get_ptx(cu);
 
-    auto ret = bind_handle([&]{
+    auto ret = bind_handle([&] {
         CUmodule module{};
         OC_CU_CHECK(cuModuleLoadData(&module, ptx.c_str()));
         return reinterpret_cast<handle_ty>(module);
@@ -95,6 +94,7 @@ void CUDADevice::destroy_texture(handle_ty handle) noexcept {
 }
 
 void CUDADevice::destroy_stream(handle_ty handle) noexcept {
+    ocarina::delete_with_allocator(reinterpret_cast<CUDAStream *>(handle));
 }
 
 }// namespace ocarina
