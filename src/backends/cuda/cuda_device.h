@@ -36,6 +36,8 @@ private:
         }
     };
 
+    [[nodiscard]] ocarina::string get_ptx(const Function &func) const noexcept;
+
 public:
     explicit CUDADevice(Context *context);
     [[nodiscard]] handle_ty create_buffer(size_t size) noexcept override;

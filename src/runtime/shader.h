@@ -30,7 +30,7 @@ public:
           _shader_tag(tag) {}
 
     [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
-    
+
     [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(_handle); }
 
     Shader &operator()(Args &&...args) noexcept {
