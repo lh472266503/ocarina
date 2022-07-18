@@ -287,6 +287,12 @@ public:
 };
 }// namespace detail
 
+template<typename... Args>
+void print(Args &&...args) {
+    static_assert(sizeof...(Args) > 0);
+    Function::current()->print(vector<const Expression *>{OC_EXPR(args)...});
+}
+
 template<typename Count>
 requires concepts::integral<expr_value_t<Count>>
 auto range(Count &&count) noexcept {

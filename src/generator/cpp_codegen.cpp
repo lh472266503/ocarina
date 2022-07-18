@@ -103,7 +103,21 @@ void CppCodegen::visit(const ForStmt *stmt) noexcept {
 }
 
 void CppCodegen::visit(const PrintStmt *stmt) noexcept {
-
+    span<const Expression *const> args = stmt->args();
+    _scratch << "printf(";
+    string format = "\"";
+    string arg;
+    for (const Expression *expr : args) {
+        switch (expr->type()->tag()) {
+            case Type::Tag::UINT: format += "%u,"; break;
+            case Type::Tag::INT: format += "%d,"; break;
+            case Type::Tag::FLOAT: format += "%f,"; break;
+            default: break;
+        }
+    }
+    format.pop_back();
+    format += "\",";
+    _scratch << format;
 }
 
 void CppCodegen::visit(const UnaryExpr *expr) noexcept {

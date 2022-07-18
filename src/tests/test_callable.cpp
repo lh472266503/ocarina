@@ -77,6 +77,7 @@ int main(int argc, char *argv[]) {
 
     Callable add = [&](Var<int> a, Var<int> b, Var<int>) {
         a = a + b;
+        print(a);
         return a;
     };
 

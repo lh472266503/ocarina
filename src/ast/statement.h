@@ -293,18 +293,15 @@ public:
 
 class OC_AST_API PrintStmt : public Statement {
 private:
-    ocarina::vector<void *> _args;
-    ocarina::vector<const Type *> _types;
+    ocarina::vector<const Expression *> _args;
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
-    PrintStmt(const vector<void *> &args,
-              const vector<const Type *> types)
-        : Statement(Tag::PRINT), _args(args), _types(types) {}
-    [[nodiscard]] span<void *const> args() const noexcept { return _args; }
-    [[nodiscard]] span<const Type *const> types() const noexcept { return _types; }
+    PrintStmt(const vector<const Expression *> &args)
+        : Statement(Tag::PRINT), _args(args) {}
+    [[nodiscard]] span<const Expression *const> args() const noexcept { return _args; }
     OC_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 

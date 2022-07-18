@@ -86,6 +86,9 @@ uint64_t LoopStmt::_compute_hash() const noexcept {
 
 uint64_t PrintStmt::_compute_hash() const noexcept {
     uint64_t ret = Hash64::default_seed;
+    for (const Expression *expr : _args) {
+        ret = hash64(ret, expr->hash());
+    }
     return ret;
 }
 

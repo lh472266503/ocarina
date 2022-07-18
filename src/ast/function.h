@@ -174,7 +174,7 @@ public:
     [[nodiscard]] ForStmt *for_(const Expression *init, const Expression *cond, const Expression *step) noexcept;
     void continue_() noexcept;
     CommentStmt *comment(ocarina::string_view string) noexcept;
-    PrintStmt *print(const vector<void *> &args, const vector<const Type *> &types) noexcept;
+    PrintStmt *print(const vector<const Expression *> &args) noexcept;
     [[nodiscard]] const ScopeStmt *body() const noexcept;
     [[nodiscard]] ScopeStmt *body() noexcept;
     [[nodiscard]] uint64_t hash() const noexcept;
