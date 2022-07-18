@@ -145,10 +145,11 @@ public:
         return ptr;
     }
 
+
     [[nodiscard]] auto used_custom_func() const noexcept {
         return _used_custom_func;
     }
-
+    [[nodiscard]] ocarina::string func_name() const noexcept;
     void assign(const Expression *lhs, const Expression *rhs) noexcept;
     void return_(const Expression *expression) noexcept;
     [[nodiscard]] const RefExpr *argument(const Type *type) noexcept;

@@ -5,6 +5,7 @@
 #include "cuda_device.h"
 #include "cuda_stream.h"
 #include "cuda_codegen.h"
+#include "cuda_shader.h"
 #include <nvrtc.h>
 
 namespace ocarina {
@@ -75,16 +76,14 @@ handle_ty CUDADevice::create_shader(const Function &function) noexcept {
     CUDACodegen codegen;
     codegen.emit(function);
     const ocarina::string &cu = codegen.scratch().c_str();
-
     ocarina::string ptx = detail::get_ptx(cu);
 
-    auto ret = bind_handle([&] {
-        CUmodule module{};
-        OC_CU_CHECK(cuModuleLoadData(&module, ptx.c_str()));
-        return reinterpret_cast<handle_ty>(module);
+    auto ptr = bind_handle([&] {
+        auto shader = ocarina::new_with_allocator<CUDAShader>(this, ptx, function.func_name());
+        return reinterpret_cast<handle_ty>(shader);
     });
 
-    return ret;
+    return ptr;
 }
 
 void CUDADevice::destroy_buffer(handle_ty handle) noexcept {
@@ -92,7 +91,7 @@ void CUDADevice::destroy_buffer(handle_ty handle) noexcept {
 }
 
 void CUDADevice::destroy_shader(handle_ty handle) noexcept {
-    
+    ocarina::delete_with_allocator(reinterpret_cast<CUDAShader *>(handle));
 }
 
 void CUDADevice::destroy_texture(handle_ty handle) noexcept {

@@ -3,6 +3,7 @@
 //
 
 #include "function.h"
+#include "generator/codegen.h"
 
 namespace ocarina {
 
@@ -133,6 +134,10 @@ CommentStmt *Function::comment(ocarina::string_view string) noexcept {
 
 ocarina::span<const Variable> Function::arguments() const noexcept {
     return _arguments;
+}
+
+ocarina::string Function::func_name() const noexcept {
+    return detail::func_name(hash());
 }
 
 void Function::assign(const Expression *lhs, const Expression *rhs) noexcept {

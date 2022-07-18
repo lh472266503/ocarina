@@ -6,6 +6,7 @@
 
 #include "device.h"
 #include "resource.h"
+#include "stream.h"
 
 namespace ocarina {
 
@@ -16,7 +17,7 @@ public:
 
     class Impl {
     public:
-        virtual void launch() noexcept = 0;
+        virtual void launch(handle_ty stream) noexcept = 0;
     };
 
 private:
@@ -27,6 +28,10 @@ public:
         : Resource(device, SHADER,
                    device->create_shader(function)),
           _shader_tag(tag) {}
+
+    [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
+    
+    [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(_handle); }
 
     Shader &operator()(Args &&...args) noexcept {
         return *this;

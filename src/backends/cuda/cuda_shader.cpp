@@ -3,7 +3,19 @@
 //
 
 #include "cuda_shader.h"
+#include "util.h"
 
 namespace ocarina {
 
+CUDAShader::CUDAShader(Device::Impl *device,
+                       const ocarina::string &ptx,
+                       ocarina::string_view entry)
+    : _entry(entry) {
+    OC_CU_CHECK(cuModuleLoadData(&_module, ptx.c_str()));
+    OC_CU_CHECK(cuModuleGetFunction(&_function, _module, _entry.c_str()));
 }
+
+void CUDAShader::launch(handle_ty stream) noexcept {
+}
+
+}// namespace ocarina
