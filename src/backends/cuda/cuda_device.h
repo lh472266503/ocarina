@@ -52,6 +52,7 @@ public:
         return func();
     }
     void destroy_buffer(handle_ty handle) noexcept override;
+    void destroy_shader(handle_ty handle) noexcept override;
     void destroy_texture(handle_ty handle) noexcept override;
     [[nodiscard]] handle_ty create_shader(const Function &function) noexcept override;
     [[nodiscard]] handle_ty create_stream() noexcept override;

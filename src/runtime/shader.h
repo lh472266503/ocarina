@@ -14,6 +14,11 @@ class Shader final : public Resource {
 public:
     using signature = typename detail::canonical_signature_t<void(Args...)>;
 
+    class Impl {
+    public:
+        virtual void launch() noexcept = 0;
+    };
+
 private:
     ShaderTag _shader_tag;
 
