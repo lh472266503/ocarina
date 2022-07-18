@@ -132,6 +132,11 @@ CommentStmt *Function::comment(ocarina::string_view string) noexcept {
     return _create_statement<CommentStmt>(string);
 }
 
+PrintStmt *Function::print(const vector<void *> &args,
+                           const vector<const Type*> &types) noexcept {
+    return _create_statement<PrintStmt>(args, types);
+}
+
 ocarina::span<const Variable> Function::arguments() const noexcept {
     return _arguments;
 }

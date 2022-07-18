@@ -44,6 +44,7 @@ struct StmtVisitor {
     virtual void visit(const AssignStmt *) = 0;
     virtual void visit(const ForStmt *) = 0;
     virtual void visit(const CommentStmt *) = 0;
+    virtual void visit(const PrintStmt *) = 0;
 };
 
 #define OC_MAKE_STATEMENT_ACCEPT_VISITOR \
@@ -64,7 +65,8 @@ public:
         SWITCH_DEFAULT,
         ASSIGN,
         COMMENT,
-        FOR
+        FOR,
+        PRINT,
     };
 
 private:
@@ -290,7 +292,20 @@ public:
 };
 
 class OC_AST_API PrintStmt : public Statement {
-    
+private:
+    ocarina::vector<void *> _args;
+    ocarina::vector<const Type *> _types;
+
+private:
+    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+
+public:
+    PrintStmt(const vector<void *> &args,
+              const vector<const Type *> types)
+        : Statement(Tag::PRINT), _args(args), _types(types) {}
+    [[nodiscard]] span<void *const> args() const noexcept { return _args; }
+    [[nodiscard]] span<const Type *const> types() const noexcept { return _types; }
+    OC_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 
 }// namespace ocarina

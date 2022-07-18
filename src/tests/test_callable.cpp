@@ -60,6 +60,17 @@ auto func(T a, T b) {
     return a + b;
 }
 
+int dadd(int n, ...) {
+    int i = 0;
+    int sum = 0.0;
+    va_list argptr;
+    va_start(argptr, n);              // 初始化argptr
+    for (i = 0; i < n; ++i)           // 对每个可选参数，读取类型为double的参数，
+        sum += va_arg(argptr, int);// 然后累加到sum中
+    va_end(argptr);
+    return sum;
+}
+
 int main(int argc, char *argv[]) {
 
     Callable callable = func<Var<int>>;

@@ -26,6 +26,7 @@ protected:
     void visit(const SwitchDefaultStmt *stmt) noexcept override;
     void visit(const AssignStmt *stmt) noexcept override;
     void visit(const ForStmt *stmt) noexcept override;
+    void visit(const PrintStmt *stmt) noexcept override;
 
     void visit(const UnaryExpr *expr) noexcept override;
     void visit(const BinaryExpr *expr) noexcept override;

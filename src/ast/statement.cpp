@@ -84,4 +84,9 @@ uint64_t LoopStmt::_compute_hash() const noexcept {
     return _body.hash();
 }
 
+uint64_t PrintStmt::_compute_hash() const noexcept {
+    uint64_t ret = Hash64::default_seed;
+    return ret;
+}
+
 }// namespace ocarina

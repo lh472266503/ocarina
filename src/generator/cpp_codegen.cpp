@@ -90,6 +90,7 @@ void CppCodegen::visit(const AssignStmt *stmt) noexcept {
     _scratch << " = ";
     stmt->rhs()->accept(*this);
 }
+
 void CppCodegen::visit(const ForStmt *stmt) noexcept {
     _scratch << "for (;";
     stmt->condition()->accept(*this);
@@ -100,6 +101,11 @@ void CppCodegen::visit(const ForStmt *stmt) noexcept {
     _scratch << ")";
     stmt->body()->accept(*this);
 }
+
+void CppCodegen::visit(const PrintStmt *stmt) noexcept {
+
+}
+
 void CppCodegen::visit(const UnaryExpr *expr) noexcept {
     switch (expr->op()) {
         case UnaryOp::POSITIVE: _scratch << "+"; break;
