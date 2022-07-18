@@ -13,11 +13,10 @@
 
 namespace ocarina {
 
-    
 #ifdef _MSC_VER
-    static constexpr string_view backend_prefix = "ocarina-backend-";
+static constexpr string_view backend_prefix = "ocarina-backend-";
 #else
-    static constexpr string_view backend_prefix = "libocarina-backend-";
+static constexpr string_view backend_prefix = "libocarina-backend-";
 #endif
 
 namespace detail {
@@ -68,9 +67,24 @@ const fs::path &Context::cache_directory() const noexcept {
     return _impl->cache_directory;
 }
 
-const DynamicModule *Context::obtain_module(const string& module_name) noexcept {
+void Context::write_cache(const string &fn, const string &text) const noexcept {
+    std::ofstream fs;
+    fs.open((cache_directory() / fn).c_str());
+    fs << text;
+    fs.close();
+}
+
+string Context::read_cache(const string &fn) const noexcept {
+    std::ifstream fst;
+    fst.open((cache_directory() / fn).c_str());
+    std::stringstream buffer;
+    buffer << fst.rdbuf();
+    return buffer.str();
+}
+
+const DynamicModule *Context::obtain_module(const string &module_name) noexcept {
     auto iter = _impl->modules.find(module_name);
-    DynamicModule* ret = nullptr;
+    DynamicModule *ret = nullptr;
     if (iter == _impl->modules.cend()) {
         DynamicModule d(module_name);
         _impl->modules.insert(std::make_pair(string(module_name), std::move(d)));

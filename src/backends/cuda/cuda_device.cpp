@@ -75,23 +75,17 @@ handle_ty CUDADevice::create_stream() noexcept {
 
 ocarina::string CUDADevice::get_ptx(const Function &function) const noexcept {
     ocarina::string ptx_fn = function.func_name() + ".ptx";
-    fs::path ptx_path = _context->cache_directory() / ptx_fn;
+    string cu_fn = function.func_name() + ".cu";
     ocarina::string ptx;
-    if (!fs::exists(ptx_path)) {
+    if (!_context->is_exist_cache(ptx_fn)) {
         CUDACodegen codegen;
         codegen.emit(function);
         const ocarina::string &cu = codegen.scratch().c_str();
         ptx = detail::get_ptx(cu);
-        std::ofstream fs;
-        fs.open(ptx_path.c_str());
-        fs << ptx;
-        fs.close();
+        _context->write_cache(ptx_fn, ptx);
+        _context->write_cache(cu_fn, cu);
     } else {
-        std::ifstream fst;
-        fst.open(ptx_path.c_str());
-        std::stringstream buffer;
-        buffer << fst.rdbuf();
-        ptx = buffer.str();
+        ptx = _context->read_cache(ptx_fn);
     }
     return ptx;
 }

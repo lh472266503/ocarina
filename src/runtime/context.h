@@ -11,18 +11,24 @@
 namespace ocarina {
 class Device;
 class DynamicModule;
-class Context final : public concepts::Noncopyable{
+class Context final : public concepts::Noncopyable {
 private:
     struct Impl;
     ocarina::unique_ptr<Impl> _impl;
+
 public:
     explicit Context(const fs::path &path, string_view cache_dir = ".cache");
     ~Context() noexcept;
     [[nodiscard]] const fs::path &runtime_directory() const noexcept;
     [[nodiscard]] const fs::path &cache_directory() const noexcept;
-    const DynamicModule *obtain_module(const string& module_name) noexcept;
+    void write_cache(const string &fn, const string &text) const noexcept;
+    [[nodiscard]] string read_cache(const string &fn) const noexcept;
+    [[nodiscard]] bool is_exist_cache(const string &fn) const noexcept {
+        auto path = cache_directory() / fn;
+        return fs::exists(path);
+    }
+    const DynamicModule *obtain_module(const string &module_name) noexcept;
     [[nodiscard]] Device create_device(const string &backend_name) noexcept;
-
 };
 
 }// namespace ocarina
