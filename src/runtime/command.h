@@ -13,7 +13,8 @@ namespace ocarina {
 #define OC_RUNTIME_CMD         \
     BufferUploadCommand,       \
         BufferDownloadCommand, \
-        SynchronizeCommand
+        SynchronizeCommand,    \
+        ShaderDispatchCommand
 
 /// forward declare
 #define OC_MAKE_CMD_FWD_DECL(CMD) class CMD;
@@ -103,5 +104,10 @@ public:
 [[nodiscard]] inline SynchronizeCommand *synchronize() noexcept {
     return SynchronizeCommand::create();
 }
+
+class ShaderDispatchCommand final : public Command {
+public:
+    OC_MAKE_CMD_COMMON_FUNC(ShaderDispatchCommand)
+};
 
 }// namespace ocarina

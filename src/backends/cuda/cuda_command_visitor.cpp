@@ -29,4 +29,8 @@ void CUDACommandVisitor::visit(const SynchronizeCommand *cmd) noexcept {
     OC_CU_CHECK(cuStreamSynchronize(_stream));
 }
 
+void CUDACommandVisitor::visit(const ShaderDispatchCommand *cmd) noexcept {
+
+}
+
 }// namespace ocarina

@@ -20,6 +20,7 @@ public:
     void visit(const BufferUploadCommand *cmd) noexcept override;
     void visit(const BufferDownloadCommand *cmd) noexcept override;
     void visit(const SynchronizeCommand *cmd) noexcept override;
+    void visit(const ShaderDispatchCommand *cmd) noexcept override;
 };
 
 }// namespace ocarina

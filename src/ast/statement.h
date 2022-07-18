@@ -25,6 +25,7 @@ class SwitchCaseStmt;
 class SwitchDefaultStmt;
 class LoopStmt;
 class ForStmt;
+class PrintStmt;
 
 class Expression;
 class LiteralExpr;
@@ -286,6 +287,10 @@ public:
     [[nodiscard]] auto body() const noexcept { return &_body; }
     [[nodiscard]] auto body() noexcept { return &_body; }
     OC_MAKE_STATEMENT_ACCEPT_VISITOR
+};
+
+class OC_AST_API PrintStmt : public Statement {
+    
 };
 
 }// namespace ocarina
