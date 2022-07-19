@@ -106,34 +106,34 @@ void CppCodegen::visit(const PrintStmt *stmt) noexcept {
     span<const Expression *const> args = stmt->args();
     current_scratch() << "printf(";
     Scratch format_scratch("\"");
+    format_scratch << stmt->fmt() << "\"";
     Scratch args_scratch;
-    for (const Expression *expr : args) {
+
+    for (int i = 0; i < args.size(); ++i) {
+        const Expression *expr = args[i];
         switch (expr->type()->tag()) {
             case Type::Tag::UINT: {
-                SCRATCH_GUARD(format_scratch);
-                current_scratch() << "%u,";
-            } break;
-            case Type::Tag::INT: {
-                SCRATCH_GUARD(format_scratch);
-                current_scratch() << "%d,";
-            } break;
-            case Type::Tag::FLOAT: {
-                SCRATCH_GUARD(format_scratch);
-                current_scratch() << "%f,";
-            } break;
-            case Type::Tag::BOOL: {
-                SCRATCH_GUARD(format_scratch);
-                current_scratch() << "%d,";
+                format_scratch.replace(i, "{}", "%u");
+                break;
             }
-            default:
-                OC_ERROR("other types are not currently available!");
+            case Type::Tag::BOOL: {
+                format_scratch.replace(i, "{}", "%d");
+                break;
+            }
+            case Type::Tag::FLOAT: {
+                format_scratch.replace(i, "{}", "%f");
+                break;
+            }
+            case Type::Tag::INT: {
+                format_scratch.replace(0, "{}", "%d");
+                break;
+            }
+            default: break;
         }
         SCRATCH_GUARD(args_scratch);
         current_scratch() << ",";
         expr->accept(*this);
     }
-    format_scratch.pop_back();
-    format_scratch << "\"";
     current_scratch() << format_scratch
                       << args_scratch
                       << ")";

@@ -288,9 +288,9 @@ public:
 }// namespace detail
 
 template<typename... Args>
-void print(Args &&...args) {
+void print(ocarina::string_view f, Args &&...args) {
     static_assert(sizeof...(Args) > 0);
-    Function::current()->print(vector<const Expression *>{OC_EXPR(args)...});
+    Function::current()->print(f, vector<const Expression *>{OC_EXPR(args)...});
 }
 
 template<typename Count>
