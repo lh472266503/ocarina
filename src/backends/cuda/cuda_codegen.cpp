@@ -11,8 +11,8 @@ void CUDACodegen::_emit_function(const Function &f) noexcept {
         return;
     }
     switch (f.tag()) {
-        case Function::Tag::KERNEL: _scratch << "extern \"C\" __global__ "; break;
-        case Function::Tag::CALLABLE: _scratch << "__device__ "; break;
+        case Function::Tag::KERNEL: current_scratch() << "extern \"C\" __global__ "; break;
+        case Function::Tag::CALLABLE: current_scratch() << "__device__ "; break;
     }
     CppCodegen::_emit_function(f);
 }

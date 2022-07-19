@@ -21,36 +21,36 @@ struct LiteralPrinter {
 }// namespace detail
 
 void CppCodegen::visit(const BreakStmt *stmt) noexcept {
-    _scratch << "break";
+    current_scratch() << "break";
 }
 void CppCodegen::visit(const ContinueStmt *stmt) noexcept {
-    _scratch << "continue";
+    current_scratch() << "continue";
 }
 void CppCodegen::visit(const ReturnStmt *stmt) noexcept {
-    _scratch << "return ";
+    current_scratch() << "return ";
     if (stmt->expression()) {
         stmt->expression()->accept(*this);
     }
 }
 void CppCodegen::visit(const ScopeStmt *stmt) noexcept {
-    _scratch << "{\n";
+    current_scratch() << "{\n";
     indent_inc();
     _emit_local_var_define(stmt);
     _emit_statements(stmt->statements());
     indent_dec();
     _emit_indent();
-    _scratch << "}";
+    current_scratch() << "}";
 }
 void CppCodegen::visit(const IfStmt *stmt) noexcept {
-    _scratch << "if (";
+    current_scratch() << "if (";
     stmt->condition()->accept(*this);
-    _scratch << ") ";
+    current_scratch() << ") ";
     stmt->true_branch()->accept(*this);
     auto false_branch = stmt->false_branch();
     if (false_branch->empty()) {
         return;
     }
-    _scratch << " else ";
+    current_scratch() << " else ";
     if (false_branch->size() == 1 && false_branch->statements()[0]->tag() == Statement::Tag::IF) {
         false_branch->statements()[0]->accept(*this);
     } else {
@@ -59,52 +59,52 @@ void CppCodegen::visit(const IfStmt *stmt) noexcept {
 }
 
 void CppCodegen::visit(const CommentStmt *stmt) noexcept {
-    _scratch << "// " << stmt->string();
+    current_scratch() << "// " << stmt->string();
 }
 
 void CppCodegen::visit(const LoopStmt *stmt) noexcept {
-    _scratch << "while (1) ";
+    current_scratch() << "while (1) ";
     stmt->body()->accept(*this);
 }
 void CppCodegen::visit(const ExprStmt *stmt) noexcept {
     stmt->expression()->accept(*this);
 }
 void CppCodegen::visit(const SwitchStmt *stmt) noexcept {
-    _scratch << "switch (";
+    current_scratch() << "switch (";
     stmt->expression()->accept(*this);
-    _scratch << ") ";
+    current_scratch() << ") ";
     stmt->body()->accept(*this);
 }
 void CppCodegen::visit(const SwitchCaseStmt *stmt) noexcept {
-    _scratch << "case ";
+    current_scratch() << "case ";
     stmt->expression()->accept(*this);
-    _scratch << ":";
+    current_scratch() << ":";
     stmt->body()->accept(*this);
 }
 void CppCodegen::visit(const SwitchDefaultStmt *stmt) noexcept {
-    _scratch << "default:";
+    current_scratch() << "default:";
     stmt->body()->accept(*this);
 }
 void CppCodegen::visit(const AssignStmt *stmt) noexcept {
     stmt->lhs()->accept(*this);
-    _scratch << " = ";
+    current_scratch() << " = ";
     stmt->rhs()->accept(*this);
 }
 
 void CppCodegen::visit(const ForStmt *stmt) noexcept {
-    _scratch << "for (;";
+    current_scratch() << "for (;";
     stmt->condition()->accept(*this);
-    _scratch << "; ";
+    current_scratch() << "; ";
     stmt->var()->accept(*this);
-    _scratch << " += ";
+    current_scratch() << " += ";
     stmt->step()->accept(*this);
-    _scratch << ")";
+    current_scratch() << ")";
     stmt->body()->accept(*this);
 }
 
 void CppCodegen::visit(const PrintStmt *stmt) noexcept {
     span<const Expression *const> args = stmt->args();
-    _scratch << "printf(";
+    current_scratch() << "printf(";
     string format = "\"";
     string arg;
     for (const Expression *expr : args) {
@@ -117,68 +117,68 @@ void CppCodegen::visit(const PrintStmt *stmt) noexcept {
     }
     format.pop_back();
     format += "\",";
-    _scratch << format;
+    current_scratch() << format;
 }
 
 void CppCodegen::visit(const UnaryExpr *expr) noexcept {
     switch (expr->op()) {
-        case UnaryOp::POSITIVE: _scratch << "+"; break;
-        case UnaryOp::NEGATIVE: _scratch << "-"; break;
-        case UnaryOp::NOT: _scratch << "!"; break;
-        case UnaryOp::BIT_NOT: _scratch << "~"; break;
+        case UnaryOp::POSITIVE: current_scratch() << "+"; break;
+        case UnaryOp::NEGATIVE: current_scratch() << "-"; break;
+        case UnaryOp::NOT: current_scratch() << "!"; break;
+        case UnaryOp::BIT_NOT: current_scratch() << "~"; break;
     }
-    _scratch << "(";
+    current_scratch() << "(";
     expr->operand()->accept(*this);
-    _scratch << ")";
+    current_scratch() << ")";
 }
 void CppCodegen::visit(const BinaryExpr *expr) noexcept {
-    _scratch << "(";
+    current_scratch() << "(";
     expr->lhs()->accept(*this);
     switch (expr->op()) {
-        case BinaryOp::ADD: _scratch << " + "; break;
-        case BinaryOp::SUB: _scratch << " - "; break;
-        case BinaryOp::MUL: _scratch << " * "; break;
-        case BinaryOp::DIV: _scratch << " / "; break;
-        case BinaryOp::MOD: _scratch << " % "; break;
-        case BinaryOp::BIT_AND: _scratch << " & "; break;
-        case BinaryOp::BIT_OR: _scratch << " | "; break;
-        case BinaryOp::BIT_XOR: _scratch << " ^ "; break;
-        case BinaryOp::SHL: _scratch << " << "; break;
-        case BinaryOp::SHR: _scratch << " >> "; break;
-        case BinaryOp::AND: _scratch << " && "; break;
-        case BinaryOp::OR: _scratch << " || "; break;
-        case BinaryOp::LESS: _scratch << " < "; break;
-        case BinaryOp::GREATER: _scratch << " > "; break;
-        case BinaryOp::LESS_EQUAL: _scratch << " <= "; break;
-        case BinaryOp::GREATER_EQUAL: _scratch << " >= "; break;
-        case BinaryOp::EQUAL: _scratch << " == "; break;
-        case BinaryOp::NOT_EQUAL: _scratch << " != "; break;
+        case BinaryOp::ADD: current_scratch() << " + "; break;
+        case BinaryOp::SUB: current_scratch() << " - "; break;
+        case BinaryOp::MUL: current_scratch() << " * "; break;
+        case BinaryOp::DIV: current_scratch() << " / "; break;
+        case BinaryOp::MOD: current_scratch() << " % "; break;
+        case BinaryOp::BIT_AND: current_scratch() << " & "; break;
+        case BinaryOp::BIT_OR: current_scratch() << " | "; break;
+        case BinaryOp::BIT_XOR: current_scratch() << " ^ "; break;
+        case BinaryOp::SHL: current_scratch() << " << "; break;
+        case BinaryOp::SHR: current_scratch() << " >> "; break;
+        case BinaryOp::AND: current_scratch() << " && "; break;
+        case BinaryOp::OR: current_scratch() << " || "; break;
+        case BinaryOp::LESS: current_scratch() << " < "; break;
+        case BinaryOp::GREATER: current_scratch() << " > "; break;
+        case BinaryOp::LESS_EQUAL: current_scratch() << " <= "; break;
+        case BinaryOp::GREATER_EQUAL: current_scratch() << " >= "; break;
+        case BinaryOp::EQUAL: current_scratch() << " == "; break;
+        case BinaryOp::NOT_EQUAL: current_scratch() << " != "; break;
     }
     expr->rhs()->accept(*this);
-    _scratch << ")";
+    current_scratch() << ")";
 }
 void CppCodegen::visit(const MemberExpr *expr) noexcept {
     expr->parent()->accept(*this);
     if (expr->is_swizzle()) {
         static constexpr std::string_view xyzw[] = {"x", "y", "z", "w"};
-        _scratch << ".";
+        current_scratch() << ".";
         for (int i = 0; i < expr->swizzle_size(); ++i) {
-            _scratch << xyzw[expr->swizzle_index(i)];
+            current_scratch() << xyzw[expr->swizzle_index(i)];
         }
     } else {
-        _scratch << ".";
+        current_scratch() << ".";
         _emit_member_name(expr->member_index());
     }
 }
 void CppCodegen::visit(const AccessExpr *expr) noexcept {
     expr->range()->accept(*this);
-    _scratch << "[";
+    current_scratch() << "[";
     expr->index()->accept(*this);
-    _scratch << "]";
+    current_scratch() << "]";
 }
 void CppCodegen::visit(const LiteralExpr *expr) noexcept {
     ocarina::visit(
-        detail::LiteralPrinter(_scratch),
+        detail::LiteralPrinter(current_scratch()),
         expr->value());
 }
 void CppCodegen::visit(const RefExpr *expr) noexcept {
@@ -186,34 +186,34 @@ void CppCodegen::visit(const RefExpr *expr) noexcept {
 }
 void CppCodegen::visit(const CallExpr *expr) noexcept {
     _emit_func_name(expr->function()->hash());
-    _scratch << "(";
+    current_scratch() << "(";
     for (const auto &arg : expr->arguments()) {
         arg->accept(*this);
-        _scratch << ",";
+        current_scratch() << ",";
     }
     if (!expr->arguments().empty()) {
-        _scratch.pop_back();
+        current_scratch().pop_back();
     }
-    _scratch << ")";
+    current_scratch() << ")";
 }
 void CppCodegen::visit(const CastExpr *expr) noexcept {
     switch (expr->cast_op()) {
-        case CastOp::STATIC: _scratch << "static_cast<"; break;
-        case CastOp::BITWISE: _scratch << "reinterpret_cast<"; break;
+        case CastOp::STATIC: current_scratch() << "static_cast<"; break;
+        case CastOp::BITWISE: current_scratch() << "reinterpret_cast<"; break;
     }
     _emit_type_name(expr->type());
-    _scratch << ">(";
+    current_scratch() << ">(";
     expr->expression()->accept(*this);
-    _scratch << ")";
+    current_scratch() << ")";
 }
 void CppCodegen::visit(const Type *type) noexcept {
     if (!type->is_structure() || type->has_defined()) { return; }
-    _scratch << "struct ";
-    _scratch << "alignas(";
-    _scratch << type->alignment();
-    _scratch << ") ";
+    current_scratch() << "struct ";
+    current_scratch() << "alignas(";
+    current_scratch() << type->alignment();
+    current_scratch() << ") ";
     _emit_struct_name(type->hash());
-    _scratch << " {\n";
+    current_scratch() << " {\n";
     indent_inc();
     for (int i = 0; i < type->members().size(); ++i) {
         const Type *member = type->members()[i];
@@ -221,10 +221,10 @@ void CppCodegen::visit(const Type *type) noexcept {
         _emit_type_name(member);
         _emit_space();
         _emit_member_name(i);
-        _scratch << "{};\n";
+        current_scratch() << "{};\n";
     }
     indent_dec();
-    _scratch << "};\n";
+    current_scratch() << "};\n";
 
     type->define();
 }
@@ -238,7 +238,7 @@ void CppCodegen::_emit_variable_define(Variable v) noexcept {
         _emit_type_name(v.type());
         _emit_space();
         switch (v.tag()) {
-            case Variable::Tag::REFERENCE: _scratch << "&"; break;
+            case Variable::Tag::REFERENCE: current_scratch() << "&"; break;
             default: break;
         }
         _emit_variable_name(v);
@@ -246,9 +246,9 @@ void CppCodegen::_emit_variable_define(Variable v) noexcept {
         _emit_type_name(v.type()->element());
         _emit_space();
         _emit_variable_name(v);
-        _scratch << "[";
-        _scratch << v.type()->dimension();
-        _scratch << "]";
+        current_scratch() << "[";
+        current_scratch() << v.type()->dimension();
+        current_scratch() << "]";
     }
 }
 
@@ -256,32 +256,32 @@ void CppCodegen::_emit_local_var_define(const ScopeStmt *scope) noexcept {
     for (const auto &var : scope->local_vars()) {
         _emit_indent();
         _emit_variable_define(var);
-        _scratch << "{};\n";
+        current_scratch() << "{};\n";
     }
 }
 
 void CppCodegen::_emit_type_name(const Type *type) noexcept {
     if (type == nullptr) {
-        _scratch << "void";
+        current_scratch() << "void";
     } else {
         switch (type->tag()) {
-            case Type::Tag::BOOL: _scratch << "bool"; break;
-            case Type::Tag::FLOAT: _scratch << "float"; break;
-            case Type::Tag::INT: _scratch << "int"; break;
-            case Type::Tag::UINT: _scratch << "uint"; break;
+            case Type::Tag::BOOL: current_scratch() << "bool"; break;
+            case Type::Tag::FLOAT: current_scratch() << "float"; break;
+            case Type::Tag::INT: current_scratch() << "int"; break;
+            case Type::Tag::UINT: current_scratch() << "uint"; break;
             case Type::Tag::VECTOR:
                 _emit_type_name(type->element());
-                _scratch << type->dimension();
+                current_scratch() << type->dimension();
                 break;
             case Type::Tag::ARRAY:
                 _emit_type_name(type->element());
-                _scratch << "[";
-                _scratch << type->dimension();
-                _scratch << "]";
+                current_scratch() << "[";
+                current_scratch() << type->dimension();
+                current_scratch() << "]";
                 break;
             case Type::Tag::MATRIX: {
                 auto d = type->dimension();
-                _scratch << "float" << d << "x" << d;
+                current_scratch() << "float" << d << "x" << d;
                 break;
             }
             case Type::Tag::STRUCTURE:
@@ -307,14 +307,14 @@ void CppCodegen::_emit_function(const Function &f) noexcept {
     f.define();
 }
 void CppCodegen::_emit_variable_name(Variable v) noexcept {
-    _scratch << "v" << v.uid();
+    current_scratch() << "v" << v.uid();
 }
 void CppCodegen::_emit_statements(ocarina::span<const Statement *const> stmts) noexcept {
 
     for (const Statement *stmt : stmts) {
         _emit_indent();
         stmt->accept(*this);
-        _scratch << ";";
+        current_scratch() << ";";
         _emit_newline();
     }
 }
@@ -322,15 +322,15 @@ void CppCodegen::_emit_body(const Function &f) noexcept {
     f.body()->accept(*this);
 }
 void CppCodegen::_emit_arguments(const Function &f) noexcept {
-    _scratch << "(";
+    current_scratch() << "(";
     for (const auto &v : f.arguments()) {
         _emit_variable_define(v);
-        _scratch << ",";
+        current_scratch() << ",";
     }
     if (!f.arguments().empty()) {
-        _scratch.pop_back();
+        current_scratch().pop_back();
     }
-    _scratch << ")";
+    current_scratch() << ")";
 }
 void CppCodegen::emit(const Function &func) noexcept {
     for (const auto &f : func.used_custom_func()) {

@@ -50,6 +50,7 @@ private:
         Scratch &operator<<(bool v) noexcept;
         Scratch &operator<<(uint v) noexcept;
         Scratch &operator<<(size_t v) noexcept;
+        Scratch &operator<<(const Scratch &scratch) noexcept;
         void clear() noexcept;
         void pop_back() noexcept;
         [[nodiscard]] const char *c_str() const noexcept;
@@ -59,11 +60,15 @@ private:
     };
 
     int _indent{};
+    Scratch _scratch;
+    ocarina::vector<Scratch *> _scratch_stack;
 
 protected:
-    Scratch _scratch;
-    void indent_inc() { _indent += 1; }
-    void indent_dec() { _indent -= 1; }
+    void indent_inc() noexcept { _indent += 1; }
+    void indent_dec() noexcept { _indent -= 1; }
+    void push_scratch(Scratch &scratch) noexcept { _scratch_stack.push_back(&scratch); }
+    void pop_scratch() noexcept { _scratch_stack.pop_back(); }
+    Scratch &current_scratch() noexcept { return *_scratch_stack.back(); }
     friend struct detail::LiteralPrinter;
 
 protected:
@@ -74,10 +79,13 @@ protected:
     virtual void _emit_func_name(uint64_t hash) noexcept;
     virtual void _emit_struct_name(uint64_t hash) noexcept;
     virtual void _emit_member_name(int index) noexcept;
+
 public:
-    Codegen() = default;
+    Codegen() { push_scratch(_scratch); }
     explicit Codegen(Scratch &scratch)
-        : _scratch(scratch) {}
+        : _scratch(scratch) {
+        push_scratch(_scratch);
+    }
     virtual void emit(const Function &func) = 0;
     Scratch &scratch() {
         return _scratch;

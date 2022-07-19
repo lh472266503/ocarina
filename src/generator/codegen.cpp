@@ -6,8 +6,6 @@
 
 namespace ocarina {
 
-
-
 Codegen::Scratch &Codegen::Scratch::operator<<(int v) noexcept {
     return *this << detail::to_string(v);
 }
@@ -27,6 +25,10 @@ Codegen::Scratch &Codegen::Scratch::operator<<(const ocarina::string &v) noexcep
 Codegen::Scratch &Codegen::Scratch::operator<<(const char *v) noexcept {
     return *this << string_view{v};
 }
+Codegen::Scratch &Codegen::Scratch::operator<<(const Codegen::Scratch &scratch) noexcept {
+    return *this << scratch.c_str();
+}
+
 void Codegen::Scratch::clear() noexcept {
     _buffer.clear();
 }
