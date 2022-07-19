@@ -24,6 +24,7 @@
 #include <string_view>
 #include <filesystem>
 #include <EASTL/tuple.h>
+#include <EASTL/string.h>
 #include <numeric>
 
 #define OC_FORWARD(arg) std::forward<decltype(arg)>(arg)
