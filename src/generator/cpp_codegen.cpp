@@ -105,19 +105,34 @@ void CppCodegen::visit(const ForStmt *stmt) noexcept {
 void CppCodegen::visit(const PrintStmt *stmt) noexcept {
     span<const Expression *const> args = stmt->args();
     current_scratch() << "printf(";
-    string format = "\"";
-    string arg;
+    Scratch format_scratch("\"");
+    Scratch args_scratch;
     for (const Expression *expr : args) {
         switch (expr->type()->tag()) {
-            case Type::Tag::UINT: format += "%u,"; break;
-            case Type::Tag::INT: format += "%d,"; break;
-            case Type::Tag::FLOAT: format += "%f,"; break;
-            default: break;
+            case Type::Tag::UINT: {
+                SCRATCH_GUARD(format_scratch);
+                current_scratch() << "%u,";
+            } break;
+            case Type::Tag::INT: {
+                SCRATCH_GUARD(format_scratch);
+                current_scratch() << "%d,";
+            } break;
+            case Type::Tag::FLOAT: {
+                SCRATCH_GUARD(format_scratch);
+                current_scratch() << "%f,";
+            } break;
+            default:
+                break;
         }
+        SCRATCH_GUARD(args_scratch);
+        current_scratch() << ",";
+        expr->accept(*this);
     }
-    format.pop_back();
-    format += "\",";
-    current_scratch() << format;
+    format_scratch.pop_back();
+    format_scratch << "\"";
+    current_scratch() << format_scratch;
+    current_scratch() << args_scratch;
+    current_scratch() << ")";
 }
 
 void CppCodegen::visit(const UnaryExpr *expr) noexcept {

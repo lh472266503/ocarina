@@ -7,6 +7,7 @@
 #include "core/header.h"
 #include "core/stl.h"
 #include "dsl/func.h"
+#include "core/logging.h"
 
 namespace ocarina {
 
@@ -35,13 +36,14 @@ struct LiteralPrinter;
 }// namespace detail
 
 class Codegen {
-private:
+protected:
     class Scratch {
     private:
         ocarina::string _buffer;
 
     public:
         Scratch() = default;
+        explicit Scratch(const string_view &str) noexcept { _buffer = str; }
         Scratch &operator<<(ocarina::string_view v) noexcept;
         Scratch &operator<<(const ocarina::string &v) noexcept;
         Scratch &operator<<(const char *v) noexcept;
@@ -59,6 +61,7 @@ private:
         [[nodiscard]] size_t size() const noexcept;
     };
 
+private:
     int _indent{};
     Scratch _scratch;
     ocarina::vector<Scratch *> _scratch_stack;
@@ -67,9 +70,30 @@ protected:
     void indent_inc() noexcept { _indent += 1; }
     void indent_dec() noexcept { _indent -= 1; }
     void push_scratch(Scratch &scratch) noexcept { _scratch_stack.push_back(&scratch); }
-    void pop_scratch() noexcept { _scratch_stack.pop_back(); }
+    void pop_scratch(Scratch &scratch) noexcept {
+        Scratch *back = _scratch_stack.back();
+        if (&scratch != back) [[unlikely]] {
+            OC_ERROR("Invalid scratch !");
+        }
+        _scratch_stack.pop_back();
+    }
     Scratch &current_scratch() noexcept { return *_scratch_stack.back(); }
     friend struct detail::LiteralPrinter;
+
+    class ScratchGuard {
+    private:
+        Scratch &_scratch;
+        Codegen *_codegen{};
+    public:
+        ScratchGuard(Codegen *codegen, Scratch &scratch)
+            : _codegen(codegen), _scratch(scratch) {
+            _codegen->push_scratch(_scratch);
+        }
+        ~ScratchGuard() {
+            _codegen->pop_scratch(_scratch);
+        }
+    };
+#define SCRATCH_GUARD(scratch) ScratchGuard __##scratch_guard(this, scratch);
 
 protected:
     virtual void _emit_newline() noexcept;
