@@ -121,8 +121,12 @@ void CppCodegen::visit(const PrintStmt *stmt) noexcept {
                 SCRATCH_GUARD(format_scratch);
                 current_scratch() << "%f,";
             } break;
+            case Type::Tag::BOOL: {
+                SCRATCH_GUARD(format_scratch);
+                current_scratch() << "%d,";
+            }
             default:
-                break;
+                OC_ERROR("other types are not currently available!");
         }
         SCRATCH_GUARD(args_scratch);
         current_scratch() << ",";
@@ -130,9 +134,9 @@ void CppCodegen::visit(const PrintStmt *stmt) noexcept {
     }
     format_scratch.pop_back();
     format_scratch << "\"";
-    current_scratch() << format_scratch;
-    current_scratch() << args_scratch;
-    current_scratch() << ")";
+    current_scratch() << format_scratch
+                      << args_scratch
+                      << ")";
 }
 
 void CppCodegen::visit(const UnaryExpr *expr) noexcept {
