@@ -299,7 +299,7 @@ private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
-    PrintStmt(const vector<const Expression *> &args)
+    explicit PrintStmt(const vector<const Expression *> &args)
         : Statement(Tag::PRINT), _args(args) {}
     [[nodiscard]] span<const Expression *const> args() const noexcept { return _args; }
     OC_MAKE_STATEMENT_ACCEPT_VISITOR

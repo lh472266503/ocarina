@@ -12,6 +12,7 @@ using namespace ocarina;
 
 int main(int argc, char *argv[]) {
     Callable add = [&](Var<float> a, Var<float> b) {
+        print(a, b);
         return a + b;
     };
 
@@ -19,18 +20,12 @@ int main(int argc, char *argv[]) {
         a = add(a , b + 6);
     };
 
-
-
-
     fs::path path(argv[0]);
     Context context(path.parent_path());
     Device device = context.create_device("cuda");
     Stream stream = device.create_stream();
 
-    auto sh = device.compile(kn);
-
-    cout << typeid(sh).name() << endl;
-    return 0;
+    auto shader = device.compile(kn);
 
     Buffer<float> f_buffer = device.create_buffer<float>(10);
 
