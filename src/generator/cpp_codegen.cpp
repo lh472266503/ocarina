@@ -109,23 +109,22 @@ void CppCodegen::visit(const PrintStmt *stmt) noexcept {
     format_scratch << stmt->fmt() << "\"";
     Scratch args_scratch;
 
-    for (int i = 0; i < args.size(); ++i) {
-        const Expression *expr = args[i];
+    for (const Expression *expr : args) {
         switch (expr->type()->tag()) {
             case Type::Tag::UINT: {
-                format_scratch.replace(i, "{}", "%u");
+                format_scratch.replace("{}", "%u");
                 break;
             }
             case Type::Tag::BOOL: {
-                format_scratch.replace(i, "{}", "%d");
+                format_scratch.replace("{}", "%d");
                 break;
             }
             case Type::Tag::FLOAT: {
-                format_scratch.replace(i, "{}", "%f");
+                format_scratch.replace("{}", "%f");
                 break;
             }
             case Type::Tag::INT: {
-                format_scratch.replace(0, "{}", "%d");
+                format_scratch.replace("{}", "%d");
                 break;
             }
             default: break;

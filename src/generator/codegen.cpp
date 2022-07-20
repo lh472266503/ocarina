@@ -54,12 +54,10 @@ void Codegen::Scratch::pop_back() noexcept {
     _buffer.pop_back();
 }
 
-void Codegen::Scratch::replace(int index, string_view substr, string_view new_str) noexcept {
-//    auto begin = _buffer.find(substr, index);
-//    auto end = begin + substr.size() - 1;
-//    _buffer.replace(begin, end, new_str);
-//
-//    int i =0;
+void Codegen::Scratch::replace(string_view substr, string_view new_str) noexcept {
+    auto begin = _buffer.find(substr);
+    auto size = substr.size();
+    _buffer.replace(begin, size, new_str);
 }
 
 void Codegen::_emit_newline() noexcept {

@@ -12,7 +12,7 @@ using namespace ocarina;
 
 int main(int argc, char *argv[]) {
     Callable add = [&](Var<float> a, Var<float> b) {
-        print(a, b);
+        print("{}, {}---",a, b);
         return a + b;
     };
 

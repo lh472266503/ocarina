@@ -53,7 +53,7 @@ protected:
         Scratch &operator<<(uint v) noexcept;
         Scratch &operator<<(size_t v) noexcept;
         Scratch &operator<<(const Scratch &scratch) noexcept;
-        void replace(int index, string_view substr, string_view new_str) noexcept;
+        void replace(string_view substr, string_view new_str) noexcept;
         void clear() noexcept;
         void pop_back() noexcept;
         [[nodiscard]] const char *c_str() const noexcept;
