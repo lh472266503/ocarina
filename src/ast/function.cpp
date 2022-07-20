@@ -128,12 +128,12 @@ void Function::break_() noexcept {
     _create_statement<BreakStmt>();
 }
 
-CommentStmt *Function::comment(ocarina::string_view string) noexcept {
-    return _create_statement<CommentStmt>(string);
+void Function::comment(ocarina::string_view string) noexcept {
+    _create_statement<CommentStmt>(string);
 }
 
-PrintStmt *Function::print(string_view fmt,const vector<const Expression *> &args) noexcept {
-    return _create_statement<PrintStmt>(fmt,args);
+void Function::print(string_view fmt, const vector<const Expression *> &args) noexcept {
+    _create_statement<PrintStmt>(fmt, args);
 }
 
 ocarina::span<const Variable> Function::arguments() const noexcept {

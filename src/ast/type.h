@@ -310,7 +310,6 @@ public:
     template<typename T>
     [[nodiscard]] static auto of(T &&) noexcept { return of<std::remove_cvref_t<T>>(); }
     [[nodiscard]] static const Type *from(std::string_view description) noexcept;
-    [[nodiscard]] static const Type *find(uint64_t hash) noexcept;
     [[nodiscard]] static const Type *at(uint32_t uid) noexcept;
     [[nodiscard]] static size_t count() noexcept;
     [[nodiscard]] bool operator==(const Type &rhs) const noexcept { return _hash == rhs._hash; }
