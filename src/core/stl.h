@@ -100,47 +100,57 @@ using std::string;
 using std::string_view;
 using std::to_string;
 
+inline size_t substr_count(string_view str, string_view target) noexcept {
+    string::size_type pos = 0;
+    size_t ret = 0;
+    while ((pos = str.find(target, pos)) != string::npos) {
+        ret += 1;
+        pos += target.length();
+    }
+    return ret;
+}
+
 // range and container
-using std::span;
-using std::vector;
+using std::array;
 using std::deque;
 using std::list;
 using std::map;
-using std::set;
 using std::optional;
 using std::queue;
+using std::set;
+using std::span;
 using std::unordered_map;
-using std::array;
 using std::unordered_set;
+using std::vector;
 
 #if 1
 // tuple
+using eastl::get;
 using eastl::tuple;
-using eastl::tuple_size;
-using eastl::tuple_size_v;
 using eastl::tuple_element;
 using eastl::tuple_element_t;
-using eastl::get;
+using eastl::tuple_size;
+using eastl::tuple_size_v;
 #else
+using std::get;
 using std::tuple;
-using std::tuple_size;
-using std::tuple_size_v;
 using std::tuple_element;
 using std::tuple_element_t;
-using std::get;
+using std::tuple_size;
+using std::tuple_size_v;
 #endif
 // sequence
+using std::index_sequence;
+using std::index_sequence_for;
+using std::integer_sequence;
 using std::make_index_sequence;
 using std::make_integer_sequence;
-using std::index_sequence;
-using std::integer_sequence;
-using std::index_sequence_for;
 
 // other
 using std::monostate;
+using std::pair;
 using std::variant;
 using std::visit;
-using std::pair;
 namespace fs = std::filesystem;
 
 }// namespace ocarina

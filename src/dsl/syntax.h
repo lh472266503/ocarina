@@ -289,7 +289,8 @@ public:
 
 template<typename... Args>
 void print(ocarina::string_view f, Args &&...args) {
-    static_assert(sizeof...(Args) > 0);
+    size_t num = sizeof...(Args);
+    OC_ASSERT(num == substr_count(f, "{}"));
     Function::current()->print(f, vector<const Expression *>{OC_EXPR(args)...});
 }
 
