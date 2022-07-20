@@ -7,8 +7,20 @@
 #include "device.h"
 #include "resource.h"
 #include "stream.h"
+#include "command.h"
 
 namespace ocarina {
+
+class ShaderInvoke {
+private:
+    ocarina::vector<const void *> _args;
+
+public:
+    explicit ShaderInvoke(vector<const void *> &&args) : _args(std::move(args)) {}
+    [[nodiscard]] ShaderDispatchCommand *dispatch(uint x, uint y = 1, uint z = 1);
+    [[nodiscard]] ShaderDispatchCommand *dispatch(uint2 dim) { return dispatch(dim.x, dim.y, 1); }
+    [[nodiscard]] ShaderDispatchCommand *dispatch(uint3 dim) { return dispatch(dim.x, dim.y, dim.z); }
+};
 
 template<typename... Args>
 class Shader final : public Resource {

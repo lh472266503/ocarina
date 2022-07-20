@@ -6,4 +6,7 @@
 
 namespace ocarina {
 
+ShaderDispatchCommand *ShaderInvoke::dispatch(uint x, uint y, uint z) {
+    return ShaderDispatchCommand::create(std::move(_args), uint3(x, y, z));
+}
 }

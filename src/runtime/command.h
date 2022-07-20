@@ -106,7 +106,15 @@ public:
 }
 
 class ShaderDispatchCommand final : public Command {
+private:
+    ocarina::vector<const void *> _args;
+    uint3 _dim;
+
 public:
+    explicit ShaderDispatchCommand(ocarina::vector<const void *> &&args, uint3 dim)
+        : _args(std::move(args)), _dim(dim) {}
+    [[nodiscard]] span<const void *const> args() const noexcept { return _args; }
+    [[nodiscard]] uint3 dim() const noexcept { return _dim; }
     OC_MAKE_CMD_COMMON_FUNC(ShaderDispatchCommand)
 };
 
