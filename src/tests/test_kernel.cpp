@@ -27,8 +27,9 @@ int main(int argc, char *argv[]) {
 
     auto shader = device.compile(kn);
 
-    cout << typeid(decltype(shader)::signature).name();
+    stream << shader(1.f,1.f).dispatch(5);
 
+//    shader(1.f, 1.f);
 //    Buffer<float> f_buffer = device.create_buffer<float>(10);
 
 //    ocarina::vector<float> v;

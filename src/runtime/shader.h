@@ -20,7 +20,7 @@ private:
 
 public:
     ArgumentList() = default;
-    [[nodiscard]] span<const void *const> ptr() const noexcept { return _args; }
+    [[nodiscard]] span<void *const> ptr() const noexcept { return _args; }
     [[nodiscard]] size_t num() const noexcept { return _args.size(); }
 
     template<typename T>
@@ -40,15 +40,20 @@ public:
     }
 };
 
-template<typename... Args>
-class Shader final : public Resource {
+template<typename T = int>
+class Shader {
 public:
-    using signature = typename detail::canonical_signature_t<void(Args...)>;
-
     class Impl {
     public:
         virtual void launch(handle_ty stream) noexcept = 0;
     };
+    static_assert(std::is_integral_v<T>);
+};
+
+template<typename... Args>
+class Shader<void(Args...)> final : public Resource {
+public:
+    using signature = typename detail::canonical_signature_t<void(Args...)>;
 
 private:
     ShaderTag _shader_tag;
@@ -60,16 +65,18 @@ public:
                    device->create_shader(function)),
           _shader_tag(tag) {}
 
-    [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
-
-    [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(_handle); }
+    [[nodiscard]] Shader<>::Impl *impl() noexcept { return reinterpret_cast<Shader<>::Impl *>(_handle); }
+    [[nodiscard]] const Shader<>::Impl *impl() const noexcept { return reinterpret_cast<const Shader<>::Impl *>(_handle); }
     [[nodiscard]] ShaderDispatchCommand *dispatch(uint x, uint y = 1, uint z = 1) {
-        return ShaderDispatchCommand::create(_argument_list.ptr(), uint3(x, y, z));
+        return new ShaderDispatchCommand(_argument_list.ptr(), uint3());
+//        return ShaderDispatchCommand::create(_argument_list.ptr(), uint3(x, y, z));
     }
     [[nodiscard]] ShaderDispatchCommand *dispatch(uint2 dim) { return dispatch(dim.x, dim.y, 1); }
     [[nodiscard]] ShaderDispatchCommand *dispatch(uint3 dim) { return dispatch(dim.x, dim.y, dim.z); }
 
-    Shader &operator()(Args &&...args) noexcept {
+    template<typename... A>
+    requires std::is_invocable_v<signature, expr_value_t<A>...>
+        Shader &operator()(A &&...args) noexcept {
         (_argument_list << ... << OC_FORWARD(args));
         return *this;
     }

@@ -15,7 +15,7 @@ class Context;
 template<typename T>
 class Buffer;
 
-template<typename... Args>
+template<typename T>
 class Shader;
 
 enum ShaderTag : uint8_t {
@@ -66,9 +66,9 @@ public:
     }
     [[nodiscard]] Stream create_stream() noexcept;
 
-    template<typename... Args>
-    [[nodiscard]] auto compile(const Kernel<Args...> &kernel, ShaderTag tag = CS) noexcept {
-        return _create<Shader<Args...>>(kernel.function(), tag);
+    template<typename T>
+    [[nodiscard]] auto compile(const Kernel<T> &kernel, ShaderTag tag = CS) noexcept {
+        return _create<Shader<T>>(kernel.function(), tag);
     }
 };
 }// namespace ocarina

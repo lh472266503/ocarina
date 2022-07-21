@@ -246,8 +246,7 @@ public:
 
     template<typename... A>
     requires std::is_invocable_v<signature, expr_value_t<A>...>
-    auto operator()(A &&...args) const noexcept {
-    }
+    auto operator()(A &&...args) const noexcept {}
 };
 
 template<typename T>
