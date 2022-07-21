@@ -12,12 +12,12 @@ using namespace ocarina;
 
 int main(int argc, char *argv[]) {
     Callable add = [&](Var<float> a, Var<float> b) {
-        print("{}, {}---",a, b);
+        print("{}, {}------------\\n",a, b);
         return a + b;
     };
 
     Kernel kn = [&](Var<float> a, Var<float> b) {
-        a = add(a , b + 6);
+        a = add(1 , 2);
     };
 
     fs::path path(argv[0]);
@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
 
     stream << commit();
 //    stream << f_buffer.download(v.data()) << synchronize();
-    stream << commit();
+//    stream << commit();
 
 //    for (int i = 0; i < 10; ++i) {
 //        cout << v[i] << endl;

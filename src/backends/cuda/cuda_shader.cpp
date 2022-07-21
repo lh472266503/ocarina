@@ -18,9 +18,9 @@ CUDAShader::CUDAShader(Device::Impl *device,
 void CUDAShader::launch(handle_ty stream, ShaderDispatchCommand *cmd) noexcept {
     uint3 grid_size = make_uint3(1);
     uint3 block_size = cmd->dim();
-//        (cuLaunchKernel(_function, grid_size.x, grid_size.y, grid_size.z,
-//                                block_size.x, block_size.y, block_size.z,
-//                                0, reinterpret_cast<CUstream>(stream), cmd->args().data(), nullptr));
+    OC_CU_CHECK(cuLaunchKernel(_function, grid_size.x, grid_size.y, grid_size.z,
+                               block_size.x, block_size.y, block_size.z,
+                               0, reinterpret_cast<CUstream>(stream), cmd->args().data(), nullptr));
 }
 
 }// namespace ocarina
