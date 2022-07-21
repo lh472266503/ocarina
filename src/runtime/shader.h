@@ -20,7 +20,7 @@ private:
 
 public:
     ArgumentList() = default;
-    [[nodiscard]] span<void *const> ptr() const noexcept { return _args; }
+    [[nodiscard]] span<void *> ptr() noexcept { return _args; }
     [[nodiscard]] size_t num() const noexcept { return _args.size(); }
 
     template<typename T>
@@ -45,7 +45,7 @@ class Shader {
 public:
     class Impl {
     public:
-        virtual void launch(handle_ty stream) noexcept = 0;
+        virtual void launch(handle_ty stream,ShaderDispatchCommand *cmd) noexcept = 0;
     };
     static_assert(std::is_integral_v<T>);
 };
@@ -68,8 +68,7 @@ public:
     [[nodiscard]] Shader<>::Impl *impl() noexcept { return reinterpret_cast<Shader<>::Impl *>(_handle); }
     [[nodiscard]] const Shader<>::Impl *impl() const noexcept { return reinterpret_cast<const Shader<>::Impl *>(_handle); }
     [[nodiscard]] ShaderDispatchCommand *dispatch(uint x, uint y = 1, uint z = 1) {
-        return new ShaderDispatchCommand(_argument_list.ptr(), uint3());
-//        return ShaderDispatchCommand::create(_argument_list.ptr(), uint3(x, y, z));
+        return ShaderDispatchCommand::create(handle(), _argument_list.ptr(), make_uint3(x,y,z));
     }
     [[nodiscard]] ShaderDispatchCommand *dispatch(uint2 dim) { return dispatch(dim.x, dim.y, 1); }
     [[nodiscard]] ShaderDispatchCommand *dispatch(uint3 dim) { return dispatch(dim.x, dim.y, dim.z); }

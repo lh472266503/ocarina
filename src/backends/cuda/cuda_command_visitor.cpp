@@ -5,6 +5,7 @@
 #include "cuda_command_visitor.h"
 #include "util.h"
 #include "cuda_device.h"
+#include "cuda_shader.h"
 
 namespace ocarina {
 void CUDACommandVisitor::visit(const BufferUploadCommand *cmd) noexcept {
@@ -30,7 +31,9 @@ void CUDACommandVisitor::visit(const SynchronizeCommand *cmd) noexcept {
 }
 
 void CUDACommandVisitor::visit(const ShaderDispatchCommand *cmd) noexcept {
-
+    uint3 grid_size = make_uint3(1);
+    uint3 block_size = make_uint3(1);
+    (reinterpret_cast<CUDAShader *>(cmd->entry()))->launch(handle_ty(_stream), const_cast<ShaderDispatchCommand*>(cmd));
 }
 
 }// namespace ocarina

@@ -261,9 +261,9 @@ OC_MAKE_VECTOR_ASSIGN_OPERATOR(/=, ocarina::is_number_v<T>)
 OC_MAKE_VECTOR_ASSIGN_OPERATOR(%=, ocarina::is_integral_v<T>)
 OC_MAKE_VECTOR_ASSIGN_OPERATOR(<<=, ocarina::is_integral_v<T>)
 OC_MAKE_VECTOR_ASSIGN_OPERATOR(>>=, ocarina::is_integral_v<T>)
-OC_MAKE_VECTOR_ASSIGN_OPERATOR(|=, std::negation_v<ocarina::is_floating_point<T>>)
-OC_MAKE_VECTOR_ASSIGN_OPERATOR(&=, std::negation_v<ocarina::is_floating_point<T>>)
-OC_MAKE_VECTOR_ASSIGN_OPERATOR(^=, std::negation_v<ocarina::is_floating_point<T>>)
+OC_MAKE_VECTOR_ASSIGN_OPERATOR(|=, ocarina::is_integral_v<T>)
+OC_MAKE_VECTOR_ASSIGN_OPERATOR(&=, ocarina::is_integral_v<T>)
+OC_MAKE_VECTOR_ASSIGN_OPERATOR(^=, ocarina::is_integral_v<T>)
 
 #undef OC_MAKE_VECTOR_ASSIGN_OPERATOR
 

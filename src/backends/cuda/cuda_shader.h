@@ -21,7 +21,7 @@ public:
                const ocarina::string &ptx,
                ocarina::string_view entry);
 
-    void launch(handle_ty stream) noexcept override;
+    void launch(handle_ty stream, ShaderDispatchCommand *cmd) noexcept override;
 };
 
 }// namespace ocarina
