@@ -141,7 +141,11 @@ ocarina::span<const Variable> Function::arguments() const noexcept {
 }
 
 ocarina::string Function::func_name() const noexcept {
-    return detail::func_name(hash());
+    if (is_kernel()) {
+        return detail::kernel_name(hash());
+    } else {
+        return detail::func_name(hash());
+    }
 }
 
 void Function::assign(const Expression *lhs, const Expression *rhs) noexcept {

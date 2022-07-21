@@ -61,28 +61,28 @@ void Codegen::Scratch::replace(string_view substr, string_view new_str) noexcept
 }
 
 void Codegen::_emit_newline() noexcept {
-    _scratch << "\n";
+    current_scratch() << "\n";
 }
 void Codegen::_emit_indent() noexcept {
     static constexpr auto indent_str = "    ";
     for (int i = 0; i < _indent; ++i) {
-        _scratch << indent_str;
+        current_scratch() << indent_str;
     }
 }
 void Codegen::_emit_space() noexcept {
-    _scratch << " ";
+    current_scratch() << " ";
 }
 
-void Codegen::_emit_func_name(uint64_t hash) noexcept {
-    _scratch << detail::func_name(hash);
+void Codegen::_emit_func_name(const Function &f) noexcept {
+    current_scratch() << f.func_name();
 }
 
 void Codegen::_emit_struct_name(uint64_t hash) noexcept {
-    _scratch << detail::struct_name(hash);
+    current_scratch() << detail::struct_name(hash);
 }
 
 void Codegen::_emit_member_name(int index) noexcept {
-    _scratch << "member_" << index;
+    current_scratch() << "member_" << index;
 }
 
 }// namespace ocarina

@@ -203,7 +203,7 @@ void CppCodegen::visit(const RefExpr *expr) noexcept {
     _emit_variable_name(expr->variable());
 }
 void CppCodegen::visit(const CallExpr *expr) noexcept {
-    _emit_func_name(expr->function()->hash());
+    _emit_func_name(*expr->function());
     current_scratch() << "(";
     for (const auto &arg : expr->arguments()) {
         arg->accept(*this);
@@ -319,7 +319,7 @@ void CppCodegen::_emit_function(const Function &f) noexcept {
     }
     _emit_type_name(f.return_type());
     _emit_space();
-    _emit_func_name(f.hash());
+    _emit_func_name(f);
     _emit_arguments(f);
     _emit_body(f);
     f.define();
