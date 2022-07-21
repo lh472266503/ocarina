@@ -49,7 +49,7 @@ namespace detail {
 }
 
 [[nodiscard]] ocarina::string_view find_identifier(ocarina::string_view &str,
-                                                  bool check_start_with_num = false) {
+                                                   bool check_start_with_num = false) {
     OC_USING_SV
     uint i = 0u;
     for (; i < str.size() && is_letter_or_num(str[i]); ++i)
@@ -126,7 +126,6 @@ const Type *TypeRegistry::parse_type(ocarina::string_view desc) noexcept {
     OC_PARSE_BASIC_TYPE(bool, BOOL)
     OC_PARSE_BASIC_TYPE(float, FLOAT)
 
-
 #undef OC_PARSE_BASIC_TYPE
 
     if (desc.starts_with("vector")) {
@@ -174,7 +173,7 @@ void TypeRegistry::parse_matrix(Type *type, ocarina::string_view desc) noexcept 
     type->_members.push_back(parse_type((tmp_desc)));
 
 #define OC_SIZE_ALIGN(dim)                       \
-    if (dimension == (dim)) {                      \
+    if (dimension == (dim)) {                    \
         type->_size = sizeof(Matrix<dim>);       \
         type->_alignment = alignof(Matrix<dim>); \
     } else
@@ -250,7 +249,7 @@ bool TypeRegistry::is_exist(uint64_t hash) const noexcept {
 }
 
 void TypeRegistry::for_each(TypeVisitor *visitor) const noexcept {
-    for(const auto &t : _types) {
+    for (const auto &t : _types) {
         visitor->visit(t.get());
     }
 }
