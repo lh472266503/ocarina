@@ -174,7 +174,7 @@ void TypeRegistry::parse_matrix(Type *type, ocarina::string_view desc) noexcept 
     type->_members.push_back(parse_type((tmp_desc)));
 
 #define OC_SIZE_ALIGN(dim)                       \
-    if (dimension == dim) {                      \
+    if (dimension == (dim)) {                      \
         type->_size = sizeof(Matrix<dim>);       \
         type->_alignment = alignof(Matrix<dim>); \
     } else
