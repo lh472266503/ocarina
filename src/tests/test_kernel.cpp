@@ -27,32 +27,23 @@ int main(int argc, char *argv[]) {
 
     auto shader = device.compile(kn);
 
-    Buffer<float> f_buffer = device.create_buffer<float>(10);
+    cout << typeid(decltype(shader)::signature).name();
 
-    ocarina::vector<float> v;
-    for (int i = 0; i < 10; ++i) {
-        v.push_back(i);
-    }
-    stream << f_buffer.upload(v.data());
+//    Buffer<float> f_buffer = device.create_buffer<float>(10);
+
+//    ocarina::vector<float> v;
+
+//    stream << f_buffer.upload(v.data());
 
     stream << synchronize();
 
     stream << commit();
-    for (int i = 0; i < 10; ++i) {
-        v[i] = 0;
-    }
-    for (int i = 0; i < 10; ++i) {
-        cout << v[i] << endl;
-    }
-    stream << f_buffer.download(v.data()) << synchronize();
-
-
-
+//    stream << f_buffer.download(v.data()) << synchronize();
     stream << commit();
 
-    for (int i = 0; i < 10; ++i) {
-        cout << v[i] << endl;
-    }
+//    for (int i = 0; i < 10; ++i) {
+//        cout << v[i] << endl;
+//    }
 
     return 0;
 }

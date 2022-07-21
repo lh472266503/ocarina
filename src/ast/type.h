@@ -300,7 +300,6 @@ private:
     Tag _tag{Tag::NONE};
     ocarina::string _description;
     ocarina::vector<const Type *> _members;
-    mutable bool _has_decl{false};
 
 public:
     static void for_each(TypeVisitor *visitor);
