@@ -12,12 +12,13 @@ using namespace ocarina;
 
 int main(int argc, char *argv[]) {
     Callable add = [&](Var<float> a, Var<float> b) {
-        print("{}, {}------------\\n",a, b);
+//        print("{}, {}------------\\n",a, b);
         return a + b;
     };
 
-    Kernel kn = [&](Var<float> a, Var<float> b) {
-        a = add(1 , 2);
+    Kernel kn = [&](Var<float> a, Var<float> b, Var<float> c) {
+        print("{}, {}----------{}--\\n",a, b, c);
+        a = add(a , b);
     };
 
     fs::path path(argv[0]);
@@ -27,7 +28,7 @@ int main(int argc, char *argv[]) {
 
     auto shader = device.compile(kn);
 
-    stream << shader(1.f,1.f).dispatch(5);
+    stream << shader(1.f,6.f, 9.f).dispatch(5);
 
 //    shader(1.f, 1.f);
 //    Buffer<float> f_buffer = device.create_buffer<float>(10);

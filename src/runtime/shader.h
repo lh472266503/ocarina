@@ -15,8 +15,20 @@ namespace ocarina {
 
 class ArgumentList {
 private:
+    static constexpr auto Size = 200;
     ocarina::vector<void *> _args;
-    ocarina::vector<std::byte> _argument_data;
+    ocarina::array<std::byte, Size> _argument_data;
+    size_t _cursor{};
+private:
+    template<typename T>
+    requires concepts::basic<T>
+    void _encode_basic(T &&arg) noexcept {
+        _cursor = mem_offset(_cursor, alignof(T));
+        auto dst_ptr = _argument_data.data() + _cursor;
+        _cursor += sizeof(T);
+        std::memcpy(dst_ptr, &arg, sizeof(T));
+        _args.push_back(dst_ptr);
+    }
 
 public:
     ArgumentList() = default;
@@ -24,18 +36,9 @@ public:
     [[nodiscard]] size_t num() const noexcept { return _args.size(); }
 
     template<typename T>
-    void push_back(T &&arg) noexcept {
-        size_t offset = mem_offset(_argument_data.size(), alignof(T));
-        _argument_data.resize(offset + sizeof(T));
-        auto dst_ptr = _argument_data.data() + offset;
-        std::memcpy(dst_ptr, &arg, sizeof(T));
-        _args.push_back(dst_ptr);
-    }
-
-    template<typename T>
     requires concepts::basic<T>
-        ArgumentList &operator<<(T &&arg) {
-        push_back(arg);
+    ArgumentList &operator<<(T &&arg) {
+        _encode_basic(OC_FORWARD(arg));
         return *this;
     }
 };
@@ -45,7 +48,7 @@ class Shader {
 public:
     class Impl {
     public:
-        virtual void launch(handle_ty stream,ShaderDispatchCommand *cmd) noexcept = 0;
+        virtual void launch(handle_ty stream, ShaderDispatchCommand *cmd) noexcept = 0;
     };
     static_assert(std::is_integral_v<T>);
 };
@@ -68,13 +71,14 @@ public:
     [[nodiscard]] Shader<>::Impl *impl() noexcept { return reinterpret_cast<Shader<>::Impl *>(_handle); }
     [[nodiscard]] const Shader<>::Impl *impl() const noexcept { return reinterpret_cast<const Shader<>::Impl *>(_handle); }
     [[nodiscard]] ShaderDispatchCommand *dispatch(uint x, uint y = 1, uint z = 1) {
-        return ShaderDispatchCommand::create(handle(), _argument_list.ptr(), make_uint3(x,y,z));
+        return ShaderDispatchCommand::create(handle(), _argument_list.ptr(), make_uint3(x, y, z));
     }
     [[nodiscard]] ShaderDispatchCommand *dispatch(uint2 dim) { return dispatch(dim.x, dim.y, 1); }
     [[nodiscard]] ShaderDispatchCommand *dispatch(uint3 dim) { return dispatch(dim.x, dim.y, dim.z); }
 
     template<typename... A>
-    requires std::is_invocable_v<signature, expr_value_t<A>...>
+    requires std::is_invocable_v<signature, expr_value_t<A>
+                                            ...>
         Shader &operator()(A &&...args) noexcept {
         (_argument_list << ... << OC_FORWARD(args));
         return *this;
