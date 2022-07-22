@@ -19,6 +19,7 @@ private:
     ocarina::vector<void *> _args;
     ocarina::array<std::byte, Size> _argument_data{};
     size_t _cursor{};
+
 private:
     template<typename T>
     requires concepts::basic<T>
@@ -77,9 +78,8 @@ public:
     [[nodiscard]] ShaderDispatchCommand *dispatch(uint3 dim) { return dispatch(dim.x, dim.y, dim.z); }
 
     template<typename... A>
-    requires std::is_invocable_v<signature, expr_value_t<A>
-                                            ...>
-        Shader &operator()(A &&...args) noexcept {
+    requires std::is_invocable_v<signature, A...>
+    Shader &operator()(A &&...args) noexcept {
         (_argument_list << ... << OC_FORWARD(args));
         return *this;
     }
