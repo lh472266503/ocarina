@@ -92,9 +92,10 @@ namespace detail {
 }// namespace detail
 
 /*
- * TYPE: BASIC | ARRAY | VECTOR | MATRIX | STRUCT
+ * TYPE: BASIC | ARRAY | VECTOR | MATRIX | STRUCT | BUFFER
  * BASIC: int | uint | bool | float
- * ARRAY: array<TYPE, N>
+ * ARRAY: array<BASIC | STRUCTURE, N>
+ * BUFFER : buffer<BASIC | STRUCTURE>
  * VECTOR: vector<BASIC,2> | vector<BASIC,3> | vector<BASIC,4>
  * MATRIX: matrix<2> | matrix<3> | matrix<4>
  * STRUCT: struct<4,TYPE...> | struct<8,TYPE...> | struct<16,TYPE...>
@@ -136,6 +137,8 @@ const Type *TypeRegistry::parse_type(ocarina::string_view desc) noexcept {
         parse_array(type.get(), desc);
     } else if (desc.starts_with("struct")) {
         parse_struct(type.get(), desc);
+    } else if (desc.starts_with("buffer")) {
+        parse_buffer(type.get(), desc);
     } else {
         OC_ERROR("invalid data type ", desc);
     }
@@ -200,6 +203,16 @@ void TypeRegistry::parse_struct(Type *type, string_view desc) noexcept {
         size += member->size();
     }
     type->_size = mem_offset(size, type->alignment());
+}
+
+void TypeRegistry::parse_buffer(Type *type, ocarina::string_view desc) noexcept {
+    type->_tag = Type::Tag::BUFFER;
+    auto lst = detail::find_content(desc);
+    auto type_str = lst[0];
+    const Type *element_type = parse_type(type_str);
+    type->_members.push_back(element_type);
+    auto alignment = element_type->alignment();
+    type->_alignment = alignment;
 }
 
 void TypeRegistry::parse_array(Type *type, ocarina::string_view desc) noexcept {
