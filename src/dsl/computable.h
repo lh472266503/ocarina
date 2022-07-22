@@ -32,6 +32,9 @@ template<typename T>
 
 class Expression;
 
+template<typename T>
+class Buffer;
+
 namespace detail {
 
 template<typename T>
@@ -179,6 +182,12 @@ struct Computable<T[N]>
     : detail::EnableSubscriptAccess<Computable<T[N]>>,
       detail::EnableGetMemberByIndex<Computable<T[N]>> {
     OC_COMPUTABLE_COMMON(Computable<T[N]>)
+};
+
+template<typename T>
+struct Computable<Buffer<T>>
+    : detail::EnableSubscriptAccess<Computable<Buffer<T>>> {
+    OC_COMPUTABLE_COMMON(Computable<Buffer<T>>)
 };
 
 template<size_t N>

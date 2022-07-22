@@ -11,31 +11,33 @@
 using namespace ocarina;
 
 int main(int argc, char *argv[]) {
+    ocarina::vector<float> v;
+    const int count = 10;
+    for (int i = 0; i < count; ++i) {
+        v.push_back(i);
+    }
+
     Callable add = [&](Var<float> a, Var<float> b) {
-//        print("{}, {}------------\\n",a, b);
         return a + b;
     };
 
     Kernel kn = [&](Var<float> a, Var<float> b, Var<float> c) {
-        print("{}, {}----------{}--\\n",a, b, c);
-        a = add(a , b);
+        print("{}, {}----------{}--\\n", a, b, c);
+        a = add(a, b);
     };
 
     fs::path path(argv[0]);
     Context context(path.parent_path());
     Device device = context.create_device("cuda");
     Stream stream = device.create_stream();
-
     auto shader = device.compile(kn);
-
+    Buffer<float> f_buffer = device.create_buffer<float>(count);
+    stream << f_buffer.upload(v.data());
     stream << shader(1.f,6.f, 9.f).dispatch(5);
 
-//    shader(1.f, 1.f);
-//    Buffer<float> f_buffer = device.create_buffer<float>(10);
+    //    shader(1.f, 1.f);
 
-//    ocarina::vector<float> v;
-
-//    stream << f_buffer.upload(v.data());
+    //    stream << f_buffer.upload(v.data());
 
     stream << synchronize();
 

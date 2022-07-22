@@ -13,6 +13,7 @@ struct Context::Impl {
     fs::path runtime_directory;
     fs::path cache_directory;
     Device::Handle device;
+    bool use_cache{false};
     ocarina::map<string, DynamicModule> modules;
     Impl() : device(Device::Handle(nullptr, nullptr)) {}
 };

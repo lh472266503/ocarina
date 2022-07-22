@@ -82,6 +82,14 @@ string Context::read_cache(const string &fn) const noexcept {
     return buffer.str();
 }
 
+bool Context::is_exist_cache(const string &fn) const noexcept {
+    if (!_impl->use_cache) {
+        return false;
+    }
+    auto path = cache_directory() / fn;
+    return fs::exists(path);
+}
+
 const DynamicModule *Context::obtain_module(const string &module_name) noexcept {
     auto iter = _impl->modules.find(module_name);
     DynamicModule *ret = nullptr;

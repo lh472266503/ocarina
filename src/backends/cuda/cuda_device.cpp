@@ -25,7 +25,6 @@ namespace ocarina {
 namespace detail {
 [[nodiscard]] string get_ptx(const string &cu) noexcept {
     nvrtcProgram program{};
-    cout << cu << endl;
     ocarina::vector<const char *> compile_option = {CUDA_NVRTC_OPTIONS};
     OC_NVRTC_CHECK(nvrtcCreateProgram(&program, cu.c_str(), "test", 0, nullptr, nullptr));
     const nvrtcResult compile_res = nvrtcCompileProgram(program, compile_option.size(), compile_option.data());
@@ -81,6 +80,7 @@ ocarina::string CUDADevice::get_ptx(const Function &function) const noexcept {
         CUDACodegen codegen;
         codegen.emit(function);
         const ocarina::string &cu = codegen.scratch().c_str();
+        cout << cu << endl;
         ptx = detail::get_ptx(cu);
         _context->write_cache(ptx_fn, ptx);
         _context->write_cache(cu_fn, cu);
