@@ -19,11 +19,11 @@ template<typename T>
 class Shader;
 
 enum ShaderTag : uint8_t {
-    CS,
-    VS,
-    FS,
-    GS,
-    TS
+    CS = 1 << 1,
+    VS = 1 << 2,
+    FS = 1 << 3,
+    GS = 1 << 4,
+    TS = 1 << 5
 };
 
 class Stream;

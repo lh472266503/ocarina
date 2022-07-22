@@ -10,7 +10,7 @@
 
 namespace ocarina {
 
-class CUDAShader : public Shader<>::Impl {
+class CUDAShader {
 private:
     CUmodule _module{};
     CUfunction _function{};
@@ -21,7 +21,7 @@ public:
                const ocarina::string &ptx,
                ocarina::string_view entry);
 
-    void launch(handle_ty stream, ShaderDispatchCommand *cmd) noexcept override;
+    void launch(handle_ty stream, ShaderDispatchCommand *cmd) noexcept;
 };
 
 }// namespace ocarina

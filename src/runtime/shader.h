@@ -27,6 +27,7 @@ private:
         _cursor = mem_offset(_cursor, alignof(T));
         auto dst_ptr = _argument_data.data() + _cursor;
         _cursor += sizeof(T);
+        OC_ASSERT(_cursor < Size);
         std::memcpy(dst_ptr, &arg, sizeof(T));
         _args.push_back(dst_ptr);
     }
@@ -44,14 +45,9 @@ public:
     }
 };
 
-template<typename T = int>
+template<typename T>
 class Shader {
-public:
-    class Impl {
-    public:
-        virtual void launch(handle_ty stream, ShaderDispatchCommand *cmd) noexcept = 0;
-    };
-    static_assert(std::is_integral_v<T>);
+    static_assert(always_false_v<T>);
 };
 
 template<typename... Args>
@@ -69,8 +65,6 @@ public:
                    device->create_shader(function)),
           _shader_tag(tag) {}
 
-    [[nodiscard]] Shader<>::Impl *impl() noexcept { return reinterpret_cast<Shader<>::Impl *>(_handle); }
-    [[nodiscard]] const Shader<>::Impl *impl() const noexcept { return reinterpret_cast<const Shader<>::Impl *>(_handle); }
     [[nodiscard]] ShaderDispatchCommand *dispatch(uint x, uint y = 1, uint z = 1) {
         return ShaderDispatchCommand::create(handle(), _argument_list.ptr(), make_uint3(x, y, z));
     }
