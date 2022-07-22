@@ -21,8 +21,8 @@ int main(int argc, char *argv[]) {
         return a + b;
     };
 
-    Kernel kn = [&](Var<float> a, Var<float> b, Var<float> c) {
-        print("{}, {}----------{}--\\n", a, b, c);
+    Kernel kn = [&](Var<float> a, Var<float> b, Var<Buffer<float>> c) {
+        print("{}, {}----------{}--\\n", a, b, 1);
         a = add(a, b);
     };
 
@@ -33,15 +33,15 @@ int main(int argc, char *argv[]) {
     auto shader = device.compile(kn);
     Buffer<float> f_buffer = device.create_buffer<float>(count);
     stream << f_buffer.upload(v.data());
-    stream << shader(1.f,6.f, 9.f).dispatch(5);
+//    stream << shader(1.f,6.f, 9.f).dispatch(5);
 
     //    shader(1.f, 1.f);
 
     //    stream << f_buffer.upload(v.data());
 
-    stream << synchronize();
-
-    stream << commit();
+//    stream << synchronize();
+//
+//    stream << commit();
 //    stream << f_buffer.download(v.data()) << synchronize();
 //    stream << commit();
 

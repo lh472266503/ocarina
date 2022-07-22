@@ -252,7 +252,11 @@ void CppCodegen::_emit_types_define() noexcept {
 }
 
 void CppCodegen::_emit_variable_define(Variable v) noexcept {
-    if (!v.type()->is_array()) {
+    if (v.type()->is_buffer()) {
+        _emit_type_name(v.type());
+        _emit_space();
+        _emit_variable_name(v);
+    } else if (!v.type()->is_array()) {
         _emit_type_name(v.type());
         _emit_space();
         switch (v.tag()) {
@@ -305,7 +309,10 @@ void CppCodegen::_emit_type_name(const Type *type) noexcept {
             case Type::Tag::STRUCTURE:
                 _emit_struct_name(type->hash());
                 break;
-            case Type::Tag::BUFFER: break;
+            case Type::Tag::BUFFER:
+                _emit_type_name(type->element());
+                current_scratch() << "*";
+                break;
             case Type::Tag::TEXTURE: break;
             case Type::Tag::BINDLESS_ARRAY: break;
             case Type::Tag::ACCEL: break;

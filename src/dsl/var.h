@@ -18,7 +18,7 @@ struct ReferenceArgumentCreation {};
 
 template<typename T>
 struct Var : public detail::Computable<T> {
-    static_assert(std::is_trivially_destructible_v<T>);
+//    static_assert(std::is_trivially_destructible_v<T>);
 
     explicit Var(const Expression *expression) noexcept
         : detail::Computable<T>(expression) {}

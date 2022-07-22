@@ -58,6 +58,8 @@ public:
         return BufferView<T>(_handle, offset, size, _size);
     }
 
+    auto operator[](int i) { return T{}; }
+
     template<typename... Args>
     [[nodiscard]] BufferUploadCommand *upload(Args &&...args) const noexcept {
         return view(0, _size).upload(OC_FORWARD(args)...);
