@@ -17,7 +17,7 @@ class ArgumentList {
 private:
     static constexpr auto Size = 200;
     ocarina::vector<void *> _args;
-    ocarina::array<std::byte, Size> _argument_data;
+    ocarina::array<std::byte, Size> _argument_data{};
     size_t _cursor{};
 private:
     template<typename T>
