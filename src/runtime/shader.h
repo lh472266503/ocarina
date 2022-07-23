@@ -5,7 +5,7 @@
 #pragma once
 
 #include "device.h"
-#include "resource.h"
+#include "buffer.h"
 #include "stream.h"
 #include "command.h"
 #include "core/concepts.h"
@@ -32,15 +32,29 @@ private:
         _args.push_back(dst_ptr);
     }
 
+    template<typename T>
+    void _encode_buffer(Buffer<T> buffer) noexcept {
+        handle_ty handle = buffer.handle();
+        _cursor = mem_offset(_cursor, alignof(handle_ty));
+        auto dst_ptr = _argument_data.data() + _cursor;
+        _cursor += sizeof(handle_ty);
+        OC_ASSERT(_cursor < Size);
+        std::memcpy(dst_ptr, &handle, sizeof(handle_ty));
+        _args.push_back(dst_ptr);
+    }
+
 public:
     ArgumentList() = default;
     [[nodiscard]] span<void *> ptr() noexcept { return _args; }
     [[nodiscard]] size_t num() const noexcept { return _args.size(); }
 
     template<typename T>
-    requires concepts::basic<T>
     ArgumentList &operator<<(T &&arg) {
-        _encode_basic(OC_FORWARD(arg));
+        if constexpr (concepts::basic<T>) {
+            _encode_basic(OC_FORWARD(arg));
+        } else if constexpr (is_buffer_v<T>) {
+            _encode_buffer(OC_FORWARD(arg));
+        }
         return *this;
     }
 };

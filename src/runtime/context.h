@@ -23,6 +23,7 @@ public:
     [[nodiscard]] const fs::path &cache_directory() const noexcept;
     void write_cache(const string &fn, const string &text) const noexcept;
     [[nodiscard]] string read_cache(const string &fn) const noexcept;
+    void clear_cache() const noexcept;
     [[nodiscard]] bool is_exist_cache(const string &fn) const noexcept;
     const DynamicModule *obtain_module(const string &module_name) noexcept;
     [[nodiscard]] Device create_device(const string &backend_name) noexcept;

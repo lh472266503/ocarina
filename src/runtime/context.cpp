@@ -82,6 +82,12 @@ string Context::read_cache(const string &fn) const noexcept {
     return buffer.str();
 }
 
+void Context::clear_cache() const noexcept {
+    if (fs::exists(_impl->cache_directory)) {
+        fs::remove_all(_impl->cache_directory);
+    }
+}
+
 bool Context::is_exist_cache(const string &fn) const noexcept {
     if (!_impl->use_cache) {
         return false;

@@ -11,7 +11,7 @@ namespace ocarina {
 
 using handle_ty = uint64_t;
 using ptr_t = uint64_t;
-class Resource : public concepts::Noncopyable {
+class Resource  {
 public:
     enum Tag : uint8_t {
         BUFFER,

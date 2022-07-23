@@ -77,13 +77,19 @@ ocarina::string CUDADevice::get_ptx(const Function &function) const noexcept {
     string cu_fn = function.func_name() + ".cu";
     ocarina::string ptx;
     if (!_context->is_exist_cache(ptx_fn)) {
-        CUDACodegen codegen;
-        codegen.emit(function);
-        const ocarina::string &cu = codegen.scratch().c_str();
-        cout << cu << endl;
-        ptx = detail::get_ptx(cu);
-        _context->write_cache(ptx_fn, ptx);
-        _context->write_cache(cu_fn, cu);
+        if (!_context->is_exist_cache(cu_fn)) {
+            CUDACodegen codegen;
+            codegen.emit(function);
+            const ocarina::string &cu = codegen.scratch().c_str();
+            cout << cu << endl;
+            ptx = detail::get_ptx(cu);
+            _context->write_cache(ptx_fn, ptx);
+            _context->write_cache(cu_fn, cu);
+        } else {
+            const ocarina::string &cu = _context->read_cache(cu_fn);
+            cout << cu << endl;
+            ptx = detail::get_ptx(cu);
+        }
     } else {
         ptx = _context->read_cache(ptx_fn);
     }
