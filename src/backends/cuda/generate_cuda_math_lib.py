@@ -9,6 +9,7 @@ native_types = ["int", "unsigned int", "float", "bool"]
 vector_alignments = {2: 8, 3: 16, 4: 16}
 indent = "\t"
 name_lst = ["x", "y", "z", "w"]
+device_flag = "__device__"
 
 prefix = "oc"
 
@@ -35,26 +36,41 @@ def emit_functions(scalar_name, dim):
     ret = "\n"
     struct_name = f"{scalar_name}{dim}"
 
-    ret += indent + f"__device__ {struct_name}() noexcept \n" + get_indent(2) + ":"
+    ret += indent + f"{device_flag} {struct_name}() noexcept \n" + get_indent(2) + ":"
     for d in range(0, dim):
         split = "," if d != dim - 1 else ""
         ret += f"{name_lst[d]}{{}}" + split 
     ret += " {}\n"
 
-    ret += indent + f"__device__ {struct_name}({scalar_name} s) noexcept \n" + get_indent(2) + ":"
+    ret += indent + f"{device_flag} {struct_name}({scalar_name} s) noexcept \n" + get_indent(2) + ":"
     for d in range(0, dim):
         split = "," if d != dim - 1 else ""
         ret += f"{name_lst[d]}(s)" + split 
     ret += " {}\n"
+
+    args = ""
+    assign = ""
+    for d in range(0, dim):
+        split = "," if d != dim - 1 else ""
+        member_name = name_lst[d]
+        args += f"{scalar_name} {member_name}" + split
+        assign += f"{member_name}({member_name})" + split 
+    ret += indent + f"{device_flag} {struct_name}({args}) noexcept \n" + get_indent(2) + ":"
+    ret += assign
+    ret += " {}\n"
+
+    access = f"{device_flag} constexpr {scalar_name} operator[]({prefix}_uint i) const noexcept %s\n" % ("{ return (&x)[i]; }")
+    access += indent + f"{device_flag} constexpr {scalar_name} &operator[]({prefix}_uint i) noexcept %s\n" % ("{ return (&x)[i]; }")
+    ret += indent + access
 
     return ret
 
 def define_vector():
     global content
     content += "\n"
-    for dim in range(2, 5):
-        alignment = vector_alignments[dim];
-        for j, scalar in enumerate(scalar_types):
+    for j, scalar in enumerate(scalar_types):
+        for dim in range(2, 5):
+            alignment = vector_alignments[dim]
             scalar_name = f"{prefix}_{scalar}"
             struct_name = f"struct alignas({alignment}) {scalar_name}{dim}" + "{"
             content += struct_name
@@ -71,8 +87,7 @@ def save_to_inl(var_name, content, fn):
         string += f"{ord(s)}" + split
 
         if i % line_len == line_len - 1:
-            string += "\n    ";
-        print(ord(s))
+            string += "\n    "
     string += "};"
     with open(fn, "w") as file:
         file.write(string)

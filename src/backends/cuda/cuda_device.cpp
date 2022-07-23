@@ -8,6 +8,7 @@
 #include "cuda_shader.h"
 #include "runtime/context.h"
 #include <nvrtc.h>
+#include "cuda_math_lib_embed.h"
 
 namespace ocarina {
 
@@ -26,7 +27,12 @@ namespace detail {
 [[nodiscard]] string get_ptx(const string &cu) noexcept {
     nvrtcProgram program{};
     ocarina::vector<const char *> compile_option = {CUDA_NVRTC_OPTIONS};
-    OC_NVRTC_CHECK(nvrtcCreateProgram(&program, cu.c_str(), "test", 0, nullptr, nullptr));
+    std::array header_names{"cuda_math_lib.h"};
+    std::array header_sources{cuda_math_lib};
+
+    OC_NVRTC_CHECK(nvrtcCreateProgram(&program, cu.c_str(), "cuda_kernel.cu",
+                                      header_names.size(), header_sources.data(),
+                                      header_names.data()));
     const nvrtcResult compile_res = nvrtcCompileProgram(program, compile_option.size(), compile_option.data());
     size_t log_size = 0;
     OC_NVRTC_CHECK(nvrtcGetProgramLogSize(program, &log_size));

@@ -14,8 +14,8 @@ using namespace ocarina;
 
 int main(int argc, char *argv[]) {
 
-    cout << std::string (cuda_math_lib);
-    return 0;
+//    cout << std::string (cuda_math_lib);
+//    return 0;
     ocarina::vector<float> v;
     const int count = 10;
     for (int i = 0; i < count; ++i) {
