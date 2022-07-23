@@ -11,7 +11,7 @@ namespace ocarina {
 
 using handle_ty = uint64_t;
 using ptr_t = uint64_t;
-class Resource  {
+class Resource {
 public:
     enum Tag : uint8_t {
         BUFFER,
@@ -33,7 +33,7 @@ public:
         : _device(device), _tag(tag), _handle(handle) {}
     [[nodiscard]] Tag tag() const noexcept { return _tag; }
     [[nodiscard]] handle_ty handle() const noexcept { return _handle; }
-    [[nodiscard]] handle_ty *handle_address() noexcept { return &_handle; }
+    [[nodiscard]] const handle_ty *handle_address() const noexcept { return &_handle; }
     ~Resource() {
         _destroy();
     }
