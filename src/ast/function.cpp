@@ -20,7 +20,9 @@ void Function::return_(const Expression *expression) noexcept {
 }
 
 Function::Function(Function::Tag tag) noexcept
-    : _tag(tag) {}
+    : _tag(tag) {
+    compute_fit_block();
+}
 
 const ScopeStmt *Function::body() const noexcept {
     return &_body;
@@ -146,6 +148,10 @@ ocarina::string Function::func_name() const noexcept {
     } else {
         return detail::func_name(hash());
     }
+}
+
+void Function::compute_fit_block() noexcept {
+    //todo
 }
 
 void Function::assign(const Expression *lhs, const Expression *rhs) noexcept {

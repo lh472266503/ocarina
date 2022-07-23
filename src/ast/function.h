@@ -41,6 +41,7 @@ private:
     mutable bool _hash_computed{false};
     Tag _tag{Tag::CALLABLE};
     ocarina::set<const Function *> _used_custom_func;
+    uint3 _block_size{make_uint3(256, 256, 1)};
 
 private:
     static ocarina::vector<Function *> &_function_stack() noexcept;
@@ -119,7 +120,7 @@ public:
         return _scope_stack.back();
     }
     template<typename Func>
-    decltype(auto) with(ScopeStmt *scope, Func&& func) noexcept {
+    decltype(auto) with(ScopeStmt *scope, Func &&func) noexcept {
         ScopeGuard guard(_scope_stack, scope);
         return func();
     }
@@ -131,7 +132,6 @@ public:
     static auto define_kernel(Func &&func) noexcept {
         return _define(Tag::KERNEL, std::forward<Func>(func));
     }
-    Function() noexcept = default;
     explicit Function(Tag tag) noexcept;
     ~Function() noexcept {
         for (auto &mem : _temp_memory) {
@@ -141,14 +141,17 @@ public:
     template<typename T, typename... Args>
     T *create_temp_obj(Args &&...args) noexcept {
         T *ptr = new_with_allocator<T>(std::forward<Args>(args)...);
-        _temp_memory.emplace_back(reinterpret_cast<std::byte*>(ptr), sizeof(T));
+        _temp_memory.emplace_back(reinterpret_cast<std::byte *>(ptr), sizeof(T));
         return ptr;
     }
-
 
     [[nodiscard]] auto used_custom_func() const noexcept {
         return _used_custom_func;
     }
+    void set_block_size(uint x, uint y = 1, uint z = 1) noexcept { _block_size = make_uint3(x, y, z); }
+    void set_block_size(uint2 size) noexcept { _block_size = make_uint3(size, 1); }
+    void set_block_size(uint3 size) noexcept { _block_size = size; }
+    void compute_fit_block() noexcept;
     [[nodiscard]] ocarina::string func_name() const noexcept;
     void assign(const Expression *lhs, const Expression *rhs) noexcept;
     void return_(const Expression *expression) noexcept;
@@ -162,19 +165,19 @@ public:
     [[nodiscard]] const AccessExpr *access(const Type *type, const Expression *range, const Expression *index) noexcept;
     [[nodiscard]] const MemberExpr *swizzle(const Type *type, const Expression *obj, uint16_t mask, uint16_t swizzle_size) noexcept;
     [[nodiscard]] const MemberExpr *member(const Type *type, const Expression *obj, int index) noexcept;
-    const CallExpr *call(const Type *type, const Function*func, ocarina::vector<const Expression *> args) noexcept;
+    const CallExpr *call(const Type *type, const Function *func, ocarina::vector<const Expression *> args) noexcept;
     const CallExpr *call_builtin(const Type *type, CallOp op, ocarina::vector<const Expression *> args) noexcept;
     [[nodiscard]] IfStmt *if_(const Expression *expr) noexcept;
     [[nodiscard]] SwitchStmt *switch_(const Expression *expr) noexcept;
     [[nodiscard]] SwitchCaseStmt *switch_case(const Expression *expr) noexcept;
-    const ExprStmt * expr_statement(const Expression *expr) noexcept;
+    const ExprStmt *expr_statement(const Expression *expr) noexcept;
     void break_() noexcept;
     [[nodiscard]] SwitchDefaultStmt *switch_default() noexcept;
     [[nodiscard]] LoopStmt *loop() noexcept;
     [[nodiscard]] ForStmt *for_(const Expression *init, const Expression *cond, const Expression *step) noexcept;
     void continue_() noexcept;
     void comment(ocarina::string_view string) noexcept;
-    void print(string_view fmt,const vector<const Expression *> &args) noexcept;
+    void print(string_view fmt, const vector<const Expression *> &args) noexcept;
     [[nodiscard]] const ScopeStmt *body() const noexcept;
     [[nodiscard]] ScopeStmt *body() noexcept;
     [[nodiscard]] uint64_t hash() const noexcept;
@@ -186,4 +189,3 @@ public:
 };
 
 }// namespace ocarina
-

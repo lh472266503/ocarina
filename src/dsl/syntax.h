@@ -19,7 +19,9 @@ inline void assign(Lhs &&lhs, Rhs &&rhs) noexcept {
             detail::extract_expression(std::forward<Lhs>(lhs)),
             detail::extract_expression(std::forward<Rhs>(rhs)));
     } else if constexpr (std::is_pointer_v<std::remove_cvref_t<Rhs>>) {
-        Function::current()->assign(detail::extract_expression(std::forward<Lhs>(lhs)), rhs);
+        Function::current()->assign(OC_EXPR(lhs), rhs);
+    } else if constexpr (std::is_pointer_v<std::remove_cvref_t<Lhs>>) {
+        Function::current()->assign(lhs, OC_EXPR(rhs));
     }
 }
 }// namespace detail
@@ -337,6 +339,11 @@ void for_range(Begin &&begin, End &&end, Step &&step, Body &&body) noexcept {
           std::forward<End>(end),
           std::forward<Step>(step)) /
         std::forward<Body>(body);
+}
+
+template<typename ...Args>
+void configure_block(Args &&...args) {
+    Function::current()->set_block_size(OC_FORWARD(args)...);
 }
 
 }// namespace ocarina

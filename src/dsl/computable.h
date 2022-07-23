@@ -35,6 +35,59 @@ class Expression;
 template<typename T>
 class Buffer;
 
+template<typename T>
+class BufferView;
+
+
+namespace detail {
+
+template<typename T>
+struct is_buffer_impl : std::false_type {};
+
+template<typename T>
+struct is_buffer_impl<Buffer<T>> : std::true_type {};
+
+template<typename T>
+struct is_buffer_view_impl : std::false_type {};
+
+template<typename T>
+struct is_buffer_view_impl<BufferView<T>> : std::true_type {};
+
+template<typename T>
+struct buffer_element_impl {
+    using type = T;
+};
+
+template<typename T>
+struct buffer_element_impl<Buffer<T>> {
+    using type = T;
+};
+
+template<typename T>
+struct buffer_element_impl<BufferView<T>> {
+    using type = T;
+};
+
+}// namespace detail
+
+template<typename T>
+using is_buffer = detail::is_buffer_impl<std::remove_cvref_t<T>>;
+
+template<typename T>
+using is_buffer_view = detail::is_buffer_view_impl<std::remove_cvref_t<T>>;
+
+template<typename T>
+using is_buffer_or_view = std::disjunction<is_buffer<T>, is_buffer_view<T>>;
+
+template<typename T>
+constexpr auto is_buffer_v = is_buffer<T>::value;
+
+template<typename T>
+constexpr auto is_buffer_view_v = is_buffer_view<T>::value;
+
+template<typename T>
+constexpr auto is_buffer_or_view_v = is_buffer_or_view<T>::value;
+
 namespace detail {
 
 template<typename T>
@@ -65,6 +118,28 @@ struct EnableSubscriptAccess {
                                            OC_EXPR(index));
         Var<element_type> *ret = f->template create_temp_obj<Var<element_type>>(expr);
         return *ret;
+    }
+};
+
+template<typename T>
+struct EnableReadAndWrite {
+    using element_type = std::remove_cvref_t<decltype(std::declval<expr_value_t<T>>()[0])>;
+    template<typename Index>
+    requires concepts::integral<expr_value_t<Index>>
+    auto read(Index &&index) const noexcept {
+        const AccessExpr *expr = Function::current()->access(Type::of<element_type>(),
+                                                             static_cast<const T *>(this)->expression(),
+                                                             OC_EXPR(index));
+        return Var<element_type>(expr);
+    }
+
+    template<typename Index, typename Val>
+    requires concepts::integral<expr_value_t<Index>> && concepts::is_same_v<element_type, expr_value_t<Val>>
+    void write(Index &&index, Val &&elm) {
+        const AccessExpr *expr = Function::current()->access(Type::of<element_type>(),
+                                                             static_cast<const T *>(this)->expression(),
+                                                             OC_EXPR(index));
+        assign(expr, OC_FORWARD(elm));
     }
 };
 
@@ -186,7 +261,7 @@ struct Computable<T[N]>
 
 template<typename T>
 struct Computable<Buffer<T>>
-    : detail::EnableSubscriptAccess<Computable<Buffer<T>>> {
+    : detail::EnableReadAndWrite<Computable<Buffer<T>>> {
     OC_COMPUTABLE_COMMON(Computable<Buffer<T>>)
 };
 

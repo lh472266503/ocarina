@@ -12,6 +12,7 @@
 using namespace ocarina;
 
 int main(int argc, char *argv[]) {
+
     ocarina::vector<float> v;
     const int count = 10;
     for (int i = 0; i < count; ++i) {
@@ -23,8 +24,9 @@ int main(int argc, char *argv[]) {
     };
 
     Kernel kn = [&](Var<float> a, Var<float> b, Var<Buffer<float>> c) {
-        print("{}, {}---------{}--\\n", a, b, c[6]);
-        c[6] = 60;
+        configure_block(1,2,1);
+        print("{}, {}---------{}--\\n", a, b, c.read(6));
+        c.write(a.cast<int>(), b);
         a = add(a, b);
     };
 
@@ -34,7 +36,6 @@ int main(int argc, char *argv[]) {
     Stream stream = device.create_stream();
     auto shader = device.compile(kn);
     Buffer<float> f_buffer = device.create_buffer<float>(count);
-    cout << f_buffer.handle() << endl;
     stream << f_buffer.upload_sync(v.data());
     stream << shader(1.f, 6.f, f_buffer).dispatch(5);
     stream << synchronize();
