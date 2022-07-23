@@ -56,15 +56,22 @@ public:
     }
 };
 
-template<typename T>
+template<typename T = int>
 class Shader {
-    static_assert(always_false_v<T>);
+    static_assert(std::is_same_v<T, int>);
+
+public:
+    class Impl {
+    public:
+        virtual void launch(handle_ty stream, ShaderDispatchCommand *cmd) noexcept = 0;
+    };
 };
 
 template<typename... Args>
 class Shader<void(Args...)> final : public Resource {
 public:
     using signature = typename detail::canonical_signature_t<void(Args...)>;
+    using Impl = typename Shader<>::Impl;
 
 private:
     ShaderTag _shader_tag;
@@ -81,7 +88,8 @@ public:
     }
     [[nodiscard]] ShaderDispatchCommand *dispatch(uint2 dim) { return dispatch(dim.x, dim.y, 1); }
     [[nodiscard]] ShaderDispatchCommand *dispatch(uint3 dim) { return dispatch(dim.x, dim.y, dim.z); }
-
+    [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(_handle); }
+    [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
     template<typename... A>
     requires std::is_invocable_v<signature, A...>
     Shader &operator()(A &&...args) noexcept {

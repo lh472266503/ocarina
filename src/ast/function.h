@@ -154,7 +154,6 @@ public:
     void set_block_size(uint x, uint y = 1, uint z = 1) noexcept { _block_size = make_uint3(x, y, z); }
     void set_block_size(uint2 size) noexcept { _block_size = make_uint3(size, 1); }
     void set_block_size(uint3 size) noexcept { _block_size = size; }
-    void compute_fit_block() noexcept;
     [[nodiscard]] ocarina::string func_name() const noexcept;
     void assign(const Expression *lhs, const Expression *rhs) noexcept;
     void return_(const Expression *expression) noexcept;
