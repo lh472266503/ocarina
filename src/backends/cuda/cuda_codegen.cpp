@@ -4,6 +4,8 @@
 
 #include "cuda_codegen.h"
 
+#define TYPE_PREFIX "oc_"
+
 namespace ocarina {
 
 void CUDACodegen::_emit_function(const Function &f) noexcept {
@@ -16,4 +18,44 @@ void CUDACodegen::_emit_function(const Function &f) noexcept {
     }
     CppCodegen::_emit_function(f);
 }
+
+void CUDACodegen::_emit_type_name(const Type *type) noexcept {
+    if (type == nullptr) {
+        current_scratch() << "void";
+    } else {
+        switch (type->tag()) {
+            case Type::Tag::BOOL: current_scratch() << TYPE_PREFIX"bool"; break;
+            case Type::Tag::FLOAT: current_scratch() << TYPE_PREFIX"float"; break;
+            case Type::Tag::INT: current_scratch() << TYPE_PREFIX"int"; break;
+            case Type::Tag::UINT: current_scratch() << TYPE_PREFIX"uint"; break;
+            case Type::Tag::VECTOR:
+                _emit_type_name(type->element());
+                current_scratch() << type->dimension();
+                break;
+            case Type::Tag::ARRAY:
+                _emit_type_name(type->element());
+                current_scratch() << "[";
+                current_scratch() << type->dimension();
+                current_scratch() << "]";
+                break;
+            case Type::Tag::MATRIX: {
+                auto d = type->dimension();
+                current_scratch() << TYPE_PREFIX"float" << d << "x" << d;
+                break;
+            }
+            case Type::Tag::STRUCTURE:
+                _emit_struct_name(type->hash());
+                break;
+            case Type::Tag::BUFFER:
+                _emit_type_name(type->element());
+                current_scratch() << "*";
+                break;
+            case Type::Tag::TEXTURE: break;
+            case Type::Tag::BINDLESS_ARRAY: break;
+            case Type::Tag::ACCEL: break;
+            case Type::Tag::NONE: break;
+        }
+    }
+}
+#undef TYPE_PREFIX
 }// namespace ocarina

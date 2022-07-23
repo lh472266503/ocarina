@@ -35,6 +35,7 @@ int main(int argc, char *argv[]) {
 
     fs::path path(argv[0]);
     Context context(path.parent_path());
+    context.clear_cache();
     Device device = context.create_device("cuda");
     Stream stream = device.create_stream();
     auto shader = device.compile(kn);
