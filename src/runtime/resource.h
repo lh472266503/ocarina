@@ -33,6 +33,7 @@ public:
         : _device(device), _tag(tag), _handle(handle) {}
     [[nodiscard]] Tag tag() const noexcept { return _tag; }
     [[nodiscard]] handle_ty handle() const noexcept { return _handle; }
+    [[nodiscard]] handle_ty *handle_address() noexcept { return &_handle; }
     ~Resource() {
         _destroy();
     }

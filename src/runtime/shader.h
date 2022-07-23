@@ -33,14 +33,16 @@ private:
     }
 
     template<typename T>
-    void _encode_buffer(Buffer<T> buffer) noexcept {
+    void _encode_buffer(Buffer<T> &buffer) noexcept {
         handle_ty handle = buffer.handle();
         _cursor = mem_offset(_cursor, alignof(handle_ty));
-        auto dst_ptr = _argument_data.data() + _cursor;
-        _cursor += sizeof(handle_ty);
-        OC_ASSERT(_cursor < Size);
-        std::memcpy(dst_ptr, &handle, sizeof(handle_ty));
-        _args.push_back(dst_ptr);
+//        auto dst_ptr = _argument_data.data() + _cursor;
+//        _cursor += sizeof(handle_ty);
+//        OC_ASSERT(_cursor < Size);
+//        std::memcpy(dst_ptr, &handle, sizeof(handle_ty));
+//        cout << *reinterpret_cast<handle_ty*>(dst_ptr) << "----------\n";
+        _args.push_back(buffer.handle_address());
+        int i = 0;
     }
 
 public:
