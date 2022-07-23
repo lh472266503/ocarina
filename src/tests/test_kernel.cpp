@@ -8,11 +8,14 @@
 #include "generator/cpp_codegen.h"
 #include "runtime/common.h"
 #include <windows.h>
+#include "backends/cuda/cuda_math_lib_embed.h"
 
 using namespace ocarina;
 
 int main(int argc, char *argv[]) {
 
+    cout << std::string (cuda_math_lib);
+    return 0;
     ocarina::vector<float> v;
     const int count = 10;
     for (int i = 0; i < count; ++i) {
