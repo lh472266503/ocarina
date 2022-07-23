@@ -1,17 +1,21 @@
 from ctypes import alignment
 from os.path import realpath, dirname
 import os
+from posixpath import split
 import struct
 
 scalar_types = ["int", "uint", "float", "bool"]
 native_types = ["int", "unsigned int", "float", "bool"]
 vector_alignments = {2: 8, 3: 16, 4: 16}
 indent = "\t"
-
+name_lst = ["x", "y", "z", "w"]
 
 prefix = "oc"
 
 content = "#pragma once\n\n"
+
+def get_indent(num = 1):
+    return indent * num
 
 def using_scalar():
     global content
@@ -22,10 +26,27 @@ def using_scalar():
     content += string
 
 def emit_member(scalar_name, dim):
-    name_lst = ["x", "y", "z", "w"]
     ret = "\n"
     for d in range(0, dim):
         ret += indent + scalar_name + " " + name_lst[d] + ";\n"
+    return ret
+
+def emit_functions(scalar_name, dim):
+    ret = "\n"
+    struct_name = f"{scalar_name}{dim}"
+
+    ret += indent + f"__device__ {struct_name}() noexcept \n" + get_indent(2) + ":"
+    for d in range(0, dim):
+        split = "," if d != dim - 1 else ""
+        ret += f"{name_lst[d]}{{}}" + split 
+    ret += " {}\n"
+
+    ret += indent + f"__device__ {struct_name}({scalar_name} s) noexcept \n" + get_indent(2) + ":"
+    for d in range(0, dim):
+        split = "," if d != dim - 1 else ""
+        ret += f"{name_lst[d]}(s)" + split 
+    ret += " {}\n"
+
     return ret
 
 def define_vector():
@@ -38,6 +59,7 @@ def define_vector():
             struct_name = f"struct alignas({alignment}) {scalar_name}{dim}" + "{"
             content += struct_name
             body = emit_member(scalar_name, dim)
+            body += emit_functions(scalar_name, dim)
             content += body
             content += "};\n\n"
 
