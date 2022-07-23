@@ -79,12 +79,13 @@ def define_vector():
             content += body
             content += "};\n\n"
 
+
 def save_to_inl(var_name, content, fn):
     string = f"static const char {var_name}[{len(content)}] = " + "{\n    "
-    line_len = 39
+    line_len = 30
     for i,s in enumerate(content):
         split = "," if i != len(content) - 1 else ""
-        string += f"{ord(s)}" + split
+        string += f"{format(ord(s), '#04x')}" + split
 
         if i % line_len == line_len - 1:
             string += "\n    "
