@@ -5,7 +5,7 @@
 #pragma once
 
 #include "builtin.h"
-#include "expr_traits.h"
+#include "type_trait.h"
 #include "expr.h"
 #include "var.h"
 #include "array.h"

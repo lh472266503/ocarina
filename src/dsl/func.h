@@ -10,7 +10,7 @@
 #include "builtin.h"
 #include "expr.h"
 #include "syntax.h"
-#include "expr_traits.h"
+#include "type_trait.h"
 
 namespace ocarina {
 

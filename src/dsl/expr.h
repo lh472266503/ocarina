@@ -5,7 +5,7 @@
 #pragma once
 
 #include "core/basic_types.h"
-#include "dsl/expr_traits.h"
+#include "dsl/type_trait.h"
 #include "dsl/computable.h"
 #include "ast/function.h"
 

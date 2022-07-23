@@ -67,7 +67,6 @@ struct prototype_to_var<const T &> {
 template<typename T>
 using prototype_to_var_t = typename prototype_to_var<T>::type;
 
-
 template<typename T>
 struct expr_value_impl {
     using type = T;
@@ -226,5 +225,60 @@ EXPR_VECTOR_TYPE_TRAITS(int)
 EXPR_VECTOR_TYPE_TRAITS(uint)
 
 #undef EXPR_VECTOR_TYPE_TRAITS
+
+template<typename T>
+class Buffer;
+
+template<typename T>
+class BufferView;
+
+namespace detail {
+
+template<typename T>
+struct is_buffer_impl : std::false_type {};
+
+template<typename T>
+struct is_buffer_impl<Buffer<T>> : std::true_type {};
+
+template<typename T>
+struct is_buffer_view_impl : std::false_type {};
+
+template<typename T>
+struct is_buffer_view_impl<BufferView<T>> : std::true_type {};
+
+template<typename T>
+struct buffer_element_impl {
+    using type = T;
+};
+
+template<typename T>
+struct buffer_element_impl<Buffer<T>> {
+    using type = T;
+};
+
+template<typename T>
+struct buffer_element_impl<BufferView<T>> {
+    using type = T;
+};
+
+}// namespace detail
+
+template<typename T>
+using is_buffer = detail::is_buffer_impl<std::remove_cvref_t<T>>;
+
+template<typename T>
+using is_buffer_view = detail::is_buffer_view_impl<std::remove_cvref_t<T>>;
+
+template<typename T>
+using is_buffer_or_view = std::disjunction<is_buffer<T>, is_buffer_view<T>>;
+
+template<typename T>
+constexpr auto is_buffer_v = is_buffer<T>::value;
+
+template<typename T>
+constexpr auto is_buffer_view_v = is_buffer_view<T>::value;
+
+template<typename T>
+constexpr auto is_buffer_or_view_v = is_buffer_or_view<T>::value;
 
 }// namespace ocarina
