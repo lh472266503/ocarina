@@ -71,11 +71,13 @@ private:
     const void *_host_ptr{};
     ptr_t _device_ptr{};
     size_t _size_in_bytes{};
+    bool _async{};
 
 public:
-    BufferUploadCommand(const void *hp, ptr_t dp, size_t size)
-        : _host_ptr(hp), _device_ptr(dp), _size_in_bytes(size) {}
+    BufferUploadCommand(const void *hp, ptr_t dp, size_t size, bool async = true)
+        : _host_ptr(hp), _device_ptr(dp), _size_in_bytes(size), _async(async) {}
     [[nodiscard]] const void *host_ptr() const noexcept { return _host_ptr; }
+    [[nodiscard]] bool async() const noexcept { return _async; }
     [[nodiscard]] ptr_t device_ptr() const noexcept { return _device_ptr; }
     [[nodiscard]] size_t size_in_bytes() const noexcept { return _size_in_bytes; }
     OC_MAKE_CMD_COMMON_FUNC(BufferUploadCommand)
@@ -86,11 +88,13 @@ private:
     void *_host_ptr{};
     ptr_t _device_ptr{};
     size_t _size_in_bytes{};
+    bool _async{};
 
 public:
-    BufferDownloadCommand(void *hp, ptr_t dp, size_t size)
-        : _host_ptr(hp), _device_ptr(dp), _size_in_bytes(size) {}
+    BufferDownloadCommand(void *hp, ptr_t dp, size_t size, bool async = true)
+        : _host_ptr(hp), _device_ptr(dp), _size_in_bytes(size), _async(async) {}
     [[nodiscard]] void *host_ptr() const noexcept { return _host_ptr; }
+    [[nodiscard]] bool async() const noexcept { return _async; }
     [[nodiscard]] ptr_t device_ptr() const noexcept { return _device_ptr; }
     [[nodiscard]] size_t size_in_bytes() const noexcept { return _size_in_bytes; }
     OC_MAKE_CMD_COMMON_FUNC(BufferDownloadCommand)

@@ -33,12 +33,22 @@ public:
 
     [[nodiscard]] BufferUploadCommand *upload(const void *data) const noexcept {
         return BufferUploadCommand::create(data, _handle + _offset * element_size,
-                                           _size * element_size);
+                                           _size * element_size, true);
+    }
+
+    [[nodiscard]] BufferUploadCommand *upload_sync(const void *data) const noexcept {
+        return BufferUploadCommand::create(data, _handle + _offset * element_size,
+                                           _size * element_size, false);
     }
 
     [[nodiscard]] BufferDownloadCommand *download(void *data) const noexcept {
         return BufferDownloadCommand::create(data, _handle + _offset * element_size,
-                                             _size * element_size);
+                                             _size * element_size, true);
+    }
+
+    [[nodiscard]] BufferDownloadCommand *download_sync(void *data) const noexcept {
+        return BufferDownloadCommand::create(data, _handle + _offset * element_size,
+                                             _size * element_size, false);
     }
 };
 
@@ -68,6 +78,16 @@ public:
     template<typename... Args>
     [[nodiscard]] BufferDownloadCommand *download(Args &&...args) const noexcept {
         return view(0, _size).download(OC_FORWARD(args)...);
+    }
+
+    template<typename... Args>
+    [[nodiscard]] BufferUploadCommand *upload_sync(Args &&...args) const noexcept {
+        return view(0, _size).upload_sync(OC_FORWARD(args)...);
+    }
+
+    template<typename... Args>
+    [[nodiscard]] BufferDownloadCommand *download_sync(Args &&...args) const noexcept {
+        return view(0, _size).download_sync(OC_FORWARD(args)...);
     }
 };
 

@@ -10,19 +10,31 @@
 namespace ocarina {
 void CUDACommandVisitor::visit(const BufferUploadCommand *cmd) noexcept {
     _device->bind_handle([&] {
-        OC_CU_CHECK(cuMemcpyHtoDAsync(cmd->device_ptr(),
-                                      cmd->host_ptr(),
-                                      cmd->size_in_bytes(),
-                                      _stream));
+        if (cmd->async()) {
+            OC_CU_CHECK(cuMemcpyHtoDAsync(cmd->device_ptr(),
+                                          cmd->host_ptr(),
+                                          cmd->size_in_bytes(),
+                                          _stream));
+        } else {
+            OC_CU_CHECK(cuMemcpyHtoD(cmd->device_ptr(),
+                                     cmd->host_ptr(),
+                                     cmd->size_in_bytes()));
+        }
     });
 }
 
 void CUDACommandVisitor::visit(const BufferDownloadCommand *cmd) noexcept {
     _device->bind_handle([&] {
-        OC_CU_CHECK(cuMemcpyDtoHAsync(cmd->host_ptr(),
-                                      cmd->device_ptr(),
-                                      cmd->size_in_bytes(),
-                                      _stream));
+        if (cmd->async()) {
+            OC_CU_CHECK(cuMemcpyDtoHAsync(cmd->host_ptr(),
+                                          cmd->device_ptr(),
+                                          cmd->size_in_bytes(),
+                                          _stream));
+        } else {
+            OC_CU_CHECK(cuMemcpyDtoH(cmd->host_ptr(),
+                                     cmd->device_ptr(),
+                                     cmd->size_in_bytes()));
+        }
     });
 }
 
