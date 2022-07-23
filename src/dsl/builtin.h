@@ -11,5 +11,8 @@
 
 namespace ocarina {
 
+inline auto dispatch_id() {
+
+}
 
 }// namespace ocarina

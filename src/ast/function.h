@@ -32,6 +32,7 @@ private:
     ocarina::vector<ocarina::unique_ptr<Expression>> _all_expressions;
     ocarina::vector<ocarina::unique_ptr<Statement>> _all_statements;
     ocarina::vector<Variable> _arguments;
+    ocarina::vector<Variable> _builtin_vars;
     ocarina::vector<Usage> _variable_usages;
     ocarina::vector<ScopeStmt *> _scope_stack;
     /// use for assignment subscript access
@@ -78,6 +79,8 @@ private:
     [[nodiscard]] const RefExpr *_ref(Variable variable) noexcept {
         return _create_expression<RefExpr>(variable);
     }
+
+    [[nodiscard]] const RefExpr *_builtin(Variable::Tag tag) noexcept;
 
     void add_used_function(const Function *func) noexcept;
 
@@ -155,6 +158,8 @@ public:
     [[nodiscard]] ocarina::string func_name() const noexcept;
     void assign(const Expression *lhs, const Expression *rhs) noexcept;
     void return_(const Expression *expression) noexcept;
+    [[nodiscard]] const RefExpr *block_idx() noexcept;
+    [[nodiscard]] const RefExpr *thread_idx() noexcept;
     [[nodiscard]] const RefExpr *argument(const Type *type) noexcept;
     [[nodiscard]] const RefExpr *reference_argument(const Type *type) noexcept;
     [[nodiscard]] const RefExpr *local(const Type *type) noexcept;

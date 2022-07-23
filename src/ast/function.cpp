@@ -3,6 +3,7 @@
 //
 
 #include "function.h"
+#include "type_registry.h"
 #include "generator/codegen.h"
 
 namespace ocarina {
@@ -32,8 +33,29 @@ ScopeStmt *Function::body() noexcept {
     return &_body;
 }
 
+const RefExpr *Function::_builtin(Variable::Tag tag) noexcept {
+    Variable variable(Type::of<uint3>(), tag, _next_variable_uid());
+    if (auto iter = std::find_if(_builtin_vars.begin(),
+                                 _builtin_vars.end(),
+                                 [&](auto v) {
+                                     return v.tag() == tag;
+                                 });
+        iter != _builtin_vars.end()) {
+        return _ref(*iter);
+    }
+    return _ref(variable);
+}
+
 void Function::add_used_function(const Function *func) noexcept {
     _used_custom_func.emplace(func);
+}
+
+const RefExpr *Function::block_idx() noexcept {
+    return _builtin(Variable::Tag::BLOCK_ID);
+}
+
+const RefExpr *Function::thread_idx() noexcept {
+    return _builtin(Variable::Tag::THREAD_ID);
 }
 
 const RefExpr *Function::argument(const Type *type) noexcept {
