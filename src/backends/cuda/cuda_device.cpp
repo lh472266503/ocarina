@@ -12,15 +12,16 @@
 
 namespace ocarina {
 
-#define CUDA_NVRTC_OPTIONS \
-    "-std=c++11",          \
-        "-arch",           \
-        "compute_50",      \
-        "-use_fast_math",  \
-        "-lineinfo",       \
-        "-default-device", \
-        "-rdc",            \
-        "true",            \
+#define CUDA_NVRTC_OPTIONS          \
+    "-std=c++17",                   \
+        "-arch",                    \
+        "compute_50",               \
+        "-use_fast_math",           \
+        "-lineinfo",                \
+        "-default-device",          \
+        "-include=cuda_math_lib.h", \
+        "-rdc",                     \
+        "true",                     \
         "-D__x86_64",
 
 namespace detail {
