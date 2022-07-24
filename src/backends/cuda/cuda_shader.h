@@ -9,13 +9,13 @@
 #include <cuda.h>
 
 namespace ocarina {
-
+class CUDADevice;
 class CUDAShader : public Shader<>::Impl {
 private:
     CUmodule _module{};
     CUfunction _func_handle{};
     const Function &_function;
-
+    CUDADevice *_device{};
 
 public:
     CUDAShader(Device::Impl *device,

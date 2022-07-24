@@ -4,13 +4,15 @@
 
 #include "cuda_shader.h"
 #include "util.h"
+#include "cuda_device.h"
 
 namespace ocarina {
 
 CUDAShader::CUDAShader(Device::Impl *device,
                        const ocarina::string &ptx,
                        const Function &func)
-    : _function(func) {
+    : _device(dynamic_cast<CUDADevice *>(device)),
+      _function(func) {
     OC_CU_CHECK(cuModuleLoadData(&_module, ptx.c_str()));
     OC_CU_CHECK(cuModuleGetFunction(&_func_handle, _module, _function.func_name().c_str()));
 }
@@ -34,7 +36,15 @@ void CUDAShader::launch(handle_ty stream, ShaderDispatchCommand *cmd) noexcept {
 }
 
 void CUDAShader::compute_fit_size() noexcept {
+    _device->bind_handle([&] {
+        int min_grid_size;
+        int auto_block_size;
+        OC_CU_CHECK(cuOccupancyMaxPotentialBlockSize(&min_grid_size, &auto_block_size,
+                                                     _func_handle, 0, 0, 0));
 
+        _function.set_grid_dim(min_grid_size);
+        _function.set_block_dim(auto_block_size);
+    });
 }
 
 }// namespace ocarina
