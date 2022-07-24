@@ -36,7 +36,7 @@ void CppCodegen::visit(const ScopeStmt *stmt) noexcept {
     current_scratch() << "{\n";
     indent_inc();
     if (stmt->is_func_body()) {
-        _emit_builtin_vars_define(*_function);
+        _emit_builtin_vars_define(current_function());
     }
     _emit_local_var_define(stmt);
     _emit_statements(stmt->statements());
@@ -286,12 +286,11 @@ void CppCodegen::_emit_local_var_define(const ScopeStmt *scope) noexcept {
 }
 
 void CppCodegen::_emit_builtin_vars_define(const Function &f) noexcept {
-    if (f.builtin_vars().empty()) {
-        return ;
+    for (const Variable &var : f.builtin_vars()) {
+        _emit_indent();
+        _emit_builtin_var(var);
+        current_scratch() << ";\n";
     }
-//    for (const Variable &var : f.builtin_vars()) {
-////        _emit_builtin_var(var);
-//    }
 }
 
 void CppCodegen::_emit_type_name(const Type *type) noexcept {
@@ -397,7 +396,8 @@ void CppCodegen::_emit_arguments(const Function &f) noexcept {
     current_scratch() << ")";
 }
 void CppCodegen::emit(const Function &func) noexcept {
-    for (const auto &f : func.used_custom_func()) {
+    FUNCTION_GUARD(func)
+    for (const Function *f : func.used_custom_func()) {
         emit(*f);
     }
     _emit_types_define();

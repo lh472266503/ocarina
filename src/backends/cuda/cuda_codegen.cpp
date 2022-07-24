@@ -51,6 +51,21 @@ void CUDACodegen::_emit_builtin_var(Variable v) noexcept {
     _emit_type_name(v.type());
     _emit_space();
     _emit_variable_name(v);
+    using Tag = Variable::Tag;
+    current_scratch() << " = ";
+    switch (v.tag()) {
+        case Tag::BLOCK_IDX:
+            current_scratch() << "reinterpret_cast<oc_uint3>(blockIdx)";
+            break;
+        case Tag::LOCAL: break;
+        case Tag::THREAD_IDX: break;
+        case Tag::DISPATCH_IDX: break;
+        case Tag::DISPATCH_ID: break;
+        case Tag::DISPATCH_DIM: break;
+        default:
+            OC_ASSERT(0);
+            break;
+    }
 }
 
 void CUDACodegen::_emit_type_name(const Type *type) noexcept {

@@ -70,14 +70,13 @@ private:
     int _indent{};
     Scratch _scratch;
     ocarina::vector<Scratch *> _scratch_stack;
-protected:
-    const Function *_function{nullptr};
+    ocarina::vector<const Function *> _func_stack;
 
 protected:
     void indent_inc() noexcept { _indent += 1; }
     void indent_dec() noexcept { _indent -= 1; }
-    void push_scratch(Scratch &scratch) noexcept { _scratch_stack.push_back(&scratch); }
-    void pop_scratch(Scratch &scratch) noexcept {
+    void push(Scratch &scratch) noexcept { _scratch_stack.push_back(&scratch); }
+    void pop(Scratch &scratch) noexcept {
         Scratch *back = _scratch_stack.back();
         if (&scratch != back) [[unlikely]] {
             OC_ERROR("Invalid scratch !");
@@ -85,23 +84,34 @@ protected:
         _scratch_stack.pop_back();
     }
     Scratch &current_scratch() noexcept { return *_scratch_stack.back(); }
+    void push(const Function &function) noexcept { _func_stack.push_back(&function); }
+    void pop(const Function &function) noexcept {
+        const Function *back = _func_stack.back();
+        if (&function != back) [[unlikely]] {
+            OC_ERROR("Invalid scratch !");
+        }
+        _func_stack.pop_back();
+    }
+    const Function &current_function() noexcept { return *_func_stack.back(); }
     friend struct detail::LiteralPrinter;
 
-    class ScratchGuard {
+    template<typename T>
+    class Guard {
     private:
-        Scratch &_scratch;
+        T &_val;
         Codegen *_codegen{};
 
     public:
-        ScratchGuard(Codegen *codegen, Scratch &scratch)
-            : _codegen(codegen), _scratch(scratch) {
-            _codegen->push_scratch(_scratch);
+        Guard(Codegen *codegen, T &val)
+        : _codegen(codegen), _val(val) {
+            _codegen->push(_val);
         }
-        ~ScratchGuard() {
-            _codegen->pop_scratch(_scratch);
+        ~Guard() {
+            _codegen->pop(_val);
         }
     };
-#define SCRATCH_GUARD(scratch) ScratchGuard __##scratch_guard(this, scratch);
+#define SCRATCH_GUARD(scratch) Guard<Scratch> __##scratch_guard(this, scratch);
+#define FUNCTION_GUARD(function) Guard<const Function> __##function_guard(this, function);
 
 protected:
     virtual void _emit_newline() noexcept;
@@ -113,10 +123,10 @@ protected:
     virtual void _emit_member_name(int index) noexcept;
 
 public:
-    Codegen() { push_scratch(_scratch); }
+    Codegen() { push(_scratch); }
     explicit Codegen(Scratch &scratch)
         : _scratch(scratch) {
-        push_scratch(_scratch);
+        push(_scratch);
     }
     virtual void emit(const Function &func) = 0;
     Scratch &scratch() {
