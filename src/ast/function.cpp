@@ -69,7 +69,16 @@ const RefExpr *Function::dispatch_idx() noexcept {
 }
 
 const RefExpr *Function::argument(const Type *type) noexcept {
-    Variable variable(type, Variable::Tag::LOCAL, _next_variable_uid());
+    Variable::Tag tag;
+    switch (type->tag()) {
+        case Type::Tag::BUFFER:
+            tag = Variable::Tag::BUFFER;
+            break;
+        default:
+            tag = Variable::Tag::LOCAL;
+            break;
+    }
+    Variable variable(type, tag, _next_variable_uid());
     _arguments.push_back(variable);
     return _ref(variable);
 }

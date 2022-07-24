@@ -284,6 +284,7 @@ void CppCodegen::_emit_local_var_define(const ScopeStmt *scope) noexcept {
 
 void CppCodegen::_emit_builtin_vars_define(const Function &f) noexcept {
     for (const Variable &var : f.builtin_vars()) {
+        _emit_builtin_var(var);
     }
 }
 
@@ -337,9 +338,34 @@ void CppCodegen::_emit_function(const Function &f) noexcept {
     f.define();
 }
 void CppCodegen::_emit_variable_name(Variable v) noexcept {
+    using Tag = Variable::Tag;
     switch (v.tag()) {
-        case Variable::Tag::LOCAL: current_scratch() << "v" << v.uid(); break;
-        default: break;
+        case Tag::LOCAL:
+            current_scratch() << "v" << v.uid();
+            break;
+        case Tag::DISPATCH_IDX:
+            current_scratch() << "d_idx" << v.uid();
+            break;
+        case Tag::DISPATCH_ID:
+            current_scratch() << "d_id" << v.uid();
+            break;
+        case Tag::DISPATCH_DIM:
+            current_scratch() << "d_dim" << v.uid();
+            break;
+        case Tag::THREAD_IDX:
+            current_scratch() << "t_idx" << v.uid();
+            break;
+        case Tag::BLOCK_IDX:
+            current_scratch() << "b_idx" << v.uid();
+            break;
+        case Tag::BUFFER:
+            current_scratch() << "b" << v.uid();
+            break;
+        case Tag::TEXTURE:
+            current_scratch() << "t" << v.uid();
+            break;
+        default:
+            break;
     }
 }
 void CppCodegen::_emit_statements(ocarina::span<const Statement *const> stmts) noexcept {

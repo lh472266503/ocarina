@@ -81,7 +81,7 @@ def define_vector():
 
 
 def save_to_inl(var_name, content, fn):
-    string = f"static const char {var_name}[{len(content)}] = " + "{\n    "
+    string = f"static const char {var_name}[] = " + "{\n    "
     line_len = 25
     for i,s in enumerate(content):
         split = "," if i != len(content) - 1 else ""
