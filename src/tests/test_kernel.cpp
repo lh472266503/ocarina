@@ -28,6 +28,8 @@ int main(int argc, char *argv[]) {
 
     Kernel kn = [&](Var<float> a, Var<float> b, Var<Buffer<float>> c) {
         configure_block(1,2,1);
+        Var<int3> vec;
+        Var<int2> vec2 = vec.xy();
         print("{}, {}---------{}--\\n", a, b, c.read(6));
         c.write(a.cast<int>(), b);
         a = add(a, b);

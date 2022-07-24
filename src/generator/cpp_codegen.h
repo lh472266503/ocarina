@@ -11,7 +11,7 @@
 
 namespace ocarina {
 
-class CppCodegen : public Codegen, private ExprVisitor, private StmtVisitor, private TypeVisitor {
+class CppCodegen : public Codegen, protected ExprVisitor, protected StmtVisitor, protected TypeVisitor {
 protected:
     void visit(const BreakStmt *stmt) noexcept override;
     void visit(const ContinueStmt *stmt) noexcept override;
@@ -39,6 +39,7 @@ protected:
 
     void visit(const Type *type) noexcept override;
 
+protected:
     virtual void _emit_types_define() noexcept;
     virtual void _emit_variable_define(Variable v) noexcept;
     virtual void _emit_type_name(const Type *type) noexcept;
