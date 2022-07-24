@@ -31,8 +31,8 @@ ScopeStmt *Function::body() noexcept {
     return &_body;
 }
 
-const RefExpr *Function::_builtin(Variable::Tag tag) noexcept {
-    Variable variable(Type::of<uint3>(), tag, _next_variable_uid());
+const RefExpr *Function::_builtin(Variable::Tag tag, const Type *type) noexcept {
+    Variable variable(type, tag, _next_variable_uid());
     if (auto iter = std::find_if(_builtin_vars.begin(),
                                  _builtin_vars.end(),
                                  [&](auto v) {
@@ -49,11 +49,23 @@ void Function::add_used_function(const Function *func) noexcept {
 }
 
 const RefExpr *Function::block_idx() noexcept {
-    return _builtin(Variable::Tag::BLOCK_ID);
+    return _builtin(Variable::Tag::BLOCK_IDX, Type::of<uint3>());
 }
 
 const RefExpr *Function::thread_idx() noexcept {
-    return _builtin(Variable::Tag::THREAD_ID);
+    return _builtin(Variable::Tag::THREAD_IDX, Type::of<uint3>());
+}
+
+const RefExpr *Function::dispatch_dim() noexcept {
+    return _builtin(Variable::Tag::DISPATCH_DIM, Type::of<uint3>());
+}
+
+const RefExpr *Function::dispatch_id() noexcept {
+    return _builtin(Variable::Tag::DISPATCH_ID, Type::of<uint>());
+}
+
+const RefExpr *Function::dispatch_idx() noexcept {
+    return _builtin(Variable::Tag::DISPATCH_IDX, Type::of<uint3>());
 }
 
 const RefExpr *Function::argument(const Type *type) noexcept {

@@ -27,10 +27,11 @@ public:
         ACCEL,
 
         // builtins
-        THREAD_ID,
-        BLOCK_ID,
+        THREAD_IDX,
+        BLOCK_IDX,
+        DISPATCH_IDX,
         DISPATCH_ID,
-        DISPATCH_SIZE
+        DISPATCH_DIM
     };
 
 private:

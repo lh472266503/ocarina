@@ -81,7 +81,7 @@ private:
         return _create_expression<RefExpr>(variable);
     }
 
-    [[nodiscard]] const RefExpr *_builtin(Variable::Tag tag) noexcept;
+    [[nodiscard]] const RefExpr *_builtin(Variable::Tag tag, const Type *type) noexcept;
 
     void add_used_function(const Function *func) noexcept;
 
@@ -175,6 +175,9 @@ public:
     void return_(const Expression *expression) noexcept;
     [[nodiscard]] const RefExpr *block_idx() noexcept;
     [[nodiscard]] const RefExpr *thread_idx() noexcept;
+    [[nodiscard]] const RefExpr *dispatch_idx() noexcept;
+    [[nodiscard]] const RefExpr *dispatch_id() noexcept;
+    [[nodiscard]] const RefExpr *dispatch_dim() noexcept;
     [[nodiscard]] const RefExpr *argument(const Type *type) noexcept;
     [[nodiscard]] const RefExpr *reference_argument(const Type *type) noexcept;
     [[nodiscard]] const RefExpr *local(const Type *type) noexcept;
