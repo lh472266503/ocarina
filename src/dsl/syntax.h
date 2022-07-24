@@ -343,7 +343,12 @@ void for_range(Begin &&begin, End &&end, Step &&step, Body &&body) noexcept {
 
 template<typename ...Args>
 void configure_block(Args &&...args) {
-    Function::current()->set_block_size(OC_FORWARD(args)...);
+    Function::current()->set_block_dim(OC_FORWARD(args)...);
+}
+
+template<typename ...Args>
+void configure_grid(Args &&...args) {
+    Function::current()->set_grid_dim(OC_FORWARD(args)...);
 }
 
 }// namespace ocarina

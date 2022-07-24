@@ -107,7 +107,7 @@ handle_ty CUDADevice::create_shader(const Function &function) noexcept {
     ocarina::string ptx = get_ptx(function);
 
     auto ptr = bind_handle([&] {
-        auto shader = ocarina::new_with_allocator<CUDAShader>(this, ptx, function.func_name());
+        auto shader = ocarina::new_with_allocator<CUDAShader>(this, ptx, function);
         return reinterpret_cast<handle_ty>(shader);
     });
 
