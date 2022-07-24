@@ -282,6 +282,11 @@ void CppCodegen::_emit_local_var_define(const ScopeStmt *scope) noexcept {
     }
 }
 
+void CppCodegen::_emit_builtin_vars_define(const Function &f) noexcept {
+    for (const Variable &var : f.builtin_vars()) {
+    }
+}
+
 void CppCodegen::_emit_type_name(const Type *type) noexcept {
     if (type == nullptr) {
         current_scratch() << "void";
@@ -332,7 +337,10 @@ void CppCodegen::_emit_function(const Function &f) noexcept {
     f.define();
 }
 void CppCodegen::_emit_variable_name(Variable v) noexcept {
-    current_scratch() << "v" << v.uid();
+    switch (v.tag()) {
+        case Variable::Tag::LOCAL: current_scratch() << "v" << v.uid(); break;
+        default: break;
+    }
 }
 void CppCodegen::_emit_statements(ocarina::span<const Statement *const> stmts) noexcept {
 
@@ -344,6 +352,7 @@ void CppCodegen::_emit_statements(ocarina::span<const Statement *const> stmts) n
     }
 }
 void CppCodegen::_emit_body(const Function &f) noexcept {
+    _emit_builtin_vars_define(f);
     f.body()->accept(*this);
 }
 void CppCodegen::_emit_arguments(const Function &f) noexcept {

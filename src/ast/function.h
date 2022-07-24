@@ -205,10 +205,11 @@ public:
     [[nodiscard]] ScopeStmt *body() noexcept;
     [[nodiscard]] uint64_t hash() const noexcept;
     [[nodiscard]] ocarina::span<const Variable> arguments() const noexcept;
+    [[nodiscard]] ocarina::span<const Variable> builtin_vars() const noexcept;
     [[nodiscard]] Tag tag() const noexcept { return _tag; }
-    [[nodiscard]] bool is_callable() const noexcept { return _tag == Tag::CALLABLE; }
-    [[nodiscard]] bool is_kernel() const noexcept { return _tag == Tag::KERNEL; }
-    [[nodiscard]] const Type *return_type() const noexcept { return _ret; }
+    [[nodiscard]] constexpr bool is_callable() const noexcept { return _tag == Tag::CALLABLE; }
+    [[nodiscard]] constexpr bool is_kernel() const noexcept { return _tag == Tag::KERNEL; }
+    [[nodiscard]] constexpr const Type *return_type() const noexcept { return _ret; }
 };
 
 }// namespace ocarina

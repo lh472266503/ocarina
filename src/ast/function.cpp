@@ -174,6 +174,10 @@ ocarina::span<const Variable> Function::arguments() const noexcept {
     return _arguments;
 }
 
+ocarina::span<const Variable> Function::builtin_vars() const noexcept {
+    return _builtin_vars;
+}
+
 ocarina::string Function::func_name() const noexcept {
     if (is_kernel()) {
         return detail::kernel_name(hash());
