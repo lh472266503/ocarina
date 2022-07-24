@@ -205,7 +205,8 @@ struct Computable<T[N]>
 
 template<typename T>
 struct Computable<Buffer<T>>
-    : detail::EnableReadAndWrite<Computable<Buffer<T>>> {
+    : detail::EnableReadAndWrite<Computable<Buffer<T>>>,
+      detail::EnableSubscriptAccess<Computable<Buffer<T>>> {
     OC_COMPUTABLE_COMMON(Computable<Buffer<T>>)
 };
 
