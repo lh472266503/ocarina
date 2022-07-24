@@ -10,7 +10,7 @@
 
 namespace ocarina {
 struct Context::Impl {
-    fs::path runtime_directory;
+    fs::path rhi_directory;
     fs::path cache_directory;
     Device::Handle device;
     bool use_cache{true};

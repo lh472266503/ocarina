@@ -6,7 +6,7 @@
 
 #include "core/header.h"
 #include "core/stl.h"
-#include "runtime/device.h"
+#include "rhi/device.h"
 #include <cuda.h>
 #include "util.h"
 

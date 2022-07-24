@@ -3,7 +3,7 @@
 //
 
 #include "device.h"
-#include "runtime/stream.h"
+#include "rhi/stream.h"
 
 namespace ocarina {
 

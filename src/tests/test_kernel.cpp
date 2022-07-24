@@ -4,9 +4,9 @@
 
 #include "core/stl.h"
 #include "dsl/common.h"
-#include "runtime/context.h"
+#include "rhi/context.h"
 #include "generator/cpp_codegen.h"
-#include "runtime/common.h"
+#include "rhi/common.h"
 #include <windows.h>
 #include "backends/cuda/cuda_math_lib_embed.h"
 

@@ -8,14 +8,14 @@
 #include "dsl/func.h"
 #include "ast/expression.h"
 #include <iostream>
-#include <runtime/context.h>
-#include "runtime/device.h"
+#include <rhi/context.h>
+#include "rhi/device.h"
 #include "generator/cpp_codegen.h"
 #include "core/platform.h"
 #include "dsl/syntax_sugar.h"
 #include "core/util.h"
 #include "rt/hit.h"
-#include "runtime/stream.h"
+#include "rhi/stream.h"
 
 using std::cout;
 using std::endl;

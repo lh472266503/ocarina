@@ -5,7 +5,7 @@
 #pragma once
 
 #include "core/stl.h"
-#include "runtime/stream.h"
+#include "rhi/stream.h"
 #include <cuda.h>
 
 namespace ocarina {

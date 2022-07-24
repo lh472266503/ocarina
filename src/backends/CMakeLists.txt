@@ -3,7 +3,7 @@ function(ocarina_add_backend name)
     add_library(ocarina-backend-${name} MODULE ${BACKEND_SOURCES})
     target_link_libraries(ocarina-backend-${name} PRIVATE
             ocarina-ast
-            ocarina-runtime
+            ocarina-rhi
             ocarina-generator)
     add_dependencies(ocarina-backend ocarina-backend-${name})
     set_target_properties(ocarina-backend-${name} PROPERTIES

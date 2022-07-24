@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "runtime/command.h"
+#include "rhi/command.h"
 #include <cuda.h>
 namespace ocarina {
 

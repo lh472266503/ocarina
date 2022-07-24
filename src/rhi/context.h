@@ -19,7 +19,7 @@ private:
 public:
     explicit Context(const fs::path &path, string_view cache_dir = ".cache");
     ~Context() noexcept;
-    [[nodiscard]] const fs::path &runtime_directory() const noexcept;
+    [[nodiscard]] const fs::path &rhi_directory() const noexcept;
     [[nodiscard]] const fs::path &cache_directory() const noexcept;
     void write_cache(const string &fn, const string &text) const noexcept;
     [[nodiscard]] string read_cache(const string &fn) const noexcept;

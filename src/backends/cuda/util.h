@@ -9,7 +9,7 @@
     [&] {                                                                                                      \
         if ((EXPR) != cudaSuccess) {                                                                           \
             cudaError_t error = cudaGetLastError();                                                            \
-            OC_ERROR_FORMAT("CUDA runtime error: {} at {}:{}", cudaGetErrorString(error), __FILE__, __LINE__); \
+            OC_ERROR_FORMAT("CUDA rhi error: {} at {}:{}", cudaGetErrorString(error), __FILE__, __LINE__); \
             std::abort();                                                                                      \
         }                                                                                                      \
     }()

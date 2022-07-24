@@ -6,7 +6,7 @@
 #include "cuda_stream.h"
 #include "cuda_codegen.h"
 #include "cuda_shader.h"
-#include "runtime/context.h"
+#include "rhi/context.h"
 #include <nvrtc.h>
 #include "cuda_math_lib_embed.h"
 
