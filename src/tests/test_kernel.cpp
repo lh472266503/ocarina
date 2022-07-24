@@ -33,6 +33,7 @@ int main(int argc, char *argv[]) {
         print("{}, {}---------{}--\\n", a, b, c.read(6));
         c.write(a.cast<int>(), b);
         a = add(a, b);
+        $return();
     };
 
     fs::path path(argv[0]);
@@ -41,6 +42,7 @@ int main(int argc, char *argv[]) {
     Device device = context.create_device("cuda");
     Stream stream = device.create_stream();
     auto shader = device.compile(kn);
+    shader.compute_fit_size();
     Buffer<float> f_buffer = device.create_buffer<float>(count);
     stream << f_buffer.upload_sync(v.data());
     stream << shader(1.f, 6.f, f_buffer).dispatch(5);

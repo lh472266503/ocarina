@@ -341,14 +341,28 @@ void for_range(Begin &&begin, End &&end, Step &&step, Body &&body) noexcept {
         std::forward<Body>(body);
 }
 
-template<typename ...Args>
-void configure_block(Args &&...args) {
+template<typename... Args>
+void configure_block(Args &&...args) noexcept {
     Function::current()->set_block_dim(OC_FORWARD(args)...);
 }
 
-template<typename ...Args>
-void configure_grid(Args &&...args) {
+template<typename... Args>
+void configure_grid(Args &&...args) noexcept {
     Function::current()->set_grid_dim(OC_FORWARD(args)...);
+}
+
+template<typename ...Args>
+void configure(Args &&...args) noexcept {
+    Function::current()->configure(OC_FORWARD(args)...);
+}
+
+template<typename T>
+void return_(T && ret) noexcept {
+    Function::current()->return_(OC_EXPR(ret));
+}
+
+inline void return_() noexcept {
+    Function::current()->return_(nullptr);
 }
 
 }// namespace ocarina

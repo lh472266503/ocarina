@@ -42,8 +42,8 @@ private:
     mutable bool _hash_computed{false};
     Tag _tag{Tag::CALLABLE};
     ocarina::set<const Function *> _used_custom_func;
-    mutable uint3 _block_dim{make_uint3(256, 256, 1)};
-    mutable uint3 _grid_dim{make_uint3(1, 1, 1)};
+    mutable uint3 _block_dim{make_uint3(0)};
+    mutable uint3 _grid_dim{make_uint3(0)};
 
 private:
     static ocarina::vector<Function *> &_function_stack() noexcept;
@@ -160,6 +160,15 @@ public:
     void set_grid_dim(uint2 size) const noexcept { _grid_dim = make_uint3(size, 1); }
     void set_grid_dim(uint3 size) const noexcept { _grid_dim = size; }
     [[nodiscard]] uint3 grid_dim() const noexcept { return _grid_dim; }
+
+    void configure(uint3 grid_dim, uint3 block_dim) const noexcept {
+        _grid_dim = grid_dim;
+        _block_dim = block_dim;
+    }
+
+    [[nodiscard]] bool has_configure() const noexcept {
+        return any(block_dim() == 0u) || any(grid_dim() == 0u);
+    }
 
     [[nodiscard]] ocarina::string func_name() const noexcept;
     void assign(const Expression *lhs, const Expression *rhs) noexcept;

@@ -91,9 +91,10 @@ public:
     [[nodiscard]] ShaderDispatchCommand *dispatch(uint3 dim) { return dispatch(dim.x, dim.y, dim.z); }
     [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(_handle); }
     [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
+    void compute_fit_size() noexcept { impl()->compute_fit_size(); }
     template<typename... A>
     requires std::is_invocable_v<signature, A...>
-    Shader &operator()(A &&...args) noexcept {
+        Shader &operator()(A &&...args) noexcept {
         (_argument_list << ... << OC_FORWARD(args));
         return *this;
     }

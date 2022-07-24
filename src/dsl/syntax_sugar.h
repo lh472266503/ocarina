@@ -28,3 +28,5 @@
 } *[&]() noexcept
 
 #define $for(v, ...) ::ocarina::range(__VA_ARGS__) / [&](auto v) noexcept
+
+#define $return(...) ::ocarina::return_(__VA_ARGS__)
