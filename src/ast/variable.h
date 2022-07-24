@@ -29,6 +29,7 @@ public:
         // builtins
         THREAD_IDX,
         BLOCK_IDX,
+        THREAD_ID,
         DISPATCH_IDX,
         DISPATCH_ID,
         DISPATCH_DIM

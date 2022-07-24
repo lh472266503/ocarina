@@ -57,10 +57,18 @@ void CUDACodegen::_emit_builtin_var(Variable v) noexcept {
         case Tag::BLOCK_IDX:
             current_scratch() << "oc_uint3(blockIdx.x, blockIdx.y, blockIdx.z)";
             break;
-        case Tag::THREAD_IDX: break;
+        case Tag::THREAD_IDX:
             current_scratch() << "oc_uint3(threadIdx.x, threadIdx.y, threadIdx.z)";
             break;
-        case Tag::DISPATCH_IDX: break;
+        case Tag::THREAD_ID:
+            current_scratch() << "(blockIdx.x + blockIdx.y * gridDim.x"
+                                 "+ gridDim.x * gridDim.y * blockIdx.z) *"
+                                 "(blockDim.x * blockDim.y * blockDim.z)"
+                                 " + (threadIdx.z * (blockDim.x * blockDim.y))"
+                                 " + (threadIdx.y * blockDim.x) + threadIdx.x";
+            break;
+        case Tag::DISPATCH_IDX:
+            break;
         case Tag::DISPATCH_ID: break;
         case Tag::DISPATCH_DIM: break;
         default:

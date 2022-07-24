@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
 //        configure_block(1,2,1);
         Var<int3> vec;
         Var<int2> vec2 = vec.xy();
-        print("{}, {}---------{}--\\n", a, b, c.read(6));
+        print("{}, {}---------{}--\\n", a, b, thread_id());
         c.write(a.cast<int>(), b);
         a = add(a, b);
         $return();
@@ -44,10 +44,10 @@ int main(int argc, char *argv[]) {
 //    shader.compute_fit_size();
     Buffer<float> f_buffer = device.create_buffer<float>(count);
     stream << f_buffer.upload_sync(v.data());
-    stream << shader(1.f, 6.f, f_buffer).dispatch(5);
+    stream << shader(1.f, 6.f, f_buffer).dispatch(5, 5);
     stream << synchronize();
     stream << f_buffer.download_sync(v.data());
-//    stream << commit();
+    stream << commit();
 
     for (int i = 0; i < count; ++i) {
         cout << v[i] << endl;

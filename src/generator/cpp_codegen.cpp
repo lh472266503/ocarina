@@ -360,6 +360,9 @@ void CppCodegen::_emit_variable_name(Variable v) noexcept {
         case Tag::THREAD_IDX:
             current_scratch() << "t_idx" << v.uid();
             break;
+        case Tag::THREAD_ID:
+            current_scratch() << "t_id" << v.uid();
+            break;
         case Tag::BLOCK_IDX:
             current_scratch() << "b_idx" << v.uid();
             break;

@@ -65,6 +65,10 @@ const RefExpr *Function::dispatch_id() noexcept {
     return _builtin(Variable::Tag::DISPATCH_ID, Type::of<uint>());
 }
 
+const RefExpr *Function::thread_id() noexcept {
+    return _builtin(Variable::Tag::THREAD_ID, Type::of<uint>());
+}
+
 const RefExpr *Function::dispatch_idx() noexcept {
     return _builtin(Variable::Tag::DISPATCH_IDX, Type::of<uint3>());
 }

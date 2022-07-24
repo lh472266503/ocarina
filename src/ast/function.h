@@ -175,6 +175,7 @@ public:
     void return_(const Expression *expression) noexcept;
     [[nodiscard]] const RefExpr *block_idx() noexcept;
     [[nodiscard]] const RefExpr *thread_idx() noexcept;
+    [[nodiscard]] const RefExpr *thread_id() noexcept;
     [[nodiscard]] const RefExpr *dispatch_idx() noexcept;
     [[nodiscard]] const RefExpr *dispatch_id() noexcept;
     [[nodiscard]] const RefExpr *dispatch_dim() noexcept;
