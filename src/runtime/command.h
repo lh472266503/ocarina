@@ -108,18 +108,23 @@ public:
 [[nodiscard]] inline SynchronizeCommand *synchronize() noexcept {
     return SynchronizeCommand::create();
 }
-
+class Function;
 class ShaderDispatchCommand final : public Command {
 private:
+    const Function &_function;
     span<void *> _args;
     uint3 _dispatch_dim;
     handle_ty _entry{};
 
 public:
-    explicit ShaderDispatchCommand(handle_ty entry, span<void *> args, uint3 dim)
-        : _entry(entry), _args(args), _dispatch_dim(dim) {}
+    explicit ShaderDispatchCommand(const Function &function, handle_ty entry, span<void *> args, uint3 dim)
+        : _function(function), _entry(entry), _args(args), _dispatch_dim(dim) {}
     [[nodiscard]] span<void *> args() noexcept { return _args; }
     [[nodiscard]] uint3 dispatch_dim() const noexcept { return _dispatch_dim; }
+    [[nodiscard]] const Function &function() const noexcept { return _function; }
+    [[nodiscard]] Function &function_nc() noexcept {
+        return *const_cast<Function *>(&_function);
+    }
     [[nodiscard]] handle_ty entry() const noexcept { return _entry; }
     OC_MAKE_CMD_COMMON_FUNC(ShaderDispatchCommand)
 };

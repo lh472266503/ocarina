@@ -76,21 +76,23 @@ public:
 
 private:
     ShaderTag _shader_tag;
+    const Function &_function;
     ArgumentList _argument_list;
 
 public:
     Shader(Device::Impl *device, const Function &function, ShaderTag tag) noexcept
         : Resource(device, SHADER,
                    device->create_shader(function)),
-          _shader_tag(tag) {}
+          _shader_tag(tag), _function(function) {}
 
     [[nodiscard]] ShaderDispatchCommand *dispatch(uint x, uint y = 1, uint z = 1) {
-        return ShaderDispatchCommand::create(handle(), _argument_list.ptr(), make_uint3(x, y, z));
+        return ShaderDispatchCommand::create(_function, handle(), _argument_list.ptr(), make_uint3(x, y, z));
     }
     [[nodiscard]] ShaderDispatchCommand *dispatch(uint2 dim) { return dispatch(dim.x, dim.y, 1); }
     [[nodiscard]] ShaderDispatchCommand *dispatch(uint3 dim) { return dispatch(dim.x, dim.y, dim.z); }
     [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(_handle); }
     [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
+    [[nodiscard]] ShaderTag shader_tag() const noexcept { return _shader_tag; }
     void compute_fit_size() noexcept { impl()->compute_fit_size(); }
     template<typename... A>
     requires std::is_invocable_v<signature, A...>
