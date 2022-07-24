@@ -26,3 +26,11 @@ target_link_libraries(ocarina-ext PUBLIC fmt::fmt-header-only)
 
 add_subdirectory(EASTL)
 target_link_libraries(ocarina-ext PUBLIC EASTL)
+
+add_subdirectory(stblib)
+add_subdirectory(tinyexr)
+
+target_link_libraries(ocarina-ext PUBLIC
+#        ocarina-ext-stblib
+        ocarina-ext-tinyexr
+        )

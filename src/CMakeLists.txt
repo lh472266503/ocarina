@@ -1,5 +1,6 @@
 
 include_directories(ext/spdlog/include)
+include_directories(ext/stblib/stb)
 include_directories(ext/xxHash)
 include_directories(ext/fmt/include)
 include_directories(ext/EASTL/include)
