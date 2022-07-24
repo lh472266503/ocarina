@@ -50,6 +50,8 @@ struct Vector : public detail::VectorStorage<T, N> {
                       std::is_same<T, bool>,
                       std::is_same<T, float>,
                       std::is_same<T, int>,
+                      std::is_same<T, char>,
+                      std::is_same<T, uchar>,
                       std::is_same<T, uint>>,
                   "Invalid vector type");
     static_assert(N == 2 || N == 3 || N == 4, "Invalid vector dimension");
@@ -58,17 +60,19 @@ struct Vector : public detail::VectorStorage<T, N> {
     [[nodiscard]] constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
 };
 
-#define SYCAMORE_MAKE_VECTOR_TYPES(T) \
-    using T##2 = Vector<T, 2>;        \
-    using T##3 = Vector<T, 3>;        \
+#define OC_MAKE_VECTOR_TYPES(T) \
+    using T##2 = Vector<T, 2>;  \
+    using T##3 = Vector<T, 3>;  \
     using T##4 = Vector<T, 4>;
 
-SYCAMORE_MAKE_VECTOR_TYPES(bool)
-SYCAMORE_MAKE_VECTOR_TYPES(float)
-SYCAMORE_MAKE_VECTOR_TYPES(int)
-SYCAMORE_MAKE_VECTOR_TYPES(uint)
+OC_MAKE_VECTOR_TYPES(bool)
+OC_MAKE_VECTOR_TYPES(float)
+OC_MAKE_VECTOR_TYPES(int)
+OC_MAKE_VECTOR_TYPES(char)
+OC_MAKE_VECTOR_TYPES(uchar)
+OC_MAKE_VECTOR_TYPES(uint)
 
-#undef SYCAMORE_MAKE_VECTOR_TYPES
+#undef OC_MAKE_VECTOR_TYPES
 
 template<size_t N>
 struct Matrix {

@@ -28,6 +28,7 @@ requires std::is_enum_v<T>
 }
 
 using uint = uint32_t;
+using uchar = unsigned char;
 
 template<typename T>
 using is_integral = std::disjunction<
