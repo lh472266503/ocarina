@@ -167,7 +167,7 @@ public:
     }
 
     [[nodiscard]] bool has_configure() const noexcept {
-        return any(block_dim() == 0u) || any(grid_dim() == 0u);
+        return all(block_dim() != 0u) || all(grid_dim() != 0u);
     }
 
     [[nodiscard]] ocarina::string func_name() const noexcept;

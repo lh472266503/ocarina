@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
     };
 
     Kernel kn = [&](Var<float> a, Var<float> b, Var<Buffer<float>> c) {
-        configure_block(1,2,1);
+//        configure_block(1,2,1);
         Var<int3> vec;
         Var<int2> vec2 = vec.xy();
         print("{}, {}---------{}--\\n", a, b, c.read(6));
@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
     Device device = context.create_device("cuda");
     Stream stream = device.create_stream();
     auto shader = device.compile(kn);
-    shader.compute_fit_size();
+//    shader.compute_fit_size();
     Buffer<float> f_buffer = device.create_buffer<float>(count);
     stream << f_buffer.upload_sync(v.data());
     stream << shader(1.f, 6.f, f_buffer).dispatch(5);

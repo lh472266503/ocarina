@@ -28,10 +28,10 @@ void CUDAShader::launch(handle_ty stream, ShaderDispatchCommand *cmd) noexcept {
         grid_dim = (cmd->dispatch_dim() + block_dim - 1u) / block_dim;
     }
 
-    uint3 grid_size = make_uint3(1);
-    uint3 block_size = cmd->dispatch_dim();
-    OC_CU_CHECK(cuLaunchKernel(_func_handle, grid_size.x, grid_size.y, grid_size.z,
-                               block_size.x, block_size.y, block_size.z,
+//    grid_dim = make_uint3(1);
+//    block_dim = cmd->dispatch_dim();
+    OC_CU_CHECK(cuLaunchKernel(_func_handle, grid_dim.x, grid_dim.y, grid_dim.z,
+                               block_dim.x, block_dim.y, block_dim.z,
                                0, reinterpret_cast<CUstream>(stream), cmd->args().data(), nullptr));
 }
 
