@@ -11,28 +11,28 @@
 
 namespace ocarina {
 
-inline Var<uint3> dispatch_idx() noexcept {
-    return eval<uint3>(Function::current()->dispatch_idx());
+inline Expr<uint3> dispatch_idx() noexcept {
+    return make_expr<uint3>(Function::current()->dispatch_idx());
 }
 
-inline Var<uint3> block_idx() noexcept {
-    return eval<uint3>(Function::current()->block_idx());
+inline Expr<uint3> block_idx() noexcept {
+    return make_expr<uint3>(Function::current()->block_idx());
 }
 
-inline Var<uint> thread_id() noexcept {
-    return eval<uint>(Function::current()->thread_id());
+inline Expr<uint> thread_id() noexcept {
+    return make_expr<uint>(Function::current()->thread_id());
 }
 
-inline Var<uint> dispatch_id() noexcept {
-    return eval<uint>(Function::current()->dispatch_id());
+inline Expr<uint> dispatch_id() noexcept {
+    return make_expr<uint>(Function::current()->dispatch_id());
 }
 
-inline Var<uint3> thread_idx() noexcept {
-    return eval<uint3>(Function::current()->thread_idx());
+inline Expr<uint3> thread_idx() noexcept {
+    return make_expr<uint3>(Function::current()->thread_idx());
 }
 
-inline Var<uint3> dispatch_dim() noexcept {
-    return eval<uint3>(Function::current()->dispatch_dim());
+inline Expr<uint3> dispatch_dim() noexcept {
+    return make_expr<uint3>(Function::current()->dispatch_dim());
 }
 
 }// namespace ocarina
