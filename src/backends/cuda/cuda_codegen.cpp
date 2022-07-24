@@ -47,6 +47,13 @@ void CUDACodegen::_emit_function(const Function &f) noexcept {
     CppCodegen::_emit_function(f);
 }
 
+void CUDACodegen::_emit_builtin_vars_define(const Function &f) noexcept {
+    CppCodegen::_emit_builtin_vars_define(f);
+    if (f.dispatch_dim_valid()) {
+        // skip the kernel
+    }
+}
+
 void CUDACodegen::_emit_builtin_var(Variable v) noexcept {
     _emit_type_name(v.type());
     _emit_space();
@@ -70,7 +77,11 @@ void CUDACodegen::_emit_builtin_var(Variable v) noexcept {
         case Tag::DISPATCH_IDX:
             break;
         case Tag::DISPATCH_ID: break;
-        case Tag::DISPATCH_DIM: break;
+        case Tag::DISPATCH_DIM: {
+            uint3 dim = current_function().dispatch_dim();
+            current_scratch() << fmt::format("oc_uint3({}, {}, {})", dim.x, dim.y, dim.z);
+            break;
+        }
         default:
             OC_ASSERT(0);
             break;

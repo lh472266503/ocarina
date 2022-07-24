@@ -291,6 +291,7 @@ void CppCodegen::_emit_builtin_vars_define(const Function &f) noexcept {
         _emit_builtin_var(var);
         current_scratch() << ";\n";
     }
+    current_scratch() << "\n";
 }
 
 void CppCodegen::_emit_type_name(const Type *type) noexcept {
