@@ -16,6 +16,7 @@ private:
     CUfunction _func_handle{};
     const Function &_function;
 
+
 public:
     CUDAShader(Device::Impl *device,
                const ocarina::string &ptx,

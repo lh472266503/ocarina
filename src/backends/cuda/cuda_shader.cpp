@@ -16,12 +16,23 @@ CUDAShader::CUDAShader(Device::Impl *device,
 }
 
 void CUDAShader::launch(handle_ty stream, ShaderDispatchCommand *cmd) noexcept {
+
+    uint3 grid_dim = make_uint3(1);
+    uint3 block_dim = make_uint3(1);
+    if (_function.has_configure()) {
+        grid_dim = _function.grid_dim();
+        block_dim = _function.block_dim();
+    } else {
+        grid_dim = (cmd->dispatch_dim() + block_dim - 1u) / block_dim;
+    }
+
     uint3 grid_size = make_uint3(1);
-    uint3 block_size = cmd->dim();
+    uint3 block_size = cmd->dispatch_dim();
     OC_CU_CHECK(cuLaunchKernel(_func_handle, grid_size.x, grid_size.y, grid_size.z,
                                block_size.x, block_size.y, block_size.z,
                                0, reinterpret_cast<CUstream>(stream), cmd->args().data(), nullptr));
 }
+
 void CUDAShader::compute_fit_size() noexcept {
 
 }

@@ -112,14 +112,14 @@ public:
 class ShaderDispatchCommand final : public Command {
 private:
     span<void *> _args;
-    uint3 _dim;
+    uint3 _dispatch_dim;
     handle_ty _entry{};
 
 public:
     explicit ShaderDispatchCommand(handle_ty entry, span<void *> args, uint3 dim)
-        : _entry(entry), _args(args), _dim(dim) {}
+        : _entry(entry), _args(args), _dispatch_dim(dim) {}
     [[nodiscard]] span<void *> args() noexcept { return _args; }
-    [[nodiscard]] uint3 dim() const noexcept { return _dim; }
+    [[nodiscard]] uint3 dispatch_dim() const noexcept { return _dispatch_dim; }
     [[nodiscard]] handle_ty entry() const noexcept { return _entry; }
     OC_MAKE_CMD_COMMON_FUNC(ShaderDispatchCommand)
 };
