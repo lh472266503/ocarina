@@ -28,7 +28,7 @@ private:
         auto dst_ptr = _argument_data.data() + _cursor;
         _cursor += sizeof(T);
         OC_ASSERT(_cursor < Size);
-        std::memcpy(dst_ptr, &arg, sizeof(T));
+        oc_memcpy(dst_ptr, &arg, sizeof(T));
         _args.push_back(dst_ptr);
     }
 

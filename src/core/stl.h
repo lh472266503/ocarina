@@ -95,6 +95,14 @@ using std::static_pointer_cast;
 using std::unique_ptr;
 using std::weak_ptr;
 
+inline void oc_memcpy(void *dst, const void *src, size_t size) {
+#ifdef _MSC_VER
+    std::memcpy(dst, src, size);
+#else
+    std::wmemcpy(dst, src, size);
+#endif
+}
+
 // string
 using std::string;
 using std::string_view;
