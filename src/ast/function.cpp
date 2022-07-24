@@ -41,6 +41,7 @@ const RefExpr *Function::_builtin(Variable::Tag tag, const Type *type) noexcept 
         iter != _builtin_vars.end()) {
         return _ref(*iter);
     }
+    _builtin_vars.push_back(variable);
     return _ref(variable);
 }
 

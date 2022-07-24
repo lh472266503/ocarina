@@ -70,6 +70,8 @@ private:
     int _indent{};
     Scratch _scratch;
     ocarina::vector<Scratch *> _scratch_stack;
+protected:
+    const Function *_function{nullptr};
 
 protected:
     void indent_inc() noexcept { _indent += 1; }
@@ -89,6 +91,7 @@ protected:
     private:
         Scratch &_scratch;
         Codegen *_codegen{};
+
     public:
         ScratchGuard(Codegen *codegen, Scratch &scratch)
             : _codegen(codegen), _scratch(scratch) {

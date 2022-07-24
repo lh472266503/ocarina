@@ -90,13 +90,16 @@ class OC_AST_API ScopeStmt : public Statement {
 private:
     ocarina::vector<Variable> _local_vars;
     ocarina::vector<const Statement *> _statements;
+    bool _is_func_body{};
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
-    ScopeStmt() noexcept : Statement(Tag::SCOPE) {}
+    explicit ScopeStmt(bool is_func_body = false) noexcept
+        : _is_func_body(is_func_body), Statement(Tag::SCOPE) {}
     [[nodiscard]] ocarina::span<const Variable> local_vars() const noexcept { return _local_vars; }
+    [[nodiscard]] bool is_func_body() const noexcept { return _is_func_body; }
     [[nodiscard]] ocarina::span<const Statement *const> statements() const noexcept { return _statements; }
     [[nodiscard]] bool is_reference(const Expression *expr) const noexcept override;
     [[nodiscard]] bool empty() const noexcept { return _statements.empty(); }
@@ -285,7 +288,7 @@ private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
-    LoopStmt(): Statement(Tag::LOOP) {}
+    LoopStmt() : Statement(Tag::LOOP) {}
     [[nodiscard]] auto body() const noexcept { return &_body; }
     [[nodiscard]] auto body() noexcept { return &_body; }
     OC_MAKE_STATEMENT_ACCEPT_VISITOR

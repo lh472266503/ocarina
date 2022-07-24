@@ -48,7 +48,9 @@ void CUDACodegen::_emit_function(const Function &f) noexcept {
 }
 
 void CUDACodegen::_emit_builtin_var(Variable v) noexcept {
-
+    _emit_type_name(v.type());
+    _emit_space();
+    _emit_variable_name(v);
 }
 
 void CUDACodegen::_emit_type_name(const Type *type) noexcept {

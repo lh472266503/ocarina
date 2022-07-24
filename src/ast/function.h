@@ -37,7 +37,7 @@ private:
     ocarina::vector<ScopeStmt *> _scope_stack;
     /// use for assignment subscript access
     ocarina::vector<ocarina::pair<std::byte *, size_t>> _temp_memory;
-    ScopeStmt _body;
+    ScopeStmt _body{true};
     mutable uint64_t _hash{0};
     mutable bool _hash_computed{false};
     Tag _tag{Tag::CALLABLE};

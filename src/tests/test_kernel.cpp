@@ -29,6 +29,7 @@ int main(int argc, char *argv[]) {
     Kernel kn = [&](Var<float> a, Var<float> b, Var<Buffer<float>> c) {
 //        configure_block(1,2,1);
         Var<int3> vec;
+        Var block = block_idx();
         Var<int2> vec2 = vec.xy();
         print("{}, {}---------{}--\\n", a, b, c.read(6));
         c.write(a.cast<int>(), b);
@@ -47,7 +48,7 @@ int main(int argc, char *argv[]) {
     stream << shader(1.f, 6.f, f_buffer).dispatch(5);
     stream << synchronize();
     stream << f_buffer.download_sync(v.data());
-    stream << commit();
+//    stream << commit();
 
     for (int i = 0; i < count; ++i) {
         cout << v[i] << endl;

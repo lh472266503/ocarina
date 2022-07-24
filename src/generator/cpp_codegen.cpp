@@ -35,6 +35,9 @@ void CppCodegen::visit(const ReturnStmt *stmt) noexcept {
 void CppCodegen::visit(const ScopeStmt *stmt) noexcept {
     current_scratch() << "{\n";
     indent_inc();
+    if (stmt->is_func_body()) {
+        _emit_builtin_vars_define(*_function);
+    }
     _emit_local_var_define(stmt);
     _emit_statements(stmt->statements());
     indent_dec();
@@ -283,9 +286,12 @@ void CppCodegen::_emit_local_var_define(const ScopeStmt *scope) noexcept {
 }
 
 void CppCodegen::_emit_builtin_vars_define(const Function &f) noexcept {
-    for (const Variable &var : f.builtin_vars()) {
-        _emit_builtin_var(var);
+    if (f.builtin_vars().empty()) {
+        return ;
     }
+//    for (const Variable &var : f.builtin_vars()) {
+////        _emit_builtin_var(var);
+//    }
 }
 
 void CppCodegen::_emit_type_name(const Type *type) noexcept {
@@ -369,7 +375,6 @@ void CppCodegen::_emit_variable_name(Variable v) noexcept {
     }
 }
 void CppCodegen::_emit_statements(ocarina::span<const Statement *const> stmts) noexcept {
-
     for (const Statement *stmt : stmts) {
         _emit_indent();
         stmt->accept(*this);
@@ -378,7 +383,6 @@ void CppCodegen::_emit_statements(ocarina::span<const Statement *const> stmts) n
     }
 }
 void CppCodegen::_emit_body(const Function &f) noexcept {
-    _emit_builtin_vars_define(f);
     f.body()->accept(*this);
 }
 void CppCodegen::_emit_arguments(const Function &f) noexcept {
