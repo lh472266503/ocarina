@@ -89,9 +89,9 @@ ocarina::string CUDADevice::get_ptx(const Function &function) const noexcept {
             codegen.emit(function);
             const ocarina::string &cu = codegen.scratch().c_str();
             cout << cu << endl;
+            _context->write_cache(cu_fn, cu);
             ptx = detail::get_ptx(cu);
             _context->write_cache(ptx_fn, ptx);
-            _context->write_cache(cu_fn, cu);
         } else {
             const ocarina::string &cu = _context->read_cache(cu_fn);
             cout << cu << endl;

@@ -29,7 +29,6 @@ int main(int argc, char *argv[]) {
     Kernel kn = [&](Var<float> a, Var<float> b, Var<Buffer<float>> c) {
 //        configure_block(1,2,1);
         Var<int3> vec;
-        Var block = block_idx();
         Var<int2> vec2 = vec.xy();
         print("{}, {}---------{}--\\n", a, b, c.read(6));
         c.write(a.cast<int>(), b);
@@ -38,7 +37,7 @@ int main(int argc, char *argv[]) {
     };
     fs::path path(argv[0]);
     Context context(path.parent_path());
-    context.clear_cache();
+//    context.clear_cache();
     Device device = context.create_device("cuda");
     Stream stream = device.create_stream();
     auto shader = device.compile(kn);
