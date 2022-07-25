@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
         //        configure_block(1,2,1);
         Var<int3> vec;
         Var<int2> vec2 = vec.xy();
-        print("{}, {}---------{}--\\n", a, b, 0);
+        print("{}, {}---------{}--", a, b, 0);
         c.write(thread_id(), c.read(thread_id()) * 2);
         a = add(a, b);
         $return();

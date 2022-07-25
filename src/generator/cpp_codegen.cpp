@@ -109,7 +109,7 @@ void CppCodegen::visit(const PrintStmt *stmt) noexcept {
     span<const Expression *const> args = stmt->args();
     current_scratch() << "printf(";
     Scratch format_scratch("\"");
-    format_scratch << stmt->fmt() << "\"";
+    format_scratch << stmt->fmt() << "\\n\"";
     Scratch args_scratch;
 
     for (const Expression *expr : args) {
