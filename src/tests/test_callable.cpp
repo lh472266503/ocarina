@@ -30,11 +30,8 @@ auto func(T a, T b) {
     Var<int3> arr;
     arr[1] = b;
     a = arr[1] + 1;
-    //    T d = a + b;
-    //    T c = a + b * a + 1.5f;
-    return a + b;
     $if(a + b > 0) {
-        a = a + 9;
+        a = (a + 9) * b;
     }
     $elif(a > 0) {
         a += 3;
@@ -52,11 +49,9 @@ auto func(T a, T b) {
                 $break;
         };
     };
-
     $while(a > 10) {
         a -= 1;
     };
-
     return a + b;
 }
 
@@ -97,7 +92,7 @@ int main(int argc, char *argv[]) {
     Stream stream = device.create_stream();
 
     CppCodegen codegen;
-    decltype(auto) f = c1.function();
+    decltype(auto) f = callable.function();
     codegen.emit(f);
     cout << codegen.scratch().c_str();
 

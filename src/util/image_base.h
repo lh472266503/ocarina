@@ -25,6 +25,11 @@ enum struct ImageWrap : uint8_t {
     Clamp
 };
 
+enum ColorSpace : uint8_t {
+    LINEAR,
+    SRGB
+};
+
 namespace detail {
 
 template<typename T>
