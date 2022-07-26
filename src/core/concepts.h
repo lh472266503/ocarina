@@ -154,9 +154,23 @@ template<typename Lhs, typename Rhs>
 concept access_able = requires(Lhs lhs, Rhs rhs) { lhs[rhs]; };
 
 template<typename T>
-concept bool_able = requires(T t) { bool(t);};
+concept bool_able = requires(T t) { bool(t); };
 
 template<typename T>
 concept switch_able = std::is_enum_v<T> || ocarina::is_integral_v<T>;
+
+#define OC_BINARY_OP_CONCEPT(op_name, op)  \
+    template<typename A, typename B>       \
+    concept op_name = requires(A a, B b) { \
+        a op b;                            \
+    };
+
+#define OC_UNARY_OP_CONCEPT(op_name, op) \
+    template<typename T>                 \
+    concept op_name = requires(T t) {    \
+        op t;                            \
+    };
+
+OC_BINARY_OP_CONCEPT(assign_able, =)
 
 }// namespace ocarina::concepts

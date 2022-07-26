@@ -98,22 +98,12 @@ OC_MAKE_DSL_ASSIGN_OP(^)
 #undef OC_MAKE_DSL_ASSIGN_OP
 
 namespace ocarina::concepts {
-#define OC_UNARY_OP_CONCEPT(op_name, op) \
-    template<typename T>                 \
-    concept op_name = requires(T t) {    \
-        op t;                            \
-    };
+
 OC_UNARY_OP_CONCEPT(positive_able, +)
 OC_UNARY_OP_CONCEPT(negative_able, -)
 OC_UNARY_OP_CONCEPT(not_able, !)
 OC_UNARY_OP_CONCEPT(bit_not_able, ~)
 #undef OC_UNARY_OP_CONCEPT
-
-#define OC_BINARY_OP_CONCEPT(op_name, op)  \
-    template<typename A, typename B>       \
-    concept op_name = requires(A a, B b) { \
-        a op b;                            \
-    };
 
 OC_BINARY_OP_CONCEPT(plus_able, +)
 OC_BINARY_OP_CONCEPT(minus_able, -)
@@ -134,7 +124,6 @@ OC_BINARY_OP_CONCEPT(gt_able, >)
 OC_BINARY_OP_CONCEPT(ge_able, >=)
 OC_BINARY_OP_CONCEPT(le_able, <=)
 
-OC_BINARY_OP_CONCEPT(assign_able, =)
 OC_BINARY_OP_CONCEPT(plus_assign_able, +=)
 OC_BINARY_OP_CONCEPT(minus_assign_able, -=)
 OC_BINARY_OP_CONCEPT(mult_assign_able, *=)
@@ -146,5 +135,4 @@ OC_BINARY_OP_CONCEPT(bit_xor_assign_able, ^=)
 OC_BINARY_OP_CONCEPT(shift_left_assign_able, <<=)
 OC_BINARY_OP_CONCEPT(shift_right_assign_able, >>=)
 
-#undef OC_BINARY_OP_CONCEPT
 }// namespace ocarina::concepts
