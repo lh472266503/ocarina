@@ -42,7 +42,6 @@ Var<int> add(Var<int> a, Var<int> b) {
 template<typename T>
 auto func(T a, T b) {
     Var<int3> arr;
-    a = sqr(a);
     arr = arr + arr;
     a = arr[1] + 1;
     $if(a + b > 0) {

@@ -7,6 +7,7 @@
 #include "dsl/var.h"
 #include "dsl/expr.h"
 #include "ast/function.h"
+#include "operators.h"
 
 namespace ocarina {
 

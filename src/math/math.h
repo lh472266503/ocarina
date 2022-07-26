@@ -13,12 +13,13 @@
 namespace ocarina {
 
 template<typename T>
-//requires concepts::m_able<T,T>
+requires concepts::multiply_able<T, T>
 [[nodiscard]] constexpr auto sqr(T v) {
     return v * v;
 }
 
 template<int n, typename T>
+requires concepts::multiply_able<T, T>
 [[nodiscard]] constexpr T Pow(T v) {
     if constexpr (n < 0) {
         return 1.f / Pow<-n>(v);
@@ -27,7 +28,7 @@ template<int n, typename T>
     } else if constexpr (n == 0) {
         return 1;
     }
-    float n2 = Pow<n / 2>(v);
+    T n2 = Pow<n / 2>(v);
     return n2 * n2 * Pow<n & 1>(v);
 }
 
