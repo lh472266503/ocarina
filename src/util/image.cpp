@@ -22,7 +22,7 @@ Image::Image(Image &&other) noexcept
     _pixel = move(other._pixel);
 }
 
-Image &Image::operator=(Image &&rhs) {
+Image &Image::operator=(Image &&rhs) noexcept {
     (*(ImageBase *)this) = std::forward<ImageBase>(rhs);
     std::swap(this->_pixel, rhs._pixel);
     return *this;

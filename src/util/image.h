@@ -19,7 +19,7 @@ public:
     Image(Image &&other) noexcept;
     Image(const Image &other) = delete;
     Image &operator=(const Image &other) = delete;
-    Image &operator=(Image &&other);
+    Image &operator=(Image &&other) noexcept;
     template<typename T = std::byte>
     const T *pixel_ptr() const { return reinterpret_cast<const T *>(_pixel.get()); }
     template<typename T = std::byte>

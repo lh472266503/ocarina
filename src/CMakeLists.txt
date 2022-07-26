@@ -15,6 +15,7 @@ add_subdirectory(generator)
 add_subdirectory(rhi)
 add_subdirectory(backends)
 add_subdirectory(util)
+add_subdirectory(math)
 
 add_library(ocarina-all INTERFACE)
 target_link_libraries(ocarina-all INTERFACE
@@ -26,6 +27,7 @@ target_link_libraries(ocarina-all INTERFACE
         ocarina-backend
         ocarina-rhi
         ocarina-util
+        ocarina-math
         ocarina-core)
 
 add_executable(ocarina main.cpp)
