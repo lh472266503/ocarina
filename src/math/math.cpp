@@ -4,3 +4,4 @@
 
 #include "optics.h"
 #include "math.h"
+#include "prims.h"
