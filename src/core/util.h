@@ -6,6 +6,7 @@
 
 #include "basic_traits.h"
 #include "concepts.h"
+#include "math/math.h"
 
 namespace ocarina {
 
@@ -15,25 +16,6 @@ requires is_integral_v<T> && is_integral_v<U>
     return (offset + alignment - 1u) / alignment * alignment;
 }
 
-template<typename T>
-requires concepts::multiply_able<T, T>
-[[nodiscard]] constexpr auto sqr(T v) {
-    return v * v;
-}
-
-template<int n, typename T>
-requires concepts::multiply_able<T, T>
-[[nodiscard]] constexpr T Pow(T v) {
-    if constexpr (n < 0) {
-        return 1.f / Pow<-n>(v);
-    } else if constexpr (n == 1) {
-        return v;
-    } else if constexpr (n == 0) {
-        return 1;
-    }
-    float n2 = Pow<n / 2>(v);
-    return n2 * n2 * Pow<n & 1>(v);
-}
 
 inline namespace size_literals {
 [[nodiscard]] constexpr auto operator""_kb(size_t bytes) noexcept {

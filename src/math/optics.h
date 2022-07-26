@@ -3,3 +3,9 @@
 //
 
 #pragma once
+
+#include "core/basic_types.h"
+
+namespace ocarina {
+
+}

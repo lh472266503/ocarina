@@ -16,6 +16,7 @@
 #include "core/util.h"
 #include "rt/hit.h"
 #include "rhi/stream.h"
+#include "math/math.h"
 
 using std::cout;
 using std::endl;
@@ -25,10 +26,24 @@ Var<int> add(Var<int> a, Var<int> b) {
     return a + b;
 }
 
+//template<typename T>
+//requires requires(T t) {
+//    t * t;
+//}
+//class Test {
+//
+//};
+
+//template<typename T>
+//T operator *(T a, T b) {
+//    return a;
+//}
+
 template<typename T>
 auto func(T a, T b) {
     Var<int3> arr;
-    arr[1] = b;
+    a = sqr(a);
+    arr = arr + arr;
     a = arr[1] + 1;
     $if(a + b > 0) {
         a = (a + 9) * b;
