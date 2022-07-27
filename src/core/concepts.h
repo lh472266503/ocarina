@@ -160,9 +160,7 @@ template<typename T>
 concept switch_able = std::is_enum_v<T> || ocarina::is_integral_v<T>;
 
 #define OC_UNARY_CHECK(T) \
-    requires(T t) {       \
-        op t;             \
-    };
+    requires(T t) { op t; };
 
 #define oc_positive_check(T) OC_UNARY_CHECK(+)
 #define oc_negative_check(T) OC_UNARY_CHECK(-)
@@ -170,9 +168,7 @@ concept switch_able = std::is_enum_v<T> || ocarina::is_integral_v<T>;
 #define oc_bit_not_check(T) OC_UNARY_CHECK(~)
 
 #define OC_BINARY_CHECK(A, B, op) \
-    requires(A a, B b) {          \
-        a op b;                   \
-    }
+    requires(A a, B b) { a op b; }
 
 #define oc_plus_check(A, B) OC_BINARY_CHECK(A, B, +)
 #define oc_minus_check(A, B) OC_BINARY_CHECK(A, B, -)
@@ -192,6 +188,7 @@ concept switch_able = std::is_enum_v<T> || ocarina::is_integral_v<T>;
 #define oc_gt_check(A, B) OC_BINARY_CHECK(A, B, >)
 #define oc_le_check(A, B) OC_BINARY_CHECK(A, B, <=)
 #define oc_ge_check(A, B) OC_BINARY_CHECK(A, B, >=)
+#define oc_assign_check(A, B) OC_BINARY_CHECK(A, B, =)
 
 #define oc_plus_assign_check(A, B) OC_BINARY_CHECK(A, B, +=)
 #define oc_minus_assign_check(A, B) OC_BINARY_CHECK(A, B, -=)
@@ -203,19 +200,5 @@ concept switch_able = std::is_enum_v<T> || ocarina::is_integral_v<T>;
 #define oc_bit_xor_assign_check(A, B) OC_BINARY_CHECK(A, B, ^=)
 #define oc_shift_left_assign_check(A, B) OC_BINARY_CHECK(A, B, <<=)
 #define oc_shift_right_assign_check(A, B) OC_BINARY_CHECK(A, B, >>=)
-
-#define OC_BINARY_OP_CONCEPT(op_name, op)  \
-    template<typename A, typename B>       \
-    concept op_name = requires(A a, B b) { \
-        a op b;                            \
-    };
-
-#define OC_UNARY_OP_CONCEPT(op_name, op) \
-    template<typename T>                 \
-    concept op_name = requires(T t) {    \
-        op t;                            \
-    };
-
-OC_BINARY_OP_CONCEPT(assign_able, =)
 
 }// namespace ocarina::concepts
