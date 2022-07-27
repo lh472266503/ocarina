@@ -10,7 +10,6 @@
 #include "core/string_util.h"
 #include "ast/type_registry.h"
 #include "dsl/common.h"
-#include "rt/hit.h"
 
 using namespace ocarina;
 

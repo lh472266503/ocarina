@@ -1,8 +1,9 @@
 //
-// Created by Zero on 15/05/2022.
+// Created by Zero on 27/07/2022.
 //
 
 #pragma once
+
 #include "core/basic_traits.h"
 #include "dsl/operators.h"
 #include "dsl/struct.h"
@@ -26,4 +27,3 @@ OC_STRUCT(ocarina::Hit, inst_id, prim_id, bary){
         return make_expr(inst_id == uint(-1));
     }
 };
-
