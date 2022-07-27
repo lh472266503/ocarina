@@ -48,18 +48,19 @@ template<typename T, typename U, typename V>
     }
 }
 
-template<typename A, typename B>
-[[nodiscard]] constexpr auto lerp(float t, A a, B b) noexcept {
+template<typename F, typename A, typename B>
+requires ocarina::is_floating_point_v<expr_value_t<F>>
+[[nodiscard]] constexpr auto lerp(F t, A a, B b) noexcept {
     return a + t * (b - a);
 }
 
 template<typename T>
-[[nodiscard]] constexpr float radians(T deg) noexcept {
+[[nodiscard]] constexpr auto radians(T deg) noexcept {
     return deg * constants::Pi / 180.0f;
 }
 
 template<typename T>
-[[nodiscard]] constexpr float degrees(T rad) noexcept {
+[[nodiscard]] constexpr auto degrees(T rad) noexcept {
     return rad * constants::InvPi * 180.0f;
 }
 

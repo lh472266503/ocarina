@@ -153,7 +153,7 @@ struct struct_member_tuple<Matrix<N>> {
     struct ocarina::is_struct<S> : std::true_type {};                                             \
     template<>                                                                                    \
     struct ocarina::struct_member_tuple<S> {                                                      \
-        using this_type = Hit;                                                                    \
+        using this_type = S;                                                                    \
         using type = ocarina::tuple<MAP_LIST(OC_MEMBER_TYPE_MAP, ##__VA_ARGS__)>;                 \
         using offset = std::index_sequence<MAP_LIST(OC_TYPE_OFFSET_OF, ##__VA_ARGS__)>;           \
         static_assert(is_valid_reflection_v<this_type, type, offset>,                             \

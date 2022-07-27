@@ -16,7 +16,7 @@
 #include "core/util.h"
 #include "rt/hit.h"
 #include "rhi/stream.h"
-#include "math/math.h"
+#include "math/base.h"
 
 using std::cout;
 using std::endl;
@@ -72,6 +72,11 @@ auto func(T a, T b) {
 
 
 int main(int argc, char *argv[]) {
+
+    cout << typeid(expr_value_t<Var<float3>>).name();
+
+    return 0;
+
     Callable callable = func<Var<int>>;
 
     Callable add = [&](Var<int> a, Var<int> b, Var<int>) {

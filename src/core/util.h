@@ -6,7 +6,7 @@
 
 #include "basic_traits.h"
 #include "concepts.h"
-#include "math/math.h"
+#include "math/base.h"
 
 namespace ocarina {
 
