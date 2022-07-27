@@ -69,6 +69,12 @@ template<typename T>
     return select(val >= 0, T(1), T(-1));
 }
 
-
+template<typename T, typename F2>
+[[nodiscard]] T triangle_lerp(F2 barycentric, T v0, T v1, T v2) noexcept {
+    auto u = barycentric.x;
+    auto v = barycentric.y;
+    auto w = 1 - barycentric.x - barycentric.y;
+    return u * v0 + v * v1 + w * v2;
+}
 
 }// namespace ocarina
