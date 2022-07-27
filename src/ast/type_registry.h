@@ -142,7 +142,7 @@ struct TypeDesc<ocarina::tuple<T...>> {
 
 template<typename T>
 const Type *Type::of() noexcept {
-    return Type::from(detail::TypeDesc<T>::description());
+    return Type::from(detail::TypeDesc<std::remove_cvref_t<T>>::description());
 }
 
 /// make struct type description

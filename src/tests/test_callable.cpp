@@ -42,8 +42,11 @@ Var<int> add(Var<int> a, Var<int> b) {
 
 template<typename T>
 auto func(T a, T b) {
-    Var<int3> arr;
-    a = radians(a);
+    Var<int3> arr{};
+//    Var<int3> arr2{a,a,a};
+//    arr = radians(arr);
+    int3 v;
+//    v = radians(v);
     arr = arr + arr;
     a = arr[1] + 1;
     a = sqr(a);

@@ -31,7 +31,7 @@ template<typename T>
 
 template<typename T>
 [[nodiscard]] constexpr auto degrees(T rad) noexcept {
-    return rad * constants::InvPi * 180.0f;
+    return rad * (constants::InvPi * 180.0f);
 }
 
 template<typename T>
@@ -64,7 +64,7 @@ MAKE_VECTOR_UNARY_FUNC(sqrt)
 MAKE_VECTOR_UNARY_FUNC(sqr)
 MAKE_VECTOR_UNARY_FUNC(sign)
 MAKE_VECTOR_UNARY_FUNC(degrees)
-//MAKE_VECTOR_UNARY_FUNC(radians)
+MAKE_VECTOR_UNARY_FUNC(radians)
 
 #undef MAKE_VECTOR_UNARY_FUNC
 

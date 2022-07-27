@@ -16,11 +16,15 @@ struct ArgumentCreation {};
 struct ReferenceArgumentCreation {};
 }// namespace ocarina::detail
 
+using detail::Computable;
+
 template<typename T>
-struct Var : public detail::Computable<T> {
+struct Var : public Computable<T> {
+
+    using Computable<T>::Computable;
 
     explicit Var(const Expression *expression) noexcept
-        : detail::Computable<T>(expression) {}
+        : Computable<T>(expression) {}
 
     Var() noexcept : Var(Function::current()->local(Type::of<T>())) {}
 
