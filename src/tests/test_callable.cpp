@@ -42,37 +42,41 @@ Var<int> add(Var<int> a, Var<int> b) {
 
 template<typename T>
 auto func(T a, T b) {
-    Var<int3> arr{};
+//    auto c = Var<int3>{a,a,a};
+
+    return a;
+//    Var<int3> arr{a,a,a};
+//    return arr;
+//    arr.x = a;
 //    Var<int3> arr2{a,a,a};
 //    arr = radians(arr);
-    int3 v;
 //    v = radians(v);
-    arr = arr + arr;
-    a = arr[1] + 1;
-    a = sqr(a);
-    $if(a + b > 0) {
-        a = (a + 9) * b;
-    }
-    $elif(a > 0) {
-        a += 3;
-    };
-    $for(v, 9) {
-        a = a + v;
-    };
-    $switch(a) {
-        $case(1) {
-            $comment(1111)
-                $break;
-        };
-        $case(2) {
-            $comment(2222)
-                $break;
-        };
-    };
-    $while(a > 10) {
-        a -= 1;
-    };
-    return a + b;
+//    arr = arr + arr;
+//    a = arr[1] + 1;
+//    a = sqr(a);
+//    $if(a + b > 0) {
+//        a = (a + 9) * b;
+//    }
+//    $elif(a > 0) {
+//        a += 3;
+//    };
+//    $for(v, 9) {
+//        a = a + v;
+//    };
+//    $switch(a) {
+//        $case(1) {
+//            $comment(1111)
+//                $break;
+//        };
+//        $case(2) {
+//            $comment(2222)
+//                $break;
+//        };
+//    };
+//    $while(a > 10) {
+//        a -= 1;
+//    };
+//    return a + b;
 }
 
 

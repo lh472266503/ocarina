@@ -38,8 +38,7 @@ public:
     requires concepts::non_pointer<std::remove_cvref_t<Arg>> && concepts::different<Expr<T>, std::remove_cvref_t<Arg>>
     explicit Expr(Arg &&arg) : Expr(detail::extract_expression(std::forward<Arg>(arg))) {}
 
-    auto operator->() noexcept { return reinterpret_cast<Proxy<T> *>(this); }
-    auto operator->() const noexcept { return reinterpret_cast<const Proxy<T> *>(this); }
+    OC_MAKE_GET_PROXY
 
     Expr(const Expr &) = delete;
     Expr &operator=(const Expr &) = delete;
