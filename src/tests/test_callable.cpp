@@ -17,6 +17,7 @@
 #include "math/rt.h"
 #include "rhi/stream.h"
 #include "math/base.h"
+#include "core/basic_types.h"
 
 using std::cout;
 using std::endl;
@@ -42,6 +43,7 @@ Var<int> add(Var<int> a, Var<int> b) {
 template<typename T>
 auto func(T a, T b) {
     Var<int3> arr;
+    a = radians(a);
     arr = arr + arr;
     a = arr[1] + 1;
     a = sqr(a);

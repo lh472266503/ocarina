@@ -39,7 +39,7 @@ Image Image::pure_color(float4 color, ColorSpace color_space, uint2 res) {
         }
     } else {
         for (auto i = 0; i < pixel_count; ++i) {
-            //            dest[i] = Spectrum::srgb_to_linear(color);
+//            dest[i] = srgb_to_linear(color);
         }
     }
     return {PixelFormat::RGBA32F, pixel, res};

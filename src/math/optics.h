@@ -5,6 +5,7 @@
 #pragma once
 
 #include <cstdlib>
+#include <cmath>
 #include "core/basic_types.h"
 #include "base.h"
 
