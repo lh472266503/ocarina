@@ -26,14 +26,18 @@ enum EToneMap {
     return fmin(255, fmax(0, int(f * 256.f)));
 }
 
-[[nodiscard]] inline uint32_t make_rgba(const float3 color) {
+template<typename V>
+requires ocarina::is_vector3_v<expr_value_t<V>>
+[[nodiscard]] inline uint32_t make_rgba(const V& color) {
     return (make_8bit(color.x) << 0) +
            (make_8bit(color.y) << 8) +
            (make_8bit(color.z) << 16) +
            (0xffU << 24);
 }
 
-[[nodiscard]] inline uint32_t make_rgba(const float4 color) {
+template<typename V>
+requires ocarina::is_vector4_v<expr_value_t<V>>
+[[nodiscard]] inline uint32_t make_rgba(const V& color) {
     return (make_8bit(color.x) << 0) +
            (make_8bit(color.y) << 8) +
            (make_8bit(color.z) << 16) +
