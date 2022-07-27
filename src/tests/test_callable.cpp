@@ -73,10 +73,6 @@ auto func(T a, T b) {
 
 int main(int argc, char *argv[]) {
 
-    cout << typeid(expr_value_t<Var<float3>>).name();
-
-    return 0;
-
     Callable callable = func<Var<int>>;
 
     Callable add = [&](Var<int> a, Var<int> b, Var<int>) {

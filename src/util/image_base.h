@@ -7,6 +7,7 @@
 #include "core/stl.h"
 #include "core/basic_types.h"
 #include "core/concepts.h"
+#include "math/optics.h"
 
 namespace ocarina {
 enum struct PixelFormat : uint8_t {
@@ -23,11 +24,6 @@ enum struct ImageWrap : uint8_t {
     Repeat,
     Black,
     Clamp
-};
-
-enum ColorSpace : uint8_t {
-    LINEAR,
-    SRGB
 };
 
 namespace detail {
