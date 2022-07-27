@@ -44,6 +44,7 @@ auto func(T a, T b) {
     Var<int3> arr;
     arr = arr + arr;
     a = arr[1] + 1;
+    a = sqr(a);
     $if(a + b > 0) {
         a = (a + 9) * b;
     }

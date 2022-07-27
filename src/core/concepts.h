@@ -159,6 +159,51 @@ concept bool_able = requires(T t) { bool(t); };
 template<typename T>
 concept switch_able = std::is_enum_v<T> || ocarina::is_integral_v<T>;
 
+#define OC_UNARY_CHECK(T) \
+    requires(T t) {       \
+        op t;             \
+    };
+
+#define oc_positive_check(T) OC_UNARY_CHECK(+)
+#define oc_negative_check(T) OC_UNARY_CHECK(-)
+#define oc_not_check(T) OC_UNARY_CHECK(!)
+#define oc_bit_not_check(T) OC_UNARY_CHECK(~)
+
+#define OC_BINARY_CHECK(A, B, op) \
+    requires(A a, B b) {          \
+        a op b;                   \
+    }
+
+#define oc_plus_check(A, B) OC_BINARY_CHECK(A, B, +)
+#define oc_minus_check(A, B) OC_BINARY_CHECK(A, B, -)
+#define oc_multiply_check(A, B) OC_BINARY_CHECK(A, B, *)
+#define oc_divide_check(A, B) OC_BINARY_CHECK(A, B, /)
+#define oc_mode_check(A, B) OC_BINARY_CHECK(A, B, %)
+#define oc_bit_and_check(A, B) OC_BINARY_CHECK(A, B, &)
+#define oc_bit_or_check(A, B) OC_BINARY_CHECK(A, B, |)
+#define oc_bit_xor_check(A, B) OC_BINARY_CHECK(A, B, ^)
+#define oc_shift_left_check(A, B) OC_BINARY_CHECK(A, B, <<)
+#define oc_shift_right_check(A, B) OC_BINARY_CHECK(A, B, >>)
+#define oc_and_check(A, B) OC_BINARY_CHECK(A, B, &&)
+#define oc_or_check(A, B) OC_BINARY_CHECK(A, B, ||)
+#define oc_equal_check(A, B) OC_BINARY_CHECK(A, B, ==)
+#define oc_ne_check(A, B) OC_BINARY_CHECK(A, B, !=)
+#define oc_lt_check(A, B) OC_BINARY_CHECK(A, B, <)
+#define oc_gt_check(A, B) OC_BINARY_CHECK(A, B, >)
+#define oc_le_check(A, B) OC_BINARY_CHECK(A, B, <=)
+#define oc_ge_check(A, B) OC_BINARY_CHECK(A, B, >=)
+
+#define oc_plus_assign_check(A, B) OC_BINARY_CHECK(A, B, +=)
+#define oc_minus_assign_check(A, B) OC_BINARY_CHECK(A, B, -=)
+#define oc_multiply_assign_check(A, B) OC_BINARY_CHECK(A, B, *=)
+#define oc_divide_assign_check(A, B) OC_BINARY_CHECK(A, B, /=)
+#define oc_mod_assign_check(A, B) OC_BINARY_CHECK(A, B, %=)
+#define oc_bit_and_assign_check(A, B) OC_BINARY_CHECK(A, B, &=)
+#define oc_bit_or_assign_check(A, B) OC_BINARY_CHECK(A, B, |=)
+#define oc_bit_xor_assign_check(A, B) OC_BINARY_CHECK(A, B, ^=)
+#define oc_shift_left_assign_check(A, B) OC_BINARY_CHECK(A, B, <<=)
+#define oc_shift_right_assign_check(A, B) OC_BINARY_CHECK(A, B, >>=)
+
 #define OC_BINARY_OP_CONCEPT(op_name, op)  \
     template<typename A, typename B>       \
     concept op_name = requires(A a, B b) { \
