@@ -30,7 +30,7 @@ struct Var : public Computable<T> {
 
     template<typename Arg>
     requires concepts::non_pointer<std::remove_cvref_t<Arg>> &&
-        oc_assign_check(expr_value_t<std::remove_cvref_t<T>>, expr_value_t<Arg>)
+        OC_ASSIGN_CHECK(expr_value_t<std::remove_cvref_t<T>>, expr_value_t<Arg>)
         Var(Arg &&arg) : Var() {
         detail::assign(*this, std::forward<Arg>(arg));
     }
@@ -44,7 +44,7 @@ struct Var : public Computable<T> {
         : Var(Function::current()->reference_argument(Type::of<T>())) {}
 
     template<typename Arg>
-    requires oc_assign_check(expr_value_t<std::remove_cvref_t<T>>, expr_value_t<Arg>)
+    requires OC_ASSIGN_CHECK(expr_value_t<std::remove_cvref_t<T>>, expr_value_t<Arg>)
     void operator=(Arg &&arg) {
         detail::assign(*this, std::forward<Arg>(arg));
     }

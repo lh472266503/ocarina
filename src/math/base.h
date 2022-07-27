@@ -40,7 +40,7 @@ template<typename T>
 }
 
 template<typename T>
-requires oc_multiply_check(T, T)
+requires OC_MULTIPLY_CHECK(T, T)
 [[nodiscard]] constexpr auto sqr(T v) {
     return v * v;
 }
@@ -115,7 +115,7 @@ MAKE_VECTOR_BINARY_FUNC(atan2)
 #undef MAKE_VECTOR_BINARY_FUNC
 
 template<int n, typename T>
-requires oc_multiply_check(T, T)
+requires OC_MULTIPLY_CHECK(T, T)
 [[nodiscard]] constexpr T Pow(T v) {
     if constexpr (n < 0) {
         return 1.f / Pow<-n>(v);

@@ -172,7 +172,7 @@ concept switch_able = std::is_enum_v<T> || ocarina::is_integral_v<T>;
 
 #define oc_plus_check(A, B) OC_BINARY_CHECK(A, B, +)
 #define oc_minus_check(A, B) OC_BINARY_CHECK(A, B, -)
-#define oc_multiply_check(A, B) OC_BINARY_CHECK(A, B, *)
+#define OC_MULTIPLY_CHECK(A, B) OC_BINARY_CHECK(A, B, *)
 #define oc_divide_check(A, B) OC_BINARY_CHECK(A, B, /)
 #define oc_mode_check(A, B) OC_BINARY_CHECK(A, B, %)
 #define oc_bit_and_check(A, B) OC_BINARY_CHECK(A, B, &)
@@ -188,7 +188,7 @@ concept switch_able = std::is_enum_v<T> || ocarina::is_integral_v<T>;
 #define oc_gt_check(A, B) OC_BINARY_CHECK(A, B, >)
 #define oc_le_check(A, B) OC_BINARY_CHECK(A, B, <=)
 #define oc_ge_check(A, B) OC_BINARY_CHECK(A, B, >=)
-#define oc_assign_check(A, B) OC_BINARY_CHECK(A, B, =)
+#define OC_ASSIGN_CHECK(A, B) OC_BINARY_CHECK(A, B, =)
 
 #define oc_plus_assign_check(A, B) OC_BINARY_CHECK(A, B, +=)
 #define oc_minus_assign_check(A, B) OC_BINARY_CHECK(A, B, -=)
