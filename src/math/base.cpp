@@ -7,3 +7,4 @@
 #include "prims.h"
 #include "frame.h"
 #include "rt.h"
+#include "sampling.h"

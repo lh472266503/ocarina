@@ -42,9 +42,9 @@ Var<int> add(Var<int> a, Var<int> b) {
 
 template<typename T>
 auto func(T a, T b) {
-//    auto c = Var<int3>{a,a,a};
+//    auto c = Var<int3>{};
 
-    return a;
+    return Var<int3>{};
 //    Var<int3> arr{a,a,a};
 //    return arr;
 //    arr.x = a;
