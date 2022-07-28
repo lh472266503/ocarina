@@ -96,4 +96,5 @@ using handle_ty = uint64_t;
 }
 
 #define OC_NDSC_INLINE [[nodiscard]] inline
+#define OC_NODISCARD [[nodiscard]]
 

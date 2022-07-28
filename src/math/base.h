@@ -20,42 +20,52 @@ template<typename T, typename F>
 }
 
 template<typename T>
-[[nodiscard]] T sign(T val) {
+requires is_scalar_v<expr_value_t<T>>
+OC_NODISCARD constexpr T sign(T val) {
     return select(val >= 0, T(1), T(-1));
 }
 
 template<typename T>
-[[nodiscard]] constexpr auto radians(const T &deg) noexcept {
+requires is_scalar_v<expr_value_t<T>>
+OC_NODISCARD constexpr auto
+radians(const T &deg) noexcept {
     return deg * (constants::Pi / 180.0f);
 }
 
 template<typename T>
-[[nodiscard]] constexpr auto degrees(T rad) noexcept {
+requires is_scalar_v<expr_value_t<T>>
+OC_NODISCARD constexpr auto
+degrees(T rad) noexcept {
     return rad * (constants::InvPi * 180.0f);
 }
 
 template<typename T>
-[[nodiscard]] auto rcp(const T &v) {
+requires is_scalar_v<expr_value_t<T>>
+OC_NODISCARD constexpr auto
+rcp(const T &v) {
     return 1.f / v;
 }
 
 template<typename T>
 requires OC_MULTIPLY_CHECK(T, T)
-[[nodiscard]] constexpr auto sqr(T v) {
+OC_NODISCARD constexpr auto sqr(T v) {
     return v * v;
 }
 
-#define MAKE_VECTOR_UNARY_FUNC(func)                                         \
-    template<typename T, uint N>                                             \
-    [[nodiscard]] constexpr auto func(Vector<T, N> v) noexcept {             \
-        static_assert(N == 2 || N == 3 || N == 4);                           \
-        if constexpr (N == 2) {                                              \
-            return Vector<T, 2>{func(v.x), func(v.y)};                       \
-        } else if constexpr (N == 3) {                                       \
-            return Vector<T, 3>(func(v.x), func(v.y), func(v.z));            \
-        } else {                                                             \
-            return Vector<T, 4>(func(v.x), func(v.y), func(v.z), func(v.w)); \
-        }                                                                    \
+#define MAKE_VECTOR_UNARY_FUNC(func)                                   \
+    template<typename T>                                               \
+    requires is_vector_v<expr_value_t<T>>                              \
+    OC_NODISCARD auto                                                  \
+    func(const T &v) noexcept {                                        \
+        static constexpr auto N = vector_dimension_v<expr_value_t<T>>; \
+        static_assert(N == 2 || N == 3 || N == 4);                     \
+        if constexpr (N == 2) {                                        \
+            return T{func(v.x), func(v.y)};                            \
+        } else if constexpr (N == 3) {                                 \
+            return T(func(v.x), func(v.y), func(v.z));                 \
+        } else {                                                       \
+            return T(func(v.x), func(v.y), func(v.z), func(v.w));      \
+        }                                                              \
     }
 
 MAKE_VECTOR_UNARY_FUNC(rcp)
@@ -69,8 +79,11 @@ MAKE_VECTOR_UNARY_FUNC(radians)
 #undef MAKE_VECTOR_UNARY_FUNC
 
 #define MAKE_VECTOR_BINARY_FUNC(func)                                                            \
-    template<typename T, uint N>                                                                 \
-    [[nodiscard]] constexpr auto func(Vector<T, N> v, Vector<T, N> u) noexcept {                 \
+    template<typename T>                                                                         \
+    requires is_vector_v<expr_value_t<T>>                                                        \
+    OC_NODISCARD auto                                                                            \
+    func(const T &v, const T &u) noexcept {                                                      \
+        static constexpr auto N = vector_dimension_v<expr_value_t<T>>;                           \
         static_assert(N == 2 || N == 3 || N == 4);                                               \
         if constexpr (N == 2) {                                                                  \
             return Vector<T, 2>{func(v.x, u.x), func(v.y, u.y)};                                 \
@@ -80,19 +93,24 @@ MAKE_VECTOR_UNARY_FUNC(radians)
             return Vector<T, 4>(func(v.x, u.x), func(v.y, u.y), func(v.z, u.z), func(v.w, u.w)); \
         }                                                                                        \
     }                                                                                            \
-    template<typename T, uint N>                                                                 \
-    [[nodiscard]] constexpr auto func(T v, Vector<T, N> u) noexcept {                            \
+    template<typename T, typename U>                                                             \
+    requires is_vector_v<expr_value_t<U>> && is_scalar_v<expr_value_t<T>>                        \
+    OC_NODISCARD auto                                                                            \
+    func(const T &t, const U &u) noexcept {                                                      \
+        static constexpr auto N = vector_dimension_v<expr_value_t<U>>;                           \
         static_assert(N == 2 || N == 3 || N == 4);                                               \
         if constexpr (N == 2) {                                                                  \
-            return Vector<T, 2>{func(v, u.x), func(v, u.y)};                                     \
+            return Vector<T, 2>{func(t, u.x), func(t, u.y)};                                     \
         } else if constexpr (N == 3) {                                                           \
-            return Vector<T, 3>(func(v, u.x), func(v, u.y), func(v, u.z));                       \
+            return Vector<T, 3>(func(t, u.x), func(t, u.y), func(t, u.z));                       \
         } else {                                                                                 \
-            return Vector<T, 4>(func(v, u.x), func(v, u.y), func(v, u.z), func(v, u.w));         \
+            return Vector<T, 4>(func(t, u.x), func(t, u.y), func(t, u.z), func(t, u.w));         \
         }                                                                                        \
     }                                                                                            \
-    template<typename T, uint N>                                                                 \
-    [[nodiscard]] constexpr auto func(Vector<T, N> v, T u) noexcept {                            \
+    template<typename T, typename U>                                                             \
+    requires is_vector_v<expr_value_t<T>> && is_scalar_v<expr_value_t<U>>                        \
+    OC_NODISCARD auto func(const T &v, const U &u) noexcept {                                    \
+        static constexpr auto N = vector_dimension_v<expr_value_t<T>>;                           \
         static_assert(N == 2 || N == 3 || N == 4);                                               \
         if constexpr (N == 2) {                                                                  \
             return Vector<T, 2>{func(v.x, u), func(v.y, u)};                                     \
@@ -107,6 +125,7 @@ using std::atan2;
 using std::max;
 using std::min;
 using std::pow;
+
 MAKE_VECTOR_BINARY_FUNC(pow)
 MAKE_VECTOR_BINARY_FUNC(min)
 MAKE_VECTOR_BINARY_FUNC(max)
@@ -116,7 +135,7 @@ MAKE_VECTOR_BINARY_FUNC(atan2)
 
 template<int n, typename T>
 requires OC_MULTIPLY_CHECK(T, T)
-[[nodiscard]] constexpr T Pow(T v) {
+OC_NODISCARD constexpr T Pow(T v) {
     if constexpr (n < 0) {
         return 1.f / Pow<-n>(v);
     } else if constexpr (n == 1) {
@@ -127,7 +146,6 @@ requires OC_MULTIPLY_CHECK(T, T)
     auto n2 = Pow<n / 2>(v);
     return n2 * n2 * Pow<n & 1>(v);
 }
-
 
 template<typename T, typename U, typename V>
 [[nodiscard]] constexpr T clamp(T val, U low, V high) noexcept {
@@ -142,10 +160,10 @@ template<typename T, typename U, typename V>
 
 template<typename F, typename A, typename B>
 requires ocarina::is_floating_point_v<expr_value_t<F>>
-[[nodiscard]] constexpr auto lerp(F t, A a, B b) noexcept {
+OC_NODISCARD constexpr auto
+lerp(F t, A a, B b) noexcept {
     return a + t * (b - a);
 }
-
 
 template<typename T, typename F2>
 [[nodiscard]] T triangle_lerp(F2 barycentric, T v0, T v1, T v2) noexcept {
