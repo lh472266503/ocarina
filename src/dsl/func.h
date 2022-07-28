@@ -117,15 +117,15 @@ struct is_callable<Callable<T>> : std::true_type {};
 namespace detail {
 
 template<typename T, typename... A>
-[[nodiscard]] auto tuple_insert(ocarina::tuple<A...> lst, T &&t) {
+[[nodiscard]] auto tuple_insert(const ocarina::tuple<A...> &lst, const T &t) {
     using ret_type = ocarina::tuple<T, A...>;
-    auto func = []<typename TT, typename... AA, size_t... i>(TT && t,
-                                                           ocarina::tuple<AA...> lst,
-                                                           std::index_sequence<i...>)
-                    ->ret_type {
-        return ret_type(std::forward<TT>(t), std::move(ocarina::get<i>(lst))...);
+    auto func = []<typename TT, typename... AA, size_t... i>(const TT &t,
+                                                             const ocarina::tuple<AA...> &lst,
+                                                             std::index_sequence<i...>)
+        -> ret_type {
+        return ret_type(t, ocarina::get<i>(lst)...);
     };
-    return func(std::forward<T>(t), std::move(lst), std::index_sequence_for<A...>());
+    return func(t, lst, std::index_sequence_for<A...>());
 }
 
 [[nodiscard]] inline ocarina::tuple<> create_argument_definition_impl(ocarina::tuple<> *var_tuple,
@@ -136,8 +136,8 @@ template<typename T, typename... A>
 template<typename Var, typename... RestVar, typename Tag, typename... RestTag>
 [[nodiscard]] auto create_argument_definition_impl(ocarina::tuple<Var, RestVar...> *var_tuple,
                                                    ocarina::tuple<Tag, RestTag...> *tag_tuple) {
-    return tuple_insert(std::move(create_argument_definition_impl(static_cast<tuple<RestVar...> *>(nullptr),
-                                                                  static_cast<tuple<RestTag...> *>(nullptr))),
+    return tuple_insert(create_argument_definition_impl(static_cast<tuple<RestVar...> *>(nullptr),
+                                                        static_cast<tuple<RestTag...> *>(nullptr)),
                         Var{Tag{}});
 }
 
@@ -207,8 +207,9 @@ public:
           }))) {}
 
     template<typename... A>
-    requires std::is_invocable_v<signature, expr_value_t<A>...>
-    auto operator()(A &&...args) const noexcept {
+    requires std::is_invocable_v<signature, expr_value_t<A>
+                                            ...> auto
+    operator()(A &&...args) const noexcept {
         const CallExpr *expr = Function::current()->call(Type::of<Ret>(), _function.get(), {(OC_EXPR(args))...});
         if constexpr (!std::is_same_v<std::remove_cvref_t<Ret>, void>) {
             return eval<Ret>(expr);
@@ -245,8 +246,9 @@ public:
           }))) {}
 
     template<typename... A>
-    requires std::is_invocable_v<signature, expr_value_t<A>...>
-    auto operator()(A &&...args) const noexcept {}
+    requires std::is_invocable_v<signature, expr_value_t<A>
+                                            ...> auto
+    operator()(A &&...args) const noexcept {}
 };
 
 template<typename T>
