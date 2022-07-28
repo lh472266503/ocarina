@@ -32,15 +32,11 @@ public:
     using this_type = T;
     explicit Expr(const Expression *expression) noexcept
         : detail::Computable<T>(expression) {}
-
     Expr() = default;
-
     template<typename Arg>
     requires concepts::non_pointer<std::remove_cvref_t<Arg>> && concepts::different<Expr<T>, std::remove_cvref_t<Arg>>
     explicit Expr(Arg &&arg) : Expr(detail::extract_expression(std::forward<Arg>(arg))) {}
-
     OC_MAKE_GET_PROXY
-
     Expr(const Expr &) = delete;
     Expr &operator=(const Expr &) = delete;
     Expr &operator=(Expr &&) = delete;
