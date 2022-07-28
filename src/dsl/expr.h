@@ -29,6 +29,7 @@ template<typename T>
 template<typename T>
 class Expr : public detail::Computable<T> {
 public:
+    using this_type = T;
     explicit Expr(const Expression *expression) noexcept
         : detail::Computable<T>(expression) {}
 

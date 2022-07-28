@@ -253,9 +253,9 @@ struct Proxy : public ocarina::detail::Computable<T> {
     static_assert(ocarina::always_false_v<T>, "proxy is invalid !");
 };
 
-#define OC_MAKE_GET_PROXY                                                     \
-    auto operator->() noexcept { return reinterpret_cast<Proxy<T> *>(this); } \
-    auto operator->() const noexcept { return reinterpret_cast<const Proxy<T> *>(this); }
+#define OC_MAKE_GET_PROXY                                                             \
+    auto operator->() noexcept { return reinterpret_cast<Proxy<this_type> *>(this); } \
+    auto operator->() const noexcept { return reinterpret_cast<const Proxy<this_type> *>(this); }
 
 #define OC_MAKE_PROXY(S) \
     template<>           \

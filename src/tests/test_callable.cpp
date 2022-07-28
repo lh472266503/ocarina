@@ -44,9 +44,11 @@ template<typename T>
 auto func(T a, T b) {
     auto c = Var<int3>{a, b, a};
     int3 aa ;
-    aa = rcp(aa);
-    a = rcp(a);
-    c = rcp(c);
+    Var<Hit> hit;
+    hit->init();
+//    aa = rcp(aa);
+//    a = rcp(a);
+//    c = rcp(c);
     return c;
 //    Var<int3> arr{a,a,a};
 //    return arr;

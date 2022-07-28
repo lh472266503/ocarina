@@ -27,3 +27,6 @@ OC_STRUCT(ocarina::Hit, inst_id, prim_id, bary){
         return make_expr(inst_id == uint(-1));
     }
 };
+
+OC_MAKE_STRUCT_VAR(ocarina::Hit, inst_id, prim_id, bary)
+
