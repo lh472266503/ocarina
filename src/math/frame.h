@@ -18,3 +18,4 @@ struct Frame {
 OC_STRUCT(ocarina::Frame, x, y, z){
 
 };
+OC_MAKE_STRUCT_VAR(ocarina::Frame, x, y, z)

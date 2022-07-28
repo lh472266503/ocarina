@@ -43,9 +43,9 @@ Var<int> add(Var<int> a, Var<int> b) {
 template<typename T>
 auto func(T a, T b) {
     auto c = Var<int3>{a, b, a};
-    int3 aa ;
-    Var<Hit> hit;
-    hit->init();
+    Var<uint> ui = a;
+    Var<float2> f2;
+//    Var<Hit> hit{ui, ui, f2};
 //    aa = rcp(aa);
 //    a = rcp(a);
 //    c = rcp(c);

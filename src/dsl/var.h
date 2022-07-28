@@ -30,7 +30,7 @@ using detail::Computable;
     }                                                                                                           \
     OC_MAKE_GET_PROXY                                                                                           \
     explicit Var(ocarina::detail::ArgumentCreation) noexcept                                                    \
-        : Var(ocarina::Function::current()->argument(Type::of<this_type>())) {                                  \
+        : Var(ocarina::Function::current()->argument(ocarina::Type::of<this_type>())) {                         \
     }                                                                                                           \
     explicit Var(ocarina::detail::ReferenceArgumentCreation) noexcept                                           \
         : Var(ocarina::Function::current()->reference_argument(ocarina::Type::of<this_type>())) {}              \
@@ -41,19 +41,14 @@ using detail::Computable;
     }
 
 #define OC_MAKE_VAR_ARG(member) \
-    const Var<std::remove_cvref_t<decltype(this_type::member)>> &member##_
-
-#define OC_MAKE_INITIAL_LIST_CTOR(...) \
-    MAP_LIST(OC_MAKE_VAR_ARG, ##__VA_ARGS__)
+    const Var<std::remove_cvref_t<decltype(this_type::member)>> &member
 
 #define OC_MAKE_VAR_ASSIGN(member) \
-    detail::assign(this->member, member##_);
-#define OC_MAKE_VARS_ASSIGN(...) \
-    MAP(OC_MAKE_VAR_ASSIGN, ##__VA_ARGS__)
+    ocarina::detail::assign(this->member, member);
 
 #define OC_MAKE_INITIAL_CTOR(...)                           \
-    Var(OC_MAKE_INITIAL_LIST_CTOR(##__VA_ARGS__)) : Var() { \
-        OC_MAKE_VARS_ASSIGN(##__VA_ARGS__)                  \
+    Var(MAP_LIST(OC_MAKE_VAR_ARG, ##__VA_ARGS__)) : Var() { \
+        MAP(OC_MAKE_VAR_ASSIGN, ##__VA_ARGS__)              \
     }
 
 #define OC_MAKE_STRUCT_VAR(T, ...)                                   \
@@ -61,7 +56,7 @@ using detail::Computable;
     struct ocarina::Var<T> : public ocarina::detail::Computable<T> { \
         using this_type = T;                                         \
         OC_MAKE_VAR_COMMON                                           \
-        OC_MAKE_INITIAL_CTOR(##__VA_ARGS__)                          \
+        OC_MAKE_INITIAL_CTOR(__VA_ARGS__)                            \
     };
 
 template<typename T>
