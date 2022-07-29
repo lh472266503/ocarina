@@ -32,6 +32,7 @@ private:
     ocarina::vector<ocarina::unique_ptr<Expression>> _all_expressions;
     ocarina::vector<ocarina::unique_ptr<Statement>> _all_statements;
     ocarina::vector<Variable> _arguments;
+    ocarina::vector<Variable> _uniform_vars;
     ocarina::vector<Variable> _builtin_vars;
     ocarina::vector<Usage> _variable_usages;
     ocarina::vector<ScopeStmt *> _scope_stack;
@@ -113,6 +114,7 @@ private:
 
 public:
     void add_used_structure(const Type *type) noexcept { _used_struct.emplace(type); }
+    void add_uniform_var(const Variable &var) noexcept { _uniform_vars.push_back(var); }
     [[nodiscard]] static Function *current() noexcept {
         return _function_stack().back();
     }

@@ -68,7 +68,10 @@ public:
         return BufferView<T>(_handle, offset, size, _size);
     }
 
+    /// for dsl trait
     auto operator[](int i) { return T{}; }
+
+    
 
     template<typename... Args>
     [[nodiscard]] BufferUploadCommand *upload(Args &&...args) const noexcept {

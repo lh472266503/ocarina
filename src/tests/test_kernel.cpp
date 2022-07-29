@@ -25,8 +25,13 @@ int main(int argc, char *argv[]) {
     Callable add = [&](Var<float> a, Var<float> b) {
         return a + b;
     };
-
-    Kernel kn = [&](Var<float> a, Var<float> b, Var<Buffer<float>> c) {
+    fs::path path(argv[0]);
+    Context context(path.parent_path());
+    context.clear_cache();
+    Device device = context.create_device("cuda");
+    Stream stream = device.create_stream();
+    Buffer<float> f_buffer = device.create_buffer<float>(count);
+    Kernel kn = [&](Var<float> a, Var<float> b, BufferVar<float> c) {
         //        configure_block(1,2,1);
         Var<int3> vec;
         Var<int2> vec2 = vec.xy();
@@ -35,14 +40,10 @@ int main(int argc, char *argv[]) {
         a = add(a, b);
         $return();
     };
-    fs::path path(argv[0]);
-    Context context(path.parent_path());
-    context.clear_cache();
-    Device device = context.create_device("cuda");
-    Stream stream = device.create_stream();
+
     auto shader = device.compile(kn);
 //    shader.compute_fit_size();
-    Buffer<float> f_buffer = device.create_buffer<float>(count);
+
     stream << f_buffer.upload_sync(v.data());
     stream << shader(1.f, 6.f, f_buffer).dispatch(10);
     stream << synchronize();
