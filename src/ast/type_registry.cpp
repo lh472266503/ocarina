@@ -232,6 +232,7 @@ void TypeRegistry::parse_array(Type *type, ocarina::string_view desc) noexcept {
 void TypeRegistry::add_type(ocarina::unique_ptr<Type> type) {
     _type_set.insert(type.get());
     type->_index = _types.size();
+    Function::current()->add_used_structure(type.get());
     _types.push_back(std::move(type));
 }
 

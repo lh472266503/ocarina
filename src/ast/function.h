@@ -42,6 +42,7 @@ private:
     mutable bool _hash_computed{false};
     Tag _tag{Tag::CALLABLE};
     ocarina::set<const Function *> _used_custom_func;
+    ocarina::set<const Type *> _used_struct;
     mutable uint3 _block_dim{make_uint3(0)};
     mutable uint3 _grid_dim{make_uint3(0)};
     mutable uint3 _dispatch_dim{make_uint3(0)};
@@ -111,6 +112,7 @@ private:
     };
 
 public:
+    void add_used_structure(const Type *type) noexcept { _used_struct.emplace(type); }
     [[nodiscard]] static Function *current() noexcept {
         return _function_stack().back();
     }
@@ -151,7 +153,7 @@ public:
     }
 
     [[nodiscard]] auto used_custom_func() const noexcept { return _used_custom_func; }
-
+    [[nodiscard]] auto used_structure() const noexcept { return _used_struct; }
     void set_block_dim(uint x, uint y = 1, uint z = 1) const noexcept { _block_dim = make_uint3(x, y, z); }
     void set_block_dim(uint2 size) const noexcept { _block_dim = make_uint3(size, 1); }
     void set_block_dim(uint3 size) const noexcept { _block_dim = size; }

@@ -45,11 +45,11 @@ auto func(T a, T b) {
     auto c = Var<int3>{a, b, a};
     Var<uint> ui = a;
     Var<float2> f2;
-//    Var<Hit> hit{ui, ui, f2};
+    Var<Hit> hit{ui, ui, f2};
 //    aa = rcp(aa);
 //    a = rcp(a);
 //    c = rcp(c);
-    return c;
+    return hit;
 //    Var<int3> arr{a,a,a};
 //    return arr;
 //    arr.x = a;

@@ -401,10 +401,12 @@ void CppCodegen::_emit_arguments(const Function &f) noexcept {
 }
 void CppCodegen::emit(const Function &func) noexcept {
     FUNCTION_GUARD(func)
+    for (const Type *type : func.used_structure()) {
+        visit(type);
+    }
     for (const Function *f : func.used_custom_func()) {
         emit(*f);
     }
-    _emit_types_define();
     _emit_function(func);
     _emit_newline();
 }
