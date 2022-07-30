@@ -24,7 +24,7 @@ class UniformBinding : public Hashable {
 private:
     const Type *_type;
     handle_ty _handle;
-    const Expression *_expr{nullptr};
+    const RefExpr *_expr{nullptr};
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept {
@@ -41,14 +41,15 @@ public:
     }
 
 public:
-    UniformBinding(const Expression *expr, const Type *type, handle_ty handle)
+    UniformBinding(const RefExpr *expr, const Type *type, handle_ty handle)
         : _type(type), _handle(handle), _expr(expr) {}
 
     UniformBinding(handle_ty handle) : _handle(handle) {}
 
     [[nodiscard]] const Type *type() const noexcept { return _type; }
     [[nodiscard]] handle_ty handle() const noexcept { return _handle; }
-    [[nodiscard]] const Expression *expression() const noexcept { return _expr; }
+    [[nodiscard]] const handle_ty *handle_address() const noexcept { return &_handle; }
+    [[nodiscard]] const RefExpr *expression() const noexcept { return _expr; }
 };
 
 class OC_AST_API Function : public concepts::Noncopyable, public concepts::Definable, public Hashable {
@@ -161,7 +162,7 @@ public:
         if (_uniform_vars.contains(handle)) {
             return;
         }
-        const Expression *expr = _ref(Variable(type, Variable::Tag::BUFFER, _next_variable_uid()));
+        const RefExpr *expr = _ref(Variable(type, Variable::Tag::BUFFER, _next_variable_uid()));
         UniformBinding uniform(expr, type, handle);
         _uniform_vars.emplace(uniform);
     }
