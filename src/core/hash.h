@@ -19,13 +19,13 @@ namespace detail {
 
 template<typename T>
 concept hashable_with_hash_method = requires(T x) {
-    x.hash();
-};
+                                        x.hash();
+                                    };
 
 template<typename T>
 concept hashable_with_hash_code_method = requires(T x) {
-    x.hash_code();
-};
+                                             x.hash_code();
+                                         };
 
 }// namespace detail
 
@@ -75,7 +75,6 @@ template<typename T>
     return Hash64{seed}(std::forward<T>(v));
 }
 
-
 class Hashable {
 private:
     mutable uint64_t _hash{0u};
@@ -85,9 +84,11 @@ protected:
     [[nodiscard]] virtual uint64_t compute_hash() const noexcept { return Hash64::default_seed; }
 
 public:
+    [[nodiscard]] const char *class_name() const noexcept { return typeid(*this).name(); }
+
     [[nodiscard]] uint64_t hash() const noexcept {
         if (!_hash_computed) {
-            _hash = compute_hash();
+            _hash = hash64(class_name(), compute_hash());
             _hash_computed = true;
         }
         return _hash;
