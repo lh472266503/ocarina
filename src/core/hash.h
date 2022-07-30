@@ -75,4 +75,23 @@ template<typename T>
     return Hash64{seed}(std::forward<T>(v));
 }
 
+
+class Hashable {
+private:
+    mutable uint64_t _hash{0u};
+    mutable bool _hash_computed{false};
+
+protected:
+    [[nodiscard]] virtual uint64_t compute_hash() const noexcept { return Hash64::default_seed; }
+
+public:
+    [[nodiscard]] uint64_t hash() const noexcept {
+        if (!_hash_computed) {
+            _hash = compute_hash();
+            _hash_computed = true;
+        }
+        return _hash;
+    }
+};
+
 }// namespace ocarina

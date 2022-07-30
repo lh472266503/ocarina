@@ -6,7 +6,6 @@
 
 #include "basic_types.h"
 #include "stl.h"
-#include "hash.h"
 
 namespace ocarina::concepts {
 
@@ -16,24 +15,6 @@ struct Noncopyable {
     Noncopyable &operator=(const Noncopyable &) noexcept = delete;
     Noncopyable(Noncopyable &&) noexcept = default;
     Noncopyable &operator=(Noncopyable &&) noexcept = default;
-};
-
-class Hashable {
-private:
-    mutable uint64_t _hash{0u};
-    mutable bool _hash_computed{false};
-
-protected:
-    [[nodiscard]] virtual uint64_t compute_hash() const noexcept { return Hash64::default_seed; }
-
-public:
-    [[nodiscard]] uint64_t hash() const noexcept {
-        if (!_hash_computed) {
-            _hash = compute_hash();
-            _hash_computed = true;
-        }
-        return _hash;
-    }
 };
 
 class Definable {

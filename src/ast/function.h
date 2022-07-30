@@ -20,17 +20,18 @@ class ScopeStmt;
 class RefExpr;
 class IfStmt;
 
-class UniformBinding {
+class UniformBinding : public Hashable {
 private:
     const Type *_type;
     handle_ty _handle;
+private:
+    [[nodiscard]] uint64_t compute_hash() const noexcept {
+        return hash64(type()->hash(), _handle);
+    }
 public:
     UniformBinding(const Type *type, handle_ty handle)
         : _type(type), _handle(handle) {}
-    //todo
-    [[nodiscard]] uint64_t hash() const noexcept {
-        return hash64(type()->hash(), handle());
-    }
+
     [[nodiscard]] const Type *type() const noexcept { return _type; }
     [[nodiscard]] handle_ty handle() const noexcept { return _handle; }
 };

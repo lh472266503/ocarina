@@ -212,6 +212,9 @@ uint64_t Function::_compute_hash() const noexcept {
     for (const Variable &v : _builtin_vars) {
         ret = hash64(ret, v.hash());
     }
+    for (const UniformBinding &v : _uniform_vars) {
+        ret = hash64(ret, v.hash());
+    }
     ret = hash64(ret, _body.hash());
     return ret;
 }
