@@ -89,7 +89,7 @@ void CUDACodegen::_emit_builtin_var(Variable v) noexcept {
 }
 
 void CUDACodegen::_emit_uniform_var(const UniformBinding &uniform) noexcept {
-    current_scratch() << "__constant__ ";
+    current_scratch() << "extern \"C\" __constant__ ";
     _emit_type_name(uniform.type());
     _emit_space();
     uniform.expression()->accept(*this);

@@ -16,7 +16,7 @@ CUDAShader::CUDAShader(Device::Impl *device,
     OC_CU_CHECK(cuModuleLoadData(&_module, ptx.c_str()));
     OC_CU_CHECK(cuModuleGetFunction(&_func_handle, _module, _function.func_name().c_str()));
     _function.for_each_uniform_var([&](const UniformBinding &uniform) {
-
+        
     });
 }
 
