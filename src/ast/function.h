@@ -32,15 +32,6 @@ private:
     }
 
 public:
-    [[nodiscard]] bool operator==(const UniformBinding &other) const noexcept {
-        return handle() == other.handle();
-    }
-
-    [[nodiscard]] bool operator<(const UniformBinding &other) const noexcept {
-        return handle() < other.handle();
-    }
-
-public:
     UniformBinding(const RefExpr *expr, const Type *type, handle_ty handle)
         : _type(type), _handle(handle), _expr(expr) {}
 
@@ -64,7 +55,7 @@ private:
     ocarina::vector<ocarina::unique_ptr<Expression>> _all_expressions;
     ocarina::vector<ocarina::unique_ptr<Statement>> _all_statements;
     ocarina::vector<Variable> _arguments;
-    ocarina::set<UniformBinding> _uniform_vars;
+    ocarina::vector<UniformBinding> _uniform_vars;
     ocarina::vector<Variable> _builtin_vars;
     ocarina::vector<Usage> _variable_usages;
     ocarina::vector<ScopeStmt *> _scope_stack;
@@ -158,14 +149,7 @@ public:
         }
     }
     void add_used_structure(const Type *type) noexcept { _used_struct.emplace(type); }
-    void add_uniform_var(const Type *type, handle_ty handle) noexcept {
-        if (_uniform_vars.contains(handle)) {
-            return;
-        }
-        const RefExpr *expr = _ref(Variable(type, Variable::Tag::BUFFER, _next_variable_uid()));
-        UniformBinding uniform(expr, type, handle);
-        _uniform_vars.emplace(uniform);
-    }
+    const UniformBinding & get_uniform_var(const Type *type, handle_ty handle) noexcept;
     [[nodiscard]] auto uniform_vars() const noexcept { return _uniform_vars; }
     template<typename Visitor>
     void for_each_uniform_var(Visitor &&visitor) const noexcept {
