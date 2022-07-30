@@ -232,3 +232,173 @@ __device__ oc_bool4 operator+(oc_bool4 vec) { return oc_bool4(+vec.x, +vec.y, +v
 __device__ oc_bool4 operator-(oc_bool4 vec) { return oc_bool4(-vec.x, -vec.y, -vec.z, -vec.w); }
 __device__ oc_bool4 operator!(oc_bool4 vec) { return oc_bool4(!vec.x, !vec.y, !vec.z, !vec.w); }
 __device__ oc_bool4 operator~(oc_bool4 vec) { return oc_bool4(~vec.x, ~vec.y, ~vec.z, ~vec.w); }
+
+__device__ oc_int2 operator+(oc_int2 lhs, oc_int2 rhs) { return oc_int2(lhs.x + rhs.x, lhs.y + rhs.y); }
+__device__ oc_int2 operator+(oc_int2 lhs, oc_int rhs) { return oc_int2(lhs.x + rhs, lhs.y + rhs); }
+__device__ oc_int2 operator+(oc_int lhs, oc_int2 rhs) { return oc_int2(lhs + rhs.x, lhs + rhs.y); }
+
+__device__ oc_int2 operator-(oc_int2 lhs, oc_int2 rhs) { return oc_int2(lhs.x - rhs.x, lhs.y - rhs.y); }
+__device__ oc_int2 operator-(oc_int2 lhs, oc_int rhs) { return oc_int2(lhs.x - rhs, lhs.y - rhs); }
+__device__ oc_int2 operator-(oc_int lhs, oc_int2 rhs) { return oc_int2(lhs - rhs.x, lhs - rhs.y); }
+
+__device__ oc_int2 operator*(oc_int2 lhs, oc_int2 rhs) { return oc_int2(lhs.x * rhs.x, lhs.y * rhs.y); }
+__device__ oc_int2 operator*(oc_int2 lhs, oc_int rhs) { return oc_int2(lhs.x * rhs, lhs.y * rhs); }
+__device__ oc_int2 operator*(oc_int lhs, oc_int2 rhs) { return oc_int2(lhs * rhs.x, lhs * rhs.y); }
+
+__device__ oc_int2 operator/(oc_int2 lhs, oc_int2 rhs) { return oc_int2(lhs.x / rhs.x, lhs.y / rhs.y); }
+__device__ oc_int2 operator/(oc_int2 lhs, oc_int rhs) { return oc_int2(lhs.x / rhs, lhs.y / rhs); }
+__device__ oc_int2 operator/(oc_int lhs, oc_int2 rhs) { return oc_int2(lhs / rhs.x, lhs / rhs.y); }
+
+__device__ oc_int2 operator%(oc_int2 lhs, oc_int2 rhs) { return oc_int2(lhs.x % rhs.x, lhs.y % rhs.y); }
+__device__ oc_int2 operator%(oc_int2 lhs, oc_int rhs) { return oc_int2(lhs.x % rhs, lhs.y % rhs); }
+__device__ oc_int2 operator%(oc_int lhs, oc_int2 rhs) { return oc_int2(lhs % rhs.x, lhs % rhs.y); }
+
+__device__ oc_int3 operator+(oc_int3 lhs, oc_int3 rhs) { return oc_int3(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z); }
+__device__ oc_int3 operator+(oc_int3 lhs, oc_int rhs) { return oc_int3(lhs.x + rhs, lhs.y + rhs, lhs.z + rhs); }
+__device__ oc_int3 operator+(oc_int lhs, oc_int3 rhs) { return oc_int3(lhs + rhs.x, lhs + rhs.y, lhs + rhs.z); }
+
+__device__ oc_int3 operator-(oc_int3 lhs, oc_int3 rhs) { return oc_int3(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z); }
+__device__ oc_int3 operator-(oc_int3 lhs, oc_int rhs) { return oc_int3(lhs.x - rhs, lhs.y - rhs, lhs.z - rhs); }
+__device__ oc_int3 operator-(oc_int lhs, oc_int3 rhs) { return oc_int3(lhs - rhs.x, lhs - rhs.y, lhs - rhs.z); }
+
+__device__ oc_int3 operator*(oc_int3 lhs, oc_int3 rhs) { return oc_int3(lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z); }
+__device__ oc_int3 operator*(oc_int3 lhs, oc_int rhs) { return oc_int3(lhs.x * rhs, lhs.y * rhs, lhs.z * rhs); }
+__device__ oc_int3 operator*(oc_int lhs, oc_int3 rhs) { return oc_int3(lhs * rhs.x, lhs * rhs.y, lhs * rhs.z); }
+
+__device__ oc_int3 operator/(oc_int3 lhs, oc_int3 rhs) { return oc_int3(lhs.x / rhs.x, lhs.y / rhs.y, lhs.z / rhs.z); }
+__device__ oc_int3 operator/(oc_int3 lhs, oc_int rhs) { return oc_int3(lhs.x / rhs, lhs.y / rhs, lhs.z / rhs); }
+__device__ oc_int3 operator/(oc_int lhs, oc_int3 rhs) { return oc_int3(lhs / rhs.x, lhs / rhs.y, lhs / rhs.z); }
+
+__device__ oc_int3 operator%(oc_int3 lhs, oc_int3 rhs) { return oc_int3(lhs.x % rhs.x, lhs.y % rhs.y, lhs.z % rhs.z); }
+__device__ oc_int3 operator%(oc_int3 lhs, oc_int rhs) { return oc_int3(lhs.x % rhs, lhs.y % rhs, lhs.z % rhs); }
+__device__ oc_int3 operator%(oc_int lhs, oc_int3 rhs) { return oc_int3(lhs % rhs.x, lhs % rhs.y, lhs % rhs.z); }
+
+__device__ oc_int4 operator+(oc_int4 lhs, oc_int4 rhs) { return oc_int4(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z, lhs.w + rhs.w); }
+__device__ oc_int4 operator+(oc_int4 lhs, oc_int rhs) { return oc_int4(lhs.x + rhs, lhs.y + rhs, lhs.z + rhs, lhs.w + rhs); }
+__device__ oc_int4 operator+(oc_int lhs, oc_int4 rhs) { return oc_int4(lhs + rhs.x, lhs + rhs.y, lhs + rhs.z, lhs + rhs.w); }
+
+__device__ oc_int4 operator-(oc_int4 lhs, oc_int4 rhs) { return oc_int4(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z, lhs.w - rhs.w); }
+__device__ oc_int4 operator-(oc_int4 lhs, oc_int rhs) { return oc_int4(lhs.x - rhs, lhs.y - rhs, lhs.z - rhs, lhs.w - rhs); }
+__device__ oc_int4 operator-(oc_int lhs, oc_int4 rhs) { return oc_int4(lhs - rhs.x, lhs - rhs.y, lhs - rhs.z, lhs - rhs.w); }
+
+__device__ oc_int4 operator*(oc_int4 lhs, oc_int4 rhs) { return oc_int4(lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z, lhs.w * rhs.w); }
+__device__ oc_int4 operator*(oc_int4 lhs, oc_int rhs) { return oc_int4(lhs.x * rhs, lhs.y * rhs, lhs.z * rhs, lhs.w * rhs); }
+__device__ oc_int4 operator*(oc_int lhs, oc_int4 rhs) { return oc_int4(lhs * rhs.x, lhs * rhs.y, lhs * rhs.z, lhs * rhs.w); }
+
+__device__ oc_int4 operator/(oc_int4 lhs, oc_int4 rhs) { return oc_int4(lhs.x / rhs.x, lhs.y / rhs.y, lhs.z / rhs.z, lhs.w / rhs.w); }
+__device__ oc_int4 operator/(oc_int4 lhs, oc_int rhs) { return oc_int4(lhs.x / rhs, lhs.y / rhs, lhs.z / rhs, lhs.w / rhs); }
+__device__ oc_int4 operator/(oc_int lhs, oc_int4 rhs) { return oc_int4(lhs / rhs.x, lhs / rhs.y, lhs / rhs.z, lhs / rhs.w); }
+
+__device__ oc_int4 operator%(oc_int4 lhs, oc_int4 rhs) { return oc_int4(lhs.x % rhs.x, lhs.y % rhs.y, lhs.z % rhs.z, lhs.w % rhs.w); }
+__device__ oc_int4 operator%(oc_int4 lhs, oc_int rhs) { return oc_int4(lhs.x % rhs, lhs.y % rhs, lhs.z % rhs, lhs.w % rhs); }
+__device__ oc_int4 operator%(oc_int lhs, oc_int4 rhs) { return oc_int4(lhs % rhs.x, lhs % rhs.y, lhs % rhs.z, lhs % rhs.w); }
+
+__device__ oc_uint2 operator+(oc_uint2 lhs, oc_uint2 rhs) { return oc_uint2(lhs.x + rhs.x, lhs.y + rhs.y); }
+__device__ oc_uint2 operator+(oc_uint2 lhs, oc_uint rhs) { return oc_uint2(lhs.x + rhs, lhs.y + rhs); }
+__device__ oc_uint2 operator+(oc_uint lhs, oc_uint2 rhs) { return oc_uint2(lhs + rhs.x, lhs + rhs.y); }
+
+__device__ oc_uint2 operator-(oc_uint2 lhs, oc_uint2 rhs) { return oc_uint2(lhs.x - rhs.x, lhs.y - rhs.y); }
+__device__ oc_uint2 operator-(oc_uint2 lhs, oc_uint rhs) { return oc_uint2(lhs.x - rhs, lhs.y - rhs); }
+__device__ oc_uint2 operator-(oc_uint lhs, oc_uint2 rhs) { return oc_uint2(lhs - rhs.x, lhs - rhs.y); }
+
+__device__ oc_uint2 operator*(oc_uint2 lhs, oc_uint2 rhs) { return oc_uint2(lhs.x * rhs.x, lhs.y * rhs.y); }
+__device__ oc_uint2 operator*(oc_uint2 lhs, oc_uint rhs) { return oc_uint2(lhs.x * rhs, lhs.y * rhs); }
+__device__ oc_uint2 operator*(oc_uint lhs, oc_uint2 rhs) { return oc_uint2(lhs * rhs.x, lhs * rhs.y); }
+
+__device__ oc_uint2 operator/(oc_uint2 lhs, oc_uint2 rhs) { return oc_uint2(lhs.x / rhs.x, lhs.y / rhs.y); }
+__device__ oc_uint2 operator/(oc_uint2 lhs, oc_uint rhs) { return oc_uint2(lhs.x / rhs, lhs.y / rhs); }
+__device__ oc_uint2 operator/(oc_uint lhs, oc_uint2 rhs) { return oc_uint2(lhs / rhs.x, lhs / rhs.y); }
+
+__device__ oc_uint2 operator%(oc_uint2 lhs, oc_uint2 rhs) { return oc_uint2(lhs.x % rhs.x, lhs.y % rhs.y); }
+__device__ oc_uint2 operator%(oc_uint2 lhs, oc_uint rhs) { return oc_uint2(lhs.x % rhs, lhs.y % rhs); }
+__device__ oc_uint2 operator%(oc_uint lhs, oc_uint2 rhs) { return oc_uint2(lhs % rhs.x, lhs % rhs.y); }
+
+__device__ oc_uint3 operator+(oc_uint3 lhs, oc_uint3 rhs) { return oc_uint3(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z); }
+__device__ oc_uint3 operator+(oc_uint3 lhs, oc_uint rhs) { return oc_uint3(lhs.x + rhs, lhs.y + rhs, lhs.z + rhs); }
+__device__ oc_uint3 operator+(oc_uint lhs, oc_uint3 rhs) { return oc_uint3(lhs + rhs.x, lhs + rhs.y, lhs + rhs.z); }
+
+__device__ oc_uint3 operator-(oc_uint3 lhs, oc_uint3 rhs) { return oc_uint3(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z); }
+__device__ oc_uint3 operator-(oc_uint3 lhs, oc_uint rhs) { return oc_uint3(lhs.x - rhs, lhs.y - rhs, lhs.z - rhs); }
+__device__ oc_uint3 operator-(oc_uint lhs, oc_uint3 rhs) { return oc_uint3(lhs - rhs.x, lhs - rhs.y, lhs - rhs.z); }
+
+__device__ oc_uint3 operator*(oc_uint3 lhs, oc_uint3 rhs) { return oc_uint3(lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z); }
+__device__ oc_uint3 operator*(oc_uint3 lhs, oc_uint rhs) { return oc_uint3(lhs.x * rhs, lhs.y * rhs, lhs.z * rhs); }
+__device__ oc_uint3 operator*(oc_uint lhs, oc_uint3 rhs) { return oc_uint3(lhs * rhs.x, lhs * rhs.y, lhs * rhs.z); }
+
+__device__ oc_uint3 operator/(oc_uint3 lhs, oc_uint3 rhs) { return oc_uint3(lhs.x / rhs.x, lhs.y / rhs.y, lhs.z / rhs.z); }
+__device__ oc_uint3 operator/(oc_uint3 lhs, oc_uint rhs) { return oc_uint3(lhs.x / rhs, lhs.y / rhs, lhs.z / rhs); }
+__device__ oc_uint3 operator/(oc_uint lhs, oc_uint3 rhs) { return oc_uint3(lhs / rhs.x, lhs / rhs.y, lhs / rhs.z); }
+
+__device__ oc_uint3 operator%(oc_uint3 lhs, oc_uint3 rhs) { return oc_uint3(lhs.x % rhs.x, lhs.y % rhs.y, lhs.z % rhs.z); }
+__device__ oc_uint3 operator%(oc_uint3 lhs, oc_uint rhs) { return oc_uint3(lhs.x % rhs, lhs.y % rhs, lhs.z % rhs); }
+__device__ oc_uint3 operator%(oc_uint lhs, oc_uint3 rhs) { return oc_uint3(lhs % rhs.x, lhs % rhs.y, lhs % rhs.z); }
+
+__device__ oc_uint4 operator+(oc_uint4 lhs, oc_uint4 rhs) { return oc_uint4(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z, lhs.w + rhs.w); }
+__device__ oc_uint4 operator+(oc_uint4 lhs, oc_uint rhs) { return oc_uint4(lhs.x + rhs, lhs.y + rhs, lhs.z + rhs, lhs.w + rhs); }
+__device__ oc_uint4 operator+(oc_uint lhs, oc_uint4 rhs) { return oc_uint4(lhs + rhs.x, lhs + rhs.y, lhs + rhs.z, lhs + rhs.w); }
+
+__device__ oc_uint4 operator-(oc_uint4 lhs, oc_uint4 rhs) { return oc_uint4(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z, lhs.w - rhs.w); }
+__device__ oc_uint4 operator-(oc_uint4 lhs, oc_uint rhs) { return oc_uint4(lhs.x - rhs, lhs.y - rhs, lhs.z - rhs, lhs.w - rhs); }
+__device__ oc_uint4 operator-(oc_uint lhs, oc_uint4 rhs) { return oc_uint4(lhs - rhs.x, lhs - rhs.y, lhs - rhs.z, lhs - rhs.w); }
+
+__device__ oc_uint4 operator*(oc_uint4 lhs, oc_uint4 rhs) { return oc_uint4(lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z, lhs.w * rhs.w); }
+__device__ oc_uint4 operator*(oc_uint4 lhs, oc_uint rhs) { return oc_uint4(lhs.x * rhs, lhs.y * rhs, lhs.z * rhs, lhs.w * rhs); }
+__device__ oc_uint4 operator*(oc_uint lhs, oc_uint4 rhs) { return oc_uint4(lhs * rhs.x, lhs * rhs.y, lhs * rhs.z, lhs * rhs.w); }
+
+__device__ oc_uint4 operator/(oc_uint4 lhs, oc_uint4 rhs) { return oc_uint4(lhs.x / rhs.x, lhs.y / rhs.y, lhs.z / rhs.z, lhs.w / rhs.w); }
+__device__ oc_uint4 operator/(oc_uint4 lhs, oc_uint rhs) { return oc_uint4(lhs.x / rhs, lhs.y / rhs, lhs.z / rhs, lhs.w / rhs); }
+__device__ oc_uint4 operator/(oc_uint lhs, oc_uint4 rhs) { return oc_uint4(lhs / rhs.x, lhs / rhs.y, lhs / rhs.z, lhs / rhs.w); }
+
+__device__ oc_uint4 operator%(oc_uint4 lhs, oc_uint4 rhs) { return oc_uint4(lhs.x % rhs.x, lhs.y % rhs.y, lhs.z % rhs.z, lhs.w % rhs.w); }
+__device__ oc_uint4 operator%(oc_uint4 lhs, oc_uint rhs) { return oc_uint4(lhs.x % rhs, lhs.y % rhs, lhs.z % rhs, lhs.w % rhs); }
+__device__ oc_uint4 operator%(oc_uint lhs, oc_uint4 rhs) { return oc_uint4(lhs % rhs.x, lhs % rhs.y, lhs % rhs.z, lhs % rhs.w); }
+
+__device__ oc_float2 operator+(oc_float2 lhs, oc_float2 rhs) { return oc_float2(lhs.x + rhs.x, lhs.y + rhs.y); }
+__device__ oc_float2 operator+(oc_float2 lhs, oc_float rhs) { return oc_float2(lhs.x + rhs, lhs.y + rhs); }
+__device__ oc_float2 operator+(oc_float lhs, oc_float2 rhs) { return oc_float2(lhs + rhs.x, lhs + rhs.y); }
+
+__device__ oc_float2 operator-(oc_float2 lhs, oc_float2 rhs) { return oc_float2(lhs.x - rhs.x, lhs.y - rhs.y); }
+__device__ oc_float2 operator-(oc_float2 lhs, oc_float rhs) { return oc_float2(lhs.x - rhs, lhs.y - rhs); }
+__device__ oc_float2 operator-(oc_float lhs, oc_float2 rhs) { return oc_float2(lhs - rhs.x, lhs - rhs.y); }
+
+__device__ oc_float2 operator*(oc_float2 lhs, oc_float2 rhs) { return oc_float2(lhs.x * rhs.x, lhs.y * rhs.y); }
+__device__ oc_float2 operator*(oc_float2 lhs, oc_float rhs) { return oc_float2(lhs.x * rhs, lhs.y * rhs); }
+__device__ oc_float2 operator*(oc_float lhs, oc_float2 rhs) { return oc_float2(lhs * rhs.x, lhs * rhs.y); }
+
+__device__ oc_float2 operator/(oc_float2 lhs, oc_float2 rhs) { return oc_float2(lhs.x / rhs.x, lhs.y / rhs.y); }
+__device__ oc_float2 operator/(oc_float2 lhs, oc_float rhs) { return oc_float2(lhs.x / rhs, lhs.y / rhs); }
+__device__ oc_float2 operator/(oc_float lhs, oc_float2 rhs) { return oc_float2(lhs / rhs.x, lhs / rhs.y); }
+
+__device__ oc_float3 operator+(oc_float3 lhs, oc_float3 rhs) { return oc_float3(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z); }
+__device__ oc_float3 operator+(oc_float3 lhs, oc_float rhs) { return oc_float3(lhs.x + rhs, lhs.y + rhs, lhs.z + rhs); }
+__device__ oc_float3 operator+(oc_float lhs, oc_float3 rhs) { return oc_float3(lhs + rhs.x, lhs + rhs.y, lhs + rhs.z); }
+
+__device__ oc_float3 operator-(oc_float3 lhs, oc_float3 rhs) { return oc_float3(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z); }
+__device__ oc_float3 operator-(oc_float3 lhs, oc_float rhs) { return oc_float3(lhs.x - rhs, lhs.y - rhs, lhs.z - rhs); }
+__device__ oc_float3 operator-(oc_float lhs, oc_float3 rhs) { return oc_float3(lhs - rhs.x, lhs - rhs.y, lhs - rhs.z); }
+
+__device__ oc_float3 operator*(oc_float3 lhs, oc_float3 rhs) { return oc_float3(lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z); }
+__device__ oc_float3 operator*(oc_float3 lhs, oc_float rhs) { return oc_float3(lhs.x * rhs, lhs.y * rhs, lhs.z * rhs); }
+__device__ oc_float3 operator*(oc_float lhs, oc_float3 rhs) { return oc_float3(lhs * rhs.x, lhs * rhs.y, lhs * rhs.z); }
+
+__device__ oc_float3 operator/(oc_float3 lhs, oc_float3 rhs) { return oc_float3(lhs.x / rhs.x, lhs.y / rhs.y, lhs.z / rhs.z); }
+__device__ oc_float3 operator/(oc_float3 lhs, oc_float rhs) { return oc_float3(lhs.x / rhs, lhs.y / rhs, lhs.z / rhs); }
+__device__ oc_float3 operator/(oc_float lhs, oc_float3 rhs) { return oc_float3(lhs / rhs.x, lhs / rhs.y, lhs / rhs.z); }
+
+__device__ oc_float4 operator+(oc_float4 lhs, oc_float4 rhs) { return oc_float4(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z, lhs.w + rhs.w); }
+__device__ oc_float4 operator+(oc_float4 lhs, oc_float rhs) { return oc_float4(lhs.x + rhs, lhs.y + rhs, lhs.z + rhs, lhs.w + rhs); }
+__device__ oc_float4 operator+(oc_float lhs, oc_float4 rhs) { return oc_float4(lhs + rhs.x, lhs + rhs.y, lhs + rhs.z, lhs + rhs.w); }
+
+__device__ oc_float4 operator-(oc_float4 lhs, oc_float4 rhs) { return oc_float4(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z, lhs.w - rhs.w); }
+__device__ oc_float4 operator-(oc_float4 lhs, oc_float rhs) { return oc_float4(lhs.x - rhs, lhs.y - rhs, lhs.z - rhs, lhs.w - rhs); }
+__device__ oc_float4 operator-(oc_float lhs, oc_float4 rhs) { return oc_float4(lhs - rhs.x, lhs - rhs.y, lhs - rhs.z, lhs - rhs.w); }
+
+__device__ oc_float4 operator*(oc_float4 lhs, oc_float4 rhs) { return oc_float4(lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z, lhs.w * rhs.w); }
+__device__ oc_float4 operator*(oc_float4 lhs, oc_float rhs) { return oc_float4(lhs.x * rhs, lhs.y * rhs, lhs.z * rhs, lhs.w * rhs); }
+__device__ oc_float4 operator*(oc_float lhs, oc_float4 rhs) { return oc_float4(lhs * rhs.x, lhs * rhs.y, lhs * rhs.z, lhs * rhs.w); }
+
+__device__ oc_float4 operator/(oc_float4 lhs, oc_float4 rhs) { return oc_float4(lhs.x / rhs.x, lhs.y / rhs.y, lhs.z / rhs.z, lhs.w / rhs.w); }
+__device__ oc_float4 operator/(oc_float4 lhs, oc_float rhs) { return oc_float4(lhs.x / rhs, lhs.y / rhs, lhs.z / rhs, lhs.w / rhs); }
+__device__ oc_float4 operator/(oc_float lhs, oc_float4 rhs) { return oc_float4(lhs / rhs.x, lhs / rhs.y, lhs / rhs.z, lhs / rhs.w); }
+
+
