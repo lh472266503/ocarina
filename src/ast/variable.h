@@ -16,6 +16,7 @@ public:
         // data
         LOCAL,
         SHARED,
+        UNIFORM,
 
         // reference
         REFERENCE,

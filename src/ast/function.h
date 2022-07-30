@@ -20,6 +20,21 @@ class ScopeStmt;
 class RefExpr;
 class IfStmt;
 
+class UniformBinding {
+private:
+    const Type *_type;
+    handle_ty _handle;
+public:
+    UniformBinding(const Type *type, handle_ty handle)
+        : _type(type), _handle(handle) {}
+    //todo
+    [[nodiscard]] uint64_t hash() const noexcept {
+        return hash64(type()->hash(), handle());
+    }
+    [[nodiscard]] const Type *type() const noexcept { return _type; }
+    [[nodiscard]] handle_ty handle() const noexcept { return _handle; }
+};
+
 class OC_AST_API Function : public concepts::Noncopyable, public concepts::Definable {
 public:
     enum struct Tag : uint {
@@ -32,7 +47,7 @@ private:
     ocarina::vector<ocarina::unique_ptr<Expression>> _all_expressions;
     ocarina::vector<ocarina::unique_ptr<Statement>> _all_statements;
     ocarina::vector<Variable> _arguments;
-    ocarina::vector<Variable> _uniform_vars;
+    ocarina::vector<UniformBinding> _uniform_vars;
     ocarina::vector<Variable> _builtin_vars;
     ocarina::vector<Usage> _variable_usages;
     ocarina::vector<ScopeStmt *> _scope_stack;
@@ -114,7 +129,8 @@ private:
 
 public:
     void add_used_structure(const Type *type) noexcept { _used_struct.emplace(type); }
-    void add_uniform_var(const Variable &var) noexcept { _uniform_vars.push_back(var); }
+    template<typename... Args>
+    void add_uniform_var(Args &&...args) noexcept { _uniform_vars.emplace_back(OC_FORWARD(args)...); }
     [[nodiscard]] static Function *current() noexcept {
         return _function_stack().back();
     }
