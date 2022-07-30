@@ -6,6 +6,7 @@
 
 #include "basic_types.h"
 #include "stl.h"
+#include "hash.h"
 
 namespace ocarina::concepts {
 
@@ -15,6 +16,24 @@ struct Noncopyable {
     Noncopyable &operator=(const Noncopyable &) noexcept = delete;
     Noncopyable(Noncopyable &&) noexcept = default;
     Noncopyable &operator=(Noncopyable &&) noexcept = default;
+};
+
+class Hashable {
+private:
+    mutable uint64_t _hash{0u};
+    mutable bool _hash_computed{false};
+
+protected:
+    [[nodiscard]] virtual uint64_t compute_hash() const noexcept { return Hash64::default_seed; }
+
+public:
+    [[nodiscard]] uint64_t hash() const noexcept {
+        if (!_hash_computed) {
+            _hash = compute_hash();
+            _hash_computed = true;
+        }
+        return _hash;
+    }
 };
 
 class Definable {
@@ -32,37 +51,37 @@ public:
 
 template<typename T>
 concept iterable = requires(T v) {
-    v.begin();
-    v.end();
-};
+                       v.begin();
+                       v.end();
+                   };
 
 template<typename T>
 concept string_viewable = requires(T v) {
-    ocarina::string_view{v};
-};
+                              ocarina::string_view{v};
+                          };
 
 template<typename T>
 concept span_convertible = requires(T v) {
-    ocarina::span{v};
-};
+                               ocarina::span{v};
+                           };
 
 template<typename T, typename... Args>
 concept constructible = requires(Args... args) {
-    T{args...};
-};
+                            T{args...};
+                        };
 
 template<typename Src, typename Dest>
 concept static_convertible = requires(Src s) {
-    static_cast<Dest>(s);
-};
+                                 static_cast<Dest>(s);
+                             };
 
 template<typename Src, typename Dest>
 concept bitwise_convertible = sizeof(Src) >= sizeof(Dest);
 
 template<typename Src, typename Dest>
 concept reinterpret_convertible = requires(Src s) {
-    reinterpret_cast<Dest *>(&s);
-};
+                                      reinterpret_cast<Dest *>(&s);
+                                  };
 
 template<typename F, typename... Args>
 concept invocable = std::is_invocable_v<F, Args...>;
@@ -74,13 +93,14 @@ template<typename T>
 concept pointer = std::is_pointer_v<T>;
 
 template<typename T>
-concept non_pointer = !std::is_pointer_v<T>;
+concept non_pointer = !
+std::is_pointer_v<T>;
 
 template<typename T>
 concept container = requires(T a) {
-    a.begin();
-    a.size();
-};
+                        a.begin();
+                        a.size();
+                    };
 
 template<typename T>
 concept integral = is_integral_v<T>;
@@ -128,11 +148,11 @@ template<typename T>
 concept basic = is_basic_v<T>;
 
 namespace detail {
-    template<typename... T>
-    struct all_same_impl : std::true_type {};
+template<typename... T>
+struct all_same_impl : std::true_type {};
 
-    template<typename First, typename... Other>
-    struct all_same_impl<First, Other...> : std::conjunction<std::is_same<First, Other>...> {};
+template<typename First, typename... Other>
+struct all_same_impl<First, Other...> : std::conjunction<std::is_same<First, Other>...> {};
 }// namespace detail
 
 template<typename... T>
@@ -148,7 +168,8 @@ template<typename... T>
 concept all_integral = (integral<T> && ...);
 
 template<typename A, typename B>
-concept different = !same<A, B>;
+concept different = !
+same<A, B>;
 
 template<typename Lhs, typename Rhs>
 concept access_able = requires(Lhs lhs, Rhs rhs) { lhs[rhs]; };
@@ -162,43 +183,43 @@ concept switch_able = std::is_enum_v<T> || ocarina::is_integral_v<T>;
 #define OC_UNARY_CHECK(T) \
     requires(T t) { op t; };
 
-#define oc_positive_check(T) OC_UNARY_CHECK(+)
-#define oc_negative_check(T) OC_UNARY_CHECK(-)
-#define oc_not_check(T) OC_UNARY_CHECK(!)
-#define oc_bit_not_check(T) OC_UNARY_CHECK(~)
+#define OC_POSITIVE_CHECK(T) OC_UNARY_CHECK(+)
+#define OC_NEGATIVE_CHECK(T) OC_UNARY_CHECK(-)
+#define OC_NOT_CHECK(T) OC_UNARY_CHECK(!)
+#define OC_BIT_NOT_CHECK(T) OC_UNARY_CHECK(~)
 
 #define OC_BINARY_CHECK(A, B, op) \
     requires(A a, B b) { a op b; }
 
-#define oc_plus_check(A, B) OC_BINARY_CHECK(A, B, +)
-#define oc_minus_check(A, B) OC_BINARY_CHECK(A, B, -)
+#define OC_PLUS_CHECK(A, B) OC_BINARY_CHECK(A, B, +)
+#define OC_MINUS_CHECK(A, B) OC_BINARY_CHECK(A, B, -)
 #define OC_MULTIPLY_CHECK(A, B) OC_BINARY_CHECK(A, B, *)
-#define oc_divide_check(A, B) OC_BINARY_CHECK(A, B, /)
-#define oc_mode_check(A, B) OC_BINARY_CHECK(A, B, %)
-#define oc_bit_and_check(A, B) OC_BINARY_CHECK(A, B, &)
-#define oc_bit_or_check(A, B) OC_BINARY_CHECK(A, B, |)
-#define oc_bit_xor_check(A, B) OC_BINARY_CHECK(A, B, ^)
-#define oc_shift_left_check(A, B) OC_BINARY_CHECK(A, B, <<)
-#define oc_shift_right_check(A, B) OC_BINARY_CHECK(A, B, >>)
-#define oc_and_check(A, B) OC_BINARY_CHECK(A, B, &&)
-#define oc_or_check(A, B) OC_BINARY_CHECK(A, B, ||)
-#define oc_equal_check(A, B) OC_BINARY_CHECK(A, B, ==)
-#define oc_ne_check(A, B) OC_BINARY_CHECK(A, B, !=)
-#define oc_lt_check(A, B) OC_BINARY_CHECK(A, B, <)
-#define oc_gt_check(A, B) OC_BINARY_CHECK(A, B, >)
-#define oc_le_check(A, B) OC_BINARY_CHECK(A, B, <=)
-#define oc_ge_check(A, B) OC_BINARY_CHECK(A, B, >=)
+#define OC_DIVIDE_CHECK(A, B) OC_BINARY_CHECK(A, B, /)
+#define OC_MODE_CHECK(A, B) OC_BINARY_CHECK(A, B, %)
+#define OC_BIT_AND_CHECK(A, B) OC_BINARY_CHECK(A, B, &)
+#define OC_BIT_OR_CHECK(A, B) OC_BINARY_CHECK(A, B, |)
+#define OC_BIT_XOR_CHECK(A, B) OC_BINARY_CHECK(A, B, ^)
+#define OC_SHIFT_LEFT_CHECK(A, B) OC_BINARY_CHECK(A, B, <<)
+#define OC_SHIFT_RIGHT_CHECK(A, B) OC_BINARY_CHECK(A, B, >>)
+#define OC_AND_CHECK(A, B) OC_BINARY_CHECK(A, B, &&)
+#define OC_OR_CHECK(A, B) OC_BINARY_CHECK(A, B, ||)
+#define OC_EQUAL_CHECK(A, B) OC_BINARY_CHECK(A, B, ==)
+#define OC_NE_CHECK(A, B) OC_BINARY_CHECK(A, B, !=)
+#define OC_LT_CHECK(A, B) OC_BINARY_CHECK(A, B, <)
+#define OC_GT_CHECK(A, B) OC_BINARY_CHECK(A, B, >)
+#define OC_LE_CHECK(A, B) OC_BINARY_CHECK(A, B, <=)
+#define OC_GE_CHECK(A, B) OC_BINARY_CHECK(A, B, >=)
 #define OC_ASSIGN_CHECK(A, B) OC_BINARY_CHECK(A, B, =)
 
-#define oc_plus_assign_check(A, B) OC_BINARY_CHECK(A, B, +=)
-#define oc_minus_assign_check(A, B) OC_BINARY_CHECK(A, B, -=)
-#define oc_multiply_assign_check(A, B) OC_BINARY_CHECK(A, B, *=)
-#define oc_divide_assign_check(A, B) OC_BINARY_CHECK(A, B, /=)
-#define oc_mod_assign_check(A, B) OC_BINARY_CHECK(A, B, %=)
-#define oc_bit_and_assign_check(A, B) OC_BINARY_CHECK(A, B, &=)
-#define oc_bit_or_assign_check(A, B) OC_BINARY_CHECK(A, B, |=)
-#define oc_bit_xor_assign_check(A, B) OC_BINARY_CHECK(A, B, ^=)
-#define oc_shift_left_assign_check(A, B) OC_BINARY_CHECK(A, B, <<=)
-#define oc_shift_right_assign_check(A, B) OC_BINARY_CHECK(A, B, >>=)
+#define OC_PLUS_ASSIGN_CHECK(A, B) OC_BINARY_CHECK(A, B, +=)
+#define OC_MINUS_ASSIGN_CHECK(A, B) OC_BINARY_CHECK(A, B, -=)
+#define OC_MULTIPLY_ASSIGN_CHECK(A, B) OC_BINARY_CHECK(A, B, *=)
+#define OC_DIVIDE_ASSIGN_CHECK(A, B) OC_BINARY_CHECK(A, B, /=)
+#define OC_MOD_ASSIGN_CHECK(A, B) OC_BINARY_CHECK(A, B, %=)
+#define OC_BIT_AND_ASSIGN_CHECK(A, B) OC_BINARY_CHECK(A, B, &=)
+#define OC_BIT_OR_ASSIGN_CHECK(A, B) OC_BINARY_CHECK(A, B, |=)
+#define OC_BIT_XOR_ASSIGN_CHECK(A, B) OC_BINARY_CHECK(A, B, ^=)
+#define OC_SHIFT_LEFT_ASSIGN_CHECK(A, B) OC_BINARY_CHECK(A, B, <<=)
+#define OC_SHIFT_RIGHT_ASSIGN_CHECK(A, B) OC_BINARY_CHECK(A, B, >>=)
 
 }// namespace ocarina::concepts
