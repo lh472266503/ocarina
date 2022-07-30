@@ -24,6 +24,7 @@ class UniformBinding : public Hashable {
 private:
     const Type *_type;
     handle_ty _handle;
+    const Expression *_expr{nullptr};
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept {
@@ -31,11 +32,12 @@ private:
     }
 
 public:
-    UniformBinding(const Type *type, handle_ty handle)
-        : _type(type), _handle(handle) {}
+    UniformBinding(const Expression *expr, const Type *type, handle_ty handle)
+        : _type(type), _handle(handle), _expr(expr) {}
 
     [[nodiscard]] const Type *type() const noexcept { return _type; }
     [[nodiscard]] handle_ty handle() const noexcept { return _handle; }
+    [[nodiscard]] const Expression *expression() const noexcept { return _expr; }
 };
 
 class OC_AST_API Function : public concepts::Noncopyable, public concepts::Definable, public Hashable {
@@ -130,8 +132,10 @@ private:
 
 public:
     void add_used_structure(const Type *type) noexcept { _used_struct.emplace(type); }
-    template<typename... Args>
-    void add_uniform_var(Args &&...args) noexcept { _uniform_vars.emplace_back(OC_FORWARD(args)...); }
+    void add_uniform_var(const Type *type, handle_ty handle) noexcept {
+        const Expression *expr = _ref(Variable(type, Variable::Tag::BUFFER, _next_variable_uid()));
+        _uniform_vars.emplace_back(expr, type, handle);
+    }
     [[nodiscard]] span<const UniformBinding> uniform_vars() const noexcept { return _uniform_vars; }
     [[nodiscard]] static Function *current() noexcept {
         return _function_stack().back();

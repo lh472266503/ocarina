@@ -49,11 +49,11 @@ int main(int argc, char *argv[]) {
     stream << shader(1.f, 6.f, f_buffer).dispatch(10);
     stream << synchronize();
     stream << f_buffer.download_sync(v.data());
-    stream << commit();
-
-    for (int i = 0; i < count; ++i) {
-        cout << v[i] << endl;
-    }
+//    stream << commit();
+//
+//    for (int i = 0; i < count; ++i) {
+//        cout << v[i] << endl;
+//    }
 
     return 0;
 }
