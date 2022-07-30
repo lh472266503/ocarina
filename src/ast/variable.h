@@ -10,7 +10,7 @@
 
 namespace ocarina {
 
-class Variable : public Hashable {
+class OC_AST_API Variable : public Hashable {
 public:
     enum struct Tag : uint32_t {
         // data
