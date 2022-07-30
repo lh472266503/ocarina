@@ -98,17 +98,23 @@ def define_operator():
                     args += f"{op}vec.{name_lst[d]}" + split
                 func = f"{device_flag} {class_name} operator{op}({class_name} vec) {{ return {class_name}({args}); }}"
                 content += func + "\n"
+            content += "\n"
     content += "\n"     
     cal_binary = ["+", "-", "*", "/", "%"]
+    cmp_binary = ["==", "!=", ">" , "<", ">=", "<="]
     
+    binary = cal_binary + cmp_binary
     for i, scalar in enumerate(scalar_types):
         for dim in range(2, 5):
-            for op in cal_binary:
+            for op in binary:
                 if scalar == "bool":
                     continue
                 if scalar == "float" and op == "%":
                     continue
                 vec_name = f"{prefix}_{scalar}{dim}"
+                ret_type = vec_name
+                if op in cmp_binary:
+                    ret_type = f"{prefix}_bool{dim}"
                 scalar_name = f"{prefix}_{scalar}"
                 args = ""
                 args1 = ""
@@ -120,9 +126,9 @@ def define_operator():
                     args1 += f"lhs.{field_name} {op} rhs" + split
                     args2 += f"lhs {op} rhs.{field_name}" + split
                     
-                func = f"{device_flag} {vec_name} operator{op}({vec_name} lhs, {vec_name} rhs) {{ return {vec_name}({args}); }}\n"
-                func += f"{device_flag} {vec_name} operator{op}({vec_name} lhs, {scalar_name} rhs) {{ return {vec_name}({args1}); }}\n"
-                func += f"{device_flag} {vec_name} operator{op}({scalar_name} lhs, {vec_name} rhs) {{ return {vec_name}({args2}); }}\n"
+                func = f"{device_flag} {ret_type} operator{op}({vec_name} lhs, {vec_name} rhs) {{ return {ret_type}({args}); }}\n"
+                func += f"{device_flag} {ret_type} operator{op}({vec_name} lhs, {scalar_name} rhs) {{ return {ret_type}({args1}); }}\n"
+                func += f"{device_flag} {ret_type} operator{op}({scalar_name} lhs, {vec_name} rhs) {{ return {ret_type}({args2}); }}\n"
                 content += func + "\n"
     
     content += "\n"  
