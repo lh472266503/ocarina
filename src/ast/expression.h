@@ -40,7 +40,7 @@ enum struct CastOp : uint32_t {
     BITWISE
 };
 
-class OC_AST_API Expression : public concepts::Noncopyable {
+class OC_AST_API Expression : public concepts::Noncopyable, public Hashable {
 public:
     enum struct Tag : uint32_t {
         UNARY,
@@ -56,19 +56,15 @@ public:
 
 private:
     const Type *_type;
-    mutable uint64_t _hash{0u};
-    mutable bool _hash_computed{false};
     Tag _tag;
 
 protected:
-    [[nodiscard]] virtual uint64_t _compute_hash() const noexcept = 0;
     mutable Usage _usage{Usage::NONE};
     virtual void _mark(Usage usage) const noexcept {};
 
 public:
     explicit Expression(Tag tag, const Type *type) noexcept : _type{type}, _tag{tag} {}
     virtual ~Expression() noexcept = default;
-    [[nodiscard]] uint64_t hash() const noexcept;
     [[nodiscard]] auto type() const noexcept { return _type; }
     [[nodiscard]] auto usage() const noexcept { return _usage; }
     [[nodiscard]] auto tag() const noexcept { return _tag; }

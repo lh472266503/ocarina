@@ -7,16 +7,6 @@
 
 namespace ocarina {
 
-uint64_t Statement::hash() const noexcept {
-    if (!_hash_computed) {
-        OC_USING_SV
-        uint64_t h = _compute_hash();
-        _hash = hash64(_tag, hash64(h, hash64("__hash_statement"sv)));
-        _hash_computed = true;
-    }
-    return _hash;
-}
-
 bool ScopeStmt::is_reference(const Expression *expr) const noexcept {
     bool ret = false;
     for (const auto &stmt : statements()) {

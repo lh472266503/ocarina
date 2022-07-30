@@ -206,6 +206,7 @@ void Function::assign(const Expression *lhs, const Expression *rhs) noexcept {
 
 uint64_t Function::_compute_hash() const noexcept {
     auto ret = _ret ? _ret->hash() : 0;
+    ret = hash64(tag(), ret);
     for (const Variable &v : _arguments) {
         ret = hash64(ret, v.hash());
     }
@@ -219,12 +220,4 @@ uint64_t Function::_compute_hash() const noexcept {
     return ret;
 }
 
-uint64_t Function::hash() const noexcept {
-    if (!_hash_computed) {
-        _hash = _compute_hash();
-        _hash = hash64("__hash_function", _hash);
-        _hash_computed = true;
-    }
-    return _hash;
-}
 }// namespace ocarina

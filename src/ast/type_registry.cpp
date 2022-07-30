@@ -113,7 +113,6 @@ const Type *TypeRegistry::parse_type(ocarina::string_view desc) noexcept {
 
     auto type = ocarina::make_unique<Type>();
     type->_description = desc;
-    type->_hash = hash;
 #define OC_PARSE_BASIC_TYPE(T, TAG)    \
     if (desc == #T##sv) {              \
         type->_size = sizeof(T);       \

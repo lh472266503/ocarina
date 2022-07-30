@@ -8,7 +8,7 @@
 #include "core/basic_types.h"
 #include "core/stl.h"
 #include "core/macro_map.h"
-#include "core/concepts.h"
+#include "core/hash.h"
 
 namespace ocarina {
 
@@ -153,7 +153,7 @@ struct struct_member_tuple<Matrix<N>> {
     struct ocarina::is_struct<S> : std::true_type {};                                             \
     template<>                                                                                    \
     struct ocarina::struct_member_tuple<S> {                                                      \
-        using this_type = S;                                                                    \
+        using this_type = S;                                                                      \
         using type = ocarina::tuple<MAP_LIST(OC_MEMBER_TYPE_MAP, ##__VA_ARGS__)>;                 \
         using offset = std::index_sequence<MAP_LIST(OC_TYPE_OFFSET_OF, ##__VA_ARGS__)>;           \
         static_assert(is_valid_reflection_v<this_type, type, offset>,                             \
@@ -268,7 +268,7 @@ struct TypeVisitor {
     virtual void visit(const Type *) noexcept = 0;
 };
 
-class OC_AST_API Type : public concepts::Noncopyable, public concepts::Definable {
+class OC_AST_API Type : public concepts::Noncopyable, public concepts::Definable, public Hashable {
 public:
     enum struct Tag : uint32_t {
         BOOL,
@@ -292,7 +292,6 @@ public:
     friend class TypeRegistry;
 
 private:
-    uint64_t _hash{0};
     size_t _size{0};
     size_t _index{0};
     size_t _alignment{0};
@@ -300,6 +299,7 @@ private:
     Tag _tag{Tag::NONE};
     ocarina::string _description;
     ocarina::vector<const Type *> _members;
+    [[nodiscard]] uint64_t _compute_hash() const noexcept override { return hash64(_description); }
 
 public:
     static void for_each(TypeVisitor *visitor);
@@ -311,23 +311,22 @@ public:
     [[nodiscard]] static const Type *from(std::string_view description) noexcept;
     [[nodiscard]] static const Type *at(uint32_t uid) noexcept;
     [[nodiscard]] static size_t count() noexcept;
-    [[nodiscard]] bool operator==(const Type &rhs) const noexcept { return _hash == rhs._hash; }
+    [[nodiscard]] bool operator==(const Type &rhs) const noexcept { return hash() == rhs.hash(); }
     [[nodiscard]] bool operator!=(const Type &rhs) const noexcept { return !(*this == rhs); }
     [[nodiscard]] bool operator<(const Type &rhs) const noexcept { return _index < rhs._index; }
     [[nodiscard]] constexpr size_t index() const noexcept { return _index; }
-    [[nodiscard]] constexpr uint64_t hash() const noexcept { return _hash; }
     [[nodiscard]] constexpr size_t size() const noexcept { return _size; }
     [[nodiscard]] constexpr size_t alignment() const noexcept { return _alignment; }
     [[nodiscard]] constexpr Tag tag() const noexcept { return _tag; }
     [[nodiscard]] auto description() const noexcept { return ocarina::string_view{_description}; }
-    [[nodiscard]] constexpr size_t dimension() const noexcept  {
+    [[nodiscard]] constexpr size_t dimension() const noexcept {
         OC_ASSERT(is_array() || is_vector() || is_matrix() || is_texture());
         return _dimension;
     }
     [[nodiscard]] ocarina::span<const Type *const> members() const noexcept;
     [[nodiscard]] const Type *element() const noexcept;
-    [[nodiscard]] constexpr bool is_scalar() const noexcept {return _tag == Tag::BOOL || _tag == Tag::FLOAT || _tag == Tag::INT || _tag == Tag::UINT;}
-    [[nodiscard]] constexpr bool is_basic() const noexcept {return is_scalar() || is_vector() || is_matrix();}
+    [[nodiscard]] constexpr bool is_scalar() const noexcept { return _tag == Tag::BOOL || _tag == Tag::FLOAT || _tag == Tag::INT || _tag == Tag::UINT; }
+    [[nodiscard]] constexpr bool is_basic() const noexcept { return is_scalar() || is_vector() || is_matrix(); }
     [[nodiscard]] constexpr bool is_array() const noexcept { return _tag == Tag::ARRAY; }
     [[nodiscard]] constexpr bool is_vector() const noexcept { return _tag == Tag::VECTOR; }
     [[nodiscard]] constexpr bool is_matrix() const noexcept { return _tag == Tag::MATRIX; }

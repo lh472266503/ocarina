@@ -81,14 +81,14 @@ private:
     mutable bool _hash_computed{false};
 
 protected:
-    [[nodiscard]] virtual uint64_t compute_hash() const noexcept { return Hash64::default_seed; }
+    [[nodiscard]] virtual uint64_t _compute_hash() const noexcept = 0;
 
 public:
     [[nodiscard]] const char *class_name() const noexcept { return typeid(*this).name(); }
 
     [[nodiscard]] uint64_t hash() const noexcept {
         if (!_hash_computed) {
-            _hash = hash64(class_name(), compute_hash());
+            _hash = hash64(class_name(), _compute_hash());
             _hash_computed = true;
         }
         return _hash;

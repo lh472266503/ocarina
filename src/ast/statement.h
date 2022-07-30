@@ -50,7 +50,7 @@ struct StmtVisitor {
 #define OC_MAKE_STATEMENT_ACCEPT_VISITOR \
     void accept(StmtVisitor &visitor) const override { visitor.visit(this); }
 
-class OC_AST_API Statement : public concepts::Noncopyable {
+class OC_AST_API Statement : public concepts::Noncopyable , public Hashable {
 public:
     enum struct Tag : uint32_t {
         SCOPE,
@@ -70,12 +70,7 @@ public:
     };
 
 private:
-    mutable uint64_t _hash{0u};
-    mutable bool _hash_computed{false};
     const Tag _tag;
-
-private:
-    [[nodiscard]] virtual uint64_t _compute_hash() const noexcept = 0;
 
 public:
     explicit Statement(Tag tag) noexcept : _tag{tag} {}
@@ -83,7 +78,6 @@ public:
     virtual void accept(StmtVisitor &) const = 0;
     virtual ~Statement() noexcept = default;
     [[nodiscard]] virtual bool is_reference(const Expression *expr) const noexcept { return false; }
-    [[nodiscard]] uint64_t hash() const noexcept;
 };
 
 class OC_AST_API ScopeStmt : public Statement {

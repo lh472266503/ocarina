@@ -6,15 +6,6 @@
 #include "function.h"
 
 namespace ocarina {
-uint64_t Expression::hash() const noexcept {
-    if (!_hash_computed) {
-        OC_USING_SV
-        _hash = hash64(_tag, hash64(_compute_hash(), hash64("__hash_expression")));
-        if (_type != nullptr) { _hash = hash64(_type->hash(), _hash); }
-        _hash_computed = true;
-    }
-    return _hash;
-}
 
 void RefExpr::_mark(Usage usage) const noexcept {
     Function::current()->mark_variable_usage(

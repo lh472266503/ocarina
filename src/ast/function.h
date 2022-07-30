@@ -24,10 +24,12 @@ class UniformBinding : public Hashable {
 private:
     const Type *_type;
     handle_ty _handle;
+
 private:
-    [[nodiscard]] uint64_t compute_hash() const noexcept {
+    [[nodiscard]] uint64_t _compute_hash() const noexcept {
         return hash64(type()->hash(), _handle);
     }
+
 public:
     UniformBinding(const Type *type, handle_ty handle)
         : _type(type), _handle(handle) {}
@@ -36,7 +38,7 @@ public:
     [[nodiscard]] handle_ty handle() const noexcept { return _handle; }
 };
 
-class OC_AST_API Function : public concepts::Noncopyable, public concepts::Definable {
+class OC_AST_API Function : public concepts::Noncopyable, public concepts::Definable, public Hashable {
 public:
     enum struct Tag : uint {
         KERNEL,
@@ -55,8 +57,6 @@ private:
     /// use for assignment subscript access
     ocarina::vector<ocarina::pair<std::byte *, size_t>> _temp_memory;
     ScopeStmt _body{true};
-    mutable uint64_t _hash{0};
-    mutable bool _hash_computed{false};
     Tag _tag{Tag::CALLABLE};
     ocarina::set<const Function *> _used_custom_func;
     ocarina::set<const Type *> _used_struct;
@@ -231,7 +231,6 @@ public:
     void print(string_view fmt, const vector<const Expression *> &args) noexcept;
     [[nodiscard]] const ScopeStmt *body() const noexcept;
     [[nodiscard]] ScopeStmt *body() noexcept;
-    [[nodiscard]] uint64_t hash() const noexcept;
     [[nodiscard]] ocarina::span<const Variable> arguments() const noexcept;
     [[nodiscard]] ocarina::span<const Variable> builtin_vars() const noexcept;
     [[nodiscard]] constexpr Tag tag() const noexcept { return _tag; }
