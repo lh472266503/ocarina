@@ -36,6 +36,7 @@ int main(int argc, char *argv[]) {
         Var<int3> vec;
         Var<int2> vec2 = vec.xy();
         print("{}, {}---------{}--", a, b, f_buffer.read(5));
+        f_buffer.write(thread_id(), f_buffer.read(thread_id()) * 2);
         c.write(thread_id(), c.read(thread_id()) * 2);
         a = add(a, b);
         $return();
@@ -45,6 +46,14 @@ int main(int argc, char *argv[]) {
 //    shader.compute_fit_size();
 
     stream << f_buffer.upload_sync(v.data());
+    stream << shader(1.f, 6.f, f_buffer).dispatch(10);
+    stream << synchronize();
+    stream << f_buffer.download_sync(v.data());
+    stream << commit();
+    for (int i = 0; i < count; ++i) {
+        cout << v[i] << endl;
+    }
+
     stream << shader(1.f, 6.f, f_buffer).dispatch(10);
     stream << synchronize();
     stream << f_buffer.download_sync(v.data());

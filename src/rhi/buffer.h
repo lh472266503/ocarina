@@ -56,6 +56,7 @@ template<typename T>
 class Buffer : public Resource {
 public:
     static constexpr size_t element_size = sizeof(T);
+    using element_type = T;
 private:
     size_t _size{};
 
@@ -75,7 +76,17 @@ public:
     requires ocarina::is_integral_v<expr_value_t<Index>>
     [[nodiscard]] auto read(Index &&index) {
         const UniformBinding &uniform = Function::current()->get_uniform_var(Type::of<Buffer<T>>(), handle());
-        return Var<Buffer<T>>(uniform.expression()).read(OC_FORWARD(index));
+        return make_expr<Buffer<T>>(uniform.expression()).read(OC_FORWARD(index));
+    }
+
+    template<typename Index, typename Val>
+    requires concepts::integral<expr_value_t<Index>> && concepts::is_same_v<element_type, expr_value_t<Val>>
+    void write(Index &&index, Val &&elm) {
+        const UniformBinding &uniform = Function::current()->get_uniform_var(Type::of<Buffer<T>>(), handle());
+        const AccessExpr *expr = Function::current()->access(Type::of<element_type>(),
+                                                             uniform.expression(),
+                                                             OC_EXPR(index));
+        assign(expr, OC_FORWARD(elm));
     }
 
     template<typename... Args>
