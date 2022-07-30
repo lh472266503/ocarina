@@ -1,6 +1,7 @@
 from ctypes import alignment
 from os.path import realpath, dirname
 import os
+from posixpath import split
 
 scalar_types = ["int", "uint", "float", "bool"]
 native_types = ["int", "unsigned int", "float", "bool"]
@@ -41,20 +42,20 @@ def emit_functions(scalar_name, dim):
 
     ret += indent + f"{device_flag} {struct_name}() noexcept \n" + get_indent(2) + ":"
     for d in range(0, dim):
-        split = "," if d != dim - 1 else ""
+        split = ", " if d != dim - 1 else ""
         ret += f"{name_lst[d]}{{}}" + split 
     ret += " {}\n"
 
     ret += indent + f"{device_flag} {struct_name}({scalar_name} s) noexcept \n" + get_indent(2) + ":"
     for d in range(0, dim):
-        split = "," if d != dim - 1 else ""
+        split = ", " if d != dim - 1 else ""
         ret += f"{name_lst[d]}(s)" + split 
     ret += " {}\n"
 
     args = ""
     assign = ""
     for d in range(0, dim):
-        split = "," if d != dim - 1 else ""
+        split = ", " if d != dim - 1 else ""
         member_name = name_lst[d]
         args += f"{scalar_name} {member_name}" + split
         assign += f"{member_name}({member_name})" + split 
@@ -82,12 +83,27 @@ def define_vector():
             content += body
             content += "};\n\n"
 
+def define_operator():
+    global content
+    unary = ["+", "-", "!", "~"]
+    for i, scalar in enumerate(scalar_types):
+        for dim in range(2, 5):
+            for op in unary:
+                if op == "~" and scalar == "float":
+                    continue
+                class_name = f"{prefix}_{scalar}{dim}"
+                args = ""
+                for d in range(0, dim):
+                    split = ", " if d != dim - 1 else ""
+                    args += f"{op}vec.{name_lst[d]}" + split
+                func = f"{device_flag} {class_name} operator{op}({class_name} vec) {{ return {class_name}({args}); }}"
+                content += func + "\n"
 
 def save_to_inl(var_name, content, fn):
     string = f"static const char {var_name}[] = " + "{\n    "
-    line_len = 25
+    line_len = 20
     for i,s in enumerate(content):
-        split = "," if i != len(content) - 1 else ""
+        split = ", " if i != len(content) - 1 else ""
         string += f"{format(ord(s), '#04x')}" + split
 
         if i % line_len == line_len - 1:
@@ -101,6 +117,7 @@ def main():
     curr_dir = dirname(realpath(__file__))
     using_scalar()
     define_vector()
+    define_operator()
 
     math_lib = "cuda_math_lib"
     with open(os.path.join(curr_dir, math_lib + ".h"), "w") as file:
@@ -108,6 +125,7 @@ def main():
         file.close()
     
     save_to_inl(math_lib, content, os.path.join(curr_dir, math_lib + "_embed.h"))
+    print(content)
 
 if __name__ == "__main__":
     main()

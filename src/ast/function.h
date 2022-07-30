@@ -27,15 +27,13 @@ private:
     const RefExpr *_expr{nullptr};
 
 private:
-    [[nodiscard]] uint64_t _compute_hash() const noexcept {
+    [[nodiscard]] uint64_t _compute_hash() const noexcept final {
         return hash64(type()->hash(), _handle);
     }
 
 public:
     UniformBinding(const RefExpr *expr, const Type *type, handle_ty handle)
         : _type(type), _handle(handle), _expr(expr) {}
-
-    UniformBinding(handle_ty handle) : _handle(handle) {}
 
     [[nodiscard]] const Type *type() const noexcept { return _type; }
     [[nodiscard]] handle_ty handle() const noexcept { return _handle; }
