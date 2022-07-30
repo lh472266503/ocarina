@@ -32,8 +32,19 @@ private:
     }
 
 public:
+    [[nodiscard]] bool operator==(const UniformBinding &other) const noexcept {
+        return handle() == other.handle();
+    }
+
+    [[nodiscard]] bool operator<(const UniformBinding &other) const noexcept {
+        return handle() < other.handle();
+    }
+
+public:
     UniformBinding(const Expression *expr, const Type *type, handle_ty handle)
         : _type(type), _handle(handle), _expr(expr) {}
+
+    UniformBinding(handle_ty handle) : _handle(handle) {}
 
     [[nodiscard]] const Type *type() const noexcept { return _type; }
     [[nodiscard]] handle_ty handle() const noexcept { return _handle; }
@@ -52,7 +63,7 @@ private:
     ocarina::vector<ocarina::unique_ptr<Expression>> _all_expressions;
     ocarina::vector<ocarina::unique_ptr<Statement>> _all_statements;
     ocarina::vector<Variable> _arguments;
-    ocarina::vector<UniformBinding> _uniform_vars;
+    ocarina::set<UniformBinding> _uniform_vars;
     ocarina::vector<Variable> _builtin_vars;
     ocarina::vector<Usage> _variable_usages;
     ocarina::vector<ScopeStmt *> _scope_stack;
@@ -114,7 +125,7 @@ private:
         current_scope()->add_stmt(ret);
         return ret;
     }
-    [[nodiscard]] uint64_t _compute_hash() const noexcept;
+    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
     class ScopeGuard {
     private:
         ocarina::vector<ScopeStmt *> &_scope_stack;
@@ -131,12 +142,36 @@ private:
     };
 
 public:
+    [[nodiscard]] auto used_custom_func() const noexcept { return _used_custom_func; }
+    template<typename Visitor>
+    void for_each_custom_func(Visitor &&visitor) const noexcept {
+        for (const Function *f : _used_custom_func) {
+            visitor(f);
+        }
+    }
+    [[nodiscard]] auto used_structure() const noexcept { return _used_struct; }
+    template<typename Visitor>
+    void for_each_structure(Visitor &&visitor) const noexcept {
+        for (const Type *type : _used_struct) {
+            visitor(type);
+        }
+    }
     void add_used_structure(const Type *type) noexcept { _used_struct.emplace(type); }
     void add_uniform_var(const Type *type, handle_ty handle) noexcept {
+        if (_uniform_vars.contains(handle)) {
+            return;
+        }
         const Expression *expr = _ref(Variable(type, Variable::Tag::BUFFER, _next_variable_uid()));
-        _uniform_vars.emplace_back(expr, type, handle);
+        UniformBinding uniform(expr, type, handle);
+        _uniform_vars.emplace(uniform);
     }
-    [[nodiscard]] span<const UniformBinding> uniform_vars() const noexcept { return _uniform_vars; }
+    [[nodiscard]] auto uniform_vars() const noexcept { return _uniform_vars; }
+    template<typename Visitor>
+    void for_each_uniform_var(Visitor &&visitor) const noexcept {
+        for (const UniformBinding &uniform : _uniform_vars) {
+            visitor(uniform);
+        }
+    }
     [[nodiscard]] static Function *current() noexcept {
         return _function_stack().back();
     }
@@ -149,9 +184,6 @@ public:
     }
     [[nodiscard]] ScopeStmt *current_scope() noexcept {
         return _scope_stack.back();
-    }
-    void upload_uniform() noexcept {
-
     }
     template<typename Func>
     decltype(auto) with(ScopeStmt *scope, Func &&func) noexcept {
@@ -179,8 +211,6 @@ public:
         return ptr;
     }
 
-    [[nodiscard]] auto used_custom_func() const noexcept { return _used_custom_func; }
-    [[nodiscard]] auto used_structure() const noexcept { return _used_struct; }
     void set_block_dim(uint x, uint y = 1, uint z = 1) const noexcept { _block_dim = make_uint3(x, y, z); }
     void set_block_dim(uint2 size) const noexcept { _block_dim = make_uint3(size, 1); }
     void set_block_dim(uint3 size) const noexcept { _block_dim = size; }

@@ -41,7 +41,6 @@ protected:
 
 protected:
     virtual void _emit_types_define() noexcept;
-    virtual void _emit_uniform_vars(const Function &f) noexcept;
     virtual void _emit_uniform_var(const UniformBinding &uniform) noexcept;
     virtual void _emit_variable_define(Variable v) noexcept;
     virtual void _emit_type_name(const Type *type) noexcept;

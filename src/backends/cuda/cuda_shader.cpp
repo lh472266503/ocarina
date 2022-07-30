@@ -15,6 +15,9 @@ CUDAShader::CUDAShader(Device::Impl *device,
       _function(func) {
     OC_CU_CHECK(cuModuleLoadData(&_module, ptx.c_str()));
     OC_CU_CHECK(cuModuleGetFunction(&_func_handle, _module, _function.func_name().c_str()));
+    _function.for_each_uniform_var([&](const UniformBinding &uniform) {
+
+    });
 }
 
 void CUDAShader::launch(handle_ty stream, ShaderDispatchCommand *cmd) noexcept {
