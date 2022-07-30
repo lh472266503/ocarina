@@ -254,6 +254,16 @@ void CppCodegen::_emit_types_define() noexcept {
     Type::for_each(this);
 }
 
+void CppCodegen::_emit_uniform_vars(const Function &f) noexcept {
+    for (const UniformBinding &uniform : f.uniform_vars()) {
+        _emit_uniform_var(uniform);
+    }
+}
+
+void CppCodegen::_emit_uniform_var(const UniformBinding &uniform) noexcept {
+
+}
+
 void CppCodegen::_emit_variable_define(Variable v) noexcept {
     if (v.type()->is_buffer()) {
         _emit_type_name(v.type());
@@ -400,6 +410,7 @@ void CppCodegen::_emit_arguments(const Function &f) noexcept {
 }
 void CppCodegen::emit(const Function &func) noexcept {
     FUNCTION_GUARD(func)
+    _emit_uniform_vars(func);
     for (const Type *type : func.used_structure()) {
         visit(type);
     }

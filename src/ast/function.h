@@ -131,6 +131,7 @@ public:
     void add_used_structure(const Type *type) noexcept { _used_struct.emplace(type); }
     template<typename... Args>
     void add_uniform_var(Args &&...args) noexcept { _uniform_vars.emplace_back(OC_FORWARD(args)...); }
+    [[nodiscard]] span<const UniformBinding> uniform_vars() const noexcept { return _uniform_vars; }
     [[nodiscard]] static Function *current() noexcept {
         return _function_stack().back();
     }

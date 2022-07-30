@@ -88,6 +88,10 @@ void CUDACodegen::_emit_builtin_var(Variable v) noexcept {
     }
 }
 
+void CUDACodegen::_emit_uniform_var(const UniformBinding &uniform) noexcept {
+
+}
+
 void CUDACodegen::_emit_type_name(const Type *type) noexcept {
     if (type == nullptr) {
         current_scratch() << "void";
