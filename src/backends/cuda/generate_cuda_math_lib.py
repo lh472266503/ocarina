@@ -101,15 +101,15 @@ def define_operator():
             content += "\n"
     content += "\n"     
     cal_binary = ["+", "-", "*", "/", "%"]
-    cmp_binary = ["==", "!=", ">" , "<", ">=", "<="]
-    
-    binary = cal_binary + cmp_binary
+    cmp_binary = ["==", "!=", ">" , "<", ">=", "<=","&&", "||"]
+    bit_binary = ["&", "|", "^", "<<", ">>"]
+    binary = cal_binary + cmp_binary + bit_binary
     for i, scalar in enumerate(scalar_types):
         for dim in range(2, 5):
             for op in binary:
                 if scalar == "bool":
                     continue
-                if scalar == "float" and op == "%":
+                if scalar == "float" and (op == "%" or op in bit_binary):
                     continue
                 vec_name = f"{prefix}_{scalar}{dim}"
                 ret_type = vec_name
