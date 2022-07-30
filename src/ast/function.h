@@ -150,6 +150,9 @@ public:
     [[nodiscard]] ScopeStmt *current_scope() noexcept {
         return _scope_stack.back();
     }
+    void upload_uniform() noexcept {
+
+    }
     template<typename Func>
     decltype(auto) with(ScopeStmt *scope, Func &&func) noexcept {
         ScopeGuard guard(_scope_stack, scope);

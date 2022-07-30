@@ -8,6 +8,7 @@
 #include "core/stl.h"
 #include "dsl/func.h"
 #include "core/logging.h"
+#include "ast/variable.h"
 
 namespace ocarina {
 
@@ -36,6 +37,7 @@ struct LiteralPrinter;
 [[nodiscard]] inline string kernel_name(uint64_t hash) {
     return "kernel_" + to_string(hash);
 }
+
 
 }// namespace detail
 
