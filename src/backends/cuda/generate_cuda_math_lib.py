@@ -224,15 +224,15 @@ def matrix_operator():
                 func += get_indent(1) + "return %s;\n" % (args) 
                 func += "}\n"
                 content += func
-            # else:
-            #     func = f"__device__ auto operator{op}(oc_float{dim}x{dim} lhs, oc_float{dim}x{dim} rhs) {{\n" 
-            #     args = f"oc_float{dim}x{dim}("
-            #     for d in range(0, dim):
-            #         split_m = ", " if d != dim - 1 else ")"
-            #         args += f"lhs[{d}] {op} rhs[{d}]" + split_m
-            #     func += get_indent(1) + "return %s;\n" % (args) 
-            #     func += "}\n"
-            #     content += func
+            else:
+                func = f"__device__ auto operator{op}(oc_float{dim}x{dim} lhs, oc_float{dim}x{dim} rhs) {{\n" 
+                args = f"oc_float{dim}x{dim}("
+                for d in range(0, dim):
+                    split_m = ", " if d != dim - 1 else ")"
+                    args += f"lhs {op} rhs[{d}]" + split_m
+                func += get_indent(1) + "return %s;\n" % (args) 
+                func += "}\n"
+                content += func
             
     content += "\n "
 
