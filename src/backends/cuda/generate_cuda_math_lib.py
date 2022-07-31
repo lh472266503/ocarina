@@ -107,7 +107,7 @@ def define_operator():
     for i, scalar in enumerate(scalar_types):
         for dim in range(2, 5):
             for op in binary:
-                if scalar == "bool":
+                if scalar == "bool" and (op in cal_binary):
                     continue
                 if scalar == "float" and (op == "%" or op in bit_binary):
                     continue
@@ -129,10 +129,26 @@ def define_operator():
                 func = f"{device_flag} {ret_type} operator{op}({vec_name} lhs, {vec_name} rhs) {{ return {ret_type}({args}); }}\n"
                 func += f"{device_flag} {ret_type} operator{op}({vec_name} lhs, {scalar_name} rhs) {{ return {ret_type}({args1}); }}\n"
                 func += f"{device_flag} {ret_type} operator{op}({scalar_name} lhs, {vec_name} rhs) {{ return {ret_type}({args2}); }}\n"
-                content += func + "\n"
-    
-    content += "\n"  
+                content += func
+        content += "\n"
+    content += "\n"
+    func_lst = ["any", "all", "none"]
+    for func in func_lst:
+        for dim in range(2, 5):
+            ret_type = f"{prefix}_bool"
+            arg_type = f"{prefix}_bool{dim}"
+            op = " || " if func == "any" else " && "
+            ret = ""
+            if func != "none":
+                for d in range(0, dim):
+                    split = op if d != dim - 1 else ""
+                    field_name = name_lst[d]
+                    ret += f"vec.{field_name}" + split
+            else:
+                ret = "!any(vec)"
                 
+            string = f"{device_flag} {ret_type} {func}({arg_type} vec) {{ return {ret}; }}" 
+            content += string + "\n"
                 
 def save_to_inl(var_name, content, fn):
     string = f"static const char {var_name}[] = " + "{\n    "
