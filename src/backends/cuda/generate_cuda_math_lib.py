@@ -203,17 +203,37 @@ def matrix_operator():
                 func1 += "}\n"
                 content += func
                 content += func1
+        
+        op = "*"
+        func = f"__device__ auto operator{op}(oc_float{dim}x{dim} m, oc_float{dim} v) {{\n"
+        args = args = f""
+        for d in range(0, dim):
+            split = " + " if d != dim - 1 else ""
+            args += f"v[{d}] {op} m[{d}]" + split
+        func += get_indent(1) + "return %s;\n" % (args) 
+        func += "}\n"
+        content += func
             
-        for op in operator[:2]:
-            func = f"__device__ auto operator{op}(oc_float{dim}x{dim} lhs, oc_float{dim}x{dim} rhs) {{\n"
-            args = f"oc_float{dim}x{dim}("
-            for d in range(0, dim):
-                split_m = ", " if d != dim - 1 else ")"
-                args += f"lhs[{d}] {op} rhs[{d}]" + split_m
-            func += get_indent(1) + "return %s;\n" % (args) 
-            func += "}\n"
-            content += func
-                    
+        for op in operator[:3]:
+            if op != "*":
+                func = f"__device__ auto operator{op}(oc_float{dim}x{dim} lhs, oc_float{dim}x{dim} rhs) {{\n"
+                args = f"oc_float{dim}x{dim}("
+                for d in range(0, dim):
+                    split = ", " if d != dim - 1 else ")"
+                    args += f"lhs[{d}] {op} rhs[{d}]" + split
+                func += get_indent(1) + "return %s;\n" % (args) 
+                func += "}\n"
+                content += func
+            # else:
+            #     func = f"__device__ auto operator{op}(oc_float{dim}x{dim} lhs, oc_float{dim}x{dim} rhs) {{\n" 
+            #     args = f"oc_float{dim}x{dim}("
+            #     for d in range(0, dim):
+            #         split_m = ", " if d != dim - 1 else ")"
+            #         args += f"lhs[{d}] {op} rhs[{d}]" + split_m
+            #     func += get_indent(1) + "return %s;\n" % (args) 
+            #     func += "}\n"
+            #     content += func
+            
     content += "\n "
 
 def save_to_inl(var_name, content, fn):
