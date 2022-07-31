@@ -1091,4 +1091,8 @@ __device__ auto operator*(oc_float4x4 lhs, oc_float4x4 rhs) {
 	return oc_float4x4(lhs * rhs[0], lhs * rhs[1], lhs * rhs[2], lhs * rhs[3]);
 }
 
+__device__ oc_int oc_select(oc_bool pred, oc_int t, oc_int f) { return pred ? t : f; }
+__device__ oc_uint oc_select(oc_bool pred, oc_uint t, oc_uint f) { return pred ? t : f; }
+__device__ oc_float oc_select(oc_bool pred, oc_float t, oc_float f) { return pred ? t : f; }
+__device__ oc_bool oc_select(oc_bool pred, oc_bool t, oc_bool f) { return pred ? t : f; }
  

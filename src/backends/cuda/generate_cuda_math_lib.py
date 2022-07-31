@@ -233,7 +233,18 @@ def matrix_operator():
                 func += get_indent(1) + "return %s;\n" % (args) 
                 func += "}\n"
                 content += func
-    content += "\n "
+    content += "\n"
+
+def define_select():
+    global content
+    for scalar in scalar_types:
+        ret_type = f"{prefix}_{scalar}"
+        func = f"__device__ {ret_type} {prefix}_select({prefix}_bool pred, {ret_type} t, {ret_type} f) {{"
+        func += " return pred ? t : f; }"
+        content += func
+        content += "\n"       
+
+
 
 def save_to_inl(var_name, content, fn):
     string = f"static const char {var_name}[] = " + "{\n    "
@@ -250,12 +261,15 @@ def save_to_inl(var_name, content, fn):
         file.close()
 
 def main():
+    global content
     curr_dir = dirname(realpath(__file__))
     using_scalar()
     define_vector()
     define_operator()
     define_matrix()
     matrix_operator()
+    define_select()
+    content += " "
 
     math_lib = "cuda_math_lib"
     with open(os.path.join(curr_dir, math_lib + ".h"), "w") as file:

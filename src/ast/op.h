@@ -44,6 +44,7 @@ enum struct CallOp : uint32_t {
 
     ALL,
     ANY,
+    NONE,
 
     SELECT,
     CLAMP,
