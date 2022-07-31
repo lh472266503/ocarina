@@ -190,14 +190,21 @@ def matrix_operator():
         for scalar in scalar_types[:3]:
             for op in operator:
                 func = f"__device__ auto operator{op}(oc_float{dim}x{dim} m, oc_{scalar} s) {{\n"
+                func1 = f"__device__ auto operator{op}(oc_{scalar} s, oc_float{dim}x{dim} m) {{\n"
                 args = ""
+                args1 = ""
                 for d in range(0, dim):
                     split = ", " if d != dim - 1 else ""
                     args += f"m[{d}] {op} s" + split
+                    args1 += f"s {op} m[{d}]" + split
                 func += get_indent(1) + f"return oc_float{dim}x{dim}({args});\n"
+                func1 += get_indent(1) + f"return oc_float{dim}x{dim}({args1});\n"
                 func += "}\n"
+                func1 += "}\n"
                 content += func
-            content += "\n "
+                content += func1
+            content += "\n"
+    content += "\n "
 
 def save_to_inl(var_name, content, fn):
     string = f"static const char {var_name}[] = " + "{\n    "
