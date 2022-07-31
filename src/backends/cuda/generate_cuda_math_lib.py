@@ -1,3 +1,4 @@
+from ast import operator
 from ctypes import alignment
 from os.path import realpath, dirname
 import os
@@ -179,9 +180,25 @@ def define_matrix():
         struct += get_indent(2) + f":cols{{{lst}}} {{}}\n"
         struct += get_indent(1) + "__device__ auto &operator[](oc_uint i) noexcept { return cols[i]; }\n"
         struct += get_indent(1) + "__device__ auto operator[](oc_uint i) const noexcept { return cols[i]; }\n"
-        struct += "};\n \n "
+        struct += "};\n \n"
         content += struct
-    
+
+def matrix_operator():
+    global content
+    operator = ["+", "-", "*", "/"]
+    for dim in range(2, 5):
+        for scalar in scalar_types[:3]:
+            for op in operator:
+                func = f"__device__ auto operator{op}(oc_float{dim}x{dim} m, oc_{scalar} s) {{\n"
+                args = ""
+                for d in range(0, dim):
+                    split = ", " if d != dim - 1 else ""
+                    args += f"m[{d}] {op} s" + split
+                func += get_indent(1) + f"return oc_float{dim}x{dim}({args});\n"
+                func += "}\n"
+                content += func
+            content += "\n "
+
 def save_to_inl(var_name, content, fn):
     string = f"static const char {var_name}[] = " + "{\n    "
     line_len = 20
@@ -202,6 +219,7 @@ def main():
     define_vector()
     define_operator()
     define_matrix()
+    matrix_operator()
 
     math_lib = "cuda_math_lib"
     with open(os.path.join(curr_dir, math_lib + ".h"), "w") as file:

@@ -33,9 +33,9 @@ int main(int argc, char *argv[]) {
     Buffer<float> f_buffer = device.create_buffer<float>(count);
     Kernel kn = [&](Var<float> a, Var<float> b, BufferVar<float> c) {
         //        configure_block(1,2,1);
-        Var<int3> vec;
-        Var<int2> vec2 = vec.xy();
-        vec2 = -vec2;
+//        Var<int3> vec;
+//        Var<int2> vec2 = vec.xy();
+//        vec2 = -vec2;
         print("{}, {}---------{}--", a, b, f_buffer.read(5));
         f_buffer.write(thread_id(), f_buffer.read(thread_id()) * 2);
         c.write(thread_id(), c.read(thread_id()) * 2);
