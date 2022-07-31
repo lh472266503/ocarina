@@ -206,16 +206,22 @@ void CppCodegen::visit(const RefExpr *expr) noexcept {
     _emit_variable_name(expr->variable());
 }
 void CppCodegen::visit(const CallExpr *expr) noexcept {
-    _emit_func_name(*expr->function());
-    current_scratch() << "(";
-    for (const auto &arg : expr->arguments()) {
-        arg->accept(*this);
-        current_scratch() << ",";
+    switch (expr->call_op()) {
+        case CallOp::CUSTOM: {
+            _emit_func_name(*expr->function());
+            current_scratch() << "(";
+            for (const auto &arg : expr->arguments()) {
+                arg->accept(*this);
+                current_scratch() << ",";
+            }
+            if (!expr->arguments().empty()) {
+                current_scratch().pop_back();
+            }
+            current_scratch() << ")";
+            break;
+        }
     }
-    if (!expr->arguments().empty()) {
-        current_scratch().pop_back();
-    }
-    current_scratch() << ")";
+
 }
 void CppCodegen::visit(const CastExpr *expr) noexcept {
     switch (expr->cast_op()) {

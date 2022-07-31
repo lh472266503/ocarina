@@ -9,6 +9,99 @@
 
 namespace ocarina {
 
+void CUDACodegen::visit(const CallExpr *expr) noexcept {
+    switch (expr->call_op()) {
+        case CallOp::CUSTOM: {
+            _emit_func_name(*expr->function());
+            current_scratch() << "(";
+            for (const auto &arg : expr->arguments()) {
+                arg->accept(*this);
+                current_scratch() << ",";
+            }
+            if (!expr->arguments().empty()) {
+                current_scratch().pop_back();
+            }
+            current_scratch() << ")";
+            break;
+        }
+        case CallOp::ALL: break;
+        case CallOp::ANY: break;
+        case CallOp::NONE: break;
+        case CallOp::SELECT: {
+            current_scratch() << "oc_select";
+            current_scratch() << "(";
+            for (const auto &arg : expr->arguments()) {
+                arg->accept(*this);
+                current_scratch() << ",";
+            }
+            if (!expr->arguments().empty()) {
+                current_scratch().pop_back();
+            }
+            current_scratch() << ")";
+            break;
+        }
+        case CallOp::CLAMP: break;
+        case CallOp::LERP: break;
+        case CallOp::ABS: break;
+        case CallOp::MIN: break;
+        case CallOp::MAX: break;
+        case CallOp::IS_INF: break;
+        case CallOp::IS_NAN: break;
+        case CallOp::ACOS: break;
+        case CallOp::ACOSH: break;
+        case CallOp::ASIN: break;
+        case CallOp::ASINH: break;
+        case CallOp::ATAN: break;
+        case CallOp::ATAN2: break;
+        case CallOp::ATANH: break;
+        case CallOp::COS: break;
+        case CallOp::COSH: break;
+        case CallOp::SIN: break;
+        case CallOp::SINH: break;
+        case CallOp::TAN: break;
+        case CallOp::TANH: break;
+        case CallOp::EXP: break;
+        case CallOp::EXP2: break;
+        case CallOp::EXP10: break;
+        case CallOp::LOG: break;
+        case CallOp::LOG2: break;
+        case CallOp::LOG10: break;
+        case CallOp::POW: break;
+        case CallOp::SQRT: break;
+        case CallOp::RSQRT: break;
+        case CallOp::CEIL: break;
+        case CallOp::FLOOR: break;
+        case CallOp::ROUND: break;
+        case CallOp::FMA: break;
+        case CallOp::CROSS: break;
+        case CallOp::DOT: break;
+        case CallOp::LENGTH: break;
+        case CallOp::LENGTH_SQUARED: break;
+        case CallOp::NORMALIZE: break;
+        case CallOp::FACE_FORWARD: break;
+        case CallOp::DETERMINANT: break;
+        case CallOp::TRANSPOSE: break;
+        case CallOp::INVERSE: break;
+        case CallOp::SYNCHRONIZE_BLOCK: break;
+        case CallOp::MAKE_BOOL2: break;
+        case CallOp::MAKE_BOOL3: break;
+        case CallOp::MAKE_BOOL4: break;
+        case CallOp::MAKE_INT2: break;
+        case CallOp::MAKE_INT3: break;
+        case CallOp::MAKE_INT4: break;
+        case CallOp::MAKE_UINT2: break;
+        case CallOp::MAKE_UINT3: break;
+        case CallOp::MAKE_UINT4: break;
+        case CallOp::MAKE_FLOAT2: break;
+        case CallOp::MAKE_FLOAT3: break;
+        case CallOp::MAKE_FLOAT4: break;
+        case CallOp::MAKE_FLOAT2X2: break;
+        case CallOp::MAKE_FLOAT3X3: break;
+        case CallOp::MAKE_FLOAT4X4: break;
+        case CallOp::COUNT: break;
+    }
+}
+
 void CUDACodegen::visit(const MemberExpr *expr) noexcept {
     if (expr->is_swizzle()) {
         static constexpr std::string_view xyzw[] = {"x", "y", "z", "w"};
