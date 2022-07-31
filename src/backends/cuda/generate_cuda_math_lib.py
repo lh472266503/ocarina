@@ -131,25 +131,46 @@ def define_operator():
                 func += f"{device_flag} {ret_type} operator{op}({scalar_name} lhs, {vec_name} rhs) {{ return {ret_type}({args2}); }}\n"
                 content += func
         content += "\n"
-    content += "\n"
-    func_lst = ["any", "all", "none"]
+    func_lst = ["oc_any", "oc_all", "oc_none"]
     for func in func_lst:
         for dim in range(2, 5):
             ret_type = f"{prefix}_bool"
             arg_type = f"{prefix}_bool{dim}"
-            op = " || " if func == "any" else " && "
+            op = " || " if func == "oc_any" else " && "
             ret = ""
-            if func != "none":
+            if func != "oc_none":
                 for d in range(0, dim):
                     split = op if d != dim - 1 else ""
                     field_name = name_lst[d]
                     ret += f"vec.{field_name}" + split
             else:
-                ret = "!any(vec)"
+                ret = "!oc_any(vec)"
                 
             string = f"{device_flag} {ret_type} {func}({arg_type} vec) {{ return {ret}; }}" 
             content += string + "\n"
-                
+    content += "\n"
+    
+def define_matrix():
+    global content
+    struct = ""
+    for dim in range(2, 5):
+        struct = f"struct {prefix}_float{dim}x{dim} {{\n"
+        struct += get_indent(1) + f"{prefix}_float{dim} cols[{dim}];\n"
+        struct += get_indent(1) + f"__device__ explicit constexpr {prefix}_float{dim}x{dim}({prefix}_float s = 1.f)\n"
+        args = ""
+        for d in range(0, dim):
+            split = ", " if d != dim - 1 else ""
+
+            vec = f"{prefix}_float{dim}("
+            for j in range(0, dim):
+                split_j = ", " if j != dim - 1 else ")"
+                scalar = "s" if j == d else "0.f"
+                vec += scalar + split_j
+            args += vec + split
+        struct += get_indent(2) + f":cols{{{args}}}{{}}\n"
+        struct += "};\n \n "
+        content += struct
+    
 def save_to_inl(var_name, content, fn):
     string = f"static const char {var_name}[] = " + "{\n    "
     line_len = 20
@@ -169,6 +190,7 @@ def main():
     using_scalar()
     define_vector()
     define_operator()
+    define_matrix()
 
     math_lib = "cuda_math_lib"
     with open(os.path.join(curr_dir, math_lib + ".h"), "w") as file:

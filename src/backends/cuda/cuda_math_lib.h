@@ -798,13 +798,32 @@ __device__ oc_bool4 operator>>(oc_bool4 lhs, oc_bool4 rhs) { return oc_bool4(lhs
 __device__ oc_bool4 operator>>(oc_bool4 lhs, oc_bool rhs) { return oc_bool4(lhs.x >> rhs, lhs.y >> rhs, lhs.z >> rhs, lhs.w >> rhs); }
 __device__ oc_bool4 operator>>(oc_bool lhs, oc_bool4 rhs) { return oc_bool4(lhs >> rhs.x, lhs >> rhs.y, lhs >> rhs.z, lhs >> rhs.w); }
 
+__device__ oc_bool oc_any(oc_bool2 vec) { return vec.x || vec.y; }
+__device__ oc_bool oc_any(oc_bool3 vec) { return vec.x || vec.y || vec.z; }
+__device__ oc_bool oc_any(oc_bool4 vec) { return vec.x || vec.y || vec.z || vec.w; }
+__device__ oc_bool oc_all(oc_bool2 vec) { return vec.x && vec.y; }
+__device__ oc_bool oc_all(oc_bool3 vec) { return vec.x && vec.y && vec.z; }
+__device__ oc_bool oc_all(oc_bool4 vec) { return vec.x && vec.y && vec.z && vec.w; }
+__device__ oc_bool oc_none(oc_bool2 vec) { return !oc_any(vec); }
+__device__ oc_bool oc_none(oc_bool3 vec) { return !oc_any(vec); }
+__device__ oc_bool oc_none(oc_bool4 vec) { return !oc_any(vec); }
 
-__device__ oc_bool any(oc_bool2 vec) { return vec.x || vec.y; }
-__device__ oc_bool any(oc_bool3 vec) { return vec.x || vec.y || vec.z; }
-__device__ oc_bool any(oc_bool4 vec) { return vec.x || vec.y || vec.z || vec.w; }
-__device__ oc_bool all(oc_bool2 vec) { return vec.x && vec.y; }
-__device__ oc_bool all(oc_bool3 vec) { return vec.x && vec.y && vec.z; }
-__device__ oc_bool all(oc_bool4 vec) { return vec.x && vec.y && vec.z && vec.w; }
-__device__ oc_bool none(oc_bool2 vec) { return !any(vec); }
-__device__ oc_bool none(oc_bool3 vec) { return !any(vec); }
-__device__ oc_bool none(oc_bool4 vec) { return !any(vec); }
+struct oc_float2x2 {
+	oc_float2 cols[2];
+	__device__ explicit constexpr oc_float2x2(oc_float s = 1.f)
+		:cols{oc_float2(s, 0.f), oc_float2(0.f, s)}{}
+};
+ 
+ struct oc_float3x3 {
+	oc_float3 cols[3];
+	__device__ explicit constexpr oc_float3x3(oc_float s = 1.f)
+		:cols{oc_float3(s, 0.f, 0.f), oc_float3(0.f, s, 0.f), oc_float3(0.f, 0.f, s)}{}
+};
+ 
+ struct oc_float4x4 {
+	oc_float4 cols[4];
+	__device__ explicit constexpr oc_float4x4(oc_float s = 1.f)
+		:cols{oc_float4(s, 0.f, 0.f, 0.f), oc_float4(0.f, s, 0.f, 0.f), oc_float4(0.f, 0.f, s, 0.f), oc_float4(0.f, 0.f, 0.f, s)}{}
+};
+ 
+ 
