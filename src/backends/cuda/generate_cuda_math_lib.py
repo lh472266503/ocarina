@@ -167,7 +167,18 @@ def define_matrix():
                 scalar = "s" if j == d else "0.f"
                 vec += scalar + split_j
             args += vec + split
-        struct += get_indent(2) + f":cols{{{args}}}{{}}\n"
+        struct += get_indent(2) + f":cols{{{args}}} {{}}\n"
+        
+        args = ""
+        lst = ""
+        for d in range(0, dim):
+            split = ", " if d != dim - 1 else ""
+            args += f"{prefix}_float{dim} c{d}" + split
+            lst += f"c{d}" + split
+        struct += get_indent(1) + f"__device__ {prefix}_float{dim}x{dim}({args})\n"
+        struct += get_indent(2) + f":cols{{{lst}}} {{}}\n"
+        struct += get_indent(1) + "__device__ auto &operator[](oc_uint i) noexcept { return cols[i]; }\n"
+        struct += get_indent(1) + "__device__ auto operator[](oc_uint i) const noexcept { return cols[i]; }\n"
         struct += "};\n \n "
         content += struct
     

@@ -811,19 +811,31 @@ __device__ oc_bool oc_none(oc_bool4 vec) { return !oc_any(vec); }
 struct oc_float2x2 {
 	oc_float2 cols[2];
 	__device__ explicit constexpr oc_float2x2(oc_float s = 1.f)
-		:cols{oc_float2(s, 0.f), oc_float2(0.f, s)}{}
+		:cols{oc_float2(s, 0.f), oc_float2(0.f, s)} {}
+	__device__ oc_float2x2(oc_float2 c0, oc_float2 c1)
+		:cols{c0, c1} {}
+	__device__ auto &operator[](oc_uint i) noexcept { return cols[i]; }
+	__device__ auto operator[](oc_uint i) const noexcept { return cols[i]; }
 };
  
  struct oc_float3x3 {
 	oc_float3 cols[3];
 	__device__ explicit constexpr oc_float3x3(oc_float s = 1.f)
-		:cols{oc_float3(s, 0.f, 0.f), oc_float3(0.f, s, 0.f), oc_float3(0.f, 0.f, s)}{}
+		:cols{oc_float3(s, 0.f, 0.f), oc_float3(0.f, s, 0.f), oc_float3(0.f, 0.f, s)} {}
+	__device__ oc_float3x3(oc_float3 c0, oc_float3 c1, oc_float3 c2)
+		:cols{c0, c1, c2} {}
+	__device__ auto &operator[](oc_uint i) noexcept { return cols[i]; }
+	__device__ auto operator[](oc_uint i) const noexcept { return cols[i]; }
 };
  
  struct oc_float4x4 {
 	oc_float4 cols[4];
 	__device__ explicit constexpr oc_float4x4(oc_float s = 1.f)
-		:cols{oc_float4(s, 0.f, 0.f, 0.f), oc_float4(0.f, s, 0.f, 0.f), oc_float4(0.f, 0.f, s, 0.f), oc_float4(0.f, 0.f, 0.f, s)}{}
+		:cols{oc_float4(s, 0.f, 0.f, 0.f), oc_float4(0.f, s, 0.f, 0.f), oc_float4(0.f, 0.f, s, 0.f), oc_float4(0.f, 0.f, 0.f, s)} {}
+	__device__ oc_float4x4(oc_float4 c0, oc_float4 c1, oc_float4 c2, oc_float4 c3)
+		:cols{c0, c1, c2, c3} {}
+	__device__ auto &operator[](oc_uint i) noexcept { return cols[i]; }
+	__device__ auto operator[](oc_uint i) const noexcept { return cols[i]; }
 };
  
  
