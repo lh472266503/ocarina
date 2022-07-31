@@ -34,8 +34,6 @@ public:
     [[nodiscard]] Tag tag() const noexcept { return _tag; }
     [[nodiscard]] handle_ty handle() const noexcept { return _handle; }
     [[nodiscard]] const handle_ty *handle_address() const noexcept { return &_handle; }
-    ~Resource() {
-        _destroy();
-    }
+    ~Resource() { _destroy(); }
 };
 }// namespace ocarina

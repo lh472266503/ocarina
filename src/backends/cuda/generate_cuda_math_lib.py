@@ -233,7 +233,6 @@ def matrix_operator():
                 func += get_indent(1) + "return %s;\n" % (args) 
                 func += "}\n"
                 content += func
-            
     content += "\n "
 
 def save_to_inl(var_name, content, fn):
