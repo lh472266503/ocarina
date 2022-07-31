@@ -862,7 +862,6 @@ __device__ auto operator/(oc_float2x2 m, oc_int s) {
 __device__ auto operator/(oc_int s, oc_float2x2 m) {
 	return oc_float2x2(s / m[0], s / m[1]);
 }
-
 __device__ auto operator+(oc_float2x2 m, oc_uint s) {
 	return oc_float2x2(m[0] + s, m[1] + s);
 }
@@ -887,7 +886,6 @@ __device__ auto operator/(oc_float2x2 m, oc_uint s) {
 __device__ auto operator/(oc_uint s, oc_float2x2 m) {
 	return oc_float2x2(s / m[0], s / m[1]);
 }
-
 __device__ auto operator+(oc_float2x2 m, oc_float s) {
 	return oc_float2x2(m[0] + s, m[1] + s);
 }
@@ -912,7 +910,12 @@ __device__ auto operator/(oc_float2x2 m, oc_float s) {
 __device__ auto operator/(oc_float s, oc_float2x2 m) {
 	return oc_float2x2(s / m[0], s / m[1]);
 }
-
+__device__ auto operator+(oc_float2x2 lhs, oc_float2x2 rhs) {
+	return oc_float2x2(lhs[0] + rhs[0], lhs[1] + rhs[1]);
+}
+__device__ auto operator-(oc_float2x2 lhs, oc_float2x2 rhs) {
+	return oc_float2x2(lhs[0] - rhs[0], lhs[1] - rhs[1]);
+}
 __device__ auto operator+(oc_float3x3 m, oc_int s) {
 	return oc_float3x3(m[0] + s, m[1] + s, m[2] + s);
 }
@@ -937,7 +940,6 @@ __device__ auto operator/(oc_float3x3 m, oc_int s) {
 __device__ auto operator/(oc_int s, oc_float3x3 m) {
 	return oc_float3x3(s / m[0], s / m[1], s / m[2]);
 }
-
 __device__ auto operator+(oc_float3x3 m, oc_uint s) {
 	return oc_float3x3(m[0] + s, m[1] + s, m[2] + s);
 }
@@ -962,7 +964,6 @@ __device__ auto operator/(oc_float3x3 m, oc_uint s) {
 __device__ auto operator/(oc_uint s, oc_float3x3 m) {
 	return oc_float3x3(s / m[0], s / m[1], s / m[2]);
 }
-
 __device__ auto operator+(oc_float3x3 m, oc_float s) {
 	return oc_float3x3(m[0] + s, m[1] + s, m[2] + s);
 }
@@ -987,7 +988,12 @@ __device__ auto operator/(oc_float3x3 m, oc_float s) {
 __device__ auto operator/(oc_float s, oc_float3x3 m) {
 	return oc_float3x3(s / m[0], s / m[1], s / m[2]);
 }
-
+__device__ auto operator+(oc_float3x3 lhs, oc_float3x3 rhs) {
+	return oc_float3x3(lhs[0] + rhs[0], lhs[1] + rhs[1], lhs[2] + rhs[2]);
+}
+__device__ auto operator-(oc_float3x3 lhs, oc_float3x3 rhs) {
+	return oc_float3x3(lhs[0] - rhs[0], lhs[1] - rhs[1], lhs[2] - rhs[2]);
+}
 __device__ auto operator+(oc_float4x4 m, oc_int s) {
 	return oc_float4x4(m[0] + s, m[1] + s, m[2] + s, m[3] + s);
 }
@@ -1012,7 +1018,6 @@ __device__ auto operator/(oc_float4x4 m, oc_int s) {
 __device__ auto operator/(oc_int s, oc_float4x4 m) {
 	return oc_float4x4(s / m[0], s / m[1], s / m[2], s / m[3]);
 }
-
 __device__ auto operator+(oc_float4x4 m, oc_uint s) {
 	return oc_float4x4(m[0] + s, m[1] + s, m[2] + s, m[3] + s);
 }
@@ -1037,7 +1042,6 @@ __device__ auto operator/(oc_float4x4 m, oc_uint s) {
 __device__ auto operator/(oc_uint s, oc_float4x4 m) {
 	return oc_float4x4(s / m[0], s / m[1], s / m[2], s / m[3]);
 }
-
 __device__ auto operator+(oc_float4x4 m, oc_float s) {
 	return oc_float4x4(m[0] + s, m[1] + s, m[2] + s, m[3] + s);
 }
@@ -1062,6 +1066,11 @@ __device__ auto operator/(oc_float4x4 m, oc_float s) {
 __device__ auto operator/(oc_float s, oc_float4x4 m) {
 	return oc_float4x4(s / m[0], s / m[1], s / m[2], s / m[3]);
 }
-
+__device__ auto operator+(oc_float4x4 lhs, oc_float4x4 rhs) {
+	return oc_float4x4(lhs[0] + rhs[0], lhs[1] + rhs[1], lhs[2] + rhs[2], lhs[3] + rhs[3]);
+}
+__device__ auto operator-(oc_float4x4 lhs, oc_float4x4 rhs) {
+	return oc_float4x4(lhs[0] - rhs[0], lhs[1] - rhs[1], lhs[2] - rhs[2], lhs[3] - rhs[3]);
+}
 
  
