@@ -37,7 +37,9 @@ namespace ocarina {
 
 template<typename T>
 [[nodiscard]] auto select(Var<bool> pred, T &&t, T &&f) noexcept {
-    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(), CallOp::SELECT, {OC_EXPR(pred), OC_EXPR(t), OC_EXPR(f)});
+    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
+                                                  CallOp::SELECT,
+                                                  {OC_EXPR(pred), OC_EXPR(t), OC_EXPR(f)});
     return make_expr<T>(expr);
 }
 

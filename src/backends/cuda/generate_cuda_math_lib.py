@@ -1,5 +1,6 @@
 from ast import operator
 from ctypes import alignment
+from dataclasses import field
 from os.path import realpath, dirname
 import os
 from posixpath import split
@@ -236,15 +237,26 @@ def matrix_operator():
     content += "\n"
 
 def define_select():
-    global content
+    global content, name_lst
     for scalar in scalar_types:
         ret_type = f"{prefix}_{scalar}"
         func = f"__device__ {ret_type} {prefix}_select({prefix}_bool pred, {ret_type} t, {ret_type} f) {{"
         func += " return pred ? t : f; }"
         content += func
-        content += "\n"       
-
-
+        content += "\n"   
+        for dim in range(2, 5):
+            ret_type = f"{prefix}_{scalar}{dim}"
+            func = f"__device__ {ret_type} {prefix}_select({prefix}_bool{dim} pred, {ret_type} t, {ret_type} f) {{\n"
+            args = f"return {ret_type}("
+            for d in range(0, dim):
+                field_name = name_lst[d]
+                split = ", " if d != dim - 1 else ");\n}"
+                args += f"{prefix}_select(pred.{field_name}, t.{field_name}, f.{field_name})" + split
+            func += get_indent(1) + args
+            content += func
+            content += "\n"  
+        content += "\n"
+            
 
 def save_to_inl(var_name, content, fn):
     string = f"static const char {var_name}[] = " + "{\n    "

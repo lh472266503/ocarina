@@ -8,6 +8,7 @@
 #include "generator/cpp_codegen.h"
 #include "rhi/common.h"
 #include <windows.h>
+#include "math/base.h"
 #include "backends/cuda/cuda_math_lib_embed.h"
 
 using namespace ocarina;
@@ -16,6 +17,9 @@ int main(int argc, char *argv[]) {
 
 //    cout << std::string (cuda_math_lib);
 //    return 0;
+
+    auto vv = select( make_float4(1) > 0.f, make_float4(5), make_float4(6));
+
     ocarina::vector<float> v;
     const int count = 10;
     for (int i = 0; i < count; ++i) {

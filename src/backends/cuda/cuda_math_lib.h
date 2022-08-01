@@ -1092,7 +1092,47 @@ __device__ auto operator*(oc_float4x4 lhs, oc_float4x4 rhs) {
 }
 
 __device__ oc_int oc_select(oc_bool pred, oc_int t, oc_int f) { return pred ? t : f; }
+__device__ oc_int2 oc_select(oc_bool2 pred, oc_int2 t, oc_int2 f) {
+	return oc_int2(oc_select(pred.x, t.x, f.x), oc_select(pred.y, t.y, f.y));
+}
+__device__ oc_int3 oc_select(oc_bool3 pred, oc_int3 t, oc_int3 f) {
+	return oc_int3(oc_select(pred.x, t.x, f.x), oc_select(pred.y, t.y, f.y), oc_select(pred.z, t.z, f.z));
+}
+__device__ oc_int4 oc_select(oc_bool4 pred, oc_int4 t, oc_int4 f) {
+	return oc_int4(oc_select(pred.x, t.x, f.x), oc_select(pred.y, t.y, f.y), oc_select(pred.z, t.z, f.z), oc_select(pred.w, t.w, f.w));
+}
+
 __device__ oc_uint oc_select(oc_bool pred, oc_uint t, oc_uint f) { return pred ? t : f; }
+__device__ oc_uint2 oc_select(oc_bool2 pred, oc_uint2 t, oc_uint2 f) {
+	return oc_uint2(oc_select(pred.x, t.x, f.x), oc_select(pred.y, t.y, f.y));
+}
+__device__ oc_uint3 oc_select(oc_bool3 pred, oc_uint3 t, oc_uint3 f) {
+	return oc_uint3(oc_select(pred.x, t.x, f.x), oc_select(pred.y, t.y, f.y), oc_select(pred.z, t.z, f.z));
+}
+__device__ oc_uint4 oc_select(oc_bool4 pred, oc_uint4 t, oc_uint4 f) {
+	return oc_uint4(oc_select(pred.x, t.x, f.x), oc_select(pred.y, t.y, f.y), oc_select(pred.z, t.z, f.z), oc_select(pred.w, t.w, f.w));
+}
+
 __device__ oc_float oc_select(oc_bool pred, oc_float t, oc_float f) { return pred ? t : f; }
+__device__ oc_float2 oc_select(oc_bool2 pred, oc_float2 t, oc_float2 f) {
+	return oc_float2(oc_select(pred.x, t.x, f.x), oc_select(pred.y, t.y, f.y));
+}
+__device__ oc_float3 oc_select(oc_bool3 pred, oc_float3 t, oc_float3 f) {
+	return oc_float3(oc_select(pred.x, t.x, f.x), oc_select(pred.y, t.y, f.y), oc_select(pred.z, t.z, f.z));
+}
+__device__ oc_float4 oc_select(oc_bool4 pred, oc_float4 t, oc_float4 f) {
+	return oc_float4(oc_select(pred.x, t.x, f.x), oc_select(pred.y, t.y, f.y), oc_select(pred.z, t.z, f.z), oc_select(pred.w, t.w, f.w));
+}
+
 __device__ oc_bool oc_select(oc_bool pred, oc_bool t, oc_bool f) { return pred ? t : f; }
+__device__ oc_bool2 oc_select(oc_bool2 pred, oc_bool2 t, oc_bool2 f) {
+	return oc_bool2(oc_select(pred.x, t.x, f.x), oc_select(pred.y, t.y, f.y));
+}
+__device__ oc_bool3 oc_select(oc_bool3 pred, oc_bool3 t, oc_bool3 f) {
+	return oc_bool3(oc_select(pred.x, t.x, f.x), oc_select(pred.y, t.y, f.y), oc_select(pred.z, t.z, f.z));
+}
+__device__ oc_bool4 oc_select(oc_bool4 pred, oc_bool4 t, oc_bool4 f) {
+	return oc_bool4(oc_select(pred.x, t.x, f.x), oc_select(pred.y, t.y, f.y), oc_select(pred.z, t.z, f.z), oc_select(pred.w, t.w, f.w));
+}
+
  
