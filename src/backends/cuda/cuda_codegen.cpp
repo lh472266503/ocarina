@@ -5,7 +5,7 @@
 #include "cuda_codegen.h"
 #include "ast/expression.h"
 
-#define TYPE_PREFIX "oc_"
+
 
 namespace ocarina {
 
@@ -28,7 +28,7 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         case CallOp::ANY: break;
         case CallOp::NONE: break;
         case CallOp::SELECT: {
-            current_scratch() << "oc_select";
+            current_scratch() << TYPE_PREFIX"select";
             current_scratch() << "(";
             for (const auto &arg : expr->arguments()) {
                 arg->accept(*this);

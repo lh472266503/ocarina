@@ -3,6 +3,7 @@
 //
 
 #include "cpp_codegen.h"
+#include "ast/type_registry.h"
 
 namespace ocarina {
 
@@ -12,10 +13,23 @@ struct LiteralPrinter {
     Scratch &scratch;
     explicit LiteralPrinter(Scratch &scratch) : scratch(scratch) {}
     template<typename T>
-    void operator()(T v) {
+    requires(is_scalar_v<T> || is_vector_v<T>) void operator()(T v) {
         if constexpr (ocarina::is_scalar_v<T>) {
             scratch << v;
+        } else {
+            using element_ty = vector_element_t<T>;
+            scratch << TYPE_PREFIX << Type::of<element_ty>()->description() << ocarina::vector_dimension_v<T>;
+            if constexpr (ocarina::vector_dimension_v<T> == 2) {
+                scratch << "(" << v.x << ", " << v.y << ")";
+            } else if constexpr (ocarina::vector_dimension_v<T> == 3) {
+                scratch << "(" << v.x << ", " << v.y << ", " << v.z << ")";
+            } else if constexpr (ocarina::vector_dimension_v<T> == 3) {
+                scratch << "(" << v.x << ", " << v.y << ", " << v.z << ", " << v.w << ")";
+            }
         }
+    }
+    template<size_t N>
+    void operator()(Matrix<N> m) {
     }
 };
 }// namespace detail

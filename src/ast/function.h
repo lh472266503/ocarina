@@ -156,6 +156,9 @@ public:
         }
     }
     [[nodiscard]] static Function *current() noexcept {
+        if (_function_stack().empty()) {
+            return nullptr;
+        }
         return _function_stack().back();
     }
     template<typename Func>

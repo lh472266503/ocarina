@@ -35,8 +35,9 @@ namespace ocarina {
     return make_expr<uint3>(Function::current()->dispatch_dim());
 }
 
-template<typename T>
-[[nodiscard]] auto select(Var<bool> pred, T &&t, T &&f) noexcept {
+template<typename U, typename T>
+requires(is_dsl_v<U> &&vector_dimension_v<expr_value_t<U>> == vector_dimension_v<expr_value_t<T>>)
+    [[nodiscard]] auto select(U &&pred, T &&t, T &&f) noexcept {
     auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
                                                   CallOp::SELECT,
                                                   {OC_EXPR(pred), OC_EXPR(t), OC_EXPR(f)});

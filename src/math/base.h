@@ -14,8 +14,8 @@ namespace ocarina {
 using std::abs;
 using std::sqrt;
 
-template<typename T, typename F>
-[[nodiscard]] constexpr auto select(bool pred, T t, F f) noexcept {
+template<typename T>
+[[nodiscard]] constexpr auto select(bool pred, T &&t, T &&f) noexcept {
     return pred ? t : f;
 }
 

@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
 //    cout << std::string (cuda_math_lib);
 //    return 0;
 
-    auto vv = select( make_float4(1) > 0.f, make_float4(5), make_float4(6));
+//    auto vv = select( make_float4(1) > 0.f, make_float4(5), make_float4(6));
 
     ocarina::vector<float> v;
     const int count = 10;
@@ -37,10 +37,11 @@ int main(int argc, char *argv[]) {
     Buffer<float> f_buffer = device.create_buffer<float>(count);
     Kernel kn = [&](Var<float> a, Var<float> b, BufferVar<float> c) {
         //        configure_block(1,2,1);
-//        Var<int3> vec;
-//        Var<int2> vec2 = vec.xy();
-//        vec2 = -vec2;
-        b = select(b > 5, a, b);
+        Var<int3> vec{1, 2, 3};
+        //        Var<int2> vec2 = vec.xy();
+        //        vec2 = -vec2;
+//        Var<bool3> pred = vec > make_int3(5);
+//        vec = select(vec > make_int3(5), vec, eval(vec));
         print("{}, {}---------{}--", a, b, f_buffer.read(5));
         f_buffer.write(thread_id(), f_buffer.read(thread_id()) * 2);
         c.write(thread_id(), c.read(thread_id()) * 2);
