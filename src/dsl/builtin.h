@@ -36,7 +36,9 @@ namespace ocarina {
 }
 
 template<typename U, typename T, typename F>
-requires(is_dsl_v<U> &&vector_dimension_v<expr_value_t<U>> == vector_dimension_v<expr_value_t<T>>)
+requires(is_dsl_v<U> &&
+                 vector_dimension_v<expr_value_t<U>> == vector_dimension_v<expr_value_t<T>> &&
+         vector_dimension_v<expr_value_t<U>> == vector_dimension_v<expr_value_t<F>>)
     [[nodiscard]] auto select(U &&pred, T &&t, F &&f) noexcept {
     auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
                                                   CallOp::SELECT,
