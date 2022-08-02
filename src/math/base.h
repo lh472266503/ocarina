@@ -12,6 +12,10 @@
 namespace ocarina {
 
 using std::abs;
+using std::atan2;
+using std::max;
+using std::min;
+using std::pow;
 using std::sqrt;
 
 template<typename T>
@@ -61,6 +65,9 @@ requires is_scalar_v<expr_value_t<T>>
 }
 
 template<typename T>
+[[nodiscard]] auto saturate(const T &f) { return min(1.f, max(0.f, f)); }
+
+template<typename T>
 requires OC_MULTIPLY_CHECK(T, T)
 OC_NODISCARD constexpr auto sqr(T v) {
     return v * v;
@@ -69,7 +76,7 @@ OC_NODISCARD constexpr auto sqr(T v) {
 #define MAKE_VECTOR_UNARY_FUNC(func)                                   \
     template<typename T>                                               \
     requires is_vector_v<expr_value_t<T>>                              \
-    OC_NODISCARD auto                                                  \
+        OC_NODISCARD auto                                                  \
     func(const T &v) noexcept {                                        \
         static constexpr auto N = vector_dimension_v<expr_value_t<T>>; \
         static_assert(N == 2 || N == 3 || N == 4);                     \
@@ -134,11 +141,6 @@ MAKE_VECTOR_UNARY_FUNC(radians)
             return T(func(v.x, u), func(v.y, u), func(v.z, u), func(v.w, u));         \
         }                                                                             \
     }
-
-using std::atan2;
-using std::max;
-using std::min;
-using std::pow;
 
 MAKE_VECTOR_BINARY_FUNC(pow)
 MAKE_VECTOR_BINARY_FUNC(min)

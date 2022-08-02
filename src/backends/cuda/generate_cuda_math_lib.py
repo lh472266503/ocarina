@@ -257,6 +257,29 @@ def define_select():
             content += "\n"  
         content += "\n"
             
+def define_unary_func(func_name, body):
+    global content, name_lst
+    for scalar in scalar_types[:3]:
+        ret_type = f"{prefix}_{scalar}"
+        func = f"__device__ {ret_type} {prefix}_{func_name}({ret_type} v) {{ {body} }}\n"
+        content += func
+        for dim in range(2, 5):
+            ret_type = f"{prefix}_{scalar}{dim}"
+            body2 = f"return {ret_type}("
+            for d in range(0,dim):
+                split = ", " if d != dim - 1 else ");"
+                field_name = name_lst[d]
+                body2 += f"{prefix}_{func_name}(v.{field_name})" + split
+            func = f"__device__ {ret_type} {prefix}_{func_name}({ret_type} v) {{ {body2} }}\n"
+            content += func
+    content += "\n"
+    
+def define_unary_funcs():
+    tab = {
+        "rcp" : "return 1.f / v;"
+    }
+    for k, v in tab.items():
+        define_unary_func(k, v)
 
 def save_to_inl(var_name, content, fn):
     string = f"static const char {var_name}[] = " + "{\n    "
@@ -281,6 +304,7 @@ def main():
     define_matrix()
     matrix_operator()
     define_select()
+    define_unary_funcs()
     content += " "
 
     math_lib = "cuda_math_lib"

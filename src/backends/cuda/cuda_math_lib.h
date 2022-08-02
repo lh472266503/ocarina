@@ -1135,4 +1135,17 @@ __device__ oc_bool4 oc_select(oc_bool4 pred, oc_bool4 t, oc_bool4 f) {
 	return oc_bool4(oc_select(pred.x, t.x, f.x), oc_select(pred.y, t.y, f.y), oc_select(pred.z, t.z, f.z), oc_select(pred.w, t.w, f.w));
 }
 
+__device__ oc_int oc_rcp(oc_int v) { return 1.f / v; }
+__device__ oc_int2 oc_rcp(oc_int2 v) { return oc_int2(oc_rcp(v.x), oc_rcp(v.y)); }
+__device__ oc_int3 oc_rcp(oc_int3 v) { return oc_int3(oc_rcp(v.x), oc_rcp(v.y), oc_rcp(v.z)); }
+__device__ oc_int4 oc_rcp(oc_int4 v) { return oc_int4(oc_rcp(v.x), oc_rcp(v.y), oc_rcp(v.z), oc_rcp(v.w)); }
+__device__ oc_uint oc_rcp(oc_uint v) { return 1.f / v; }
+__device__ oc_uint2 oc_rcp(oc_uint2 v) { return oc_uint2(oc_rcp(v.x), oc_rcp(v.y)); }
+__device__ oc_uint3 oc_rcp(oc_uint3 v) { return oc_uint3(oc_rcp(v.x), oc_rcp(v.y), oc_rcp(v.z)); }
+__device__ oc_uint4 oc_rcp(oc_uint4 v) { return oc_uint4(oc_rcp(v.x), oc_rcp(v.y), oc_rcp(v.z), oc_rcp(v.w)); }
+__device__ oc_float oc_rcp(oc_float v) { return 1.f / v; }
+__device__ oc_float2 oc_rcp(oc_float2 v) { return oc_float2(oc_rcp(v.x), oc_rcp(v.y)); }
+__device__ oc_float3 oc_rcp(oc_float3 v) { return oc_float3(oc_rcp(v.x), oc_rcp(v.y), oc_rcp(v.z)); }
+__device__ oc_float4 oc_rcp(oc_float4 v) { return oc_float4(oc_rcp(v.x), oc_rcp(v.y), oc_rcp(v.z), oc_rcp(v.w)); }
+
  
