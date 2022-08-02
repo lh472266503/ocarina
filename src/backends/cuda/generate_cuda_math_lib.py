@@ -277,7 +277,7 @@ def define_unary_func(func_name, param):
     
 def define_unary_funcs():
     tab = {
-        "rcp" : ["return 1.f / v;", ["int", "uint", "float", "bool"]],
+        "rcp" : ["return 1.f / v;", ["int", "uint", "float"]],
         "abs" : ["return abs(v);", ["int", "float"]],
         "cos" : ["return cos(v);", ["float"]],
         "sin" : ["return sin(v);",["float"]],
@@ -289,6 +289,35 @@ def define_unary_funcs():
     }
     for k, v in tab.items():
         define_unary_func(k, v)
+        
+def define_binary_func(func_name, param):
+    global content, name_lst
+    body, types = param
+    for scalar in types:
+        ret_type = f"{prefix}_{scalar}"
+        func = f"__device__ {ret_type} {prefix}_{func_name}({ret_type} lhs, {ret_type} rhs) {{ {body} }}\n"
+        content += func
+        for dim in range(2, 5):
+            ret_type = f"{prefix}_{scalar}{dim}"
+            body2 = f"return {ret_type}("
+            for d in range(0,dim):
+                split = ", " if d != dim - 1 else ");"
+                field_name = name_lst[d]
+                body2 += f"{prefix}_{func_name}(lhs.{field_name}, rhs.{field_name})" + split
+            func = f"__device__ {ret_type} {prefix}_{func_name}({ret_type} lhs, {ret_type} rhs) {{ {body2} }}\n"
+            content += func
+    content += "\n"      
+
+
+def define_binary_funcs():
+    tab = {
+        "pow" : ["return pow(lhs, rhs);", ["float"]],
+        "min" : ["return min(lhs, rhs);", ["int", "uint", "float"]],
+        "max" : ["return max(lhs, rhs);", ["int", "uint", "float"]],
+        "atan2" : ["return atan2(lhs, rhs);", ["float"]],
+    }
+    for k, v in tab.items():
+        define_binary_func(k, v)
 
 def save_to_inl(var_name, content, fn):
     string = f"static const char {var_name}[] = " + "{\n    "
@@ -314,6 +343,7 @@ def main():
     matrix_operator()
     define_select()
     define_unary_funcs()
+    define_binary_funcs()
     content += " "
 
     math_lib = "cuda_math_lib"
