@@ -1199,4 +1199,9 @@ __device__ oc_float2 oc_radians(oc_float2 v) { return oc_float2(oc_radians(v.x),
 __device__ oc_float3 oc_radians(oc_float3 v) { return oc_float3(oc_radians(v.x), oc_radians(v.y), oc_radians(v.z)); }
 __device__ oc_float4 oc_radians(oc_float4 v) { return oc_float4(oc_radians(v.x), oc_radians(v.y), oc_radians(v.z), oc_radians(v.w)); }
 
+__device__ oc_float oc_saturate(oc_float v) { return min(1.f, max(0.f, v)); }
+__device__ oc_float2 oc_saturate(oc_float2 v) { return oc_float2(oc_saturate(v.x), oc_saturate(v.y)); }
+__device__ oc_float3 oc_saturate(oc_float3 v) { return oc_float3(oc_saturate(v.x), oc_saturate(v.y), oc_saturate(v.z)); }
+__device__ oc_float4 oc_saturate(oc_float4 v) { return oc_float4(oc_saturate(v.x), oc_saturate(v.y), oc_saturate(v.z), oc_saturate(v.w)); }
+
  

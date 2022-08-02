@@ -285,6 +285,7 @@ def define_unary_funcs():
         "sqrt" : ["return sqrt(v);",["float"]],
         "degrees" : ["return v * (180.f / 3.1415926535f);",["float"]],
         "radians" : ["return v * (3.1415926535f / 180.f);",["float"]],
+        "saturate" : ["return min(1.f, max(0.f, v));",["float"]],
     }
     for k, v in tab.items():
         define_unary_func(k, v)
