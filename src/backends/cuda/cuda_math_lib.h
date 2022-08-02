@@ -1171,4 +1171,32 @@ __device__ oc_float2 oc_sin(oc_float2 v) { return oc_float2(oc_sin(v.x), oc_sin(
 __device__ oc_float3 oc_sin(oc_float3 v) { return oc_float3(oc_sin(v.x), oc_sin(v.y), oc_sin(v.z)); }
 __device__ oc_float4 oc_sin(oc_float4 v) { return oc_float4(oc_sin(v.x), oc_sin(v.y), oc_sin(v.z), oc_sin(v.w)); }
 
+__device__ oc_int oc_sqr(oc_int v) { return v * v; }
+__device__ oc_int2 oc_sqr(oc_int2 v) { return oc_int2(oc_sqr(v.x), oc_sqr(v.y)); }
+__device__ oc_int3 oc_sqr(oc_int3 v) { return oc_int3(oc_sqr(v.x), oc_sqr(v.y), oc_sqr(v.z)); }
+__device__ oc_int4 oc_sqr(oc_int4 v) { return oc_int4(oc_sqr(v.x), oc_sqr(v.y), oc_sqr(v.z), oc_sqr(v.w)); }
+__device__ oc_uint oc_sqr(oc_uint v) { return v * v; }
+__device__ oc_uint2 oc_sqr(oc_uint2 v) { return oc_uint2(oc_sqr(v.x), oc_sqr(v.y)); }
+__device__ oc_uint3 oc_sqr(oc_uint3 v) { return oc_uint3(oc_sqr(v.x), oc_sqr(v.y), oc_sqr(v.z)); }
+__device__ oc_uint4 oc_sqr(oc_uint4 v) { return oc_uint4(oc_sqr(v.x), oc_sqr(v.y), oc_sqr(v.z), oc_sqr(v.w)); }
+__device__ oc_float oc_sqr(oc_float v) { return v * v; }
+__device__ oc_float2 oc_sqr(oc_float2 v) { return oc_float2(oc_sqr(v.x), oc_sqr(v.y)); }
+__device__ oc_float3 oc_sqr(oc_float3 v) { return oc_float3(oc_sqr(v.x), oc_sqr(v.y), oc_sqr(v.z)); }
+__device__ oc_float4 oc_sqr(oc_float4 v) { return oc_float4(oc_sqr(v.x), oc_sqr(v.y), oc_sqr(v.z), oc_sqr(v.w)); }
+
+__device__ oc_float oc_sqrt(oc_float v) { return sqrt(v); }
+__device__ oc_float2 oc_sqrt(oc_float2 v) { return oc_float2(oc_sqrt(v.x), oc_sqrt(v.y)); }
+__device__ oc_float3 oc_sqrt(oc_float3 v) { return oc_float3(oc_sqrt(v.x), oc_sqrt(v.y), oc_sqrt(v.z)); }
+__device__ oc_float4 oc_sqrt(oc_float4 v) { return oc_float4(oc_sqrt(v.x), oc_sqrt(v.y), oc_sqrt(v.z), oc_sqrt(v.w)); }
+
+__device__ oc_float oc_degrees(oc_float v) { return v * (180.f / 3.1415926535f); }
+__device__ oc_float2 oc_degrees(oc_float2 v) { return oc_float2(oc_degrees(v.x), oc_degrees(v.y)); }
+__device__ oc_float3 oc_degrees(oc_float3 v) { return oc_float3(oc_degrees(v.x), oc_degrees(v.y), oc_degrees(v.z)); }
+__device__ oc_float4 oc_degrees(oc_float4 v) { return oc_float4(oc_degrees(v.x), oc_degrees(v.y), oc_degrees(v.z), oc_degrees(v.w)); }
+
+__device__ oc_float oc_radians(oc_float v) { return v * (3.1415926535f / 180.f); }
+__device__ oc_float2 oc_radians(oc_float2 v) { return oc_float2(oc_radians(v.x), oc_radians(v.y)); }
+__device__ oc_float3 oc_radians(oc_float3 v) { return oc_float3(oc_radians(v.x), oc_radians(v.y), oc_radians(v.z)); }
+__device__ oc_float4 oc_radians(oc_float4 v) { return oc_float4(oc_radians(v.x), oc_radians(v.y), oc_radians(v.z), oc_radians(v.w)); }
+
  
