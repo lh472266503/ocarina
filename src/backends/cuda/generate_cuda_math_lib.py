@@ -257,9 +257,10 @@ def define_select():
             content += "\n"  
         content += "\n"
             
-def define_unary_func(func_name, body):
+def define_unary_func(func_name, param):
     global content, name_lst
-    for scalar in scalar_types[:3]:
+    body, types = param
+    for scalar in types:
         ret_type = f"{prefix}_{scalar}"
         func = f"__device__ {ret_type} {prefix}_{func_name}({ret_type} v) {{ {body} }}\n"
         content += func
@@ -276,7 +277,10 @@ def define_unary_func(func_name, body):
     
 def define_unary_funcs():
     tab = {
-        "rcp" : "return 1.f / v;"
+        "rcp" : ["return 1.f / v;", ["int", "uint", "float", "bool"]],
+        "abs" : ["return abs(v);", ["int", "float"]],
+        "cos" : ["return cos(v);", ["float"]],
+        "sin" : ["return sin(v);",["float"]],
     }
     for k, v in tab.items():
         define_unary_func(k, v)
