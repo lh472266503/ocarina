@@ -426,7 +426,7 @@ def main():
     define_make_vecs()
     content += " "
 
-    math_lib = "cuda_math_lib"
+    math_lib = "cuda_builtin"
     with open(os.path.join(curr_dir, math_lib + ".h"), "w") as file:
         file.write(content)
         file.close()
