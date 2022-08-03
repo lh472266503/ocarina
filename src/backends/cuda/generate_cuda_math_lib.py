@@ -168,6 +168,7 @@ def define_matrix():
     struct = ""
     for dim in range(2, 5):
         struct = f"struct {prefix}_float{dim}x{dim} {{\n"
+        struct_name = f"{prefix}_float{dim}x{dim}"
         struct += get_indent(1) + f"{prefix}_float{dim} cols[{dim}];\n"
         struct += get_indent(1) + f"__device__ explicit constexpr {prefix}_float{dim}x{dim}({prefix}_float s = 1.f)\n"
         args = ""
@@ -190,6 +191,22 @@ def define_matrix():
             lst += f"c{d}" + split
         struct += get_indent(1) + f"__device__ {prefix}_float{dim}x{dim}({args})\n"
         struct += get_indent(2) + f":cols{{{lst}}} {{}}\n"
+
+        args = ""
+        body = f":{struct_name}("
+        for i in range(0, dim):
+            col = f"oc_float{dim}("
+            for j in range(0, dim):
+                split = ", " if i * j != (dim - 1)**2 else ""
+                split_col = ", " if j != dim - 1 else ")"
+                args += f"{prefix}_float m{i}{j}" + split
+                col += f"m{i}{j}" + split_col
+            split_body = ", " if i != dim - 1 else ")"
+            body += col + split_body
+        print(body)
+        struct += get_indent(1) + f"__device__ {struct_name} ({args}){body} {{}}\n"
+
+
         struct += get_indent(1) + "__device__ auto &operator[](oc_uint i) noexcept { return cols[i]; }\n"
         struct += get_indent(1) + "__device__ auto operator[](oc_uint i) const noexcept { return cols[i]; }\n"
         struct += "};\n \n"

@@ -859,6 +859,7 @@ struct oc_float2x2 {
 		:cols{oc_float2(s, 0.f), oc_float2(0.f, s)} {}
 	__device__ oc_float2x2(oc_float2 c0, oc_float2 c1)
 		:cols{c0, c1} {}
+	__device__ oc_float2x2 (oc_float m00, oc_float m01, oc_float m10, oc_float m11):oc_float2x2(oc_float2(m00, m01), oc_float2(m10, m11)) {}
 	__device__ auto &operator[](oc_uint i) noexcept { return cols[i]; }
 	__device__ auto operator[](oc_uint i) const noexcept { return cols[i]; }
 };
@@ -869,6 +870,7 @@ struct oc_float3x3 {
 		:cols{oc_float3(s, 0.f, 0.f), oc_float3(0.f, s, 0.f), oc_float3(0.f, 0.f, s)} {}
 	__device__ oc_float3x3(oc_float3 c0, oc_float3 c1, oc_float3 c2)
 		:cols{c0, c1, c2} {}
+	__device__ oc_float3x3 (oc_float m00, oc_float m01, oc_float m02, oc_float m10, oc_float m11, oc_float m12, oc_float m20, oc_float m21, oc_float m22):oc_float3x3(oc_float3(m00, m01, m02), oc_float3(m10, m11, m12), oc_float3(m20, m21, m22)) {}
 	__device__ auto &operator[](oc_uint i) noexcept { return cols[i]; }
 	__device__ auto operator[](oc_uint i) const noexcept { return cols[i]; }
 };
@@ -879,6 +881,7 @@ struct oc_float4x4 {
 		:cols{oc_float4(s, 0.f, 0.f, 0.f), oc_float4(0.f, s, 0.f, 0.f), oc_float4(0.f, 0.f, s, 0.f), oc_float4(0.f, 0.f, 0.f, s)} {}
 	__device__ oc_float4x4(oc_float4 c0, oc_float4 c1, oc_float4 c2, oc_float4 c3)
 		:cols{c0, c1, c2, c3} {}
+	__device__ oc_float4x4 (oc_float m00, oc_float m01, oc_float m02, oc_float m03, oc_float m10, oc_float m11, oc_float m12, oc_float m13, oc_float m20, oc_float m21, oc_float m22, oc_float m23, oc_float m30, oc_float m31, oc_float m32, oc_float m33):oc_float4x4(oc_float4(m00, m01, m02, m03), oc_float4(m10, m11, m12, m13), oc_float4(m20, m21, m22, m23), oc_float4(m30, m31, m32, m33)) {}
 	__device__ auto &operator[](oc_uint i) noexcept { return cols[i]; }
 	__device__ auto operator[](oc_uint i) const noexcept { return cols[i]; }
 };
