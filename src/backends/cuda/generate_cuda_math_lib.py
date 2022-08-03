@@ -423,6 +423,44 @@ def define_vec_func():
         content += "\n"
     content += "\n"
         
+def define_make_vecs():
+    global content,name_lst
+    for type in scalar_types:
+        content += f"""[[nodiscard]] __device__ inline auto oc_make_{type}2(oc_{type} s = 0) noexcept {{ return oc_{type}2{{s, s}}; }}
+[[nodiscard]] __device__ inline auto oc_make_{type}2(oc_{type} x, oc_{type} y) noexcept {{ return oc_{type}2{{x, y}}; }}""" + "\n"
+
+        for t in scalar_types:
+            for l in range(2, 5):
+                content += f"[[nodiscard]] __device__ inline auto oc_make_{type}2(oc_{t}{l} v) noexcept {{ return oc_{type}2{{static_cast<oc_{type}>(v.x), static_cast<oc_{type}>(v.y)}}; }}"
+                content += "\n"
+        content += f"""[[nodiscard]] __device__ inline auto oc_make_{type}3(oc_{type} s = 0) noexcept {{ return oc_{type}3{{s, s, s}}; }}
+[[nodiscard]] __device__ inline auto oc_make_{type}3(oc_{type} x, oc_{type} y, oc_{type} z) noexcept {{ return oc_{type}3{{x, y, z}}; }}
+[[nodiscard]] __device__ inline auto oc_make_{type}3(oc_{type} x, oc_{type}2 yz) noexcept {{ return oc_{type}3{{x, yz.x, yz.y}}; }}
+[[nodiscard]] __device__ inline auto oc_make_{type}3(oc_{type}2 xy, oc_{type} z) noexcept {{ return oc_{type}3{{xy.x, xy.y, z}}; }}""" + "\n"
+
+        for t in scalar_types:
+            for l in range(3, 5):
+                
+                content += f"[[nodiscard]] __device__ inline auto oc_make_{type}3(oc_{t}{l} v) noexcept {{ return oc_{type}3{{static_cast<oc_{type}>(v.x), static_cast<oc_{type}>(v.y), static_cast<oc_{type}>(v.z)}}; }}" 
+                content += "\n"
+        # make type4
+        content += f"""[[nodiscard]] __device__ inline auto oc_make_{type}4(oc_{type} s = 0) noexcept {{ return oc_{type}4{{s, s, s, s}}; }}
+[[nodiscard]] __device__ inline auto oc_make_{type}4(oc_{type} x, oc_{type} y, oc_{type} z, oc_{type} w) noexcept {{ return oc_{type}4{{x, y, z, w}}; }}
+[[nodiscard]] __device__ inline auto oc_make_{type}4(oc_{type} x, oc_{type} y, oc_{type}2 zw) noexcept {{ return oc_{type}4{{x, y, zw.x, zw.y}}; }}
+[[nodiscard]] __device__ inline auto oc_make_{type}4(oc_{type} x, oc_{type}2 yz, oc_{type} w) noexcept {{ return oc_{type}4{{x, yz.x, yz.y, w}}; }}
+[[nodiscard]] __device__ inline auto oc_make_{type}4(oc_{type}2 xy, oc_{type} z, oc_{type} w) noexcept {{ return oc_{type}4{{xy.x, xy.y, z, w}}; }}
+[[nodiscard]] __device__ inline auto oc_make_{type}4(oc_{type}2 xy, oc_{type}2 zw) noexcept {{ return oc_{type}4{{xy.x, xy.y, zw.x, zw.y}}; }}
+[[nodiscard]] __device__ inline auto oc_make_{type}4(oc_{type} x, oc_{type}3 yzw) noexcept {{ return oc_{type}4{{x, yzw.x, yzw.y, yzw.z}}; }}
+[[nodiscard]] __device__ inline auto oc_make_{type}4(oc_{type}3 xyz, oc_{type} w) noexcept {{ return oc_{type}4{{xyz.x, xyz.y, xyz.z, w}}; }}"""
+
+        for t in scalar_types:
+            content += f"[[nodiscard]] __device__ inline auto oc_make_{type}4(oc_{t}4 v) noexcept {{ return oc_{type}4{{static_cast<oc_{type}>(v.x), static_cast<oc_{type}>(v.y), static_cast<oc_{type}>(v.z), static_cast<oc_{type}>(v.w)}}; }}"
+            content += "\n"
+
+
+    content += "\n"
+
+
 
 def save_to_inl(var_name, content, fn):
     string = f"static const char {var_name}[] = " + "{\n    "
@@ -463,6 +501,7 @@ def main():
     define_triple_funcs()
     convert_cuda_math()
     define_vec_func()
+    define_make_vecs()
 
     content += " "
 

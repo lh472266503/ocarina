@@ -1,11 +1,19 @@
 
-// [[nodiscard]] __device__ inline auto oc_faceforward(oc_float3 n, oc_float3 i, oc_float3 n_ref) noexcept { return oc_dot(n_ref, i) < 0.0f ? n : -n; }
+[[nodiscard]] __device__ inline auto oc_faceforward(oc_float3 n, oc_float3 i, oc_float3 n_ref) noexcept { return oc_dot(n_ref, i) < 0.0f ? n : -n; }
 
 [[nodiscard]] __device__ inline auto oc_cross(oc_float3 u, oc_float3 v) noexcept { return oc_float3(u.y * v.z - v.y * u.z, u.z * v.x - v.z * u.x, u.x * v.y - v.x * u.y); }
 
-[[nodiscard]] __device__ inline auto oc_transpose(const oc_float2x2 m) noexcept { return oc_float2x2(m[0].x, m[1].x, m[0].y, m[1].y); }
-[[nodiscard]] __device__ inline auto oc_transpose(const oc_float3x3 m) noexcept { return oc_float3x3(m[0].x, m[1].x, m[2].x, m[0].y, m[1].y, m[2].y, m[0].z, m[1].z, m[2].z); }
-[[nodiscard]] __device__ inline auto oc_transpose(const oc_float4x4 m) noexcept { return oc_float4x4(m[0].x, m[1].x, m[2].x, m[3].x, m[0].y, m[1].y, m[2].y, m[3].y, m[0].z, m[1].z, m[2].z, m[3].z, m[0].w, m[1].w, m[2].w, m[3].w); }
+[[nodiscard]] __device__ inline auto oc_transpose(const oc_float2x2 m) noexcept { 
+    return oc_float2x2(m[0].x, m[1].x, m[0].y, m[1].y); 
+}
+
+[[nodiscard]] __device__ inline auto oc_transpose(const oc_float3x3 m) noexcept { 
+    return oc_float3x3(m[0].x, m[1].x, m[2].x, m[0].y, m[1].y, m[2].y, m[0].z, m[1].z, m[2].z); 
+}
+
+[[nodiscard]] __device__ inline auto oc_transpose(const oc_float4x4 m) noexcept { 
+    return oc_float4x4(m[0].x, m[1].x, m[2].x, m[3].x, m[0].y, m[1].y, m[2].y, m[3].y, m[0].z, m[1].z, m[2].z, m[3].z, m[0].w, m[1].w, m[2].w, m[3].w); 
+}
 
 [[nodiscard]] __device__ inline auto oc_determinant(const oc_float2x2 m) noexcept {
     return m[0][0] * m[1][1] - m[1][0] * m[0][1];
