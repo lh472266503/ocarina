@@ -303,34 +303,35 @@ def define_unary_func(func_name, param):
     content += "\n"
     
 def define_unary_funcs():
-    tab = {
-        "rcp" : ["return 1.f / v;", ["int", "uint", "float"]],
-        "abs" : ["return abs(v);", ["int", "float"]],
-        "ceil" : ["return ceil(v);", ["float"]],
-        "floor" : ["return floor(v);", ["float"]],
-        "round" : ["return round(v);", ["float"]],
-        "sin" : ["return sinf(v);",["float"]],
-        "cos" : ["return cosf(v);", ["float"]],
-        "tan" : ["return tanf(v);", ["float"]],
-        "asin" : ["return asinf(v);", ["float"]],
-        "acos" : ["return acosf(v);", ["float"]],
-        "atan" : ["return atanf(v);", ["float"]],
-        "is_inf" : ["return isinf(v);", ["float"]],
-        "is_nan" : ["return isnan(v);", ["float"]],
-        "exp" : ["return expf(v);",["float"]],
-        "exp2" : ["return exp2f(v);",["float"]],
-        "exp10" : ["return exp10f(v);",["float"]],
-        "log" : ["return logf(v);",["float"]],
-        "log2" : ["return log2f(v);",["float"]],
-        "log10" : ["return log10f(v);",["float"]],
-        "sqr" : ["return v * v;",["int","uint","float"]],
-        "sqrt" : ["return sqrtf(v);",["float"]],
-        "rsqrt" : ["return rsqrtf(v);",["float"]],
-        "degrees" : ["return v * (180.f / 3.1415926535f);",["float"]],
-        "radians" : ["return v * (3.1415926535f / 180.f);",["float"]],
-        "saturate" : ["return min(1.f, max(0.f, v));",["float"]],
-    }
-    for k, v in tab.items():
+    tab = [
+        ["rcp" , ["return 1.f / v;", ["int", "uint", "float"]]],
+        ["abs" , ["return fabsf(v);", ["float"]]],
+        ["abs" , ["return abs(v);", ["int"]]],
+        ["ceil" , ["return ceilf(v);", ["float"]]],
+        ["floor" , ["return floorf(v);", ["float"]]],
+        ["round" , ["return roundf(v);", ["float"]]],
+        ["sin" , ["return sinf(v);",["float"]]],
+        ["cos" , ["return cosf(v);", ["float"]]],
+        ["tan" , ["return tanf(v);", ["float"]]],
+        ["asin" , ["return asinf(v);", ["float"]]],
+        ["acos" , ["return acosf(v);", ["float"]]],
+        ["atan" , ["return atanf(v);", ["float"]]],
+        ["is_inf" , ["return isinf(v);", ["float"]]],
+        ["is_nan" , ["return isnan(v);", ["float"]]],
+        ["exp" , ["return expf(v);",["float"]]],
+        ["exp2" , ["return exp2f(v);",["float"]]],
+        ["exp10" , ["return exp10f(v);",["float"]]],
+        ["log" , ["return logf(v);",["float"]]],
+        ["log2" , ["return log2f(v);",["float"]]],
+        ["log10" , ["return log10f(v);",["float"]]],
+        ["sqr" , ["return v * v;",["int","uint","float"]]],
+        ["sqrt" , ["return sqrtf(v);",["float"]]],
+        ["rsqrt" , ["return rsqrtf(v);",["float"]]],
+        ["degrees" , ["return v * (180.f / 3.1415926535f);",["float"]]],
+        ["radians" , ["return v * (3.1415926535f / 180.f);",["float"]]],
+        ["saturate" , ["return min(1.f, max(0.f, v));",["float"]]],
+    ]
+    for k, v in tab:
         define_unary_func(k, v)
         
 def define_binary_func(func_name, param):
