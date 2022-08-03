@@ -47,7 +47,7 @@ requires(is_dsl_v<U> &&
 }
 
 template<typename T>
-requires is_dsl_v<T>
+requires (is_dsl_v<T> && is_bool_vector_expr_v<T>)
 [[nodiscard]] auto all(const T &t) noexcept {
     auto expr = Function::current()->call_builtin(Type::of<bool>(),
         CallOp::ALL, {OC_EXPR(t)});
