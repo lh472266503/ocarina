@@ -1157,6 +1157,21 @@ __device__ oc_float2 oc_abs(oc_float2 v) { return oc_float2(oc_abs(v.x), oc_abs(
 __device__ oc_float3 oc_abs(oc_float3 v) { return oc_float3(oc_abs(v.x), oc_abs(v.y), oc_abs(v.z)); }
 __device__ oc_float4 oc_abs(oc_float4 v) { return oc_float4(oc_abs(v.x), oc_abs(v.y), oc_abs(v.z), oc_abs(v.w)); }
 
+__device__ oc_float oc_ceil(oc_float v) { return ceil(v); }
+__device__ oc_float2 oc_ceil(oc_float2 v) { return oc_float2(oc_ceil(v.x), oc_ceil(v.y)); }
+__device__ oc_float3 oc_ceil(oc_float3 v) { return oc_float3(oc_ceil(v.x), oc_ceil(v.y), oc_ceil(v.z)); }
+__device__ oc_float4 oc_ceil(oc_float4 v) { return oc_float4(oc_ceil(v.x), oc_ceil(v.y), oc_ceil(v.z), oc_ceil(v.w)); }
+
+__device__ oc_float oc_floor(oc_float v) { return floor(v); }
+__device__ oc_float2 oc_floor(oc_float2 v) { return oc_float2(oc_floor(v.x), oc_floor(v.y)); }
+__device__ oc_float3 oc_floor(oc_float3 v) { return oc_float3(oc_floor(v.x), oc_floor(v.y), oc_floor(v.z)); }
+__device__ oc_float4 oc_floor(oc_float4 v) { return oc_float4(oc_floor(v.x), oc_floor(v.y), oc_floor(v.z), oc_floor(v.w)); }
+
+__device__ oc_float oc_round(oc_float v) { return round(v); }
+__device__ oc_float2 oc_round(oc_float2 v) { return oc_float2(oc_round(v.x), oc_round(v.y)); }
+__device__ oc_float3 oc_round(oc_float3 v) { return oc_float3(oc_round(v.x), oc_round(v.y), oc_round(v.z)); }
+__device__ oc_float4 oc_round(oc_float4 v) { return oc_float4(oc_round(v.x), oc_round(v.y), oc_round(v.z), oc_round(v.w)); }
+
 __device__ oc_float oc_sin(oc_float v) { return sinf(v); }
 __device__ oc_float2 oc_sin(oc_float2 v) { return oc_float2(oc_sin(v.x), oc_sin(v.y)); }
 __device__ oc_float3 oc_sin(oc_float3 v) { return oc_float3(oc_sin(v.x), oc_sin(v.y), oc_sin(v.z)); }

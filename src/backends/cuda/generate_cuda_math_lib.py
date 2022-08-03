@@ -279,6 +279,9 @@ def define_unary_funcs():
     tab = {
         "rcp" : ["return 1.f / v;", ["int", "uint", "float"]],
         "abs" : ["return abs(v);", ["int", "float"]],
+        "ceil" : ["return ceil(v);", ["float"]],
+        "floor" : ["return floor(v);", ["float"]],
+        "round" : ["return round(v);", ["float"]],
         "sin" : ["return sinf(v);",["float"]],
         "cos" : ["return cosf(v);", ["float"]],
         "tan" : ["return tanf(v);", ["float"]],
