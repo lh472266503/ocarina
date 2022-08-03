@@ -338,13 +338,12 @@ def define_binary_funcs():
 def define_triple_func(tab):
     global content, name_lst
     func_name = tab["name"]
-    # arg_types = tab["arg_types"]
-    ret_type = tab.get("ret_type", "auto")
     body = tab["body"]
     types = tab.get("types", scalar_types)
     for scalar in types:
-        arg_types = f"{prefix}_{scalar}"
-        scalar_func = f"__device__ {ret_type} {prefix}_{func_name}({arg_types} v0, {arg_types} v1, {arg_types} v2) {{ {body} }}\n"
+        arg_type = f"{prefix}_{scalar}"
+        ret_type = f"{prefix}_{scalar}"
+        scalar_func = f"__device__ {ret_type} {prefix}_{func_name}({arg_type} v0, {arg_type} v1, {arg_type} v2) {{ {body} }}\n"
         content += scalar_func
         for dim in range(2, 5):
             vec_ret_type = f"{ret_type}{dim}"
@@ -353,18 +352,21 @@ def define_triple_func(tab):
                 split = ", " if d != dim - 1 else ");"
                 field_name = name_lst[d]
                 vec_body += f"{prefix}_{func_name}(v0.{field_name}, v1.{field_name}, v2.{field_name})" + split
-            vec_func = f"__device__ {vec_ret_type} {prefix}_{func_name}({arg_types}{dim} v0, {arg_types}{dim} v1, {arg_types}{dim} v2) {{ {vec_body} }}\n"
+            vec_func = f"__device__ {vec_ret_type} {prefix}_{func_name}({arg_type}{dim} v0, {arg_type}{dim} v1, {arg_type}{dim} v2) {{ {vec_body} }}\n"
             content += vec_func
     content += "\n"
 
 def define_triple_funcs():
     lst = [
         {
-            "arg_types" : ["oc_float", "oc_float", "oc_float"],
             "name" : "lerp",
-            "ret_type" : f"{prefix}_float",
-            "body" : f"return v1 + v0 * (v2 - v1);",
+            "body" : "return v1 + v0 * (v2 - v1);",
             "types" : ["float"]
+        },
+        {
+            "name" : "clamp",
+            "body" : "if (v0 < v1) { return v1; } else if (v0 > v2) { return v2; } else { return v0; }",
+            "types" : ["float", "uint", "int"]
         }
     ]
     for v in lst:
