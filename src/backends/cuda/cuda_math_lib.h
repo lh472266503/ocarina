@@ -1157,20 +1157,35 @@ __device__ oc_float2 oc_abs(oc_float2 v) { return oc_float2(oc_abs(v.x), oc_abs(
 __device__ oc_float3 oc_abs(oc_float3 v) { return oc_float3(oc_abs(v.x), oc_abs(v.y), oc_abs(v.z)); }
 __device__ oc_float4 oc_abs(oc_float4 v) { return oc_float4(oc_abs(v.x), oc_abs(v.y), oc_abs(v.z), oc_abs(v.w)); }
 
-__device__ oc_float oc_sin(oc_float v) { return sin(v); }
+__device__ oc_float oc_sin(oc_float v) { return sinf(v); }
 __device__ oc_float2 oc_sin(oc_float2 v) { return oc_float2(oc_sin(v.x), oc_sin(v.y)); }
 __device__ oc_float3 oc_sin(oc_float3 v) { return oc_float3(oc_sin(v.x), oc_sin(v.y), oc_sin(v.z)); }
 __device__ oc_float4 oc_sin(oc_float4 v) { return oc_float4(oc_sin(v.x), oc_sin(v.y), oc_sin(v.z), oc_sin(v.w)); }
 
-__device__ oc_float oc_cos(oc_float v) { return cos(v); }
+__device__ oc_float oc_cos(oc_float v) { return cosf(v); }
 __device__ oc_float2 oc_cos(oc_float2 v) { return oc_float2(oc_cos(v.x), oc_cos(v.y)); }
 __device__ oc_float3 oc_cos(oc_float3 v) { return oc_float3(oc_cos(v.x), oc_cos(v.y), oc_cos(v.z)); }
 __device__ oc_float4 oc_cos(oc_float4 v) { return oc_float4(oc_cos(v.x), oc_cos(v.y), oc_cos(v.z), oc_cos(v.w)); }
 
-__device__ oc_float oc_tan(oc_float v) { return tan(v); }
+__device__ oc_float oc_tan(oc_float v) { return tanf(v); }
 __device__ oc_float2 oc_tan(oc_float2 v) { return oc_float2(oc_tan(v.x), oc_tan(v.y)); }
 __device__ oc_float3 oc_tan(oc_float3 v) { return oc_float3(oc_tan(v.x), oc_tan(v.y), oc_tan(v.z)); }
 __device__ oc_float4 oc_tan(oc_float4 v) { return oc_float4(oc_tan(v.x), oc_tan(v.y), oc_tan(v.z), oc_tan(v.w)); }
+
+__device__ oc_float oc_asin(oc_float v) { return asinf(v); }
+__device__ oc_float2 oc_asin(oc_float2 v) { return oc_float2(oc_asin(v.x), oc_asin(v.y)); }
+__device__ oc_float3 oc_asin(oc_float3 v) { return oc_float3(oc_asin(v.x), oc_asin(v.y), oc_asin(v.z)); }
+__device__ oc_float4 oc_asin(oc_float4 v) { return oc_float4(oc_asin(v.x), oc_asin(v.y), oc_asin(v.z), oc_asin(v.w)); }
+
+__device__ oc_float oc_acos(oc_float v) { return acosf(v); }
+__device__ oc_float2 oc_acos(oc_float2 v) { return oc_float2(oc_acos(v.x), oc_acos(v.y)); }
+__device__ oc_float3 oc_acos(oc_float3 v) { return oc_float3(oc_acos(v.x), oc_acos(v.y), oc_acos(v.z)); }
+__device__ oc_float4 oc_acos(oc_float4 v) { return oc_float4(oc_acos(v.x), oc_acos(v.y), oc_acos(v.z), oc_acos(v.w)); }
+
+__device__ oc_float oc_atan(oc_float v) { return atanf(v); }
+__device__ oc_float2 oc_atan(oc_float2 v) { return oc_float2(oc_atan(v.x), oc_atan(v.y)); }
+__device__ oc_float3 oc_atan(oc_float3 v) { return oc_float3(oc_atan(v.x), oc_atan(v.y), oc_atan(v.z)); }
+__device__ oc_float4 oc_atan(oc_float4 v) { return oc_float4(oc_atan(v.x), oc_atan(v.y), oc_atan(v.z), oc_atan(v.w)); }
 
 __device__ oc_float oc_is_inf(oc_float v) { return isinf(v); }
 __device__ oc_float2 oc_is_inf(oc_float2 v) { return oc_float2(oc_is_inf(v.x), oc_is_inf(v.y)); }
@@ -1181,6 +1196,36 @@ __device__ oc_float oc_is_nan(oc_float v) { return isnan(v); }
 __device__ oc_float2 oc_is_nan(oc_float2 v) { return oc_float2(oc_is_nan(v.x), oc_is_nan(v.y)); }
 __device__ oc_float3 oc_is_nan(oc_float3 v) { return oc_float3(oc_is_nan(v.x), oc_is_nan(v.y), oc_is_nan(v.z)); }
 __device__ oc_float4 oc_is_nan(oc_float4 v) { return oc_float4(oc_is_nan(v.x), oc_is_nan(v.y), oc_is_nan(v.z), oc_is_nan(v.w)); }
+
+__device__ oc_float oc_exp(oc_float v) { return expf(v); }
+__device__ oc_float2 oc_exp(oc_float2 v) { return oc_float2(oc_exp(v.x), oc_exp(v.y)); }
+__device__ oc_float3 oc_exp(oc_float3 v) { return oc_float3(oc_exp(v.x), oc_exp(v.y), oc_exp(v.z)); }
+__device__ oc_float4 oc_exp(oc_float4 v) { return oc_float4(oc_exp(v.x), oc_exp(v.y), oc_exp(v.z), oc_exp(v.w)); }
+
+__device__ oc_float oc_exp2(oc_float v) { return exp2f(v); }
+__device__ oc_float2 oc_exp2(oc_float2 v) { return oc_float2(oc_exp2(v.x), oc_exp2(v.y)); }
+__device__ oc_float3 oc_exp2(oc_float3 v) { return oc_float3(oc_exp2(v.x), oc_exp2(v.y), oc_exp2(v.z)); }
+__device__ oc_float4 oc_exp2(oc_float4 v) { return oc_float4(oc_exp2(v.x), oc_exp2(v.y), oc_exp2(v.z), oc_exp2(v.w)); }
+
+__device__ oc_float oc_exp10(oc_float v) { return exp10f(v); }
+__device__ oc_float2 oc_exp10(oc_float2 v) { return oc_float2(oc_exp10(v.x), oc_exp10(v.y)); }
+__device__ oc_float3 oc_exp10(oc_float3 v) { return oc_float3(oc_exp10(v.x), oc_exp10(v.y), oc_exp10(v.z)); }
+__device__ oc_float4 oc_exp10(oc_float4 v) { return oc_float4(oc_exp10(v.x), oc_exp10(v.y), oc_exp10(v.z), oc_exp10(v.w)); }
+
+__device__ oc_float oc_log(oc_float v) { return logf(v); }
+__device__ oc_float2 oc_log(oc_float2 v) { return oc_float2(oc_log(v.x), oc_log(v.y)); }
+__device__ oc_float3 oc_log(oc_float3 v) { return oc_float3(oc_log(v.x), oc_log(v.y), oc_log(v.z)); }
+__device__ oc_float4 oc_log(oc_float4 v) { return oc_float4(oc_log(v.x), oc_log(v.y), oc_log(v.z), oc_log(v.w)); }
+
+__device__ oc_float oc_log2(oc_float v) { return log2f(v); }
+__device__ oc_float2 oc_log2(oc_float2 v) { return oc_float2(oc_log2(v.x), oc_log2(v.y)); }
+__device__ oc_float3 oc_log2(oc_float3 v) { return oc_float3(oc_log2(v.x), oc_log2(v.y), oc_log2(v.z)); }
+__device__ oc_float4 oc_log2(oc_float4 v) { return oc_float4(oc_log2(v.x), oc_log2(v.y), oc_log2(v.z), oc_log2(v.w)); }
+
+__device__ oc_float oc_log10(oc_float v) { return log10f(v); }
+__device__ oc_float2 oc_log10(oc_float2 v) { return oc_float2(oc_log10(v.x), oc_log10(v.y)); }
+__device__ oc_float3 oc_log10(oc_float3 v) { return oc_float3(oc_log10(v.x), oc_log10(v.y), oc_log10(v.z)); }
+__device__ oc_float4 oc_log10(oc_float4 v) { return oc_float4(oc_log10(v.x), oc_log10(v.y), oc_log10(v.z), oc_log10(v.w)); }
 
 __device__ oc_int oc_sqr(oc_int v) { return v * v; }
 __device__ oc_int2 oc_sqr(oc_int2 v) { return oc_int2(oc_sqr(v.x), oc_sqr(v.y)); }
@@ -1195,10 +1240,15 @@ __device__ oc_float2 oc_sqr(oc_float2 v) { return oc_float2(oc_sqr(v.x), oc_sqr(
 __device__ oc_float3 oc_sqr(oc_float3 v) { return oc_float3(oc_sqr(v.x), oc_sqr(v.y), oc_sqr(v.z)); }
 __device__ oc_float4 oc_sqr(oc_float4 v) { return oc_float4(oc_sqr(v.x), oc_sqr(v.y), oc_sqr(v.z), oc_sqr(v.w)); }
 
-__device__ oc_float oc_sqrt(oc_float v) { return sqrt(v); }
+__device__ oc_float oc_sqrt(oc_float v) { return sqrtf(v); }
 __device__ oc_float2 oc_sqrt(oc_float2 v) { return oc_float2(oc_sqrt(v.x), oc_sqrt(v.y)); }
 __device__ oc_float3 oc_sqrt(oc_float3 v) { return oc_float3(oc_sqrt(v.x), oc_sqrt(v.y), oc_sqrt(v.z)); }
 __device__ oc_float4 oc_sqrt(oc_float4 v) { return oc_float4(oc_sqrt(v.x), oc_sqrt(v.y), oc_sqrt(v.z), oc_sqrt(v.w)); }
+
+__device__ oc_float oc_rsqrt(oc_float v) { return rsqrtf(v); }
+__device__ oc_float2 oc_rsqrt(oc_float2 v) { return oc_float2(oc_rsqrt(v.x), oc_rsqrt(v.y)); }
+__device__ oc_float3 oc_rsqrt(oc_float3 v) { return oc_float3(oc_rsqrt(v.x), oc_rsqrt(v.y), oc_rsqrt(v.z)); }
+__device__ oc_float4 oc_rsqrt(oc_float4 v) { return oc_float4(oc_rsqrt(v.x), oc_rsqrt(v.y), oc_rsqrt(v.z), oc_rsqrt(v.w)); }
 
 __device__ oc_float oc_degrees(oc_float v) { return v * (180.f / 3.1415926535f); }
 __device__ oc_float2 oc_degrees(oc_float2 v) { return oc_float2(oc_degrees(v.x), oc_degrees(v.y)); }
