@@ -367,6 +367,11 @@ def define_triple_funcs():
             "name" : "clamp",
             "body" : "if (v0 < v1) { return v1; } else if (v0 > v2) { return v2; } else { return v0; }",
             "types" : ["float", "uint", "int"]
+        },
+        {
+            "name" : "fma",
+            "body" : "return fmaf(v0, v1, v2);",
+            "types" : ["float"]
         }
     ]
     for v in lst:

@@ -1334,4 +1334,9 @@ __device__ oc_int2 oc_clamp(oc_int2 v0, oc_int2 v1, oc_int2 v2) { return oc_int2
 __device__ oc_int3 oc_clamp(oc_int3 v0, oc_int3 v1, oc_int3 v2) { return oc_int3(oc_clamp(v0.x, v1.x, v2.x), oc_clamp(v0.y, v1.y, v2.y), oc_clamp(v0.z, v1.z, v2.z)); }
 __device__ oc_int4 oc_clamp(oc_int4 v0, oc_int4 v1, oc_int4 v2) { return oc_int4(oc_clamp(v0.x, v1.x, v2.x), oc_clamp(v0.y, v1.y, v2.y), oc_clamp(v0.z, v1.z, v2.z), oc_clamp(v0.w, v1.w, v2.w)); }
 
+__device__ oc_float oc_fma(oc_float v0, oc_float v1, oc_float v2) { return fmaf(v0, v1, v2); }
+__device__ oc_float2 oc_fma(oc_float2 v0, oc_float2 v1, oc_float2 v2) { return oc_float2(oc_fma(v0.x, v1.x, v2.x), oc_fma(v0.y, v1.y, v2.y)); }
+__device__ oc_float3 oc_fma(oc_float3 v0, oc_float3 v1, oc_float3 v2) { return oc_float3(oc_fma(v0.x, v1.x, v2.x), oc_fma(v0.y, v1.y, v2.y), oc_fma(v0.z, v1.z, v2.z)); }
+__device__ oc_float4 oc_fma(oc_float4 v0, oc_float4 v1, oc_float4 v2) { return oc_float4(oc_fma(v0.x, v1.x, v2.x), oc_fma(v0.y, v1.y, v2.y), oc_fma(v0.z, v1.z, v2.z), oc_fma(v0.w, v1.w, v2.w)); }
+
  
