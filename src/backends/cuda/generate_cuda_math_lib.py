@@ -352,7 +352,7 @@ def define_triple_func(tab):
                 split = ", " if d != dim - 1 else ");"
                 field_name = name_lst[d]
                 vec_body += f"{prefix}_{func_name}(v0.{field_name}, v1.{field_name}, v2.{field_name})" + split
-            vec_func = f"__device__ {vec_ret_type} {prefix}_{func_name}({vec_ret_type} v0, {vec_ret_type} v1, {vec_ret_type} v2) {{ {vec_body} }}\n"
+            vec_func = f"__device__ {vec_ret_type} {prefix}_{func_name}({arg_types[0]}{dim} v0, {arg_types[1]}{dim} v1, {arg_types[2]}{dim} v2) {{ {vec_body} }}\n"
             content += vec_func
     content += "\n"
 
