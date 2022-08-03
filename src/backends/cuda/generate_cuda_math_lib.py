@@ -388,15 +388,6 @@ def define_triple_funcs():
     for v in lst:
         define_triple_func(v)
 
-def define_make_vec(scalar):
-    global content, name_lst
-    for dim in range(2, 5):
-        pass
-
-def define_make_vecs():
-    for scalar in scalar_types:
-        define_make_vec(scalar)
-
 def save_to_inl(var_name, content, fn):
     string = f"static const char {var_name}[] = " + "{\n    "
     line_len = 20
@@ -411,6 +402,17 @@ def save_to_inl(var_name, content, fn):
         file.write(file_head() + string)
         file.close()
 
+def convert_cuda_math():
+    curr_dir = dirname(realpath(__file__))
+    cuda_math = "cuda_math"
+
+    print(os.path.join(curr_dir, cuda_math + ".h"))
+    
+    with open(os.path.join(curr_dir, cuda_math + ".h"), "r") as file:
+        string = file.read()
+        file.close()
+        save_to_inl(cuda_math, string, os.path.join(curr_dir, cuda_math + "_embed.h"))
+
 def main():
     global content
     curr_dir = dirname(realpath(__file__))
@@ -423,15 +425,16 @@ def main():
     define_unary_funcs()
     define_binary_funcs()
     define_triple_funcs()
-    define_make_vecs()
+    convert_cuda_math()
+
     content += " "
 
-    math_lib = "cuda_builtin"
-    with open(os.path.join(curr_dir, math_lib + ".h"), "w") as file:
+    cuda_builtin = "cuda_builtin"
+    with open(os.path.join(curr_dir, cuda_builtin + ".h"), "w") as file:
         file.write(content)
         file.close()
     
-    save_to_inl(math_lib, content, os.path.join(curr_dir, math_lib + "_embed.h"))
+    save_to_inl(cuda_builtin, content, os.path.join(curr_dir, cuda_builtin + "_embed.h"))
     # print(content)
 
 if __name__ == "__main__":

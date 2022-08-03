@@ -10,12 +10,13 @@
 #include <windows.h>
 #include "math/base.h"
 #include "backends/cuda/cuda_builtin_embed.h"
+#include "backends/cuda/cuda_math_embed.h"
 
 using namespace ocarina;
 
 int main(int argc, char *argv[]) {
 
-//    cout << std::string (cuda_math_lib);
+//    cout << std::string (cuda_math);
 //    return 0;
 
 //    auto vv = select( make_float4(1) > 0.f, make_float4(5), make_float4(6));
