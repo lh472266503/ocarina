@@ -54,4 +54,21 @@ requires (is_dsl_v<T> && is_bool_vector_expr_v<T>)
     return make_expr<bool>(expr);
 }
 
+template<typename T>
+requires (is_dsl_v<T> && is_bool_vector_expr_v<T>)
+    [[nodiscard]] auto any(const T &t) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<bool>(),
+                                                  CallOp::ANY, {OC_EXPR(t)});
+    return make_expr<bool>(expr);
+}
+
+template<typename T>
+requires (is_dsl_v<T> && is_bool_vector_expr_v<T>)
+    [[nodiscard]] auto none(const T &t) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<bool>(),
+                                                  CallOp::NONE, {OC_EXPR(t)});
+    return make_expr<bool>(expr);
+}
+
+
 }// namespace ocarina

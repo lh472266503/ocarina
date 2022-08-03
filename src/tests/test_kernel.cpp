@@ -39,6 +39,8 @@ int main(int argc, char *argv[]) {
     Kernel kn = [&](Var<float> a, Var<float> b, BufferVar<float> c) {
         //        configure_block(1,2,1);
         Var<int3> vec{1, 2, 3};
+        Var<bool2> bv;
+        Var vv = all(bv);
         //        Var<int2> vec2 = vec.xy();
         //        vec2 = -vec2;
 //        Var<bool3> pred = vec > make_int3(5);
