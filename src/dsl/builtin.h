@@ -35,6 +35,30 @@ namespace ocarina {
     return make_expr<uint3>(Function::current()->dispatch_dim());
 }
 
+template<typename T>
+requires is_bool_vector_expr_v<T>
+[[nodiscard]] auto all(const T &t) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<bool>(),
+        CallOp::ALL, {OC_EXPR(t)});
+    return make_expr<bool>(expr);
+}
+
+template<typename T>
+requires is_bool_vector_expr_v<T>
+[[nodiscard]] auto any(const T &t) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<bool>(),
+                                                  CallOp::ANY, {OC_EXPR(t)});
+    return make_expr<bool>(expr);
+}
+
+template<typename T>
+requires is_bool_vector_expr_v<T>
+[[nodiscard]] auto none(const T &t) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<bool>(),
+                                                  CallOp::NONE, {OC_EXPR(t)});
+    return make_expr<bool>(expr);
+}
+
 template<typename U, typename T, typename F>
 requires(is_dsl_v<U> &&
                  vector_dimension_v<expr_value_t<U>> == vector_dimension_v<expr_value_t<T>> &&
@@ -46,29 +70,13 @@ requires(is_dsl_v<U> &&
     return make_expr<T>(expr);
 }
 
-template<typename T>
-requires (is_dsl_v<T> && is_bool_vector_expr_v<T>)
-[[nodiscard]] auto all(const T &t) noexcept {
-    auto expr = Function::current()->call_builtin(Type::of<bool>(),
-        CallOp::ALL, {OC_EXPR(t)});
-    return make_expr<bool>(expr);
+template<typename T, typename A, typename B>
+requires any_dsl_v<T, A, B>
+[[nodiscard]] auto clamp(const T &t, const A &a, const B &b) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
+                                                  CallOp::CLAMP,
+                                                  {OC_EXPR(t), OC_EXPR(a), OC_EXPR(b)});
+    return make_expr<expr_value_t<T>>(expr);
 }
-
-template<typename T>
-requires (is_dsl_v<T> && is_bool_vector_expr_v<T>)
-    [[nodiscard]] auto any(const T &t) noexcept {
-    auto expr = Function::current()->call_builtin(Type::of<bool>(),
-                                                  CallOp::ANY, {OC_EXPR(t)});
-    return make_expr<bool>(expr);
-}
-
-template<typename T>
-requires (is_dsl_v<T> && is_bool_vector_expr_v<T>)
-    [[nodiscard]] auto none(const T &t) noexcept {
-    auto expr = Function::current()->call_builtin(Type::of<bool>(),
-                                                  CallOp::NONE, {OC_EXPR(t)});
-    return make_expr<bool>(expr);
-}
-
 
 }// namespace ocarina

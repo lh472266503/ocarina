@@ -44,7 +44,7 @@ public:
     ArgumentList() = default;
     [[nodiscard]] span<void *> ptr() noexcept { return _args; }
     [[nodiscard]] size_t num() const noexcept { return _args.size(); }
-
+    void clear() noexcept { _cursor = 0; }
     template<typename T>
     ArgumentList &operator<<(T &&arg) {
         if constexpr (concepts::basic<T>) {
@@ -97,6 +97,7 @@ public:
     template<typename... A>
     requires std::is_invocable_v<signature, A...>
         Shader &operator()(A &&...args) noexcept {
+        _argument_list.clear();
         (_argument_list << ... << OC_FORWARD(args));
         return *this;
     }
