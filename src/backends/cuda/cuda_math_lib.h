@@ -1316,7 +1316,7 @@ __device__ oc_float2 oc_atan2(oc_float2 lhs, oc_float2 rhs) { return oc_float2(o
 __device__ oc_float3 oc_atan2(oc_float3 lhs, oc_float3 rhs) { return oc_float3(oc_atan2(lhs.x, rhs.x), oc_atan2(lhs.y, rhs.y), oc_atan2(lhs.z, rhs.z)); }
 __device__ oc_float4 oc_atan2(oc_float4 lhs, oc_float4 rhs) { return oc_float4(oc_atan2(lhs.x, rhs.x), oc_atan2(lhs.y, rhs.y), oc_atan2(lhs.z, rhs.z), oc_atan2(lhs.w, rhs.w)); }
 
-__device__ oc_float oc_lerp(oc_float t, oc_float a, oc_float b) { return a + t * (b - a); }
+__device__ oc_float oc_lerp(oc_float v0, oc_float v1, oc_float v2) { return v1 + v0 * (v2 - v1); }
 __device__ oc_float2 oc_lerp(oc_float2 v0, oc_float2 v1, oc_float2 v2) { return oc_float2(oc_lerp(v0.x, v1.x, v2.x), oc_lerp(v0.y, v1.y, v2.y)); }
 __device__ oc_float3 oc_lerp(oc_float3 v0, oc_float3 v1, oc_float3 v2) { return oc_float3(oc_lerp(v0.x, v1.x, v2.x), oc_lerp(v0.y, v1.y, v2.y), oc_lerp(v0.z, v1.z, v2.z)); }
 __device__ oc_float4 oc_lerp(oc_float4 v0, oc_float4 v1, oc_float4 v2) { return oc_float4(oc_lerp(v0.x, v1.x, v2.x), oc_lerp(v0.y, v1.y, v2.y), oc_lerp(v0.z, v1.z, v2.z), oc_lerp(v0.w, v1.w, v2.w)); }

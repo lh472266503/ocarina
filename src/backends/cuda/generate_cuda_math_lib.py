@@ -337,13 +337,13 @@ def define_binary_funcs():
 
 def define_triple_func(tab):
     global content, name_lst
-    args = tab["args"]
     func_name = tab["name"]
+    arg_types = tab["arg_types"]
     ret_type = tab.get("ret_type", "auto")
     body = tab["body"]
     types = tab.get("types", scalar_types)
     for scalar in types:
-        scalar_func = f"__device__ {ret_type} {prefix}_{func_name}({args}) {{ {body} }}\n"
+        scalar_func = f"__device__ {ret_type} {prefix}_{func_name}({arg_types[0]} v0, {arg_types[1]} v1, {arg_types[2]} v2) {{ {body} }}\n"
         content += scalar_func
         for dim in range(2, 5):
             vec_ret_type = f"{ret_type}{dim}"
@@ -359,10 +359,10 @@ def define_triple_func(tab):
 def define_triple_funcs():
     lst = [
         {
-            "args":"oc_float t, oc_float a, oc_float b",
+            "arg_types" : ["oc_float", "oc_float", "oc_float"],
             "name" : "lerp",
             "ret_type" : f"{prefix}_float",
-            "body" : f"return a + t * (b - a);",
+            "body" : f"return v1 + v0 * (v2 - v1);",
             "types" : ["float"]
         }
     ]
