@@ -133,6 +133,17 @@ def define_operator():
                 func += f"{device_flag} {ret_type} operator{op}({scalar_name} lhs, {vec_name} rhs) {{ return {ret_type}({args2}); }}\n"
                 content += func
         content += "\n"
+
+    for i,scalar in enumerate(scalar_types[:3]):
+        for dim in range(2, 5):
+            for op in cal_binary:
+                if scalar == "float" and op == "%":
+                    continue
+                vec_name = f"{prefix}_{scalar}{dim}"
+                func = f"__device__ {vec_name}& operator{op}=({vec_name} &lhs, {vec_name} rhs) {{ lhs = lhs {op} rhs; return lhs; }}\n"
+                content += func
+        content += "\n"
+
     func_lst = ["oc_any", "oc_all", "oc_none"]
     for func in func_lst:
         for dim in range(2, 5):
@@ -377,6 +388,15 @@ def define_triple_funcs():
     for v in lst:
         define_triple_func(v)
 
+def define_make_vec(scalar):
+    global content, name_lst
+    for dim in range(2, 5):
+        pass
+
+def define_make_vecs():
+    for scalar in scalar_types:
+        define_make_vec(scalar)
+
 def save_to_inl(var_name, content, fn):
     string = f"static const char {var_name}[] = " + "{\n    "
     line_len = 20
@@ -403,6 +423,7 @@ def main():
     define_unary_funcs()
     define_binary_funcs()
     define_triple_funcs()
+    define_make_vecs()
     content += " "
 
     math_lib = "cuda_math_lib"
