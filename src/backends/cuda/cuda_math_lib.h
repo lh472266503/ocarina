@@ -1280,38 +1280,38 @@ __device__ oc_float2 oc_saturate(oc_float2 v) { return oc_float2(oc_saturate(v.x
 __device__ oc_float3 oc_saturate(oc_float3 v) { return oc_float3(oc_saturate(v.x), oc_saturate(v.y), oc_saturate(v.z)); }
 __device__ oc_float4 oc_saturate(oc_float4 v) { return oc_float4(oc_saturate(v.x), oc_saturate(v.y), oc_saturate(v.z), oc_saturate(v.w)); }
 
-__device__ oc_float oc_pow(oc_float lhs, oc_float rhs) { return pow(lhs, rhs); }
+__device__ oc_float oc_pow(oc_float lhs, oc_float rhs) { return powf(lhs, rhs); }
 __device__ oc_float2 oc_pow(oc_float2 lhs, oc_float2 rhs) { return oc_float2(oc_pow(lhs.x, rhs.x), oc_pow(lhs.y, rhs.y)); }
 __device__ oc_float3 oc_pow(oc_float3 lhs, oc_float3 rhs) { return oc_float3(oc_pow(lhs.x, rhs.x), oc_pow(lhs.y, rhs.y), oc_pow(lhs.z, rhs.z)); }
 __device__ oc_float4 oc_pow(oc_float4 lhs, oc_float4 rhs) { return oc_float4(oc_pow(lhs.x, rhs.x), oc_pow(lhs.y, rhs.y), oc_pow(lhs.z, rhs.z), oc_pow(lhs.w, rhs.w)); }
 
-__device__ oc_int oc_min(oc_int lhs, oc_int rhs) { return min(lhs, rhs); }
+__device__ oc_int oc_min(oc_int lhs, oc_int rhs) { return fminf(lhs, rhs); }
 __device__ oc_int2 oc_min(oc_int2 lhs, oc_int2 rhs) { return oc_int2(oc_min(lhs.x, rhs.x), oc_min(lhs.y, rhs.y)); }
 __device__ oc_int3 oc_min(oc_int3 lhs, oc_int3 rhs) { return oc_int3(oc_min(lhs.x, rhs.x), oc_min(lhs.y, rhs.y), oc_min(lhs.z, rhs.z)); }
 __device__ oc_int4 oc_min(oc_int4 lhs, oc_int4 rhs) { return oc_int4(oc_min(lhs.x, rhs.x), oc_min(lhs.y, rhs.y), oc_min(lhs.z, rhs.z), oc_min(lhs.w, rhs.w)); }
-__device__ oc_uint oc_min(oc_uint lhs, oc_uint rhs) { return min(lhs, rhs); }
+__device__ oc_uint oc_min(oc_uint lhs, oc_uint rhs) { return fminf(lhs, rhs); }
 __device__ oc_uint2 oc_min(oc_uint2 lhs, oc_uint2 rhs) { return oc_uint2(oc_min(lhs.x, rhs.x), oc_min(lhs.y, rhs.y)); }
 __device__ oc_uint3 oc_min(oc_uint3 lhs, oc_uint3 rhs) { return oc_uint3(oc_min(lhs.x, rhs.x), oc_min(lhs.y, rhs.y), oc_min(lhs.z, rhs.z)); }
 __device__ oc_uint4 oc_min(oc_uint4 lhs, oc_uint4 rhs) { return oc_uint4(oc_min(lhs.x, rhs.x), oc_min(lhs.y, rhs.y), oc_min(lhs.z, rhs.z), oc_min(lhs.w, rhs.w)); }
-__device__ oc_float oc_min(oc_float lhs, oc_float rhs) { return min(lhs, rhs); }
+__device__ oc_float oc_min(oc_float lhs, oc_float rhs) { return fminf(lhs, rhs); }
 __device__ oc_float2 oc_min(oc_float2 lhs, oc_float2 rhs) { return oc_float2(oc_min(lhs.x, rhs.x), oc_min(lhs.y, rhs.y)); }
 __device__ oc_float3 oc_min(oc_float3 lhs, oc_float3 rhs) { return oc_float3(oc_min(lhs.x, rhs.x), oc_min(lhs.y, rhs.y), oc_min(lhs.z, rhs.z)); }
 __device__ oc_float4 oc_min(oc_float4 lhs, oc_float4 rhs) { return oc_float4(oc_min(lhs.x, rhs.x), oc_min(lhs.y, rhs.y), oc_min(lhs.z, rhs.z), oc_min(lhs.w, rhs.w)); }
 
-__device__ oc_int oc_max(oc_int lhs, oc_int rhs) { return max(lhs, rhs); }
+__device__ oc_int oc_max(oc_int lhs, oc_int rhs) { return fmaxf(lhs, rhs); }
 __device__ oc_int2 oc_max(oc_int2 lhs, oc_int2 rhs) { return oc_int2(oc_max(lhs.x, rhs.x), oc_max(lhs.y, rhs.y)); }
 __device__ oc_int3 oc_max(oc_int3 lhs, oc_int3 rhs) { return oc_int3(oc_max(lhs.x, rhs.x), oc_max(lhs.y, rhs.y), oc_max(lhs.z, rhs.z)); }
 __device__ oc_int4 oc_max(oc_int4 lhs, oc_int4 rhs) { return oc_int4(oc_max(lhs.x, rhs.x), oc_max(lhs.y, rhs.y), oc_max(lhs.z, rhs.z), oc_max(lhs.w, rhs.w)); }
-__device__ oc_uint oc_max(oc_uint lhs, oc_uint rhs) { return max(lhs, rhs); }
+__device__ oc_uint oc_max(oc_uint lhs, oc_uint rhs) { return fmaxf(lhs, rhs); }
 __device__ oc_uint2 oc_max(oc_uint2 lhs, oc_uint2 rhs) { return oc_uint2(oc_max(lhs.x, rhs.x), oc_max(lhs.y, rhs.y)); }
 __device__ oc_uint3 oc_max(oc_uint3 lhs, oc_uint3 rhs) { return oc_uint3(oc_max(lhs.x, rhs.x), oc_max(lhs.y, rhs.y), oc_max(lhs.z, rhs.z)); }
 __device__ oc_uint4 oc_max(oc_uint4 lhs, oc_uint4 rhs) { return oc_uint4(oc_max(lhs.x, rhs.x), oc_max(lhs.y, rhs.y), oc_max(lhs.z, rhs.z), oc_max(lhs.w, rhs.w)); }
-__device__ oc_float oc_max(oc_float lhs, oc_float rhs) { return max(lhs, rhs); }
+__device__ oc_float oc_max(oc_float lhs, oc_float rhs) { return fmaxf(lhs, rhs); }
 __device__ oc_float2 oc_max(oc_float2 lhs, oc_float2 rhs) { return oc_float2(oc_max(lhs.x, rhs.x), oc_max(lhs.y, rhs.y)); }
 __device__ oc_float3 oc_max(oc_float3 lhs, oc_float3 rhs) { return oc_float3(oc_max(lhs.x, rhs.x), oc_max(lhs.y, rhs.y), oc_max(lhs.z, rhs.z)); }
 __device__ oc_float4 oc_max(oc_float4 lhs, oc_float4 rhs) { return oc_float4(oc_max(lhs.x, rhs.x), oc_max(lhs.y, rhs.y), oc_max(lhs.z, rhs.z), oc_max(lhs.w, rhs.w)); }
 
-__device__ oc_float oc_atan2(oc_float lhs, oc_float rhs) { return atan2(lhs, rhs); }
+__device__ oc_float oc_atan2(oc_float lhs, oc_float rhs) { return atan2f(lhs, rhs); }
 __device__ oc_float2 oc_atan2(oc_float2 lhs, oc_float2 rhs) { return oc_float2(oc_atan2(lhs.x, rhs.x), oc_atan2(lhs.y, rhs.y)); }
 __device__ oc_float3 oc_atan2(oc_float3 lhs, oc_float3 rhs) { return oc_float3(oc_atan2(lhs.x, rhs.x), oc_atan2(lhs.y, rhs.y), oc_atan2(lhs.z, rhs.z)); }
 __device__ oc_float4 oc_atan2(oc_float4 lhs, oc_float4 rhs) { return oc_float4(oc_atan2(lhs.x, rhs.x), oc_atan2(lhs.y, rhs.y), oc_atan2(lhs.z, rhs.z), oc_atan2(lhs.w, rhs.w)); }
