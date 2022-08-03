@@ -58,19 +58,13 @@ enum struct CallOp : uint32_t {
     IS_NAN,
 
     ACOS,
-    ACOSH,
     ASIN,
-    ASINH,
     ATAN,
     ATAN2,
-    ATANH,
 
     COS,
-    COSH,
     SIN,
-    SINH,
     TAN,
-    TANH,
 
     EXP,
     EXP2,

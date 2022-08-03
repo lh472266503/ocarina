@@ -279,8 +279,11 @@ def define_unary_funcs():
     tab = {
         "rcp" : ["return 1.f / v;", ["int", "uint", "float"]],
         "abs" : ["return abs(v);", ["int", "float"]],
-        "cos" : ["return cos(v);", ["float"]],
         "sin" : ["return sin(v);",["float"]],
+        "cos" : ["return cos(v);", ["float"]],
+        "tan" : ["return tan(v);", ["float"]],
+        "is_inf" : ["return isinf(v);", ["float"]],
+        "is_nan" : ["return isnan(v);", ["float"]],
         "sqr" : ["return v * v;",["int","uint","float"]],
         "sqrt" : ["return sqrt(v);",["float"]],
         "degrees" : ["return v * (180.f / 3.1415926535f);",["float"]],

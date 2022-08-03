@@ -48,18 +48,12 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         case CallOp::IS_INF: break;
         case CallOp::IS_NAN: break;
         case CallOp::ACOS: break;
-        case CallOp::ACOSH: break;
         case CallOp::ASIN: break;
-        case CallOp::ASINH: break;
         case CallOp::ATAN: break;
         case CallOp::ATAN2: break;
-        case CallOp::ATANH: break;
         case CallOp::COS: break;
-        case CallOp::COSH: break;
         case CallOp::SIN: break;
-        case CallOp::SINH: break;
         case CallOp::TAN: break;
-        case CallOp::TANH: break;
         case CallOp::EXP: break;
         case CallOp::EXP2: break;
         case CallOp::EXP10: break;
