@@ -405,6 +405,25 @@ def define_triple_funcs():
     for v in lst:
         define_triple_func(v)
 
+def define_vec_func():
+    global content, name_lst
+    for dim in range(2, 5):
+        body = "return "        
+        for d in range(0, dim):
+            field_name = name_lst[d]
+            split = " + " if d != dim - 1 else ";"
+            body += f"a.{field_name} + b.{field_name}" + split
+        func = f"__device__ inline auto oc_dot(oc_float{dim} a, oc_float{dim} b) {{ {body} }}\n"
+        content += func
+        content += f"__device__ inline auto oc_length(oc_float{dim} v) noexcept {{ {{return oc_sqrt(oc_dot(v, v));}} }}\n"
+        content += f"__device__ inline auto oc_length_squared(oc_float{dim} v) noexcept {{ {{return oc_dot(v, v);}} }}\n"
+        content += f"__device__ inline auto oc_distance(oc_float{dim} a, oc_float{dim} b) noexcept {{ {{return oc_length(a - b);}} }}\n"
+        content += f"__device__ inline auto oc_distance_squared(oc_float{dim} a, oc_float{dim} b) noexcept {{ {{return oc_length_squared(a - b);}} }}\n"
+        content += f"__device__ inline auto oc_normalize(oc_float{dim} v) noexcept {{ {{return v * oc_rsqrt(oc_dot(v, v));}} }}\n"
+        content += "\n"
+    content += "\n"
+        
+
 def save_to_inl(var_name, content, fn):
     string = f"static const char {var_name}[] = " + "{\n    "
     line_len = 20
@@ -443,6 +462,7 @@ def main():
     define_binary_funcs()
     define_triple_funcs()
     convert_cuda_math()
+    define_vec_func()
 
     content += " "
 

@@ -1388,4 +1388,26 @@ __device__ oc_float2 oc_fma(oc_float2 v0, oc_float2 v1, oc_float2 v2) { return o
 __device__ oc_float3 oc_fma(oc_float3 v0, oc_float3 v1, oc_float3 v2) { return oc_float3(oc_fma(v0.x, v1.x, v2.x), oc_fma(v0.y, v1.y, v2.y), oc_fma(v0.z, v1.z, v2.z)); }
 __device__ oc_float4 oc_fma(oc_float4 v0, oc_float4 v1, oc_float4 v2) { return oc_float4(oc_fma(v0.x, v1.x, v2.x), oc_fma(v0.y, v1.y, v2.y), oc_fma(v0.z, v1.z, v2.z), oc_fma(v0.w, v1.w, v2.w)); }
 
+__device__ inline auto oc_dot(oc_float2 a, oc_float2 b) { return a.x + b.x + a.y + b.y; }
+__device__ inline auto oc_length(oc_float2 v) noexcept { {return oc_sqrt(oc_dot(v, v));} }
+__device__ inline auto oc_length_squared(oc_float2 v) noexcept { {return oc_dot(v, v);} }
+__device__ inline auto oc_distance(oc_float2 a, oc_float2 b) noexcept { {return oc_length(a - b);} }
+__device__ inline auto oc_distance_squared(oc_float2 a, oc_float2 b) noexcept { {return oc_length_squared(a - b);} }
+__device__ inline auto oc_normalize(oc_float2 v) noexcept { {return v * oc_rsqrt(oc_dot(v, v));} }
+
+__device__ inline auto oc_dot(oc_float3 a, oc_float3 b) { return a.x + b.x + a.y + b.y + a.z + b.z; }
+__device__ inline auto oc_length(oc_float3 v) noexcept { {return oc_sqrt(oc_dot(v, v));} }
+__device__ inline auto oc_length_squared(oc_float3 v) noexcept { {return oc_dot(v, v);} }
+__device__ inline auto oc_distance(oc_float3 a, oc_float3 b) noexcept { {return oc_length(a - b);} }
+__device__ inline auto oc_distance_squared(oc_float3 a, oc_float3 b) noexcept { {return oc_length_squared(a - b);} }
+__device__ inline auto oc_normalize(oc_float3 v) noexcept { {return v * oc_rsqrt(oc_dot(v, v));} }
+
+__device__ inline auto oc_dot(oc_float4 a, oc_float4 b) { return a.x + b.x + a.y + b.y + a.z + b.z + a.w + b.w; }
+__device__ inline auto oc_length(oc_float4 v) noexcept { {return oc_sqrt(oc_dot(v, v));} }
+__device__ inline auto oc_length_squared(oc_float4 v) noexcept { {return oc_dot(v, v);} }
+__device__ inline auto oc_distance(oc_float4 a, oc_float4 b) noexcept { {return oc_length(a - b);} }
+__device__ inline auto oc_distance_squared(oc_float4 a, oc_float4 b) noexcept { {return oc_length_squared(a - b);} }
+__device__ inline auto oc_normalize(oc_float4 v) noexcept { {return v * oc_rsqrt(oc_dot(v, v));} }
+
+
  
