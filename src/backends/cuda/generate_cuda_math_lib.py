@@ -319,6 +319,40 @@ def define_binary_funcs():
     for k, v in tab.items():
         define_binary_func(k, v)
 
+def define_triple_func(tab):
+    global content, name_lst
+    args = tab["args"]
+    func_name = tab["name"]
+    ret_type = tab.get("ret_type", "auto")
+    body = tab["body"]
+    types = tab.get("types", scalar_types)
+    for scalar in types:
+        scalar_func = f"__device__ {ret_type} {prefix}_{func_name}({args}) {{ {body} }}\n"
+        content += scalar_func
+        for dim in range(2, 5):
+            vec_ret_type = f"{ret_type}{dim}"
+            vec_body = f"return {vec_ret_type}("
+            for d in range(0, dim):
+                split = ", " if d != dim - 1 else ");"
+                field_name = name_lst[d]
+                vec_body += f"{prefix}_{func_name}(v0.{field_name}, v1.{field_name}, v2.{field_name})" + split
+            vec_func = f"__device__ {vec_ret_type} {prefix}_{func_name}({vec_ret_type} v0, {vec_ret_type} v1, {vec_ret_type} v2) {{ {vec_body} }}\n"
+            content += vec_func
+    content += "\n"
+
+def define_triple_funcs():
+    lst = [
+        {
+            "args":"oc_float t, oc_float a, oc_float b",
+            "name" : "lerp",
+            "ret_type" : f"{prefix}_float",
+            "body" : f"return a + t * (b - a);",
+            "types" : ["float"]
+        }
+    ]
+    for v in lst:
+        define_triple_func(v)
+
 def save_to_inl(var_name, content, fn):
     string = f"static const char {var_name}[] = " + "{\n    "
     line_len = 20
@@ -344,6 +378,7 @@ def main():
     define_select()
     define_unary_funcs()
     define_binary_funcs()
+    define_triple_funcs()
     content += " "
 
     math_lib = "cuda_math_lib"
