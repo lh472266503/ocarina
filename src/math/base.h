@@ -175,8 +175,8 @@ template<typename T, typename U, typename V>
 }
 
 template<typename F, typename A, typename B>
-requires ocarina::is_floating_point_v<expr_value_t<F>>
-OC_NODISCARD constexpr auto
+requires none_dsl_v<F, A, B>
+    OC_NODISCARD constexpr auto
 lerp(F t, A a, B b) noexcept {
     return a + t * (b - a);
 }

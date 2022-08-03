@@ -170,6 +170,9 @@ using any_dsl = std::disjunction<is_dsl<T>...>;
 template<typename... T>
 constexpr auto any_dsl_v = any_dsl<T...>::value;
 
+template<typename ...T>
+constexpr auto none_dsl_v = !any_dsl_v<T...>;
+
 template<typename... T>
 using all_dsl = std::conjunction<is_dsl<T>...>;
 

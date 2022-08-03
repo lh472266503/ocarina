@@ -60,7 +60,7 @@ requires is_bool_vector_expr_v<T>
 }
 
 template<typename U, typename T, typename F>
-requires(is_dsl_v<U> &&
+requires(any_dsl_v<U, T, F> &&
                  vector_dimension_v<expr_value_t<U>> == vector_dimension_v<expr_value_t<T>> &&
          vector_dimension_v<expr_value_t<U>> == vector_dimension_v<expr_value_t<F>>)
     [[nodiscard]] auto select(U &&pred, T &&t, F &&f) noexcept {
@@ -75,6 +75,24 @@ requires any_dsl_v<T, A, B>
 [[nodiscard]] auto clamp(const T &t, const A &a, const B &b) noexcept {
     auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
                                                   CallOp::CLAMP,
+                                                  {OC_EXPR(t), OC_EXPR(a), OC_EXPR(b)});
+    return make_expr<expr_value_t<T>>(expr);
+}
+
+template<typename T, typename A, typename B>
+requires any_dsl_v<T, A, B>
+[[nodiscard]] auto lerp(const T &t, const A &a, const B &b) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
+                                                  CallOp::LERP,
+                                                  {OC_EXPR(t), OC_EXPR(a), OC_EXPR(b)});
+    return make_expr<expr_value_t<T>>(expr);
+}
+
+template<typename T, typename A, typename B>
+requires any_dsl_v<T, A, B>
+[[nodiscard]] auto fma(const T &t, const A &a, const B &b) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
+                                                  CallOp::FMA,
                                                   {OC_EXPR(t), OC_EXPR(a), OC_EXPR(b)});
     return make_expr<expr_value_t<T>>(expr);
 }
