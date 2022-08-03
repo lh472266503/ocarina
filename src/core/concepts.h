@@ -51,15 +51,15 @@ concept constructible = requires(Args... args) {
                             T{args...};
                         };
 
-template<typename Src, typename Dest>
+template<typename Dest, typename Src>
 concept static_convertible = requires(Src s) {
                                  static_cast<Dest>(s);
                              };
 
-template<typename Src, typename Dest>
+template<typename Dest, typename Src>
 concept bitwise_convertible = sizeof(Src) >= sizeof(Dest);
 
-template<typename Src, typename Dest>
+template<typename Dest, typename Src>
 concept reinterpret_convertible = requires(Src s) {
                                       reinterpret_cast<Dest *>(&s);
                                   };

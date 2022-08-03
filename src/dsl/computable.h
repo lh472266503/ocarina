@@ -110,6 +110,7 @@ struct EnableGetMemberByIndex {
 template<typename T>
 struct EnableStaticCast {
     template<class Dest>
+    requires concepts::static_convertible<Dest, expr_value_t<T>>
     [[nodiscard]] Expr<Dest> cast() const noexcept {
         const CastExpr *expr = Function::current()->cast(Type::of<Dest>(), CastOp::STATIC,
                                                          static_cast<const T *>(this)->expression());
@@ -120,6 +121,7 @@ struct EnableStaticCast {
 template<typename T>
 struct EnableBitwiseCast {
     template<class Dest>
+    requires concepts::bitwise_convertible<Dest, expr_value_t<T>>
     [[nodiscard]] Expr<Dest> as() const noexcept {
         const CastExpr *expr = Function::current()->cast(Type::of<Dest>(), CastOp::BITWISE,
                                                          static_cast<const T *>(this)->expression());

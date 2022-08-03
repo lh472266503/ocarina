@@ -40,6 +40,7 @@ int main(int argc, char *argv[]) {
         //        configure_block(1,2,1);
         Var<int3> vec{1, 2, 3};
         Var<bool2> bv;
+//        Var vf = vec.cast<float3>();
         Var vv = all(bv);
         Var f = 0.5f;
         f = fma(f, a, b);
