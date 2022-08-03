@@ -17,8 +17,8 @@ struct alignas(8) oc_int2{
 		:x(s), y(s) {}
 	__device__ oc_int2(oc_int x, oc_int y) noexcept 
 		:x(x), y(y) {}
-	__device__ constexpr oc_int operator[](oc_uint i) const noexcept { return (&x)[i]; }
-	__device__ constexpr oc_int &operator[](oc_uint i) noexcept { return (&x)[i]; }
+	__device__ inline oc_int operator[](oc_uint i) const noexcept { return (&x)[i]; }
+	__device__ inline oc_int &operator[](oc_uint i) noexcept { return (&x)[i]; }
 };
 
 struct alignas(16) oc_int3{
@@ -32,8 +32,8 @@ struct alignas(16) oc_int3{
 		:x(s), y(s), z(s) {}
 	__device__ oc_int3(oc_int x, oc_int y, oc_int z) noexcept 
 		:x(x), y(y), z(z) {}
-	__device__ constexpr oc_int operator[](oc_uint i) const noexcept { return (&x)[i]; }
-	__device__ constexpr oc_int &operator[](oc_uint i) noexcept { return (&x)[i]; }
+	__device__ inline oc_int operator[](oc_uint i) const noexcept { return (&x)[i]; }
+	__device__ inline oc_int &operator[](oc_uint i) noexcept { return (&x)[i]; }
 };
 
 struct alignas(16) oc_int4{
@@ -48,8 +48,8 @@ struct alignas(16) oc_int4{
 		:x(s), y(s), z(s), w(s) {}
 	__device__ oc_int4(oc_int x, oc_int y, oc_int z, oc_int w) noexcept 
 		:x(x), y(y), z(z), w(w) {}
-	__device__ constexpr oc_int operator[](oc_uint i) const noexcept { return (&x)[i]; }
-	__device__ constexpr oc_int &operator[](oc_uint i) noexcept { return (&x)[i]; }
+	__device__ inline oc_int operator[](oc_uint i) const noexcept { return (&x)[i]; }
+	__device__ inline oc_int &operator[](oc_uint i) noexcept { return (&x)[i]; }
 };
 
 struct alignas(8) oc_uint2{
@@ -62,8 +62,8 @@ struct alignas(8) oc_uint2{
 		:x(s), y(s) {}
 	__device__ oc_uint2(oc_uint x, oc_uint y) noexcept 
 		:x(x), y(y) {}
-	__device__ constexpr oc_uint operator[](oc_uint i) const noexcept { return (&x)[i]; }
-	__device__ constexpr oc_uint &operator[](oc_uint i) noexcept { return (&x)[i]; }
+	__device__ inline oc_uint operator[](oc_uint i) const noexcept { return (&x)[i]; }
+	__device__ inline oc_uint &operator[](oc_uint i) noexcept { return (&x)[i]; }
 };
 
 struct alignas(16) oc_uint3{
@@ -77,8 +77,8 @@ struct alignas(16) oc_uint3{
 		:x(s), y(s), z(s) {}
 	__device__ oc_uint3(oc_uint x, oc_uint y, oc_uint z) noexcept 
 		:x(x), y(y), z(z) {}
-	__device__ constexpr oc_uint operator[](oc_uint i) const noexcept { return (&x)[i]; }
-	__device__ constexpr oc_uint &operator[](oc_uint i) noexcept { return (&x)[i]; }
+	__device__ inline oc_uint operator[](oc_uint i) const noexcept { return (&x)[i]; }
+	__device__ inline oc_uint &operator[](oc_uint i) noexcept { return (&x)[i]; }
 };
 
 struct alignas(16) oc_uint4{
@@ -93,8 +93,8 @@ struct alignas(16) oc_uint4{
 		:x(s), y(s), z(s), w(s) {}
 	__device__ oc_uint4(oc_uint x, oc_uint y, oc_uint z, oc_uint w) noexcept 
 		:x(x), y(y), z(z), w(w) {}
-	__device__ constexpr oc_uint operator[](oc_uint i) const noexcept { return (&x)[i]; }
-	__device__ constexpr oc_uint &operator[](oc_uint i) noexcept { return (&x)[i]; }
+	__device__ inline oc_uint operator[](oc_uint i) const noexcept { return (&x)[i]; }
+	__device__ inline oc_uint &operator[](oc_uint i) noexcept { return (&x)[i]; }
 };
 
 struct alignas(8) oc_float2{
@@ -107,8 +107,8 @@ struct alignas(8) oc_float2{
 		:x(s), y(s) {}
 	__device__ oc_float2(oc_float x, oc_float y) noexcept 
 		:x(x), y(y) {}
-	__device__ constexpr oc_float operator[](oc_uint i) const noexcept { return (&x)[i]; }
-	__device__ constexpr oc_float &operator[](oc_uint i) noexcept { return (&x)[i]; }
+	__device__ inline oc_float operator[](oc_uint i) const noexcept { return (&x)[i]; }
+	__device__ inline oc_float &operator[](oc_uint i) noexcept { return (&x)[i]; }
 };
 
 struct alignas(16) oc_float3{
@@ -122,8 +122,8 @@ struct alignas(16) oc_float3{
 		:x(s), y(s), z(s) {}
 	__device__ oc_float3(oc_float x, oc_float y, oc_float z) noexcept 
 		:x(x), y(y), z(z) {}
-	__device__ constexpr oc_float operator[](oc_uint i) const noexcept { return (&x)[i]; }
-	__device__ constexpr oc_float &operator[](oc_uint i) noexcept { return (&x)[i]; }
+	__device__ inline oc_float operator[](oc_uint i) const noexcept { return (&x)[i]; }
+	__device__ inline oc_float &operator[](oc_uint i) noexcept { return (&x)[i]; }
 };
 
 struct alignas(16) oc_float4{
@@ -138,8 +138,8 @@ struct alignas(16) oc_float4{
 		:x(s), y(s), z(s), w(s) {}
 	__device__ oc_float4(oc_float x, oc_float y, oc_float z, oc_float w) noexcept 
 		:x(x), y(y), z(z), w(w) {}
-	__device__ constexpr oc_float operator[](oc_uint i) const noexcept { return (&x)[i]; }
-	__device__ constexpr oc_float &operator[](oc_uint i) noexcept { return (&x)[i]; }
+	__device__ inline oc_float operator[](oc_uint i) const noexcept { return (&x)[i]; }
+	__device__ inline oc_float &operator[](oc_uint i) noexcept { return (&x)[i]; }
 };
 
 struct alignas(8) oc_bool2{
@@ -152,8 +152,8 @@ struct alignas(8) oc_bool2{
 		:x(s), y(s) {}
 	__device__ oc_bool2(oc_bool x, oc_bool y) noexcept 
 		:x(x), y(y) {}
-	__device__ constexpr oc_bool operator[](oc_uint i) const noexcept { return (&x)[i]; }
-	__device__ constexpr oc_bool &operator[](oc_uint i) noexcept { return (&x)[i]; }
+	__device__ inline oc_bool operator[](oc_uint i) const noexcept { return (&x)[i]; }
+	__device__ inline oc_bool &operator[](oc_uint i) noexcept { return (&x)[i]; }
 };
 
 struct alignas(16) oc_bool3{
@@ -167,8 +167,8 @@ struct alignas(16) oc_bool3{
 		:x(s), y(s), z(s) {}
 	__device__ oc_bool3(oc_bool x, oc_bool y, oc_bool z) noexcept 
 		:x(x), y(y), z(z) {}
-	__device__ constexpr oc_bool operator[](oc_uint i) const noexcept { return (&x)[i]; }
-	__device__ constexpr oc_bool &operator[](oc_uint i) noexcept { return (&x)[i]; }
+	__device__ inline oc_bool operator[](oc_uint i) const noexcept { return (&x)[i]; }
+	__device__ inline oc_bool &operator[](oc_uint i) noexcept { return (&x)[i]; }
 };
 
 struct alignas(16) oc_bool4{
@@ -183,8 +183,8 @@ struct alignas(16) oc_bool4{
 		:x(s), y(s), z(s), w(s) {}
 	__device__ oc_bool4(oc_bool x, oc_bool y, oc_bool z, oc_bool w) noexcept 
 		:x(x), y(y), z(z), w(w) {}
-	__device__ constexpr oc_bool operator[](oc_uint i) const noexcept { return (&x)[i]; }
-	__device__ constexpr oc_bool &operator[](oc_uint i) noexcept { return (&x)[i]; }
+	__device__ inline oc_bool operator[](oc_uint i) const noexcept { return (&x)[i]; }
+	__device__ inline oc_bool &operator[](oc_uint i) noexcept { return (&x)[i]; }
 };
 
 __device__ oc_int2 operator+(oc_int2 vec) { return oc_int2(+vec.x, +vec.y); }
@@ -855,7 +855,7 @@ __device__ oc_bool oc_none(oc_bool4 vec) { return !oc_any(vec); }
 
 struct oc_float2x2 {
 	oc_float2 cols[2];
-	__device__ explicit constexpr oc_float2x2(oc_float s = 1.f)
+	__device__ explicit inline oc_float2x2(oc_float s = 1.f)
 		:cols{oc_float2(s, 0.f), oc_float2(0.f, s)} {}
 	__device__ oc_float2x2(oc_float2 c0, oc_float2 c1)
 		:cols{c0, c1} {}
@@ -866,7 +866,7 @@ struct oc_float2x2 {
  
 struct oc_float3x3 {
 	oc_float3 cols[3];
-	__device__ explicit constexpr oc_float3x3(oc_float s = 1.f)
+	__device__ explicit inline oc_float3x3(oc_float s = 1.f)
 		:cols{oc_float3(s, 0.f, 0.f), oc_float3(0.f, s, 0.f), oc_float3(0.f, 0.f, s)} {}
 	__device__ oc_float3x3(oc_float3 c0, oc_float3 c1, oc_float3 c2)
 		:cols{c0, c1, c2} {}
@@ -877,7 +877,7 @@ struct oc_float3x3 {
  
 struct oc_float4x4 {
 	oc_float4 cols[4];
-	__device__ explicit constexpr oc_float4x4(oc_float s = 1.f)
+	__device__ explicit inline oc_float4x4(oc_float s = 1.f)
 		:cols{oc_float4(s, 0.f, 0.f, 0.f), oc_float4(0.f, s, 0.f, 0.f), oc_float4(0.f, 0.f, s, 0.f), oc_float4(0.f, 0.f, 0.f, s)} {}
 	__device__ oc_float4x4(oc_float4 c0, oc_float4 c1, oc_float4 c2, oc_float4 c3)
 		:cols{c0, c1, c2, c3} {}
@@ -1559,4 +1559,25 @@ __device__ inline auto oc_normalize(oc_float4 v) noexcept { {return v * oc_rsqrt
 [[nodiscard]] __device__ inline auto oc_make_bool4(oc_float4 v) noexcept { return oc_bool4{static_cast<oc_bool>(v.x), static_cast<oc_bool>(v.y), static_cast<oc_bool>(v.z), static_cast<oc_bool>(v.w)}; }
 [[nodiscard]] __device__ inline auto oc_make_bool4(oc_bool4 v) noexcept { return oc_bool4{static_cast<oc_bool>(v.x), static_cast<oc_bool>(v.y), static_cast<oc_bool>(v.z), static_cast<oc_bool>(v.w)}; }
 
+
+[[nodiscard]] __device__ inline auto oc_make_float2x2(oc_float s = 1.0f) noexcept { return oc_float2x2{oc_make_float2(s, 0.0f), oc_make_float2(0.0f, s)}; }
+[[nodiscard]] __device__ inline auto oc_make_float2x2(oc_float m00, oc_float m01, oc_float m10, oc_float m11) noexcept { return oc_float2x2{oc_make_float2(m00, m01), oc_make_float2(m10, m11)}; }
+[[nodiscard]] __device__ inline auto oc_make_float2x2(oc_float2 c0, oc_float2 c1) noexcept { return oc_float2x2{c0, c1}; }
+[[nodiscard]] __device__ inline auto oc_make_float2x2(oc_float2x2 m) noexcept { return m; }
+[[nodiscard]] __device__ inline auto oc_make_float2x2(oc_float3x3 m) noexcept { return oc_float2x2{oc_make_float2(m[0]), oc_make_float2(m[1])}; }
+[[nodiscard]] __device__ inline auto oc_make_float2x2(oc_float4x4 m) noexcept { return oc_float2x2{oc_make_float2(m[0]), oc_make_float2(m[1])}; }
+
+[[nodiscard]] __device__ inline auto oc_make_float3x3(oc_float s = 1.0f) noexcept { return oc_float3x3{oc_make_float3(s, 0.0f, 0.0f), oc_make_float3(0.0f, s, 0.0f), oc_make_float3(0.0f, 0.0f, s)}; }
+[[nodiscard]] __device__ inline auto oc_make_float3x3(oc_float m00, oc_float m01, oc_float m02, oc_float m10, oc_float m11, oc_float m12, oc_float m20, oc_float m21, oc_float m22) noexcept { return oc_float3x3{oc_make_float3(m00, m01, m02), oc_make_float3(m10, m11, m12), oc_make_float3(m20, m21, m22)}; }
+[[nodiscard]] __device__ inline auto oc_make_float3x3(oc_float3 c0, oc_float3 c1, oc_float3 c2) noexcept { return oc_float3x3{c0, c1, c2}; }
+[[nodiscard]] __device__ inline auto oc_make_float3x3(oc_float2x2 m) noexcept { return oc_float3x3{oc_make_float3(m[0], 0.0f), oc_make_float3(m[1], 0.0f), oc_make_float3(0.0f, 0.0f, 1.0f)}; }
+[[nodiscard]] __device__ inline auto oc_make_float3x3(oc_float3x3 m) noexcept { return m; }
+[[nodiscard]] __device__ inline auto oc_make_float3x3(oc_float4x4 m) noexcept { return oc_float3x3{oc_make_float3(m[0]), oc_make_float3(m[1]), oc_make_float3(m[2])}; }
+
+[[nodiscard]] __device__ inline auto oc_make_float4x4(oc_float s = 1.0f) noexcept { return oc_float4x4{oc_make_float4(s, 0.0f, 0.0f, 0.0f), oc_make_float4(0.0f, s, 0.0f, 0.0f), oc_make_float4(0.0f, 0.0f, s, 0.0f), oc_make_float4(0.0f, 0.0f, 0.0f, s)}; }
+[[nodiscard]] __device__ inline auto oc_make_float4x4(oc_float m00, oc_float m01, oc_float m02, oc_float m03, oc_float m10, oc_float m11, oc_float m12, oc_float m13, oc_float m20, oc_float m21, oc_float m22, oc_float m23, oc_float m30, oc_float m31, oc_float m32, oc_float m33) noexcept { return oc_float4x4{oc_make_float4(m00, m01, m02, m03), oc_make_float4(m10, m11, m12, m13), oc_make_float4(m20, m21, m22, m23), oc_make_float4(m30, m31, m32, m33)}; }
+[[nodiscard]] __device__ inline auto oc_make_float4x4(oc_float4 c0, oc_float4 c1, oc_float4 c2, oc_float4 c3) noexcept { return oc_float4x4{c0, c1, c2, c3}; }
+[[nodiscard]] __device__ inline auto oc_make_float4x4(oc_float2x2 m) noexcept { return oc_float4x4{oc_make_float4(m[0], 0.0f, 0.0f), oc_make_float4(m[1], 0.0f, 0.0f), oc_make_float4(0.0f, 0.0f, 0.0f, 0.0f), oc_make_float4(0.0f, 0.0f, 0.0f, 1.0f)}; }
+[[nodiscard]] __device__ inline auto oc_make_float4x4(oc_float3x3 m) noexcept { return oc_float4x4{oc_make_float4(m[0], 0.0f), oc_make_float4(m[1], 0.0f), oc_make_float4(m[2], 0.0f), oc_make_float4(0.0f, 0.0f, 0.0f, 1.0f)}; }
+[[nodiscard]] __device__ inline auto oc_make_float4x4(oc_float4x4 m) noexcept { return m; }
  
