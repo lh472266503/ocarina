@@ -12,16 +12,16 @@
 
 namespace ocarina {
 
-#define CUDA_NVRTC_OPTIONS          \
-    "-std=c++17",                   \
-        "-arch",                    \
-        "compute_50",               \
-        "-use_fast_math",           \
-        "-lineinfo",                \
-        "-default-device",          \
+#define CUDA_NVRTC_OPTIONS         \
+    "-std=c++17",                  \
+        "-arch",                   \
+        "compute_50",              \
+        "-use_fast_math",          \
+        "-lineinfo",               \
+        "-default-device",         \
         "-include=cuda_builtin.h", \
-        "-rdc",                     \
-        "true",                     \
+        "-rdc",                    \
+        "true",                    \
         "-D__x86_64",
 
 namespace detail {
@@ -96,7 +96,7 @@ ocarina::string CUDADevice::get_ptx(const Function &function) const noexcept {
             const ocarina::string &cu = _context->read_cache(cu_fn);
             cout << cu << endl;
             ptx = detail::get_ptx(cu);
-//            _context->write_cache(ptx_fn, ptx);
+            //            _context->write_cache(ptx_fn, ptx);
         }
     } else {
         ptx = _context->read_cache(ptx_fn);

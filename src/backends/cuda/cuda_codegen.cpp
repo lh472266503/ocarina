@@ -5,74 +5,49 @@
 #include "cuda_codegen.h"
 #include "ast/expression.h"
 
-
-
 namespace ocarina {
 
 void CUDACodegen::visit(const CallExpr *expr) noexcept {
+#define OC_GEN_FUNC_NAME(func_name) current_scratch() << TYPE_PREFIX #func_name;
     switch (expr->call_op()) {
-        case CallOp::CUSTOM: {
-            _emit_func_name(*expr->function());
-            current_scratch() << "(";
-            for (const auto &arg : expr->arguments()) {
-                arg->accept(*this);
-                current_scratch() << ",";
-            }
-            if (!expr->arguments().empty()) {
-                current_scratch().pop_back();
-            }
-            current_scratch() << ")";
-            break;
-        }
-        case CallOp::ALL: break;
-        case CallOp::ANY: break;
-        case CallOp::NONE: break;
-        case CallOp::SELECT: {
-            current_scratch() << TYPE_PREFIX"select";
-            current_scratch() << "(";
-            for (const auto &arg : expr->arguments()) {
-                arg->accept(*this);
-                current_scratch() << ",";
-            }
-            if (!expr->arguments().empty()) {
-                current_scratch().pop_back();
-            }
-            current_scratch() << ")";
-            break;
-        }
-        case CallOp::CLAMP: break;
-        case CallOp::LERP: break;
-        case CallOp::ABS: break;
-        case CallOp::MIN: break;
-        case CallOp::MAX: break;
-        case CallOp::IS_INF: break;
-        case CallOp::IS_NAN: break;
-        case CallOp::ACOS: break;
-        case CallOp::ASIN: break;
-        case CallOp::ATAN: break;
-        case CallOp::ATAN2: break;
-        case CallOp::COS: break;
-        case CallOp::SIN: break;
-        case CallOp::TAN: break;
-        case CallOp::EXP: break;
-        case CallOp::EXP2: break;
-        case CallOp::EXP10: break;
-        case CallOp::LOG: break;
-        case CallOp::LOG2: break;
-        case CallOp::LOG10: break;
-        case CallOp::POW: break;
-        case CallOp::SQRT: break;
-        case CallOp::RSQRT: break;
-        case CallOp::CEIL: break;
-        case CallOp::FLOOR: break;
-        case CallOp::ROUND: break;
-        case CallOp::FMA: break;
-        case CallOp::CROSS: break;
-        case CallOp::DOT: break;
-        case CallOp::LENGTH: break;
-        case CallOp::LENGTH_SQUARED: break;
-        case CallOp::NORMALIZE: break;
-        case CallOp::FACE_FORWARD: break;
+        case CallOp::CUSTOM: _emit_func_name(*expr->function()); break;
+        case CallOp::ALL:OC_GEN_FUNC_NAME(all); break;
+        case CallOp::ANY:OC_GEN_FUNC_NAME(any); break;
+        case CallOp::NONE: OC_GEN_FUNC_NAME(none);break;
+        case CallOp::SELECT: OC_GEN_FUNC_NAME(select); break;
+        case CallOp::CLAMP:OC_GEN_FUNC_NAME(clamp); break;
+        case CallOp::LERP:OC_GEN_FUNC_NAME(lerp); break;
+        case CallOp::ABS:OC_GEN_FUNC_NAME(abs); break;
+        case CallOp::MIN: OC_GEN_FUNC_NAME(min);break;
+        case CallOp::MAX:OC_GEN_FUNC_NAME(max); break;
+        case CallOp::IS_INF:OC_GEN_FUNC_NAME(is_inf); break;
+        case CallOp::IS_NAN:OC_GEN_FUNC_NAME(is_nan); break;
+        case CallOp::ACOS: OC_GEN_FUNC_NAME(acos);break;
+        case CallOp::ASIN: OC_GEN_FUNC_NAME(asin) break;
+        case CallOp::ATAN: OC_GEN_FUNC_NAME(atan) break;
+        case CallOp::ATAN2: OC_GEN_FUNC_NAME(atan2) break;
+        case CallOp::COS: OC_GEN_FUNC_NAME(cos) break;
+        case CallOp::SIN: OC_GEN_FUNC_NAME(sin) break;
+        case CallOp::TAN: OC_GEN_FUNC_NAME(tan) break;
+        case CallOp::EXP: OC_GEN_FUNC_NAME(exp) break;
+        case CallOp::EXP2: OC_GEN_FUNC_NAME(exp2) break;
+        case CallOp::EXP10: OC_GEN_FUNC_NAME(exp10) break;
+        case CallOp::LOG: OC_GEN_FUNC_NAME(log) break;
+        case CallOp::LOG2: OC_GEN_FUNC_NAME(log2) break;
+        case CallOp::LOG10: OC_GEN_FUNC_NAME(log10) break;
+        case CallOp::POW: OC_GEN_FUNC_NAME(pow) break;
+        case CallOp::SQRT: OC_GEN_FUNC_NAME(sqrt) break;
+        case CallOp::RSQRT: OC_GEN_FUNC_NAME(rsqrt) break;
+        case CallOp::CEIL: OC_GEN_FUNC_NAME(ceil) break;
+        case CallOp::FLOOR: OC_GEN_FUNC_NAME(floor) break;
+        case CallOp::ROUND: OC_GEN_FUNC_NAME(round) break;
+        case CallOp::FMA: OC_GEN_FUNC_NAME(fma) break;
+        case CallOp::CROSS: OC_GEN_FUNC_NAME(cross) break;
+        case CallOp::DOT:OC_GEN_FUNC_NAME(dot) break;
+        case CallOp::LENGTH: OC_GEN_FUNC_NAME(length) break;
+        case CallOp::LENGTH_SQUARED: OC_GEN_FUNC_NAME(length_squared) break;
+        case CallOp::NORMALIZE: OC_GEN_FUNC_NAME(normalize) break;
+        case CallOp::FACE_FORWARD: OC_GEN_FUNC_NAME(face_forward) break;
         case CallOp::DETERMINANT: break;
         case CallOp::TRANSPOSE: break;
         case CallOp::INVERSE: break;
@@ -94,6 +69,16 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         case CallOp::MAKE_FLOAT4X4: break;
         case CallOp::COUNT: break;
     }
+#undef OC_GEN_FUNC_NAME
+    current_scratch() << "(";
+    for (const auto &arg : expr->arguments()) {
+        arg->accept(*this);
+        current_scratch() << ",";
+    }
+    if (!expr->arguments().empty()) {
+        current_scratch().pop_back();
+    }
+    current_scratch() << ")";
 }
 
 void CUDACodegen::visit(const MemberExpr *expr) noexcept {
@@ -189,10 +174,10 @@ void CUDACodegen::_emit_type_name(const Type *type) noexcept {
         current_scratch() << "void";
     } else {
         switch (type->tag()) {
-            case Type::Tag::BOOL: current_scratch() << TYPE_PREFIX"bool"; break;
-            case Type::Tag::FLOAT: current_scratch() << TYPE_PREFIX"float"; break;
-            case Type::Tag::INT: current_scratch() << TYPE_PREFIX"int"; break;
-            case Type::Tag::UINT: current_scratch() << TYPE_PREFIX"uint"; break;
+            case Type::Tag::BOOL: current_scratch() << TYPE_PREFIX "bool"; break;
+            case Type::Tag::FLOAT: current_scratch() << TYPE_PREFIX "float"; break;
+            case Type::Tag::INT: current_scratch() << TYPE_PREFIX "int"; break;
+            case Type::Tag::UINT: current_scratch() << TYPE_PREFIX "uint"; break;
             case Type::Tag::VECTOR:
                 _emit_type_name(type->element());
                 current_scratch() << type->dimension();
@@ -205,7 +190,7 @@ void CUDACodegen::_emit_type_name(const Type *type) noexcept {
                 break;
             case Type::Tag::MATRIX: {
                 auto d = type->dimension();
-                current_scratch() << TYPE_PREFIX"float" << d << "x" << d;
+                current_scratch() << TYPE_PREFIX "float" << d << "x" << d;
                 break;
             }
             case Type::Tag::STRUCTURE:
