@@ -203,7 +203,6 @@ def define_matrix():
                 col += f"m{i}{j}" + split_col
             split_body = ", " if i != dim - 1 else ")"
             body += col + split_body
-        print(body)
         struct += get_indent(1) + f"__device__ {struct_name} ({args}){body} {{}}\n"
 
 
