@@ -15,17 +15,17 @@
     return oc_float4x4(m[0].x, m[1].x, m[2].x, m[3].x, m[0].y, m[1].y, m[2].y, m[3].y, m[0].z, m[1].z, m[2].z, m[3].z, m[0].w, m[1].w, m[2].w, m[3].w); 
 }
 
-[[nodiscard]] __device__ inline auto oc_determinant(const oc_float2x2 m) noexcept {
+[[nodiscard]] __device__ inline auto oc_det(const oc_float2x2 m) noexcept {
     return m[0][0] * m[1][1] - m[1][0] * m[0][1];
 }
 
-[[nodiscard]] __device__ inline auto oc_determinant(const oc_float3x3 m) noexcept {// from GLM
+[[nodiscard]] __device__ inline auto oc_det(const oc_float3x3 m) noexcept {// from GLM
     return m[0].x * (m[1].y * m[2].z - m[2].y * m[1].z)
          - m[1].x * (m[0].y * m[2].z - m[2].y * m[0].z)
          + m[2].x * (m[0].y * m[1].z - m[1].y * m[0].z);
 }
 
-[[nodiscard]] __device__ inline auto oc_determinant(const oc_float4x4 m) noexcept {// from GLM
+[[nodiscard]] __device__ inline auto oc_det(const oc_float4x4 m) noexcept {// from GLM
     const auto coef00 = m[2].z * m[3].w - m[3].z * m[2].w;
     const auto coef02 = m[1].z * m[3].w - m[3].z * m[1].w;
     const auto coef03 = m[1].z * m[2].w - m[2].z * m[1].w;
