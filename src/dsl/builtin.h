@@ -46,4 +46,12 @@ requires(is_dsl_v<U> &&
     return make_expr<T>(expr);
 }
 
+template<typename T>
+requires is_dsl_v<T>
+[[nodiscard]] auto all(const T &t) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<bool>(),
+        CallOp::ALL, {OC_EXPR(t)});
+    return make_expr<bool>(expr);
+}
+
 }// namespace ocarina
