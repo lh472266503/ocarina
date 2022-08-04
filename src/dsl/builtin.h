@@ -186,4 +186,28 @@ OC_MAKE_FLOATING_BUILTIN_FUNC(saturate, SATURATE)
 
 #undef OC_MAKE_FLOATING_BUILTIN_FUNC
 
+#define OC_MAKE_VEC2_MAKER(type, tag)                                                   \
+    template<typename T>                                                                \
+    requires(is_dsl_v<T> && (is_scalar_expr_v<T> || is_vector_expr_v<T>))               \
+    OC_NODISCARD auto make_##type##2(const T &t) noexcept {                             \
+        auto expr = Function::current()->call_builtin(Type::of<type##2>(),              \
+                                                      CallOp::MAKE_##tag##2,            \
+                                                      {OC_EXPR(t)});                    \
+        return make_expr<int2>(expr);                                                   \
+    }                                                                                   \
+    template<typename A, typename B>                                                    \
+    requires(any_dsl_v<A, B> && is_all_int_element_v<expr_value_t<A>, expr_value_t<B>>) \
+    OC_NODISCARD auto make_##type##2(const A &a, const B &b) noexcept {                 \
+        auto expr = Function::current()->call_builtin(Type::of<type##2>(),              \
+                                                      CallOp::MAKE_##tag##2,            \
+                                                      {OC_EXPR(a), OC_EXPR(b)});        \
+        return make_expr<int2>(expr);                                                   \
+    }
+
+OC_MAKE_VEC2_MAKER(int, INT)
+OC_MAKE_VEC2_MAKER(float, FLOAT)
+OC_MAKE_VEC2_MAKER(uint, UINT)
+
+#undef OC_MAKE_VEC2_MAKER
+
 }// namespace ocarina

@@ -15,14 +15,6 @@
 using namespace ocarina;
 
 int main(int argc, char *argv[]) {
-//    cout << typeid(vector_element_t<float>).name();
-////    cout << std::string (cuda_math);
-//
-//    auto v1 = make_float3(3);
-//    cout << dot(v1, v1);
-//    return 0;
-
-//    auto vv = select( make_float4(1) > 0.f, make_float4(5), make_float4(6));
 
     ocarina::vector<float> v;
     const int count = 10;
@@ -42,6 +34,8 @@ int main(int argc, char *argv[]) {
     Kernel kn = [&](Var<float> a, Var<float> b, BufferVar<float> c) {
         //        configure_block(1,2,1);
         Var<int3> vec{1, 2, 3};
+        Var<int> ii = 2;
+        Var<int2> v22 = make_int2(ii, ii);
         Var<bool2> bv;
 //        Var vf = vec.cast<float3>();
         Var vv = all(bv);
