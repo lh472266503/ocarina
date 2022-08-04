@@ -423,6 +423,12 @@ def define_vec_func():
         content += f"__device__ inline auto oc_distance_squared(oc_float{dim} a, oc_float{dim} b) noexcept {{ {{return oc_length_squared(a - b);}} }}\n"
         content += f"__device__ inline auto oc_normalize(oc_float{dim} v) noexcept {{ {{return v * oc_rsqrt(oc_dot(v, v));}} }}\n"
         content += "\n"
+
+
+    for scalar in scalar_types[:3]:
+        content += f"[[nodiscard]] __device__ inline auto oc_cross(oc_{scalar}3 u, oc_{scalar}3 v) noexcept {{ {{return oc_{scalar}3(u.y * v.z - v.y * u.z, u.z * v.x - v.z * u.x, u.x * v.y - v.x * u.y); }} }}\n"
+    
+
     content += "\n"
         
 def define_make_vecs():

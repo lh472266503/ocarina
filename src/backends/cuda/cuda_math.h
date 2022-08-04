@@ -1,8 +1,6 @@
 
 [[nodiscard]] __device__ inline auto oc_faceforward(oc_float3 n, oc_float3 i, oc_float3 n_ref) noexcept { return oc_dot(n_ref, i) < 0.0f ? n : -n; }
 
-[[nodiscard]] __device__ inline auto oc_cross(oc_float3 u, oc_float3 v) noexcept { return oc_float3(u.y * v.z - v.y * u.z, u.z * v.x - v.z * u.x, u.x * v.y - v.x * u.y); }
-
 [[nodiscard]] __device__ inline auto oc_transpose(const oc_float2x2 m) noexcept {
     return oc_float2x2(m[0].x, m[1].x, m[0].y, m[1].y);
 }
@@ -137,3 +135,4 @@ __device__ inline auto oc_inverse(oc_float3x3 m) noexcept {// from GLM
                             inv_2 * one_over_determinant,
                             inv_3 * one_over_determinant);
 }
+  

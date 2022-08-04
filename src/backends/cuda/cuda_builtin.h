@@ -1427,6 +1427,9 @@ __device__ inline auto oc_distance(oc_float4 a, oc_float4 b) noexcept { {return 
 __device__ inline auto oc_distance_squared(oc_float4 a, oc_float4 b) noexcept { {return oc_length_squared(a - b);} }
 __device__ inline auto oc_normalize(oc_float4 v) noexcept { {return v * oc_rsqrt(oc_dot(v, v));} }
 
+[[nodiscard]] __device__ inline auto oc_cross(oc_int3 u, oc_int3 v) noexcept { {return oc_int3(u.y * v.z - v.y * u.z, u.z * v.x - v.z * u.x, u.x * v.y - v.x * u.y); } }
+[[nodiscard]] __device__ inline auto oc_cross(oc_uint3 u, oc_uint3 v) noexcept { {return oc_uint3(u.y * v.z - v.y * u.z, u.z * v.x - v.z * u.x, u.x * v.y - v.x * u.y); } }
+[[nodiscard]] __device__ inline auto oc_cross(oc_float3 u, oc_float3 v) noexcept { {return oc_float3(u.y * v.z - v.y * u.z, u.z * v.x - v.z * u.x, u.x * v.y - v.x * u.y); } }
 
 [[nodiscard]] __device__ inline auto oc_make_int2(oc_int s = 0) noexcept { return oc_int2{s, s}; }
 [[nodiscard]] __device__ inline auto oc_make_int2(oc_int x, oc_int y) noexcept { return oc_int2{x, y}; }
