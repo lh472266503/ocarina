@@ -17,6 +17,9 @@ using namespace ocarina;
 int main(int argc, char *argv[]) {
 //    cout << typeid(vector_element_t<float>).name();
 ////    cout << std::string (cuda_math);
+//
+//    auto v1 = make_float3(3);
+//    cout << dot(v1, v1);
 //    return 0;
 
 //    auto vv = select( make_float4(1) > 0.f, make_float4(5), make_float4(6));

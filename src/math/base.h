@@ -182,6 +182,84 @@ lerp(F t, A a, B b) noexcept {
     return a + t * (b - a);
 }
 
+template<typename T, size_t N>
+[[nodiscard]] constexpr auto volume(Vector<T, N> v) noexcept {
+    static_assert(N == 2 || N == 3 || N == 4);
+    if constexpr (N == 2) {
+        return v.x * v.y;
+    } else if constexpr (N == 3) {
+        return v.x * v.y * v.z;
+    } else {
+        return v.x * v.y * v.z * v.w;
+    }
+}
+
+template<typename T, size_t N>
+[[nodiscard]] auto dot(const Vector<T, N> &u, const Vector<T, N> &v) noexcept {
+    static_assert(N == 2 || N == 3 || N == 4);
+    if constexpr (N == 2) {
+        return u.x * v.x + u.y * v.y;
+    } else if constexpr (N == 3) {
+        return u.x * v.x + u.y * v.y + u.z * v.z;
+    } else {
+        return u.x * v.x + u.y * v.y + u.z * v.z + u.w * v.w;
+    }
+}
+
+template<typename T, size_t N>
+[[nodiscard]] constexpr auto abs_dot(Vector<T, N> u, Vector<T, N> v) noexcept {
+    return abs(dot(u, v));
+}
+
+template<typename T, size_t N>
+[[nodiscard]] constexpr auto length(Vector<T, N> u) noexcept {
+    return sqrt(dot(u, u));
+}
+
+template<typename T, size_t N>
+[[nodiscard]] constexpr auto length_squared(Vector<T, N> u) noexcept {
+    return dot(u, u);
+}
+
+template<typename T, size_t N>
+[[nodiscard]] constexpr auto normalize(Vector<T, N> u) noexcept {
+    return u * (1.0f / length(u));
+}
+
+template<typename T, size_t N>
+[[nodiscard]] constexpr auto distance(Vector<T, N> u, Vector<T, N> v) noexcept {
+    return length(u - v);
+}
+
+template<typename T, size_t N>
+[[nodiscard]] constexpr auto distance_squared(Vector<T, N> u, Vector<T, N> v) noexcept {
+    return length_squared(u - v);
+}
+
+template<typename T>
+[[nodiscard]] constexpr auto cross(Vector<T, 3> u, Vector<T, 3> v) noexcept {
+    return Vector<T, 3>(u.y * v.z - v.y * u.z,
+                        u.z * v.x - v.z * u.x,
+                        u.x * v.y - v.x * u.y);
+}
+
+[[nodiscard]] inline float3 face_forward(float3 v1, float3 v2) noexcept {
+    return dot(v1, v2) > 0 ? v1 : -v1;
+}
+
+template<typename T, size_t N>
+[[nodiscard]] auto triangle_area(Vector<T, N> p0, Vector<T, N> p1, Vector<T, N> p2) noexcept {
+    static_assert(N == 3 || N == 2, "N must be greater than 1!");
+    if constexpr (N == 2) {
+        Vector<T, 3> pp0 = Vector<T, 3>{p0.x, p0.y, 0};
+        Vector<T, 3> pp1 = Vector<T, 3>{p1.x, p1.y, 0};
+        Vector<T, 3> pp2 = Vector<T, 3>{p2.x, p2.y, 0};
+        return 0.5 * length(cross(pp1 - pp0, pp2 - pp0));
+    } else {
+        return 0.5 * length(cross(p1 - p0, p2 - p0));
+    }
+}
+
 template<typename T, typename F2>
 [[nodiscard]] T triangle_lerp(F2 barycentric, T v0, T v1, T v2) noexcept {
     auto u = barycentric.x;
