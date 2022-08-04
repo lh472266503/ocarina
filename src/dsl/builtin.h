@@ -37,15 +37,17 @@ namespace ocarina {
 
 template<typename T>
 requires is_bool_vector_expr_v<T>
-[[nodiscard]] auto all(const T &t) noexcept {
+OC_NODISCARD auto
+all(const T &t) noexcept {
     auto expr = Function::current()->call_builtin(Type::of<bool>(),
-        CallOp::ALL, {OC_EXPR(t)});
+                                                  CallOp::ALL, {OC_EXPR(t)});
     return make_expr<bool>(expr);
 }
 
 template<typename T>
 requires is_bool_vector_expr_v<T>
-[[nodiscard]] auto any(const T &t) noexcept {
+OC_NODISCARD auto
+any(const T &t) noexcept {
     auto expr = Function::current()->call_builtin(Type::of<bool>(),
                                                   CallOp::ANY, {OC_EXPR(t)});
     return make_expr<bool>(expr);
@@ -53,7 +55,8 @@ requires is_bool_vector_expr_v<T>
 
 template<typename T>
 requires is_bool_vector_expr_v<T>
-[[nodiscard]] auto none(const T &t) noexcept {
+OC_NODISCARD auto
+none(const T &t) noexcept {
     auto expr = Function::current()->call_builtin(Type::of<bool>(),
                                                   CallOp::NONE, {OC_EXPR(t)});
     return make_expr<bool>(expr);
@@ -61,9 +64,9 @@ requires is_bool_vector_expr_v<T>
 
 template<typename U, typename T, typename F>
 requires(any_dsl_v<U, T, F> &&
-                 vector_dimension_v<expr_value_t<U>> == vector_dimension_v<expr_value_t<T>> &&
+         vector_dimension_v<expr_value_t<U>> == vector_dimension_v<expr_value_t<T>> &&
          vector_dimension_v<expr_value_t<U>> == vector_dimension_v<expr_value_t<F>>)
-    [[nodiscard]] auto select(U &&pred, T &&t, F &&f) noexcept {
+OC_NODISCARD auto select(U &&pred, T &&t, F &&f) noexcept {
     auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
                                                   CallOp::SELECT,
                                                   {OC_EXPR(pred), OC_EXPR(t), OC_EXPR(f)});
@@ -72,7 +75,8 @@ requires(any_dsl_v<U, T, F> &&
 
 template<typename T, typename A, typename B>
 requires any_dsl_v<T, A, B>
-[[nodiscard]] auto clamp(const T &t, const A &a, const B &b) noexcept {
+OC_NODISCARD auto
+clamp(const T &t, const A &a, const B &b) noexcept {
     auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
                                                   CallOp::CLAMP,
                                                   {OC_EXPR(t), OC_EXPR(a), OC_EXPR(b)});
@@ -81,7 +85,8 @@ requires any_dsl_v<T, A, B>
 
 template<typename T, typename A, typename B>
 requires any_dsl_v<T, A, B>
-[[nodiscard]] auto lerp(const T &t, const A &a, const B &b) noexcept {
+OC_NODISCARD auto
+lerp(const T &t, const A &a, const B &b) noexcept {
     auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
                                                   CallOp::LERP,
                                                   {OC_EXPR(t), OC_EXPR(a), OC_EXPR(b)});
@@ -90,10 +95,29 @@ requires any_dsl_v<T, A, B>
 
 template<typename T, typename A, typename B>
 requires any_dsl_v<T, A, B>
-[[nodiscard]] auto fma(const T &t, const A &a, const B &b) noexcept {
+OC_NODISCARD auto
+fma(const T &t, const A &a, const B &b) noexcept {
     auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
                                                   CallOp::FMA,
                                                   {OC_EXPR(t), OC_EXPR(a), OC_EXPR(b)});
+    return make_expr<expr_value_t<T>>(expr);
+}
+
+template<typename T>
+requires is_dsl_v<T>
+OC_NODISCARD auto
+abs(const T &t) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
+                                                  CallOp::ABS, {OC_EXPR(t)});
+    return make_expr<expr_value_t<T>>(expr);
+}
+
+template<typename T>
+requires is_dsl_v<T>
+OC_NODISCARD auto
+exp(const T &t) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
+                                                  CallOp::EXP, {OC_EXPR(t)});
     return make_expr<expr_value_t<T>>(expr);
 }
 
