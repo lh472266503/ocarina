@@ -246,4 +246,48 @@ OC_MAKE_VEC3_MAKER(bool, BOOL)
 
 #undef OC_MAKE_VEC3_MAKER
 
+template<typename T>
+requires(is_dsl_v<T> && (is_scalar_expr_v<T> || is_vector_expr_v<T>))
+    OC_NODISCARD auto make_int4(const T &t) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<int4>(),
+                                                  CallOp::MAKE_INT4, {OC_EXPR(t)});
+    return make_expr<int4>(expr);
+}
+
+template<typename T, typename U>
+requires(any_dsl_v<T, U> &&
+             is_all_int_element_v<expr_value_t<T>, expr_value_t<U>> &&
+         ((is_vector3_expr_v<T> && is_scalar_expr_v<U>) ||
+          (is_scalar_expr_v<T> && is_vector3_expr_v<U>) ||
+          (is_vector2_expr_v<T> && is_vector2_expr_v<U>)))
+    OC_NODISCARD auto make_int4(const T &t, const U &u) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<int4>(),
+                                                  CallOp::MAKE_INT4,
+                                                  {OC_EXPR(t), OC_EXPR(u)});
+    return make_expr<int4>(expr);
+}
+
+template<typename A, typename B, typename C>
+requires(any_dsl_v<A, B, C> &&
+             is_all_int_element_v<expr_value_t<A>, expr_value_t<B>, expr_value_t<C>> &&
+         ((is_vector2_expr_v<A> && is_scalar_expr_v<B> && is_scalar_expr_v<C>) ||
+          (is_scalar_expr_v<A> && is_vector2_expr_v<B> && is_scalar_expr_v<C>) ||
+          (is_scalar_expr_v<A> && is_scalar_expr_v<B> && is_vector2_expr_v<C>)))
+    OC_NODISCARD auto make_int4(const A &a, const B &b, const C &c) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<int4>(),
+                                                  CallOp::MAKE_INT4,
+                                                  {OC_EXPR(a), OC_EXPR(b), OC_EXPR(c)});
+    return make_expr<int4>(expr);
+}
+
+template<typename A, typename B, typename C, typename D>
+requires(any_dsl_v<A, B, C, D> &&is_all_int_element_expr_v<A, B, C, D>)
+    OC_NODISCARD auto make_int4(const A &a, const B &b, const C &c, const D &d) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<int4>(),
+                                                  CallOp::MAKE_INT4,
+                                                  {OC_EXPR(a), OC_EXPR(b),
+                                                   OC_EXPR(c), OC_EXPR(d)});
+    return make_expr<int4>(expr);
+}
+
 }// namespace ocarina

@@ -216,19 +216,27 @@ EXPR_DIMENSION_TRAITS(matrix, 4)
 
 #undef EXPR_DIMENSION_TRAITS
 
-#define EXPR_VECTOR_TYPE_TRAITS(type)                                             \
-    template<typename T>                                                          \
-    using is_##type##_vector_expr = is_##type##_vector<expr_value_t<T>>;          \
-    template<typename T>                                                          \
-    constexpr auto is_##type##_vector_expr_v = is_##type##_vector_expr<T>::value; \
-    template<typename T>                                                          \
-    using is_##type##_element = std::is_same<type, vector_element_t<T>>;          \
-    template<typename T>                                                          \
-    constexpr auto is_##type##_element_v = is_##type##_element<T>::value;         \
-    template<typename... T>                                                       \
-    using is_all_##type##_element = std::conjunction<is_##type##_element<T>...>;  \
-    template<typename... T>                                                       \
-    constexpr auto is_all_##type##_element_v = is_all_##type##_element<T...>::value;
+#define EXPR_VECTOR_TYPE_TRAITS(type)                                                 \
+    template<typename T>                                                              \
+    using is_##type##_vector_expr = is_##type##_vector<expr_value_t<T>>;              \
+    template<typename T>                                                              \
+    constexpr auto is_##type##_vector_expr_v = is_##type##_vector_expr<T>::value;     \
+    template<typename T>                                                              \
+    using is_##type##_element = std::is_same<type, vector_element_t<T>>;              \
+    template<typename T>                                                              \
+    constexpr auto is_##type##_element_v = is_##type##_element<T>::value;             \
+    template<typename T>                                                              \
+    using is_##type##_element_expr = is_##type##_element<T>;                          \
+    template<typename T>                                                              \
+    constexpr auto is_##type##_element_expr_v = is_##type##_element_expr<T>::value;   \
+    template<typename... T>                                                           \
+    using is_all_##type##_element = std::conjunction<is_##type##_element<T>...>;      \
+    template<typename... T>                                                           \
+    constexpr auto is_all_##type##_element_v = is_all_##type##_element<T...>::value;  \
+    template<typename... T>                                                           \
+    using is_all_##type##_element_expr = is_all_##type##_element<expr_value_t<T>...>; \
+    template<typename... T>                                                           \
+    constexpr auto is_all_##type##_element_expr_v = is_all_##type##_element_expr<T...>::value;
 
 EXPR_VECTOR_TYPE_TRAITS(bool)
 EXPR_VECTOR_TYPE_TRAITS(float)
