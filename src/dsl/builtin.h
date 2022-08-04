@@ -151,6 +151,29 @@ OC_NODISCARD auto length_squared(const T &t) noexcept {
     return make_expr<expr_value_t<T>>(expr);
 }
 
+template<typename T>
+requires(is_dsl_v<T> && is_matrix_v<expr_value_t<T>>)
+OC_NODISCARD auto determinant(const T &m) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
+                                                  CallOp::DETERMINANT, {OC_EXPR(m)});
+    return make_expr<expr_value_t<T>>(expr);
+}
+
+template<typename T>
+requires(is_dsl_v<T> && is_matrix_v<expr_value_t<T>>)
+OC_NODISCARD auto transpose(const T &m) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
+                                                  CallOp::TRANSPOSE, {OC_EXPR(m)});
+    return make_expr<expr_value_t<T>>(expr);
+}
+
+template<typename T>
+requires(is_dsl_v<T> && is_matrix_v<expr_value_t<T>>)
+OC_NODISCARD auto inverse(const T &m) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
+                                                  CallOp::INVERSE, {OC_EXPR(m)});
+    return make_expr<expr_value_t<T>>(expr);
+}
 
 template<typename T, typename U>
 requires(any_dsl_v<T, U> && is_vector3_v<expr_value_t<T>> && is_vector3_v<expr_value_t<U>>)
