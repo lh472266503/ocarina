@@ -248,7 +248,7 @@ void CppCodegen::visit(const CastExpr *expr) noexcept {
     current_scratch() << ")";
 }
 void CppCodegen::visit(const Type *type) noexcept {
-    if (!type->is_structure() || type->has_defined()) { return; }
+    if (!type->is_structure() || has_generated(type)) { return; }
     current_scratch() << "struct ";
     current_scratch() << "alignas(";
     current_scratch() << type->alignment();
@@ -267,11 +267,27 @@ void CppCodegen::visit(const Type *type) noexcept {
     indent_dec();
     current_scratch() << "};\n";
 
-    type->define();
+    add_generated(type);
 }
 
 void CppCodegen::_emit_types_define() noexcept {
     Type::for_each(this);
+}
+
+bool CppCodegen::has_generated(const Type *type) const noexcept {
+    return _generated_struct.contains(type);
+}
+
+void CppCodegen::add_generated(const Type *type) noexcept {
+    _generated_struct.emplace(type);
+}
+
+bool CppCodegen::has_generated(const Function *func) const noexcept {
+    return _generated_func.contains(func);
+}
+
+void CppCodegen::add_generated(const Function *func) noexcept {
+    _generated_func.emplace(func);
 }
 
 void CppCodegen::_emit_uniform_var(const UniformBinding &uniform) noexcept {
@@ -355,7 +371,7 @@ void CppCodegen::_emit_type_name(const Type *type) noexcept {
     }
 }
 void CppCodegen::_emit_function(const Function &f) noexcept {
-    if (f.has_defined()) {
+    if (has_generated(&f)) {
         return;
     }
     _emit_type_name(f.return_type());
@@ -363,7 +379,7 @@ void CppCodegen::_emit_function(const Function &f) noexcept {
     _emit_func_name(f);
     _emit_arguments(f);
     _emit_body(f);
-    f.define();
+    add_generated(&f);
 }
 void CppCodegen::_emit_variable_name(Variable v) noexcept {
     current_scratch() << v.name();

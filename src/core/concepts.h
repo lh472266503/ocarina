@@ -17,18 +17,6 @@ struct Noncopyable {
     Noncopyable &operator=(Noncopyable &&) noexcept = default;
 };
 
-class Definable {
-private:
-    mutable bool _defined{false};
-
-protected:
-    Definable() = default;
-
-public:
-    [[nodiscard]] bool has_defined() const noexcept { return _defined; }
-    void define() const noexcept { _defined = true; }
-    void undef() const noexcept { _defined = false; }
-};
 
 template<typename T>
 concept iterable = requires(T v) {

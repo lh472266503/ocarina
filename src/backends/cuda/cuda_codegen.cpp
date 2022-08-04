@@ -117,7 +117,7 @@ void CUDACodegen::visit(const MemberExpr *expr) noexcept {
 }
 
 void CUDACodegen::_emit_function(const Function &f) noexcept {
-    if (f.has_defined()) {
+    if (has_generated(&f)) {
         return;
     }
     switch (f.tag()) {

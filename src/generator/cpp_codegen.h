@@ -13,6 +13,10 @@ namespace ocarina {
 
 class CppCodegen : public Codegen, protected ExprVisitor, protected StmtVisitor, protected TypeVisitor {
 protected:
+    ocarina::set<const Function *> _generated_func;
+    ocarina::set<const Type *> _generated_struct;
+
+protected:
     void visit(const BreakStmt *stmt) noexcept override;
     void visit(const ContinueStmt *stmt) noexcept override;
     void visit(const ReturnStmt *stmt) noexcept override;
@@ -40,6 +44,10 @@ protected:
     void visit(const Type *type) noexcept override;
 
 protected:
+    [[nodiscard]] bool has_generated(const Function *func) const noexcept;
+    void add_generated(const Function *func) noexcept;
+    [[nodiscard]] bool has_generated(const Type *type) const noexcept;
+    void add_generated(const Type *type) noexcept;
     virtual void _emit_types_define() noexcept;
     virtual void _emit_uniform_var(const UniformBinding &uniform) noexcept;
     virtual void _emit_variable_define(Variable v) noexcept;

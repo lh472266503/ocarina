@@ -9,6 +9,14 @@
 
 namespace ocarina {
 
+#define OC_DEFINE_TEMPLATE_VALUE(template_name) \
+    template<typename T>                        \
+    constexpr auto template_name##_v = template_name<T>::value;
+
+#define OC_DEFINE_TEMPLATE_VALUE_MULTI(template_name) \
+    template<typename... T>                           \
+    constexpr auto template_name##_v = template_name<T...>::value;
+
 template<typename... T>
 struct always_false : std::false_type {};
 

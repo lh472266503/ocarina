@@ -268,7 +268,7 @@ struct TypeVisitor {
     virtual void visit(const Type *) noexcept = 0;
 };
 
-class OC_AST_API Type : public concepts::Noncopyable, public concepts::Definable, public Hashable {
+class OC_AST_API Type : public concepts::Noncopyable, public Hashable {
 public:
     enum struct Tag : uint32_t {
         BOOL,

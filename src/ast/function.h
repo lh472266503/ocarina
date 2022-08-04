@@ -41,7 +41,7 @@ public:
     [[nodiscard]] const RefExpr *expression() const noexcept { return _expr; }
 };
 
-class OC_AST_API Function : public concepts::Noncopyable, public concepts::Definable, public Hashable {
+class OC_AST_API Function : public concepts::Noncopyable, public Hashable {
 public:
     enum struct Tag : uint {
         KERNEL,
