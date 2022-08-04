@@ -224,7 +224,11 @@ EXPR_DIMENSION_TRAITS(matrix, 4)
     template<typename T>                                                          \
     using is_##type##_element = std::is_same<bool, vector_element_t<T>>;          \
     template<typename T>                                                          \
-    constexpr auto is_##type##_element_v = is_##type##_element<T>::value;
+    constexpr auto is_##type##_element_v = is_##type##_element<T>::value;         \
+    template<typename... T>                                                       \
+    using is_all_##type##_element = std::conjunction<is_##type##_element<T>...>;  \
+    template<typename... T>                                                       \
+    constexpr auto is_all_##type##_element_v = is_all_##type##_element<T...>::value;
 
 EXPR_VECTOR_TYPE_TRAITS(bool)
 EXPR_VECTOR_TYPE_TRAITS(float)

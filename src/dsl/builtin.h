@@ -127,6 +127,73 @@ OC_NODISCARD auto sqr(const T &t) noexcept {
     return make_expr<expr_value_t<T>>(expr);
 }
 
+template<typename T>
+requires(is_dsl_v<T> && is_vector_v<expr_value_t<T>>)
+OC_NODISCARD auto length(const T &t) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
+                                                  CallOp::LENGTH, {OC_EXPR(t)});
+    return make_expr<expr_value_t<T>>(expr);
+}
+
+template<typename T>
+requires(is_dsl_v<T> && is_vector_v<expr_value_t<T>>)
+OC_NODISCARD auto normalize(const T &t) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
+                                                  CallOp::NORMALIZE, {OC_EXPR(t)});
+    return make_expr<expr_value_t<T>>(expr);
+}
+
+template<typename T>
+requires(is_dsl_v<T> && is_vector_v<expr_value_t<T>>)
+OC_NODISCARD auto length_squared(const T &t) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
+                                                  CallOp::LENGTH_SQUARED, {OC_EXPR(t)});
+    return make_expr<expr_value_t<T>>(expr);
+}
+
+
+template<typename T, typename U>
+requires(any_dsl_v<T, U> && is_vector3_v<expr_value_t<T>> && is_vector3_v<expr_value_t<U>>)
+OC_NODISCARD auto cross(const T &t, const U &u) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
+                                                  CallOp::CROSS, {OC_EXPR(t), OC_EXPR(u)});
+    return make_expr<expr_value_t<T>>(expr);
+}
+
+template<typename T, typename U>
+requires(any_dsl_v<T, U> && is_vector_same_dimension_v<expr_value_t<U>, expr_value_t<T>>)
+OC_NODISCARD auto dot(const T &t, const U &u) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
+                                                  CallOp::DOT, {OC_EXPR(t), OC_EXPR(u)});
+    return make_expr<expr_value_t<T>>(expr);
+}
+
+template<typename T, typename U>
+requires(any_dsl_v<T, U> && is_vector_same_dimension_v<expr_value_t<U>, expr_value_t<T>>)
+OC_NODISCARD auto distance(const T &t, const U &u) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
+                                                  CallOp::DISTANCE, {OC_EXPR(t), OC_EXPR(u)});
+    return make_expr<expr_value_t<T>>(expr);
+}
+
+template<typename T, typename U>
+requires(any_dsl_v<T, U> && is_vector_same_dimension_v<expr_value_t<U>, expr_value_t<T>>)
+OC_NODISCARD auto distance_squared(const T &t, const U &u) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
+                                                  CallOp::DISTANCE_SQUARED, {OC_EXPR(t), OC_EXPR(u)});
+    return make_expr<expr_value_t<T>>(expr);
+}
+
+template<typename A, typename B, typename C>
+requires(any_dsl_v<A, B, C> &&
+         is_all_float_element_v<expr_value_t<A>, expr_value_t<B>, expr_value_t<C>> &&
+         is_vector_same_dimension_v<expr_value_t<A>, expr_value_t<B>, expr_value_t<C>>)
+OC_NODISCARD auto face_forward(const A &a, const B &b, const C &c) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<A>>(),
+                                                  CallOp::FACE_FORWARD, {OC_EXPR(a), OC_EXPR(b), OC_EXPR(c)});
+    return make_expr<expr_value_t<A>>(expr);
+}
+
 #define OC_MAKE_FLOATING_BUILTIN_FUNC(func, tag)                                   \
     template<typename T>                                                           \
     requires(is_dsl_v<T> && is_float_element_v<expr_value_t<T>>)                   \

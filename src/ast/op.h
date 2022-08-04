@@ -91,6 +91,8 @@ enum struct CallOp : uint32_t {
 
     CROSS,
     DOT,
+    DISTANCE,
+    DISTANCE_SQUARED,
     LENGTH,
     LENGTH_SQUARED,
     NORMALIZE,

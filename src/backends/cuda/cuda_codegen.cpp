@@ -46,6 +46,8 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         case CallOp::DOT: OC_GEN_FUNC_NAME(dot); break;
         case CallOp::LENGTH: OC_GEN_FUNC_NAME(length); break;
         case CallOp::LENGTH_SQUARED: OC_GEN_FUNC_NAME(length_squared); break;
+        case CallOp::DISTANCE: OC_GEN_FUNC_NAME(distance); break;
+        case CallOp::DISTANCE_SQUARED: OC_GEN_FUNC_NAME(distance_squared); break;
         case CallOp::NORMALIZE: OC_GEN_FUNC_NAME(normalize); break;
         case CallOp::FACE_FORWARD: OC_GEN_FUNC_NAME(face_forward); break;
         case CallOp::DETERMINANT: OC_GEN_FUNC_NAME(det); break;
