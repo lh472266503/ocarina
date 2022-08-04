@@ -231,6 +231,11 @@ EXPR_VECTOR_TYPE_TRAITS(float)
 EXPR_VECTOR_TYPE_TRAITS(int)
 EXPR_VECTOR_TYPE_TRAITS(uint)
 
+template<typename T>
+using is_signed_element = std::disjunction<is_float_element<T>, is_int_element<T>>;
+template<typename T>
+constexpr auto is_signed_element_v = is_signed_element<T>::value;
+
 #undef EXPR_VECTOR_TYPE_TRAITS
 
 template<typename T>

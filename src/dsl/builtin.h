@@ -104,11 +104,26 @@ fma(const T &t, const A &a, const B &b) noexcept {
 }
 
 template<typename T>
-requires is_dsl_v<T>
-OC_NODISCARD auto
-abs(const T &t) noexcept {
+requires(is_dsl_v<T> && is_signed_element_v<expr_value_t<T>>)
+OC_NODISCARD auto abs(const T &t) noexcept {
     auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
                                                   CallOp::ABS, {OC_EXPR(t)});
+    return make_expr<expr_value_t<T>>(expr);
+}
+
+template<typename T>
+requires(is_dsl_v<T>)
+OC_NODISCARD auto rcp(const T &t) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
+                                                  CallOp::RCP, {OC_EXPR(t)});
+    return make_expr<expr_value_t<T>>(expr);
+}
+
+template<typename T>
+requires(is_dsl_v<T>)
+OC_NODISCARD auto sqr(const T &t) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
+                                                  CallOp::SQR, {OC_EXPR(t)});
     return make_expr<expr_value_t<T>>(expr);
 }
 
@@ -143,6 +158,5 @@ OC_MAKE_FLOATING_BUILTIN_FUNC(rsqrt, RSQRT)
 OC_MAKE_FLOATING_BUILTIN_FUNC(saturate, SATURATE)
 
 #undef OC_MAKE_FLOATING_BUILTIN_FUNC
-
 
 }// namespace ocarina

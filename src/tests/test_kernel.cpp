@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
         vec2 = -vec2;
         //        Var<bool3> pred = vec > make_int3(5);
         vec = select(vec > make_int3(5), vec, -vec);
-        print("{}, {}---------{}--", a, f, f_buffer.read(5));
+        print("{}, {}---------{}--", sqr(a), f, f_buffer.read(5));
         f_buffer.write(thread_id(), f_buffer.read(thread_id()) * 2);
         c.write(thread_id(), c.read(thread_id()) * 2);
         a = add(a, b);
