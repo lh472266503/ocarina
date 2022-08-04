@@ -318,6 +318,8 @@ def define_unary_funcs():
         ["atan" , ["return atanf(v);", ["float"]]],
         ["is_inf" , ["return isinf(v);", ["float"]]],
         ["is_nan" , ["return isnan(v);", ["float"]]],
+        ["is_inf" , ["return false;", ["int", "uint"]]],
+        ["is_nan" , ["return false;", ["int", "uint"]]],
         ["exp" , ["return expf(v);",["float"]]],
         ["exp2" , ["return exp2f(v);",["float"]]],
         ["exp10" , ["return exp10f(v);",["float"]]],
