@@ -27,8 +27,8 @@ OC_MAKE_BUILTIN_FUNC(dispatch_dim, uint3)
 #define OC_MAKE_LOGIC_FUNC(func, tag)                                             \
     template<typename T>                                                          \
     requires is_bool_vector_expr_v<T>                                             \
-    OC_NODISCARD auto                                                             \
-    func(const T &t) noexcept {                                                   \
+        OC_NODISCARD auto                                                         \
+        func(const T &t) noexcept {                                               \
         auto expr = Function::current()->call_builtin(Type::of<bool>(),           \
                                                       CallOp::tag, {OC_EXPR(t)}); \
         return make_expr<bool>(expr);                                             \
@@ -42,9 +42,9 @@ OC_MAKE_LOGIC_FUNC(none, NONE)
 
 template<typename U, typename T, typename F>
 requires(any_dsl_v<U, T, F> &&
-         vector_dimension_v<expr_value_t<U>> == vector_dimension_v<expr_value_t<T>> &&
+                 vector_dimension_v<expr_value_t<U>> == vector_dimension_v<expr_value_t<T>> &&
          vector_dimension_v<expr_value_t<U>> == vector_dimension_v<expr_value_t<F>>)
-OC_NODISCARD auto select(U &&pred, T &&t, F &&f) noexcept {
+    OC_NODISCARD auto select(U &&pred, T &&t, F &&f) noexcept {
     auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
                                                   CallOp::SELECT,
                                                   {OC_EXPR(pred), OC_EXPR(t), OC_EXPR(f)});
@@ -54,7 +54,8 @@ OC_NODISCARD auto select(U &&pred, T &&t, F &&f) noexcept {
 #define OC_MAKE_TRIPLE_FUNC(func, tag)                                                       \
     template<typename T, typename A, typename B>                                             \
     requires(any_dsl_v<T, A, B> && ocarina::is_same_expr_v<T, A, B>)                         \
-    OC_NODISCARD auto func(const T &t, const A &a, const B &b) noexcept {                    \
+        OC_NODISCARD auto                                                                    \
+        func(const T &t, const A &a, const B &b) noexcept {                                  \
         auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),           \
                                                       CallOp::tag,                           \
                                                       {OC_EXPR(t), OC_EXPR(a), OC_EXPR(b)}); \
@@ -68,8 +69,8 @@ OC_MAKE_TRIPLE_FUNC(clamp, CLAMP)
 #undef OC_MAKE_TRIPLE_FUNC
 
 template<typename T>
-requires(is_dsl_v<T> && is_signed_element_v<expr_value_t<T>>)
-OC_NODISCARD auto abs(const T &t) noexcept {
+requires(is_dsl_v<T> &&is_signed_element_v<expr_value_t<T>>)
+    OC_NODISCARD auto abs(const T &t) noexcept {
     auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
                                                   CallOp::ABS, {OC_EXPR(t)});
     return make_expr<expr_value_t<T>>(expr);
@@ -77,7 +78,7 @@ OC_NODISCARD auto abs(const T &t) noexcept {
 
 template<typename T>
 requires(is_dsl_v<T>)
-OC_NODISCARD auto rcp(const T &t) noexcept {
+    OC_NODISCARD auto rcp(const T &t) noexcept {
     auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
                                                   CallOp::RCP, {OC_EXPR(t)});
     return make_expr<expr_value_t<T>>(expr);
@@ -85,7 +86,7 @@ OC_NODISCARD auto rcp(const T &t) noexcept {
 
 template<typename T>
 requires(is_dsl_v<T>)
-OC_NODISCARD auto sqr(const T &t) noexcept {
+    OC_NODISCARD auto sqr(const T &t) noexcept {
     auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
                                                   CallOp::SQR, {OC_EXPR(t)});
     return make_expr<expr_value_t<T>>(expr);
@@ -94,7 +95,8 @@ OC_NODISCARD auto sqr(const T &t) noexcept {
 #define OC_MAKE_UNARY_VECTOR_FUNC(func, tag)                                       \
     template<typename T>                                                           \
     requires(is_dsl_v<T> && is_vector_v<expr_value_t<T>>)                          \
-    OC_NODISCARD auto func(const T &t) noexcept {                                  \
+        OC_NODISCARD auto                                                          \
+        func(const T &t) noexcept {                                                \
         auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(), \
                                                       CallOp::tag, {OC_EXPR(t)});  \
         return make_expr<expr_value_t<T>>(expr);                                   \
@@ -109,7 +111,8 @@ OC_MAKE_UNARY_VECTOR_FUNC(length_squared, LENGTH_SQUARED)
 #define OC_MAKE_MATRIX_FUNC(func, tag)                                             \
     template<typename T>                                                           \
     requires(is_dsl_v<T> && is_matrix_v<expr_value_t<T>>)                          \
-    OC_NODISCARD auto func(const T &m) noexcept {                                  \
+        OC_NODISCARD auto                                                          \
+        func(const T &m) noexcept {                                                \
         auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(), \
                                                       CallOp::tag, {OC_EXPR(m)});  \
         return make_expr<expr_value_t<T>>(expr);                                   \
@@ -122,8 +125,8 @@ OC_MAKE_MATRIX_FUNC(inverse, INVERSE)
 #undef OC_MAKE_MATRIX_FUNC
 
 template<typename T, typename U>
-requires(any_dsl_v<T, U> && is_vector3_v<expr_value_t<T>> && is_vector3_v<expr_value_t<U>>)
-OC_NODISCARD auto cross(const T &t, const U &u) noexcept {
+requires(any_dsl_v<T, U> &&is_vector3_v<expr_value_t<T>> &&is_vector3_v<expr_value_t<U>>)
+    OC_NODISCARD auto cross(const T &t, const U &u) noexcept {
     auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
                                                   CallOp::CROSS, {OC_EXPR(t), OC_EXPR(u)});
     return make_expr<expr_value_t<T>>(expr);
@@ -132,7 +135,8 @@ OC_NODISCARD auto cross(const T &t, const U &u) noexcept {
 #define OC_MAKE_BINARY_VECTOR_FUNC(func, tag)                                                 \
     template<typename T, typename U>                                                          \
     requires(any_dsl_v<T, U> && is_vector_same_dimension_v<expr_value_t<U>, expr_value_t<T>>) \
-    OC_NODISCARD auto func(const T &t, const U &u) noexcept {                                 \
+        OC_NODISCARD auto                                                                     \
+        func(const T &t, const U &u) noexcept {                                               \
         auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),            \
                                                       CallOp::tag, {OC_EXPR(t), OC_EXPR(u)}); \
         return make_expr<expr_value_t<T>>(expr);                                              \
@@ -146,9 +150,9 @@ OC_MAKE_BINARY_VECTOR_FUNC(distance_squared, DISTANCE_SQUARED)
 
 template<typename A, typename B, typename C>
 requires(any_dsl_v<A, B, C> &&
-         is_all_float_element_v<expr_value_t<A>, expr_value_t<B>, expr_value_t<C>> &&
-         is_vector_same_dimension_v<expr_value_t<A>, expr_value_t<B>, expr_value_t<C>>)
-OC_NODISCARD auto face_forward(const A &a, const B &b, const C &c) noexcept {
+             is_all_float_element_v<expr_value_t<A>, expr_value_t<B>, expr_value_t<C>> &&
+                 is_vector_same_dimension_v<expr_value_t<A>, expr_value_t<B>, expr_value_t<C>>)
+    OC_NODISCARD auto face_forward(const A &a, const B &b, const C &c) noexcept {
     auto expr = Function::current()->call_builtin(Type::of<expr_value_t<A>>(),
                                                   CallOp::FACE_FORWARD, {OC_EXPR(a), OC_EXPR(b), OC_EXPR(c)});
     return make_expr<expr_value_t<A>>(expr);
@@ -157,7 +161,8 @@ OC_NODISCARD auto face_forward(const A &a, const B &b, const C &c) noexcept {
 #define OC_MAKE_FLOATING_BUILTIN_FUNC(func, tag)                                   \
     template<typename T>                                                           \
     requires(is_dsl_v<T> && is_float_element_v<expr_value_t<T>>)                   \
-    OC_NODISCARD auto func(const T &t) noexcept {                                  \
+        OC_NODISCARD auto                                                          \
+        func(const T &t) noexcept {                                                \
         auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(), \
                                                       CallOp::tag, {OC_EXPR(t)});  \
         return make_expr<expr_value_t<T>>(expr);                                   \
@@ -189,7 +194,7 @@ OC_MAKE_FLOATING_BUILTIN_FUNC(saturate, SATURATE)
 #define OC_MAKE_VEC2_MAKER(type, tag)                                                        \
     template<typename T>                                                                     \
     requires(is_dsl_v<T> && (is_scalar_expr_v<T> || is_vector_expr_v<T>))                    \
-    OC_NODISCARD auto make_##type##2(const T &t) noexcept {                                  \
+        OC_NODISCARD auto make_##type##2(const T &t) noexcept {                              \
         auto expr = Function::current()->call_builtin(Type::of<type##2>(),                   \
                                                       CallOp::MAKE_##tag##2,                 \
                                                       {OC_EXPR(t)});                         \
@@ -197,7 +202,7 @@ OC_MAKE_FLOATING_BUILTIN_FUNC(saturate, SATURATE)
     }                                                                                        \
     template<typename A, typename B>                                                         \
     requires(any_dsl_v<A, B> && is_all_##type##_element_v<expr_value_t<A>, expr_value_t<B>>) \
-    OC_NODISCARD auto make_##type##2(const A &a, const B &b) noexcept {                      \
+        OC_NODISCARD auto make_##type##2(const A &a, const B &b) noexcept {                  \
         auto expr = Function::current()->call_builtin(Type::of<type##2>(),                   \
                                                       CallOp::MAKE_##tag##2,                 \
                                                       {OC_EXPR(a), OC_EXPR(b)});             \
@@ -214,7 +219,7 @@ OC_MAKE_VEC2_MAKER(bool, BOOL)
 #define OC_MAKE_VEC3_MAKER(type, tag)                                                                            \
     template<typename T>                                                                                         \
     requires(is_dsl_v<T> && (is_scalar_expr_v<T> || is_vector_expr_v<T>))                                        \
-    OC_NODISCARD auto make_##type##3(const T &t) noexcept {                                                      \
+        OC_NODISCARD auto make_##type##3(const T &t) noexcept {                                                  \
         auto expr = Function::current()->call_builtin(Type::of<type##3>(),                                       \
                                                       CallOp::MAKE_##tag##3,                                     \
                                                       {OC_EXPR(t)});                                             \
@@ -246,48 +251,53 @@ OC_MAKE_VEC3_MAKER(bool, BOOL)
 
 #undef OC_MAKE_VEC3_MAKER
 
-template<typename T>
-requires(is_dsl_v<T> && (is_scalar_expr_v<T> || is_vector_expr_v<T>))
-    OC_NODISCARD auto make_int4(const T &t) noexcept {
-    auto expr = Function::current()->call_builtin(Type::of<int4>(),
-                                                  CallOp::MAKE_INT4, {OC_EXPR(t)});
-    return make_expr<int4>(expr);
-}
+#define OC_MAKE_VEC4_MAKER(type, tag)                                                               \
+    template<typename T>                                                                            \
+    requires(is_dsl_v<T> && (is_scalar_expr_v<T> || is_vector_expr_v<T>))                           \
+        OC_NODISCARD auto make_##type##4(const T &t) noexcept {                                     \
+        auto expr = Function::current()->call_builtin(Type::of<type##4>(),                          \
+                                                      CallOp::MAKE_##tag##4, {OC_EXPR(t)});         \
+        return make_expr<type##4>(expr);                                                            \
+    }                                                                                               \
+    template<typename T, typename U>                                                                \
+    requires(any_dsl_v<T, U> &&                                                                     \
+             is_all_int_element_expr_v<T, U> &&                                                     \
+             ((is_vector3_expr_v<T> && is_scalar_expr_v<U>) ||                                      \
+              (is_scalar_expr_v<T> && is_vector3_expr_v<U>) ||                                      \
+              (is_vector2_expr_v<T> && is_vector2_expr_v<U>)))                                      \
+        OC_NODISCARD auto make_##type##4(const T &t, const U &u) noexcept {                         \
+        auto expr = Function::current()->call_builtin(Type::of<type##4>(),                          \
+                                                      CallOp::MAKE_##tag##4,                        \
+                                                      {OC_EXPR(t), OC_EXPR(u)});                    \
+        return make_expr<type##4>(expr);                                                            \
+    }                                                                                               \
+    template<typename A, typename B, typename C>                                                    \
+    requires(any_dsl_v<A, B, C> &&                                                                  \
+             is_all_int_element_expr_v<A, B, C> &&                                                  \
+             ((is_vector2_expr_v<A> && is_scalar_expr_v<B> && is_scalar_expr_v<C>) ||               \
+              (is_scalar_expr_v<A> && is_vector2_expr_v<B> && is_scalar_expr_v<C>) ||               \
+              (is_scalar_expr_v<A> && is_scalar_expr_v<B> && is_vector2_expr_v<C>)))                \
+        OC_NODISCARD auto make_##type##4(const A &a, const B &b, const C &c) noexcept {             \
+        auto expr = Function::current()->call_builtin(Type::of<type##4>(),                          \
+                                                      CallOp::MAKE_##tag##4,                        \
+                                                      {OC_EXPR(a), OC_EXPR(b), OC_EXPR(c)});        \
+        return make_expr<type##4>(expr);                                                            \
+    }                                                                                               \
+    template<typename A, typename B, typename C, typename D>                                        \
+    requires(any_dsl_v<A, B, C, D> && is_all_int_element_expr_v<A, B, C, D>)                        \
+        OC_NODISCARD auto make_##type##4(const A &a, const B &b, const C &c, const D &d) noexcept { \
+        auto expr = Function::current()->call_builtin(Type::of<type##4>(),                          \
+                                                      CallOp::MAKE_##tag##4,                        \
+                                                      {OC_EXPR(a), OC_EXPR(b),                      \
+                                                       OC_EXPR(c), OC_EXPR(d)});                    \
+        return make_expr<type##4>(expr);                                                            \
+    }
 
-template<typename T, typename U>
-requires(any_dsl_v<T, U> &&
-             is_all_int_element_v<expr_value_t<T>, expr_value_t<U>> &&
-         ((is_vector3_expr_v<T> && is_scalar_expr_v<U>) ||
-          (is_scalar_expr_v<T> && is_vector3_expr_v<U>) ||
-          (is_vector2_expr_v<T> && is_vector2_expr_v<U>)))
-    OC_NODISCARD auto make_int4(const T &t, const U &u) noexcept {
-    auto expr = Function::current()->call_builtin(Type::of<int4>(),
-                                                  CallOp::MAKE_INT4,
-                                                  {OC_EXPR(t), OC_EXPR(u)});
-    return make_expr<int4>(expr);
-}
+OC_MAKE_VEC4_MAKER(int, INT)
+OC_MAKE_VEC4_MAKER(uint, UINT)
+OC_MAKE_VEC4_MAKER(float, FLOAT)
+OC_MAKE_VEC4_MAKER(bool, BOOL)
 
-template<typename A, typename B, typename C>
-requires(any_dsl_v<A, B, C> &&
-             is_all_int_element_v<expr_value_t<A>, expr_value_t<B>, expr_value_t<C>> &&
-         ((is_vector2_expr_v<A> && is_scalar_expr_v<B> && is_scalar_expr_v<C>) ||
-          (is_scalar_expr_v<A> && is_vector2_expr_v<B> && is_scalar_expr_v<C>) ||
-          (is_scalar_expr_v<A> && is_scalar_expr_v<B> && is_vector2_expr_v<C>)))
-    OC_NODISCARD auto make_int4(const A &a, const B &b, const C &c) noexcept {
-    auto expr = Function::current()->call_builtin(Type::of<int4>(),
-                                                  CallOp::MAKE_INT4,
-                                                  {OC_EXPR(a), OC_EXPR(b), OC_EXPR(c)});
-    return make_expr<int4>(expr);
-}
-
-template<typename A, typename B, typename C, typename D>
-requires(any_dsl_v<A, B, C, D> &&is_all_int_element_expr_v<A, B, C, D>)
-    OC_NODISCARD auto make_int4(const A &a, const B &b, const C &c, const D &d) noexcept {
-    auto expr = Function::current()->call_builtin(Type::of<int4>(),
-                                                  CallOp::MAKE_INT4,
-                                                  {OC_EXPR(a), OC_EXPR(b),
-                                                   OC_EXPR(c), OC_EXPR(d)});
-    return make_expr<int4>(expr);
-}
+#undef OC_MAKE_VEC4_MAKER
 
 }// namespace ocarina
