@@ -76,10 +76,16 @@ enum struct CallOp : uint32_t {
 
     SQRT,
     RSQRT,
+    SQR,
+    RCP,
 
     CEIL,
     FLOOR,
     ROUND,
+
+    DEGREES,
+    RADIANS,
+    SATURATE,
 
     FMA,
 

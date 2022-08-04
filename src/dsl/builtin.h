@@ -112,52 +112,37 @@ abs(const T &t) noexcept {
     return make_expr<expr_value_t<T>>(expr);
 }
 
-template<typename T>
-requires(is_dsl_v<T> && is_float_element_v<expr_value_t<T>>)
-OC_NODISCARD auto exp(const T &t) noexcept {
-    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
-                                                  CallOp::EXP, {OC_EXPR(t)});
-    return make_expr<expr_value_t<T>>(expr);
-}
+#define OC_MAKE_FLOATING_BUILTIN_FUNC(func, tag)                                   \
+    template<typename T>                                                           \
+    requires(is_dsl_v<T> && is_float_element_v<expr_value_t<T>>)                   \
+    OC_NODISCARD auto func(const T &t) noexcept {                                  \
+        auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(), \
+                                                      CallOp::tag, {OC_EXPR(t)});  \
+        return make_expr<expr_value_t<T>>(expr);                                   \
+    }
 
-template<typename T>
-requires(is_dsl_v<T> && is_float_element_v<expr_value_t<T>>)
-OC_NODISCARD auto exp2(const T &t) noexcept {
-    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
-                                                  CallOp::EXP2, {OC_EXPR(t)});
-    return make_expr<expr_value_t<T>>(expr);
-}
+OC_MAKE_FLOATING_BUILTIN_FUNC(exp, EXP)
+OC_MAKE_FLOATING_BUILTIN_FUNC(exp2, EXP2)
+OC_MAKE_FLOATING_BUILTIN_FUNC(exp10, EXP10)
+OC_MAKE_FLOATING_BUILTIN_FUNC(log, LOG)
+OC_MAKE_FLOATING_BUILTIN_FUNC(log2, LOG2)
+OC_MAKE_FLOATING_BUILTIN_FUNC(log10, LOG10)
+OC_MAKE_FLOATING_BUILTIN_FUNC(cos, COS)
+OC_MAKE_FLOATING_BUILTIN_FUNC(sin, SIN)
+OC_MAKE_FLOATING_BUILTIN_FUNC(tan, TAN)
+OC_MAKE_FLOATING_BUILTIN_FUNC(acos, ACOS)
+OC_MAKE_FLOATING_BUILTIN_FUNC(asin, ASIN)
+OC_MAKE_FLOATING_BUILTIN_FUNC(atan, ATAN)
+OC_MAKE_FLOATING_BUILTIN_FUNC(degrees, DEGREES)
+OC_MAKE_FLOATING_BUILTIN_FUNC(radians, RADIANS)
+OC_MAKE_FLOATING_BUILTIN_FUNC(ceil, CEIL)
+OC_MAKE_FLOATING_BUILTIN_FUNC(round, ROUND)
+OC_MAKE_FLOATING_BUILTIN_FUNC(floor, FLOOR)
+OC_MAKE_FLOATING_BUILTIN_FUNC(sqrt, SQRT)
+OC_MAKE_FLOATING_BUILTIN_FUNC(rsqrt, RSQRT)
+OC_MAKE_FLOATING_BUILTIN_FUNC(saturate, SATURATE)
 
-template<typename T>
-requires(is_dsl_v<T> && is_float_element_v<expr_value_t<T>>)
-OC_NODISCARD auto exp10(const T &t) noexcept {
-    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
-                                                  CallOp::EXP10, {OC_EXPR(t)});
-    return make_expr<expr_value_t<T>>(expr);
-}
+#undef OC_MAKE_FLOATING_BUILTIN_FUNC
 
-template<typename T>
-requires(is_dsl_v<T> && is_float_element_v<expr_value_t<T>>)
-OC_NODISCARD auto log(const T &t) noexcept {
-    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
-                                                  CallOp::LOG, {OC_EXPR(t)});
-    return make_expr<expr_value_t<T>>(expr);
-}
-
-template<typename T>
-requires(is_dsl_v<T> && is_float_element_v<expr_value_t<T>>)
-OC_NODISCARD auto log2(const T &t) noexcept {
-    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
-                                                  CallOp::LOG2, {OC_EXPR(t)});
-    return make_expr<expr_value_t<T>>(expr);
-}
-
-template<typename T>
-requires(is_dsl_v<T> && is_float_element_v<expr_value_t<T>>)
-OC_NODISCARD auto log10(const T &t) noexcept {
-    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
-                                                  CallOp::LOG10, {OC_EXPR(t)});
-    return make_expr<expr_value_t<T>>(expr);
-}
 
 }// namespace ocarina
