@@ -23,7 +23,7 @@ template<typename T>
     return pred ? t : f;
 }
 
-template<typename T, uint N>
+template<typename T, size_t N>
 requires ocarina::is_scalar_v<T> [
     [nodiscard]] constexpr auto
 select(Vector<bool, N> pred, Vector<T, N> t, Vector<T, N> f) noexcept {
