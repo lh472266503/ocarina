@@ -92,6 +92,7 @@
         "resumable": "cpp",
         "unordered_set": "cpp",
         "queue": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "__config": "cpp"
     }
 }

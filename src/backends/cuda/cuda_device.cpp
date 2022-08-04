@@ -21,7 +21,7 @@ namespace ocarina {
         "-lineinfo",               \
         "-default-device",         \
         "-include=cuda_builtin.h", \
-        "-include=cuda_math.h", \
+        "-include=cuda_math.h",    \
         "-rdc",                    \
         "true",                    \
         "-D__x86_64",
@@ -31,7 +31,7 @@ namespace detail {
     nvrtcProgram program{};
     ocarina::vector<const char *> compile_option = {CUDA_NVRTC_OPTIONS};
     std::array header_names{"cuda_builtin.h", "cuda_math.h"};
-    std::array header_sources{cuda_builtin ,cuda_math};
+    std::array header_sources{cuda_builtin, cuda_math};
 
     OC_NVRTC_CHECK(nvrtcCreateProgram(&program, cu.c_str(), "cuda_kernel.cu",
                                       header_names.size(), header_sources.data(),

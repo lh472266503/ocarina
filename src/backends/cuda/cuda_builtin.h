@@ -1464,7 +1464,8 @@ __device__ inline auto oc_normalize(oc_float4 v) noexcept { {return v * oc_rsqrt
 [[nodiscard]] __device__ inline auto oc_make_int4(oc_int2 xy, oc_int z, oc_int w) noexcept { return oc_int4{xy.x, xy.y, z, w}; }
 [[nodiscard]] __device__ inline auto oc_make_int4(oc_int2 xy, oc_int2 zw) noexcept { return oc_int4{xy.x, xy.y, zw.x, zw.y}; }
 [[nodiscard]] __device__ inline auto oc_make_int4(oc_int x, oc_int3 yzw) noexcept { return oc_int4{x, yzw.x, yzw.y, yzw.z}; }
-[[nodiscard]] __device__ inline auto oc_make_int4(oc_int3 xyz, oc_int w) noexcept { return oc_int4{xyz.x, xyz.y, xyz.z, w}; }[[nodiscard]] __device__ inline auto oc_make_int4(oc_int4 v) noexcept { return oc_int4{static_cast<oc_int>(v.x), static_cast<oc_int>(v.y), static_cast<oc_int>(v.z), static_cast<oc_int>(v.w)}; }
+[[nodiscard]] __device__ inline auto oc_make_int4(oc_int3 xyz, oc_int w) noexcept { return oc_int4{xyz.x, xyz.y, xyz.z, w}; }
+[[nodiscard]] __device__ inline auto oc_make_int4(oc_int4 v) noexcept { return oc_int4{static_cast<oc_int>(v.x), static_cast<oc_int>(v.y), static_cast<oc_int>(v.z), static_cast<oc_int>(v.w)}; }
 [[nodiscard]] __device__ inline auto oc_make_int4(oc_uint4 v) noexcept { return oc_int4{static_cast<oc_int>(v.x), static_cast<oc_int>(v.y), static_cast<oc_int>(v.z), static_cast<oc_int>(v.w)}; }
 [[nodiscard]] __device__ inline auto oc_make_int4(oc_float4 v) noexcept { return oc_int4{static_cast<oc_int>(v.x), static_cast<oc_int>(v.y), static_cast<oc_int>(v.z), static_cast<oc_int>(v.w)}; }
 [[nodiscard]] __device__ inline auto oc_make_int4(oc_bool4 v) noexcept { return oc_int4{static_cast<oc_int>(v.x), static_cast<oc_int>(v.y), static_cast<oc_int>(v.z), static_cast<oc_int>(v.w)}; }
@@ -1501,7 +1502,8 @@ __device__ inline auto oc_normalize(oc_float4 v) noexcept { {return v * oc_rsqrt
 [[nodiscard]] __device__ inline auto oc_make_uint4(oc_uint2 xy, oc_uint z, oc_uint w) noexcept { return oc_uint4{xy.x, xy.y, z, w}; }
 [[nodiscard]] __device__ inline auto oc_make_uint4(oc_uint2 xy, oc_uint2 zw) noexcept { return oc_uint4{xy.x, xy.y, zw.x, zw.y}; }
 [[nodiscard]] __device__ inline auto oc_make_uint4(oc_uint x, oc_uint3 yzw) noexcept { return oc_uint4{x, yzw.x, yzw.y, yzw.z}; }
-[[nodiscard]] __device__ inline auto oc_make_uint4(oc_uint3 xyz, oc_uint w) noexcept { return oc_uint4{xyz.x, xyz.y, xyz.z, w}; }[[nodiscard]] __device__ inline auto oc_make_uint4(oc_int4 v) noexcept { return oc_uint4{static_cast<oc_uint>(v.x), static_cast<oc_uint>(v.y), static_cast<oc_uint>(v.z), static_cast<oc_uint>(v.w)}; }
+[[nodiscard]] __device__ inline auto oc_make_uint4(oc_uint3 xyz, oc_uint w) noexcept { return oc_uint4{xyz.x, xyz.y, xyz.z, w}; }
+[[nodiscard]] __device__ inline auto oc_make_uint4(oc_int4 v) noexcept { return oc_uint4{static_cast<oc_uint>(v.x), static_cast<oc_uint>(v.y), static_cast<oc_uint>(v.z), static_cast<oc_uint>(v.w)}; }
 [[nodiscard]] __device__ inline auto oc_make_uint4(oc_uint4 v) noexcept { return oc_uint4{static_cast<oc_uint>(v.x), static_cast<oc_uint>(v.y), static_cast<oc_uint>(v.z), static_cast<oc_uint>(v.w)}; }
 [[nodiscard]] __device__ inline auto oc_make_uint4(oc_float4 v) noexcept { return oc_uint4{static_cast<oc_uint>(v.x), static_cast<oc_uint>(v.y), static_cast<oc_uint>(v.z), static_cast<oc_uint>(v.w)}; }
 [[nodiscard]] __device__ inline auto oc_make_uint4(oc_bool4 v) noexcept { return oc_uint4{static_cast<oc_uint>(v.x), static_cast<oc_uint>(v.y), static_cast<oc_uint>(v.z), static_cast<oc_uint>(v.w)}; }
@@ -1538,7 +1540,8 @@ __device__ inline auto oc_normalize(oc_float4 v) noexcept { {return v * oc_rsqrt
 [[nodiscard]] __device__ inline auto oc_make_float4(oc_float2 xy, oc_float z, oc_float w) noexcept { return oc_float4{xy.x, xy.y, z, w}; }
 [[nodiscard]] __device__ inline auto oc_make_float4(oc_float2 xy, oc_float2 zw) noexcept { return oc_float4{xy.x, xy.y, zw.x, zw.y}; }
 [[nodiscard]] __device__ inline auto oc_make_float4(oc_float x, oc_float3 yzw) noexcept { return oc_float4{x, yzw.x, yzw.y, yzw.z}; }
-[[nodiscard]] __device__ inline auto oc_make_float4(oc_float3 xyz, oc_float w) noexcept { return oc_float4{xyz.x, xyz.y, xyz.z, w}; }[[nodiscard]] __device__ inline auto oc_make_float4(oc_int4 v) noexcept { return oc_float4{static_cast<oc_float>(v.x), static_cast<oc_float>(v.y), static_cast<oc_float>(v.z), static_cast<oc_float>(v.w)}; }
+[[nodiscard]] __device__ inline auto oc_make_float4(oc_float3 xyz, oc_float w) noexcept { return oc_float4{xyz.x, xyz.y, xyz.z, w}; }
+[[nodiscard]] __device__ inline auto oc_make_float4(oc_int4 v) noexcept { return oc_float4{static_cast<oc_float>(v.x), static_cast<oc_float>(v.y), static_cast<oc_float>(v.z), static_cast<oc_float>(v.w)}; }
 [[nodiscard]] __device__ inline auto oc_make_float4(oc_uint4 v) noexcept { return oc_float4{static_cast<oc_float>(v.x), static_cast<oc_float>(v.y), static_cast<oc_float>(v.z), static_cast<oc_float>(v.w)}; }
 [[nodiscard]] __device__ inline auto oc_make_float4(oc_float4 v) noexcept { return oc_float4{static_cast<oc_float>(v.x), static_cast<oc_float>(v.y), static_cast<oc_float>(v.z), static_cast<oc_float>(v.w)}; }
 [[nodiscard]] __device__ inline auto oc_make_float4(oc_bool4 v) noexcept { return oc_float4{static_cast<oc_float>(v.x), static_cast<oc_float>(v.y), static_cast<oc_float>(v.z), static_cast<oc_float>(v.w)}; }
@@ -1575,7 +1578,8 @@ __device__ inline auto oc_normalize(oc_float4 v) noexcept { {return v * oc_rsqrt
 [[nodiscard]] __device__ inline auto oc_make_bool4(oc_bool2 xy, oc_bool z, oc_bool w) noexcept { return oc_bool4{xy.x, xy.y, z, w}; }
 [[nodiscard]] __device__ inline auto oc_make_bool4(oc_bool2 xy, oc_bool2 zw) noexcept { return oc_bool4{xy.x, xy.y, zw.x, zw.y}; }
 [[nodiscard]] __device__ inline auto oc_make_bool4(oc_bool x, oc_bool3 yzw) noexcept { return oc_bool4{x, yzw.x, yzw.y, yzw.z}; }
-[[nodiscard]] __device__ inline auto oc_make_bool4(oc_bool3 xyz, oc_bool w) noexcept { return oc_bool4{xyz.x, xyz.y, xyz.z, w}; }[[nodiscard]] __device__ inline auto oc_make_bool4(oc_int4 v) noexcept { return oc_bool4{static_cast<oc_bool>(v.x), static_cast<oc_bool>(v.y), static_cast<oc_bool>(v.z), static_cast<oc_bool>(v.w)}; }
+[[nodiscard]] __device__ inline auto oc_make_bool4(oc_bool3 xyz, oc_bool w) noexcept { return oc_bool4{xyz.x, xyz.y, xyz.z, w}; }
+[[nodiscard]] __device__ inline auto oc_make_bool4(oc_int4 v) noexcept { return oc_bool4{static_cast<oc_bool>(v.x), static_cast<oc_bool>(v.y), static_cast<oc_bool>(v.z), static_cast<oc_bool>(v.w)}; }
 [[nodiscard]] __device__ inline auto oc_make_bool4(oc_uint4 v) noexcept { return oc_bool4{static_cast<oc_bool>(v.x), static_cast<oc_bool>(v.y), static_cast<oc_bool>(v.z), static_cast<oc_bool>(v.w)}; }
 [[nodiscard]] __device__ inline auto oc_make_bool4(oc_float4 v) noexcept { return oc_bool4{static_cast<oc_bool>(v.x), static_cast<oc_bool>(v.y), static_cast<oc_bool>(v.z), static_cast<oc_bool>(v.w)}; }
 [[nodiscard]] __device__ inline auto oc_make_bool4(oc_bool4 v) noexcept { return oc_bool4{static_cast<oc_bool>(v.x), static_cast<oc_bool>(v.y), static_cast<oc_bool>(v.z), static_cast<oc_bool>(v.w)}; }
@@ -1601,4 +1605,5 @@ __device__ inline auto oc_normalize(oc_float4 v) noexcept { {return v * oc_rsqrt
 [[nodiscard]] __device__ inline auto oc_make_float4x4(oc_float2x2 m) noexcept { return oc_float4x4{oc_make_float4(m[0], 0.0f, 0.0f), oc_make_float4(m[1], 0.0f, 0.0f), oc_make_float4(0.0f, 0.0f, 0.0f, 0.0f), oc_make_float4(0.0f, 0.0f, 0.0f, 1.0f)}; }
 [[nodiscard]] __device__ inline auto oc_make_float4x4(oc_float3x3 m) noexcept { return oc_float4x4{oc_make_float4(m[0], 0.0f), oc_make_float4(m[1], 0.0f), oc_make_float4(m[2], 0.0f), oc_make_float4(0.0f, 0.0f, 0.0f, 1.0f)}; }
 [[nodiscard]] __device__ inline auto oc_make_float4x4(oc_float4x4 m) noexcept { return m; }
+
  

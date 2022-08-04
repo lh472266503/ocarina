@@ -135,4 +135,3 @@ __device__ inline auto oc_inverse(oc_float3x3 m) noexcept {// from GLM
                             inv_2 * one_over_determinant,
                             inv_3 * one_over_determinant);
 }
-  
