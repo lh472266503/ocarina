@@ -113,11 +113,50 @@ abs(const T &t) noexcept {
 }
 
 template<typename T>
-requires is_dsl_v<T>
-OC_NODISCARD auto
-exp(const T &t) noexcept {
+requires(is_dsl_v<T> && is_float_element_v<expr_value_t<T>>)
+OC_NODISCARD auto exp(const T &t) noexcept {
     auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
                                                   CallOp::EXP, {OC_EXPR(t)});
+    return make_expr<expr_value_t<T>>(expr);
+}
+
+template<typename T>
+requires(is_dsl_v<T> && is_float_element_v<expr_value_t<T>>)
+OC_NODISCARD auto exp2(const T &t) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
+                                                  CallOp::EXP2, {OC_EXPR(t)});
+    return make_expr<expr_value_t<T>>(expr);
+}
+
+template<typename T>
+requires(is_dsl_v<T> && is_float_element_v<expr_value_t<T>>)
+OC_NODISCARD auto exp10(const T &t) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
+                                                  CallOp::EXP10, {OC_EXPR(t)});
+    return make_expr<expr_value_t<T>>(expr);
+}
+
+template<typename T>
+requires(is_dsl_v<T> && is_float_element_v<expr_value_t<T>>)
+OC_NODISCARD auto log(const T &t) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
+                                                  CallOp::LOG, {OC_EXPR(t)});
+    return make_expr<expr_value_t<T>>(expr);
+}
+
+template<typename T>
+requires(is_dsl_v<T> && is_float_element_v<expr_value_t<T>>)
+OC_NODISCARD auto log2(const T &t) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
+                                                  CallOp::LOG2, {OC_EXPR(t)});
+    return make_expr<expr_value_t<T>>(expr);
+}
+
+template<typename T>
+requires(is_dsl_v<T> && is_float_element_v<expr_value_t<T>>)
+OC_NODISCARD auto log10(const T &t) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
+                                                  CallOp::LOG10, {OC_EXPR(t)});
     return make_expr<expr_value_t<T>>(expr);
 }
 

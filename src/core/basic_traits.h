@@ -108,6 +108,7 @@ struct is_matrix_impl<Matrix<N>, 0u> : std::true_type {};
 
 template<typename T>
 struct vector_element_impl {
+    static_assert(is_scalar_v<T>);
     using type = T;
 };
 

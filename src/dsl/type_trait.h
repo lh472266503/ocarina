@@ -170,7 +170,7 @@ using any_dsl = std::disjunction<is_dsl<T>...>;
 template<typename... T>
 constexpr auto any_dsl_v = any_dsl<T...>::value;
 
-template<typename ...T>
+template<typename... T>
 constexpr auto none_dsl_v = !any_dsl_v<T...>;
 
 template<typename... T>
@@ -216,11 +216,15 @@ EXPR_DIMENSION_TRAITS(matrix, 4)
 
 #undef EXPR_DIMENSION_TRAITS
 
-#define EXPR_VECTOR_TYPE_TRAITS(type)                                    \
-    template<typename T>                                                 \
-    using is_##type##_vector_expr = is_##type##_vector<expr_value_t<T>>; \
-    template<typename T>                                                 \
-    constexpr auto is_##type##_vector_expr_v = is_##type##_vector_expr<T>::value;
+#define EXPR_VECTOR_TYPE_TRAITS(type)                                             \
+    template<typename T>                                                          \
+    using is_##type##_vector_expr = is_##type##_vector<expr_value_t<T>>;          \
+    template<typename T>                                                          \
+    constexpr auto is_##type##_vector_expr_v = is_##type##_vector_expr<T>::value; \
+    template<typename T>                                                          \
+    using is_##type##_element = std::is_same<bool, vector_element_t<T>>;          \
+    template<typename T>                                                          \
+    constexpr auto is_##type##_element_v = is_##type##_element<T>::value;
 
 EXPR_VECTOR_TYPE_TRAITS(bool)
 EXPR_VECTOR_TYPE_TRAITS(float)
