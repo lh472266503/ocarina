@@ -62,7 +62,8 @@ template<typename T = std::byte>
 
 template<typename T>
 inline void deallocate(T *p) noexcept {
-    allocator<T>{}.deallocate(p, 0u);
+    using type = std::remove_cvref_t<T>;
+    allocator<type>{}.deallocate(const_cast<type *>(p), 0u);
 }
 
 template<typename T, typename... Args>

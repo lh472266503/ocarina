@@ -11,7 +11,7 @@
 
 #include "stb_image_write.h"
 
-#define TINYEXR_IMPLEMENTATION
+//#define TINYEXR_IMPLEMENTATION
 
 #include <limits>
 #include "ext/tinyexr/tinyexr.h"
