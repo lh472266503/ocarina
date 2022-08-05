@@ -300,28 +300,36 @@ OC_MAKE_VEC4_MAKER(bool, BOOL)
 
 #undef OC_MAKE_VEC4_MAKER
 
-template<typename T>
-requires(is_dsl_v<T> && (is_matrix2_v<expr_value_t<T>> || is_floating_point_expr_v<T>))
-OC_NODISCARD auto make_float2x2(const T &t) noexcept {
-    auto expr = Function::current()->call_builtin(Type::of<float2x2>(),
-                                                  CallOp::MAKE_FLOAT2X2, {OC_EXPR(t)});
-    return make_expr<float2x2>(expr);
-}
+#define OC_MAKE_MATRIX(dim)                                                                                     \
+    template<typename T>                                                                                        \
+    requires(is_dsl_v<T> && (is_matrix_v<expr_value_t<T>> || is_floating_point_expr_v<T>))                      \
+    OC_NODISCARD auto                                                                                           \
+        make_float##dim##x##dim(const T &t) noexcept {                                                          \
+        auto expr = Function::current()->call_builtin(Type::of<float##dim##x##dim>(),                           \
+                                                      CallOp::MAKE_FLOAT##dim##X##dim, {OC_EXPR(t)});           \
+        return make_expr<float##dim##x##dim>(expr);                                                             \
+    }                                                                                                           \
+    template<typename... Args>                                                                                  \
+    requires(any_dsl_v<Args...> && sizeof...(Args) == dim * dim && is_all_float_element_expr_v<Args...>)        \
+    OC_NODISCARD auto                                                                                           \
+        make_float##dim##x##dim(const Args &...args) {                                                          \
+        auto expr = Function::current()->call_builtin(Type::of<float##dim##x##dim>(),                           \
+                                                      CallOp::MAKE_FLOAT##dim##X##dim, {OC_EXPR(args)...});     \
+        return make_expr<float##dim##x##dim>(expr);                                                             \
+    }                                                                                                           \
+    template<typename... Args>                                                                                  \
+    requires(any_dsl_v<Args...> && sizeof...(Args) == dim && is_all_int_vector##dim##_v<expr_value_t<Args>...>) \
+    OC_NODISCARD auto                                                                                           \
+        make_float##dim##x##dim(const Args &...args) {                                                          \
+        auto expr = Function::current()->call_builtin(Type::of<float##dim##x##dim>(),                           \
+                                                      CallOp::MAKE_FLOAT##dim##X##dim, {OC_EXPR(args)...});     \
+        return make_expr<float##dim##x##dim>(expr);                                                             \
+    }
 
-template<typename... Args>
-requires(any_dsl_v<Args...> && sizeof...(Args) == 4 && is_all_float_element_expr_v<Args...>)
-OC_NODISCARD auto make_float2x2(const Args &...args) {
-    auto expr = Function::current()->call_builtin(Type::of<float2x2>(),
-                                                  CallOp::MAKE_FLOAT2X2, {OC_EXPR(args)...});
-    return make_expr<float2x2>(expr);
-}
+OC_MAKE_MATRIX(2)
+OC_MAKE_MATRIX(3)
+OC_MAKE_MATRIX(4)
 
-template<typename... Args>
-requires(any_dsl_v<Args...> && sizeof...(Args) == 2 )
-OC_NODISCARD auto make_float2x2(const Args &...args) {
-    auto expr = Function::current()->call_builtin(Type::of<float2x2>(),
-                                                  CallOp::MAKE_FLOAT2X2, {OC_EXPR(args)...});
-    return make_expr<float2x2>(expr);
-}
+#undef OC_MAKE_MATRIX
 
 }// namespace ocarina
