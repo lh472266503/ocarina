@@ -30,8 +30,57 @@ public:
     [[nodiscard]] static Image load_exr(const fs::path &fn, ColorSpace color_space, float3 scale = make_float3(1.f));
     [[nodiscard]] static Image create_empty(PixelFormat pixel_format, uint2 res) {
         size_t size_in_bytes = pixel_size(pixel_format) * res.x * res.y;
-        auto pixel = allocate<std::byte>(size_in_bytes);
+        auto pixel = allocate(size_in_bytes);
         return {pixel_format, pixel, res};
     }
+    template<typename T>
+    static Image from_data(T *data, uint2 res) {
+        size_t size_in_bytes = sizeof(T) * res.x * res.y;
+        auto pixel = allocate(size_in_bytes);
+        auto pixel_format = PixelFormatImpl<T>::format;
+        std::memcpy(pixel, data, size_in_bytes);
+        return {pixel_format, pixel, res};
+    }
+    /**
+                 * ".bmp" or ".png" or ".tga" or ".jpg" or ".jpeg"
+                 */
+    static Image load_other(const fs::path &fn, ColorSpace color_space,
+                            float3 scale = make_float3(1.f));
+
+    template<typename Func>
+    void for_each_pixel(Func func) const {
+        auto p = _pixel.get();
+        int stride = pixel_size(_pixel_format);
+        parallel_for(pixel_num(), [&](uint i, uint tid) {
+            const std::byte *pixel = p + stride * i;
+            func(pixel, i);
+        });
+    }
+
+    template<typename Func>
+    void for_each_pixel(Func func) {
+        auto p = _pixel.get();
+        int stride = pixel_size(_pixel_format);
+        parallel_for(pixel_num(), [&](uint i, uint tid) {
+            std::byte *pixel = const_cast<std::byte *>(p + stride * i);
+            func(pixel, i);
+        });
+    }
+
+    void save(const fs::path &fn);
+    void convert_to_8bit_image();
+    void convert_to_32bit_image();
+    static std::pair<PixelFormat, const std::byte *> convert_to_32bit(PixelFormat pixel_format,
+                                                                      const std::byte *ptr, uint2 res);
+    static std::pair<PixelFormat, const std::byte *> convert_to_8bit(PixelFormat pixel_format,
+                                                                     const std::byte *ptr, uint2 res);
+    static void save_image(const fs::path &fn, PixelFormat pixel_format,
+                           uint2 res, const std::byte *ptr);
+    static void save_exr(const fs::path &fn, PixelFormat pixel_format,
+                         uint2 res, const std::byte *ptr);
+    static void save_hdr(const fs::path &fn, PixelFormat pixel_format,
+                         uint2 res, const std::byte *ptr);
+    static void save_other(const fs::path &fn, PixelFormat pixel_format,
+                           uint2 res, const std::byte *ptr);
 };
 }// namespace ocarina

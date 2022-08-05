@@ -55,7 +55,7 @@ struct allocator {
     }
 };
 
-template<typename T>
+template<typename T = std::byte>
 [[nodiscard]] inline auto allocate(size_t n = 1u) noexcept {
     return allocator<T>{}.allocate(n);
 }
