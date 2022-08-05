@@ -30,8 +30,9 @@ template<typename... T>
 constexpr auto always_true_v = always_true<T...>::value;
 
 template<typename T>
-requires std::is_enum_v<T>
-[[nodiscard]] constexpr auto to_underlying(T e) noexcept {
+requires std::is_enum_v<T> [
+    [nodiscard]] constexpr auto
+to_underlying(T e) noexcept {
     return static_cast<std::underlying_type_t<T>>(e);
 }
 
@@ -195,30 +196,6 @@ using is_vector3 = is_vector<T, 3u>;
 template<typename T>
 using is_vector4 = is_vector<T, 4u>;
 
-template<typename T>
-using is_bool_vector = std::conjunction<is_vector<T>, std::is_same<vector_element_t<T>, bool>>;
-
-template<typename T>
-constexpr auto is_bool_vector_v = is_bool_vector<T>::value;
-
-template<typename T>
-using is_float_vector = std::conjunction<is_vector<T>, std::is_same<vector_element_t<T>, float>>;
-
-template<typename T>
-constexpr auto is_float_vector_v = is_float_vector<T>::value;
-
-template<typename T>
-using is_int_vector = std::conjunction<is_vector<T>, std::is_same<vector_element_t<T>, int>>;
-
-template<typename T>
-constexpr auto is_int_vector_v = is_int_vector<T>::value;
-
-template<typename T>
-using is_uint_vector = std::conjunction<is_vector<T>, std::is_same<vector_element_t<T>, uint>>;
-
-template<typename T>
-constexpr auto is_uint_vector_v = is_uint_vector<T>::value;
-
 template<typename T, size_t N = 0u>
 constexpr auto is_vector_v = is_vector<T, N>::value;
 
@@ -230,6 +207,29 @@ constexpr auto is_vector3_v = is_vector3<T>::value;
 
 template<typename T>
 constexpr auto is_vector4_v = is_vector4<T>::value;
+
+#define OC_MAKE_IS_TYPE_VECTOR_DIM(type, dim)                                                                     \
+    template<typename T>                                                                                          \
+    using is_##type##_vector##dim = std::conjunction<is_vector##dim<T>, std::is_same<vector_element_t<T>, type>>; \
+    OC_DEFINE_TEMPLATE_VALUE(is_##type##_vector##dim)                                                             \
+    template<typename... T>                                                                                       \
+    using is_all_##type##_vector##dim = std::conjunction<is_##type##_vector##dim<T>...>;                          \
+    OC_DEFINE_TEMPLATE_VALUE(is_all_##type##_vector##dim)
+
+#define OC_MAKE_IS_TYPE_VECTOR(type)    \
+    OC_MAKE_IS_TYPE_VECTOR_DIM(type, )  \
+    OC_MAKE_IS_TYPE_VECTOR_DIM(type, 2) \
+    OC_MAKE_IS_TYPE_VECTOR_DIM(type, 3) \
+    OC_MAKE_IS_TYPE_VECTOR_DIM(type, 4)
+
+OC_MAKE_IS_TYPE_VECTOR(bool)
+OC_MAKE_IS_TYPE_VECTOR(int)
+OC_MAKE_IS_TYPE_VECTOR(uint)
+OC_MAKE_IS_TYPE_VECTOR(float)
+
+#undef OC_MAKE_IS_TYPE_VECTOR
+
+#undef OC_MAKE_IS_TYPE_VECTOR_DIM
 
 template<typename T, size_t N = 0u>
 using is_matrix = detail::is_matrix_impl<std::remove_cvref_t<T>, N>;
