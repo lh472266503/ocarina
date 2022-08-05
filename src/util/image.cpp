@@ -44,7 +44,7 @@ Image &Image::operator=(Image &&rhs) noexcept {
 Image Image::pure_color(float4 color, ColorSpace color_space, uint2 res) {
     auto pixel_count = res.x * res.y;
     auto pixel_size = PixelFormatImpl<float4>::pixel_size * pixel_count;
-    auto pixel = allocate<std::byte>(pixel_size);
+    auto pixel = new_array<std::byte>(pixel_size);
     auto dest = (float4 *)pixel;
     if (color_space == ColorSpace::LINEAR) {
         for (auto i = 0; i < pixel_count; ++i) {
@@ -79,7 +79,7 @@ Image Image::load_hdr(const fs::path &path, ColorSpace color_space, float3 scale
     PixelFormat pixel_format = detail::PixelFormatImpl<float4>::format;
     int pixel_size = detail::PixelFormatImpl<float4>::pixel_size;
     size_t size_in_bytes = pixel_num * pixel_size;
-    auto pixel = allocate(size_in_bytes);
+    auto pixel = new_array(size_in_bytes);
     float *src = rgb;
     auto dest = (float *)pixel;
     if (color_space == SRGB) {
@@ -147,7 +147,7 @@ Image Image::load_exr(const fs::path &fn, ColorSpace color_space, float3 scale) 
         case 1: {
             using PixelType = float;
             PixelFormat pixel_format = detail::PixelFormatImpl<PixelType>::format;
-            PixelType *pixel = allocate<PixelType>(pixel_num);
+            PixelType *pixel = new_array<PixelType>(pixel_num);
             size_t size_in_bytes = pixel_num * detail::PixelFormatImpl<PixelType>::pixel_size;
             if (color_space == SRGB) {
                 for (int i = 0; i < pixel_num; ++i) {
@@ -165,7 +165,7 @@ Image Image::load_exr(const fs::path &fn, ColorSpace color_space, float3 scale) 
         case 2: {
             using PixelType = float2;
             PixelFormat pixel_format = detail::PixelFormatImpl<PixelType>::format;
-            PixelType *pixel = allocate<PixelType>(pixel_num);
+            PixelType *pixel = new_array<PixelType>(pixel_num);
             size_t size_in_bytes = pixel_num * detail::PixelFormatImpl<PixelType>::pixel_size;
             if (color_space == SRGB) {
                 for (int i = 0; i < pixel_num; ++i) {
@@ -187,7 +187,7 @@ Image Image::load_exr(const fs::path &fn, ColorSpace color_space, float3 scale) 
         case 3:
         case 4: {
             PixelFormat pixel_format = detail::PixelFormatImpl<float4>::format;
-            float4 *pixel = allocate<float4>(pixel_num);
+            float4 *pixel = new_array<float4>(pixel_num);
             if (color_space == SRGB) {
                 for (int i = 0; i < pixel_num; ++i) {
                     pixel[i] = make_float4(
@@ -228,7 +228,7 @@ Image Image::load_other(const fs::path &path, ColorSpace color_space, float3 sca
     size_t pixel_num = w * h;
     size_t size_in_bytes = pixel_size * pixel_num;
     uint2 resolution = make_uint2(w, h);
-    auto pixel = allocate<std::byte>(size_in_bytes);
+    auto pixel = new_array<std::byte>(size_in_bytes);
     uint8_t *src = rgba;
     auto dest = (uint32_t *)pixel;
     if (color_space == SRGB) {
@@ -359,7 +359,7 @@ void Image::save_image(const fs::path &fn, PixelFormat pixel_format,
         } else {
             auto [format, pixel] = convert_to_32bit(pixel_format, ptr, res);
             save_exr(fn, format, res, pixel);
-            deallocate(pixel);
+            delete_array(pixel);
         }
     } else if (extension == ".hdr") {
         if (is_32bit(pixel_format)) {
@@ -367,7 +367,7 @@ void Image::save_image(const fs::path &fn, PixelFormat pixel_format,
         } else {
             auto [format, pixel] = convert_to_32bit(pixel_format, ptr, res);
             save_hdr(fn, format, res, pixel);
-            deallocate(pixel);
+            delete_array(pixel);
         }
     } else {
         if (is_8bit(pixel_format)) {
@@ -375,7 +375,7 @@ void Image::save_image(const fs::path &fn, PixelFormat pixel_format,
         } else {
             auto [format, pixel] = convert_to_8bit(pixel_format, ptr, res);
             save_other(fn, format, res, pixel);
-            deallocate(pixel);
+            delete_array(pixel);
         }
     }
     OC_INFO("save picture ", fn);
@@ -389,7 +389,7 @@ Image::convert_to_32bit(PixelFormat pixel_format, const std::byte *ptr, uint2 re
     switch (pixel_format) {
         case PixelFormat::R8U: {
             using TargetType = float;
-            pixel = allocate<std::byte>(pixel_num * sizeof(TargetType));
+            pixel = new_array<std::byte>(pixel_num * sizeof(TargetType));
             auto src = (uint8_t *)ptr;
             auto dest = (TargetType *)pixel;
             for (int i = 0; i < pixel_num; ++i, ++dest) {
@@ -400,7 +400,7 @@ Image::convert_to_32bit(PixelFormat pixel_format, const std::byte *ptr, uint2 re
         }
         case PixelFormat::RG8U: {
             using TargetType = float2;
-            pixel = allocate(pixel_num * sizeof(TargetType));
+            pixel = new_array(pixel_num * sizeof(TargetType));
             auto src = (uint8_t *)ptr;
             auto dest = (TargetType *)pixel;
             for (int i = 0; i < pixel_num; ++i, ++dest, src += 2) {
@@ -411,7 +411,7 @@ Image::convert_to_32bit(PixelFormat pixel_format, const std::byte *ptr, uint2 re
         }
         case PixelFormat::RGBA8U: {
             using TargetType = float4;
-            pixel = allocate(pixel_num * sizeof(TargetType));
+            pixel = new_array(pixel_num * sizeof(TargetType));
             auto src = (uint8_t *)ptr;
             auto dest = (TargetType *)pixel;
             for (int i = 0; i < pixel_num; ++i, ++dest, src += 4) {
@@ -437,7 +437,7 @@ Image::convert_to_8bit(PixelFormat pixel_format, const std::byte *ptr, uint2 res
     switch (pixel_format) {
         case PixelFormat::R32F: {
             using TargetType = uint8_t;
-            pixel = allocate(pixel_num * sizeof(TargetType));
+            pixel = new_array(pixel_num * sizeof(TargetType));
             auto dest = (TargetType *)pixel;
             auto src = (float *)ptr;
             for (int i = 0; i < pixel_num; ++i, ++dest, ++src) {
@@ -448,7 +448,7 @@ Image::convert_to_8bit(PixelFormat pixel_format, const std::byte *ptr, uint2 res
         }
         case PixelFormat::RG32F: {
             using TargetType = uint16_t;
-            pixel = allocate(pixel_num * sizeof(TargetType));
+            pixel = new_array(pixel_num * sizeof(TargetType));
             auto dest = (TargetType *)pixel;
             auto src = (float *)pixel;
             for (int i = 0; i < pixel_num; ++i, dest += 2, src += 2) {
@@ -460,7 +460,7 @@ Image::convert_to_8bit(PixelFormat pixel_format, const std::byte *ptr, uint2 res
         }
         case PixelFormat::RGBA32F: {
             using TargetType = uint32_t;
-            pixel = allocate(pixel_num * sizeof(TargetType));
+            pixel = new_array(pixel_num * sizeof(TargetType));
             auto dest = (TargetType *)pixel;
             auto src = (float4 *)ptr;
             for (int i = 0; i < pixel_num; ++i, ++dest, ++src) {

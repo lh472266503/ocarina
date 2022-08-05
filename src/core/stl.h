@@ -79,6 +79,16 @@ inline void delete_with_allocator(T *p) noexcept {
     }
 }
 
+template<typename T = std::byte>
+OC_NODISCARD T *new_array(size_t num) noexcept {
+    return new T[num];
+}
+
+template<typename T>
+void delete_array(T *ptr) noexcept {
+    delete[] ptr;
+}
+
 // io
 using std::cout;
 using std::endl;
