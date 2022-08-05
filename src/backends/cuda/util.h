@@ -4,14 +4,16 @@
 
 #pragma once
 #include "core/logging.h"
+#include <cuda.h>
+#include <nvrtc.h>
 
-#define OC_CUDA_CHECK(EXPR)                                                                                    \
-    [&] {                                                                                                      \
-        if ((EXPR) != cudaSuccess) {                                                                           \
-            cudaError_t error = cudaGetLastError();                                                            \
+#define OC_CUDA_CHECK(EXPR)                                                                                \
+    [&] {                                                                                                  \
+        if ((EXPR) != cudaSuccess) {                                                                       \
+            cudaError_t error = cudaGetLastError();                                                        \
             OC_ERROR_FORMAT("CUDA rhi error: {} at {}:{}", cudaGetErrorString(error), __FILE__, __LINE__); \
-            std::abort();                                                                                      \
-        }                                                                                                      \
+            std::abort();                                                                                  \
+        }                                                                                                  \
     }()
 
 #define OC_CU_CHECK(EXPR)                                                               \

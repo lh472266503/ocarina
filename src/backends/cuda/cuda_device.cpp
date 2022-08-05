@@ -109,7 +109,7 @@ ocarina::string CUDADevice::get_ptx(const Function &function) const noexcept {
 
 handle_ty CUDADevice::create_texture(uint2 res, PixelStorage pixel_storage) noexcept {
     return bind_handle([&] {
-        auto texture = ocarina::new_with_allocator<CUDATexture>(res, pixel_storage);
+        auto texture = ocarina::new_with_allocator<CUDATexture>(this, res, pixel_storage);
         return reinterpret_cast<handle_ty>(texture);
     });
 }

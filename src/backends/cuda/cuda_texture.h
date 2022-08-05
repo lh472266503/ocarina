@@ -9,9 +9,19 @@
 #include <cuda.h>
 
 namespace ocarina {
+class CUDADevice;
 class CUDATexture : public RHITexture::Impl {
+private:
+    CUDADevice *_device{};
+    uint2 _res{};
+    PixelStorage _pixel_storage{};
+    CUtexObject _tex_handle{};
+    CUarray _array_handle{};
+    CUsurfObject _surface_handle{};
+
 public:
-    CUDATexture(uint2 res, PixelStorage pixel_storage)
-        : RHITexture::Impl(res, pixel_storage) {}
+    CUDATexture(CUDADevice *device, uint2 res, PixelStorage pixel_storage);
+    [[nodiscard]] uint2 resolution() const noexcept override { return _res; }
+    [[nodiscard]] PixelStorage pixel_storage() const noexcept override { return _pixel_storage; }
 };
 }// namespace ocarina
