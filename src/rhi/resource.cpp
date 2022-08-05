@@ -6,7 +6,7 @@
 
 namespace ocarina {
 
-void Resource::_destroy() {
+void RHIResource::_destroy() {
     switch (_tag) {
         case Tag::BUFFER: _device->destroy_buffer(_handle); break;
         case Tag::TEXTURE: _device->destroy_texture(_handle); break;

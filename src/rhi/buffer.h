@@ -53,7 +53,7 @@ public:
 };
 
 template<typename T>
-class Buffer : public Resource {
+class Buffer : public RHIResource {
 public:
     static constexpr size_t element_size = sizeof(T);
     using element_type = T;
@@ -62,7 +62,7 @@ private:
 
 public:
     Buffer(Device::Impl *device, size_t size)
-        : Resource(device, Tag::BUFFER, device->create_buffer(size * sizeof(T))),
+        : RHIResource(device, Tag::BUFFER, device->create_buffer(size * sizeof(T))),
           _size(size) {}
 
     [[nodiscard]] BufferView<T> view(size_t offset, size_t size) const noexcept {

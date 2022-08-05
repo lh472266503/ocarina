@@ -7,7 +7,7 @@
 
 namespace ocarina {
 Stream::Stream(Device::Impl *device)
-    : Resource(device, Tag::STREAM,
+    : RHIResource(device, Tag::STREAM,
                device->create_stream()) {}
 
 Stream &Stream::operator<<(Command *command) noexcept {

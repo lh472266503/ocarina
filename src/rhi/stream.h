@@ -22,7 +22,7 @@ template<typename... Args>
     return Commit(OC_FORWARD(args)...);
 }
 
-class Stream : public Resource {
+class Stream : public RHIResource {
 public:
     class Impl {
     protected:

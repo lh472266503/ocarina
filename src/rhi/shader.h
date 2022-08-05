@@ -69,7 +69,7 @@ public:
 };
 
 template<typename... Args>
-class Shader<void(Args...)> final : public Resource {
+class Shader<void(Args...)> final : public RHIResource {
 public:
     using signature = typename detail::canonical_signature_t<void(Args...)>;
     using Impl = typename Shader<>::Impl;
@@ -81,7 +81,7 @@ private:
 
 public:
     Shader(Device::Impl *device, const Function &function, ShaderTag tag) noexcept
-        : Resource(device, SHADER,
+        : RHIResource(device, SHADER,
                    device->create_shader(function)),
           _shader_tag(tag), _function(function) {}
 
