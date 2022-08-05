@@ -9,6 +9,10 @@ namespace ocarina {
 
 CUDATexture::CUDATexture(CUDADevice *device, uint2 res, PixelStorage pixel_storage)
     : _device(device), _res(res), _pixel_storage(pixel_storage) {
+    init();
+}
+
+void CUDATexture::init() {
     CUDA_ARRAY_DESCRIPTOR array_desc{};
     array_desc.Width = _res.x;
     array_desc.Height = _res.y;
@@ -41,6 +45,21 @@ CUDATexture::CUDATexture(CUDADevice *device, uint2 res, PixelStorage pixel_stora
     }
 
     OC_CU_CHECK(cuArrayCreate(&_array_handle, &array_desc));
+
+    CUDA_RESOURCE_DESC res_desc{};
+    res_desc.resType = CU_RESOURCE_TYPE_ARRAY;
+    res_desc.res.array.hArray = _array_handle;
+    res_desc.flags = 0;
+    CUDA_TEXTURE_DESC tex_desc{};
+    tex_desc.addressMode[0] = CU_TR_ADDRESS_MODE_WRAP;
+    tex_desc.addressMode[1] = CU_TR_ADDRESS_MODE_WRAP;
+    tex_desc.addressMode[2] = CU_TR_ADDRESS_MODE_WRAP;
+    tex_desc.maxAnisotropy = 2;
+    tex_desc.maxMipmapLevelClamp = 9;
+    tex_desc.filterMode = CU_TR_FILTER_MODE_POINT;
+    tex_desc.flags = CU_TRSF_NORMALIZED_COORDINATES;
+    OC_CU_CHECK(cuSurfObjectCreate(&_surface_handle, &res_desc));
+    OC_CU_CHECK(cuTexObjectCreate(&_tex_handle, &res_desc, &tex_desc, nullptr));
 }
 
 }// namespace ocarina

@@ -30,6 +30,9 @@ int main(int argc, char *argv[]) {
     context.clear_cache();
     Device device = context.create_device("cuda");
     Stream stream = device.create_stream();
+
+    auto texture = device.create_texture(make_uint2(20), PixelStorage::BYTE4);
+
     Buffer<float> f_buffer = device.create_buffer<float>(count);
     Kernel kn = [&](Var<float> a, Var<float> b, BufferVar<float> c) {
         //        configure_block(1,2,1);

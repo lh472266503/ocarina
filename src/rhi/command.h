@@ -100,6 +100,17 @@ public:
     OC_MAKE_CMD_COMMON_FUNC(BufferDownloadCommand)
 };
 
+class TextureUploadCommand final : public Command {
+private:
+
+};
+
+class TextureDownloadCommand final : public Command {
+private:
+    
+};
+
+
 class SynchronizeCommand final : public Command {
 public:
     OC_MAKE_CMD_COMMON_FUNC(SynchronizeCommand)

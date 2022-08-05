@@ -21,6 +21,7 @@ private:
 
 public:
     CUDATexture(CUDADevice *device, uint2 res, PixelStorage pixel_storage);
+    void init();
     [[nodiscard]] uint2 resolution() const noexcept override { return _res; }
     [[nodiscard]] PixelStorage pixel_storage() const noexcept override { return _pixel_storage; }
 };
