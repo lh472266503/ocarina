@@ -188,8 +188,7 @@ constexpr auto is_same_expr_v = is_same_expr<T...>::value;
 #define EXPR_TYPE_TRAITS(type)                           \
     template<typename T>                                 \
     using is_##type##_expr = is_##type<expr_value_t<T>>; \
-    template<typename T>                                 \
-    constexpr auto is_##type##_expr_v = is_##type##_expr<T>::value;
+    OC_DEFINE_TEMPLATE_VALUE(is_##type##_expr)
 
 EXPR_TYPE_TRAITS(integral)
 EXPR_TYPE_TRAITS(boolean)
@@ -201,8 +200,7 @@ EXPR_TYPE_TRAITS(scalar)
 #define EXPR_DIMENSION_TRAITS(cls, dim)                          \
     template<typename T>                                         \
     using is_##cls##dim##_expr = is_##cls##dim<expr_value_t<T>>; \
-    template<typename T>                                         \
-    constexpr auto is_##cls##dim##_expr_v = is_##cls##dim##_expr<T>::value;
+    OC_DEFINE_TEMPLATE_VALUE(is_##cls##dim##_expr)
 
 EXPR_DIMENSION_TRAITS(vector, )
 EXPR_DIMENSION_TRAITS(vector, 2)
@@ -215,8 +213,6 @@ EXPR_DIMENSION_TRAITS(matrix, 3)
 EXPR_DIMENSION_TRAITS(matrix, 4)
 
 #undef EXPR_DIMENSION_TRAITS
-
-
 
 #define EXPR_VECTOR_TYPE_TRAITS(type)                                                 \
     template<typename T>                                                              \
