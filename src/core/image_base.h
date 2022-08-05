@@ -16,10 +16,6 @@ enum struct PixelStorage : uint32_t {
     BYTE2,
     BYTE4,
 
-    HALF1,
-    HALF2,
-    HALF4,
-
     FLOAT1,
     FLOAT2,
     FLOAT4

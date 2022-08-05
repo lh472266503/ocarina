@@ -7,6 +7,7 @@
 #include "core/header.h"
 #include "core/stl.h"
 #include "dsl/func.h"
+#include "core/image_base.h"
 #include "core/concepts.h"
 
 namespace ocarina {
@@ -28,6 +29,8 @@ enum ShaderTag : uint8_t {
 
 class Stream;
 
+class RHITexture;
+
 class Device : public concepts::Noncopyable {
 public:
     class Impl : public concepts::Noncopyable {
@@ -43,6 +46,7 @@ public:
         virtual void destroy_shader(handle_ty handle) noexcept = 0;
         [[nodiscard]] virtual handle_ty create_stream() noexcept = 0;
         [[nodiscard]] virtual handle_ty create_shader(const Function &function) noexcept = 0;
+        [[nodiscard]] virtual handle_ty create_texture(uint2 res, PixelStorage pixel_storage) noexcept = 0;
         virtual void destroy_stream(handle_ty handle) noexcept = 0;
     };
 
@@ -65,7 +69,7 @@ public:
         return Buffer<T>(_impl.get(), size);
     }
     [[nodiscard]] Stream create_stream() noexcept;
-
+    [[nodiscard]] RHITexture create_texture(uint2 res, PixelStorage pixel_storage) noexcept;
     template<typename T>
     [[nodiscard]] auto compile(const Kernel<T> &kernel, ShaderTag tag = CS) noexcept {
         return _create<Shader<T>>(kernel.function(), tag);
