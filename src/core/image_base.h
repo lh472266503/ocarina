@@ -10,6 +10,21 @@
 #include "math/optics.h"
 
 namespace ocarina {
+
+enum struct PixelStorage : uint32_t {
+    BYTE1,
+    BYTE2,
+    BYTE4,
+
+    HALF1,
+    HALF2,
+    HALF4,
+
+    FLOAT1,
+    FLOAT2,
+    FLOAT4
+};
+
 enum struct PixelFormat : uint8_t {
     R8U,
     RG8U,

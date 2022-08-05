@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "image_base.h"
+#include "core/image_base.h"
 
 namespace ocarina {
 class Image : public ImageBase {
