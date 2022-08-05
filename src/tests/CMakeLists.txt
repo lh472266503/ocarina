@@ -1,27 +1,18 @@
 
-add_executable(test-callable test_callable.cpp)
-target_link_libraries(test-callable ocarina-all)
 
-set_target_properties(test-callable PROPERTIES
-        PUBLIC_HEADER "${HEADER_FILES}"
-        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
-        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-        WINDOWS_EXPORT_ALL_SYMBOLS ON)
+function(ocarina_add_test name)
+    cmake_parse_arguments(TEST "" "" "SOURCES" ${ARGN})
+    add_executable(${name}  ${TEST_SOURCES})
+    target_link_libraries(${name} ocarina-all)
+    set_target_properties(${name} PROPERTIES
+            PUBLIC_HEADER "${HEADER_FILES}"
+            LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+            RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+            WINDOWS_EXPORT_ALL_SYMBOLS ON)
+endfunction()
 
-add_executable(test-parsetype test_parse_type.cpp)
-target_link_libraries(test-parsetype ocarina-all)
 
-set_target_properties(test-parsetype PROPERTIES
-        PUBLIC_HEADER "${HEADER_FILES}"
-        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
-        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-        WINDOWS_EXPORT_ALL_SYMBOLS ON)
-
-add_executable(test-kernel test_kernel.cpp)
-target_link_libraries(test-kernel ocarina-all)
-
-set_target_properties(test-kernel PROPERTIES
-        PUBLIC_HEADER "${HEADER_FILES}"
-        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
-        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-        WINDOWS_EXPORT_ALL_SYMBOLS ON)
+ocarina_add_test(test-callable SOURCES test_callable.cpp)
+ocarina_add_test(test-parsetype SOURCES test_parse_type.cpp)
+ocarina_add_test(test-kernel SOURCES test_kernel.cpp)
+ocarina_add_test(test-imageio SOURCES test_image_io.cpp)
