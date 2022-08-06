@@ -229,9 +229,9 @@ struct Computable<Buffer<T>>
     OC_COMPUTABLE_COMMON(Computable<Buffer<T>>)
 };
 
-template<>
-struct Computable<RHITexture>
-    : detail::EnableSample<Computable<RHITexture>> {
+template<typename T>
+struct Computable<RHITexture<T>>
+    : detail::EnableSample<Computable<RHITexture<T>>> {
     OC_COMPUTABLE_COMMON(Computable<RHITexture>)
 };
 

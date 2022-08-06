@@ -67,8 +67,39 @@ MAKE_PIXEL_FORMAT_OF_TYPE(float4, RGBA32F)
 #undef MAKE_PIXEL_FORMAT_OF_TYPE
 }// namespace detail
 
+namespace detail {
+
 template<typename T>
-using PixelFormatImpl = detail::PixelFormatImpl<T>;
+struct PixelStorageImpl {
+
+    template<typename U>
+    static constexpr auto always_false = false;
+
+    static_assert(always_false<T>, "Unsupported type for pixel format.");
+};
+
+#define MAKE_PIXEL_STORAGE_OF_TYPE(Type, f)              \
+    template<>                                           \
+    struct PixelStorageImpl<Type> {                      \
+        static constexpr auto storage = PixelStorage::f; \
+        static constexpr auto pixel_size = sizeof(Type); \
+    };
+
+MAKE_PIXEL_STORAGE_OF_TYPE(uchar, BYTE1)
+MAKE_PIXEL_STORAGE_OF_TYPE(uchar2, BYTE2)
+MAKE_PIXEL_STORAGE_OF_TYPE(uchar4, BYTE4)
+MAKE_PIXEL_STORAGE_OF_TYPE(float, FLOAT1)
+MAKE_PIXEL_STORAGE_OF_TYPE(float2, FLOAT2)
+MAKE_PIXEL_STORAGE_OF_TYPE(float4, FLOAT4)
+
+#undef MAKE_PIXEL_FORMAT_OF_TYPE
+}// namespace detail
+
+template<typename T>
+using PixelStorageImpl = detail::PixelStorageImpl<T>;
+
+//template<typename T>
+//using PixelFormatImpl = detail::PixelFormatImpl<T>;
 
 OC_NDSC_INLINE PixelStorage format_to_storage(PixelFormat pixel_format) noexcept {
     switch (pixel_format) {

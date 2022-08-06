@@ -10,6 +10,7 @@
 
 namespace ocarina {
 
+template<typename T>
 class RHITexture : public RHIResource {
 public:
     class Impl {
@@ -21,16 +22,26 @@ public:
 
 public:
     explicit RHITexture(Device::Impl *device, uint2 res,
-                        PixelStorage pixel_storage);
+                        PixelStorage pixel_storage)
+        : RHIResource(device, Tag::TEXTURE,
+                      device->create_texture(res, pixel_storage)) {}
     [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
     [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(_handle); }
     [[nodiscard]] uint2 resolution() const noexcept { return impl()->resolution(); }
     [[nodiscard]] handle_ty handle() const noexcept { return impl()->handle(); }
     [[nodiscard]] PixelStorage pixel_storage() const noexcept { return impl()->pixel_storage(); }
-    [[nodiscard]] TextureUploadCommand *upload(const void *data) const noexcept;
-    [[nodiscard]] TextureUploadCommand *upload_sync(const void *data) const noexcept;
-    [[nodiscard]] TextureDownloadCommand *download(void *data) const noexcept;
-    [[nodiscard]] TextureDownloadCommand *download_sync(void *data) const noexcept;
+    [[nodiscard]] TextureUploadCommand *upload(const void *data) const noexcept {
+        return TextureUploadCommand::create(data, handle(), resolution(), pixel_storage(), true);
+    }
+    [[nodiscard]] TextureUploadCommand *upload_sync(const void *data) const noexcept {
+        return TextureUploadCommand::create(data, handle(), resolution(), pixel_storage(), false);
+    }
+    [[nodiscard]] TextureDownloadCommand *download(void *data) const noexcept {
+        return TextureDownloadCommand::create(data, handle(), resolution(), pixel_storage(), true);
+    }
+    [[nodiscard]] TextureDownloadCommand *download_sync(void *data) const noexcept {
+        return TextureDownloadCommand::create(data, handle(), resolution(), pixel_storage(), false);
+    }
 };
 
 }// namespace ocarina

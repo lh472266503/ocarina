@@ -68,7 +68,8 @@ struct Var : public Computable<T> {
 template<typename T>
 using BufferVar = Var<Buffer<T>>;
 
-using TextureVar = Var<RHITexture>;
+template<typename T>
+using TextureVar = Var<RHITexture<T>>;
 
 template<typename T>
 Var(T &&) -> Var<expr_value_t<T>>;

@@ -43,7 +43,7 @@ Image &Image::operator=(Image &&rhs) noexcept {
 
 Image Image::pure_color(float4 color, ColorSpace color_space, uint2 res) {
     auto pixel_count = res.x * res.y;
-    auto pixel_size = PixelFormatImpl<float4>::pixel_size * pixel_count;
+    auto pixel_size = PixelStorageImpl<float4>::pixel_size * pixel_count;
     auto pixel = new_array<std::byte>(pixel_size);
     auto dest = (float4 *)pixel;
     if (color_space == ColorSpace::LINEAR) {

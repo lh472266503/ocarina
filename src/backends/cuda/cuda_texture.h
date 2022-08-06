@@ -10,7 +10,7 @@
 
 namespace ocarina {
 class CUDADevice;
-class CUDATexture : public RHITexture::Impl {
+class CUDATexture : public RHITexture<float>::Impl {
 private:
     CUDADevice *_device{};
     uint2 _res{};

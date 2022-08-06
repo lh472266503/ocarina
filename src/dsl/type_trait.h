@@ -252,6 +252,7 @@ class Buffer;
 template<typename T>
 class BufferView;
 
+template<typename T>
 class RHITexture;
 
 namespace detail {
