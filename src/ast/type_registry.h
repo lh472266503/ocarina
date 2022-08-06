@@ -122,6 +122,16 @@ struct TypeDesc<Buffer<T>> {
     }
 };
 
+template<typename T>
+struct TypeDesc<RHITexture<T>> {
+    static ocarina::string_view description() noexcept {
+        static thread_local auto s = ocarina::format(
+            FMT_STRING("Texture<{}>"),
+            TypeDesc<T>::description());
+        return s;
+    }
+};
+
 template<typename T, size_t N>
 struct TypeDesc<T[N]> : public TypeDesc<std::array<T, N>> {};
 

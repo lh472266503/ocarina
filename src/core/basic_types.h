@@ -138,6 +138,13 @@ using basic_types = ocarina::tuple<
     bool4, float4, int4, uint4,
     float2x2, float3x3, float4x4>;
 
+using texture_elements = ocarina::tuple<uchar, uchar2, uchar4, float, float2, float4>;
+
+//template<typename T, typename ...Ts>
+//bool is_contain(const ocarina::tuple<Ts...> *tp) noexcept {
+//
+//}
+
 [[nodiscard]] constexpr bool any(const bool2 v) noexcept { return v.x || v.y; }
 [[nodiscard]] constexpr bool any(const bool3 v) noexcept { return v.x || v.y || v.z; }
 [[nodiscard]] constexpr bool any(const bool4 v) noexcept { return v.x || v.y || v.z || v.w; }

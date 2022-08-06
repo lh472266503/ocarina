@@ -287,21 +287,41 @@ struct buffer_element_impl<BufferView<T>> {
 }// namespace detail
 
 template<typename T>
+using buffer_element = detail::buffer_element_impl<std::remove_cvref_t<T>>;
+
+template<typename T>
 using is_buffer = detail::is_buffer_impl<std::remove_cvref_t<T>>;
+OC_DEFINE_TEMPLATE_VALUE(is_buffer)
 
 template<typename T>
 using is_buffer_view = detail::is_buffer_view_impl<std::remove_cvref_t<T>>;
+OC_DEFINE_TEMPLATE_VALUE(is_buffer_view)
 
 template<typename T>
 using is_buffer_or_view = std::disjunction<is_buffer<T>, is_buffer_view<T>>;
+OC_DEFINE_TEMPLATE_VALUE(is_buffer_or_view)
+
+namespace detail {
 
 template<typename T>
-constexpr auto is_buffer_v = is_buffer<T>::value;
+struct is_texture_impl : std::false_type {};
 
 template<typename T>
-constexpr auto is_buffer_view_v = is_buffer_view<T>::value;
+struct is_texture_impl<RHITexture<T>> : std::true_type {};
 
 template<typename T>
-constexpr auto is_buffer_or_view_v = is_buffer_or_view<T>::value;
+struct texture_element_impl {
+    using type = T;
+};
+
+template<typename T>
+struct texture_element_impl<RHITexture<T>> {
+    using type = T;
+};
+}// namespace detail
+
+template<typename T>
+using is_texture = detail::is_texture_impl<std::remove_cvref_t<T>>;
+OC_DEFINE_TEMPLATE_VALUE(is_texture)
 
 }// namespace ocarina
