@@ -63,26 +63,43 @@ public:
 };
 
 class Command {
+private:
+    bool _async{};
+
 public:
+    Command(bool async = true) : _async(async) {}
     virtual ~Command() noexcept = default;
     virtual void accept(CommandVisitor &visitor) const noexcept = 0;
     virtual void recycle() noexcept = 0;
+    [[nodiscard]] bool async() const noexcept { return _async; }
+};
+
+class DataCopyCommand : public Command {
+private:
+    handle_ty _src{};
+    handle_ty _dst{};
+
+public:
+    DataCopyCommand(handle_ty src, handle_ty dst, bool async)
+        : Command(async), _src(src), _dst(dst) {}
+    template<typename T = handle_ty>
+    [[nodiscard]] T src() const noexcept { return reinterpret_cast<T>(_src); }
+    template<typename T = handle_ty>
+    [[nodiscard]] T dst() const noexcept { return reinterpret_cast<T>(_dst); }
 };
 
 class DataOpCommand : public Command {
 private:
     handle_ty _host_ptr{};
     handle_ty _device_ptr{};
-    bool _async{};
 
 protected:
     DataOpCommand(handle_ty hp, handle_ty dp, bool async)
-        : _host_ptr(hp), _device_ptr(dp), _async(async) {}
+        : Command(async), _host_ptr(hp), _device_ptr(dp) {}
 
 public:
     template<typename T = handle_ty>
     [[nodiscard]] T host_ptr() const noexcept { return reinterpret_cast<T>(_host_ptr); }
-    [[nodiscard]] bool async() const noexcept { return _async; }
     [[nodiscard]] handle_ty device_ptr() const noexcept { return _device_ptr; }
 };
 
@@ -162,7 +179,7 @@ private:
 
 public:
     explicit ShaderDispatchCommand(const Function &function, handle_ty entry, span<void *> args, uint3 dim)
-        : _function(function), _entry(entry), _args(args), _dispatch_dim(dim) {}
+        : Command(true), _function(function), _entry(entry), _args(args), _dispatch_dim(dim) {}
     [[nodiscard]] span<void *> args() noexcept { return _args; }
     [[nodiscard]] uint3 dispatch_dim() const noexcept { return _dispatch_dim; }
     [[nodiscard]] const Function &function() const noexcept { return _function; }
