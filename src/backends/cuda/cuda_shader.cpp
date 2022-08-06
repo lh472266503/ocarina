@@ -25,6 +25,10 @@ CUDAShader::CUDAShader(Device::Impl *device,
     });
 }
 
+CUDAShader::~CUDAShader() {
+    OC_CU_CHECK(cuModuleUnload(_module));
+}
+
 void CUDAShader::launch(handle_ty stream, ShaderDispatchCommand *cmd) noexcept {
 
     uint3 grid_dim = make_uint3(1);

@@ -16,6 +16,7 @@ public:
     public:
         [[nodiscard]] virtual uint2 resolution() const noexcept = 0;
         [[nodiscard]] virtual PixelStorage pixel_storage() const noexcept = 0;
+        [[nodiscard]] virtual handle_ty handle() const noexcept = 0;
     };
 
 public:
@@ -24,6 +25,7 @@ public:
     [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
     [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(_handle); }
     [[nodiscard]] uint2 resolution() const noexcept { return impl()->resolution(); }
+    [[nodiscard]] handle_ty handle() const noexcept { return impl()->handle(); }
     [[nodiscard]] PixelStorage pixel_storage() const noexcept { return impl()->pixel_storage(); }
     [[nodiscard]] TextureUploadCommand *upload(const void *data) const noexcept;
     [[nodiscard]] TextureDownloadCommand *download(const void *data) const noexcept;

@@ -72,16 +72,16 @@ public:
 class BufferUploadCommand final : public Command {
 private:
     const void *_host_ptr{};
-    ptr_t _device_ptr{};
+    handle_ty _device_ptr{};
     size_t _size_in_bytes{};
     bool _async{};
 
 public:
-    BufferUploadCommand(const void *hp, ptr_t dp, size_t size, bool async = true)
+    BufferUploadCommand(const void *hp, handle_ty dp, size_t size, bool async = true)
         : _host_ptr(hp), _device_ptr(dp), _size_in_bytes(size), _async(async) {}
     [[nodiscard]] const void *host_ptr() const noexcept { return _host_ptr; }
     [[nodiscard]] bool async() const noexcept { return _async; }
-    [[nodiscard]] ptr_t device_ptr() const noexcept { return _device_ptr; }
+    [[nodiscard]] handle_ty device_ptr() const noexcept { return _device_ptr; }
     [[nodiscard]] size_t size_in_bytes() const noexcept { return _size_in_bytes; }
     OC_MAKE_CMD_COMMON_FUNC(BufferUploadCommand)
 };
@@ -89,16 +89,16 @@ public:
 class BufferDownloadCommand final : public Command {
 private:
     void *_host_ptr{};
-    ptr_t _device_ptr{};
+    handle_ty _device_ptr{};
     size_t _size_in_bytes{};
     bool _async{};
 
 public:
-    BufferDownloadCommand(void *hp, ptr_t dp, size_t size, bool async = true)
+    BufferDownloadCommand(void *hp, handle_ty dp, size_t size, bool async = true)
         : _host_ptr(hp), _device_ptr(dp), _size_in_bytes(size), _async(async) {}
     [[nodiscard]] void *host_ptr() const noexcept { return _host_ptr; }
     [[nodiscard]] bool async() const noexcept { return _async; }
-    [[nodiscard]] ptr_t device_ptr() const noexcept { return _device_ptr; }
+    [[nodiscard]] handle_ty device_ptr() const noexcept { return _device_ptr; }
     [[nodiscard]] size_t size_in_bytes() const noexcept { return _size_in_bytes; }
     OC_MAKE_CMD_COMMON_FUNC(BufferDownloadCommand)
 };
@@ -106,17 +106,17 @@ public:
 class TextureUploadCommand final : public Command {
 private:
     const void *_host_ptr{};
-    ptr_t _device_ptr{};
+    handle_ty _device_ptr{};
     PixelStorage _pixel_storage{};
     uint2 _resolution{};
     bool _async{};
 
 public:
-    TextureUploadCommand(const void *data, ptr_t device_ptr, uint2 resolution, PixelStorage storage, bool async)
+    TextureUploadCommand(const void *data, handle_ty device_ptr, uint2 resolution, PixelStorage storage, bool async)
         : _host_ptr(data), _device_ptr(device_ptr), _resolution(resolution), _pixel_storage(storage), _async(async) {}
     [[nodiscard]] const void *host_ptr() const noexcept { return _host_ptr; }
     [[nodiscard]] bool async() const noexcept { return _async; }
-    [[nodiscard]] ptr_t device_ptr() const noexcept { return _device_ptr; }
+    [[nodiscard]] handle_ty device_ptr() const noexcept { return _device_ptr; }
     [[nodiscard]] PixelStorage pixel_storage() const noexcept { return _pixel_storage; }
     [[nodiscard]] uint2 resolution() const noexcept { return _resolution; }
     OC_MAKE_CMD_COMMON_FUNC(TextureUploadCommand)
@@ -125,17 +125,17 @@ public:
 class TextureDownloadCommand final : public Command {
 private:
     void *_host_ptr{};
-    ptr_t _device_ptr{};
+    handle_ty _device_ptr{};
     PixelStorage _pixel_storage{};
     uint2 _resolution{};
     bool _async{};
 
 public:
-    TextureDownloadCommand(void *data, ptr_t device_ptr, uint2 resolution, PixelStorage storage, bool async)
+    TextureDownloadCommand(void *data, handle_ty device_ptr, uint2 resolution, PixelStorage storage, bool async)
         : _host_ptr(data), _device_ptr(device_ptr), _resolution(resolution), _pixel_storage(storage), _async(async) {}
     [[nodiscard]] const void *host_ptr() const noexcept { return _host_ptr; }
     [[nodiscard]] bool async() const noexcept { return _async; }
-    [[nodiscard]] ptr_t device_ptr() const noexcept { return _device_ptr; }
+    [[nodiscard]] handle_ty device_ptr() const noexcept { return _device_ptr; }
     [[nodiscard]] PixelStorage pixel_storage() const noexcept { return _pixel_storage; }
     [[nodiscard]] uint2 resolution() const noexcept { return _resolution; }
     OC_MAKE_CMD_COMMON_FUNC(TextureDownloadCommand)
