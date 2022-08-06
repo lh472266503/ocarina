@@ -6,6 +6,7 @@
 
 #include "core/header.h"
 #include "resource.h"
+#include "command.h"
 
 namespace ocarina {
 
@@ -24,6 +25,8 @@ public:
     [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(_handle); }
     [[nodiscard]] uint2 resolution() const noexcept { return impl()->resolution(); }
     [[nodiscard]] PixelStorage pixel_storage() const noexcept { return impl()->pixel_storage(); }
+    [[nodiscard]] TextureUploadCommand *upload(const void *data) const noexcept;
+    [[nodiscard]] TextureDownloadCommand *download(const void *data) const noexcept;
 };
 
 }// namespace ocarina

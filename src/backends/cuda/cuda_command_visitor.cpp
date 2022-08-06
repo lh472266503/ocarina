@@ -47,5 +47,10 @@ void CUDACommandVisitor::visit(const ShaderDispatchCommand *cmd) noexcept {
     uint3 block_size = make_uint3(1);
     (reinterpret_cast<CUDAShader *>(cmd->entry()))->launch(handle_ty(_stream), const_cast<ShaderDispatchCommand*>(cmd));
 }
+void CUDACommandVisitor::visit(const TextureUploadCommand *cmd) noexcept {
+}
+void CUDACommandVisitor::visit(const TextureDownloadCommand *cmd) noexcept {
+
+}
 
 }// namespace ocarina

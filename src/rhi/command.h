@@ -10,10 +10,12 @@
 
 namespace ocarina {
 
-#define OC_RUNTIME_CMD         \
-    BufferUploadCommand,       \
-        BufferDownloadCommand, \
-        SynchronizeCommand,    \
+#define OC_RUNTIME_CMD          \
+    BufferUploadCommand,        \
+        BufferDownloadCommand,  \
+        TextureUploadCommand,   \
+        TextureDownloadCommand, \
+        SynchronizeCommand,     \
         ShaderDispatchCommand
 
 /// forward declare
@@ -102,12 +104,15 @@ public:
 
 class TextureUploadCommand final : public Command {
 private:
-
+    void *_host_ptr{};
+public:
+    OC_MAKE_CMD_COMMON_FUNC(TextureUploadCommand)
 };
 
 class TextureDownloadCommand final : public Command {
 private:
-    
+public:
+    OC_MAKE_CMD_COMMON_FUNC(TextureDownloadCommand)
 };
 
 

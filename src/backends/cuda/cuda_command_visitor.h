@@ -19,6 +19,8 @@ public:
         : _stream(stream), _device(device) {}
     void visit(const BufferUploadCommand *cmd) noexcept override;
     void visit(const BufferDownloadCommand *cmd) noexcept override;
+    void visit(const TextureUploadCommand *cmd) noexcept override;
+    void visit(const TextureDownloadCommand *cmd) noexcept override;
     void visit(const SynchronizeCommand *cmd) noexcept override;
     void visit(const ShaderDispatchCommand *cmd) noexcept override;
 };
