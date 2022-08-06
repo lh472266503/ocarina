@@ -42,7 +42,7 @@ public:
     explicit CUDADevice(Context *context);
     [[nodiscard]] handle_ty create_buffer(size_t size) noexcept override;
     template<typename Func>
-    decltype(auto) bind_handle(Func &&func) noexcept {
+    decltype(auto) use_context(Func &&func) noexcept {
         ContextGuard cg(_cu_ctx);
         return func();
     }

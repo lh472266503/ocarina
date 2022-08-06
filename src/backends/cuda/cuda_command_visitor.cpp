@@ -9,7 +9,7 @@
 
 namespace ocarina {
 void CUDACommandVisitor::visit(const BufferUploadCommand *cmd) noexcept {
-    _device->bind_handle([&] {
+    _device->use_context([&] {
         if (cmd->async()) {
             OC_CU_CHECK(cuMemcpyHtoDAsync(cmd->device_ptr(),
                                           cmd->host_ptr(),
@@ -24,7 +24,7 @@ void CUDACommandVisitor::visit(const BufferUploadCommand *cmd) noexcept {
 }
 
 void CUDACommandVisitor::visit(const BufferDownloadCommand *cmd) noexcept {
-    _device->bind_handle([&] {
+    _device->use_context([&] {
         if (cmd->async()) {
             OC_CU_CHECK(cuMemcpyDtoHAsync(cmd->host_ptr(),
                                           cmd->device_ptr(),

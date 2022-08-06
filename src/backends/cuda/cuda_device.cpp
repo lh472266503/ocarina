@@ -68,7 +68,7 @@ CUDADevice::CUDADevice(Context *context)
 }
 
 handle_ty CUDADevice::create_buffer(size_t size) noexcept {
-    return bind_handle([&] {
+    return use_context([&] {
         handle_ty handle{};
         OC_CU_CHECK(cuMemAlloc(&handle, size));
         return handle;
@@ -76,7 +76,7 @@ handle_ty CUDADevice::create_buffer(size_t size) noexcept {
 }
 
 handle_ty CUDADevice::create_stream() noexcept {
-    return bind_handle([&] {
+    return use_context([&] {
         CUDAStream *stream = ocarina::new_with_allocator<CUDAStream>(this);
         return reinterpret_cast<handle_ty>(stream);
     });
@@ -108,7 +108,7 @@ ocarina::string CUDADevice::get_ptx(const Function &function) const noexcept {
 }
 
 handle_ty CUDADevice::create_texture(uint2 res, PixelStorage pixel_storage) noexcept {
-    return bind_handle([&] {
+    return use_context([&] {
         auto texture = ocarina::new_with_allocator<CUDATexture>(this, res, pixel_storage);
         return reinterpret_cast<handle_ty>(texture);
     });
@@ -117,7 +117,7 @@ handle_ty CUDADevice::create_texture(uint2 res, PixelStorage pixel_storage) noex
 handle_ty CUDADevice::create_shader(const Function &function) noexcept {
     ocarina::string ptx = get_ptx(function);
 
-    auto ptr = bind_handle([&] {
+    auto ptr = use_context([&] {
         auto shader = ocarina::new_with_allocator<CUDAShader>(this, ptx, function);
         return reinterpret_cast<handle_ty>(shader);
     });
@@ -134,7 +134,9 @@ void CUDADevice::destroy_shader(handle_ty handle) noexcept {
 }
 
 void CUDADevice::destroy_texture(handle_ty handle) noexcept {
-    ocarina::delete_with_allocator(reinterpret_cast<CUDATexture *>(handle));
+    use_context([&] {
+        ocarina::delete_with_allocator(reinterpret_cast<CUDATexture *>(handle));
+    });
 }
 
 void CUDADevice::destroy_stream(handle_ty handle) noexcept {

@@ -61,5 +61,10 @@ void CUDATexture::init() {
     OC_CU_CHECK(cuSurfObjectCreate(&_surface_handle, &res_desc));
     OC_CU_CHECK(cuTexObjectCreate(&_tex_handle, &res_desc, &tex_desc, nullptr));
 }
+CUDATexture::~CUDATexture() {
+    OC_CU_CHECK(cuArrayDestroy(_array_handle));
+    OC_CU_CHECK(cuTexObjectDestroy(_tex_handle));
+    OC_CU_CHECK(cuSurfObjectDestroy(_surface_handle));
+}
 
 }// namespace ocarina

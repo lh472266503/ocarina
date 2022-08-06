@@ -7,6 +7,7 @@
 #include "core/stl.h"
 #include "resource.h"
 #include "core/pool.h"
+#include "core/image_base.h"
 
 namespace ocarina {
 
@@ -104,17 +105,41 @@ public:
 
 class TextureUploadCommand final : public Command {
 private:
-    void *_host_ptr{};
+    const void *_host_ptr{};
+    ptr_t _device_ptr{};
+    PixelStorage _pixel_storage{};
+    uint2 _resolution{};
+    bool _async{};
+
 public:
+    TextureUploadCommand(const void *data, ptr_t device_ptr, uint2 resolution, PixelStorage storage, bool async)
+        : _host_ptr(data), _device_ptr(device_ptr), _resolution(resolution), _pixel_storage(storage), _async(async) {}
+    [[nodiscard]] const void *host_ptr() const noexcept { return _host_ptr; }
+    [[nodiscard]] bool async() const noexcept { return _async; }
+    [[nodiscard]] ptr_t device_ptr() const noexcept { return _device_ptr; }
+    [[nodiscard]] PixelStorage pixel_storage() const noexcept { return _pixel_storage; }
+    [[nodiscard]] uint2 resolution() const noexcept { return _resolution; }
     OC_MAKE_CMD_COMMON_FUNC(TextureUploadCommand)
 };
 
 class TextureDownloadCommand final : public Command {
 private:
+    void *_host_ptr{};
+    ptr_t _device_ptr{};
+    PixelStorage _pixel_storage{};
+    uint2 _resolution{};
+    bool _async{};
+
 public:
+    TextureDownloadCommand(void *data, ptr_t device_ptr, uint2 resolution, PixelStorage storage, bool async)
+        : _host_ptr(data), _device_ptr(device_ptr), _resolution(resolution), _pixel_storage(storage), _async(async) {}
+    [[nodiscard]] const void *host_ptr() const noexcept { return _host_ptr; }
+    [[nodiscard]] bool async() const noexcept { return _async; }
+    [[nodiscard]] ptr_t device_ptr() const noexcept { return _device_ptr; }
+    [[nodiscard]] PixelStorage pixel_storage() const noexcept { return _pixel_storage; }
+    [[nodiscard]] uint2 resolution() const noexcept { return _resolution; }
     OC_MAKE_CMD_COMMON_FUNC(TextureDownloadCommand)
 };
-
 
 class SynchronizeCommand final : public Command {
 public:

@@ -42,7 +42,7 @@ void CUDAShader::launch(handle_ty stream, ShaderDispatchCommand *cmd) noexcept {
 }
 
 void CUDAShader::compute_fit_size() noexcept {
-    _device->bind_handle([&] {
+    _device->use_context([&] {
         int min_grid_size;
         int auto_block_size;
         OC_CU_CHECK(cuOccupancyMaxPotentialBlockSize(&min_grid_size, &auto_block_size,
