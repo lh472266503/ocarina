@@ -11,7 +11,7 @@
 
 namespace ocarina {
 
-class CppCodegen : public Codegen, protected ExprVisitor, protected StmtVisitor, protected TypeVisitor {
+class OC_COMPILE_API CppCodegen : public Codegen, protected ExprVisitor, protected StmtVisitor, protected TypeVisitor {
 protected:
     ocarina::set<const Function *> _generated_func;
     ocarina::set<const Type *> _generated_struct;
@@ -40,6 +40,7 @@ protected:
     void visit(const RefExpr *expr) noexcept override;
     void visit(const CallExpr *expr) noexcept override;
     void visit(const CastExpr *expr) noexcept override;
+    void visit(const SampleExpr *expr) noexcept override;
 
     void visit(const Type *type) noexcept override;
 

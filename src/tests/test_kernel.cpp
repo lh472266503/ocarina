@@ -35,8 +35,8 @@ int main(int argc, char *argv[]) {
     auto path2 = R"(E:/work/compile/ocarina/res/test.png)";
     auto image = Image::load(path2, LINEAR);
 
-    auto texture = device.create_texture<float4>(image.resolution());
-//    stream << texture.upload_sync(image.pixel_ptr());
+    auto texture = device.create_texture<uchar4>(image.resolution());
+    stream << texture.upload_sync(image.pixel_ptr());
 
     Buffer<float> f_buffer = device.create_buffer<float>(count);
     Kernel kn = [&](Var<float> a, Var<float> b, BufferVar<float> c) {

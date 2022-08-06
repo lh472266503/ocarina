@@ -42,7 +42,7 @@ Var<int> add(Var<int> a, Var<int> b) {
 
 template<typename T>
 auto func(T a, T b) {
-    auto c = Var<int3>{a, b, a};
+    auto c = Var<int3>{};
     Var<uint> ui = a;
     Var<float2> f2;
     f2 = +f2;

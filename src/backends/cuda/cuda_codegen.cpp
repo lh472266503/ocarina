@@ -215,5 +215,7 @@ void CUDACodegen::_emit_type_name(const Type *type) noexcept {
         }
     }
 }
-#undef TYPE_PREFIX
+void CUDACodegen::visit(const SampleExpr *expr) noexcept {
+
+}
 }// namespace ocarina
