@@ -69,6 +69,22 @@ public:
     virtual void recycle() noexcept = 0;
 };
 
+class BufferOpCommand : public Command {
+private:
+    handle_ty _host_ptr{};
+    handle_ty _device_ptr{};
+    size_t _size_in_bytes{};
+    bool _async{};
+
+public:
+    BufferOpCommand(handle_ty hp, handle_ty dp, size_t size, bool async = true)
+        : _host_ptr(hp), _device_ptr(dp), _size_in_bytes(size), _async(async) {}
+    [[nodiscard]] handle_ty host_ptr() const noexcept { return _host_ptr; }
+    [[nodiscard]] bool async() const noexcept { return _async; }
+    [[nodiscard]] handle_ty device_ptr() const noexcept { return _device_ptr; }
+    [[nodiscard]] size_t size_in_bytes() const noexcept { return _size_in_bytes; }
+};
+
 class BufferUploadCommand final : public Command {
 private:
     const void *_host_ptr{};
@@ -166,7 +182,8 @@ public:
     [[nodiscard]] Function &function_nc() noexcept {
         return *const_cast<Function *>(&_function);
     }
-    [[nodiscard]] handle_ty entry() const noexcept { return _entry; }
+    template<typename T>
+    [[nodiscard]] auto entry() const noexcept { return reinterpret_cast<T>(_entry); }
     OC_MAKE_CMD_COMMON_FUNC(ShaderDispatchCommand)
 };
 
