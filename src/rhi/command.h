@@ -134,16 +134,17 @@ public:
 
 class TextureOpCommand : public DataOpCommand {
 private:
-    handle_ty _host_ptr{};
-    handle_ty _device_ptr{};
     PixelStorage _pixel_storage{};
     uint2 _resolution{};
-    bool _async{};
 
 public:
     TextureOpCommand(handle_ty data, handle_ty device_ptr, uint2 resolution, PixelStorage storage, bool async)
         : DataOpCommand(data, device_ptr, async), _pixel_storage(storage), _resolution(resolution) {}
     [[nodiscard]] PixelStorage pixel_storage() const noexcept { return _pixel_storage; }
+    [[nodiscard]] size_t width() const noexcept { return _resolution.x; }
+    [[nodiscard]] size_t height() const noexcept { return _resolution.y; }
+    [[nodiscard]] size_t width_in_bytes() const noexcept { return pixel_size(_pixel_storage) * channel_num(_pixel_storage) * width(); }
+    [[nodiscard]] size_t size_in_bytes() const noexcept { return height() * width_in_bytes(); }
     [[nodiscard]] uint2 resolution() const noexcept { return _resolution; }
 };
 
