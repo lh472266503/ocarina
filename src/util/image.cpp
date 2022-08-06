@@ -19,19 +19,19 @@
 
 namespace ocarina {
 
-Image::Image(PixelFormat pixel_format, const std::byte *pixel, uint2 res, const fs::path &path)
-    : ImageBase(pixel_format, res),
+Image::Image(PixelStorage pixel_storage, const std::byte *pixel, uint2 res, const fs::path &path)
+    : ImageBase(pixel_storage, res),
       _path(path) {
     _pixel.reset(pixel);
 }
 
-Image::Image(PixelFormat pixel_format, const std::byte *pixel, uint2 res)
-    : ImageBase(pixel_format, res) {
+Image::Image(PixelStorage pixel_storage, const std::byte *pixel, uint2 res)
+    : ImageBase(pixel_storage, res) {
     _pixel.reset(pixel);
 }
 
 Image::Image(Image &&other) noexcept
-    : ImageBase(other._pixel_format, other._resolution) {
+    : ImageBase(other._pixel_storage, other._resolution) {
     _pixel = move(other._pixel);
 }
 
@@ -55,7 +55,7 @@ Image Image::pure_color(float4 color, ColorSpace color_space, uint2 res) {
             dest[i] = srgb_to_linear(color);
         }
     }
-    return {PixelFormat::RGBA32F, pixel, res};
+    return {PixelStorage::FLOAT4, pixel, res};
 }
 
 Image Image::load(const fs::path &path, ColorSpace color_space, float3 scale) {
@@ -76,8 +76,8 @@ Image Image::load_hdr(const fs::path &path, ColorSpace color_space, float3 scale
     auto path_str = fs::absolute(path).string();
     float *rgb = stbi_loadf(path_str.c_str(), &w, &h, &comp, 3);
     int pixel_num = w * h;
-    PixelFormat pixel_format = detail::PixelFormatImpl<float4>::format;
-    int pixel_size = detail::PixelFormatImpl<float4>::pixel_size;
+    PixelStorage pixel_storage = detail::PixelStorageImpl<float4>::storage;
+    int pixel_size = detail::PixelStorageImpl<float4>::pixel_size;
     size_t size_in_bytes = pixel_num * pixel_size;
     auto pixel = new_array(size_in_bytes);
     float *src = rgb;
@@ -98,7 +98,7 @@ Image Image::load_hdr(const fs::path &path, ColorSpace color_space, float3 scale
         }
     }
     free(rgb);
-    return {pixel_format, pixel, make_uint2(w, h), path};
+    return {pixel_storage, pixel, make_uint2(w, h), path};
 }
 
 Image Image::load_exr(const fs::path &fn, ColorSpace color_space, float3 scale) {
@@ -146,9 +146,9 @@ Image Image::load_exr(const fs::path &fn, ColorSpace color_space, float3 scale) 
     switch (exr_image.num_channels) {
         case 1: {
             using PixelType = float;
-            PixelFormat pixel_format = detail::PixelFormatImpl<PixelType>::format;
+            PixelStorage pixel_storage = detail::PixelStorageImpl<PixelType>::storage;
             PixelType *pixel = new_array<PixelType>(pixel_num);
-            size_t size_in_bytes = pixel_num * detail::PixelFormatImpl<PixelType>::pixel_size;
+            size_t size_in_bytes = pixel_num * detail::PixelStorageImpl<PixelType>::pixel_size;
             if (color_space == SRGB) {
                 for (int i = 0; i < pixel_num; ++i) {
                     PixelType val = reinterpret_cast<PixelType *>(exr_image.images[0])[i];
@@ -160,13 +160,13 @@ Image Image::load_exr(const fs::path &fn, ColorSpace color_space, float3 scale) 
                     pixel[i] = val * scale.x;
                 }
             }
-            return Image(pixel_format, (std::byte *)pixel, resolution, fn);
+            return Image(pixel_storage, (std::byte *)pixel, resolution, fn);
         }
         case 2: {
             using PixelType = float2;
-            PixelFormat pixel_format = detail::PixelFormatImpl<PixelType>::format;
+            PixelStorage pixel_storage = detail::PixelStorageImpl<PixelType>::storage;
             PixelType *pixel = new_array<PixelType>(pixel_num);
-            size_t size_in_bytes = pixel_num * detail::PixelFormatImpl<PixelType>::pixel_size;
+            size_t size_in_bytes = pixel_num * detail::PixelStorageImpl<PixelType>::pixel_size;
             if (color_space == SRGB) {
                 for (int i = 0; i < pixel_num; ++i) {
                     pixel[i] = make_float2(
@@ -182,11 +182,11 @@ Image Image::load_exr(const fs::path &fn, ColorSpace color_space, float3 scale) 
                         reinterpret_cast<float *>(exr_image.images[0])[i] * scale.y);
                 }
             }
-            return {pixel_format, (std::byte *)pixel, resolution, fn};
+            return {pixel_storage, (std::byte *)pixel, resolution, fn};
         }
         case 3:
         case 4: {
-            PixelFormat pixel_format = detail::PixelFormatImpl<float4>::format;
+            PixelStorage pixel_storage = detail::PixelStorageImpl<float4>::storage;
             float4 *pixel = new_array<float4>(pixel_num);
             if (color_space == SRGB) {
                 for (int i = 0; i < pixel_num; ++i) {
@@ -207,7 +207,7 @@ Image Image::load_exr(const fs::path &fn, ColorSpace color_space, float3 scale) 
                                make_float4(scale, 1.f);
                 }
             }
-            return {pixel_format, (std::byte *)pixel, resolution, fn};
+            return {pixel_storage, (std::byte *)pixel, resolution, fn};
         }
         default:
             OC_ERROR("unknown")
@@ -223,8 +223,8 @@ Image Image::load_other(const fs::path &path, ColorSpace color_space, float3 sca
     if (!rgba) {
         throw std::runtime_error(fn + " load fail");
     }
-    PixelFormat pixel_format = detail::PixelFormatImpl<uchar4>::format;
-    int pixel_size = detail::PixelFormatImpl<uchar4>::pixel_size;
+    PixelStorage pixel_storage = detail::PixelStorageImpl<uchar4>::storage;
+    int pixel_size = detail::PixelStorageImpl<uchar4>::pixel_size;
     size_t pixel_num = w * h;
     size_t size_in_bytes = pixel_size * pixel_num;
     uint2 resolution = make_uint2(w, h);
@@ -252,16 +252,16 @@ Image Image::load_other(const fs::path &path, ColorSpace color_space, float3 sca
         }
     }
     free(rgba);
-    return {pixel_format, pixel, resolution, path};
+    return {pixel_storage, pixel, resolution, path};
 }
 
 void Image::save(const fs::path &fn) {
-    save_image(fn, _pixel_format, resolution(), _pixel.get());
+    save_image(fn, _pixel_storage, resolution(), _pixel.get());
 }
 
-void Image::save_exr(const fs::path &fn, PixelFormat pixel_format,
+void Image::save_exr(const fs::path &fn, PixelStorage pixel_storage,
                      uint2 res, const std::byte *ptr) {
-    OC_ASSERT(is_32bit(pixel_format));
+    OC_ASSERT(is_32bit(pixel_storage));
     EXRHeader header;
     InitEXRHeader(&header);
 
@@ -306,17 +306,17 @@ void Image::save_exr(const fs::path &fn, PixelFormat pixel_format,
     }
 }
 
-void Image::save_hdr(const fs::path &fn, PixelFormat pixel_format,
+void Image::save_hdr(const fs::path &fn, PixelStorage pixel_storage,
                      uint2 res, const std::byte *ptr) {
-    OC_ASSERT(is_32bit(pixel_format));
+    OC_ASSERT(is_32bit(pixel_storage));
     auto path_str = fs::absolute(fn).string();
     stbi_write_hdr(path_str.c_str(), res.x, res.y, 4,
                    reinterpret_cast<const float *>(ptr));
 }
 
-void Image::save_other(const fs::path &fn, PixelFormat pixel_format,
+void Image::save_other(const fs::path &fn, PixelStorage pixel_storage,
                        uint2 res, const std::byte *ptr) {
-    OC_ASSERT(is_8bit(pixel_format));
+    OC_ASSERT(is_8bit(pixel_storage));
     auto path_str = fs::absolute(fn).string();
     auto extension = to_lower(fn.extension().string());
     if (extension == ".png") {
@@ -332,48 +332,48 @@ void Image::save_other(const fs::path &fn, PixelFormat pixel_format,
 }
 
 void Image::convert_to_8bit_image() {
-    if (is_8bit(pixel_format())) {
+    if (is_8bit(pixel_storage())) {
         return;
     }
-    auto [new_format, ptr] = convert_to_8bit(pixel_format(), _pixel.get(), resolution());
-    _pixel_format = new_format;
+    auto [new_format, ptr] = convert_to_8bit(pixel_storage(), _pixel.get(), resolution());
+    _pixel_storage = new_format;
     _pixel.reset(ptr);
 }
 
 void Image::convert_to_32bit_image() {
-    if (is_32bit(pixel_format())) {
+    if (is_32bit(pixel_storage())) {
         return;
     }
-    auto [new_format, ptr] = convert_to_32bit(pixel_format(), _pixel.get(), resolution());
-    _pixel_format = new_format;
+    auto [new_format, ptr] = convert_to_32bit(pixel_storage(), _pixel.get(), resolution());
+    _pixel_storage = new_format;
     _pixel.reset(ptr);
 }
 
-void Image::save_image(const fs::path &fn, PixelFormat pixel_format,
+void Image::save_image(const fs::path &fn, PixelStorage pixel_storage,
                        uint2 res, const std::byte *ptr) {
     OC_ASSERT(ptr != nullptr);
     auto extension = to_lower(fn.extension().string());
     if (extension == ".exr") {
-        if (is_32bit(pixel_format)) {
-            save_exr(fn, pixel_format, res, ptr);
+        if (is_32bit(pixel_storage)) {
+            save_exr(fn, pixel_storage, res, ptr);
         } else {
-            auto [format, pixel] = convert_to_32bit(pixel_format, ptr, res);
+            auto [format, pixel] = convert_to_32bit(pixel_storage, ptr, res);
             save_exr(fn, format, res, pixel);
             delete_array(pixel);
         }
     } else if (extension == ".hdr") {
-        if (is_32bit(pixel_format)) {
-            save_hdr(fn, pixel_format, res, ptr);
+        if (is_32bit(pixel_storage)) {
+            save_hdr(fn, pixel_storage, res, ptr);
         } else {
-            auto [format, pixel] = convert_to_32bit(pixel_format, ptr, res);
+            auto [format, pixel] = convert_to_32bit(pixel_storage, ptr, res);
             save_hdr(fn, format, res, pixel);
             delete_array(pixel);
         }
     } else {
-        if (is_8bit(pixel_format)) {
-            save_other(fn, pixel_format, res, ptr);
+        if (is_8bit(pixel_storage)) {
+            save_other(fn, pixel_storage, res, ptr);
         } else {
-            auto [format, pixel] = convert_to_8bit(pixel_format, ptr, res);
+            auto [format, pixel] = convert_to_8bit(pixel_storage, ptr, res);
             save_other(fn, format, res, pixel);
             delete_array(pixel);
         }
@@ -381,13 +381,13 @@ void Image::save_image(const fs::path &fn, PixelFormat pixel_format,
     OC_INFO("save picture ", fn);
 }
 
-std::pair<PixelFormat, const std::byte *>
-Image::convert_to_32bit(PixelFormat pixel_format, const std::byte *ptr, uint2 res) {
-    OC_ASSERT(is_8bit(pixel_format));
+std::pair<PixelStorage, const std::byte *>
+Image::convert_to_32bit(PixelStorage pixel_storage, const std::byte *ptr, uint2 res) {
+    OC_ASSERT(is_8bit(pixel_storage));
     uint pixel_num = res.x * res.y;
     const std::byte *pixel = nullptr;
-    switch (pixel_format) {
-        case PixelFormat::R8U: {
+    switch (pixel_storage) {
+        case PixelStorage::BYTE1: {
             using TargetType = float;
             pixel = new_array<std::byte>(pixel_num * sizeof(TargetType));
             auto src = (uint8_t *)ptr;
@@ -395,10 +395,10 @@ Image::convert_to_32bit(PixelFormat pixel_format, const std::byte *ptr, uint2 re
             for (int i = 0; i < pixel_num; ++i, ++dest) {
                 *dest = float(src[i]) / 255.f;
             }
-            pixel_format = PixelFormat::R8U;
+            pixel_storage = PixelStorage::BYTE1;
             break;
         }
-        case PixelFormat::RG8U: {
+        case PixelStorage::BYTE2: {
             using TargetType = float2;
             pixel = new_array(pixel_num * sizeof(TargetType));
             auto src = (uint8_t *)ptr;
@@ -406,10 +406,10 @@ Image::convert_to_32bit(PixelFormat pixel_format, const std::byte *ptr, uint2 re
             for (int i = 0; i < pixel_num; ++i, ++dest, src += 2) {
                 *dest = make_float2(float(src[0]) / 255.f, float(src[1]) / 255.f);
             }
-            pixel_format = PixelFormat::RG32F;
+            pixel_storage = PixelStorage::FLOAT2;
             break;
         }
-        case PixelFormat::RGBA8U: {
+        case PixelStorage::BYTE4: {
             using TargetType = float4;
             pixel = new_array(pixel_num * sizeof(TargetType));
             auto src = (uint8_t *)ptr;
@@ -420,22 +420,22 @@ Image::convert_to_32bit(PixelFormat pixel_format, const std::byte *ptr, uint2 re
                                     float(src[2]) / 255.f,
                                     float(src[3]) / 255.f);
             }
-            pixel_format = PixelFormat::RGBA32F;
+            pixel_storage = PixelStorage::FLOAT4;
             break;
         }
         default:
             OC_EXCEPTION("unknown pixel type");
     }
-    return {pixel_format, pixel};
+    return {pixel_storage, pixel};
 }
 
-std::pair<PixelFormat, const std::byte *>
-Image::convert_to_8bit(PixelFormat pixel_format, const std::byte *ptr, uint2 res) {
-    OC_ASSERT(is_32bit(pixel_format));
+std::pair<PixelStorage, const std::byte *>
+Image::convert_to_8bit(PixelStorage pixel_storage, const std::byte *ptr, uint2 res) {
+    OC_ASSERT(is_32bit(pixel_storage));
     uint pixel_num = res.x * res.y;
     const std::byte *pixel = nullptr;
-    switch (pixel_format) {
-        case PixelFormat::R32F: {
+    switch (pixel_storage) {
+        case PixelStorage::FLOAT1: {
             using TargetType = uint8_t;
             pixel = new_array(pixel_num * sizeof(TargetType));
             auto dest = (TargetType *)pixel;
@@ -443,10 +443,10 @@ Image::convert_to_8bit(PixelFormat pixel_format, const std::byte *ptr, uint2 res
             for (int i = 0; i < pixel_num; ++i, ++dest, ++src) {
                 *dest = make_8bit(src[0]);
             }
-            pixel_format = PixelFormat::R8U;
+            pixel_storage = PixelStorage::BYTE1;
             break;
         }
-        case PixelFormat::RG32F: {
+        case PixelStorage::FLOAT2: {
             using TargetType = uint16_t;
             pixel = new_array(pixel_num * sizeof(TargetType));
             auto dest = (TargetType *)pixel;
@@ -455,10 +455,10 @@ Image::convert_to_8bit(PixelFormat pixel_format, const std::byte *ptr, uint2 res
                 dest[0] = make_8bit(src[0]);
                 dest[1] = make_8bit(src[1]);
             }
-            pixel_format = PixelFormat::RG8U;
+            pixel_storage = PixelStorage::BYTE2;
             break;
         }
-        case PixelFormat::RGBA32F: {
+        case PixelStorage::FLOAT4: {
             using TargetType = uint32_t;
             pixel = new_array(pixel_num * sizeof(TargetType));
             auto dest = (TargetType *)pixel;
@@ -466,13 +466,13 @@ Image::convert_to_8bit(PixelFormat pixel_format, const std::byte *ptr, uint2 res
             for (int i = 0; i < pixel_num; ++i, ++dest, ++src) {
                 *dest = make_rgba(*src);
             }
-            pixel_format = PixelFormat::RGBA8U;
+            pixel_storage = PixelStorage::BYTE4;
             break;
         }
         default:
             break;
     }
-    return {pixel_format, pixel};
+    return {pixel_storage, pixel};
 }
 
 }// namespace ocarina

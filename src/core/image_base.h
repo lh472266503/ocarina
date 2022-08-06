@@ -11,25 +11,13 @@
 
 namespace ocarina {
 
-enum struct PixelStorage : uint32_t {
+enum struct PixelStorage : uint8_t {
     BYTE1,
     BYTE2,
     BYTE4,
-
     FLOAT1,
     FLOAT2,
     FLOAT4,
-
-    UNKNOWN
-};
-
-enum struct PixelFormat : uint8_t {
-    R8U,
-    RG8U,
-    RGBA8U,
-    R32F,
-    RG32F,
-    RGBA32F,
     UNKNOWN
 };
 
@@ -42,7 +30,7 @@ enum struct ImageWrap : uint8_t {
 namespace detail {
 
 template<typename T>
-struct PixelFormatImpl {
+struct PixelStorageImpl {
 
     template<typename U>
     static constexpr auto always_false = false;
@@ -52,66 +40,23 @@ struct PixelFormatImpl {
 
 #define MAKE_PIXEL_FORMAT_OF_TYPE(Type, f)               \
     template<>                                           \
-    struct PixelFormatImpl<Type> {                       \
-        static constexpr auto format = PixelFormat::f;   \
-        static constexpr auto pixel_size = sizeof(Type); \
-    };
-
-MAKE_PIXEL_FORMAT_OF_TYPE(uchar, R8U)
-MAKE_PIXEL_FORMAT_OF_TYPE(uchar2, RG8U)
-MAKE_PIXEL_FORMAT_OF_TYPE(uchar4, RGBA8U)
-MAKE_PIXEL_FORMAT_OF_TYPE(float, R32F)
-MAKE_PIXEL_FORMAT_OF_TYPE(float2, RG32F)
-MAKE_PIXEL_FORMAT_OF_TYPE(float4, RGBA32F)
-
-#undef MAKE_PIXEL_FORMAT_OF_TYPE
-}// namespace detail
-
-namespace detail {
-
-template<typename T>
-struct PixelStorageImpl {
-
-    template<typename U>
-    static constexpr auto always_false = false;
-
-    static_assert(always_false<T>, "Unsupported type for pixel format.");
-};
-
-#define MAKE_PIXEL_STORAGE_OF_TYPE(Type, f)              \
-    template<>                                           \
     struct PixelStorageImpl<Type> {                      \
         static constexpr auto storage = PixelStorage::f; \
         static constexpr auto pixel_size = sizeof(Type); \
     };
 
-MAKE_PIXEL_STORAGE_OF_TYPE(uchar, BYTE1)
-MAKE_PIXEL_STORAGE_OF_TYPE(uchar2, BYTE2)
-MAKE_PIXEL_STORAGE_OF_TYPE(uchar4, BYTE4)
-MAKE_PIXEL_STORAGE_OF_TYPE(float, FLOAT1)
-MAKE_PIXEL_STORAGE_OF_TYPE(float2, FLOAT2)
-MAKE_PIXEL_STORAGE_OF_TYPE(float4, FLOAT4)
+MAKE_PIXEL_FORMAT_OF_TYPE(uchar, BYTE1)
+MAKE_PIXEL_FORMAT_OF_TYPE(uchar2, BYTE2)
+MAKE_PIXEL_FORMAT_OF_TYPE(uchar4, BYTE4)
+MAKE_PIXEL_FORMAT_OF_TYPE(float, FLOAT1)
+MAKE_PIXEL_FORMAT_OF_TYPE(float2, FLOAT2)
+MAKE_PIXEL_FORMAT_OF_TYPE(float4, FLOAT4)
 
 #undef MAKE_PIXEL_FORMAT_OF_TYPE
 }// namespace detail
 
 template<typename T>
 using PixelStorageImpl = detail::PixelStorageImpl<T>;
-
-//template<typename T>
-//using PixelFormatImpl = detail::PixelFormatImpl<T>;
-
-OC_NDSC_INLINE PixelStorage format_to_storage(PixelFormat pixel_format) noexcept {
-    switch (pixel_format) {
-        case PixelFormat::R8U: return PixelStorage::BYTE1;
-        case PixelFormat::RG8U: return PixelStorage::BYTE2;
-        case PixelFormat::RGBA8U: return PixelStorage::BYTE4;
-        case PixelFormat::R32F: return PixelStorage::FLOAT1;
-        case PixelFormat::RG32F: return PixelStorage::FLOAT2;
-        case PixelFormat::RGBA32F: return PixelStorage::FLOAT4;
-        default: OC_ASSERT(0); return PixelStorage::UNKNOWN;
-    }
-}
 
 OC_NDSC_INLINE size_t pixel_size(PixelStorage pixel_storage) noexcept {
     switch (pixel_storage) {
@@ -127,16 +72,12 @@ OC_NDSC_INLINE size_t pixel_size(PixelStorage pixel_storage) noexcept {
     return 0;
 }
 
-OC_NDSC_INLINE size_t pixel_size(PixelFormat pixel_format) noexcept {
-    return pixel_size(format_to_storage(pixel_format));
+OC_NDSC_INLINE bool is_8bit(PixelStorage pixel_format) noexcept {
+    return pixel_format == PixelStorage::BYTE1 || pixel_format == PixelStorage::BYTE2 || pixel_format == PixelStorage::BYTE4;
 }
 
-OC_NDSC_INLINE bool is_8bit(PixelFormat pixel_format) noexcept {
-    return pixel_format == PixelFormat::R8U || pixel_format == PixelFormat::RG8U || pixel_format == PixelFormat::RGBA8U;
-}
-
-OC_NDSC_INLINE bool is_32bit(PixelFormat pixel_format) noexcept {
-    return pixel_format == PixelFormat::R32F || pixel_format == PixelFormat::RG32F || pixel_format == PixelFormat::RGBA32F;
+OC_NDSC_INLINE bool is_32bit(PixelStorage pixel_format) noexcept {
+    return pixel_format == PixelStorage::FLOAT1 || pixel_format == PixelStorage::FLOAT2 || pixel_format == PixelStorage::FLOAT4;
 }
 
 OC_NDSC_INLINE size_t channel_num(PixelStorage pixel_storage) {
@@ -145,34 +86,30 @@ OC_NDSC_INLINE size_t channel_num(PixelStorage pixel_storage) {
     return 4u;
 }
 
-OC_NDSC_INLINE size_t channel_num(PixelFormat pixel_format) noexcept {
-    return channel_num(format_to_storage(pixel_format));
-}
-
 class ImageBase : public concepts::Noncopyable {
 protected:
-    PixelFormat _pixel_format{PixelFormat::UNKNOWN};
+    PixelStorage _pixel_storage{PixelStorage::UNKNOWN};
     uint2 _resolution{};
 
 public:
-    ImageBase(PixelFormat pixel_format, uint2 resolution)
-        : _pixel_format(pixel_format),
+    ImageBase(PixelStorage pixel_format, uint2 resolution)
+        : _pixel_storage(pixel_format),
           _resolution(resolution) {}
     ImageBase(ImageBase &&other) noexcept {
-        _pixel_format = other._pixel_format;
+        _pixel_storage = other._pixel_storage;
         _resolution = other._resolution;
     }
     ImageBase() = default;
     ImageBase &operator=(ImageBase &&) = default;
-    [[nodiscard]] int channel_num() const { return ::ocarina::channel_num(_pixel_format); }
+    [[nodiscard]] int channel_num() const { return ::ocarina::channel_num(_pixel_storage); }
     [[nodiscard]] uint2 resolution() const { return _resolution; }
     [[nodiscard]] uint width() const { return _resolution.x; }
     [[nodiscard]] uint height() const { return _resolution.y; }
-    [[nodiscard]] PixelFormat pixel_format() const { return _pixel_format; }
-    [[nodiscard]] size_t pitch_byte_size() const { return _resolution.x * pixel_size(_pixel_format); }
+    [[nodiscard]] PixelStorage pixel_storage() const { return _pixel_storage; }
+    [[nodiscard]] size_t pitch_byte_size() const { return _resolution.x * pixel_size(_pixel_storage); }
     [[nodiscard]] size_t pixel_num() const { return _resolution.x * _resolution.y; }
     [[nodiscard]] size_t size_in_bytes() const {
-        return pixel_size(_pixel_format) * pixel_num() * channel_num();
+        return pixel_size(_pixel_storage) * pixel_num() * channel_num();
     }
 };
 
