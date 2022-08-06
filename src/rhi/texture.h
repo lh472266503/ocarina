@@ -28,7 +28,9 @@ public:
     [[nodiscard]] handle_ty handle() const noexcept { return impl()->handle(); }
     [[nodiscard]] PixelStorage pixel_storage() const noexcept { return impl()->pixel_storage(); }
     [[nodiscard]] TextureUploadCommand *upload(const void *data) const noexcept;
-    [[nodiscard]] TextureDownloadCommand *download(const void *data) const noexcept;
+    [[nodiscard]] TextureUploadCommand *upload_sync(const void *data) const noexcept;
+    [[nodiscard]] TextureDownloadCommand *download(void *data) const noexcept;
+    [[nodiscard]] TextureDownloadCommand *download_sync(void *data) const noexcept;
 };
 
 }// namespace ocarina
