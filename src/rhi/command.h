@@ -146,7 +146,7 @@ public:
     [[nodiscard]] PixelStorage pixel_storage() const noexcept { return _pixel_storage; }
     [[nodiscard]] size_t width() const noexcept { return _resolution.x; }
     [[nodiscard]] size_t height() const noexcept { return _resolution.y; }
-    [[nodiscard]] size_t width_in_bytes() const noexcept { return pixel_size(_pixel_storage) * channel_num(_pixel_storage) * width(); }
+    [[nodiscard]] size_t width_in_bytes() const noexcept { return pixel_size(_pixel_storage) * width(); }
     [[nodiscard]] size_t size_in_bytes() const noexcept { return height() * width_in_bytes(); }
     [[nodiscard]] uint2 resolution() const noexcept { return _resolution; }
 };
