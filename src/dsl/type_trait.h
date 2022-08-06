@@ -185,10 +185,13 @@ using is_same_expr = concepts::is_same<expr_value_t<T>...>;
 template<typename... T>
 constexpr auto is_same_expr_v = is_same_expr<T...>::value;
 
-#define EXPR_TYPE_TRAITS(type)                           \
-    template<typename T>                                 \
-    using is_##type##_expr = is_##type<expr_value_t<T>>; \
-    OC_DEFINE_TEMPLATE_VALUE(is_##type##_expr)
+#define EXPR_TYPE_TRAITS(type)                                                    \
+    template<typename T>                                                          \
+    using is_##type##_expr = is_##type<expr_value_t<T>>;                          \
+    OC_DEFINE_TEMPLATE_VALUE(is_##type##_expr)                                    \
+    template<typename... T>                                                       \
+    using is_all_##type##_expr = std::disjunction<is_##type<expr_value_t<T>>...>; \
+    OC_DEFINE_TEMPLATE_VALUE_MULTI(is_all_##type##_expr)
 
 EXPR_TYPE_TRAITS(integral)
 EXPR_TYPE_TRAITS(boolean)
@@ -248,6 +251,8 @@ class Buffer;
 
 template<typename T>
 class BufferView;
+
+class RHITexture;
 
 namespace detail {
 

@@ -88,6 +88,21 @@ struct EnableReadAndWrite {
 };
 
 template<typename T>
+struct EnableSample {
+
+    template<typename U, typename V>
+    requires(is_all_floating_point_expr_v<U, V>)
+    OC_NODISCARD auto sample(const U &u, const V &v) const noexcept {
+    }
+
+    template<typename T>
+    requires(is_float_vector2_v<expr_value_t<T>>)
+    OC_NODISCARD auto sample(const T &uv) const noexcept {
+        return sample(uv.x, uv.y);
+    }
+};
+
+template<typename T>
 struct EnableGetMemberByIndex {
     using element_type = std::remove_cvref_t<decltype(std::declval<expr_value_t<T>>()[0])>;
     template<int i>
@@ -111,7 +126,8 @@ template<typename T>
 struct EnableStaticCast {
     template<class Dest>
     requires concepts::static_convertible<Dest, expr_value_t<T>>
-    [[nodiscard]] Expr<Dest> cast() const noexcept {
+    OC_NODISCARD Expr<Dest>
+    cast() const noexcept {
         const CastExpr *expr = Function::current()->cast(Type::of<Dest>(), CastOp::STATIC,
                                                          static_cast<const T *>(this)->expression());
         return make_expr<Dest>(expr);
@@ -122,7 +138,8 @@ template<typename T>
 struct EnableBitwiseCast {
     template<class Dest>
     requires concepts::bitwise_convertible<Dest, expr_value_t<T>>
-    [[nodiscard]] Expr<Dest> as() const noexcept {
+    OC_NODISCARD Expr<Dest>
+    as() const noexcept {
         const CastExpr *expr = Function::current()->cast(Type::of<Dest>(), CastOp::BITWISE,
                                                          static_cast<const T *>(this)->expression());
         return make_expr<Dest>(expr);
@@ -210,6 +227,12 @@ struct Computable<Buffer<T>>
     : detail::EnableReadAndWrite<Computable<Buffer<T>>>,
       detail::EnableSubscriptAccess<Computable<Buffer<T>>> {
     OC_COMPUTABLE_COMMON(Computable<Buffer<T>>)
+};
+
+template<>
+struct Computable<RHITexture>
+    : detail::EnableSample<Computable<RHITexture>> {
+    OC_COMPUTABLE_COMMON(Computable<RHITexture>)
 };
 
 template<size_t N>

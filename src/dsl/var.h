@@ -66,43 +66,9 @@ struct Var : public Computable<T> {
 };
 
 template<typename T>
-struct Var<Vector<T, 2>> : Computable<Vector<T, 2>> {
-    using this_type = Vector<T, 2>;
-    OC_MAKE_VAR_COMMON
-    Var(const Var<T> &x_, const Var<T> &y_)
-        : Var() {
-        detail::assign(this->x, x_);
-        detail::assign(this->y, y_);
-    }
-};
-
-template<typename T>
-struct Var<Vector<T, 3>> : Computable<Vector<T, 3>> {
-    using this_type = Vector<T, 3>;
-    OC_MAKE_VAR_COMMON
-    Var(const Var<T> &x_, const Var<T> &y_, const Var<T> &z_)
-        : Var() {
-        detail::assign(this->x, x_);
-        detail::assign(this->y, y_);
-        detail::assign(this->z, z_);
-    }
-};
-
-template<typename T>
-struct Var<Vector<T, 4>> : Computable<Vector<T, 4>> {
-    using this_type = Vector<T, 4>;
-    OC_MAKE_VAR_COMMON
-    Var(const Var<T> &x_, const Var<T> &y_, const Var<T> &z_, const Var<T> &w_)
-        : Var() {
-        detail::assign(this->x, x_);
-        detail::assign(this->y, y_);
-        detail::assign(this->z, z_);
-        detail::assign(this->w, w_);
-    }
-};
-
-template<typename T>
 using BufferVar = Var<Buffer<T>>;
+
+using TextureVar = Var<RHITexture>;
 
 template<typename T>
 Var(T &&) -> Var<expr_value_t<T>>;

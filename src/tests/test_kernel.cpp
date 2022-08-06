@@ -11,6 +11,7 @@
 #include "math/base.h"
 #include "backends/cuda/cuda_builtin_embed.h"
 #include "backends/cuda/cuda_math_embed.h"
+#include "util/image.h"
 
 using namespace ocarina;
 
@@ -31,12 +32,16 @@ int main(int argc, char *argv[]) {
     Device device = context.create_device("cuda");
     Stream stream = device.create_stream();
 
-    auto texture = device.create_texture(make_uint2(20), PixelStorage::BYTE4);
+    auto path2 = R"(E:/work/compile/ocarina/res/test.png)";
+    auto image = Image::load(path2, LINEAR);
+
+//    auto texture = device.create_texture(image.resolution(), PixelStorage::BYTE4);
+//    stream << texture.upload_sync(image.pixel_ptr());
 
     Buffer<float> f_buffer = device.create_buffer<float>(count);
     Kernel kn = [&](Var<float> a, Var<float> b, BufferVar<float> c) {
         //        configure_block(1,2,1);
-        Var<int3> vec{1, 2, 3};
+        Var<int3> vec = make_int3(1,2, a.cast<int>());
         Var<int> ii = 2;
         Var<int2> v22 = make_int2(ii, ii);
         Var<bool2> bv;
