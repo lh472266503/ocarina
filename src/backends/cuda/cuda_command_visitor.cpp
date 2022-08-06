@@ -55,7 +55,7 @@ namespace detail {
     memcpy_desc.srcY = 0;
     memcpy_desc.srcPitch = cmd->width_in_bytes();
     memcpy_desc.dstMemoryType = CU_MEMORYTYPE_ARRAY;
-    memcpy_desc.dstArray = reinterpret_cast<CUarray>(cmd->device_ptr());
+    memcpy_desc.dstArray = cmd->device_ptr<CUarray>();
     memcpy_desc.dstXInBytes = 0;
     memcpy_desc.dstY = 0;
     memcpy_desc.WidthInBytes = cmd->width_in_bytes();

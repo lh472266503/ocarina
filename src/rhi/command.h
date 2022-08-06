@@ -100,6 +100,9 @@ protected:
 public:
     template<typename T = handle_ty>
     [[nodiscard]] T host_ptr() const noexcept { return reinterpret_cast<T>(_host_ptr); }
+    [[nodiscard]] handle_ty host_ptr() const noexcept { return _host_ptr; }
+    template<typename T>
+    [[nodiscard]] T device_ptr() const noexcept { return reinterpret_cast<T>(_device_ptr); }
     [[nodiscard]] handle_ty device_ptr() const noexcept { return _device_ptr; }
 };
 
