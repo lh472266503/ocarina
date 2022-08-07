@@ -24,7 +24,7 @@ using detail::Computable;
     Var() noexcept : Var(ocarina::Function::current()->local(ocarina::Type::of<this_type>())) {}                \
     template<typename Arg>                                                                                      \
     requires ocarina::concepts::non_pointer<std::remove_cvref_t<Arg>> &&                                        \
-        OC_ASSIGN_CHECK(ocarina::expr_value_t<std::remove_cvref_t<this_type>>, ocarina::expr_value_t<Arg>)      \
+             OC_ASSIGN_CHECK(ocarina::expr_value_t<std::remove_cvref_t<this_type>>, ocarina::expr_value_t<Arg>) \
     Var(Arg &&arg) : Var() {                                                                                    \
         ocarina::detail::assign(*this, std::forward<Arg>(arg));                                                 \
     }                                                                                                           \

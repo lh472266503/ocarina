@@ -93,12 +93,12 @@ struct EnableSample {
     template<typename U, typename V>
     requires(is_all_floating_point_expr_v<U, V>)
     OC_NODISCARD auto sample(const U &u, const V &v) const noexcept {
-//        const SampleExpr *expr = Function::current()->sample()
+//        const CallExpr *expr = Function::current()->c
     }
 
-    template<typename T>
-    requires(is_float_vector2_v<expr_value_t<T>>)
-    OC_NODISCARD auto sample(const T &uv) const noexcept {
+    template<typename UV>
+    requires(is_float_vector2_v<expr_value_t<UV>>)
+    OC_NODISCARD auto sample(const UV &uv) const noexcept {
         return sample(uv.x, uv.y);
     }
 };

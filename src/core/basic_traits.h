@@ -17,6 +17,14 @@ namespace ocarina {
     template<typename... T>                           \
     constexpr auto template_name##_v = template_name<T...>::value;
 
+#define OC_DEFINE_TEMPLATE_TYPE(template_name) \
+    template<typename T>                       \
+    using template_name##_t = typename template_name<T>::type;
+
+#define OC_DEFINE_TEMPLATE_TYPE_MULTI(template_name) \
+    template<typename... T>                          \
+    using template_name##_t = typename template_name<T...>::type;
+
 template<typename... T>
 struct always_false : std::false_type {};
 
@@ -61,6 +69,12 @@ template<typename T>
 constexpr auto is_floating_point_v = is_floating_point<T>::value;
 
 template<typename T>
+using is_char = std::is_same<std::remove_cvref_t<T>, char>;
+
+template<typename T>
+using is_uchar = std::is_same<std::remove_cvref<T>, uchar>;
+
+template<typename T>
 using is_signed = std::disjunction<
     is_floating_point<T>,
     std::is_same<std::remove_cvref_t<T>, int>>;
@@ -77,14 +91,16 @@ constexpr auto is_unsigned_v = is_unsigned<T>::value;
 template<typename T>
 using is_scalar = std::disjunction<is_integral<T>,
                                    is_boolean<T>,
-                                   std::is_floating_point<T>>;
+                                   is_char<T>,
+                                   is_uchar<T>,
+                                   ocarina::is_floating_point<T>>;
 
 template<typename T>
 constexpr auto is_scalar_v = is_scalar<T>::value;
 
 template<typename T>
 using is_number = std::disjunction<is_integral<T>,
-                                   std::is_floating_point<T>>;
+                                   ocarina::is_floating_point<T>>;
 
 template<typename T>
 constexpr auto is_number_v = is_number<T>::value;
@@ -178,11 +194,31 @@ using matrix_dimension = detail::matrix_dimension_impl<std::remove_cvref_t<T>>;
 template<typename T>
 constexpr auto matrix_dimension_v = matrix_dimension<T>::value;
 
+namespace detail {
 template<typename T>
-using vector_element = detail::vector_element_impl<std::remove_cvref_t<T>>;
+struct type_dimension_impl {
+    static constexpr size_t value = 1;
+};
+
+template<typename T, size_t N>
+struct type_dimension_impl<Vector<T, N>> {
+    static constexpr size_t value = N;
+};
+
+template<size_t N>
+struct type_dimension_impl<Matrix<N>> {
+    static constexpr size_t value = N;
+};
+
+}// namespace detail
 
 template<typename T>
-using vector_element_t = typename vector_element<T>::type;
+using type_dimension = detail::type_dimension_impl<std::remove_cvref_t<T>>;
+OC_DEFINE_TEMPLATE_VALUE(type_dimension)
+
+template<typename T>
+using vector_element = detail::vector_element_impl<std::remove_cvref_t<T>>;
+OC_DEFINE_TEMPLATE_TYPE(vector_element)
 
 template<typename T, size_t N = 0u>
 using is_vector = detail::is_vector_impl<std::remove_cvref_t<T>, N>;
