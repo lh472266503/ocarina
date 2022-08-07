@@ -57,6 +57,7 @@ class Buffer : public RHIResource {
 public:
     static constexpr size_t element_size = sizeof(T);
     using element_type = T;
+
 private:
     size_t _size{};
 
@@ -73,16 +74,20 @@ public:
     auto operator[](int i) { return T{}; }
 
     template<typename Index>
-    requires ocarina::is_integral_v<expr_value_t<Index>>
-    [[nodiscard]] auto read(Index &&index) {
-        const UniformBinding &uniform = Function::current()->get_uniform_var(Type::of<Buffer<T>>(), handle());
+    requires ocarina::is_integral_v<expr_value_t<Index>> [
+        [nodiscard]] auto
+    read(Index &&index) {
+        const UniformBinding &uniform = Function::current()->get_uniform_var(Type::of<Buffer<T>>(),
+                                                                             handle(), Variable::Tag::BUFFER);
         return make_expr<Buffer<T>>(uniform.expression()).read(OC_FORWARD(index));
     }
 
     template<typename Index, typename Val>
     requires concepts::integral<expr_value_t<Index>> && concepts::is_same_v<element_type, expr_value_t<Val>>
     void write(Index &&index, Val &&elm) {
-        const UniformBinding &uniform = Function::current()->get_uniform_var(Type::of<Buffer<T>>(), handle());
+        const UniformBinding &uniform = Function::current()->get_uniform_var(Type::of<Buffer<T>>(),
+                                                                             handle(),
+                                                                             Variable::Tag::BUFFER);
         const AccessExpr *expr = Function::current()->access(Type::of<element_type>(),
                                                              uniform.expression(),
                                                              OC_EXPR(index));

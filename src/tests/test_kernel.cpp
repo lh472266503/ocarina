@@ -44,8 +44,8 @@ int main(int argc, char *argv[]) {
         Var<bool2> bv;
 
         Var tex_v = tex.sample(0.51f, 0.5f);
+//        Var tv2 = texture.sample(0.51f, 0.5f);
 
-//        Var vf = vec.cast<float3>();
         Var vv = all(bv);
         Var f = 0.5f;
         f = fma(f, a, b);
@@ -62,24 +62,24 @@ int main(int argc, char *argv[]) {
 
     auto shader = device.compile(kn);
     //    shader.compute_fit_size();
-
+//    return 0;
     stream << f_buffer.upload_sync(v.data());
     stream << shader(1.f, 6.f, f_buffer, texture).dispatch(10);
     stream << synchronize();
     stream << f_buffer.download_sync(v.data());
     stream << commit();
-    for (int i = 0; i < count; ++i) {
-        cout << v[i] << endl;
-    }
+//    for (int i = 0; i < count; ++i) {
+//        cout << v[i] << endl;
+//    }
 
-//    stream << shader(3.f, 6.f, f_buffer).dispatch(10);
+    stream << shader(3.f, 6.f, f_buffer, texture).dispatch(10);
     stream << synchronize();
     stream << f_buffer.download_sync(v.data());
     stream << commit();
     //
-        for (int i = 0; i < count; ++i) {
-            cout << v[i] << endl;
-        }
+//        for (int i = 0; i < count; ++i) {
+//            cout << v[i] << endl;
+//        }
 
     return 0;
 }

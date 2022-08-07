@@ -27,6 +27,23 @@ public:
                         PixelStorage pixel_storage)
         : RHIResource(device, Tag::TEXTURE,
                       device->create_texture(res, pixel_storage)) {}
+
+    /// for dsl
+    template<typename U, typename V>
+    requires(is_all_floating_point_expr_v<U, V>)
+    [[nodiscard]] auto sample(const U &u, const V &v) const noexcept {
+        const UniformBinding &uniform = Function::current()->get_uniform_var(Type::of<RHITexture<T>>(),
+                                                                             read_handle(),
+                                                                             Variable::Tag::TEXTURE);
+        return make_expr<RHITexture<T>>(uniform.expression()).sample(u, v);
+    }
+
+    template<typename UV>
+    requires(is_float_vector2_v<expr_value_t<UV>>)
+    OC_NODISCARD auto sample(const UV &uv) const noexcept {
+        return sample(uv.x, uv.y);
+    }
+
     [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
     [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(_handle); }
     [[nodiscard]] uint2 resolution() const noexcept { return impl()->resolution(); }

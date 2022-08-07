@@ -37,7 +37,9 @@ public:
 
     [[nodiscard]] const Type *type() const noexcept { return _type; }
     [[nodiscard]] handle_ty handle() const noexcept { return _handle; }
-    [[nodiscard]] const handle_ty *handle_address() const noexcept { return &_handle; }
+    [[nodiscard]] const handle_ty *handle_address() const noexcept {
+        return &_handle;
+    }
     [[nodiscard]] const RefExpr *expression() const noexcept { return _expr; }
 };
 
@@ -147,7 +149,7 @@ public:
         }
     }
     void add_used_structure(const Type *type) noexcept { _used_struct.emplace(type); }
-    const UniformBinding & get_uniform_var(const Type *type, handle_ty handle) noexcept;
+    const UniformBinding & get_uniform_var(const Type *type, handle_ty handle, Variable::Tag tag) noexcept;
     [[nodiscard]] auto uniform_vars() const noexcept { return _uniform_vars; }
     template<typename Visitor>
     void for_each_uniform_var(Visitor &&visitor) const noexcept {
