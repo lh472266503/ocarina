@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
         Var<int2> v22 = make_int2(ii, ii);
         Var<bool2> bv;
 
-        Var<float4> tex_v = tex.sample(0.5f, 0.5f);
+        Var tex_v = tex.sample(0.51f, 0.5f);
 
 //        Var vf = vec.cast<float3>();
         Var vv = all(bv);
@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
         vec2 = -vec2;
         //        Var<bool3> pred = vec > make_int3(5);
         vec = select(vec > make_int3(5), vec, -vec);
-        print("{}, {}---------{}--", sqr(a), f, f_buffer.read(5));
+        print("{}, {}---------{}--{}", sqr(a), f, f_buffer.read(5), tex_v.x);
         f_buffer.write(thread_id(), f_buffer.read(thread_id()) * 2);
         c.write(thread_id(), c.read(thread_id()) * 2);
         a = add(a, b);
@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
     //    shader.compute_fit_size();
 
     stream << f_buffer.upload_sync(v.data());
-//    stream << shader(1.f, 6.f, f_buffer).dispatch(10);
+    stream << shader(1.f, 6.f, f_buffer, texture).dispatch(10);
     stream << synchronize();
     stream << f_buffer.download_sync(v.data());
     stream << commit();

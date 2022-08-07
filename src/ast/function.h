@@ -99,7 +99,7 @@ private:
         _all_expressions.push_back(std::move(expr));
         return ret;
     }
-    [[nodiscard]] const RefExpr *_ref(Variable variable) noexcept {
+    [[nodiscard]] const RefExpr *_ref(const Variable& variable) noexcept {
         return _create_expression<RefExpr>(variable);
     }
 

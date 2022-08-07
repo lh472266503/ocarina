@@ -26,8 +26,11 @@ public:
     [[nodiscard]] uint2 resolution() const noexcept override { return _res; }
     [[nodiscard]] CUarray array_handle() const noexcept { return _array_handle; }
     [[nodiscard]] CUsurfObject surface_handle() const noexcept { return _surface_handle; }
-    [[nodiscard]] CUtexObject tex_handle() const noexcept { return _tex_handle; }
-    [[nodiscard]] handle_ty handle() const noexcept override { return reinterpret_cast<handle_ty>(array_handle());}
+    [[nodiscard]] CUtexObject read_handle() const noexcept override { return _tex_handle; }
+    [[nodiscard]] handle_ty write_handle() const noexcept override { return reinterpret_cast<handle_ty>(array_handle()); }
+    [[nodiscard]] const handle_ty *read_handle_address() const noexcept override {
+        return &_tex_handle;
+    }
     [[nodiscard]] PixelStorage pixel_storage() const noexcept override { return _pixel_storage; }
 };
 }// namespace ocarina

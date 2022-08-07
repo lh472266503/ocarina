@@ -40,7 +40,15 @@ private:
         OC_ASSERT(_cursor < Size);
     }
 
-public:
+    template<typename T>
+    void _encode_texture(const RHITexture<T> &texture) noexcept {
+        _cursor = mem_offset(_cursor, alignof(handle_ty));
+        _args.push_back(const_cast<handle_ty *>(texture.read_handle_address()));
+        _cursor += sizeof(handle_ty);
+        OC_ASSERT(_cursor < Size);
+    }
+
+    public:
     ArgumentList() = default;
     [[nodiscard]] span<void *> ptr() noexcept { return _args; }
     [[nodiscard]] size_t num() const noexcept { return _args.size(); }
@@ -51,6 +59,8 @@ public:
             _encode_basic(OC_FORWARD(arg));
         } else if constexpr (is_buffer_v<T>) {
             _encode_buffer(OC_FORWARD(arg));
+        } else if constexpr (is_texture_v<T>){
+            _encode_texture(OC_FORWARD(arg));
         }
         return *this;
     }

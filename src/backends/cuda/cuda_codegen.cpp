@@ -75,7 +75,7 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         case CallOp::MAKE_FLOAT3X3: OC_GEN_FUNC_NAME(make_float3x3); break;
         case CallOp::MAKE_FLOAT4X4: OC_GEN_FUNC_NAME(make_float4x4); break;
         case CallOp::TEX_SAMPLE:
-            current_scratch() << "tex_sample_float" << expr->type()->dimension();
+            current_scratch() << "oc_tex_sample_float" << expr->type()->dimension();
             break;
         case CallOp::COUNT: break;
         default: OC_ASSERT(0); break;
