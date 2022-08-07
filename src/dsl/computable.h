@@ -93,7 +93,15 @@ struct EnableSample {
     template<typename U, typename V>
     requires(is_all_floating_point_expr_v<U, V>)
     OC_NODISCARD auto sample(const U &u, const V &v) const noexcept {
-//        const CallExpr *expr = Function::current()->c
+        using texture_type = expr_value_t<T>;
+        using element_type = texture_element_t<texture_type>;
+        const T *texture = static_cast<const T *>(this);
+        using sample_type = texture_sample_t<element_type>;
+        const CallExpr *expr = Function::current()->call_builtin(Type::of<sample_type>(),
+                                                                 {OC_EXPR(texture),
+                                                                  OC_EXPR(u),
+                                                                  OC_EXPR(v)});
+        return make_expr<sample_type>(expr);
     }
 
     template<typename UV>

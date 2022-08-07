@@ -324,4 +324,8 @@ template<typename T>
 using is_texture = detail::is_texture_impl<std::remove_cvref_t<T>>;
 OC_DEFINE_TEMPLATE_VALUE(is_texture)
 
+template<typename T>
+using texture_element = detail::texture_element_impl<std::remove_cvref_t<T>>;
+OC_DEFINE_TEMPLATE_TYPE(texture_element)
+
 }// namespace ocarina

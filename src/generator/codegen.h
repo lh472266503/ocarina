@@ -19,9 +19,9 @@ struct LiteralPrinter;
 
 }// namespace detail
 
-class Codegen {
+class OC_GENERATOR_API Codegen {
 protected:
-    class Scratch {
+    class OC_GENERATOR_API Scratch {
     private:
         ocarina::string _buffer;
 

@@ -29,10 +29,10 @@
 #define OC_DSL_API __declspec(dllimport)
 #endif
 
-#ifdef OC_COMPILE_EXPORT_DLL
-#define OC_COMPILE_API __declspec(dllexport)
+#ifdef OC_GENERATOR_EXPORT_DLL
+#define OC_GENERATOR_API __declspec(dllexport)
 #else
-#define OC_COMPILE_API __declspec(dllimport)
+#define OC_GENERATOR_API __declspec(dllimport)
 #endif
 
 #ifdef OC_RUNTIME_EXPORT_DLL

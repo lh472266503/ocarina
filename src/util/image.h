@@ -37,8 +37,8 @@ public:
     static Image from_data(T *data, uint2 res) {
         size_t size_in_bytes = sizeof(T) * res.x * res.y;
         auto pixel = allocate(size_in_bytes);
-        auto pixel_format = PixelFormatImpl<T>::format;
-        std::memcpy(pixel, data, size_in_bytes);
+        auto pixel_format = PixelStorageImpl<T>::storage;
+        oc_memcpy(pixel, data, size_in_bytes);
         return {pixel_format, pixel, res};
     }
     /**
