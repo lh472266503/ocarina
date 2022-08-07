@@ -522,7 +522,7 @@ def save_to_inl(var_name, content, fn):
 
 def convert_cuda_math():
     curr_dir = dirname(realpath(__file__))
-    cuda_math = "cuda_math"
+    cuda_math = "cuda_device_math"
 
     print(os.path.join(curr_dir, cuda_math + ".h"))
     
@@ -551,7 +551,7 @@ def main():
 
     content += "\n "
 
-    cuda_builtin = "cuda_builtin"
+    cuda_builtin = "cuda_device_builtin"
     with open(os.path.join(curr_dir, cuda_builtin + ".h"), "w") as file:
         file.write(content)
         file.close()

@@ -9,8 +9,6 @@
 #include "rhi/common.h"
 #include <windows.h>
 #include "math/base.h"
-#include "backends/cuda/cuda_builtin_embed.h"
-#include "backends/cuda/cuda_math_embed.h"
 #include "util/image.h"
 
 using namespace ocarina;
