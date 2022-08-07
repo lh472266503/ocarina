@@ -150,7 +150,7 @@ public:
     }
     void add_used_structure(const Type *type) noexcept { _used_struct.emplace(type); }
     const UniformBinding & get_uniform_var(const Type *type, handle_ty handle, Variable::Tag tag) noexcept;
-    [[nodiscard]] auto uniform_vars() const noexcept { return _uniform_vars; }
+    [[nodiscard]] auto &uniform_vars() const noexcept { return _uniform_vars; }
     template<typename Visitor>
     void for_each_uniform_var(Visitor &&visitor) const noexcept {
         for (const UniformBinding &uniform : _uniform_vars) {

@@ -112,7 +112,9 @@ public:
         Shader &operator()(A &&...args) noexcept {
         _argument_list.clear();
         (_argument_list << ... << OC_FORWARD(args));
-
+        for (const auto &uniform : _function.uniform_vars()) {
+            _argument_list.push_handle_address(const_cast<handle_ty *>(uniform.handle_address()));
+        }
         return *this;
     }
 };

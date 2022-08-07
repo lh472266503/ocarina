@@ -16,13 +16,13 @@ CUDAShader::CUDAShader(Device::Impl *device,
     OC_CU_CHECK(cuModuleLoadData(&_module, ptx.c_str()));
     OC_CU_CHECK(cuModuleGetFunction(&_func_handle, _module, _function.func_name().c_str()));
 
-    _function.for_each_uniform_var([&](const UniformBinding &uniform) {
-        const string &var_name = uniform.expression()->variable().name();
-        CUdeviceptr ptr{};
-        size_t size{};
-        OC_CU_CHECK(cuModuleGetGlobal(&ptr, &size, _module, var_name.c_str()));
-        OC_CU_CHECK(cuMemcpyHtoD(ptr, uniform.handle_address(), size));
-    });
+//    _function.for_each_uniform_var([&](const UniformBinding &uniform) {
+//        const string &var_name = uniform.expression()->variable().name();
+//        CUdeviceptr ptr{};
+//        size_t size{};
+//        OC_CU_CHECK(cuModuleGetGlobal(&ptr, &size, _module, var_name.c_str()));
+//        OC_CU_CHECK(cuMemcpyHtoD(ptr, uniform.handle_address(), size));
+//    });
 }
 
 CUDAShader::~CUDAShader() {
@@ -39,7 +39,6 @@ void CUDAShader::launch(handle_ty stream, ShaderDispatchCommand *cmd) noexcept {
     } else {
         grid_dim = (cmd->dispatch_dim() + block_dim - 1u) / block_dim;
     }
-
     OC_CU_CHECK(cuLaunchKernel(_func_handle, grid_dim.x, grid_dim.y, grid_dim.z,
                                block_dim.x, block_dim.y, block_dim.z,
                                0, reinterpret_cast<CUstream>(stream), cmd->args().data(), nullptr));
