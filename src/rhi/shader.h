@@ -34,25 +34,28 @@ private:
 
     template<typename T>
     void _encode_buffer(const Buffer<T> &buffer) noexcept {
-        _cursor = mem_offset(_cursor, alignof(handle_ty));
-        _args.push_back(const_cast<handle_ty *>(buffer.handle_address()));
-        _cursor += sizeof(handle_ty);
-        OC_ASSERT(_cursor < Size);
+        push_handle_address(const_cast<handle_ty *>(buffer.handle_address()));
     }
 
     template<typename T>
     void _encode_texture(const RHITexture<T> &texture) noexcept {
-        _cursor = mem_offset(_cursor, alignof(handle_ty));
-        _args.push_back(const_cast<handle_ty *>(texture.read_handle_address()));
-        _cursor += sizeof(handle_ty);
-        OC_ASSERT(_cursor < Size);
+        push_handle_address(const_cast<handle_ty *>(texture.read_handle_address()));
     }
 
-    public:
+
+public:
     ArgumentList() = default;
     [[nodiscard]] span<void *> ptr() noexcept { return _args; }
     [[nodiscard]] size_t num() const noexcept { return _args.size(); }
     void clear() noexcept { _cursor = 0; }
+
+    void push_handle_address(handle_ty *address) noexcept {
+        _cursor = mem_offset(_cursor, alignof(handle_ty));
+        _args.push_back(address);
+        _cursor += sizeof(handle_ty);
+        OC_ASSERT(_cursor < Size);
+    }
+
     template<typename T>
     ArgumentList &operator<<(T &&arg) {
         if constexpr (concepts::basic<T>) {
@@ -109,6 +112,7 @@ public:
         Shader &operator()(A &&...args) noexcept {
         _argument_list.clear();
         (_argument_list << ... << OC_FORWARD(args));
+
         return *this;
     }
 };

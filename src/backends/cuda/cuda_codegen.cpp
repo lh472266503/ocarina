@@ -180,6 +180,10 @@ void CUDACodegen::_emit_uniform_var(const UniformBinding &uniform) noexcept {
     _emit_newline();
 }
 
+void CUDACodegen::_emit_arguments(const Function &f) noexcept {
+    CppCodegen::_emit_arguments(f);
+}
+
 void CUDACodegen::_emit_type_name(const Type *type) noexcept {
     if (type == nullptr) {
         current_scratch() << "void";

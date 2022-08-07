@@ -402,6 +402,10 @@ void CppCodegen::_emit_arguments(const Function &f) noexcept {
         _emit_variable_define(v);
         current_scratch() << ",";
     }
+//    for (const auto &uniform : f.uniform_vars()) {
+//        _emit_variable_define(uniform.expression()->variable());
+//        current_scratch() << ",";
+//    }
     if (!f.arguments().empty()) {
         current_scratch().pop_back();
     }

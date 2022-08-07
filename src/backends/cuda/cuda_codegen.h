@@ -13,6 +13,7 @@ protected:
     void visit(const CallExpr *expr) noexcept override;
     void _emit_function(const Function &f) noexcept override;
     void _emit_type_name(const Type *type) noexcept override;
+    void _emit_arguments(const Function &f) noexcept override;
     void _emit_builtin_var(Variable v) noexcept override;
     void _emit_uniform_var(const UniformBinding &uniform) noexcept override;
     void _emit_builtin_vars_define(const Function &f) noexcept override;
