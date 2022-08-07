@@ -40,7 +40,6 @@ protected:
     void visit(const RefExpr *expr) noexcept override;
     void visit(const CallExpr *expr) noexcept override;
     void visit(const CastExpr *expr) noexcept override;
-    void visit(const SampleExpr *expr) noexcept override;
 
     void visit(const Type *type) noexcept override;
 

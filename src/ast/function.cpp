@@ -129,10 +129,6 @@ const MemberExpr *Function::member(const Type *type, const Expression *obj, int 
     return _create_expression<MemberExpr>(type, obj, index, 0);
 }
 
-const SampleExpr *Function::sample(const Type *type, const Expression *tex, const Expression *s, const Expression *t) noexcept {
-    return _create_expression<SampleExpr>(type, tex, s, t);
-}
-
 const CallExpr *Function::call(const Type *type, const Function *func,
                                ocarina::vector<const Expression *> args) noexcept {
     add_used_function(func);

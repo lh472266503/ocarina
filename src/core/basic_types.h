@@ -138,12 +138,24 @@ using basic_types = ocarina::tuple<
     bool4, float4, int4, uint4,
     float2x2, float3x3, float4x4>;
 
+namespace detail {
 using texture_elements = ocarina::tuple<uchar, uchar2, uchar4, float, float2, float4>;
+template<typename T, typename... Ts>
+[[nodiscard]] constexpr bool is_contain(const ocarina::tuple<Ts...> *tp) noexcept {
+    return std::disjunction_v<std::is_same<T, Ts>...>;
+}
 
-//template<typename T, typename ...Ts>
-//bool is_contain(const ocarina::tuple<Ts...> *tp) noexcept {
-//
-//}
+template<typename T>
+[[nodiscard]] constexpr bool is_valid_texture_element_impl() noexcept {
+    return is_contain<T>(static_cast<texture_elements *>(nullptr));
+}
+
+}// namespace detail
+
+template<typename T>
+[[nodiscard]] constexpr bool is_valid_texture_element() noexcept {
+    return detail::is_valid_texture_element_impl<std::remove_cvref_t<T>>();
+}
 
 [[nodiscard]] constexpr bool any(const bool2 v) noexcept { return v.x || v.y; }
 [[nodiscard]] constexpr bool any(const bool3 v) noexcept { return v.x || v.y || v.z; }

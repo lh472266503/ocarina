@@ -21,7 +21,6 @@ class LiteralExpr;
 class RefExpr;
 class CallExpr;
 class CastExpr;
-class SampleExpr;
 
 class Function;
 
@@ -34,7 +33,6 @@ struct OC_AST_API ExprVisitor {
     virtual void visit(const RefExpr *) = 0;
     virtual void visit(const CallExpr *) = 0;
     virtual void visit(const CastExpr *) = 0;
-    virtual void visit(const SampleExpr *) = 0;
 };
 
 enum struct CastOp : uint32_t {
@@ -250,23 +248,4 @@ public:
     OC_MAKE_EXPRESSION_ACCEPT_VISITOR
 };
 
-class OC_AST_API SampleExpr : public Expression {
-private:
-    const Expression *_tex;
-    const Expression *_s;
-    const Expression *_t;
-
-private:
-    void _mark(Usage) const noexcept override {}
-    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
-
-public:
-    SampleExpr(const Type *type, const Expression *tex,
-               const Expression *s, const Expression *t)
-        : Expression(Tag::SAMPLE, type), _tex(tex), _s(s), _t(t) {}
-    [[nodiscard]] const Expression *texture() const noexcept { return _tex; }
-    [[nodiscard]] const Expression *s_tangent() const noexcept { return _s; }
-    [[nodiscard]] const Expression *t_tangent() const noexcept { return _t; }
-    OC_MAKE_EXPRESSION_ACCEPT_VISITOR
-};
 }// namespace ocarina

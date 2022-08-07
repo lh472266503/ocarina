@@ -50,10 +50,4 @@ uint64_t CallExpr::_compute_hash() const noexcept {
     return ret;
 }
 
-uint64_t SampleExpr::_compute_hash() const noexcept {
-    uint64_t ret = hash64(_tex->hash(), _s->hash());
-    ret = hash64(_t->hash(), ret);
-    return ret;
-}
-
 }// namespace ocarina

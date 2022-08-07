@@ -248,10 +248,6 @@ void CppCodegen::visit(const CastExpr *expr) noexcept {
     current_scratch() << ")";
 }
 
-void CppCodegen::visit(const SampleExpr *expr) noexcept {
-    OC_ERROR("cpp does not support sample expression!");
-}
-
 void CppCodegen::visit(const Type *type) noexcept {
     if (!type->is_structure() || has_generated(type)) { return; }
     current_scratch() << "struct ";

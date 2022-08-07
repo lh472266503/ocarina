@@ -102,6 +102,8 @@ enum struct CallOp : uint32_t {
     TRANSPOSE,
     INVERSE,
 
+    TEX_SAMPLE,
+
     SYNCHRONIZE_BLOCK,
 
     MAKE_BOOL2,
