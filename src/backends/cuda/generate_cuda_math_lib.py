@@ -494,23 +494,17 @@ def define_make_matrix():
         for t in range(i + 1, 5):
             content += f"[[nodiscard]] __device__ inline auto oc_make_float{i}x{i}(oc_float{t}x{t} m) noexcept {{ return oc_float{i}x{i}{{{', '.join(f'oc_make_float{i}(m[{j}])' for j in range(i))}}}; }}"
             content += "\n"
-    content += "\n"
 
-def define_tex_sample_function():
-    global content
-    tex_type = "cudaTextureObject_t"
-    types = ["float", "float2", "float4"]
-    for i, type in enumerate(types):
-        func = f"[[nodiscard]] __device__ auto tex_sample_{type}({tex_type} handle, oc_float u, oc_float v) noexcept {{\n"
-        func += get_indent(1) + f"auto ret = tex2D<{type}>(handle, u, 1 - v);\n"
-        if i == 0:
-            func += get_indent(1) + "return ret;\n}\n"
-        elif i == 1:
-            func += get_indent(1) + "return oc_make_float2(ret.x, ret.y);\n}\n"
-        elif i == 2:
-            func += get_indent(1) + "return oc_make_float4(ret.x, ret.y, ret.z, ret.w);\n}\n"
-            
-        content += func
+def convert_cuda_device_resource():
+    curr_dir = dirname(realpath(__file__))
+    cuda_device_resource = "cuda_device_resource"
+
+    print(os.path.join(curr_dir, cuda_device_resource + ".h"))
+    
+    with open(os.path.join(curr_dir, cuda_device_resource + ".h"), "r") as file:
+        string = file.read()
+        file.close()
+        save_to_inl(cuda_device_resource, string, os.path.join(curr_dir, cuda_device_resource + "_embed.h"))
 
 def save_to_inl(var_name, content, fn):
     string = f"static const char {var_name}[] = " + "{\n    "
@@ -550,10 +544,10 @@ def main():
     define_binary_funcs()
     define_triple_funcs()
     convert_cuda_math()
+    convert_cuda_device_resource()
     define_vec_func()
     define_make_vecs()
     define_make_matrix()
-    define_tex_sample_function()
 
     content += "\n "
 

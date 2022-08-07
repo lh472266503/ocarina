@@ -11,28 +11,30 @@
 #include <nvrtc.h>
 #include "cuda_builtin_embed.h"
 #include "cuda_math_embed.h"
+#include "cuda_device_resource_embed.h"
 
 namespace ocarina {
 
-#define CUDA_NVRTC_OPTIONS         \
-    "-std=c++17",                  \
-        "-arch",                   \
-        "compute_50",              \
-        "-use_fast_math",          \
-        "-lineinfo",               \
-        "-default-device",         \
-        "-include=cuda_builtin.h", \
-        "-include=cuda_math.h",    \
-        "-rdc",                    \
-        "true",                    \
+#define CUDA_NVRTC_OPTIONS                 \
+    "-std=c++17",                          \
+        "-arch",                           \
+        "compute_50",                      \
+        "-use_fast_math",                  \
+        "-lineinfo",                       \
+        "-default-device",                 \
+        "-include=cuda_builtin.h",         \
+        "-include=cuda_math.h",            \
+        "-include=cuda_device_resource.h", \
+        "-rdc",                            \
+        "true",                            \
         "-D__x86_64",
 
 namespace detail {
 [[nodiscard]] string get_ptx(const string &cu) noexcept {
     nvrtcProgram program{};
     ocarina::vector<const char *> compile_option = {CUDA_NVRTC_OPTIONS};
-    std::array header_names{"cuda_builtin.h", "cuda_math.h"};
-    std::array header_sources{cuda_builtin, cuda_math};
+    std::array header_names{"cuda_builtin.h", "cuda_math.h", "cuda_device_resource.h"};
+    std::array header_sources{cuda_builtin, cuda_math, cuda_device_resource};
 
     OC_NVRTC_CHECK(nvrtcCreateProgram(&program, cu.c_str(), "cuda_kernel.cu",
                                       header_names.size(), header_sources.data(),
