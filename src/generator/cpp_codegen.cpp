@@ -402,10 +402,12 @@ void CppCodegen::_emit_arguments(const Function &f) noexcept {
         _emit_variable_define(v);
         current_scratch() << ",";
     }
+#if CUDA_ARGUMENT_PUSH
     for (const auto &uniform : f.uniform_vars()) {
         _emit_variable_define(uniform.expression()->variable());
         current_scratch() << ",";
     }
+#endif
     if (!f.arguments().empty()) {
         current_scratch().pop_back();
     }
@@ -413,10 +415,11 @@ void CppCodegen::_emit_arguments(const Function &f) noexcept {
 }
 void CppCodegen::emit(const Function &func) noexcept {
     FUNCTION_GUARD(func)
-//    func.for_each_uniform_var([&](const UniformBinding &uniform) {
-//        _emit_uniform_var(uniform);
-//    });
-
+#if CUDA_ARGUMENT_PUSH == 0
+    func.for_each_uniform_var([&](const UniformBinding &uniform) {
+        _emit_uniform_var(uniform);
+    });
+#endif
     func.for_each_structure([&](const Type *type) {
         visit(type);
     });
