@@ -74,6 +74,9 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         case CallOp::MAKE_FLOAT2X2: OC_GEN_FUNC_NAME(make_float2x2); break;
         case CallOp::MAKE_FLOAT3X3: OC_GEN_FUNC_NAME(make_float3x3); break;
         case CallOp::MAKE_FLOAT4X4: OC_GEN_FUNC_NAME(make_float4x4); break;
+        case CallOp::TEX_SAMPLE:
+            current_scratch() << "tex_sample_float" << expr->type()->dimension();
+            break;
         case CallOp::COUNT: break;
         default: OC_ASSERT(0); break;
     }
@@ -208,7 +211,9 @@ void CUDACodegen::_emit_type_name(const Type *type) noexcept {
                 _emit_type_name(type->element());
                 current_scratch() << "*";
                 break;
-            case Type::Tag::TEXTURE: break;
+            case Type::Tag::TEXTURE:
+                current_scratch() << "cudaTextureObject_t";
+                break;
             case Type::Tag::BINDLESS_ARRAY: break;
             case Type::Tag::ACCEL: break;
             case Type::Tag::NONE: break;

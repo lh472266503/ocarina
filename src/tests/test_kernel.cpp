@@ -14,7 +14,6 @@
 using namespace ocarina;
 
 int main(int argc, char *argv[]) {
-
     ocarina::vector<float> v;
     const int count = 10;
     for (int i = 0; i < count; ++i) {
@@ -37,12 +36,15 @@ int main(int argc, char *argv[]) {
     stream << texture.upload_sync(image.pixel_ptr());
 
     Buffer<float> f_buffer = device.create_buffer<float>(count);
-    Kernel kn = [&](Var<float> a, Var<float> b, BufferVar<float> c) {
+    Kernel kn = [&](Var<float> a, Var<float> b, BufferVar<float> c, TextureVar<uchar4> tex) {
         //        configure_block(1,2,1);
         Var<int3> vec = make_int3(1,2, a.cast<int>());
         Var<int> ii = 2;
         Var<int2> v22 = make_int2(ii, ii);
         Var<bool2> bv;
+
+        Var<float4> tex_v = tex.sample(0.5f, 0.5f);
+
 //        Var vf = vec.cast<float3>();
         Var vv = all(bv);
         Var f = 0.5f;
@@ -62,7 +64,7 @@ int main(int argc, char *argv[]) {
     //    shader.compute_fit_size();
 
     stream << f_buffer.upload_sync(v.data());
-    stream << shader(1.f, 6.f, f_buffer).dispatch(10);
+//    stream << shader(1.f, 6.f, f_buffer).dispatch(10);
     stream << synchronize();
     stream << f_buffer.download_sync(v.data());
     stream << commit();
@@ -70,7 +72,7 @@ int main(int argc, char *argv[]) {
         cout << v[i] << endl;
     }
 
-    stream << shader(3.f, 6.f, f_buffer).dispatch(10);
+//    stream << shader(3.f, 6.f, f_buffer).dispatch(10);
     stream << synchronize();
     stream << f_buffer.download_sync(v.data());
     stream << commit();

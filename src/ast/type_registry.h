@@ -30,7 +30,7 @@ struct TypeDesc {
     static_assert(always_false_v<T>, "Invalid type.");
 };
 
-#define OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(S, tag)     \
+#define OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(S)     \
     template<>                                                         \
     struct TypeDesc<S> {                                               \
         static constexpr ocarina::string_view description() noexcept { \
@@ -60,10 +60,11 @@ struct TypeDesc {
         }                                                              \
     };
 
-OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(bool, BOOL)
-OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(float, FLOAT)
-OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(int, INT32)
-OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(uint, UINT32)
+OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(bool)
+OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(float)
+OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(int)
+OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(uint)
+OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(uchar)
 
 #undef OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION
 
@@ -127,7 +128,7 @@ struct TypeDesc<RHITexture<T>> {
     static_assert(is_valid_texture_element<T>(), "T is not a valid element in texture!");
     static ocarina::string_view description() noexcept {
         static thread_local auto s = ocarina::format(
-            FMT_STRING("Texture<{}>"),
+            FMT_STRING("texture<{}>"),
             TypeDesc<T>::description());
         return s;
     }
@@ -247,6 +248,7 @@ private:
     void parse_matrix(Type *type, ocarina::string_view desc) noexcept;
     void parse_array(Type *type, ocarina::string_view desc) noexcept;
     void parse_buffer(Type *type, ocarina::string_view desc) noexcept;
+    void parse_texture(Type *type, ocarina::string_view desc) noexcept;
     void parse_struct(Type *type, ocarina::string_view desc) noexcept;
 
 public:

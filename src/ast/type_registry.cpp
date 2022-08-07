@@ -119,12 +119,14 @@ const Type *TypeRegistry::parse_type(ocarina::string_view desc) noexcept {
         type->_alignment = alignof(T); \
         type->_description = #T;       \
         type->_tag = Type::Tag::TAG;   \
+        type->_dimension = 1;          \
     } else
 
     OC_PARSE_BASIC_TYPE(int, INT)
     OC_PARSE_BASIC_TYPE(uint, UINT)
     OC_PARSE_BASIC_TYPE(bool, BOOL)
     OC_PARSE_BASIC_TYPE(float, FLOAT)
+    OC_PARSE_BASIC_TYPE(uchar, UCHAR)
 
 #undef OC_PARSE_BASIC_TYPE
 
@@ -138,6 +140,8 @@ const Type *TypeRegistry::parse_type(ocarina::string_view desc) noexcept {
         parse_struct(type.get(), desc);
     } else if (desc.starts_with("buffer")) {
         parse_buffer(type.get(), desc);
+    } else if (desc.starts_with("texture")) {
+        parse_texture(type.get(), desc);
     } else {
         OC_ERROR("invalid data type ", desc);
     }
@@ -206,6 +210,16 @@ void TypeRegistry::parse_struct(Type *type, string_view desc) noexcept {
 
 void TypeRegistry::parse_buffer(Type *type, ocarina::string_view desc) noexcept {
     type->_tag = Type::Tag::BUFFER;
+    auto lst = detail::find_content(desc);
+    auto type_str = lst[0];
+    const Type *element_type = parse_type(type_str);
+    type->_members.push_back(element_type);
+    auto alignment = element_type->alignment();
+    type->_alignment = alignment;
+}
+
+void TypeRegistry::parse_texture(Type *type, ocarina::string_view desc) noexcept {
+    type->_tag = Type::Tag::TEXTURE;
     auto lst = detail::find_content(desc);
     auto type_str = lst[0];
     const Type *element_type = parse_type(type_str);

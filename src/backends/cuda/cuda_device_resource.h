@@ -1,5 +1,5 @@
 
-__device__ auto tex_sample_float(cudaTextureObject_t handle, oc_float u, oc_float v) noexcept {
+__device__ auto tex_sample_float1(cudaTextureObject_t handle, oc_float u, oc_float v) noexcept {
     auto ret = tex2D<float>(handle, u, 1 - v);
     return ret;
 }

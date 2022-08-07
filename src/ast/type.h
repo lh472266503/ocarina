@@ -275,6 +275,7 @@ public:
         FLOAT,
         INT,
         UINT,
+        UCHAR,
 
         VECTOR,
         MATRIX,
@@ -320,12 +321,14 @@ public:
     [[nodiscard]] constexpr Tag tag() const noexcept { return _tag; }
     [[nodiscard]] auto description() const noexcept { return ocarina::string_view{_description}; }
     [[nodiscard]] constexpr size_t dimension() const noexcept {
-        OC_ASSERT(is_array() || is_vector() || is_matrix() || is_texture());
         return _dimension;
     }
     [[nodiscard]] ocarina::span<const Type *const> members() const noexcept;
     [[nodiscard]] const Type *element() const noexcept;
-    [[nodiscard]] constexpr bool is_scalar() const noexcept { return _tag == Tag::BOOL || _tag == Tag::FLOAT || _tag == Tag::INT || _tag == Tag::UINT; }
+    [[nodiscard]] constexpr bool is_scalar() const noexcept {
+        return _tag == Tag::BOOL || _tag == Tag::FLOAT || _tag == Tag::INT ||
+               _tag == Tag::UINT || _tag == Tag::UCHAR;
+    }
     [[nodiscard]] constexpr bool is_basic() const noexcept { return is_scalar() || is_vector() || is_matrix(); }
     [[nodiscard]] constexpr bool is_array() const noexcept { return _tag == Tag::ARRAY; }
     [[nodiscard]] constexpr bool is_vector() const noexcept { return _tag == Tag::VECTOR; }

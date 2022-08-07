@@ -98,7 +98,8 @@ struct EnableSample {
         const T *texture = static_cast<const T *>(this);
         using sample_type = texture_sample_t<element_type>;
         const CallExpr *expr = Function::current()->call_builtin(Type::of<sample_type>(),
-                                                                 {OC_EXPR(texture),
+                                                                CallOp::TEX_SAMPLE,
+                                                                 {texture->expression(),
                                                                   OC_EXPR(u),
                                                                   OC_EXPR(v)});
         return make_expr<sample_type>(expr);
