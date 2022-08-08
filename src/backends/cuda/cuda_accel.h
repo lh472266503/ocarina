@@ -6,8 +6,8 @@
 
 #include "core/stl.h"
 #include "rhi/accel.h"
-#include <cuda.h>
-//#include <optix.h>
+#include "util.h"
+
 
 namespace ocarina {
 

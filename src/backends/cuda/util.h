@@ -6,6 +6,7 @@
 #include "core/logging.h"
 #include <cuda.h>
 #include <nvrtc.h>
+#include <optix.h>
 
 #define OC_CUDA_CHECK(EXPR)                                                                                \
     [&] {                                                                                                  \
