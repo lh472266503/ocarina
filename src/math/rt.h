@@ -28,5 +28,4 @@ OC_STRUCT(ocarina::Hit, inst_id, prim_id, bary){
     }
 };
 
-OC_MAKE_STRUCT_VAR(ocarina::Hit, inst_id, prim_id, bary)
 
