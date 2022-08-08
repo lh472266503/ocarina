@@ -148,7 +148,7 @@ handle_ty CUDADevice::create_accel() noexcept {
     return 0;
 }
 void CUDADevice::destroy_accel(handle_ty handle) noexcept {
-    
+
 }
 
 }// namespace ocarina
