@@ -4,10 +4,10 @@
 
 #pragma once
 
-#include "device.h"
+#include "rhi/device.h"
 #include "buffer.h"
 #include "stream.h"
-#include "command.h"
+#include "rhi/command.h"
 #include "core/concepts.h"
 #include "core/util.h"
 

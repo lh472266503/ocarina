@@ -3,7 +3,7 @@
 //
 
 #include "stream.h"
-#include "device.h"
+#include "rhi/device.h"
 
 namespace ocarina {
 Stream::Stream(Device::Impl *device)

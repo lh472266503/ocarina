@@ -5,7 +5,7 @@
 #pragma once
 
 #include "core/stl.h"
-#include "resource.h"
+#include "resources/resource.h"
 #include "core/pool.h"
 #include "core/image_base.h"
 

@@ -5,7 +5,7 @@
 #pragma once
 
 #include "resource.h"
-#include "command.h"
+#include "rhi/command.h"
 
 namespace ocarina {
 

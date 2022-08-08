@@ -6,7 +6,7 @@
 
 #include "core/stl.h"
 #include "core/concepts.h"
-#include "device.h"
+#include "rhi/device.h"
 namespace ocarina {
 
 using handle_ty = uint64_t;

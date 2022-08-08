@@ -15,7 +15,7 @@
 #include "dsl/syntax_sugar.h"
 #include "core/util.h"
 #include "math/rt.h"
-#include "rhi/stream.h"
+#include "rhi/resources/stream.h"
 #include "math/base.h"
 #include "core/basic_types.h"
 

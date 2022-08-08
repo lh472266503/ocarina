@@ -3,8 +3,8 @@
 //
 
 #include "device.h"
-#include "rhi/texture.h"
-#include "rhi/stream.h"
+#include "resources/texture.h"
+#include "resources/stream.h"
 
 namespace ocarina {
 

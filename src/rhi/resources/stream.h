@@ -5,8 +5,8 @@
 #pragma once
 
 #include "resource.h"
-#include "device.h"
-#include "command_queue.h"
+#include "rhi/device.h"
+#include "rhi/command_queue.h"
 
 namespace ocarina {
 

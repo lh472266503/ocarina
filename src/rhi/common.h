@@ -7,7 +7,7 @@
 
 #include "command.h"
 #include "device.h"
-#include "stream.h"
-#include "shader.h"
-#include "buffer.h"
-#include "texture.h"
+#include "resources/stream.h"
+#include "resources/shader.h"
+#include "resources/buffer.h"
+#include "resources/texture.h"
