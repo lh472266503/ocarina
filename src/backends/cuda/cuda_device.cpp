@@ -22,7 +22,7 @@ namespace ocarina {
         "-use_fast_math",                  \
         "-lineinfo",                       \
         "-default-device",                 \
-        "-include=cuda_device_builtin.h",         \
+        "-include=cuda_device_builtin.h",  \
         "-include=cuda_device_math.h",     \
         "-include=cuda_device_resource.h", \
         "-rdc",                            \
@@ -148,7 +148,6 @@ handle_ty CUDADevice::create_accel() noexcept {
     return 0;
 }
 void CUDADevice::destroy_accel(handle_ty handle) noexcept {
-
 }
 
 }// namespace ocarina
