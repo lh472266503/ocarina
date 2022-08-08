@@ -18,26 +18,26 @@ struct ReferenceArgumentCreation {};
 
 using detail::Computable;
 
-#define OC_MAKE_VAR_COMMON                                                                                      \
-    explicit Var(const ocarina::Expression *expression) noexcept                                                \
-        : ocarina::detail::Computable<this_type>(expression) {}                                                 \
-    Var() noexcept : Var(ocarina::Function::current()->local(ocarina::Type::of<this_type>())) {}                \
-    template<typename Arg>                                                                                      \
-    requires ocarina::concepts::non_pointer<std::remove_cvref_t<Arg>> &&                                        \
-             OC_ASSIGN_CHECK(ocarina::expr_value_t<std::remove_cvref_t<this_type>>, ocarina::expr_value_t<Arg>) \
-    Var(Arg &&arg) : Var() {                                                                                    \
-        ocarina::detail::assign(*this, std::forward<Arg>(arg));                                                 \
-    }                                                                                                           \
-    OC_MAKE_GET_PROXY                                                                                           \
-    explicit Var(ocarina::detail::ArgumentCreation) noexcept                                                    \
-        : Var(ocarina::Function::current()->argument(ocarina::Type::of<this_type>())) {                         \
-    }                                                                                                           \
-    explicit Var(ocarina::detail::ReferenceArgumentCreation) noexcept                                           \
-        : Var(ocarina::Function::current()->reference_argument(ocarina::Type::of<this_type>())) {}              \
-    template<typename Arg>                                                                                      \
-    requires OC_ASSIGN_CHECK(ocarina::expr_value_t<std::remove_cvref_t<this_type>>, ocarina::expr_value_t<Arg>) \
-    void operator=(Arg &&arg) {                                                                                 \
-        ocarina::detail::assign(*this, std::forward<Arg>(arg));                                                 \
+#define OC_MAKE_VAR_COMMON                                                                         \
+    explicit Var(const ocarina::Expression *expression) noexcept                                   \
+        : ocarina::detail::Computable<this_type>(expression) {}                                    \
+    Var() noexcept : Var(ocarina::Function::current()->local(ocarina::Type::of<this_type>())) {}   \
+    template<typename Arg>                                                                         \
+    requires ocarina::concepts::non_pointer<std::remove_cvref_t<Arg>> &&                           \
+             OC_ASSIGN_CHECK(ocarina::expr_value_t<this_type>, ocarina::expr_value_t<Arg>)         \
+    Var(Arg &&arg) : Var() {                                                                       \
+        ocarina::detail::assign(*this, std::forward<Arg>(arg));                                    \
+    }                                                                                              \
+    OC_MAKE_GET_PROXY                                                                              \
+    explicit Var(ocarina::detail::ArgumentCreation) noexcept                                       \
+        : Var(ocarina::Function::current()->argument(ocarina::Type::of<this_type>())) {            \
+    }                                                                                              \
+    explicit Var(ocarina::detail::ReferenceArgumentCreation) noexcept                              \
+        : Var(ocarina::Function::current()->reference_argument(ocarina::Type::of<this_type>())) {} \
+    template<typename Arg>                                                                         \
+    requires OC_ASSIGN_CHECK(ocarina::expr_value_t<this_type>, ocarina::expr_value_t<Arg>)         \
+    void operator=(Arg &&arg) {                                                                    \
+        ocarina::detail::assign(*this, std::forward<Arg>(arg));                                    \
     }
 
 #define OC_MAKE_VAR_ARG(member) \
@@ -62,7 +62,32 @@ using detail::Computable;
 template<typename T>
 struct Var : public Computable<T> {
     using this_type = T;
-    OC_MAKE_VAR_COMMON
+
+    explicit Var(const ocarina::Expression *expression) noexcept
+        : ocarina::detail::Computable<this_type>(expression) {}
+    Var() noexcept : Var(ocarina::Function::current()->local(ocarina::Type::of<this_type>())) {}
+
+    template<typename Arg>
+    requires ocarina::concepts::non_pointer<std::remove_cvref_t<Arg>> &&
+             OC_ASSIGN_CHECK(ocarina::expr_value_t<this_type>, ocarina::expr_value_t<Arg>)
+    Var(Arg &&arg)
+        : Var() {
+        ocarina::detail::assign(*this, std::forward<Arg>(arg));
+    }
+
+    OC_MAKE_GET_PROXY
+
+    explicit Var(ocarina::detail::ArgumentCreation) noexcept
+        : Var(ocarina::Function::current()->argument(ocarina::Type::of<this_type>())) {}
+
+    explicit Var(ocarina::detail::ReferenceArgumentCreation) noexcept
+        : Var(ocarina::Function::current()->reference_argument(ocarina::Type::of<this_type>())) {}
+
+    template<typename Arg>
+    requires OC_ASSIGN_CHECK(ocarina::expr_value_t<this_type>, ocarina::expr_value_t<Arg>)
+    void operator=(Arg &&arg) {
+        ocarina::detail::assign(*this, std::forward<Arg>(arg));
+    }
 };
 
 template<typename T>
