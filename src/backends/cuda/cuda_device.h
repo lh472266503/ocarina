@@ -57,6 +57,16 @@ public:
     void destroy_shader(handle_ty handle) noexcept override;
     void destroy_texture(handle_ty handle) noexcept override;
     [[nodiscard]] handle_ty create_shader(const Function &function) noexcept override;
+
+    
+    [[nodiscard]] handle_ty create_accel() noexcept override{
+        return 0;
+    }
+
+    void destroy_accel(handle_ty handle) noexcept override {
+
+    }
+
     [[nodiscard]] handle_ty create_stream() noexcept override;
     [[nodiscard]] handle_ty create_texture(uint2 res, PixelStorage pixel_storage) noexcept override;
     void destroy_stream(handle_ty handle) noexcept override;

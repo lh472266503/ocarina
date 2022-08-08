@@ -17,7 +17,8 @@ public:
         BUFFER,
         TEXTURE,
         STREAM,
-        SHADER
+        SHADER,
+        ACCEL,
     };
 
 protected:
