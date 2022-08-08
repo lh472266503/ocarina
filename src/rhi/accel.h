@@ -10,7 +10,7 @@
 namespace ocarina {
 class Accel : public RHIResource {
 public:
-    Accel(Device::Impl *device)
+    explicit Accel(Device::Impl *device)
         : RHIResource(device, Tag::ACCEL, 0) {}
 };
 }// namespace ocarina
