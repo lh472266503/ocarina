@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include "resources/resource.h"
-#include "command.h"
+#include "rhi/resources/resource.h"
+#include "rhi/command.h"
 
 namespace ocarina {
 class Accel : public RHIResource {

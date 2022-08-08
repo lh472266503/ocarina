@@ -4,10 +4,8 @@
 
 #pragma once
 
-#include "core/stl.h"
-#include "rhi/geometries/accel.h"
-#include "util.h"
-
+#include "rhi/resources/resource.h"
+#include "rhi/command.h"
 
 namespace ocarina {
 
