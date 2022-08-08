@@ -9,9 +9,9 @@
 #include "cuda_shader.h"
 #include "rhi/context.h"
 #include <nvrtc.h>
-#include "cuda_device_builtin_embed.h"
-#include "cuda_device_math_embed.h"
-#include "cuda_device_resource_embed.h"
+#include "embed/cuda_device_builtin_embed.h"
+#include "embed/cuda_device_math_embed.h"
+#include "embed/cuda_device_resource_embed.h"
 
 namespace ocarina {
 
