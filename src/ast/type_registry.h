@@ -106,7 +106,7 @@ struct TypeDesc<std::array<T, N>> {
     static_assert(alignof(T) >= 4u);
     static ocarina::string_view description() noexcept {
         static thread_local auto s = ocarina::format(
-            FMT_STRING("array<{},{}>"),
+            "array<{},{}>",
             TypeDesc<T>::description(), N);
         return s;
     }
@@ -117,7 +117,7 @@ struct TypeDesc<Buffer<T>> {
     static_assert(alignof(T) >= 4u);
     static ocarina::string_view description() noexcept {
         static thread_local auto s = ocarina::format(
-            FMT_STRING("buffer<{}>"),
+            "buffer<{}>",
             TypeDesc<T>::description());
         return s;
     }

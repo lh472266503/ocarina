@@ -10,10 +10,12 @@
 #include <windows.h>
 #include "math/base.h"
 #include "util/image.h"
+#include "dsl/common.h"
 
 using namespace ocarina;
 
 int main(int argc, char *argv[]) {
+
     ocarina::vector<float> v;
     const int count = 10;
     for (int i = 0; i < count; ++i) {
@@ -38,6 +40,9 @@ int main(int argc, char *argv[]) {
     Buffer<float> f_buffer = device.create_buffer<float>(count);
     Kernel kn = [&](Var<float> a, Var<float> b, BufferVar<float> c, TextureVar<uchar4> tex) {
         //        configure_block(1,2,1);
+        Array<uint> ua(10);
+        ua[5] = 1u;
+        Var uuu = ua[5];
         Var<int3> vec = make_int3(1,2, a.cast<int>());
         Var<int> ii = 2;
         Var<int2> v22 = make_int2(ii, ii);
