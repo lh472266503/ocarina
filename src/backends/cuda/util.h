@@ -3,6 +3,7 @@
 //
 
 #pragma once
+
 #include "core/logging.h"
 #include <cuda.h>
 #include <nvrtc.h>
@@ -37,3 +38,23 @@
             std::abort();                                                                               \
         }                                                                                               \
     }();
+
+#define OPTIX_CHECK(EXPR)                                                                                              \
+    [&] {                                                                                                              \
+        OptixResult res = EXPR;                                                                                        \
+        if (res != OPTIX_SUCCESS) {                                                                                    \
+            spdlog::error("OptiX call " #EXPR " failed with code {}: \"{}\" at {}:{}", int(res),                       \
+                          optixGetErrorString(res), __FILE__, __LINE__);                                               \
+            std::abort();                                                                                              \
+        }                                                                                                              \
+    }()
+
+#define OPTIX_CHECK_WITH_LOG(EXPR, LOG)                                                                                \
+    [&]{                                                                                                               \
+        OptixResult res = EXPR;                                                                                        \
+        if (res != OPTIX_SUCCESS) {                                                                                    \
+            spdlog::error("OptiX call " #EXPR " failed with code {}: \"{}\"\nLogs: {},at {}:{}", int(res),             \
+                optixGetErrorString(res), LOG, __FILE__, __LINE__ );                                                   \
+            std::abort();                                                                                              \
+        }                                                                                                              \
+    } ()
