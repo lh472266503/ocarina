@@ -240,9 +240,9 @@ struct Computable<Buffer<T>>
 };
 
 template<typename T>
-struct Computable<RHITexture<T>>
-    : detail::EnableSample<Computable<RHITexture<T>>> {
-    OC_COMPUTABLE_COMMON(Computable<RHITexture>)
+struct Computable<Texture<T>>
+    : detail::EnableSample<Computable<Texture<T>>> {
+    OC_COMPUTABLE_COMMON(Computable<Texture>)
 };
 
 template<size_t N>

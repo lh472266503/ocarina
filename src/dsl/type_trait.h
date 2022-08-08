@@ -253,7 +253,7 @@ template<typename T>
 class BufferView;
 
 template<typename T>
-class RHITexture;
+class Texture;
 
 namespace detail {
 
@@ -307,7 +307,7 @@ template<typename T>
 struct is_texture_impl : std::false_type {};
 
 template<typename T>
-struct is_texture_impl<RHITexture<T>> : std::true_type {};
+struct is_texture_impl<Texture<T>> : std::true_type {};
 
 template<typename T>
 struct texture_element_impl {
@@ -315,7 +315,7 @@ struct texture_element_impl {
 };
 
 template<typename T>
-struct texture_element_impl<RHITexture<T>> {
+struct texture_element_impl<Texture<T>> {
     using type = T;
 };
 }// namespace detail

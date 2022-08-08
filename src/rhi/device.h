@@ -30,7 +30,7 @@ enum ShaderTag : uint8_t {
 class Stream;
 
 template<typename T>
-class RHITexture;
+class Texture;
 
 class Device : public concepts::Noncopyable {
 public:
@@ -74,8 +74,8 @@ public:
     [[nodiscard]] Stream create_stream() noexcept;
 
     template<typename T>
-    [[nodiscard]] RHITexture<T> create_texture(uint2 res) noexcept {
-        return _create<RHITexture<T>>(res, PixelStorageImpl<T>::storage);
+    [[nodiscard]] Texture<T> create_texture(uint2 res) noexcept {
+        return _create<Texture<T>>(res, PixelStorageImpl<T>::storage);
     }
     template<typename T>
     [[nodiscard]] auto compile(const Kernel<T> &kernel, ShaderTag tag = CS) noexcept {

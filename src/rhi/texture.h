@@ -11,7 +11,7 @@
 namespace ocarina {
 
 template<typename T>
-class RHITexture : public RHIResource {
+class Texture : public RHIResource {
 public:
     class Impl {
     public:
@@ -23,7 +23,7 @@ public:
     };
 
 public:
-    explicit RHITexture(Device::Impl *device, uint2 res,
+    explicit Texture(Device::Impl *device, uint2 res,
                         PixelStorage pixel_storage)
         : RHIResource(device, Tag::TEXTURE,
                       device->create_texture(res, pixel_storage)) {}
@@ -32,10 +32,10 @@ public:
     template<typename U, typename V>
     requires(is_all_floating_point_expr_v<U, V>)
     [[nodiscard]] auto sample(const U &u, const V &v) const noexcept {
-        const UniformBinding &uniform = Function::current()->get_uniform_var(Type::of<RHITexture<T>>(),
+        const UniformBinding &uniform = Function::current()->get_uniform_var(Type::of<Texture<T>>(),
                                                                              read_handle(),
                                                                              Variable::Tag::TEXTURE);
-        return make_expr<RHITexture<T>>(uniform.expression()).sample(u, v);
+        return make_expr<Texture<T>>(uniform.expression()).sample(u, v);
     }
 
     template<typename UV>

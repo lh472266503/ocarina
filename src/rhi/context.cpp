@@ -49,9 +49,9 @@ bool create_directory_if_necessary(const fs::path &path) {
 
 Context::Context(const fs::path &path, string_view cache_dir)
     : _impl(std::move(ocarina::make_unique<Impl>())) {
-    _impl->rhi_directory = detail::create_rhi_directory(path);
-    _impl->cache_directory = rhi_directory() / cache_dir;
-    DynamicModule::add_search_path(rhi_directory());
+    _impl->runtime_directory = detail::create_rhi_directory(path);
+    _impl->cache_directory = runtime_directory() / cache_dir;
+    DynamicModule::add_search_path(runtime_directory());
     detail::create_directory_if_necessary(cache_directory());
 }
 
@@ -59,8 +59,8 @@ Context::~Context() noexcept {
     OC_INFO("context was destructed !");
 }
 
-const fs::path &Context::rhi_directory() const noexcept {
-    return _impl->rhi_directory;
+const fs::path &Context::runtime_directory() const noexcept {
+    return _impl->runtime_directory;
 }
 
 const fs::path &Context::cache_directory() const noexcept {

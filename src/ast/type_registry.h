@@ -124,7 +124,7 @@ struct TypeDesc<Buffer<T>> {
 };
 
 template<typename T>
-struct TypeDesc<RHITexture<T>> {
+struct TypeDesc<Texture<T>> {
     static_assert(is_valid_texture_element<T>(), "T is not a valid element in texture!");
     static ocarina::string_view description() noexcept {
         static thread_local auto s = ocarina::format(

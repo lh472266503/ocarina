@@ -69,7 +69,7 @@ template<typename T>
 using BufferVar = Var<Buffer<T>>;
 
 template<typename T>
-using TextureVar = Var<RHITexture<T>>;
+using TextureVar = Var<Texture<T>>;
 
 template<typename T>
 Var(T &&) -> Var<expr_value_t<T>>;
