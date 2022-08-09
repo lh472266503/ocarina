@@ -417,16 +417,16 @@ def define_vec_func():
             body += f"a.{field_name} + b.{field_name}" + split
         func = f"__device__ inline auto oc_dot(oc_float{dim} a, oc_float{dim} b) {{ {body} }}\n"
         content += func
-        content += f"__device__ inline auto oc_length(oc_float{dim} v) noexcept {{ {{return oc_sqrt(oc_dot(v, v));}} }}\n"
-        content += f"__device__ inline auto oc_length_squared(oc_float{dim} v) noexcept {{ {{return oc_dot(v, v);}} }}\n"
-        content += f"__device__ inline auto oc_distance(oc_float{dim} a, oc_float{dim} b) noexcept {{ {{return oc_length(a - b);}} }}\n"
-        content += f"__device__ inline auto oc_distance_squared(oc_float{dim} a, oc_float{dim} b) noexcept {{ {{return oc_length_squared(a - b);}} }}\n"
-        content += f"__device__ inline auto oc_normalize(oc_float{dim} v) noexcept {{ {{return v * oc_rsqrt(oc_dot(v, v));}} }}\n"
+        content += f"__device__ inline auto oc_length(oc_float{dim} v) noexcept {{ return oc_sqrt(oc_dot(v, v)); }}\n"
+        content += f"__device__ inline auto oc_length_squared(oc_float{dim} v) noexcept {{ return oc_dot(v, v); }}\n"
+        content += f"__device__ inline auto oc_distance(oc_float{dim} a, oc_float{dim} b) noexcept {{ return oc_length(a - b); }}\n"
+        content += f"__device__ inline auto oc_distance_squared(oc_float{dim} a, oc_float{dim} b) noexcept {{ return oc_length_squared(a - b); }}\n"
+        content += f"__device__ inline auto oc_normalize(oc_float{dim} v) noexcept {{ return v * oc_rsqrt(oc_dot(v, v)); }}\n"
         content += "\n"
 
 
     for scalar in scalar_types[:3]:
-        content += f"[[nodiscard]] __device__ inline auto oc_cross(oc_{scalar}3 u, oc_{scalar}3 v) noexcept {{ {{return oc_{scalar}3(u.y * v.z - v.y * u.z, u.z * v.x - v.z * u.x, u.x * v.y - v.x * u.y); }} }}\n"
+        content += f"[[nodiscard]] __device__ inline auto oc_cross(oc_{scalar}3 u, oc_{scalar}3 v) noexcept {{ return oc_{scalar}3(u.y * v.z - v.y * u.z, u.z * v.x - v.z * u.x, u.x * v.y - v.x * u.y);  }}\n"
     
 
     content += "\n"
