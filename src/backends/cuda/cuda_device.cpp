@@ -7,6 +7,7 @@
 #include "cuda_texture.h"
 #include "cuda_codegen.h"
 #include "cuda_shader.h"
+#include "cuda_mesh.h"
 #include "rhi/context.h"
 #include <nvrtc.h>
 #include "embed/cuda_device_builtin_embed.h"
@@ -125,6 +126,15 @@ handle_ty CUDADevice::create_shader(const Function &function) noexcept {
     });
 
     return ptr;
+}
+
+handle_ty CUDADevice::create_mesh(handle_ty v_handle, handle_ty t_handle,
+                                  uint v_stride, uint t_count) noexcept {
+    return 0;
+}
+
+void CUDADevice::destroy_mesh(handle_ty handle) noexcept {
+    ocarina::delete_with_allocator(reinterpret_cast<CUDAMesh *>(handle));
 }
 
 void CUDADevice::destroy_buffer(handle_ty handle) noexcept {

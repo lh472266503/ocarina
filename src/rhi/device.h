@@ -43,14 +43,17 @@ public:
         explicit Impl(Context *ctx) : _context(ctx) {}
         [[nodiscard]] virtual handle_ty create_buffer(size_t size) noexcept = 0;
         virtual void destroy_buffer(handle_ty handle) noexcept = 0;
+        [[nodiscard]] virtual handle_ty create_texture(uint2 res, PixelStorage pixel_storage) noexcept = 0;
         virtual void destroy_texture(handle_ty handle) noexcept = 0;
-        virtual void destroy_shader(handle_ty handle) noexcept = 0;
-        [[nodiscard]] virtual handle_ty create_stream() noexcept = 0;
         [[nodiscard]] virtual handle_ty create_shader(const Function &function) noexcept = 0;
+        virtual void destroy_shader(handle_ty handle) noexcept = 0;
         [[nodiscard]] virtual handle_ty create_accel() noexcept = 0;
         virtual void destroy_accel(handle_ty handle) noexcept = 0;
-        [[nodiscard]] virtual handle_ty create_texture(uint2 res, PixelStorage pixel_storage) noexcept = 0;
+        [[nodiscard]] virtual handle_ty create_stream() noexcept = 0;
         virtual void destroy_stream(handle_ty handle) noexcept = 0;
+        [[nodiscard]] virtual handle_ty create_mesh(handle_ty v_handle,handle_ty t_handle,
+                                                    uint v_stride,uint t_count) noexcept = 0;
+        virtual void destroy_mesh(handle_ty handle) noexcept = 0;
     };
 
     using Creator = Device::Impl *(Context *);

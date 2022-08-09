@@ -40,28 +40,31 @@ private:
 
 public:
     explicit CUDADevice(Context *context);
-    [[nodiscard]] handle_ty create_buffer(size_t size) noexcept override;
     template<typename Func>
     decltype(auto) use_context(Func &&func) noexcept {
         ContextGuard cg(_cu_ctx);
         return func();
     }
     template<typename Func>
-    decltype(auto) bind_handle_sync(Func &&func) noexcept {
+    decltype(auto) use_context_sync(Func &&func) noexcept {
         std::mutex mutex;
         std::unique_lock lock(mutex);
         ContextGuard cg(_cu_ctx);
         return func();
     }
+    [[nodiscard]] handle_ty create_buffer(size_t size) noexcept override;
     void destroy_buffer(handle_ty handle) noexcept override;
-    void destroy_shader(handle_ty handle) noexcept override;
+    [[nodiscard]] handle_ty create_texture(uint2 res, PixelStorage pixel_storage) noexcept override;
     void destroy_texture(handle_ty handle) noexcept override;
     [[nodiscard]] handle_ty create_shader(const Function &function) noexcept override;
+    void destroy_shader(handle_ty handle) noexcept override;
     [[nodiscard]] handle_ty create_accel() noexcept override;
     void destroy_accel(handle_ty handle) noexcept override;
     [[nodiscard]] handle_ty create_stream() noexcept override;
-    [[nodiscard]] handle_ty create_texture(uint2 res, PixelStorage pixel_storage) noexcept override;
     void destroy_stream(handle_ty handle) noexcept override;
+    [[nodiscard]] virtual handle_ty create_mesh(handle_ty v_handle, handle_ty t_handle,
+                                                uint v_stride, uint t_count) noexcept override;
+    virtual void destroy_mesh(handle_ty handle) noexcept override;
 };
 }// namespace ocarina
 
