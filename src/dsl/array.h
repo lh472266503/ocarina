@@ -12,7 +12,8 @@
 namespace ocarina {
 
 template<typename T>
-class Array : public detail::EnableSubscriptAccess<detail::Computable<std::array<T, 1>>> {
+class Array : public detail::EnableSubscriptAccess<Array<T>, T>,
+              public concepts::Noncopyable {
 public:
     using element_type = T;
 
@@ -23,9 +24,10 @@ private:
 public:
     explicit Array(size_t num)
         : _size(num) {
-        _expression = Function::current()->local(Type::from(ocarina::format("array<{},{}>",
-                                                                            detail::TypeDesc<T>::description(),
-                                                                            num)));
+        const Type *type = Type::from(ocarina::format("array<{},{}>",
+                                                      detail::TypeDesc<T>::description(),
+                                                      num));
+        _expression = Function::current()->local(type);
     }
     [[nodiscard]] const RefExpr *expression() const noexcept { return _expression; }
     [[nodiscard]] size_t size() const noexcept { return _size; }

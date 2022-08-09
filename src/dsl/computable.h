@@ -39,10 +39,9 @@ template<typename T>
 
 #define OC_EXPR(arg) ocarina::detail::extract_expression(OC_FORWARD(arg))
 
-template<typename T>
+template<typename T,
+         typename element_type = std::remove_cvref_t<decltype(std::declval<expr_value_t<T>>()[0])>>
 struct EnableSubscriptAccess {
-
-    using element_type = std::remove_cvref_t<decltype(std::declval<expr_value_t<T>>()[0])>;
 
     template<typename Index>
     requires concepts::integral<expr_value_t<Index>>
