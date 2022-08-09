@@ -94,6 +94,8 @@ public:
         assign(expr, OC_FORWARD(elm));
     }
 
+    [[nodiscard]] size_t size() const noexcept { return _size; }
+
     template<typename... Args>
     [[nodiscard]] BufferUploadCommand *upload(Args &&...args) const noexcept {
         return view(0, _size).upload(OC_FORWARD(args)...);

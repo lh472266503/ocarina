@@ -7,6 +7,7 @@
 #include "core/header.h"
 #include "core/stl.h"
 #include "dsl/func.h"
+#include "math/rt.h"
 #include "core/image_base.h"
 #include "core/concepts.h"
 
@@ -27,10 +28,18 @@ enum ShaderTag : uint8_t {
     TS = 1 << 5
 };
 
+enum AccelUsageTag : uint8_t {
+    FAST_BUILD,
+    FAST_UPDATE,
+    FAST_TRACE
+};
+
 class Stream;
 
 template<typename T>
 class Texture;
+
+class Mesh;
 
 class Device : public concepts::Noncopyable {
 public:
@@ -74,6 +83,12 @@ public:
     [[nodiscard]] Buffer<T> create_buffer(size_t size) noexcept {
         return Buffer<T>(_impl.get(), size);
     }
+
+    template<typename Vertex, typename Tri>
+    [[nodiscard]] Mesh create_mesh(const Buffer<Vertex> &v_buffer,
+                                   const Buffer<Tri> &t_buffer,
+                                   AccelUsageTag usage_tag = AccelUsageTag::FAST_TRACE) noexcept;
+
     [[nodiscard]] Stream create_stream() noexcept;
 
     template<typename T>

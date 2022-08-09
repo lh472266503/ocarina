@@ -28,4 +28,14 @@ OC_STRUCT(ocarina::Hit, inst_id, prim_id, bary){
     }
 };
 
+namespace ocarina {
+struct Triangle {
+public:
+    uint i, j, k;
+    Triangle(uint i, uint j, uint k) : i(i), j(j), k(k) {}
+    Triangle() = default;
+};
+}// namespace ocarina
+OC_STRUCT(ocarina::Triangle, i, j, k){};
+
 
