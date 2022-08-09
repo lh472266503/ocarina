@@ -154,13 +154,13 @@ def main():
 
 
     print(curr_dir)
-    # fn = os.path.join(curr_dir, "common_lib.h")
-    # string = get_content()
-    # with open(fn, "w") as f:
-    #     f.write(string)
-    #     f.close()
+    fn = os.path.join(curr_dir, "common_lib.h")
+    string = get_content()
+    with open(fn, "w") as f:
+        f.write(string)
+        f.close()
 
-    fn = os.path.join(curr_dir, "../backends/cuda/common_lib.h")
+    fn = os.path.join(curr_dir, "../backends/cuda/embed/cuda_device_math.h")
     string = get_content("oc_", "__device__")
     with open(fn, "w") as f:
         f.write(string)
