@@ -408,7 +408,7 @@ void CppCodegen::_emit_arguments(const Function &f) noexcept {
         current_scratch() << ",";
     }
 #endif
-    if (!f.arguments().empty()) {
+    if (f.arguments().size() + f.uniform_vars().size() > 0) {
         current_scratch().pop_back();
     }
     current_scratch() << ")";
