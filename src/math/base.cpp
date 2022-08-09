@@ -5,6 +5,6 @@
 #include "optics.h"
 #include "base.h"
 #include "prims.h"
-#include "frame.h"
+#include "geometry.h"
 #include "rt.h"
 #include "sampling.h"
