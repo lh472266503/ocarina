@@ -44,9 +44,10 @@ int main(int argc, char *argv[]) {
     Buffer<float> f_buffer = device.create_buffer<float>(count);
     Kernel kn = [&](Var<float> a, Var<float> b, BufferVar<float> c, TextureVar<uchar4> tex) {
 
-//        Var<float3> v1 = make_float3(a), v2,v3;
-//        coordinate_system(v1,v2,v3);
-
+        Var<float3> v1 = make_float3(a), v2,v3;
+//        v1 = normalize(v1);
+        coordinate_system(v1,v2,v3);
+        print("{},{},{}",v2.x,v2.y,v2.z);
 //                configure_block(1,2,1);
         Array<uint> ua(10);
         ua[5] = 1u;
@@ -77,16 +78,16 @@ int main(int argc, char *argv[]) {
     auto shader = device.compile(kn);
     //    shader.compute_fit_size();
 //    return 0;
-    stream << f_buffer.upload_sync(v.data());
-    stream << shader(0.1f, 0.9f, f_buffer, texture).dispatch(10);
-    stream << synchronize();
-    stream << f_buffer.download_sync(v.data());
-    stream << commit();
+//    stream << f_buffer.upload_sync(v.data());
+//    stream << shader(0.1f, 0.9f, f_buffer, texture).dispatch(10);
+//    stream << synchronize();
+//    stream << f_buffer.download_sync(v.data());
+//    stream << commit();
 //    for (int i = 0; i < count; ++i) {
 //        cout << v[i] << endl;
 //    }
 
-    stream << shader(0.55f, 0.55f, f_buffer, texture).dispatch(10);
+    stream << shader(0.95f, 0.55f, f_buffer, texture).dispatch(10);
     stream << synchronize();
     stream << f_buffer.download_sync(v.data());
     stream << commit();

@@ -138,5 +138,10 @@
                             inv_3 * one_over_determinant);
 }
 
-
+ inline void coordinate_system(float3 v1, float3 &v2, float3 &v3) noexcept {
+    v2 = select(abs(v1.x) > abs(v1.y),
+                make_float3(-v1.z, 0.f, v1.x) / sqrt(v1.x * v1.x + v1.z * v1.z),
+                make_float3(0.f, v1.z, -v1.y) / sqrt(v1.y * v1.y + v1.z * v1.z));
+    v3 = cross(v1, v2);
+}
 

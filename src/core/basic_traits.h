@@ -250,7 +250,7 @@ constexpr auto is_vector4_v = is_vector4<T>::value;
     OC_DEFINE_TEMPLATE_VALUE(is_##type##_vector##dim)                                                             \
     template<typename... T>                                                                                       \
     using is_all_##type##_vector##dim = std::conjunction<is_##type##_vector##dim<T>...>;                          \
-    OC_DEFINE_TEMPLATE_VALUE(is_all_##type##_vector##dim)
+    OC_DEFINE_TEMPLATE_VALUE_MULTI(is_all_##type##_vector##dim)
 
 #define OC_MAKE_IS_TYPE_VECTOR(type)    \
     OC_MAKE_IS_TYPE_VECTOR_DIM(type, )  \

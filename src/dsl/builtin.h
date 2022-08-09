@@ -157,6 +157,15 @@ OC_NODISCARD auto face_forward(const A &a, const B &b, const C &c) noexcept {
     return make_expr<expr_value_t<A>>(expr);
 }
 
+template<typename A>
+requires(is_all_float_element_expr_v<A> &&
+         is_all_float_vector3_v<expr_value_t<A>>)
+void coordinate_system(const A &a, Var<float3> &b, Var<float3> &c) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<A>>(),
+                                                  CallOp::COORDINATE_SYSTEM, {OC_EXPR(a), OC_EXPR(b), OC_EXPR(c)});
+    Function::current()->expr_statement(expr);
+}
+
 #define OC_MAKE_FLOATING_BUILTIN_FUNC(func, tag)                                   \
     template<typename T>                                                           \
     requires(is_dsl_v<T> && is_float_element_v<expr_value_t<T>>)                   \

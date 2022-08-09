@@ -138,5 +138,10 @@
                             inv_3 * one_over_determinant);
 }
 
-
+__device__ inline void oc_coordinate_system(oc_float3 v1, oc_float3 &v2, oc_float3 &v3) noexcept {
+    v2 = oc_select(oc_abs(v1.x) > oc_abs(v1.y),
+                oc_make_float3(-v1.z, 0.f, v1.x) / oc_sqrt(v1.x * v1.x + v1.z * v1.z),
+                oc_make_float3(0.f, v1.z, -v1.y) / oc_sqrt(v1.y * v1.y + v1.z * v1.z));
+    v3 = oc_cross(v1, v2);
+}
 

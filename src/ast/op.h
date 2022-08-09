@@ -97,6 +97,7 @@ enum struct CallOp : uint32_t {
     LENGTH_SQUARED,
     NORMALIZE,
     FACE_FORWARD,
+    COORDINATE_SYSTEM,
 
     DETERMINANT,
     TRANSPOSE,

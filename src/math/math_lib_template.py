@@ -144,7 +144,12 @@ def get_content(prefix = "", device_flag = ""):
                             inv_3 * one_over_determinant);
 }}
 
-
+{device_flag} inline void {prefix}coordinate_system({prefix}float3 v1, {prefix}float3 &v2, {prefix}float3 &v3) noexcept {{
+    v2 = {prefix}select({prefix}abs(v1.x) > {prefix}abs(v1.y),
+                {prefix}make_float3(-v1.z, 0.f, v1.x) / {prefix}sqrt(v1.x * v1.x + v1.z * v1.z),
+                {prefix}make_float3(0.f, v1.z, -v1.y) / {prefix}sqrt(v1.y * v1.y + v1.z * v1.z));
+    v3 = {prefix}cross(v1, v2);
+}}
 
 """
     return content
