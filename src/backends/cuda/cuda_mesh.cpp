@@ -4,6 +4,9 @@
 
 #include "cuda_mesh.h"
 #include "cuda_device.h"
+#include <optix_stack_size.h>
+#include <optix.h>
+#include <optix_stubs.h>
 
 namespace ocarina {
 
@@ -12,7 +15,22 @@ CUDAMesh::~CUDAMesh() {
 }
 
 void CUDAMesh::build_bvh(const MeshBuildCommand *cmd) noexcept {
+    _device->use_context([&] {
+        OptixAccelBuildOptions accel_options = {};
+        accel_options.buildFlags = (OPTIX_BUILD_FLAG_ALLOW_COMPACTION | OPTIX_BUILD_FLAG_PREFER_FAST_TRACE);
+        accel_options.motionOptions.numKeys = 1;
+        accel_options.operation = OPTIX_BUILD_OPERATION_BUILD;
 
+        OptixAccelBufferSizes gas_buffer_sizes;
+        OC_OPTIX_CHECK(optixAccelComputeMemoryUsage(
+            _device->optix_device_context(),
+            &accel_options,
+            &_build_input,
+            1,  // num_build_inputs
+            &gas_buffer_sizes
+            ));
+        int i =0;
+    });
 }
 
 void CUDAMesh::init_build_input() noexcept {

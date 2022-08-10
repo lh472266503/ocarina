@@ -23,6 +23,9 @@ public:
 
     [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(_handle); }
     [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
+    [[nodiscard]] MeshBuildCommand *build_bvh() noexcept {
+        return MeshBuildCommand::create(_handle);
+    }
 };
 
 template<typename Vertex, typename Tri>

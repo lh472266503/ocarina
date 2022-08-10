@@ -61,6 +61,8 @@ int main(int argc, char *argv[]) {
     stream << v_buffer.upload_sync(vertices.data());
     stream << t_buffer.upload_sync(triangle.data());
 
+    stream << cube.build_bvh();
+
     Callable cb = [&](Var<Triangle> t) {
         print("{},{},{}--", t.i,t.j,t.k);
     };
