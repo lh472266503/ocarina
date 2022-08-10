@@ -47,8 +47,7 @@ public:
         virtual void destroy_accel(handle_ty handle) noexcept = 0;
         [[nodiscard]] virtual handle_ty create_stream() noexcept = 0;
         virtual void destroy_stream(handle_ty handle) noexcept = 0;
-        [[nodiscard]] virtual handle_ty create_mesh(handle_ty v_handle,handle_ty t_handle,uint vert_num,
-                                                    uint v_stride,uint tri_num,AccelUsageTag usage_tag) noexcept = 0;
+        [[nodiscard]] virtual handle_ty create_mesh(const MeshParams &params) noexcept = 0;
         virtual void destroy_mesh(handle_ty handle) noexcept = 0;
     };
 
@@ -74,7 +73,8 @@ public:
     template<typename Vertex, typename Tri>
     [[nodiscard]] Mesh create_mesh(const Buffer<Vertex> &v_buffer,
                                    const Buffer<Tri> &t_buffer,
-                                   AccelUsageTag usage_tag = AccelUsageTag::FAST_TRACE) noexcept; // implement in mesh.h
+                                   AccelUsageTag usage_tag = AccelUsageTag::FAST_TRACE,
+                                   AccelGeomTag geom_tag = AccelGeomTag::DISABLE_ANYHIT) noexcept;// implement in mesh.h
 
     [[nodiscard]] Stream create_stream() noexcept;
 

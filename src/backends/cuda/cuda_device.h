@@ -62,10 +62,7 @@ public:
     void destroy_accel(handle_ty handle) noexcept override;
     [[nodiscard]] handle_ty create_stream() noexcept override;
     void destroy_stream(handle_ty handle) noexcept override;
-    [[nodiscard]] handle_ty create_mesh(handle_ty v_handle, handle_ty t_handle,
-                                        uint vert_num,
-                                        uint v_stride, uint tri_num,
-                                        AccelUsageTag usage_tag) noexcept override;
+    [[nodiscard]] handle_ty create_mesh(const MeshParams &params) noexcept override;
     virtual void destroy_mesh(handle_ty handle) noexcept override;
 };
 }// namespace ocarina

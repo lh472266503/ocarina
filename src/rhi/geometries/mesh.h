@@ -14,33 +14,34 @@ namespace ocarina {
 class Mesh : public RHIResource {
 public:
     class Impl {
-    protected:
-        uint tri_num{};
-        uint vert_num{};
-        uint vertex_stride{};
-        AccelUsageTag usage_tag;
-        friend class Mesh;
-
-    public:
-        Impl(uint vert_num, uint tri_num, uint v_stride, AccelUsageTag usage_tag)
-            : vert_num(vert_num), tri_num(tri_num), vertex_stride(v_stride), usage_tag(usage_tag) {}
     };
 
 public:
-    Mesh(Device::Impl *device, handle_ty v_handle, handle_ty t_handle,
-         uint vert_num, uint t_num, uint v_stride, AccelUsageTag usage_tag)
+    Mesh(Device::Impl *device, const MeshParams &params)
         : RHIResource(device, Tag::MESH,
-                      device->create_mesh(v_handle, t_handle, vert_num, v_stride, t_num, usage_tag)) {}
+                      device->create_mesh(params)) {}
 
     [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(_handle); }
     [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
-    [[nodiscard]] uint triangle_num() const noexcept { return impl()->tri_num; }
 };
 
 template<typename Vertex, typename Tri>
-Mesh Device::create_mesh(const Buffer<Vertex> &v_buffer, const Buffer<Tri> &t_buffer, AccelUsageTag usage_tag) noexcept {
-    return _create<Mesh>(v_buffer.handle(), t_buffer.handle(), v_buffer.size(),
-                         t_buffer.size(), sizeof(Vertex), usage_tag);
+Mesh Device::create_mesh(const Buffer<Vertex> &v_buffer, const Buffer<Tri> &t_buffer,
+                         AccelUsageTag usage_tag, AccelGeomTag geom_tag) noexcept {
+    MeshParams params;
+    params.vert_handle = v_buffer.handle();
+    params.vert_handle_address = v_buffer.handle_address();
+    params.vert_stride = sizeof(Vertex);
+    params.vert_num = v_buffer.size();
+
+    params.tri_handle = t_buffer.handle();
+    params.tri_num = t_buffer.size();
+    params.tri_stride = sizeof(Tri);
+
+    params.usage_tag = usage_tag;
+    params.geom_tag = geom_tag;
+
+    return _create<Mesh>(params);
 }
 
 }// namespace ocarina

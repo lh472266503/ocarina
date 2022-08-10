@@ -30,16 +30,17 @@ enum AccelGeomTag : uint8_t {
 };
 
 struct MeshParams {
+    const void *vert_handle_address{};
+    handle_ty vert_handle{};
+    uint vert_stride{};
+    uint vert_num{};
+
+    handle_ty tri_handle{};
+    uint tri_stride{};
+    uint tri_num{};
+
     AccelUsageTag usage_tag;
     AccelGeomTag geom_tag;
-    handle_ty vert_handle;
-    void *vert_handle_address;
-    handle_ty tri_handle;
-    uint vert_stride;
-    uint tri_stride;
-    uint tri_num{};
-    uint vert_num{};
-    uint vertex_stride{};
 };
 
 }// namespace ocarina
