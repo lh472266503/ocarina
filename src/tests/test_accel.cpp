@@ -56,6 +56,26 @@ int main(int argc, char *argv[]) {
     auto v_buffer = device.create_buffer<float3>(vertices.size());
     auto t_buffer = device.create_buffer<Triangle>(triangle.size());
 
+    auto cube = device.create_mesh(v_buffer, t_buffer);
+
+    stream << v_buffer.upload_sync(vertices.data());
+    stream << t_buffer.upload_sync(triangle.data());
+
+    Callable cb = [&](Var<Triangle> t) {
+        print("{},{},{}--", t.i,t.j,t.k);
+    };
+
+    Kernel kernel = [&](BufferVar<float3> v) {
+        Var<float3> pos = v_buffer.read(thread_id());
+        Var<float3> pos2 = v[thread_id()];
+        Var t = t_buffer.read(thread_id());
+        cb(t);
+        print("{},{},{}", pos.x, pos2.y, pos.z);
+    };
+
+    auto shader = device.compile(kernel);
+    stream << shader(v_buffer).dispatch(t_buffer.size());
+    stream << synchronize() << commit();
 
     return 0;
 }
