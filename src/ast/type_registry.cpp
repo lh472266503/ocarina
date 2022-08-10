@@ -266,8 +266,7 @@ const Type *TypeRegistry::type_at(uint i) const noexcept {
 }
 
 uint64_t TypeRegistry::_hash(ocarina::string_view desc) noexcept {
-    using namespace std::string_view_literals;
-    return hash64(desc, hash64("__hash_type"sv));
+    return Hashable::compute_hash<Type>(hash64(desc));
 }
 bool TypeRegistry::is_exist(ocarina::string_view desc) const noexcept {
     return is_exist(_hash(desc));
