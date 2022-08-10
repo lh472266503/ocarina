@@ -39,7 +39,7 @@
         }                                                                                               \
     }();
 
-#define OPTIX_CHECK(EXPR)                                                                        \
+#define OC_OPTIX_CHECK(EXPR)                                                                     \
     [&] {                                                                                        \
         OptixResult res = EXPR;                                                                  \
         if (res != OPTIX_SUCCESS) {                                                              \
@@ -49,7 +49,7 @@
         }                                                                                        \
     }()
 
-#define OPTIX_CHECK_WITH_LOG(EXPR, LOG)                                                                    \
+#define OC_OPTIX_CHECK_WITH_LOG(EXPR, LOG)                                                                 \
     [&] {                                                                                                  \
         OptixResult res = EXPR;                                                                            \
         if (res != OPTIX_SUCCESS) {                                                                        \

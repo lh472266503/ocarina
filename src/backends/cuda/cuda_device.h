@@ -15,6 +15,8 @@ class CUDADevice : public Device::Impl {
 private:
     CUdevice _cu_device{};
     CUcontext _cu_ctx{};
+    OptixDeviceContext _optix_device_context{};
+    OptixPipeline _optix_pipeline{};
 
     class ContextGuard {
     private:
@@ -52,6 +54,7 @@ public:
         ContextGuard cg(_cu_ctx);
         return func();
     }
+    [[nodiscard]] OptixDeviceContext create_optix_context() noexcept;
     [[nodiscard]] handle_ty create_buffer(size_t size) noexcept override;
     void destroy_buffer(handle_ty handle) noexcept override;
     [[nodiscard]] handle_ty create_texture(uint2 res, PixelStorage pixel_storage) noexcept override;

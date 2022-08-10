@@ -9,6 +9,8 @@
 #include "cuda_shader.h"
 #include "cuda_mesh.h"
 #include "rhi/context.h"
+#include <optix_stubs.h>
+#include <optix_function_table_definition.h>
 #include <nvrtc.h>
 #include "embed/cuda_device_builtin_embed.h"
 #include "embed/cuda_device_math_embed.h"
@@ -68,6 +70,7 @@ CUDADevice::CUDADevice(Context *context)
     OC_CU_CHECK(cuInit(0));
     OC_CU_CHECK(cuDeviceGet(&_cu_device, 0));
     OC_CU_CHECK(cuDevicePrimaryCtxRetain(&_cu_ctx, _cu_device));
+    _optix_device_context = create_optix_context();
 }
 
 handle_ty CUDADevice::create_buffer(size_t size) noexcept {
@@ -75,6 +78,34 @@ handle_ty CUDADevice::create_buffer(size_t size) noexcept {
         handle_ty handle{};
         OC_CU_CHECK(cuMemAlloc(&handle, size));
         return handle;
+    });
+}
+
+namespace detail {
+void context_log_cb(unsigned int level, const char *tag, const char *message, void * /*cbdata */) {
+    std::cerr << "[" << std::setw(2) << level << "][" << std::setw(12) << tag << "]: " << message << "\n";
+}
+}// namespace detail
+
+OptixDeviceContext CUDADevice::create_optix_context() noexcept {
+    return use_context([&] {
+        OptixDeviceContext ctx;
+        OC_CU_CHECK(cuMemFree(0));
+        OC_OPTIX_CHECK(optixInit());
+
+        OptixDeviceContextOptions ctx_options = {};
+#ifndef NDEBUG
+        ctx_options.logCallbackLevel = 4;// status/progress
+#else
+        ctx_options.logCallbackLevel = 2;// error
+#endif
+        ctx_options.logCallbackFunction = detail::context_log_cb;
+#if (OPTIX_VERSION >= 70200)
+        ctx_options.validationMode = OPTIX_DEVICE_CONTEXT_VALIDATION_MODE_OFF;
+#endif
+        CUcontext cu_context = nullptr;
+        OC_OPTIX_CHECK(optixDeviceContextCreate(cu_context, &ctx_options, &ctx));
+        return ctx;
     });
 }
 
@@ -127,7 +158,6 @@ handle_ty CUDADevice::create_shader(const Function &function) noexcept {
 
     return ptr;
 }
-
 
 handle_ty CUDADevice::create_mesh(const MeshParams &params) noexcept {
     return 0;

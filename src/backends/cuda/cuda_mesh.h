@@ -14,10 +14,8 @@ class CUDAMesh : public Mesh::Impl {
 private:
     CUDADevice *_device;
     MeshParams _params;
-    OptixTraversableHandle _BLAS_handle{};
-    OptixDeviceContext _optix_device_context{};
+    OptixTraversableHandle _blas_handle{};
     OptixBuildInput _build_input{};
-    OptixPipeline _optix_pipeline{};
 
 public:
     CUDAMesh(CUDADevice *device, const MeshParams &params)
