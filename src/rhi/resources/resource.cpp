@@ -12,6 +12,8 @@ void RHIResource::_destroy() {
         case Tag::TEXTURE: _device->destroy_texture(_handle); break;
         case Tag::STREAM: _device->destroy_stream(_handle); break;
         case Tag::SHADER: _device->destroy_shader(_handle); break;
+        case Tag::MESH: _device->destroy_mesh(_handle); break;
+        case Tag::ACCEL: _device->destroy_accel(_handle); break;
     }
 }
 }// namespace ocarina

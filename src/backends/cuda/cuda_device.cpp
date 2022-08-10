@@ -23,7 +23,7 @@ CUDADevice::CUDADevice(Context *context)
     OC_CU_CHECK(cuInit(0));
     OC_CU_CHECK(cuDeviceGet(&_cu_device, 0));
     OC_CU_CHECK(cuDevicePrimaryCtxRetain(&_cu_ctx, _cu_device));
-    _optix_device_context = create_optix_context();
+    init_optix_context();
 }
 
 handle_ty CUDADevice::create_buffer(size_t size) noexcept {
@@ -40,9 +40,8 @@ void context_log_cb(unsigned int level, const char *tag, const char *message, vo
 }
 }// namespace detail
 
-OptixDeviceContext CUDADevice::create_optix_context() noexcept {
-    return use_context([&] {
-        OptixDeviceContext ctx;
+void CUDADevice::init_optix_context() noexcept {
+    use_context([&] {
         OC_CU_CHECK(cuMemFree(0));
         OC_OPTIX_CHECK(optixInit());
 
@@ -57,8 +56,7 @@ OptixDeviceContext CUDADevice::create_optix_context() noexcept {
         ctx_options.validationMode = OPTIX_DEVICE_CONTEXT_VALIDATION_MODE_OFF;
 #endif
         CUcontext cu_context = nullptr;
-        OC_OPTIX_CHECK(optixDeviceContextCreate(cu_context, &ctx_options, &ctx));
-        return ctx;
+        OC_OPTIX_CHECK(optixDeviceContextCreate(cu_context, &ctx_options, &_optix_device_context));
     });
 }
 
@@ -89,7 +87,8 @@ handle_ty CUDADevice::create_shader(const Function &function) noexcept {
 }
 
 handle_ty CUDADevice::create_mesh(const MeshParams &params) noexcept {
-    return 0;
+    auto ret = new_with_allocator<CUDAMesh>(this, params);
+    return reinterpret_cast<handle_ty>(ret);
 }
 
 void CUDADevice::destroy_mesh(handle_ty handle) noexcept {

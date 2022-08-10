@@ -7,6 +7,10 @@
 
 namespace ocarina {
 
+CUDAMesh::~CUDAMesh() {
+
+}
+
 void CUDAMesh::init_build_input() noexcept {
     _build_input.type = OPTIX_BUILD_INPUT_TYPE_TRIANGLES;
     {

@@ -22,6 +22,7 @@ public:
         :  _device(device), _params(params) {
         init_build_input();
     }
+    ~CUDAMesh();
     void init_build_input() noexcept;
     void build_bvh(const MeshBuildCommand *cmd) noexcept;
 };

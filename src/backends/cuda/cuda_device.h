@@ -39,8 +39,6 @@ private:
         }
     };
 
-    [[nodiscard]] ocarina::string get_ptx(const Function &func) const noexcept;
-
 public:
     explicit CUDADevice(Context *context);
     template<typename Func>
@@ -55,7 +53,8 @@ public:
         ContextGuard cg(_cu_ctx);
         return func();
     }
-    [[nodiscard]] OptixDeviceContext create_optix_context() noexcept;
+    void init_optix_context() noexcept;
+    [[nodiscard]] OptixDeviceContext optix_device_context() const noexcept { return _optix_device_context; }
     [[nodiscard]] handle_ty create_buffer(size_t size) noexcept override;
     void destroy_buffer(handle_ty handle) noexcept override;
     [[nodiscard]] handle_ty create_texture(uint2 res, PixelStorage pixel_storage) noexcept override;
@@ -67,6 +66,6 @@ public:
     [[nodiscard]] handle_ty create_stream() noexcept override;
     void destroy_stream(handle_ty handle) noexcept override;
     [[nodiscard]] handle_ty create_mesh(const MeshParams &params) noexcept override;
-    virtual void destroy_mesh(handle_ty handle) noexcept override;
+    void destroy_mesh(handle_ty handle) noexcept override;
 };
 }// namespace ocarina
