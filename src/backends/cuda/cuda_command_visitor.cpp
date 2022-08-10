@@ -80,5 +80,7 @@ void CUDACommandVisitor::visit(const TextureUploadCommand *cmd) noexcept {
 
 void CUDACommandVisitor::visit(const TextureDownloadCommand *cmd) noexcept {
 }
+void CUDACommandVisitor::visit(const MeshBuildCommand *cmd) noexcept {
+}
 
 }// namespace ocarina

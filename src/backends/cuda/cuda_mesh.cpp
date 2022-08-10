@@ -3,6 +3,7 @@
 //
 
 #include "cuda_mesh.h"
+#include "cuda_device.h"
 
 namespace ocarina {
 

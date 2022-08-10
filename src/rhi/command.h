@@ -17,6 +17,7 @@ namespace ocarina {
         TextureUploadCommand,   \
         TextureDownloadCommand, \
         SynchronizeCommand,     \
+        MeshBuildCommand,       \
         ShaderDispatchCommand
 
 /// forward declare
@@ -173,6 +174,12 @@ public:
 [[nodiscard]] inline SynchronizeCommand *synchronize() noexcept {
     return SynchronizeCommand::create();
 }
+
+class MeshBuildCommand final : public Command {
+public:
+    OC_MAKE_CMD_COMMON_FUNC(MeshBuildCommand)
+};
+
 class Function;
 class ShaderDispatchCommand final : public Command {
 private:
