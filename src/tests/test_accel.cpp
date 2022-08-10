@@ -1,0 +1,61 @@
+//
+// Created by Zero on 09/08/2022.
+//
+
+#include "core/stl.h"
+#include "dsl/common.h"
+#include "rhi/context.h"
+#include "rhi/common.h"
+#include <windows.h>
+#include "math/base.h"
+#include "math/geometry.h"
+#include "util/image.h"
+#include "dsl/common.h"
+#include "rhi/geometries/mesh.h"
+
+using namespace ocarina;
+
+auto get_cube(float x = 1, float y = 1, float z = 1) {
+    x = x / 2.f;
+    y = y / 2.f;
+    z = z / 2.f;
+    auto vertices = vector<float3>{
+        float3(-x, -y, z), float3(x, -y, z), float3(-x, y, z), float3(x, y, z),    // +z
+        float3(-x, y, -z), float3(x, y, -z), float3(-x, -y, -z), float3(x, -y, -z),// -z
+        float3(-x, y, z), float3(x, y, z), float3(-x, y, -z), float3(x, y, -z),    // +y
+        float3(-x, -y, z), float3(x, -y, z), float3(-x, -y, -z), float3(x, -y, -z),// -y
+        float3(x, -y, z), float3(x, y, z), float3(x, y, -z), float3(x, -y, -z),    // +x
+        float3(-x, -y, z), float3(-x, y, z), float3(-x, y, -z), float3(-x, -y, -z),// -x
+    };
+    auto triangles = vector<Triangle>{
+        Triangle(0, 1, 3),
+        Triangle(0, 3, 2),
+        Triangle(6, 5, 7),
+        Triangle(4, 5, 6),
+        Triangle(10, 9, 11),
+        Triangle(8, 9, 10),
+        Triangle(13, 14, 15),
+        Triangle(13, 12, 14),
+        Triangle(18, 17, 19),
+        Triangle(17, 16, 19),
+        Triangle(21, 22, 23),
+        Triangle(20, 21, 23),
+    };
+
+    return ocarina::make_pair(vertices, triangles);
+}
+
+int main(int argc, char *argv[]) {
+    fs::path path(argv[0]);
+    Context context(path.parent_path());
+    context.clear_cache();
+    Device device = context.create_device("cuda");
+    Stream stream = device.create_stream();
+    auto [vertices, triangle] = get_cube();
+
+    auto v_buffer = device.create_buffer<float3>(vertices.size());
+    auto t_buffer = device.create_buffer<Triangle>(triangle.size());
+
+
+    return 0;
+}

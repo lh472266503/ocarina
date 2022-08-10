@@ -8,7 +8,6 @@
 #include "rhi/geometries/accel.h"
 #include "util.h"
 
-
 namespace ocarina {
 
 }

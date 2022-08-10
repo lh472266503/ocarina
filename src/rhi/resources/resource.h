@@ -7,10 +7,12 @@
 #include "core/stl.h"
 #include "core/concepts.h"
 #include "rhi/device.h"
+
 namespace ocarina {
 
 using handle_ty = uint64_t;
 using ptr_t = uint64_t;
+
 class RHIResource {
 public:
     enum Tag : uint8_t {
@@ -18,6 +20,7 @@ public:
         TEXTURE,
         STREAM,
         SHADER,
+        MESH,
         ACCEL,
     };
 
