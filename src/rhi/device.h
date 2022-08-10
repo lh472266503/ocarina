@@ -60,7 +60,7 @@ public:
         virtual void destroy_accel(handle_ty handle) noexcept = 0;
         [[nodiscard]] virtual handle_ty create_stream() noexcept = 0;
         virtual void destroy_stream(handle_ty handle) noexcept = 0;
-        [[nodiscard]] virtual handle_ty create_mesh(handle_ty v_handle,handle_ty t_handle,
+        [[nodiscard]] virtual handle_ty create_mesh(handle_ty v_handle,handle_ty t_handle,uint vert_num,
                                                     uint v_stride,uint tri_num,AccelUsageTag usage_tag) noexcept = 0;
         virtual void destroy_mesh(handle_ty handle) noexcept = 0;
     };
