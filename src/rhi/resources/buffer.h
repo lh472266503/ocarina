@@ -76,7 +76,7 @@ public:
     template<typename Index>
     requires ocarina::is_integral_v<expr_value_t<Index>>
     OC_NODISCARD auto
-    read(Index &&index) {
+    read(Index &&index) const {
         const UniformBinding &uniform = Function::current()->get_uniform_var(Type::of<Buffer<T>>(),
                                                                              handle(), Variable::Tag::BUFFER);
         return make_expr<Buffer<T>>(uniform.expression()).read(OC_FORWARD(index));
