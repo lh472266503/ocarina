@@ -53,10 +53,10 @@ int main(int argc, char *argv[]) {
     Stream stream = device.create_stream();
     auto [vertices, triangle] = get_cube();
 
-    auto v_buffer = device.create_buffer<float3>(vertices.size());
-    auto t_buffer = device.create_buffer<Triangle>(triangle.size());
+    Buffer v_buffer = device.create_buffer<float3>(vertices.size());
+    Buffer t_buffer = device.create_buffer<Triangle>(triangle.size());
 
-    auto cube = device.create_mesh(v_buffer, t_buffer);
+    Mesh cube = device.create_mesh(v_buffer, t_buffer);
 
     stream << v_buffer.upload_sync(vertices.data());
     stream << t_buffer.upload_sync(triangle.data());

@@ -176,7 +176,13 @@ public:
 }
 
 class MeshBuildCommand final : public Command {
+private:
+    handle_ty _mesh{};
+
 public:
+    MeshBuildCommand(handle_ty mesh) : _mesh(mesh) {}
+    template<typename T>
+    [[nodiscard]] T *mesh() const { return reinterpret_cast<T *>(_mesh); }
     OC_MAKE_CMD_COMMON_FUNC(MeshBuildCommand)
 };
 

@@ -11,6 +11,10 @@ CUDAMesh::~CUDAMesh() {
 
 }
 
+void CUDAMesh::build_bvh(const MeshBuildCommand *cmd) noexcept {
+
+}
+
 void CUDAMesh::init_build_input() noexcept {
     _build_input.type = OPTIX_BUILD_INPUT_TYPE_TRIANGLES;
     {

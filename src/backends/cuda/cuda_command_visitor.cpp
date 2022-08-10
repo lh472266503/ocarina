@@ -6,6 +6,7 @@
 #include "util.h"
 #include "cuda_device.h"
 #include "cuda_shader.h"
+#include "cuda_mesh.h"
 
 namespace ocarina {
 void CUDACommandVisitor::visit(const BufferUploadCommand *cmd) noexcept {
@@ -81,6 +82,7 @@ void CUDACommandVisitor::visit(const TextureUploadCommand *cmd) noexcept {
 void CUDACommandVisitor::visit(const TextureDownloadCommand *cmd) noexcept {
 }
 void CUDACommandVisitor::visit(const MeshBuildCommand *cmd) noexcept {
+    cmd->mesh<CUDAMesh>()->build_bvh(cmd);
 }
 
 }// namespace ocarina

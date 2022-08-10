@@ -24,6 +24,9 @@ public:
     }
     ~CUDAMesh();
     void init_build_input() noexcept;
+    [[nodiscard]] MeshBuildCommand *build_bvh() noexcept {
+        return MeshBuildCommand::create(reinterpret_cast<handle_ty>(this));
+    }
     void build_bvh(const MeshBuildCommand *cmd) noexcept;
 };
 }// namespace ocarina
