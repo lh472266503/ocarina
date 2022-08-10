@@ -9,6 +9,7 @@
 #include "rhi/device.h"
 #include <cuda.h>
 #include "util.h"
+#include "cuda_compiler.h"
 
 namespace ocarina {
 class CUDADevice : public Device::Impl {

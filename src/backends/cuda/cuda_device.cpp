@@ -5,7 +5,6 @@
 #include "cuda_device.h"
 #include "cuda_stream.h"
 #include "cuda_texture.h"
-#include "cuda_codegen.h"
 #include "cuda_shader.h"
 #include "cuda_mesh.h"
 #include "rhi/context.h"
@@ -15,55 +14,9 @@
 #include "embed/cuda_device_builtin_embed.h"
 #include "embed/cuda_device_math_embed.h"
 #include "embed/cuda_device_resource_embed.h"
+#include "cuda_compiler.h"
 
 namespace ocarina {
-
-#define CUDA_NVRTC_OPTIONS                 \
-    "-std=c++17",                          \
-        "-arch",                           \
-        "compute_50",                      \
-        "-use_fast_math",                  \
-        "-lineinfo",                       \
-        "-default-device",                 \
-        "-include=cuda_device_builtin.h",  \
-        "-include=cuda_device_math.h",     \
-        "-include=cuda_device_resource.h", \
-        "-rdc",                            \
-        "true",                            \
-        "-D__x86_64",
-
-namespace detail {
-[[nodiscard]] string get_ptx(const string &cu) noexcept {
-    nvrtcProgram program{};
-    ocarina::vector<const char *> compile_option = {CUDA_NVRTC_OPTIONS};
-    std::array header_names{"cuda_device_builtin.h", "cuda_device_math.h", "cuda_device_resource.h"};
-    std::array header_sources{cuda_device_builtin, cuda_device_math, cuda_device_resource};
-
-    OC_NVRTC_CHECK(nvrtcCreateProgram(&program, cu.c_str(), "cuda_kernel.cu",
-                                      header_names.size(), header_sources.data(),
-                                      header_names.data()));
-    const nvrtcResult compile_res = nvrtcCompileProgram(program, compile_option.size(), compile_option.data());
-    size_t log_size = 0;
-    OC_NVRTC_CHECK(nvrtcGetProgramLogSize(program, &log_size));
-    string log;
-    log.resize(log_size);
-    if (log_size > 1) {
-        OC_NVRTC_CHECK(nvrtcGetProgramLog(program, log.data()));
-    }
-    if (compile_res != NVRTC_SUCCESS) {
-        cout << log << endl;
-        std::abort();
-    }
-    size_t ptx_size = 0;
-    ocarina::string ptx;
-    OC_NVRTC_CHECK(nvrtcGetPTXSize(program, &ptx_size));
-    ptx.resize(ptx_size);
-    OC_NVRTC_CHECK(nvrtcGetPTX(program, ptx.data()));
-    OC_NVRTC_CHECK(nvrtcDestroyProgram(&program));
-    return ptx;
-}
-}// namespace detail
-#undef CUDA_NVRTC_OPTIONS
 
 CUDADevice::CUDADevice(Context *context)
     : Device::Impl(context) {
@@ -116,31 +69,6 @@ handle_ty CUDADevice::create_stream() noexcept {
     });
 }
 
-ocarina::string CUDADevice::get_ptx(const Function &function) const noexcept {
-    ocarina::string ptx_fn = function.func_name() + ".ptx";
-    string cu_fn = function.func_name() + ".cu";
-    ocarina::string ptx;
-    if (!_context->is_exist_cache(ptx_fn)) {
-        if (!_context->is_exist_cache(cu_fn)) {
-            CUDACodegen codegen;
-            codegen.emit(function);
-            const ocarina::string &cu = codegen.scratch().c_str();
-            cout << cu << endl;
-            _context->write_cache(cu_fn, cu);
-            ptx = detail::get_ptx(cu);
-            _context->write_cache(ptx_fn, ptx);
-        } else {
-            const ocarina::string &cu = _context->read_cache(cu_fn);
-            cout << cu << endl;
-            ptx = detail::get_ptx(cu);
-            //            _context->write_cache(ptx_fn, ptx);
-        }
-    } else {
-        ptx = _context->read_cache(ptx_fn);
-    }
-    return ptx;
-}
-
 handle_ty CUDADevice::create_texture(uint2 res, PixelStorage pixel_storage) noexcept {
     return use_context([&] {
         auto texture = ocarina::new_with_allocator<CUDATexture>(this, res, pixel_storage);
@@ -149,7 +77,8 @@ handle_ty CUDADevice::create_texture(uint2 res, PixelStorage pixel_storage) noex
 }
 
 handle_ty CUDADevice::create_shader(const Function &function) noexcept {
-    ocarina::string ptx = get_ptx(function);
+    CUDACompiler compiler(this, function);
+    ocarina::string ptx = compiler.obtain_ptx();
 
     auto ptr = use_context([&] {
         auto shader = ocarina::new_with_allocator<CUDAShader>(this, ptx, function);

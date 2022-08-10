@@ -49,6 +49,7 @@ public:
         virtual void destroy_stream(handle_ty handle) noexcept = 0;
         [[nodiscard]] virtual handle_ty create_mesh(const MeshParams &params) noexcept = 0;
         virtual void destroy_mesh(handle_ty handle) noexcept = 0;
+        [[nodiscard]] Context *context() noexcept { return _context; }
     };
 
     using Creator = Device::Impl *(Context *);
