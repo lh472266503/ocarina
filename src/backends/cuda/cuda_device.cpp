@@ -129,8 +129,11 @@ handle_ty CUDADevice::create_shader(const Function &function) noexcept {
 }
 
 handle_ty CUDADevice::create_mesh(handle_ty v_handle, handle_ty t_handle,
-                                  uint v_stride, uint t_count) noexcept {
-    return 0;
+                                  uint v_stride, uint tri_num,AccelUsageTag usage_tag) noexcept {
+    auto ptr = use_context([&]{
+        return ocarina::new_with_allocator<CUDAMesh>(v_handle, t_handle, v_stride, tri_num, usage_tag);
+    });
+    return reinterpret_cast<handle_ty>(ptr);
 }
 
 void CUDADevice::destroy_mesh(handle_ty handle) noexcept {
