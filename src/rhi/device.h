@@ -87,7 +87,7 @@ public:
     template<typename Vertex, typename Tri>
     [[nodiscard]] Mesh create_mesh(const Buffer<Vertex> &v_buffer,
                                    const Buffer<Tri> &t_buffer,
-                                   AccelUsageTag usage_tag = AccelUsageTag::FAST_TRACE) noexcept;
+                                   AccelUsageTag usage_tag = AccelUsageTag::FAST_TRACE) noexcept; // implement in mesh.h
 
     [[nodiscard]] Stream create_stream() noexcept;
 

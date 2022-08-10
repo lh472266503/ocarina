@@ -47,7 +47,7 @@ struct EnableSubscriptAccess {
         const AccessExpr *expr = Function::current()->access(Type::of<element_type>(),
                                                              static_cast<const T *>(this)->expression(),
                                                              OC_EXPR(index));
-        return Var<element_type>(expr);
+        return eval<element_type>(expr);
     }
 
     template<typename Index>
@@ -71,7 +71,7 @@ struct EnableReadAndWrite {
         const AccessExpr *expr = Function::current()->access(Type::of<element_type>(),
                                                              static_cast<const T *>(this)->expression(),
                                                              OC_EXPR(index));
-        return Var<element_type>(expr);
+        return eval<element_type>(expr);
     }
 
     template<typename Index, typename Val>
