@@ -10,6 +10,7 @@
 #include "math/rt.h"
 #include "core/image_base.h"
 #include "core/concepts.h"
+#include "params.h"
 
 namespace ocarina {
 class Context;
@@ -19,20 +20,6 @@ class Buffer;
 
 template<typename T>
 class Shader;
-
-enum ShaderTag : uint8_t {
-    CS = 1 << 1,
-    VS = 1 << 2,
-    FS = 1 << 3,
-    GS = 1 << 4,
-    TS = 1 << 5
-};
-
-enum AccelUsageTag : uint8_t {
-    FAST_BUILD,
-    FAST_UPDATE,
-    FAST_TRACE
-};
 
 class Stream;
 
