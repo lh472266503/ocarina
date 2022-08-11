@@ -5,7 +5,7 @@
 #pragma once
 
 #include "core/stl.h"
-#include "rhi/geometries/mesh.h"
+#include "rhi/rtx/mesh.h"
 #include "util.h"
 
 namespace ocarina {

@@ -11,7 +11,6 @@
 #include "math/geometry.h"
 #include "util/image.h"
 #include "dsl/common.h"
-#include "rhi/geometries/mesh.h"
 
 using namespace ocarina;
 
