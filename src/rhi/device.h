@@ -28,6 +28,8 @@ class Texture;
 
 class Mesh;
 
+class Accel;
+
 class Device : public concepts::Noncopyable {
 public:
     class Impl : public concepts::Noncopyable {
@@ -70,14 +72,13 @@ public:
     [[nodiscard]] Buffer<T> create_buffer(size_t size) noexcept {
         return Buffer<T>(_impl.get(), size);
     }
-
     template<typename Vertex, typename Tri>
     [[nodiscard]] Mesh create_mesh(const Buffer<Vertex> &v_buffer,
                                    const Buffer<Tri> &t_buffer,
                                    AccelUsageTag usage_tag = AccelUsageTag::FAST_TRACE,
                                    AccelGeomTag geom_tag = AccelGeomTag::DISABLE_ANYHIT) noexcept;// implement in mesh.h
-
     [[nodiscard]] Stream create_stream() noexcept;
+    [[nodiscard]] Accel create_accel() noexcept;
 
     template<typename T>
     [[nodiscard]] Texture<T> create_texture(uint2 res) noexcept {

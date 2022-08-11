@@ -12,13 +12,22 @@ namespace ocarina {
 class Accel : public RHIResource {
 public:
     class Impl {
+    public:
         virtual void add_mesh(Mesh::Impl *mesh, float4x4 transform) noexcept = 0;
     };
-
+private:
+    ocarina::vector<Mesh> _meshes;
+    ocarina::vector<float4x4> _transforms;
 public:
     explicit Accel(Device::Impl *device)
         : RHIResource(device, Tag::ACCEL, device->create_accel()) {}
 
-    void add_mesh(Mesh &&mesh, float4x4 transform);
+    [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
+    [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(_handle); }
+    void add_mesh(Mesh &&mesh, float4x4 transform) noexcept {
+        _meshes.push_back(std::move(mesh));
+        _transforms.push_back(transform);
+    }
+
 };
 }// namespace ocarina

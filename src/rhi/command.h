@@ -18,6 +18,7 @@ namespace ocarina {
         TextureDownloadCommand, \
         SynchronizeCommand,     \
         MeshBuildCommand,       \
+        AccelBuildCommand,      \
         ShaderDispatchCommand
 
 /// forward declare
@@ -184,6 +185,12 @@ public:
     template<typename T>
     [[nodiscard]] T *mesh() const { return reinterpret_cast<T *>(_mesh); }
     OC_MAKE_CMD_COMMON_FUNC(MeshBuildCommand)
+};
+
+class AccelBuildCommand final : public Command {
+public:
+    AccelBuildCommand() = default;
+    OC_MAKE_CMD_COMMON_FUNC(AccelBuildCommand)
 };
 
 class Function;

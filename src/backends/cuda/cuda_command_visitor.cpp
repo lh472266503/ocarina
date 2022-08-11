@@ -84,5 +84,7 @@ void CUDACommandVisitor::visit(const TextureDownloadCommand *cmd) noexcept {
 void CUDACommandVisitor::visit(const MeshBuildCommand *cmd) noexcept {
     cmd->mesh<CUDAMesh>()->build_bvh(cmd);
 }
+void CUDACommandVisitor::visit(const AccelBuildCommand *cmd) noexcept {
+}
 
 }// namespace ocarina

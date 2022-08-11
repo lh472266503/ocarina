@@ -2,7 +2,7 @@
 // Created by Zero on 2022/8/8.
 //
 
-#include "cuda_accel.h"
+#include "optix_accel.h"
 
 namespace ocarina {
 

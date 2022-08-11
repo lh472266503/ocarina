@@ -5,11 +5,16 @@
 #include "device.h"
 #include "resources/texture.h"
 #include "resources/stream.h"
+#include "rtx/accel.h"
 
 namespace ocarina {
 
 Stream Device::create_stream() noexcept {
     return _create<Stream>();
+}
+
+Accel Device::create_accel() noexcept {
+    return _create<Accel>();
 }
 
 }// namespace ocarina

@@ -15,6 +15,7 @@
 #include "embed/cuda_device_math_embed.h"
 #include "embed/cuda_device_resource_embed.h"
 #include "cuda_compiler.h"
+#include "optix_accel.h"
 
 namespace ocarina {
 
@@ -113,9 +114,13 @@ void CUDADevice::destroy_stream(handle_ty handle) noexcept {
     ocarina::delete_with_allocator(reinterpret_cast<CUDAStream *>(handle));
 }
 handle_ty CUDADevice::create_accel() noexcept {
-    return 0;
+    return use_context([&] {
+        auto accel = new_with_allocator<OptixAccel>(this);
+        return reinterpret_cast<handle_ty>(accel);
+    });
 }
 void CUDADevice::destroy_accel(handle_ty handle) noexcept {
+    ocarina::delete_with_allocator(reinterpret_cast<OptixAccel *>(handle));
 }
 
 }// namespace ocarina
