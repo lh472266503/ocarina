@@ -104,6 +104,8 @@ enum struct CallOp : uint32_t {
     INVERSE,
 
     TEX_SAMPLE,
+    TEX_READ,
+    TEX_WRITE,
 
     SYNCHRONIZE_BLOCK,
 

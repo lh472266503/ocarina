@@ -78,6 +78,8 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         case CallOp::TEX_SAMPLE:
             current_scratch() << "oc_tex_sample_float" << expr->type()->dimension();
             break;
+        case CallOp::TEX_READ: break;
+        case CallOp::TEX_WRITE: break;
         case CallOp::COUNT: break;
         default: OC_ASSERT(0); break;
     }

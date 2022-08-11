@@ -85,17 +85,54 @@ struct EnableReadAndWrite {
 };
 
 template<typename T>
-struct EnableSample {
+struct EnableTextureReadAndWrite {
+
+    using texture_type = expr_value_t<T>;
+    using element_type = texture_element_t<texture_type>;
+
+    template<typename U, typename V>
+    requires(is_all_integral_expr_v<U, V>)
+        OC_NODISCARD auto read(const U &u, const V &v) const noexcept {
+        const T *texture = static_cast<const T *>(this);
+        const AccessExpr *expr = Function::current()->call_builtin(Type::of<element_type>(), CallOp::TEX_READ,
+                                                                   {texture->expression(),
+                                                                    OC_EXPR(u), OC_EXPR(v)});
+        return eval<element_type>(expr);
+    }
+
+    template<typename UV>
+    requires(is_int_vector2_v<expr_value_t<UV>>)
+        OC_NODISCARD auto read(const UV &uv) const noexcept {
+        return read(uv.x, uv.y);
+    }
+
+    template<typename U, typename V, typename Val>
+    requires(is_all_integral_expr_v<U, V> &&concepts::is_same_v<element_type, expr_value_t<Val>>) void write(const U &u, const V &v, const Val &elm) noexcept {
+        const T *texture = static_cast<const T *>(this);
+        const AccessExpr *expr = Function::current()->call_builtin(Type::of<element_type>(), CallOp::TEX_READ,
+                                                                   {texture->expression(),
+                                                                    OC_EXPR(u), OC_EXPR(v), OC_EXPR(elm)});
+        assign(expr, OC_FORWARD(elm));
+    }
+
+    template<typename UV, typename Val>
+    requires(is_float_vector2_v<expr_value_t<UV>> &&concepts::is_same_v<element_type, expr_value_t<Val>>) void write(const UV &uv, const Val &elm) noexcept {
+        write(uv.x, uv.y, elm);
+    }
+};
+
+template<typename T>
+struct EnableTextureSample {
 
     template<typename U, typename V>
     requires(is_all_floating_point_expr_v<U, V>)
-    OC_NODISCARD auto sample(const U &u, const V &v) const noexcept {
+        OC_NODISCARD auto sample(const U &u, const V &v) const noexcept {
         using texture_type = expr_value_t<T>;
         using element_type = texture_element_t<texture_type>;
         const T *texture = static_cast<const T *>(this);
         using sample_type = texture_sample_t<element_type>;
         const CallExpr *expr = Function::current()->call_builtin(Type::of<sample_type>(),
-                                                                CallOp::TEX_SAMPLE,
+                                                                 CallOp::TEX_SAMPLE,
                                                                  {texture->expression(),
                                                                   OC_EXPR(u),
                                                                   OC_EXPR(v)});
@@ -238,7 +275,8 @@ struct Computable<Buffer<T>>
 
 template<typename T>
 struct Computable<Texture<T>>
-    : detail::EnableSample<Computable<Texture<T>>> {
+    : detail::EnableTextureSample<Computable<Texture<T>>>,
+      detail::EnableTextureReadAndWrite<Computable<Texture<T>>> {
     OC_COMPUTABLE_COMMON(Computable<Texture>)
 };
 
