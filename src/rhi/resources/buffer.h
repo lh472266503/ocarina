@@ -52,7 +52,7 @@ public:
     }
 };
 
-template<typename T>
+template<typename T = std::byte>
 class Buffer : public RHIResource {
 public:
     static constexpr size_t element_size = sizeof(T);

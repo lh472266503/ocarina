@@ -15,6 +15,7 @@ private:
     CUDADevice *_device;
     MeshParams _params;
     OptixTraversableHandle _blas_handle{};
+    ocarina::vector<Buffer<std::byte>> _as_buffers;
     OptixBuildInput _build_input{};
 
 public:

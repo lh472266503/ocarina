@@ -11,7 +11,6 @@
 namespace ocarina {
 
 CUDAMesh::~CUDAMesh() {
-
 }
 
 void CUDAMesh::build_bvh(const MeshBuildCommand *cmd) noexcept {
@@ -26,10 +25,24 @@ void CUDAMesh::build_bvh(const MeshBuildCommand *cmd) noexcept {
             _device->optix_device_context(),
             &accel_options,
             &_build_input,
-            1,  // num_build_inputs
-            &gas_buffer_sizes
-            ));
-        int i =0;
+            1,// num_build_inputs
+            &gas_buffer_sizes));
+        Buffer tri_gas_buffer = Buffer(_device, gas_buffer_sizes.outputSizeInBytes);
+        Buffer temp_buffer = Buffer(_device, gas_buffer_sizes.tempSizeInBytes);
+        Buffer compact_size_buffer = Buffer<uint64_t>(_device, 1);
+        OptixAccelEmitDesc emit_desc;
+        emit_desc.type = OPTIX_PROPERTY_TYPE_COMPACTED_SIZE;
+        emit_desc.result = compact_size_buffer.handle();
+
+        OptixTraversableHandle traversable_handle = 0;
+        OC_OPTIX_CHECK(optixAccelBuild(_device->optix_device_context(), nullptr,
+                                    &accel_options, &_build_input, 1,
+                                    temp_buffer.handle(), gas_buffer_sizes.tempSizeInBytes,
+                                    tri_gas_buffer.handle(), gas_buffer_sizes.outputSizeInBytes,
+                                    &traversable_handle, &emit_desc, 1));
+//        _as_buffers.push_back(std::move(tri_gas_buffer));
+//        _as_buffers.push_back(move(temp_buffer));
+        int i = 0;
     });
 }
 
@@ -39,7 +52,7 @@ void CUDAMesh::init_build_input() noexcept {
         _build_input.triangleArray.vertexFormat = OPTIX_VERTEX_FORMAT_FLOAT3;
         _build_input.triangleArray.vertexStrideInBytes = _params.vert_stride;
         _build_input.triangleArray.numVertices = _params.vert_num;
-        _build_input.triangleArray.vertexBuffers = reinterpret_cast<const CUdeviceptr*>(_params.vert_handle_address);
+        _build_input.triangleArray.vertexBuffers = reinterpret_cast<const CUdeviceptr *>(_params.vert_handle_address);
     }
     {
         _build_input.triangleArray.indexFormat = OPTIX_INDICES_FORMAT_UNSIGNED_INT3;
