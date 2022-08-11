@@ -36,14 +36,16 @@ public:
     RHIResource(Device::Impl *device, Tag tag, handle_ty handle)
         : _device(device), _tag(tag), _handle(handle) {}
     RHIResource(RHIResource &&other) noexcept {
+        if (&other == this) { return; }
         _tag = other._tag;
         _device = other._device;
         _handle = other._handle;
-        other._handle = 0;
+        other._device = nullptr;
     }
     [[nodiscard]] Tag tag() const noexcept { return _tag; }
     [[nodiscard]] handle_ty handle() const noexcept { return _handle; }
     [[nodiscard]] const handle_ty *handle_address() const noexcept { return &_handle; }
+    [[nodiscard]] bool valid() const noexcept { return bool(_device); }
     ~RHIResource() { _destroy(); }
 };
 }// namespace ocarina
