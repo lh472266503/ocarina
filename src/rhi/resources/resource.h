@@ -13,7 +13,7 @@ namespace ocarina {
 using handle_ty = uint64_t;
 using ptr_t = uint64_t;
 
-class RHIResource {
+class RHIResource : concepts::Noncopyable {
 public:
     enum Tag : uint8_t {
         BUFFER,
@@ -35,6 +35,12 @@ protected:
 public:
     RHIResource(Device::Impl *device, Tag tag, handle_ty handle)
         : _device(device), _tag(tag), _handle(handle) {}
+    RHIResource(RHIResource &&other) noexcept {
+        _tag = other._tag;
+        _device = other._device;
+        _handle = other._handle;
+        other._handle = 0;
+    }
     [[nodiscard]] Tag tag() const noexcept { return _tag; }
     [[nodiscard]] handle_ty handle() const noexcept { return _handle; }
     [[nodiscard]] const handle_ty *handle_address() const noexcept { return &_handle; }

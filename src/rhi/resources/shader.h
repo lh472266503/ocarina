@@ -13,6 +13,26 @@
 
 namespace ocarina {
 
+namespace detail {
+template<typename T>
+struct prototype_to_shader_invocation {
+    using type = const T &;
+};
+
+template<typename T>
+struct prototype_to_shader_invocation<Buffer<T>> {
+    using type = const Buffer<T> &;
+};
+
+template<typename T>
+struct prototype_to_shader_invocation<Texture<T>> {
+    using type = const Texture<T> &;
+};
+}// namespace detail
+
+template<typename T>
+using prototype_to_shader_invocation_t = typename detail::prototype_to_shader_invocation<T>::type;
+
 class ArgumentList {
 private:
     static constexpr auto Size = 200;
@@ -42,7 +62,6 @@ private:
         push_handle_address(const_cast<handle_ty *>(texture.read_handle_address()));
     }
 
-
 public:
     ArgumentList() = default;
     [[nodiscard]] span<void *> ptr() noexcept { return _args; }
@@ -62,7 +81,7 @@ public:
             _encode_basic(OC_FORWARD(arg));
         } else if constexpr (is_buffer_v<T>) {
             _encode_buffer(OC_FORWARD(arg));
-        } else if constexpr (is_texture_v<T>){
+        } else if constexpr (is_texture_v<T>) {
             _encode_texture(OC_FORWARD(arg));
         }
         return *this;
@@ -95,7 +114,7 @@ private:
 public:
     Shader(Device::Impl *device, const Function &function, ShaderTag tag) noexcept
         : RHIResource(device, SHADER,
-                   device->create_shader(function)),
+                      device->create_shader(function)),
           _shader_tag(tag), _function(function) {}
 
     [[nodiscard]] ShaderDispatchCommand *dispatch(uint x, uint y = 1, uint z = 1) {
@@ -107,9 +126,8 @@ public:
     [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
     [[nodiscard]] ShaderTag shader_tag() const noexcept { return _shader_tag; }
     void compute_fit_size() noexcept { impl()->compute_fit_size(); }
-    template<typename... A>
-    requires std::is_invocable_v<signature, A...>
-        Shader &operator()(A &&...args) noexcept {
+
+    Shader &operator()(prototype_to_shader_invocation_t<Args> &&...args) noexcept {
         _argument_list.clear();
         (_argument_list << ... << OC_FORWARD(args));
 #if CUDA_ARGUMENT_PUSH

@@ -67,7 +67,7 @@ int main(int argc, char *argv[]) {
         print("{},{},{}--", t.i,t.j,t.k);
     };
 
-    Kernel kernel = [&](BufferVar<float3> v) {
+    Kernel kernel = [&](const BufferVar<float3> &v) {
         Var<float3> pos = v_buffer.read(thread_id());
         Var<float3> pos2 = v[thread_id()];
         Var t = t_buffer.read(thread_id());

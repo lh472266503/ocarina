@@ -40,8 +40,8 @@ void CUDAMesh::build_bvh(const MeshBuildCommand *cmd) noexcept {
                                     temp_buffer.handle(), gas_buffer_sizes.tempSizeInBytes,
                                     tri_gas_buffer.handle(), gas_buffer_sizes.outputSizeInBytes,
                                     &traversable_handle, &emit_desc, 1));
-//        _as_buffers.push_back(std::move(tri_gas_buffer));
-//        _as_buffers.push_back(move(temp_buffer));
+        _as_buffers.push_back(std::move(tri_gas_buffer));
+        _as_buffers.push_back(move(temp_buffer));
         int i = 0;
     });
 }
