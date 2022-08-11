@@ -6,7 +6,7 @@
 
 namespace ocarina {
 
-void RHIResource::_destroy() {
+void RHIResource::destroy() {
     if (!valid()) { return; }
     switch (_tag) {
         case Tag::BUFFER: _device->destroy_buffer(_handle); break;

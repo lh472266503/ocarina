@@ -13,7 +13,7 @@ namespace ocarina {
 using handle_ty = uint64_t;
 using ptr_t = uint64_t;
 
-class RHIResource : concepts::Noncopyable {
+class RHIResource : public concepts::Noncopyable {
 public:
     enum Tag : uint8_t {
         BUFFER,
@@ -25,16 +25,15 @@ public:
     };
 
 protected:
-    Tag _tag;
+    Tag _tag{};
     handle_ty _handle{};
     Device::Impl *_device{nullptr};
 
 protected:
-    void _destroy();
-
-public:
     RHIResource(Device::Impl *device, Tag tag, handle_ty handle)
         : _device(device), _tag(tag), _handle(handle) {}
+
+public:
     RHIResource(RHIResource &&other) noexcept {
         if (&other == this) { return; }
         _tag = other._tag;
@@ -46,6 +45,7 @@ public:
     [[nodiscard]] handle_ty handle() const noexcept { return _handle; }
     [[nodiscard]] const handle_ty *handle_address() const noexcept { return &_handle; }
     [[nodiscard]] bool valid() const noexcept { return bool(_device); }
-    ~RHIResource() { _destroy(); }
+    void destroy();
+    ~RHIResource() { destroy(); }
 };
 }// namespace ocarina

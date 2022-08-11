@@ -27,34 +27,31 @@ void CUDAMesh::build_bvh(const MeshBuildCommand *cmd) noexcept {
             &_build_input,
             1,// num_build_inputs
             &gas_buffer_sizes));
-        Buffer tri_gas_buffer = Buffer(_device, gas_buffer_sizes.outputSizeInBytes);
+
+        _blas_buffer = std::make_unique<Buffer<std::byte>>(_device, gas_buffer_sizes.outputSizeInBytes);
+
         Buffer temp_buffer = Buffer(_device, gas_buffer_sizes.tempSizeInBytes);
         Buffer compact_size_buffer = Buffer<uint64_t>(_device, 1);
         OptixAccelEmitDesc emit_desc;
         emit_desc.type = OPTIX_PROPERTY_TYPE_COMPACTED_SIZE;
         emit_desc.result = compact_size_buffer.handle();
 
-        OptixTraversableHandle traversable_handle = 0;
         OC_OPTIX_CHECK(optixAccelBuild(_device->optix_device_context(), nullptr,
                                        &accel_options, &_build_input, 1,
                                        temp_buffer.handle(), gas_buffer_sizes.tempSizeInBytes,
-                                       tri_gas_buffer.handle(), gas_buffer_sizes.outputSizeInBytes,
-                                       &traversable_handle, &emit_desc, 1));
+                                       _blas_buffer->handle(), gas_buffer_sizes.outputSizeInBytes,
+                                       &_blas_handle, &emit_desc, 1));
 
         auto compacted_gas_size = _device->download<size_t>(emit_desc.result);
         if (compacted_gas_size < gas_buffer_sizes.outputSizeInBytes) {
-            auto gas_buffer = Buffer(_device, compacted_gas_size);
+            _blas_buffer = std::make_unique<Buffer<std::byte>>(_device, compacted_gas_size);
             OC_OPTIX_CHECK(optixAccelCompact(_device->optix_device_context(), nullptr,
-                                             traversable_handle,
-                                             gas_buffer.handle(),
+                                             _blas_handle,
+                                             _blas_buffer->handle(),
                                              compacted_gas_size,
-                                             &traversable_handle));
-            _as_buffers.push_back(std::move(gas_buffer));
-        } else {
-            _as_buffers.push_back(std::move(tri_gas_buffer));
+                                             &_blas_handle));
         }
         OC_CU_CHECK(cuCtxSynchronize());
-        _as_buffers.push_back(std::move(temp_buffer));
     });
 }
 
