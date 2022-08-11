@@ -184,7 +184,8 @@ public:
     }
     template<typename Func>
     static auto define_kernel(Func &&func) noexcept {
-        return _define(Tag::KERNEL, std::forward<Func>(func));
+        auto function = _define(Tag::KERNEL, std::forward<Func>(func));
+        return function;
     }
     explicit Function(Tag tag) noexcept;
     ~Function() noexcept {

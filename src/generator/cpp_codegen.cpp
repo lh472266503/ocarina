@@ -294,7 +294,7 @@ void CppCodegen::add_generated(const Function *func) noexcept {
 void CppCodegen::_emit_uniform_var(const UniformBinding &uniform) noexcept {
 }
 
-void CppCodegen::_emit_variable_define(Variable v) noexcept {
+void CppCodegen::_emit_variable_define(const Variable &v) noexcept {
     if (v.type()->is_buffer()) {
         _emit_type_name(v.type());
         _emit_space();
@@ -408,6 +408,8 @@ void CppCodegen::_emit_arguments(const Function &f) noexcept {
         current_scratch() << ",";
     }
 #endif
+    Variable dispatch_dim(Type::of<uint3>(), Variable::Tag::LOCAL, -1, "d_dim");
+    //    _emit_variable_define(dispatch_dim);
     if (f.arguments().size() + f.uniform_vars().size() > 0) {
         current_scratch().pop_back();
     }

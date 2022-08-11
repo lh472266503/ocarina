@@ -170,7 +170,7 @@ private:
     }
 
 public:
-    explicit RefExpr(Variable v) noexcept
+    explicit RefExpr(const Variable& v) noexcept
         : Expression(Tag::REF, v.type()), _variable(v) {}
     [[nodiscard]] auto variable() const noexcept { return _variable; }
     OC_MAKE_EXPRESSION_ACCEPT_VISITOR

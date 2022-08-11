@@ -146,21 +146,26 @@ void CUDACodegen::_emit_builtin_var(Variable v) noexcept {
     current_scratch() << " = ";
     switch (v.tag()) {
         case Tag::BLOCK_IDX:
-            current_scratch() << "oc_uint3(blockIdx.x, blockIdx.y, blockIdx.z)";
+            current_scratch() << "oc_make_uint3(blockIdx.x, blockIdx.y, blockIdx.z)";
             break;
         case Tag::THREAD_IDX:
-            current_scratch() << "oc_uint3(threadIdx.x, threadIdx.y, threadIdx.z)";
+            current_scratch() << "oc_make_uint3(threadIdx.x, threadIdx.y, threadIdx.z)";
             break;
         case Tag::THREAD_ID:
             current_scratch() << "(blockIdx.x + blockIdx.y * gridDim.x"
-                                 "+ gridDim.x * gridDim.y * blockIdx.z) *"
+                                 "+ gridDim.x * gridDim.y * blockIdx.z) * "
                                  "(blockDim.x * blockDim.y * blockDim.z)"
                                  " + (threadIdx.z * (blockDim.x * blockDim.y))"
                                  " + (threadIdx.y * blockDim.x) + threadIdx.x";
             break;
         case Tag::DISPATCH_IDX:
+            current_scratch() << "oc_make_uint3(blockIdx.x * blockDim.x + threadIdx.x,"
+                                 "blockIdx.y * blockDim.y + threadIdx.y,"
+                                 "blockIdx.z * blockDim.z + threadIdx.z)";
             break;
-        case Tag::DISPATCH_ID: break;
+        case Tag::DISPATCH_ID:
+            current_scratch() << "";
+            break;
         case Tag::DISPATCH_DIM: {
             uint3 dim = current_function().dispatch_dim();
             current_scratch() << fmt::format("oc_uint3({}, {}, {})", dim.x, dim.y, dim.z);

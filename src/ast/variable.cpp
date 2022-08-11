@@ -8,6 +8,7 @@
 namespace ocarina {
 
 string Variable::name() const noexcept {
+    if (_name) { return _name; }
     return string(detail::variable_prefix(tag())) + detail::to_string(_uid);
 }
 }// namespace ocarina
