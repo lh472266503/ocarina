@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
 
     auto shader = device.compile(kn);
     //    shader.compute_fit_size();
-//    return 0;
+    return 0;
 //    stream << f_buffer.upload_sync(v.data());
     stream << shader(0.1f, 0.9f, f_buffer, texture).dispatch(10);
     stream << synchronize();

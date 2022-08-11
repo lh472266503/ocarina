@@ -1,4 +1,10 @@
 
+struct OCTexture {
+    cudaTextureObject_t texture;
+    cudaSurfaceObject_t surface;  
+};
+
+
 __device__ auto oc_tex_sample_float1(cudaTextureObject_t handle, oc_float u, oc_float v) noexcept {
     auto ret = tex2D<float>(handle, u, 1 - v);
     return ret;
