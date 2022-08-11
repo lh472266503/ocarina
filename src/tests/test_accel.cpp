@@ -71,8 +71,8 @@ int main(int argc, char *argv[]) {
 
     Kernel kernel = [&](const BufferVar<float3> &v) {
         Var<float3> pos = v_buffer.read(dispatch_idx().x);
-        Var<float3> pos2 = v[thread_id()];
-        Var t = t_buffer.read(thread_id());
+        Var<float3> pos2 = v[dispatch_id()];
+        Var t = t_buffer.read(dispatch_id());
         cb(t);
         print("{},{},{}, {}", pos.x, pos2.y, pos.z, dispatch_dim().x);
     };

@@ -167,7 +167,7 @@ void CUDACodegen::_emit_builtin_var(Variable v) noexcept {
             current_scratch() << "d_idx";
             break;
         case Tag::DISPATCH_ID:
-            current_scratch() << "";
+            current_scratch() << "d_idx.z * d_dim.x * d_dim.y + d_dim.x * d_idx.y + d_idx.x";
             break;
         case Tag::DISPATCH_DIM: {
             current_scratch() << "d_dim";
