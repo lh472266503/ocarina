@@ -59,7 +59,7 @@ private:
 
     template<typename T>
     void _encode_texture(const Texture<T> &texture) noexcept {
-        push_handle_address(const_cast<handle_ty *>(texture.read_handle_address()));
+        push_handle_address(const_cast<handle_ty *>(texture.tex_handle_address()));
     }
 
 public:
