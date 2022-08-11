@@ -79,10 +79,10 @@ int main(int argc, char *argv[]) {
     //    shader.compute_fit_size();
 //    return 0;
 //    stream << f_buffer.upload_sync(v.data());
-//    stream << shader(0.1f, 0.9f, f_buffer, texture).dispatch(10);
-//    stream << synchronize();
-//    stream << f_buffer.download_sync(v.data());
-//    stream << commit();
+    stream << shader(0.1f, 0.9f, f_buffer, texture).dispatch(10);
+    stream << synchronize();
+    stream << f_buffer.download_sync(v.data());
+    stream << commit();
 //    for (int i = 0; i < count; ++i) {
 //        cout << v[i] << endl;
 //    }

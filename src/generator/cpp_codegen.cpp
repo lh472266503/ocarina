@@ -13,7 +13,8 @@ struct LiteralPrinter {
     Scratch &scratch;
     explicit LiteralPrinter(Scratch &scratch) : scratch(scratch) {}
     template<typename T>
-    requires(is_scalar_v<T> || is_vector_v<T>) void operator()(T v) {
+    requires(is_scalar_v<T> || is_vector_v<T>)
+    void operator()(T v) {
         if constexpr (ocarina::is_scalar_v<T>) {
             scratch << v;
         } else {
@@ -235,7 +236,6 @@ void CppCodegen::visit(const CallExpr *expr) noexcept {
             break;
         }
     }
-
 }
 void CppCodegen::visit(const CastExpr *expr) noexcept {
     switch (expr->cast_op()) {
@@ -408,10 +408,13 @@ void CppCodegen::_emit_arguments(const Function &f) noexcept {
         current_scratch() << ",";
     }
 #endif
-    Variable dispatch_dim(Type::of<uint3>(), Variable::Tag::LOCAL, -1, "d_dim");
-    //    _emit_variable_define(dispatch_dim);
-    if (f.arguments().size() + f.uniform_vars().size() > 0) {
-        current_scratch().pop_back();
+    if (f.is_kernel()) {
+        Variable dispatch_dim(Type::of<uint3>(), Variable::Tag::LOCAL, -1, "d_dim");
+        _emit_variable_define(dispatch_dim);
+    } else {
+        if (f.arguments().size() + f.uniform_vars().size() > 0) {
+            current_scratch().pop_back();
+        }
     }
     current_scratch() << ")";
 }

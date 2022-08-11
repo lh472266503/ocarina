@@ -118,6 +118,7 @@ public:
           _shader_tag(tag), _function(function) {}
 
     [[nodiscard]] ShaderDispatchCommand *dispatch(uint x, uint y = 1, uint z = 1) {
+        _argument_list << make_uint3(x, y, z);
         return ShaderDispatchCommand::create(_function, handle(), _argument_list.ptr(), make_uint3(x, y, z));
     }
     [[nodiscard]] ShaderDispatchCommand *dispatch(uint2 dim) { return dispatch(dim.x, dim.y, 1); }

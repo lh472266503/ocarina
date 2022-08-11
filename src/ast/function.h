@@ -67,7 +67,6 @@ private:
     ocarina::set<const Type *> _used_struct;
     mutable uint3 _block_dim{make_uint3(0)};
     mutable uint3 _grid_dim{make_uint3(0)};
-    mutable uint3 _dispatch_dim{make_uint3(0)};
 
 private:
     static ocarina::vector<Function *> &_function_stack() noexcept;
@@ -210,18 +209,12 @@ public:
     void set_grid_dim(uint3 size) const noexcept { _grid_dim = size; }
     [[nodiscard]] uint3 grid_dim() const noexcept { return _grid_dim; }
 
-    void set_dispatch_dim(uint x, uint y = 1, uint z = 1) const noexcept { _dispatch_dim = make_uint3(x, y, z); }
-    void set_dispatch_dim(uint2 size) const noexcept { _dispatch_dim = make_uint3(size, 1); }
-    void set_dispatch_dim(uint3 size) const noexcept { _dispatch_dim = size; }
-    [[nodiscard]] uint3 dispatch_dim() const noexcept { return _dispatch_dim; }
-
     void configure(uint3 grid_dim, uint3 block_dim) const noexcept {
         _grid_dim = grid_dim;
         _block_dim = block_dim;
     }
 
     [[nodiscard]] bool has_configure() const noexcept { return all(block_dim() != 0u) || all(grid_dim() != 0u); }
-    [[nodiscard]] bool dispatch_dim_valid() const noexcept { return all(dispatch_dim() != 0u); }
 
     [[nodiscard]] ocarina::string func_name() const noexcept;
     void assign(const Expression *lhs, const Expression *rhs) noexcept;

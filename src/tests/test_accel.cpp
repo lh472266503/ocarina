@@ -74,12 +74,12 @@ int main(int argc, char *argv[]) {
         Var<float3> pos2 = v[thread_id()];
         Var t = t_buffer.read(thread_id());
         cb(t);
-        print("{},{},{}", pos.x, pos2.y, pos.z);
+        print("{},{},{}, {}", pos.x, pos2.y, pos.z, dispatch_dim().x);
     };
 
     auto shader = device.compile(kernel);
-//    stream << shader(v_buffer).dispatch(t_buffer.size());
-//    stream << synchronize() << commit();
+    stream << shader(v_buffer).dispatch(t_buffer.size());
+    stream << synchronize() << commit();
 
     return 0;
 }
