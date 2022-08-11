@@ -40,9 +40,22 @@ void CUDAMesh::build_bvh(const MeshBuildCommand *cmd) noexcept {
                                     temp_buffer.handle(), gas_buffer_sizes.tempSizeInBytes,
                                     tri_gas_buffer.handle(), gas_buffer_sizes.outputSizeInBytes,
                                     &traversable_handle, &emit_desc, 1));
+
+        auto compacted_gas_size = _device->download<size_t>(emit_desc.result);
+        if (compacted_gas_size < gas_buffer_sizes.outputSizeInBytes) {
+            auto tri_gas_buffer = Buffer(_device,compacted_gas_size);
+            OC_OPTIX_CHECK(optixAccelCompact(_device->optix_device_context(), nullptr,
+                                          traversable_handle,
+                                          tri_gas_buffer.handle(),
+                                          compacted_gas_size,
+                                          &traversable_handle));
+            _as_buffers.push_back(std::move(tri_gas_buffer));
+        } else {
+            _as_buffers.push_back(std::move(tri_gas_buffer));
+        }
+        OC_CU_CHECK(cuCtxSynchronize());
         _as_buffers.push_back(std::move(tri_gas_buffer));
-        _as_buffers.push_back(move(temp_buffer));
-        int i = 0;
+        _as_buffers.push_back(std::move(temp_buffer));
     });
 }
 
