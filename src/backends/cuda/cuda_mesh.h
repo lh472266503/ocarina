@@ -20,11 +20,12 @@ private:
 
 public:
     CUDAMesh(CUDADevice *device, const MeshParams &params)
-        :  _device(device), _params(params) {
+        : _device(device), _params(params) {
         init_build_input();
     }
     ~CUDAMesh();
     void init_build_input() noexcept;
+    [[nodiscard]] handle_ty blas_handle() const noexcept override { return _blas_handle; }
     void build_bvh(const MeshBuildCommand *cmd) noexcept;
 };
 }// namespace ocarina

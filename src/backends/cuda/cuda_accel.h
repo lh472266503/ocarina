@@ -9,5 +9,12 @@
 #include "util.h"
 
 namespace ocarina {
+class OptixAccel : public Accel::Impl {
+private:
 
-}
+public:
+    void add_mesh(Mesh::Impl *mesh, float4x4 mat) noexcept {
+
+    }
+};
+}// namespace ocarina
