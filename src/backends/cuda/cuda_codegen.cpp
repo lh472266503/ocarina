@@ -224,7 +224,7 @@ void CUDACodegen::_emit_type_name(const Type *type) noexcept {
                 current_scratch() << "*";
                 break;
             case Type::Tag::TEXTURE:
-                current_scratch() << "cudaTextureObject_t";
+                current_scratch() << "OCTexture";
                 break;
             case Type::Tag::BINDLESS_ARRAY: break;
             case Type::Tag::ACCEL: break;

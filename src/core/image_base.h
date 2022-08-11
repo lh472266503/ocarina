@@ -11,7 +11,7 @@
 
 namespace ocarina {
 
-enum struct PixelStorage : uint8_t {
+enum struct PixelStorage : uint {
     BYTE1,
     BYTE2,
     BYTE4,
