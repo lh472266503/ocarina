@@ -58,4 +58,21 @@ __device__ auto oc_tex_read_uchar4(OCTexture obj, oc_uint x, oc_uint y) noexcept
     return oc_make_uchar4(ret.x, ret.y, ret.x, ret.y);
 }
 
+__device__ auto oc_tex_read_float1(OCTexture obj, oc_uint x, oc_uint y) noexcept {
+    auto ret = surf2Dread<float>(obj.surface, x * sizeof(float), y, cudaBoundaryModeZero);
+    return ret;
+}
 
+__device__ auto oc_tex_read_float2(OCTexture obj, oc_uint x, oc_uint y) noexcept {
+    auto ret = surf2Dread<float2>(obj.surface, x * sizeof(float2), y, cudaBoundaryModeZero);
+    return oc_make_float2(ret.x, ret.y);
+}
+
+__device__ auto oc_tex_read_float4(OCTexture obj, oc_uint x, oc_uint y) noexcept {
+    auto ret = surf2Dread<float4>(obj.surface, x * sizeof(float4), y, cudaBoundaryModeZero);
+    return oc_make_float4(ret.x, ret.y, ret.x, ret.y);
+}
+
+// __device__ void oc_tex_write_uchar1(OCTexture obj, oc_uint x, oc_uint y, oc_uchar var) noexcept {
+//     surf2Dwrite(v, obj.surface, x * sizeof(uchar), y, cudaBoundaryModeZero);
+// }
