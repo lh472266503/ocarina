@@ -205,6 +205,8 @@ void CUDACodegen::_emit_type_name(const Type *type) noexcept {
             case Type::Tag::FLOAT: current_scratch() << TYPE_PREFIX "float"; break;
             case Type::Tag::INT: current_scratch() << TYPE_PREFIX "int"; break;
             case Type::Tag::UINT: current_scratch() << TYPE_PREFIX "uint"; break;
+            case Type::Tag::UCHAR: current_scratch() << TYPE_PREFIX "uchar"; break;
+            case Type::Tag::CHAR: break;
             case Type::Tag::VECTOR:
                 _emit_type_name(type->element());
                 current_scratch() << type->dimension();

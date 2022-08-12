@@ -50,12 +50,12 @@ __device__ auto oc_tex_read_uchar1(OCTexture obj, oc_uint x, oc_uint y) noexcept
 
 __device__ auto oc_tex_read_uchar2(OCTexture obj, oc_uint x, oc_uint y) noexcept {
     auto ret = surf2Dread<uchar2>(obj.surface, x * sizeof(uchar2), y, cudaBoundaryModeZero);
-    return ret;
+    return oc_make_uchar2(ret.x, ret.y);
 }
 
 __device__ auto oc_tex_read_uchar4(OCTexture obj, oc_uint x, oc_uint y) noexcept {
     auto ret = surf2Dread<uchar4>(obj.surface, x * sizeof(uchar4), y, cudaBoundaryModeZero);
-    return ret;
+    return oc_make_uchar4(ret.x, ret.y, ret.x, ret.y);
 }
 
 

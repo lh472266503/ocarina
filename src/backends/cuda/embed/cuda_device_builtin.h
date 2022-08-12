@@ -6,6 +6,7 @@ using oc_int = int;
 using oc_uint = unsigned int;
 using oc_float = float;
 using oc_bool = bool;
+using oc_uchar = unsigned char;
 
 struct alignas(8) oc_int2{
 	oc_int x;
@@ -187,6 +188,51 @@ struct alignas(16) oc_bool4{
 	__device__ inline oc_bool &operator[](oc_uint i) noexcept { return (&x)[i]; }
 };
 
+struct alignas(8) oc_uchar2{
+	oc_uchar x;
+	oc_uchar y;
+
+	__device__ oc_uchar2() noexcept 
+		:x{}, y{} {}
+	__device__ oc_uchar2(oc_uchar s) noexcept 
+		:x(s), y(s) {}
+	__device__ oc_uchar2(oc_uchar x, oc_uchar y) noexcept 
+		:x(x), y(y) {}
+	__device__ inline oc_uchar operator[](oc_uint i) const noexcept { return (&x)[i]; }
+	__device__ inline oc_uchar &operator[](oc_uint i) noexcept { return (&x)[i]; }
+};
+
+struct alignas(16) oc_uchar3{
+	oc_uchar x;
+	oc_uchar y;
+	oc_uchar z;
+
+	__device__ oc_uchar3() noexcept 
+		:x{}, y{}, z{} {}
+	__device__ oc_uchar3(oc_uchar s) noexcept 
+		:x(s), y(s), z(s) {}
+	__device__ oc_uchar3(oc_uchar x, oc_uchar y, oc_uchar z) noexcept 
+		:x(x), y(y), z(z) {}
+	__device__ inline oc_uchar operator[](oc_uint i) const noexcept { return (&x)[i]; }
+	__device__ inline oc_uchar &operator[](oc_uint i) noexcept { return (&x)[i]; }
+};
+
+struct alignas(16) oc_uchar4{
+	oc_uchar x;
+	oc_uchar y;
+	oc_uchar z;
+	oc_uchar w;
+
+	__device__ oc_uchar4() noexcept 
+		:x{}, y{}, z{}, w{} {}
+	__device__ oc_uchar4(oc_uchar s) noexcept 
+		:x(s), y(s), z(s), w(s) {}
+	__device__ oc_uchar4(oc_uchar x, oc_uchar y, oc_uchar z, oc_uchar w) noexcept 
+		:x(x), y(y), z(z), w(w) {}
+	__device__ inline oc_uchar operator[](oc_uint i) const noexcept { return (&x)[i]; }
+	__device__ inline oc_uchar &operator[](oc_uint i) noexcept { return (&x)[i]; }
+};
+
 __device__ oc_int2 operator+(oc_int2 vec) { return oc_int2(+vec.x, +vec.y); }
 __device__ oc_int2 operator-(oc_int2 vec) { return oc_int2(-vec.x, -vec.y); }
 __device__ oc_int2 operator!(oc_int2 vec) { return oc_int2(!vec.x, !vec.y); }
@@ -243,6 +289,21 @@ __device__ oc_bool4 operator+(oc_bool4 vec) { return oc_bool4(+vec.x, +vec.y, +v
 __device__ oc_bool4 operator-(oc_bool4 vec) { return oc_bool4(-vec.x, -vec.y, -vec.z, -vec.w); }
 __device__ oc_bool4 operator!(oc_bool4 vec) { return oc_bool4(!vec.x, !vec.y, !vec.z, !vec.w); }
 __device__ oc_bool4 operator~(oc_bool4 vec) { return oc_bool4(~vec.x, ~vec.y, ~vec.z, ~vec.w); }
+
+__device__ oc_uchar2 operator+(oc_uchar2 vec) { return oc_uchar2(+vec.x, +vec.y); }
+__device__ oc_uchar2 operator-(oc_uchar2 vec) { return oc_uchar2(-vec.x, -vec.y); }
+__device__ oc_uchar2 operator!(oc_uchar2 vec) { return oc_uchar2(!vec.x, !vec.y); }
+__device__ oc_uchar2 operator~(oc_uchar2 vec) { return oc_uchar2(~vec.x, ~vec.y); }
+
+__device__ oc_uchar3 operator+(oc_uchar3 vec) { return oc_uchar3(+vec.x, +vec.y, +vec.z); }
+__device__ oc_uchar3 operator-(oc_uchar3 vec) { return oc_uchar3(-vec.x, -vec.y, -vec.z); }
+__device__ oc_uchar3 operator!(oc_uchar3 vec) { return oc_uchar3(!vec.x, !vec.y, !vec.z); }
+__device__ oc_uchar3 operator~(oc_uchar3 vec) { return oc_uchar3(~vec.x, ~vec.y, ~vec.z); }
+
+__device__ oc_uchar4 operator+(oc_uchar4 vec) { return oc_uchar4(+vec.x, +vec.y, +vec.z, +vec.w); }
+__device__ oc_uchar4 operator-(oc_uchar4 vec) { return oc_uchar4(-vec.x, -vec.y, -vec.z, -vec.w); }
+__device__ oc_uchar4 operator!(oc_uchar4 vec) { return oc_uchar4(!vec.x, !vec.y, !vec.z, !vec.w); }
+__device__ oc_uchar4 operator~(oc_uchar4 vec) { return oc_uchar4(~vec.x, ~vec.y, ~vec.z, ~vec.w); }
 
 
 __device__ oc_int2 operator+(oc_int2 lhs, oc_int2 rhs) { return oc_int2(lhs.x + rhs.x, lhs.y + rhs.y); }
@@ -798,6 +859,169 @@ __device__ oc_bool4 operator>>(oc_bool4 lhs, oc_bool4 rhs) { return oc_bool4(lhs
 __device__ oc_bool4 operator>>(oc_bool4 lhs, oc_bool rhs) { return oc_bool4(lhs.x >> rhs, lhs.y >> rhs, lhs.z >> rhs, lhs.w >> rhs); }
 __device__ oc_bool4 operator>>(oc_bool lhs, oc_bool4 rhs) { return oc_bool4(lhs >> rhs.x, lhs >> rhs.y, lhs >> rhs.z, lhs >> rhs.w); }
 
+__device__ oc_uchar2 operator+(oc_uchar2 lhs, oc_uchar2 rhs) { return oc_uchar2(lhs.x + rhs.x, lhs.y + rhs.y); }
+__device__ oc_uchar2 operator+(oc_uchar2 lhs, oc_uchar rhs) { return oc_uchar2(lhs.x + rhs, lhs.y + rhs); }
+__device__ oc_uchar2 operator+(oc_uchar lhs, oc_uchar2 rhs) { return oc_uchar2(lhs + rhs.x, lhs + rhs.y); }
+__device__ oc_uchar2 operator-(oc_uchar2 lhs, oc_uchar2 rhs) { return oc_uchar2(lhs.x - rhs.x, lhs.y - rhs.y); }
+__device__ oc_uchar2 operator-(oc_uchar2 lhs, oc_uchar rhs) { return oc_uchar2(lhs.x - rhs, lhs.y - rhs); }
+__device__ oc_uchar2 operator-(oc_uchar lhs, oc_uchar2 rhs) { return oc_uchar2(lhs - rhs.x, lhs - rhs.y); }
+__device__ oc_uchar2 operator*(oc_uchar2 lhs, oc_uchar2 rhs) { return oc_uchar2(lhs.x * rhs.x, lhs.y * rhs.y); }
+__device__ oc_uchar2 operator*(oc_uchar2 lhs, oc_uchar rhs) { return oc_uchar2(lhs.x * rhs, lhs.y * rhs); }
+__device__ oc_uchar2 operator*(oc_uchar lhs, oc_uchar2 rhs) { return oc_uchar2(lhs * rhs.x, lhs * rhs.y); }
+__device__ oc_uchar2 operator/(oc_uchar2 lhs, oc_uchar2 rhs) { return oc_uchar2(lhs.x / rhs.x, lhs.y / rhs.y); }
+__device__ oc_uchar2 operator/(oc_uchar2 lhs, oc_uchar rhs) { return oc_uchar2(lhs.x / rhs, lhs.y / rhs); }
+__device__ oc_uchar2 operator/(oc_uchar lhs, oc_uchar2 rhs) { return oc_uchar2(lhs / rhs.x, lhs / rhs.y); }
+__device__ oc_uchar2 operator%(oc_uchar2 lhs, oc_uchar2 rhs) { return oc_uchar2(lhs.x % rhs.x, lhs.y % rhs.y); }
+__device__ oc_uchar2 operator%(oc_uchar2 lhs, oc_uchar rhs) { return oc_uchar2(lhs.x % rhs, lhs.y % rhs); }
+__device__ oc_uchar2 operator%(oc_uchar lhs, oc_uchar2 rhs) { return oc_uchar2(lhs % rhs.x, lhs % rhs.y); }
+__device__ oc_bool2 operator==(oc_uchar2 lhs, oc_uchar2 rhs) { return oc_bool2(lhs.x == rhs.x, lhs.y == rhs.y); }
+__device__ oc_bool2 operator==(oc_uchar2 lhs, oc_uchar rhs) { return oc_bool2(lhs.x == rhs, lhs.y == rhs); }
+__device__ oc_bool2 operator==(oc_uchar lhs, oc_uchar2 rhs) { return oc_bool2(lhs == rhs.x, lhs == rhs.y); }
+__device__ oc_bool2 operator!=(oc_uchar2 lhs, oc_uchar2 rhs) { return oc_bool2(lhs.x != rhs.x, lhs.y != rhs.y); }
+__device__ oc_bool2 operator!=(oc_uchar2 lhs, oc_uchar rhs) { return oc_bool2(lhs.x != rhs, lhs.y != rhs); }
+__device__ oc_bool2 operator!=(oc_uchar lhs, oc_uchar2 rhs) { return oc_bool2(lhs != rhs.x, lhs != rhs.y); }
+__device__ oc_bool2 operator>(oc_uchar2 lhs, oc_uchar2 rhs) { return oc_bool2(lhs.x > rhs.x, lhs.y > rhs.y); }
+__device__ oc_bool2 operator>(oc_uchar2 lhs, oc_uchar rhs) { return oc_bool2(lhs.x > rhs, lhs.y > rhs); }
+__device__ oc_bool2 operator>(oc_uchar lhs, oc_uchar2 rhs) { return oc_bool2(lhs > rhs.x, lhs > rhs.y); }
+__device__ oc_bool2 operator<(oc_uchar2 lhs, oc_uchar2 rhs) { return oc_bool2(lhs.x < rhs.x, lhs.y < rhs.y); }
+__device__ oc_bool2 operator<(oc_uchar2 lhs, oc_uchar rhs) { return oc_bool2(lhs.x < rhs, lhs.y < rhs); }
+__device__ oc_bool2 operator<(oc_uchar lhs, oc_uchar2 rhs) { return oc_bool2(lhs < rhs.x, lhs < rhs.y); }
+__device__ oc_bool2 operator>=(oc_uchar2 lhs, oc_uchar2 rhs) { return oc_bool2(lhs.x >= rhs.x, lhs.y >= rhs.y); }
+__device__ oc_bool2 operator>=(oc_uchar2 lhs, oc_uchar rhs) { return oc_bool2(lhs.x >= rhs, lhs.y >= rhs); }
+__device__ oc_bool2 operator>=(oc_uchar lhs, oc_uchar2 rhs) { return oc_bool2(lhs >= rhs.x, lhs >= rhs.y); }
+__device__ oc_bool2 operator<=(oc_uchar2 lhs, oc_uchar2 rhs) { return oc_bool2(lhs.x <= rhs.x, lhs.y <= rhs.y); }
+__device__ oc_bool2 operator<=(oc_uchar2 lhs, oc_uchar rhs) { return oc_bool2(lhs.x <= rhs, lhs.y <= rhs); }
+__device__ oc_bool2 operator<=(oc_uchar lhs, oc_uchar2 rhs) { return oc_bool2(lhs <= rhs.x, lhs <= rhs.y); }
+__device__ oc_bool2 operator&&(oc_uchar2 lhs, oc_uchar2 rhs) { return oc_bool2(lhs.x && rhs.x, lhs.y && rhs.y); }
+__device__ oc_bool2 operator&&(oc_uchar2 lhs, oc_uchar rhs) { return oc_bool2(lhs.x && rhs, lhs.y && rhs); }
+__device__ oc_bool2 operator&&(oc_uchar lhs, oc_uchar2 rhs) { return oc_bool2(lhs && rhs.x, lhs && rhs.y); }
+__device__ oc_bool2 operator||(oc_uchar2 lhs, oc_uchar2 rhs) { return oc_bool2(lhs.x || rhs.x, lhs.y || rhs.y); }
+__device__ oc_bool2 operator||(oc_uchar2 lhs, oc_uchar rhs) { return oc_bool2(lhs.x || rhs, lhs.y || rhs); }
+__device__ oc_bool2 operator||(oc_uchar lhs, oc_uchar2 rhs) { return oc_bool2(lhs || rhs.x, lhs || rhs.y); }
+__device__ oc_uchar2 operator&(oc_uchar2 lhs, oc_uchar2 rhs) { return oc_uchar2(lhs.x & rhs.x, lhs.y & rhs.y); }
+__device__ oc_uchar2 operator&(oc_uchar2 lhs, oc_uchar rhs) { return oc_uchar2(lhs.x & rhs, lhs.y & rhs); }
+__device__ oc_uchar2 operator&(oc_uchar lhs, oc_uchar2 rhs) { return oc_uchar2(lhs & rhs.x, lhs & rhs.y); }
+__device__ oc_uchar2 operator|(oc_uchar2 lhs, oc_uchar2 rhs) { return oc_uchar2(lhs.x | rhs.x, lhs.y | rhs.y); }
+__device__ oc_uchar2 operator|(oc_uchar2 lhs, oc_uchar rhs) { return oc_uchar2(lhs.x | rhs, lhs.y | rhs); }
+__device__ oc_uchar2 operator|(oc_uchar lhs, oc_uchar2 rhs) { return oc_uchar2(lhs | rhs.x, lhs | rhs.y); }
+__device__ oc_uchar2 operator^(oc_uchar2 lhs, oc_uchar2 rhs) { return oc_uchar2(lhs.x ^ rhs.x, lhs.y ^ rhs.y); }
+__device__ oc_uchar2 operator^(oc_uchar2 lhs, oc_uchar rhs) { return oc_uchar2(lhs.x ^ rhs, lhs.y ^ rhs); }
+__device__ oc_uchar2 operator^(oc_uchar lhs, oc_uchar2 rhs) { return oc_uchar2(lhs ^ rhs.x, lhs ^ rhs.y); }
+__device__ oc_uchar2 operator<<(oc_uchar2 lhs, oc_uchar2 rhs) { return oc_uchar2(lhs.x << rhs.x, lhs.y << rhs.y); }
+__device__ oc_uchar2 operator<<(oc_uchar2 lhs, oc_uchar rhs) { return oc_uchar2(lhs.x << rhs, lhs.y << rhs); }
+__device__ oc_uchar2 operator<<(oc_uchar lhs, oc_uchar2 rhs) { return oc_uchar2(lhs << rhs.x, lhs << rhs.y); }
+__device__ oc_uchar2 operator>>(oc_uchar2 lhs, oc_uchar2 rhs) { return oc_uchar2(lhs.x >> rhs.x, lhs.y >> rhs.y); }
+__device__ oc_uchar2 operator>>(oc_uchar2 lhs, oc_uchar rhs) { return oc_uchar2(lhs.x >> rhs, lhs.y >> rhs); }
+__device__ oc_uchar2 operator>>(oc_uchar lhs, oc_uchar2 rhs) { return oc_uchar2(lhs >> rhs.x, lhs >> rhs.y); }
+__device__ oc_uchar3 operator+(oc_uchar3 lhs, oc_uchar3 rhs) { return oc_uchar3(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z); }
+__device__ oc_uchar3 operator+(oc_uchar3 lhs, oc_uchar rhs) { return oc_uchar3(lhs.x + rhs, lhs.y + rhs, lhs.z + rhs); }
+__device__ oc_uchar3 operator+(oc_uchar lhs, oc_uchar3 rhs) { return oc_uchar3(lhs + rhs.x, lhs + rhs.y, lhs + rhs.z); }
+__device__ oc_uchar3 operator-(oc_uchar3 lhs, oc_uchar3 rhs) { return oc_uchar3(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z); }
+__device__ oc_uchar3 operator-(oc_uchar3 lhs, oc_uchar rhs) { return oc_uchar3(lhs.x - rhs, lhs.y - rhs, lhs.z - rhs); }
+__device__ oc_uchar3 operator-(oc_uchar lhs, oc_uchar3 rhs) { return oc_uchar3(lhs - rhs.x, lhs - rhs.y, lhs - rhs.z); }
+__device__ oc_uchar3 operator*(oc_uchar3 lhs, oc_uchar3 rhs) { return oc_uchar3(lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z); }
+__device__ oc_uchar3 operator*(oc_uchar3 lhs, oc_uchar rhs) { return oc_uchar3(lhs.x * rhs, lhs.y * rhs, lhs.z * rhs); }
+__device__ oc_uchar3 operator*(oc_uchar lhs, oc_uchar3 rhs) { return oc_uchar3(lhs * rhs.x, lhs * rhs.y, lhs * rhs.z); }
+__device__ oc_uchar3 operator/(oc_uchar3 lhs, oc_uchar3 rhs) { return oc_uchar3(lhs.x / rhs.x, lhs.y / rhs.y, lhs.z / rhs.z); }
+__device__ oc_uchar3 operator/(oc_uchar3 lhs, oc_uchar rhs) { return oc_uchar3(lhs.x / rhs, lhs.y / rhs, lhs.z / rhs); }
+__device__ oc_uchar3 operator/(oc_uchar lhs, oc_uchar3 rhs) { return oc_uchar3(lhs / rhs.x, lhs / rhs.y, lhs / rhs.z); }
+__device__ oc_uchar3 operator%(oc_uchar3 lhs, oc_uchar3 rhs) { return oc_uchar3(lhs.x % rhs.x, lhs.y % rhs.y, lhs.z % rhs.z); }
+__device__ oc_uchar3 operator%(oc_uchar3 lhs, oc_uchar rhs) { return oc_uchar3(lhs.x % rhs, lhs.y % rhs, lhs.z % rhs); }
+__device__ oc_uchar3 operator%(oc_uchar lhs, oc_uchar3 rhs) { return oc_uchar3(lhs % rhs.x, lhs % rhs.y, lhs % rhs.z); }
+__device__ oc_bool3 operator==(oc_uchar3 lhs, oc_uchar3 rhs) { return oc_bool3(lhs.x == rhs.x, lhs.y == rhs.y, lhs.z == rhs.z); }
+__device__ oc_bool3 operator==(oc_uchar3 lhs, oc_uchar rhs) { return oc_bool3(lhs.x == rhs, lhs.y == rhs, lhs.z == rhs); }
+__device__ oc_bool3 operator==(oc_uchar lhs, oc_uchar3 rhs) { return oc_bool3(lhs == rhs.x, lhs == rhs.y, lhs == rhs.z); }
+__device__ oc_bool3 operator!=(oc_uchar3 lhs, oc_uchar3 rhs) { return oc_bool3(lhs.x != rhs.x, lhs.y != rhs.y, lhs.z != rhs.z); }
+__device__ oc_bool3 operator!=(oc_uchar3 lhs, oc_uchar rhs) { return oc_bool3(lhs.x != rhs, lhs.y != rhs, lhs.z != rhs); }
+__device__ oc_bool3 operator!=(oc_uchar lhs, oc_uchar3 rhs) { return oc_bool3(lhs != rhs.x, lhs != rhs.y, lhs != rhs.z); }
+__device__ oc_bool3 operator>(oc_uchar3 lhs, oc_uchar3 rhs) { return oc_bool3(lhs.x > rhs.x, lhs.y > rhs.y, lhs.z > rhs.z); }
+__device__ oc_bool3 operator>(oc_uchar3 lhs, oc_uchar rhs) { return oc_bool3(lhs.x > rhs, lhs.y > rhs, lhs.z > rhs); }
+__device__ oc_bool3 operator>(oc_uchar lhs, oc_uchar3 rhs) { return oc_bool3(lhs > rhs.x, lhs > rhs.y, lhs > rhs.z); }
+__device__ oc_bool3 operator<(oc_uchar3 lhs, oc_uchar3 rhs) { return oc_bool3(lhs.x < rhs.x, lhs.y < rhs.y, lhs.z < rhs.z); }
+__device__ oc_bool3 operator<(oc_uchar3 lhs, oc_uchar rhs) { return oc_bool3(lhs.x < rhs, lhs.y < rhs, lhs.z < rhs); }
+__device__ oc_bool3 operator<(oc_uchar lhs, oc_uchar3 rhs) { return oc_bool3(lhs < rhs.x, lhs < rhs.y, lhs < rhs.z); }
+__device__ oc_bool3 operator>=(oc_uchar3 lhs, oc_uchar3 rhs) { return oc_bool3(lhs.x >= rhs.x, lhs.y >= rhs.y, lhs.z >= rhs.z); }
+__device__ oc_bool3 operator>=(oc_uchar3 lhs, oc_uchar rhs) { return oc_bool3(lhs.x >= rhs, lhs.y >= rhs, lhs.z >= rhs); }
+__device__ oc_bool3 operator>=(oc_uchar lhs, oc_uchar3 rhs) { return oc_bool3(lhs >= rhs.x, lhs >= rhs.y, lhs >= rhs.z); }
+__device__ oc_bool3 operator<=(oc_uchar3 lhs, oc_uchar3 rhs) { return oc_bool3(lhs.x <= rhs.x, lhs.y <= rhs.y, lhs.z <= rhs.z); }
+__device__ oc_bool3 operator<=(oc_uchar3 lhs, oc_uchar rhs) { return oc_bool3(lhs.x <= rhs, lhs.y <= rhs, lhs.z <= rhs); }
+__device__ oc_bool3 operator<=(oc_uchar lhs, oc_uchar3 rhs) { return oc_bool3(lhs <= rhs.x, lhs <= rhs.y, lhs <= rhs.z); }
+__device__ oc_bool3 operator&&(oc_uchar3 lhs, oc_uchar3 rhs) { return oc_bool3(lhs.x && rhs.x, lhs.y && rhs.y, lhs.z && rhs.z); }
+__device__ oc_bool3 operator&&(oc_uchar3 lhs, oc_uchar rhs) { return oc_bool3(lhs.x && rhs, lhs.y && rhs, lhs.z && rhs); }
+__device__ oc_bool3 operator&&(oc_uchar lhs, oc_uchar3 rhs) { return oc_bool3(lhs && rhs.x, lhs && rhs.y, lhs && rhs.z); }
+__device__ oc_bool3 operator||(oc_uchar3 lhs, oc_uchar3 rhs) { return oc_bool3(lhs.x || rhs.x, lhs.y || rhs.y, lhs.z || rhs.z); }
+__device__ oc_bool3 operator||(oc_uchar3 lhs, oc_uchar rhs) { return oc_bool3(lhs.x || rhs, lhs.y || rhs, lhs.z || rhs); }
+__device__ oc_bool3 operator||(oc_uchar lhs, oc_uchar3 rhs) { return oc_bool3(lhs || rhs.x, lhs || rhs.y, lhs || rhs.z); }
+__device__ oc_uchar3 operator&(oc_uchar3 lhs, oc_uchar3 rhs) { return oc_uchar3(lhs.x & rhs.x, lhs.y & rhs.y, lhs.z & rhs.z); }
+__device__ oc_uchar3 operator&(oc_uchar3 lhs, oc_uchar rhs) { return oc_uchar3(lhs.x & rhs, lhs.y & rhs, lhs.z & rhs); }
+__device__ oc_uchar3 operator&(oc_uchar lhs, oc_uchar3 rhs) { return oc_uchar3(lhs & rhs.x, lhs & rhs.y, lhs & rhs.z); }
+__device__ oc_uchar3 operator|(oc_uchar3 lhs, oc_uchar3 rhs) { return oc_uchar3(lhs.x | rhs.x, lhs.y | rhs.y, lhs.z | rhs.z); }
+__device__ oc_uchar3 operator|(oc_uchar3 lhs, oc_uchar rhs) { return oc_uchar3(lhs.x | rhs, lhs.y | rhs, lhs.z | rhs); }
+__device__ oc_uchar3 operator|(oc_uchar lhs, oc_uchar3 rhs) { return oc_uchar3(lhs | rhs.x, lhs | rhs.y, lhs | rhs.z); }
+__device__ oc_uchar3 operator^(oc_uchar3 lhs, oc_uchar3 rhs) { return oc_uchar3(lhs.x ^ rhs.x, lhs.y ^ rhs.y, lhs.z ^ rhs.z); }
+__device__ oc_uchar3 operator^(oc_uchar3 lhs, oc_uchar rhs) { return oc_uchar3(lhs.x ^ rhs, lhs.y ^ rhs, lhs.z ^ rhs); }
+__device__ oc_uchar3 operator^(oc_uchar lhs, oc_uchar3 rhs) { return oc_uchar3(lhs ^ rhs.x, lhs ^ rhs.y, lhs ^ rhs.z); }
+__device__ oc_uchar3 operator<<(oc_uchar3 lhs, oc_uchar3 rhs) { return oc_uchar3(lhs.x << rhs.x, lhs.y << rhs.y, lhs.z << rhs.z); }
+__device__ oc_uchar3 operator<<(oc_uchar3 lhs, oc_uchar rhs) { return oc_uchar3(lhs.x << rhs, lhs.y << rhs, lhs.z << rhs); }
+__device__ oc_uchar3 operator<<(oc_uchar lhs, oc_uchar3 rhs) { return oc_uchar3(lhs << rhs.x, lhs << rhs.y, lhs << rhs.z); }
+__device__ oc_uchar3 operator>>(oc_uchar3 lhs, oc_uchar3 rhs) { return oc_uchar3(lhs.x >> rhs.x, lhs.y >> rhs.y, lhs.z >> rhs.z); }
+__device__ oc_uchar3 operator>>(oc_uchar3 lhs, oc_uchar rhs) { return oc_uchar3(lhs.x >> rhs, lhs.y >> rhs, lhs.z >> rhs); }
+__device__ oc_uchar3 operator>>(oc_uchar lhs, oc_uchar3 rhs) { return oc_uchar3(lhs >> rhs.x, lhs >> rhs.y, lhs >> rhs.z); }
+__device__ oc_uchar4 operator+(oc_uchar4 lhs, oc_uchar4 rhs) { return oc_uchar4(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z, lhs.w + rhs.w); }
+__device__ oc_uchar4 operator+(oc_uchar4 lhs, oc_uchar rhs) { return oc_uchar4(lhs.x + rhs, lhs.y + rhs, lhs.z + rhs, lhs.w + rhs); }
+__device__ oc_uchar4 operator+(oc_uchar lhs, oc_uchar4 rhs) { return oc_uchar4(lhs + rhs.x, lhs + rhs.y, lhs + rhs.z, lhs + rhs.w); }
+__device__ oc_uchar4 operator-(oc_uchar4 lhs, oc_uchar4 rhs) { return oc_uchar4(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z, lhs.w - rhs.w); }
+__device__ oc_uchar4 operator-(oc_uchar4 lhs, oc_uchar rhs) { return oc_uchar4(lhs.x - rhs, lhs.y - rhs, lhs.z - rhs, lhs.w - rhs); }
+__device__ oc_uchar4 operator-(oc_uchar lhs, oc_uchar4 rhs) { return oc_uchar4(lhs - rhs.x, lhs - rhs.y, lhs - rhs.z, lhs - rhs.w); }
+__device__ oc_uchar4 operator*(oc_uchar4 lhs, oc_uchar4 rhs) { return oc_uchar4(lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z, lhs.w * rhs.w); }
+__device__ oc_uchar4 operator*(oc_uchar4 lhs, oc_uchar rhs) { return oc_uchar4(lhs.x * rhs, lhs.y * rhs, lhs.z * rhs, lhs.w * rhs); }
+__device__ oc_uchar4 operator*(oc_uchar lhs, oc_uchar4 rhs) { return oc_uchar4(lhs * rhs.x, lhs * rhs.y, lhs * rhs.z, lhs * rhs.w); }
+__device__ oc_uchar4 operator/(oc_uchar4 lhs, oc_uchar4 rhs) { return oc_uchar4(lhs.x / rhs.x, lhs.y / rhs.y, lhs.z / rhs.z, lhs.w / rhs.w); }
+__device__ oc_uchar4 operator/(oc_uchar4 lhs, oc_uchar rhs) { return oc_uchar4(lhs.x / rhs, lhs.y / rhs, lhs.z / rhs, lhs.w / rhs); }
+__device__ oc_uchar4 operator/(oc_uchar lhs, oc_uchar4 rhs) { return oc_uchar4(lhs / rhs.x, lhs / rhs.y, lhs / rhs.z, lhs / rhs.w); }
+__device__ oc_uchar4 operator%(oc_uchar4 lhs, oc_uchar4 rhs) { return oc_uchar4(lhs.x % rhs.x, lhs.y % rhs.y, lhs.z % rhs.z, lhs.w % rhs.w); }
+__device__ oc_uchar4 operator%(oc_uchar4 lhs, oc_uchar rhs) { return oc_uchar4(lhs.x % rhs, lhs.y % rhs, lhs.z % rhs, lhs.w % rhs); }
+__device__ oc_uchar4 operator%(oc_uchar lhs, oc_uchar4 rhs) { return oc_uchar4(lhs % rhs.x, lhs % rhs.y, lhs % rhs.z, lhs % rhs.w); }
+__device__ oc_bool4 operator==(oc_uchar4 lhs, oc_uchar4 rhs) { return oc_bool4(lhs.x == rhs.x, lhs.y == rhs.y, lhs.z == rhs.z, lhs.w == rhs.w); }
+__device__ oc_bool4 operator==(oc_uchar4 lhs, oc_uchar rhs) { return oc_bool4(lhs.x == rhs, lhs.y == rhs, lhs.z == rhs, lhs.w == rhs); }
+__device__ oc_bool4 operator==(oc_uchar lhs, oc_uchar4 rhs) { return oc_bool4(lhs == rhs.x, lhs == rhs.y, lhs == rhs.z, lhs == rhs.w); }
+__device__ oc_bool4 operator!=(oc_uchar4 lhs, oc_uchar4 rhs) { return oc_bool4(lhs.x != rhs.x, lhs.y != rhs.y, lhs.z != rhs.z, lhs.w != rhs.w); }
+__device__ oc_bool4 operator!=(oc_uchar4 lhs, oc_uchar rhs) { return oc_bool4(lhs.x != rhs, lhs.y != rhs, lhs.z != rhs, lhs.w != rhs); }
+__device__ oc_bool4 operator!=(oc_uchar lhs, oc_uchar4 rhs) { return oc_bool4(lhs != rhs.x, lhs != rhs.y, lhs != rhs.z, lhs != rhs.w); }
+__device__ oc_bool4 operator>(oc_uchar4 lhs, oc_uchar4 rhs) { return oc_bool4(lhs.x > rhs.x, lhs.y > rhs.y, lhs.z > rhs.z, lhs.w > rhs.w); }
+__device__ oc_bool4 operator>(oc_uchar4 lhs, oc_uchar rhs) { return oc_bool4(lhs.x > rhs, lhs.y > rhs, lhs.z > rhs, lhs.w > rhs); }
+__device__ oc_bool4 operator>(oc_uchar lhs, oc_uchar4 rhs) { return oc_bool4(lhs > rhs.x, lhs > rhs.y, lhs > rhs.z, lhs > rhs.w); }
+__device__ oc_bool4 operator<(oc_uchar4 lhs, oc_uchar4 rhs) { return oc_bool4(lhs.x < rhs.x, lhs.y < rhs.y, lhs.z < rhs.z, lhs.w < rhs.w); }
+__device__ oc_bool4 operator<(oc_uchar4 lhs, oc_uchar rhs) { return oc_bool4(lhs.x < rhs, lhs.y < rhs, lhs.z < rhs, lhs.w < rhs); }
+__device__ oc_bool4 operator<(oc_uchar lhs, oc_uchar4 rhs) { return oc_bool4(lhs < rhs.x, lhs < rhs.y, lhs < rhs.z, lhs < rhs.w); }
+__device__ oc_bool4 operator>=(oc_uchar4 lhs, oc_uchar4 rhs) { return oc_bool4(lhs.x >= rhs.x, lhs.y >= rhs.y, lhs.z >= rhs.z, lhs.w >= rhs.w); }
+__device__ oc_bool4 operator>=(oc_uchar4 lhs, oc_uchar rhs) { return oc_bool4(lhs.x >= rhs, lhs.y >= rhs, lhs.z >= rhs, lhs.w >= rhs); }
+__device__ oc_bool4 operator>=(oc_uchar lhs, oc_uchar4 rhs) { return oc_bool4(lhs >= rhs.x, lhs >= rhs.y, lhs >= rhs.z, lhs >= rhs.w); }
+__device__ oc_bool4 operator<=(oc_uchar4 lhs, oc_uchar4 rhs) { return oc_bool4(lhs.x <= rhs.x, lhs.y <= rhs.y, lhs.z <= rhs.z, lhs.w <= rhs.w); }
+__device__ oc_bool4 operator<=(oc_uchar4 lhs, oc_uchar rhs) { return oc_bool4(lhs.x <= rhs, lhs.y <= rhs, lhs.z <= rhs, lhs.w <= rhs); }
+__device__ oc_bool4 operator<=(oc_uchar lhs, oc_uchar4 rhs) { return oc_bool4(lhs <= rhs.x, lhs <= rhs.y, lhs <= rhs.z, lhs <= rhs.w); }
+__device__ oc_bool4 operator&&(oc_uchar4 lhs, oc_uchar4 rhs) { return oc_bool4(lhs.x && rhs.x, lhs.y && rhs.y, lhs.z && rhs.z, lhs.w && rhs.w); }
+__device__ oc_bool4 operator&&(oc_uchar4 lhs, oc_uchar rhs) { return oc_bool4(lhs.x && rhs, lhs.y && rhs, lhs.z && rhs, lhs.w && rhs); }
+__device__ oc_bool4 operator&&(oc_uchar lhs, oc_uchar4 rhs) { return oc_bool4(lhs && rhs.x, lhs && rhs.y, lhs && rhs.z, lhs && rhs.w); }
+__device__ oc_bool4 operator||(oc_uchar4 lhs, oc_uchar4 rhs) { return oc_bool4(lhs.x || rhs.x, lhs.y || rhs.y, lhs.z || rhs.z, lhs.w || rhs.w); }
+__device__ oc_bool4 operator||(oc_uchar4 lhs, oc_uchar rhs) { return oc_bool4(lhs.x || rhs, lhs.y || rhs, lhs.z || rhs, lhs.w || rhs); }
+__device__ oc_bool4 operator||(oc_uchar lhs, oc_uchar4 rhs) { return oc_bool4(lhs || rhs.x, lhs || rhs.y, lhs || rhs.z, lhs || rhs.w); }
+__device__ oc_uchar4 operator&(oc_uchar4 lhs, oc_uchar4 rhs) { return oc_uchar4(lhs.x & rhs.x, lhs.y & rhs.y, lhs.z & rhs.z, lhs.w & rhs.w); }
+__device__ oc_uchar4 operator&(oc_uchar4 lhs, oc_uchar rhs) { return oc_uchar4(lhs.x & rhs, lhs.y & rhs, lhs.z & rhs, lhs.w & rhs); }
+__device__ oc_uchar4 operator&(oc_uchar lhs, oc_uchar4 rhs) { return oc_uchar4(lhs & rhs.x, lhs & rhs.y, lhs & rhs.z, lhs & rhs.w); }
+__device__ oc_uchar4 operator|(oc_uchar4 lhs, oc_uchar4 rhs) { return oc_uchar4(lhs.x | rhs.x, lhs.y | rhs.y, lhs.z | rhs.z, lhs.w | rhs.w); }
+__device__ oc_uchar4 operator|(oc_uchar4 lhs, oc_uchar rhs) { return oc_uchar4(lhs.x | rhs, lhs.y | rhs, lhs.z | rhs, lhs.w | rhs); }
+__device__ oc_uchar4 operator|(oc_uchar lhs, oc_uchar4 rhs) { return oc_uchar4(lhs | rhs.x, lhs | rhs.y, lhs | rhs.z, lhs | rhs.w); }
+__device__ oc_uchar4 operator^(oc_uchar4 lhs, oc_uchar4 rhs) { return oc_uchar4(lhs.x ^ rhs.x, lhs.y ^ rhs.y, lhs.z ^ rhs.z, lhs.w ^ rhs.w); }
+__device__ oc_uchar4 operator^(oc_uchar4 lhs, oc_uchar rhs) { return oc_uchar4(lhs.x ^ rhs, lhs.y ^ rhs, lhs.z ^ rhs, lhs.w ^ rhs); }
+__device__ oc_uchar4 operator^(oc_uchar lhs, oc_uchar4 rhs) { return oc_uchar4(lhs ^ rhs.x, lhs ^ rhs.y, lhs ^ rhs.z, lhs ^ rhs.w); }
+__device__ oc_uchar4 operator<<(oc_uchar4 lhs, oc_uchar4 rhs) { return oc_uchar4(lhs.x << rhs.x, lhs.y << rhs.y, lhs.z << rhs.z, lhs.w << rhs.w); }
+__device__ oc_uchar4 operator<<(oc_uchar4 lhs, oc_uchar rhs) { return oc_uchar4(lhs.x << rhs, lhs.y << rhs, lhs.z << rhs, lhs.w << rhs); }
+__device__ oc_uchar4 operator<<(oc_uchar lhs, oc_uchar4 rhs) { return oc_uchar4(lhs << rhs.x, lhs << rhs.y, lhs << rhs.z, lhs << rhs.w); }
+__device__ oc_uchar4 operator>>(oc_uchar4 lhs, oc_uchar4 rhs) { return oc_uchar4(lhs.x >> rhs.x, lhs.y >> rhs.y, lhs.z >> rhs.z, lhs.w >> rhs.w); }
+__device__ oc_uchar4 operator>>(oc_uchar4 lhs, oc_uchar rhs) { return oc_uchar4(lhs.x >> rhs, lhs.y >> rhs, lhs.z >> rhs, lhs.w >> rhs); }
+__device__ oc_uchar4 operator>>(oc_uchar lhs, oc_uchar4 rhs) { return oc_uchar4(lhs >> rhs.x, lhs >> rhs.y, lhs >> rhs.z, lhs >> rhs.w); }
+
 __device__ oc_int2& operator+=(oc_int2 &lhs, oc_int2 rhs) { lhs = lhs + rhs; return lhs; }
 __device__ oc_int2& operator-=(oc_int2 &lhs, oc_int2 rhs) { lhs = lhs - rhs; return lhs; }
 __device__ oc_int2& operator*=(oc_int2 &lhs, oc_int2 rhs) { lhs = lhs * rhs; return lhs; }
@@ -1183,6 +1407,17 @@ __device__ oc_bool4 oc_select(oc_bool4 pred, oc_bool4 t, oc_bool4 f) {
 	return oc_bool4(oc_select(pred.x, t.x, f.x), oc_select(pred.y, t.y, f.y), oc_select(pred.z, t.z, f.z), oc_select(pred.w, t.w, f.w));
 }
 
+__device__ oc_uchar oc_select(oc_bool pred, oc_uchar t, oc_uchar f) { return pred ? t : f; }
+__device__ oc_uchar2 oc_select(oc_bool2 pred, oc_uchar2 t, oc_uchar2 f) {
+	return oc_uchar2(oc_select(pred.x, t.x, f.x), oc_select(pred.y, t.y, f.y));
+}
+__device__ oc_uchar3 oc_select(oc_bool3 pred, oc_uchar3 t, oc_uchar3 f) {
+	return oc_uchar3(oc_select(pred.x, t.x, f.x), oc_select(pred.y, t.y, f.y), oc_select(pred.z, t.z, f.z));
+}
+__device__ oc_uchar4 oc_select(oc_bool4 pred, oc_uchar4 t, oc_uchar4 f) {
+	return oc_uchar4(oc_select(pred.x, t.x, f.x), oc_select(pred.y, t.y, f.y), oc_select(pred.z, t.z, f.z), oc_select(pred.w, t.w, f.w));
+}
+
 __device__ oc_int oc_rcp(oc_int v) { return 1.f / v; }
 __device__ oc_int2 oc_rcp(oc_int2 v) { return oc_int2(oc_rcp(v.x), oc_rcp(v.y)); }
 __device__ oc_int3 oc_rcp(oc_int3 v) { return oc_int3(oc_rcp(v.x), oc_rcp(v.y), oc_rcp(v.z)); }
@@ -1445,6 +1680,9 @@ __device__ inline auto oc_normalize(oc_float4 v) noexcept { return v * oc_rsqrt(
 [[nodiscard]] __device__ inline auto oc_make_int2(oc_bool2 v) noexcept { return oc_int2{static_cast<oc_int>(v.x), static_cast<oc_int>(v.y)}; }
 [[nodiscard]] __device__ inline auto oc_make_int2(oc_bool3 v) noexcept { return oc_int2{static_cast<oc_int>(v.x), static_cast<oc_int>(v.y)}; }
 [[nodiscard]] __device__ inline auto oc_make_int2(oc_bool4 v) noexcept { return oc_int2{static_cast<oc_int>(v.x), static_cast<oc_int>(v.y)}; }
+[[nodiscard]] __device__ inline auto oc_make_int2(oc_uchar2 v) noexcept { return oc_int2{static_cast<oc_int>(v.x), static_cast<oc_int>(v.y)}; }
+[[nodiscard]] __device__ inline auto oc_make_int2(oc_uchar3 v) noexcept { return oc_int2{static_cast<oc_int>(v.x), static_cast<oc_int>(v.y)}; }
+[[nodiscard]] __device__ inline auto oc_make_int2(oc_uchar4 v) noexcept { return oc_int2{static_cast<oc_int>(v.x), static_cast<oc_int>(v.y)}; }
 [[nodiscard]] __device__ inline auto oc_make_int3(oc_int s = 0) noexcept { return oc_int3{s, s, s}; }
 [[nodiscard]] __device__ inline auto oc_make_int3(oc_int x, oc_int y, oc_int z) noexcept { return oc_int3{x, y, z}; }
 [[nodiscard]] __device__ inline auto oc_make_int3(oc_int x, oc_int2 yz) noexcept { return oc_int3{x, yz.x, yz.y}; }
@@ -1457,6 +1695,8 @@ __device__ inline auto oc_normalize(oc_float4 v) noexcept { return v * oc_rsqrt(
 [[nodiscard]] __device__ inline auto oc_make_int3(oc_float4 v) noexcept { return oc_int3{static_cast<oc_int>(v.x), static_cast<oc_int>(v.y), static_cast<oc_int>(v.z)}; }
 [[nodiscard]] __device__ inline auto oc_make_int3(oc_bool3 v) noexcept { return oc_int3{static_cast<oc_int>(v.x), static_cast<oc_int>(v.y), static_cast<oc_int>(v.z)}; }
 [[nodiscard]] __device__ inline auto oc_make_int3(oc_bool4 v) noexcept { return oc_int3{static_cast<oc_int>(v.x), static_cast<oc_int>(v.y), static_cast<oc_int>(v.z)}; }
+[[nodiscard]] __device__ inline auto oc_make_int3(oc_uchar3 v) noexcept { return oc_int3{static_cast<oc_int>(v.x), static_cast<oc_int>(v.y), static_cast<oc_int>(v.z)}; }
+[[nodiscard]] __device__ inline auto oc_make_int3(oc_uchar4 v) noexcept { return oc_int3{static_cast<oc_int>(v.x), static_cast<oc_int>(v.y), static_cast<oc_int>(v.z)}; }
 [[nodiscard]] __device__ inline auto oc_make_int4(oc_int s = 0) noexcept { return oc_int4{s, s, s, s}; }
 [[nodiscard]] __device__ inline auto oc_make_int4(oc_int x, oc_int y, oc_int z, oc_int w) noexcept { return oc_int4{x, y, z, w}; }
 [[nodiscard]] __device__ inline auto oc_make_int4(oc_int x, oc_int y, oc_int2 zw) noexcept { return oc_int4{x, y, zw.x, zw.y}; }
@@ -1469,6 +1709,7 @@ __device__ inline auto oc_normalize(oc_float4 v) noexcept { return v * oc_rsqrt(
 [[nodiscard]] __device__ inline auto oc_make_int4(oc_uint4 v) noexcept { return oc_int4{static_cast<oc_int>(v.x), static_cast<oc_int>(v.y), static_cast<oc_int>(v.z), static_cast<oc_int>(v.w)}; }
 [[nodiscard]] __device__ inline auto oc_make_int4(oc_float4 v) noexcept { return oc_int4{static_cast<oc_int>(v.x), static_cast<oc_int>(v.y), static_cast<oc_int>(v.z), static_cast<oc_int>(v.w)}; }
 [[nodiscard]] __device__ inline auto oc_make_int4(oc_bool4 v) noexcept { return oc_int4{static_cast<oc_int>(v.x), static_cast<oc_int>(v.y), static_cast<oc_int>(v.z), static_cast<oc_int>(v.w)}; }
+[[nodiscard]] __device__ inline auto oc_make_int4(oc_uchar4 v) noexcept { return oc_int4{static_cast<oc_int>(v.x), static_cast<oc_int>(v.y), static_cast<oc_int>(v.z), static_cast<oc_int>(v.w)}; }
 [[nodiscard]] __device__ inline auto oc_make_uint2(oc_uint s = 0) noexcept { return oc_uint2{s, s}; }
 [[nodiscard]] __device__ inline auto oc_make_uint2(oc_uint x, oc_uint y) noexcept { return oc_uint2{x, y}; }
 [[nodiscard]] __device__ inline auto oc_make_uint2(oc_int2 v) noexcept { return oc_uint2{static_cast<oc_uint>(v.x), static_cast<oc_uint>(v.y)}; }
@@ -1483,6 +1724,9 @@ __device__ inline auto oc_normalize(oc_float4 v) noexcept { return v * oc_rsqrt(
 [[nodiscard]] __device__ inline auto oc_make_uint2(oc_bool2 v) noexcept { return oc_uint2{static_cast<oc_uint>(v.x), static_cast<oc_uint>(v.y)}; }
 [[nodiscard]] __device__ inline auto oc_make_uint2(oc_bool3 v) noexcept { return oc_uint2{static_cast<oc_uint>(v.x), static_cast<oc_uint>(v.y)}; }
 [[nodiscard]] __device__ inline auto oc_make_uint2(oc_bool4 v) noexcept { return oc_uint2{static_cast<oc_uint>(v.x), static_cast<oc_uint>(v.y)}; }
+[[nodiscard]] __device__ inline auto oc_make_uint2(oc_uchar2 v) noexcept { return oc_uint2{static_cast<oc_uint>(v.x), static_cast<oc_uint>(v.y)}; }
+[[nodiscard]] __device__ inline auto oc_make_uint2(oc_uchar3 v) noexcept { return oc_uint2{static_cast<oc_uint>(v.x), static_cast<oc_uint>(v.y)}; }
+[[nodiscard]] __device__ inline auto oc_make_uint2(oc_uchar4 v) noexcept { return oc_uint2{static_cast<oc_uint>(v.x), static_cast<oc_uint>(v.y)}; }
 [[nodiscard]] __device__ inline auto oc_make_uint3(oc_uint s = 0) noexcept { return oc_uint3{s, s, s}; }
 [[nodiscard]] __device__ inline auto oc_make_uint3(oc_uint x, oc_uint y, oc_uint z) noexcept { return oc_uint3{x, y, z}; }
 [[nodiscard]] __device__ inline auto oc_make_uint3(oc_uint x, oc_uint2 yz) noexcept { return oc_uint3{x, yz.x, yz.y}; }
@@ -1495,6 +1739,8 @@ __device__ inline auto oc_normalize(oc_float4 v) noexcept { return v * oc_rsqrt(
 [[nodiscard]] __device__ inline auto oc_make_uint3(oc_float4 v) noexcept { return oc_uint3{static_cast<oc_uint>(v.x), static_cast<oc_uint>(v.y), static_cast<oc_uint>(v.z)}; }
 [[nodiscard]] __device__ inline auto oc_make_uint3(oc_bool3 v) noexcept { return oc_uint3{static_cast<oc_uint>(v.x), static_cast<oc_uint>(v.y), static_cast<oc_uint>(v.z)}; }
 [[nodiscard]] __device__ inline auto oc_make_uint3(oc_bool4 v) noexcept { return oc_uint3{static_cast<oc_uint>(v.x), static_cast<oc_uint>(v.y), static_cast<oc_uint>(v.z)}; }
+[[nodiscard]] __device__ inline auto oc_make_uint3(oc_uchar3 v) noexcept { return oc_uint3{static_cast<oc_uint>(v.x), static_cast<oc_uint>(v.y), static_cast<oc_uint>(v.z)}; }
+[[nodiscard]] __device__ inline auto oc_make_uint3(oc_uchar4 v) noexcept { return oc_uint3{static_cast<oc_uint>(v.x), static_cast<oc_uint>(v.y), static_cast<oc_uint>(v.z)}; }
 [[nodiscard]] __device__ inline auto oc_make_uint4(oc_uint s = 0) noexcept { return oc_uint4{s, s, s, s}; }
 [[nodiscard]] __device__ inline auto oc_make_uint4(oc_uint x, oc_uint y, oc_uint z, oc_uint w) noexcept { return oc_uint4{x, y, z, w}; }
 [[nodiscard]] __device__ inline auto oc_make_uint4(oc_uint x, oc_uint y, oc_uint2 zw) noexcept { return oc_uint4{x, y, zw.x, zw.y}; }
@@ -1507,6 +1753,7 @@ __device__ inline auto oc_normalize(oc_float4 v) noexcept { return v * oc_rsqrt(
 [[nodiscard]] __device__ inline auto oc_make_uint4(oc_uint4 v) noexcept { return oc_uint4{static_cast<oc_uint>(v.x), static_cast<oc_uint>(v.y), static_cast<oc_uint>(v.z), static_cast<oc_uint>(v.w)}; }
 [[nodiscard]] __device__ inline auto oc_make_uint4(oc_float4 v) noexcept { return oc_uint4{static_cast<oc_uint>(v.x), static_cast<oc_uint>(v.y), static_cast<oc_uint>(v.z), static_cast<oc_uint>(v.w)}; }
 [[nodiscard]] __device__ inline auto oc_make_uint4(oc_bool4 v) noexcept { return oc_uint4{static_cast<oc_uint>(v.x), static_cast<oc_uint>(v.y), static_cast<oc_uint>(v.z), static_cast<oc_uint>(v.w)}; }
+[[nodiscard]] __device__ inline auto oc_make_uint4(oc_uchar4 v) noexcept { return oc_uint4{static_cast<oc_uint>(v.x), static_cast<oc_uint>(v.y), static_cast<oc_uint>(v.z), static_cast<oc_uint>(v.w)}; }
 [[nodiscard]] __device__ inline auto oc_make_float2(oc_float s = 0) noexcept { return oc_float2{s, s}; }
 [[nodiscard]] __device__ inline auto oc_make_float2(oc_float x, oc_float y) noexcept { return oc_float2{x, y}; }
 [[nodiscard]] __device__ inline auto oc_make_float2(oc_int2 v) noexcept { return oc_float2{static_cast<oc_float>(v.x), static_cast<oc_float>(v.y)}; }
@@ -1521,6 +1768,9 @@ __device__ inline auto oc_normalize(oc_float4 v) noexcept { return v * oc_rsqrt(
 [[nodiscard]] __device__ inline auto oc_make_float2(oc_bool2 v) noexcept { return oc_float2{static_cast<oc_float>(v.x), static_cast<oc_float>(v.y)}; }
 [[nodiscard]] __device__ inline auto oc_make_float2(oc_bool3 v) noexcept { return oc_float2{static_cast<oc_float>(v.x), static_cast<oc_float>(v.y)}; }
 [[nodiscard]] __device__ inline auto oc_make_float2(oc_bool4 v) noexcept { return oc_float2{static_cast<oc_float>(v.x), static_cast<oc_float>(v.y)}; }
+[[nodiscard]] __device__ inline auto oc_make_float2(oc_uchar2 v) noexcept { return oc_float2{static_cast<oc_float>(v.x), static_cast<oc_float>(v.y)}; }
+[[nodiscard]] __device__ inline auto oc_make_float2(oc_uchar3 v) noexcept { return oc_float2{static_cast<oc_float>(v.x), static_cast<oc_float>(v.y)}; }
+[[nodiscard]] __device__ inline auto oc_make_float2(oc_uchar4 v) noexcept { return oc_float2{static_cast<oc_float>(v.x), static_cast<oc_float>(v.y)}; }
 [[nodiscard]] __device__ inline auto oc_make_float3(oc_float s = 0) noexcept { return oc_float3{s, s, s}; }
 [[nodiscard]] __device__ inline auto oc_make_float3(oc_float x, oc_float y, oc_float z) noexcept { return oc_float3{x, y, z}; }
 [[nodiscard]] __device__ inline auto oc_make_float3(oc_float x, oc_float2 yz) noexcept { return oc_float3{x, yz.x, yz.y}; }
@@ -1533,6 +1783,8 @@ __device__ inline auto oc_normalize(oc_float4 v) noexcept { return v * oc_rsqrt(
 [[nodiscard]] __device__ inline auto oc_make_float3(oc_float4 v) noexcept { return oc_float3{static_cast<oc_float>(v.x), static_cast<oc_float>(v.y), static_cast<oc_float>(v.z)}; }
 [[nodiscard]] __device__ inline auto oc_make_float3(oc_bool3 v) noexcept { return oc_float3{static_cast<oc_float>(v.x), static_cast<oc_float>(v.y), static_cast<oc_float>(v.z)}; }
 [[nodiscard]] __device__ inline auto oc_make_float3(oc_bool4 v) noexcept { return oc_float3{static_cast<oc_float>(v.x), static_cast<oc_float>(v.y), static_cast<oc_float>(v.z)}; }
+[[nodiscard]] __device__ inline auto oc_make_float3(oc_uchar3 v) noexcept { return oc_float3{static_cast<oc_float>(v.x), static_cast<oc_float>(v.y), static_cast<oc_float>(v.z)}; }
+[[nodiscard]] __device__ inline auto oc_make_float3(oc_uchar4 v) noexcept { return oc_float3{static_cast<oc_float>(v.x), static_cast<oc_float>(v.y), static_cast<oc_float>(v.z)}; }
 [[nodiscard]] __device__ inline auto oc_make_float4(oc_float s = 0) noexcept { return oc_float4{s, s, s, s}; }
 [[nodiscard]] __device__ inline auto oc_make_float4(oc_float x, oc_float y, oc_float z, oc_float w) noexcept { return oc_float4{x, y, z, w}; }
 [[nodiscard]] __device__ inline auto oc_make_float4(oc_float x, oc_float y, oc_float2 zw) noexcept { return oc_float4{x, y, zw.x, zw.y}; }
@@ -1545,6 +1797,7 @@ __device__ inline auto oc_normalize(oc_float4 v) noexcept { return v * oc_rsqrt(
 [[nodiscard]] __device__ inline auto oc_make_float4(oc_uint4 v) noexcept { return oc_float4{static_cast<oc_float>(v.x), static_cast<oc_float>(v.y), static_cast<oc_float>(v.z), static_cast<oc_float>(v.w)}; }
 [[nodiscard]] __device__ inline auto oc_make_float4(oc_float4 v) noexcept { return oc_float4{static_cast<oc_float>(v.x), static_cast<oc_float>(v.y), static_cast<oc_float>(v.z), static_cast<oc_float>(v.w)}; }
 [[nodiscard]] __device__ inline auto oc_make_float4(oc_bool4 v) noexcept { return oc_float4{static_cast<oc_float>(v.x), static_cast<oc_float>(v.y), static_cast<oc_float>(v.z), static_cast<oc_float>(v.w)}; }
+[[nodiscard]] __device__ inline auto oc_make_float4(oc_uchar4 v) noexcept { return oc_float4{static_cast<oc_float>(v.x), static_cast<oc_float>(v.y), static_cast<oc_float>(v.z), static_cast<oc_float>(v.w)}; }
 [[nodiscard]] __device__ inline auto oc_make_bool2(oc_bool s = 0) noexcept { return oc_bool2{s, s}; }
 [[nodiscard]] __device__ inline auto oc_make_bool2(oc_bool x, oc_bool y) noexcept { return oc_bool2{x, y}; }
 [[nodiscard]] __device__ inline auto oc_make_bool2(oc_int2 v) noexcept { return oc_bool2{static_cast<oc_bool>(v.x), static_cast<oc_bool>(v.y)}; }
@@ -1559,6 +1812,9 @@ __device__ inline auto oc_normalize(oc_float4 v) noexcept { return v * oc_rsqrt(
 [[nodiscard]] __device__ inline auto oc_make_bool2(oc_bool2 v) noexcept { return oc_bool2{static_cast<oc_bool>(v.x), static_cast<oc_bool>(v.y)}; }
 [[nodiscard]] __device__ inline auto oc_make_bool2(oc_bool3 v) noexcept { return oc_bool2{static_cast<oc_bool>(v.x), static_cast<oc_bool>(v.y)}; }
 [[nodiscard]] __device__ inline auto oc_make_bool2(oc_bool4 v) noexcept { return oc_bool2{static_cast<oc_bool>(v.x), static_cast<oc_bool>(v.y)}; }
+[[nodiscard]] __device__ inline auto oc_make_bool2(oc_uchar2 v) noexcept { return oc_bool2{static_cast<oc_bool>(v.x), static_cast<oc_bool>(v.y)}; }
+[[nodiscard]] __device__ inline auto oc_make_bool2(oc_uchar3 v) noexcept { return oc_bool2{static_cast<oc_bool>(v.x), static_cast<oc_bool>(v.y)}; }
+[[nodiscard]] __device__ inline auto oc_make_bool2(oc_uchar4 v) noexcept { return oc_bool2{static_cast<oc_bool>(v.x), static_cast<oc_bool>(v.y)}; }
 [[nodiscard]] __device__ inline auto oc_make_bool3(oc_bool s = 0) noexcept { return oc_bool3{s, s, s}; }
 [[nodiscard]] __device__ inline auto oc_make_bool3(oc_bool x, oc_bool y, oc_bool z) noexcept { return oc_bool3{x, y, z}; }
 [[nodiscard]] __device__ inline auto oc_make_bool3(oc_bool x, oc_bool2 yz) noexcept { return oc_bool3{x, yz.x, yz.y}; }
@@ -1571,6 +1827,8 @@ __device__ inline auto oc_normalize(oc_float4 v) noexcept { return v * oc_rsqrt(
 [[nodiscard]] __device__ inline auto oc_make_bool3(oc_float4 v) noexcept { return oc_bool3{static_cast<oc_bool>(v.x), static_cast<oc_bool>(v.y), static_cast<oc_bool>(v.z)}; }
 [[nodiscard]] __device__ inline auto oc_make_bool3(oc_bool3 v) noexcept { return oc_bool3{static_cast<oc_bool>(v.x), static_cast<oc_bool>(v.y), static_cast<oc_bool>(v.z)}; }
 [[nodiscard]] __device__ inline auto oc_make_bool3(oc_bool4 v) noexcept { return oc_bool3{static_cast<oc_bool>(v.x), static_cast<oc_bool>(v.y), static_cast<oc_bool>(v.z)}; }
+[[nodiscard]] __device__ inline auto oc_make_bool3(oc_uchar3 v) noexcept { return oc_bool3{static_cast<oc_bool>(v.x), static_cast<oc_bool>(v.y), static_cast<oc_bool>(v.z)}; }
+[[nodiscard]] __device__ inline auto oc_make_bool3(oc_uchar4 v) noexcept { return oc_bool3{static_cast<oc_bool>(v.x), static_cast<oc_bool>(v.y), static_cast<oc_bool>(v.z)}; }
 [[nodiscard]] __device__ inline auto oc_make_bool4(oc_bool s = 0) noexcept { return oc_bool4{s, s, s, s}; }
 [[nodiscard]] __device__ inline auto oc_make_bool4(oc_bool x, oc_bool y, oc_bool z, oc_bool w) noexcept { return oc_bool4{x, y, z, w}; }
 [[nodiscard]] __device__ inline auto oc_make_bool4(oc_bool x, oc_bool y, oc_bool2 zw) noexcept { return oc_bool4{x, y, zw.x, zw.y}; }
@@ -1583,6 +1841,51 @@ __device__ inline auto oc_normalize(oc_float4 v) noexcept { return v * oc_rsqrt(
 [[nodiscard]] __device__ inline auto oc_make_bool4(oc_uint4 v) noexcept { return oc_bool4{static_cast<oc_bool>(v.x), static_cast<oc_bool>(v.y), static_cast<oc_bool>(v.z), static_cast<oc_bool>(v.w)}; }
 [[nodiscard]] __device__ inline auto oc_make_bool4(oc_float4 v) noexcept { return oc_bool4{static_cast<oc_bool>(v.x), static_cast<oc_bool>(v.y), static_cast<oc_bool>(v.z), static_cast<oc_bool>(v.w)}; }
 [[nodiscard]] __device__ inline auto oc_make_bool4(oc_bool4 v) noexcept { return oc_bool4{static_cast<oc_bool>(v.x), static_cast<oc_bool>(v.y), static_cast<oc_bool>(v.z), static_cast<oc_bool>(v.w)}; }
+[[nodiscard]] __device__ inline auto oc_make_bool4(oc_uchar4 v) noexcept { return oc_bool4{static_cast<oc_bool>(v.x), static_cast<oc_bool>(v.y), static_cast<oc_bool>(v.z), static_cast<oc_bool>(v.w)}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar2(oc_uchar s = 0) noexcept { return oc_uchar2{s, s}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar2(oc_uchar x, oc_uchar y) noexcept { return oc_uchar2{x, y}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar2(oc_int2 v) noexcept { return oc_uchar2{static_cast<oc_uchar>(v.x), static_cast<oc_uchar>(v.y)}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar2(oc_int3 v) noexcept { return oc_uchar2{static_cast<oc_uchar>(v.x), static_cast<oc_uchar>(v.y)}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar2(oc_int4 v) noexcept { return oc_uchar2{static_cast<oc_uchar>(v.x), static_cast<oc_uchar>(v.y)}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar2(oc_uint2 v) noexcept { return oc_uchar2{static_cast<oc_uchar>(v.x), static_cast<oc_uchar>(v.y)}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar2(oc_uint3 v) noexcept { return oc_uchar2{static_cast<oc_uchar>(v.x), static_cast<oc_uchar>(v.y)}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar2(oc_uint4 v) noexcept { return oc_uchar2{static_cast<oc_uchar>(v.x), static_cast<oc_uchar>(v.y)}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar2(oc_float2 v) noexcept { return oc_uchar2{static_cast<oc_uchar>(v.x), static_cast<oc_uchar>(v.y)}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar2(oc_float3 v) noexcept { return oc_uchar2{static_cast<oc_uchar>(v.x), static_cast<oc_uchar>(v.y)}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar2(oc_float4 v) noexcept { return oc_uchar2{static_cast<oc_uchar>(v.x), static_cast<oc_uchar>(v.y)}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar2(oc_bool2 v) noexcept { return oc_uchar2{static_cast<oc_uchar>(v.x), static_cast<oc_uchar>(v.y)}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar2(oc_bool3 v) noexcept { return oc_uchar2{static_cast<oc_uchar>(v.x), static_cast<oc_uchar>(v.y)}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar2(oc_bool4 v) noexcept { return oc_uchar2{static_cast<oc_uchar>(v.x), static_cast<oc_uchar>(v.y)}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar2(oc_uchar2 v) noexcept { return oc_uchar2{static_cast<oc_uchar>(v.x), static_cast<oc_uchar>(v.y)}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar2(oc_uchar3 v) noexcept { return oc_uchar2{static_cast<oc_uchar>(v.x), static_cast<oc_uchar>(v.y)}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar2(oc_uchar4 v) noexcept { return oc_uchar2{static_cast<oc_uchar>(v.x), static_cast<oc_uchar>(v.y)}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar3(oc_uchar s = 0) noexcept { return oc_uchar3{s, s, s}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar3(oc_uchar x, oc_uchar y, oc_uchar z) noexcept { return oc_uchar3{x, y, z}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar3(oc_uchar x, oc_uchar2 yz) noexcept { return oc_uchar3{x, yz.x, yz.y}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar3(oc_uchar2 xy, oc_uchar z) noexcept { return oc_uchar3{xy.x, xy.y, z}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar3(oc_int3 v) noexcept { return oc_uchar3{static_cast<oc_uchar>(v.x), static_cast<oc_uchar>(v.y), static_cast<oc_uchar>(v.z)}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar3(oc_int4 v) noexcept { return oc_uchar3{static_cast<oc_uchar>(v.x), static_cast<oc_uchar>(v.y), static_cast<oc_uchar>(v.z)}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar3(oc_uint3 v) noexcept { return oc_uchar3{static_cast<oc_uchar>(v.x), static_cast<oc_uchar>(v.y), static_cast<oc_uchar>(v.z)}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar3(oc_uint4 v) noexcept { return oc_uchar3{static_cast<oc_uchar>(v.x), static_cast<oc_uchar>(v.y), static_cast<oc_uchar>(v.z)}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar3(oc_float3 v) noexcept { return oc_uchar3{static_cast<oc_uchar>(v.x), static_cast<oc_uchar>(v.y), static_cast<oc_uchar>(v.z)}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar3(oc_float4 v) noexcept { return oc_uchar3{static_cast<oc_uchar>(v.x), static_cast<oc_uchar>(v.y), static_cast<oc_uchar>(v.z)}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar3(oc_bool3 v) noexcept { return oc_uchar3{static_cast<oc_uchar>(v.x), static_cast<oc_uchar>(v.y), static_cast<oc_uchar>(v.z)}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar3(oc_bool4 v) noexcept { return oc_uchar3{static_cast<oc_uchar>(v.x), static_cast<oc_uchar>(v.y), static_cast<oc_uchar>(v.z)}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar3(oc_uchar3 v) noexcept { return oc_uchar3{static_cast<oc_uchar>(v.x), static_cast<oc_uchar>(v.y), static_cast<oc_uchar>(v.z)}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar3(oc_uchar4 v) noexcept { return oc_uchar3{static_cast<oc_uchar>(v.x), static_cast<oc_uchar>(v.y), static_cast<oc_uchar>(v.z)}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar4(oc_uchar s = 0) noexcept { return oc_uchar4{s, s, s, s}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar4(oc_uchar x, oc_uchar y, oc_uchar z, oc_uchar w) noexcept { return oc_uchar4{x, y, z, w}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar4(oc_uchar x, oc_uchar y, oc_uchar2 zw) noexcept { return oc_uchar4{x, y, zw.x, zw.y}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar4(oc_uchar x, oc_uchar2 yz, oc_uchar w) noexcept { return oc_uchar4{x, yz.x, yz.y, w}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar4(oc_uchar2 xy, oc_uchar z, oc_uchar w) noexcept { return oc_uchar4{xy.x, xy.y, z, w}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar4(oc_uchar2 xy, oc_uchar2 zw) noexcept { return oc_uchar4{xy.x, xy.y, zw.x, zw.y}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar4(oc_uchar x, oc_uchar3 yzw) noexcept { return oc_uchar4{x, yzw.x, yzw.y, yzw.z}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar4(oc_uchar3 xyz, oc_uchar w) noexcept { return oc_uchar4{xyz.x, xyz.y, xyz.z, w}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar4(oc_int4 v) noexcept { return oc_uchar4{static_cast<oc_uchar>(v.x), static_cast<oc_uchar>(v.y), static_cast<oc_uchar>(v.z), static_cast<oc_uchar>(v.w)}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar4(oc_uint4 v) noexcept { return oc_uchar4{static_cast<oc_uchar>(v.x), static_cast<oc_uchar>(v.y), static_cast<oc_uchar>(v.z), static_cast<oc_uchar>(v.w)}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar4(oc_float4 v) noexcept { return oc_uchar4{static_cast<oc_uchar>(v.x), static_cast<oc_uchar>(v.y), static_cast<oc_uchar>(v.z), static_cast<oc_uchar>(v.w)}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar4(oc_bool4 v) noexcept { return oc_uchar4{static_cast<oc_uchar>(v.x), static_cast<oc_uchar>(v.y), static_cast<oc_uchar>(v.z), static_cast<oc_uchar>(v.w)}; }
+[[nodiscard]] __device__ inline auto oc_make_uchar4(oc_uchar4 v) noexcept { return oc_uchar4{static_cast<oc_uchar>(v.x), static_cast<oc_uchar>(v.y), static_cast<oc_uchar>(v.z), static_cast<oc_uchar>(v.w)}; }
 
 
 [[nodiscard]] __device__ inline auto oc_make_float2x2(oc_float s = 1.0f) noexcept { return oc_float2x2{oc_make_float2(s, 0.0f), oc_make_float2(0.0f, s)}; }
