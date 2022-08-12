@@ -13,17 +13,6 @@
 #include "core/util.h"
 
 namespace ocarina {
-#define CUDA_NVRTC_OPTIONS                 \
-    "-std=c++17",                          \
-        "-arch",                           \
-        "compute_50",                      \
-        "-use_fast_math",                  \
-        "-restrict",                       \
-        "-default-device",                 \
-        "-include=cuda_device_builtin.h",  \
-        "-include=cuda_device_math.h",     \
-        "-include=cuda_device_resource.h", \
-
 
 CUDACompiler::CUDACompiler(CUDADevice *device, const Function &f)
     : _device(device), _function(f) {}
@@ -31,9 +20,22 @@ CUDACompiler::CUDACompiler(CUDADevice *device, const Function &f)
 ocarina::string CUDACompiler::compile(const string &cu, const string &fn, int sm) const noexcept {
     TIMER_TAG(compile, "compile " + fn);
     nvrtcProgram program{};
-    ocarina::vector<const char *> compile_option = {CUDA_NVRTC_OPTIONS};
     std::array header_names{"cuda_device_builtin.h", "cuda_device_math.h", "cuda_device_resource.h"};
     std::array header_sources{cuda_device_builtin, cuda_device_math, cuda_device_resource};
+    auto compute_sm = ocarina::format("compute_{}", sm);
+    ocarina::vector<const char *> compile_option = {
+        "-std=c++17",
+        "-arch",
+        compute_sm.c_str(),
+        "-use_fast_math",
+        "-restrict",
+        "-default-device",
+    };
+    ocarina::vector<string> includes;
+    for (const auto & header_name: header_names) {
+        includes.push_back(ocarina::format("-include={}", header_name));
+        compile_option.push_back(includes.back().c_str());
+    }
 
     OC_NVRTC_CHECK(nvrtcCreateProgram(&program, cu.c_str(), fn.c_str(),
                                       header_names.size(), header_sources.data(),
