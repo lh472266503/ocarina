@@ -46,7 +46,7 @@ auto func(T a, T b) {
     Var<uint> ui = a;
     Var<float2> f2;
     f2 = +f2;
-    Var<Hit> hit{ui, ui, f2};
+    Var<Hit> hit{};
 //    aa = rcp(aa);
 //    a = rcp(a);
 //    c = rcp(c);

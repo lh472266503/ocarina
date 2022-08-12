@@ -90,34 +90,36 @@ struct EnableTextureReadAndWrite {
     using texture_type = expr_value_t<T>;
     using element_type = texture_element_t<texture_type>;
 
-    template<typename U, typename V>
-    requires(is_all_integral_expr_v<U, V>)
-        OC_NODISCARD auto read(const U &u, const V &v) const noexcept {
+    template<typename X, typename Y>
+    requires(is_all_integral_expr_v<X, Y>)
+    OC_NODISCARD auto read(const X &x, const Y &y) const noexcept {
         const T *texture = static_cast<const T *>(this);
         const AccessExpr *expr = Function::current()->call_builtin(Type::of<element_type>(), CallOp::TEX_READ,
                                                                    {texture->expression(),
-                                                                    OC_EXPR(u), OC_EXPR(v)});
+                                                                    OC_EXPR(x), OC_EXPR(y)});
         return eval<element_type>(expr);
     }
 
-    template<typename UV>
-    requires(is_int_vector2_v<expr_value_t<UV>>)
-        OC_NODISCARD auto read(const UV &uv) const noexcept {
-        return read(uv.x, uv.y);
+    template<typename XY>
+    requires(is_int_vector2_v<expr_value_t<XY>>)
+    OC_NODISCARD auto read(const XY &xy) const noexcept {
+        return read(xy.x, xy.y);
     }
 
-    template<typename U, typename V, typename Val>
-    requires(is_all_integral_expr_v<U, V> &&concepts::is_same_v<element_type, expr_value_t<Val>>) void write(const U &u, const V &v, const Val &elm) noexcept {
+    template<typename X, typename Y, typename Val>
+    requires(is_all_integral_expr_v<X, Y> && concepts::is_same_v<element_type, expr_value_t<Val>>)
+    void write(const X &x, const Y &y, const Val &elm) noexcept {
         const T *texture = static_cast<const T *>(this);
         const AccessExpr *expr = Function::current()->call_builtin(Type::of<element_type>(), CallOp::TEX_READ,
                                                                    {texture->expression(),
-                                                                    OC_EXPR(u), OC_EXPR(v), OC_EXPR(elm)});
+                                                                    OC_EXPR(x), OC_EXPR(y), OC_EXPR(elm)});
         assign(expr, OC_FORWARD(elm));
     }
 
-    template<typename UV, typename Val>
-    requires(is_float_vector2_v<expr_value_t<UV>> &&concepts::is_same_v<element_type, expr_value_t<Val>>) void write(const UV &uv, const Val &elm) noexcept {
-        write(uv.x, uv.y, elm);
+    template<typename XY, typename Val>
+    requires(is_float_vector2_v<expr_value_t<XY>> && concepts::is_same_v<element_type, expr_value_t<Val>>)
+    void write(const XY &xy, const Val &elm) noexcept {
+        write(xy.x, xy.y, elm);
     }
 };
 
@@ -126,7 +128,7 @@ struct EnableTextureSample {
 
     template<typename U, typename V>
     requires(is_all_floating_point_expr_v<U, V>)
-        OC_NODISCARD auto sample(const U &u, const V &v) const noexcept {
+    OC_NODISCARD auto sample(const U &u, const V &v) const noexcept {
         using texture_type = expr_value_t<T>;
         using element_type = texture_element_t<texture_type>;
         const T *texture = static_cast<const T *>(this);

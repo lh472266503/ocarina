@@ -41,6 +41,9 @@ __device__ auto oc_tex_sample_float4(OCTexture obj, oc_float u, oc_float v) noex
     return oc_make_float4(ret.x, ret.y, ret.z, ret.w);
 }
 
-
+__device__ auto oc_tex_read_char1(OCTexture obj, oc_uint x, oc_uint y) noexcept {
+    auto ret = surf2Dread<char>(obj.surface, x * sizeof(char), y, cudaBoundaryModeZero);
+    return ret;
+}
 
 
