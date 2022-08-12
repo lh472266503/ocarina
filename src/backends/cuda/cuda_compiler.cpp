@@ -18,14 +18,13 @@ namespace ocarina {
         "-arch",                           \
         "compute_50",                      \
         "-use_fast_math",                  \
-        "-lineinfo",                       \
+        "-restrict",                       \
         "-default-device",                 \
         "-include=cuda_device_builtin.h",  \
         "-include=cuda_device_math.h",     \
         "-include=cuda_device_resource.h", \
-        "-rdc",                            \
-        "true",                            \
-        "-D__x86_64",
+
+
 CUDACompiler::CUDACompiler(CUDADevice *device, const Function &f)
     : _device(device), _function(f) {}
 
@@ -72,12 +71,12 @@ ocarina::string CUDACompiler::obtain_ptx() const noexcept {
             const ocarina::string &cu = codegen.scratch().c_str();
             cout << cu << endl;
             context->write_cache(cu_fn, cu);
-            ptx = compile(cu,cu_fn);
+            ptx = compile(cu, cu_fn);
             context->write_cache(ptx_fn, ptx);
         } else {
             const ocarina::string &cu = context->read_cache(cu_fn);
             cout << cu << endl;
-            ptx = compile(cu,cu_fn);
+            ptx = compile(cu, cu_fn);
             context->write_cache(ptx_fn, ptx);
         }
     } else {
