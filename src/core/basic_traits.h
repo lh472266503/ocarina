@@ -72,7 +72,7 @@ template<typename T>
 using is_char = std::is_same<std::remove_cvref_t<T>, char>;
 
 template<typename T>
-using is_uchar = std::is_same<std::remove_cvref<T>, uchar>;
+using is_uchar = std::is_same<std::remove_cvref_t<T>, uchar>;
 
 template<typename T>
 using is_signed = std::disjunction<

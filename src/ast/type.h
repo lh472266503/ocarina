@@ -276,6 +276,7 @@ public:
         INT,
         UINT,
         UCHAR,
+        CHAR,
 
         VECTOR,
         MATRIX,
@@ -327,7 +328,7 @@ public:
     [[nodiscard]] const Type *element() const noexcept;
     [[nodiscard]] constexpr bool is_scalar() const noexcept {
         return _tag == Tag::BOOL || _tag == Tag::FLOAT || _tag == Tag::INT ||
-               _tag == Tag::UINT || _tag == Tag::UCHAR;
+               _tag == Tag::UINT || _tag == Tag::UCHAR || _tag == Tag::CHAR;
     }
     [[nodiscard]] constexpr bool is_basic() const noexcept { return is_scalar() || is_vector() || is_matrix(); }
     [[nodiscard]] constexpr bool is_array() const noexcept { return _tag == Tag::ARRAY; }
