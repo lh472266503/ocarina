@@ -28,7 +28,7 @@ namespace ocarina {
 CUDACompiler::CUDACompiler(CUDADevice *device, const Function &f)
     : _device(device), _function(f) {}
 
-ocarina::string CUDACompiler::compile(const string &cu, const string &fn) const noexcept {
+ocarina::string CUDACompiler::compile(const string &cu, const string &fn, int sm) const noexcept {
     TIMER_TAG(compile, "compile " + fn);
     nvrtcProgram program{};
     ocarina::vector<const char *> compile_option = {CUDA_NVRTC_OPTIONS};
