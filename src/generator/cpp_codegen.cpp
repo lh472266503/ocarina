@@ -422,6 +422,7 @@ void CppCodegen::_emit_arguments(const Function &f) noexcept {
 }
 void CppCodegen::emit(const Function &func) noexcept {
     FUNCTION_GUARD(func)
+    TIMER_TAG(codegen, "function " + func.func_name() + " generated");
 #if CUDA_ARGUMENT_PUSH == 0
     func.for_each_uniform_var([&](const UniformBinding &uniform) {
         _emit_uniform_var(uniform);

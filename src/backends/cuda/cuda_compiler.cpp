@@ -10,6 +10,7 @@
 #include "embed/cuda_device_resource_embed.h"
 #include "cuda_codegen.h"
 #include "rhi/context.h"
+#include "core/util.h"
 
 namespace ocarina {
 #define CUDA_NVRTC_OPTIONS                 \
@@ -28,13 +29,14 @@ namespace ocarina {
 CUDACompiler::CUDACompiler(CUDADevice *device, const Function &f)
     : _device(device), _function(f) {}
 
-ocarina::string CUDACompiler::compile(const string &cu) const noexcept {
+ocarina::string CUDACompiler::compile(const string &cu, const string &fn) const noexcept {
+    TIMER_TAG(compile, "compile " + fn);
     nvrtcProgram program{};
     ocarina::vector<const char *> compile_option = {CUDA_NVRTC_OPTIONS};
     std::array header_names{"cuda_device_builtin.h", "cuda_device_math.h", "cuda_device_resource.h"};
     std::array header_sources{cuda_device_builtin, cuda_device_math, cuda_device_resource};
 
-    OC_NVRTC_CHECK(nvrtcCreateProgram(&program, cu.c_str(), "cuda_kernel.cu",
+    OC_NVRTC_CHECK(nvrtcCreateProgram(&program, cu.c_str(), fn.c_str(),
                                       header_names.size(), header_sources.data(),
                                       header_names.data()));
     const nvrtcResult compile_res = nvrtcCompileProgram(program, compile_option.size(), compile_option.data());
@@ -70,12 +72,12 @@ ocarina::string CUDACompiler::obtain_ptx() const noexcept {
             const ocarina::string &cu = codegen.scratch().c_str();
             cout << cu << endl;
             context->write_cache(cu_fn, cu);
-            ptx = compile(cu);
+            ptx = compile(cu,cu_fn);
             context->write_cache(ptx_fn, ptx);
         } else {
             const ocarina::string &cu = context->read_cache(cu_fn);
             cout << cu << endl;
-            ptx = compile(cu);
+            ptx = compile(cu,cu_fn);
             context->write_cache(ptx_fn, ptx);
         }
     } else {
