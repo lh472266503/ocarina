@@ -83,18 +83,36 @@ __device__ auto oc_pixel_to_float(const T &pixel) noexcept {
     return 0.f;
 }
 
+template<typename DST,typename SRC>
+__device__ auto convert_to_type(const SRC &val) noexcept {
+
+}
+
 template<typename T>
 __device__ auto oc_image_read(ImageData obj, oc_uint x, oc_uint y) noexcept {
     switch (obj.pixel_storage) {
         case OCPixelStorage::BYTE1:
+            auto v = surf2Dread<uchar>(obj.surface, x * sizeof(oc_uchar), y, cudaBoundaryModeZero);
 
             break;
-        case OCPixelStorage::BYTE2: break;
-        case OCPixelStorage::BYTE4: break;
-        case OCPixelStorage::FLOAT1: break;
-        case OCPixelStorage::FLOAT2: break;
-        case OCPixelStorage::FLOAT4: break;
-        case OCPixelStorage::UNKNOWN: break;
+        case OCPixelStorage::BYTE2:
+            auto v = surf2Dread<uchar2>(obj.surface, x * sizeof(uchar2), y, cudaBoundaryModeZero);
+
+            break;
+        case OCPixelStorage::BYTE4:
+            auto v = surf2Dread<uchar4>(obj.surface, x * sizeof(uchar4), y, cudaBoundaryModeZero);
+            break;
+        case OCPixelStorage::FLOAT1:
+            auto v = surf2Dread<float>(obj.surface, x * sizeof(float), y, cudaBoundaryModeZero);
+            break;
+        case OCPixelStorage::FLOAT2:
+            auto v = surf2Dread<float2>(obj.surface, x * sizeof(float2), y, cudaBoundaryModeZero);
+            break;
+        case OCPixelStorage::FLOAT4:
+            auto v = surf2Dread<float2>(obj.surface, x * sizeof(float2), y, cudaBoundaryModeZero);
+            break;
+        case OCPixelStorage::UNKNOWN:
+            break;
     }
     return T{};
 }
