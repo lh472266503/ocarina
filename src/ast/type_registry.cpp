@@ -140,7 +140,7 @@ const Type *TypeRegistry::parse_type(ocarina::string_view desc) noexcept {
         parse_struct(type.get(), desc);
     } else if (desc.starts_with("buffer")) {
         parse_buffer(type.get(), desc);
-    } else if (desc.starts_with("texture")) {
+    } else if (desc.starts_with("image")) {
         parse_texture(type.get(), desc);
     } else {
         OC_ERROR("invalid data type ", desc);

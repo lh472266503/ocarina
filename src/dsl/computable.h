@@ -276,10 +276,10 @@ struct Computable<Buffer<T>>
 };
 
 template<typename T>
-struct Computable<Texture<T>>
-    : detail::EnableTextureSample<Computable<Texture<T>>>,
-      detail::EnableTextureReadAndWrite<Computable<Texture<T>>> {
-    OC_COMPUTABLE_COMMON(Computable<Texture>)
+struct Computable<Image<T>>
+    : detail::EnableTextureSample<Computable<Image<T>>>,
+      detail::EnableTextureReadAndWrite<Computable<Image<T>>> {
+    OC_COMPUTABLE_COMMON(Computable<Image>)
 };
 
 template<size_t N>

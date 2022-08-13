@@ -94,7 +94,7 @@ template<typename T>
 using BufferVar = Var<Buffer<T>>;
 
 template<typename T>
-using TextureVar = Var<Texture<T>>;
+using ImageVar = Var<Image<T>>;
 
 template<typename T>
 Var(T &&) -> Var<expr_value_t<T>>;

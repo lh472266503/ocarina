@@ -3,7 +3,7 @@
 //
 
 #include "device.h"
-#include "resources/texture.h"
+#include "resources/image.h"
 #include "resources/stream.h"
 #include "rtx/accel.h"
 

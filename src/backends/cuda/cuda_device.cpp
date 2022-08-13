@@ -4,7 +4,7 @@
 
 #include "cuda_device.h"
 #include "cuda_stream.h"
-#include "cuda_texture.h"
+#include "cuda_image.h"
 #include "cuda_shader.h"
 #include "cuda_mesh.h"
 #include "rhi/context.h"
@@ -70,7 +70,7 @@ handle_ty CUDADevice::create_stream() noexcept {
 
 handle_ty CUDADevice::create_texture(uint2 res, PixelStorage pixel_storage) noexcept {
     return use_context([&] {
-        auto texture = ocarina::new_with_allocator<CUDATexture>(this, res, pixel_storage);
+        auto texture = ocarina::new_with_allocator<CUDAImage>(this, res, pixel_storage);
         return reinterpret_cast<handle_ty>(texture);
     });
 }
@@ -106,7 +106,7 @@ void CUDADevice::destroy_shader(handle_ty handle) noexcept {
 
 void CUDADevice::destroy_texture(handle_ty handle) noexcept {
     use_context([&] {
-        ocarina::delete_with_allocator(reinterpret_cast<CUDATexture *>(handle));
+        ocarina::delete_with_allocator(reinterpret_cast<CUDAImage *>(handle));
     });
 }
 

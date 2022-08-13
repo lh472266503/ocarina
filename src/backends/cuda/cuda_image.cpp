@@ -2,18 +2,18 @@
 // Created by Zero on 06/08/2022.
 //
 
-#include "cuda_texture.h"
+#include "cuda_image.h"
 #include "util.h"
 
 namespace ocarina {
 
-CUDATexture::CUDATexture(CUDADevice *device, uint2 res, PixelStorage pixel_storage)
+CUDAImage::CUDAImage(CUDADevice *device, uint2 res, PixelStorage pixel_storage)
     : _device(device), _res(res) {
     _oc_texture.pixel_storage = pixel_storage;
     init();
 }
 
-void CUDATexture::init() {
+void CUDAImage::init() {
     CUDA_ARRAY_DESCRIPTOR array_desc{};
     array_desc.Width = _res.x;
     array_desc.Height = _res.y;
@@ -62,7 +62,7 @@ void CUDATexture::init() {
     OC_CU_CHECK(cuSurfObjectCreate(&_oc_texture.surface, &res_desc));
     OC_CU_CHECK(cuTexObjectCreate(&_oc_texture.texture, &res_desc, &tex_desc, nullptr));
 }
-CUDATexture::~CUDATexture() {
+CUDAImage::~CUDAImage() {
     OC_CU_CHECK(cuArrayDestroy(_array_handle));
     OC_CU_CHECK(cuTexObjectDestroy(_oc_texture.texture));
     OC_CU_CHECK(cuSurfObjectDestroy(_oc_texture.surface));

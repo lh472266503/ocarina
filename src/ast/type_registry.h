@@ -18,7 +18,7 @@ template<typename T>
 class BufferView;
 
 template<typename T>
-class Texture;
+class Image;
 
 template<typename T>
 class TextureView;
@@ -124,11 +124,11 @@ struct TypeDesc<Buffer<T>> {
 };
 
 template<typename T>
-struct TypeDesc<Texture<T>> {
-    static_assert(is_valid_texture_element<T>(), "T is not a valid element in texture!");
+struct TypeDesc<Image<T>> {
+    static_assert(is_valid_texture_element<T>(), "T is not a valid element in image!");
     static ocarina::string_view description() noexcept {
         static thread_local auto s = ocarina::format(
-            FMT_STRING("texture<{}>"),
+            FMT_STRING("image<{}>"),
             TypeDesc<T>::description());
         return s;
     }

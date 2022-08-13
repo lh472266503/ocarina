@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
     stream << texture.upload_sync(image.pixel_ptr());
 
     Buffer<float> f_buffer = device.create_buffer<float>(count);
-    Kernel kn = [&](Var<float> a, Var<float> b, BufferVar<float> c, TextureVar<uchar4> tex) {
+    Kernel kn = [&](Var<float> a, Var<float> b, BufferVar<float> c, ImageVar<uchar4> tex) {
 
         Var<float3> v1 = make_float3(a), v2,v3;
 //        v1 = normalize(v1);

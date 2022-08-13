@@ -10,6 +10,6 @@
 #include "resources/stream.h"
 #include "resources/shader.h"
 #include "resources/buffer.h"
-#include "resources/texture.h"
+#include "resources/image.h"
 #include "rtx/mesh.h"
 #include "rtx/accel.h"

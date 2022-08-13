@@ -24,7 +24,7 @@ class Shader;
 class Stream;
 
 template<typename T>
-class Texture;
+class Image;
 
 class Mesh;
 
@@ -81,8 +81,8 @@ public:
     [[nodiscard]] Accel create_accel() noexcept;
 
     template<typename T>
-    [[nodiscard]] Texture<T> create_texture(uint2 res) noexcept {
-        return _create<Texture<T>>(res, PixelStorageImpl<T>::storage);
+    [[nodiscard]] Image<T> create_texture(uint2 res) noexcept {
+        return _create<Image<T>>(res, PixelStorageImpl<T>::storage);
     }
     template<typename T>
     [[nodiscard]] auto compile(const Kernel<T> &kernel, ShaderTag tag = CS) noexcept {

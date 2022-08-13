@@ -5,26 +5,26 @@
 #pragma once
 
 #include "core/stl.h"
-#include "rhi/resources/texture.h"
+#include "rhi/resources/image.h"
 #include <cuda.h>
 
 namespace ocarina {
 class CUDADevice;
-class CUDATexture : public Texture<float>::Impl {
+class CUDAImage : public Image<float>::Impl {
 private:
-    struct OCTexture {
+    struct ImageData {
         CUtexObject texture{};
         CUsurfObject surface{};
         PixelStorage pixel_storage{};
     };
-    OCTexture _oc_texture;
+    ImageData _oc_texture;
     CUDADevice *_device{};
     uint2 _res{};
     CUarray _array_handle{};
 
 public:
-    CUDATexture(CUDADevice *device, uint2 res, PixelStorage pixel_storage);
-    ~CUDATexture();
+    CUDAImage(CUDADevice *device, uint2 res, PixelStorage pixel_storage);
+    ~CUDAImage();
     void init();
     [[nodiscard]] uint2 resolution() const noexcept override { return _res; }
     [[nodiscard]] handle_ty array_handle() const noexcept override { return reinterpret_cast<handle_ty>(_array_handle); }

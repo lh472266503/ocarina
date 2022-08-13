@@ -25,8 +25,8 @@ struct prototype_to_shader_invocation<Buffer<T>> {
 };
 
 template<typename T>
-struct prototype_to_shader_invocation<Texture<T>> {
-    using type = const Texture<T> &;
+struct prototype_to_shader_invocation<Image<T>> {
+    using type = const Image<T> &;
 };
 }// namespace detail
 
@@ -58,7 +58,7 @@ private:
     }
 
     template<typename T>
-    void _encode_texture(const Texture<T> &texture) noexcept {
+    void _encode_texture(const Image<T> &texture) noexcept {
         push_handle_address(const_cast<handle_ty *>(texture.tex_handle_address()));
     }
 
