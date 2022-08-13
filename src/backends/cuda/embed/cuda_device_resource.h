@@ -74,20 +74,34 @@ template<typename A, typename B>
 static constexpr bool oc_is_same_v = oc_is_same<A, B>::value;
 
 template<typename T>
-__device__ auto oc_pixel_to_float(const T &pixel) noexcept {
-    if constexpr (oc_is_same_v<oc_float, T>) {
-        return pixel;
-    } else if constexpr (oc_is_same_v<oc_uchar, T>) {
-        return static_cast<oc_float>(pixel / 255.f);
-    }
-    return 0.f;
-}
-
-template<typename T>
 struct oc_type {
     static constexpr auto dimension = 1;
     using element_type = T;
 };
+
+template<typename T, size_t N>
+struct oc_vec {
+    using type = T;
+};
+
+#define OC_MAKE_VEC_TYPE(T, N) \
+    template<>                 \
+    struct oc_vec<T, N> {      \
+        using type = T##N;     \
+    };
+
+#define OC_MAKE_VEC_TYPE_N(T) \
+    OC_MAKE_VEC_TYPE(T, 2)    \
+    OC_MAKE_VEC_TYPE(T, 3)    \
+    OC_MAKE_VEC_TYPE(T, 4)
+
+OC_MAKE_VEC_TYPE_N(oc_float)
+OC_MAKE_VEC_TYPE_N(oc_int)
+OC_MAKE_VEC_TYPE_N(oc_uchar)
+OC_MAKE_VEC_TYPE_N(oc_uint)
+
+#undef OC_MAKE_VEC_TYPE
+#undef OC_MAKE_VEC_TYPE_N
 
 #define OC_MAKE_TYPE_DIM(type, dim)            \
     template<>                                 \
@@ -116,8 +130,43 @@ using oc_type_element_t = typename oc_type<T>::element_type;
 #undef OC_MAKE_TYPE
 #undef OC_MAKE_TYPE_DIM
 
-template<typename DST, typename SRC>
-__device__ auto convert_to_type(const SRC &val) noexcept {
+template<typename Dst, typename Src>
+__device__ auto oc_convert_scalar(const Src &src) noexcept {
+    static_assert(oc_type_dim<Src> == 1 && oc_type_dim<Dst> == 1);
+    if constexpr (oc_is_same_v<Dst, Src>) {
+        return src;
+    } else if constexpr (oc_is_same_v<Dst, float>) {
+        // Src is uchar
+        return static_cast<float>(src / 255.f);
+    } else if constexpr (oc_is_same_v<Dst, uchar>) {
+        // Src is float
+        return static_cast<uchar>(src * 255);
+    }
+    __builtin_unreachable();
+}
+
+template<typename Dst, typename Src>
+__device__ auto oc_convert_vector(const Src &val) noexcept {
+    static_assert(oc_type_dim<Dst> == oc_type_dim<Src>);
+    using element_type = oc_type_element_t<Dst>;
+    if constexpr (oc_type_dim<Dst> == 1) {
+        return oc_convert_scalar<Dst>(val);
+    } else if constexpr (oc_type_dim<Dst> == 2) {
+        return Dst(oc_convert_scalar<element_type>(val.x),
+                   oc_convert_scalar<element_type>(val.y));
+    } else if constexpr (oc_type_dim<Dst> == 4) {
+        return Dst(oc_convert_scalar<element_type>(val.x),
+                   oc_convert_scalar<element_type>(val.y),
+                   oc_convert_scalar<element_type>(val.z),
+                   oc_convert_scalar<element_type>(val.w));
+    }
+}
+
+template<size_t Dim, typename Src>
+__device__ auto oc_fit(const Src &src) noexcept {
+    using element_type = oc_type_element_t<Src>;
+    static constexpr auto dim = oc_type_dim<Src>;
+    return;
 }
 
 template<typename T>
