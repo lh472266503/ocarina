@@ -2,7 +2,7 @@
 // Created by Zero on 05/08/2022.
 //
 
-#include "util/image.h"
+#include "util/image_io.h"
 #include "core/stl.h"
 #include "dsl/common.h"
 #include "rhi/context.h"
@@ -10,7 +10,7 @@
 #include <windows.h>
 #include "math/base.h"
 #include "math/geometry.h"
-#include "util/image.h"
+#include "util/image_io.h"
 #include "dsl/common.h"
 
 using namespace ocarina;
@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
     Stream stream = device.create_stream();
     auto path1 = R"(E:/work/compile/ocarina/res/test.png)";
     auto path2 = R"(E:/work/compile/ocarina/res/test.tga)";
-    auto image = Image::load(path1, LINEAR);
+    auto image = ImageIO::load(path1, LINEAR);
     image.save(path2);
     return 0;
 }

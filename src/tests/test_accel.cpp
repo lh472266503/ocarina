@@ -9,7 +9,7 @@
 #include <windows.h>
 #include "math/base.h"
 #include "math/geometry.h"
-#include "util/image.h"
+#include "util/image_io.h"
 #include "dsl/common.h"
 
 using namespace ocarina;
