@@ -83,9 +83,41 @@ __device__ auto oc_pixel_to_float(const T &pixel) noexcept {
     return 0.f;
 }
 
-template<typename DST,typename SRC>
-__device__ auto convert_to_type(const SRC &val) noexcept {
+template<typename T>
+struct oc_type {
+    static constexpr auto dimension = 1;
+    using element_type = T;
+};
 
+#define OC_MAKE_TYPE_DIM(type, dim)            \
+    template<>                                 \
+    struct oc_type<type##dim> {                \
+        static constexpr auto dimension = dim; \
+        using element_type = type;             \
+    };
+
+#define OC_MAKE_TYPE(type)    \
+    OC_MAKE_TYPE_DIM(type, 2) \
+    OC_MAKE_TYPE_DIM(type, 3) \
+    OC_MAKE_TYPE_DIM(type, 4)
+
+OC_MAKE_TYPE(oc_uint)
+OC_MAKE_TYPE(oc_int)
+OC_MAKE_TYPE(oc_float)
+OC_MAKE_TYPE(oc_uchar)
+OC_MAKE_TYPE(oc_bool)
+
+template<typename T>
+static constexpr auto oc_type_dim = oc_type<T>::dimension;
+
+template<typename T>
+using oc_type_element_t = typename oc_type<T>::element_type;
+
+#undef OC_MAKE_TYPE
+#undef OC_MAKE_TYPE_DIM
+
+template<typename DST, typename SRC>
+__device__ auto convert_to_type(const SRC &val) noexcept {
 }
 
 template<typename T>
@@ -116,4 +148,3 @@ __device__ auto oc_image_read(ImageData obj, oc_uint x, oc_uint y) noexcept {
     }
     return T{};
 }
-
