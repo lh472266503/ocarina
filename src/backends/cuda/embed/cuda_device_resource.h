@@ -79,7 +79,7 @@ struct oc_type {
     using element_type = T;
 };
 
-template<typename T, size_t N>
+template<typename T, int N>
 struct oc_vec {
     using type = T;
 };
@@ -99,6 +99,9 @@ OC_MAKE_VEC_TYPE_N(oc_float)
 OC_MAKE_VEC_TYPE_N(oc_int)
 OC_MAKE_VEC_TYPE_N(oc_uchar)
 OC_MAKE_VEC_TYPE_N(oc_uint)
+
+template<typename T, int N>
+using oc_vec_t = typename oc_vec<T, N>::type;
 
 #undef OC_MAKE_VEC_TYPE
 #undef OC_MAKE_VEC_TYPE_N
@@ -162,11 +165,13 @@ __device__ auto oc_convert_vector(const Src &val) noexcept {
     }
 }
 
-template<size_t Dim, typename Src>
+template<int Dim, typename Src>
 __device__ auto oc_fit(const Src &src) noexcept {
     using element_type = oc_type_element_t<Src>;
     static constexpr auto dim = oc_type_dim<Src>;
-    return;
+    using ret_type = typename oc_vec_t<element_type, Dim>;
+    if constexpr (dim == 2) {
+    }
 }
 
 template<typename T>
