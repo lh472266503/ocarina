@@ -60,6 +60,42 @@ __device__ auto oc_tex_read_float4(ImageData obj, oc_uint x, oc_uint y) noexcept
     return oc_make_float4(ret.x, ret.y, ret.x, ret.y);
 }
 
-// __device__ void oc_tex_write_uchar1(ImageData obj, oc_uint x, oc_uint y, oc_uchar var) noexcept {
-//     surf2Dwrite(v, obj.surface, x * sizeof(uchar), y, cudaBoundaryModeZero);
-// }
+template<typename A, typename B>
+struct oc_is_same {
+    static constexpr bool value = false;
+};
+
+template<typename A>
+struct oc_is_same<A, A> {
+    static constexpr bool value = true;
+};
+
+template<typename A, typename B>
+static constexpr bool oc_is_same_v = oc_is_same<A, B>::value;
+
+template<typename T>
+__device__ auto oc_pixel_to_float(const T &pixel) noexcept {
+    if constexpr (oc_is_same_v<oc_float, T>) {
+        return pixel;
+    } else if constexpr (oc_is_same_v<oc_uchar, T>) {
+        return static_cast<oc_float>(pixel / 255.f);
+    }
+    return 0.f;
+}
+
+template<typename T>
+__device__ auto oc_image_read(ImageData obj, oc_uint x, oc_uint y) noexcept {
+    switch (obj.pixel_storage) {
+        case OCPixelStorage::BYTE1:
+
+            break;
+        case OCPixelStorage::BYTE2: break;
+        case OCPixelStorage::BYTE4: break;
+        case OCPixelStorage::FLOAT1: break;
+        case OCPixelStorage::FLOAT2: break;
+        case OCPixelStorage::FLOAT4: break;
+        case OCPixelStorage::UNKNOWN: break;
+    }
+    return T{};
+}
+
