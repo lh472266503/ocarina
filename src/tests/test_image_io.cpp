@@ -27,6 +27,19 @@ int main(int argc, char *argv[]) {
 
     auto image = device.create_image<uchar4>(image_io.resolution());
 
+    stream << image.upload_sync(image_io.pixel_ptr());
+
+    Kernel kernel = [&](ImageVar<uchar4> img) {
+        Var v = img.read(make_uint2(dispatch_idx()));
+        img.write(make_uint2(dispatch_idx()), make_uchar4(0));
+        print("-{}--{}--{}", v.x, v.y, v.z);
+    };
+
+    auto shader = device.compile(kernel);
+    stream << shader(image).dispatch(50,50);
+    stream << synchronize()
+           << image.download_sync(image_io.pixel_ptr())
+           << commit();
     image_io.save(path2);
 
 

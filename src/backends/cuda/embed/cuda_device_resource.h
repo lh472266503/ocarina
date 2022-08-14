@@ -176,10 +176,10 @@ __device__ void oc_image_write(ImageData obj, oc_uint x, oc_uint y, Input val) n
         uchar v = oc_convert_scalar<Elm>(val);
         surf2Dwrite(v, obj.surface, x * sizeof(uchar), y, cudaBoundaryModeZero);
     } else if constexpr (oc_is_same_v<Elm, oc_uchar2>) {
-        oc_char2 v = oc_convert_vector<Elm>(val);
+        oc_uchar2 v = oc_convert_vector<Elm>(val);
         surf2Dwrite(make_uchar2(v.x, v.y), obj.surface, x * sizeof(uchar2), y, cudaBoundaryModeZero);
     } else if constexpr (oc_is_same_v<Elm, oc_uchar4>) {
-        oc_char4 v = oc_convert_vector<Elm>(val);
+        oc_uchar4 v = oc_convert_vector<Elm>(val);
         surf2Dwrite(make_uchar4(v.x, v.y, v.z, v.w), obj.surface, x * sizeof(uchar4), y, cudaBoundaryModeZero);
     } else if constexpr (oc_is_same_v<Elm, oc_float>) {
         oc_float v = oc_convert_vector<Elm>(val);
@@ -193,4 +193,6 @@ __device__ void oc_image_write(ImageData obj, oc_uint x, oc_uint y, Input val) n
     }
     __builtin_unreachable();
 }
+
+
 
