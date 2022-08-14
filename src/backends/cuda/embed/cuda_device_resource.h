@@ -174,31 +174,27 @@ __device__ auto oc_fit(const Src &src) noexcept {
     }
 }
 
-template<typename T>
+template<typename Elm, typename Target = Elm>
 __device__ auto oc_image_read(ImageData obj, oc_uint x, oc_uint y) noexcept {
-    switch (obj.pixel_storage) {
-        case OCPixelStorage::BYTE1:
-            auto v = surf2Dread<uchar>(obj.surface, x * sizeof(oc_uchar), y, cudaBoundaryModeZero);
-
-            break;
-        case OCPixelStorage::BYTE2:
-            auto v = surf2Dread<uchar2>(obj.surface, x * sizeof(uchar2), y, cudaBoundaryModeZero);
-
-            break;
-        case OCPixelStorage::BYTE4:
-            auto v = surf2Dread<uchar4>(obj.surface, x * sizeof(uchar4), y, cudaBoundaryModeZero);
-            break;
-        case OCPixelStorage::FLOAT1:
-            auto v = surf2Dread<float>(obj.surface, x * sizeof(float), y, cudaBoundaryModeZero);
-            break;
-        case OCPixelStorage::FLOAT2:
-            auto v = surf2Dread<float2>(obj.surface, x * sizeof(float2), y, cudaBoundaryModeZero);
-            break;
-        case OCPixelStorage::FLOAT4:
-            auto v = surf2Dread<float2>(obj.surface, x * sizeof(float2), y, cudaBoundaryModeZero);
-            break;
-        case OCPixelStorage::UNKNOWN:
-            break;
+    static_assert(oc_type_dim<Elm> == oc_type_dim<Target>);
+    if constexpr (oc_is_same_v<Elm, uchar>) {
+        auto v = surf2Dread<uchar>(obj.surface, x * sizeof(oc_uchar), y, cudaBoundaryModeZero);
+        return oc_convert_scalar<Target>(v);
+    } else if constexpr (oc_is_same_v<Elm, oc_char2>) {
+        auto v = surf2Dread<uchar2>(obj.surface, x * sizeof(uchar2), y, cudaBoundaryModeZero);
+        return oc_convert_vector<Target>(oc_make_uchar2(v.x, v.y));
+    } else if constexpr (oc_is_same_v<Elm, oc_char4>) {
+        auto v = surf2Dread<uchar4>(obj.surface, x * sizeof(uchar4), y, cudaBoundaryModeZero);
+        return oc_convert_vector<Target>(oc_make_uchar4(v.x, v.y, v.z, v.w));
+    } else if constexpr (oc_is_same_v<Elm, oc_float>) {
+        auto v = surf2Dread<float>(obj.surface, x * sizeof(float), y, cudaBoundaryModeZero);
+        return oc_convert_scalar<Target>(v);
+    } else if constexpr (oc_is_same_v<Elm, oc_float2>) {
+        auto v = surf2Dread<float2>(obj.surface, x * sizeof(float2), y, cudaBoundaryModeZero);
+        return oc_convert_vector<Target>(oc_make_float2(v.x, v.y));
+    } else if constexpr (oc_is_same_v<Elm, oc_float4>) {
+        auto v = surf2Dread<float4>(obj.surface, x * sizeof(float4), y, cudaBoundaryModeZero);
+        return oc_convert_vector<Target>(oc_make_float4(v.x, v.y, v.z, v.w));
     }
-    return T{};
+    __builtin_unreachable();
 }
