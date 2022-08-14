@@ -63,7 +63,8 @@ int main(int argc, char *argv[]) {
         Var vv = all(bv);
         Var f = 0.5f;
         f = fma(f, a, b);
-        Var<int2> vec2 = vec.xy();
+        Var mat = make_float4x4(1.f);
+        Var<int2> vec2 = make_int2(1);
         vec2 = -vec2;
         //        Var<bool3> pred = vec > make_int3(5);
         vec = select(vec > make_int3(5), vec, -vec);
@@ -73,7 +74,6 @@ int main(int argc, char *argv[]) {
 //        c.write(thread_id(), c.read(thread_id()) * 2);
         c[thread_id()] *= 2;
         a = add(a, b);
-        $return();
     };
 
     auto shader = device.compile(kn);

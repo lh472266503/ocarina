@@ -12,25 +12,32 @@ struct LiteralPrinter {
     using Scratch = Codegen::Scratch;
     Scratch &scratch;
     explicit LiteralPrinter(Scratch &scratch) : scratch(scratch) {}
+
     template<typename T>
     requires(is_scalar_v<T> || is_vector_v<T>)
     void operator()(T v) {
         if constexpr (ocarina::is_scalar_v<T>) {
             scratch << v;
         } else {
-            using element_ty = vector_element_t<T>;
-            scratch << TYPE_PREFIX << Type::of<element_ty>()->description() << ocarina::vector_dimension_v<T>;
-            if constexpr (ocarina::vector_dimension_v<T> == 2) {
-                scratch << "(" << v.x << ", " << v.y << ")";
-            } else if constexpr (ocarina::vector_dimension_v<T> == 3) {
-                scratch << "(" << v.x << ", " << v.y << ", " << v.z << ")";
-            } else if constexpr (ocarina::vector_dimension_v<T> == 3) {
-                scratch << "(" << v.x << ", " << v.y << ", " << v.z << ", " << v.w << ")";
+            static constexpr auto dim = ocarina::vector_dimension_v<T>;
+            auto printer = *this;
+            scratch << TYPE_PREFIX << Type::of<T>()->name() << "(";
+            for (int i = 0; i < dim; ++i) {
+                const char *token = i == dim - 1 ? ")" : ",";
+                printer(v[i]);
+                scratch << token;
             }
         }
     }
     template<size_t N>
     void operator()(Matrix<N> m) {
+        auto printer = *this;
+        scratch << TYPE_PREFIX <<Type::of<Matrix<N>>()->name() << "(";
+        for (int i = 0; i < N; ++i) {
+            const char *token = i == N - 1 ? ")" : ",";
+            printer(m[i]);
+            scratch << token;
+        }
     }
 };
 }// namespace detail

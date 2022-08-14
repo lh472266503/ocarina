@@ -207,15 +207,15 @@ void CUDACodegen::_emit_type_name(const Type *type) noexcept {
         current_scratch() << "void";
     } else {
         switch (type->tag()) {
-            case Type::Tag::BOOL: current_scratch() << TYPE_PREFIX "bool"; break;
-            case Type::Tag::FLOAT: current_scratch() << TYPE_PREFIX "float"; break;
-            case Type::Tag::INT: current_scratch() << TYPE_PREFIX "int"; break;
-            case Type::Tag::UINT: current_scratch() << TYPE_PREFIX "uint"; break;
-            case Type::Tag::UCHAR: current_scratch() << TYPE_PREFIX "uchar"; break;
-            case Type::Tag::CHAR: break;
+            case Type::Tag::BOOL:
+            case Type::Tag::FLOAT:
+            case Type::Tag::INT:
+            case Type::Tag::UINT:
+            case Type::Tag::UCHAR:
+            case Type::Tag::CHAR:
             case Type::Tag::VECTOR:
-                _emit_type_name(type->element());
-                current_scratch() << type->dimension();
+            case Type::Tag::MATRIX:
+                current_scratch() << TYPE_PREFIX << type->name();
                 break;
             case Type::Tag::ARRAY:
                 _emit_type_name(type->element());
@@ -223,11 +223,6 @@ void CUDACodegen::_emit_type_name(const Type *type) noexcept {
                 current_scratch() << type->dimension();
                 current_scratch() << "]";
                 break;
-            case Type::Tag::MATRIX: {
-                auto d = type->dimension();
-                current_scratch() << TYPE_PREFIX "float" << d << "x" << d;
-                break;
-            }
             case Type::Tag::STRUCTURE:
                 _emit_struct_name(type->hash());
                 break;
