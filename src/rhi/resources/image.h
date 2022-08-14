@@ -58,10 +58,10 @@ public:
         return TextureUploadCommand::create(data, array_handle(), resolution(), pixel_storage(), false);
     }
     [[nodiscard]] TextureDownloadCommand *download(void *data) const noexcept {
-        return TextureDownloadCommand::create(data, tex_handle(), resolution(), pixel_storage(), true);
+        return TextureDownloadCommand::create(data, array_handle(), resolution(), pixel_storage(), true);
     }
     [[nodiscard]] TextureDownloadCommand *download_sync(void *data) const noexcept {
-        return TextureDownloadCommand::create(data, tex_handle(), resolution(), pixel_storage(), false);
+        return TextureDownloadCommand::create(data, array_handle(), resolution(), pixel_storage(), false);
     }
 };
 
