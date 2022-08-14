@@ -23,7 +23,13 @@ int main(int argc, char *argv[]) {
     Stream stream = device.create_stream();
     auto path1 = R"(E:/work/compile/ocarina/res/test.png)";
     auto path2 = R"(E:/work/compile/ocarina/res/test.tga)";
-    auto image = ImageIO::load(path1, LINEAR);
-    image.save(path2);
+    auto image_io = ImageIO::load(path1, LINEAR);
+
+    auto image = device.create_image<uchar4>(image_io.resolution());
+
+    image_io.save(path2);
+
+
+
     return 0;
 }

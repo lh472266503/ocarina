@@ -41,7 +41,7 @@ public:
         explicit Impl(Context *ctx) : _context(ctx) {}
         [[nodiscard]] virtual handle_ty create_buffer(size_t size) noexcept = 0;
         virtual void destroy_buffer(handle_ty handle) noexcept = 0;
-        [[nodiscard]] virtual handle_ty create_texture(uint2 res, PixelStorage pixel_storage) noexcept = 0;
+        [[nodiscard]] virtual handle_ty create_image(uint2 res, PixelStorage pixel_storage) noexcept = 0;
         virtual void destroy_texture(handle_ty handle) noexcept = 0;
         [[nodiscard]] virtual handle_ty create_shader(const Function &function) noexcept = 0;
         virtual void destroy_shader(handle_ty handle) noexcept = 0;
@@ -81,7 +81,7 @@ public:
     [[nodiscard]] Accel create_accel() noexcept;
 
     template<typename T>
-    [[nodiscard]] Image<T> create_texture(uint2 res) noexcept {
+    [[nodiscard]] Image<T> create_image(uint2 res) noexcept {
         return _create<Image<T>>(res, PixelStorageImpl<T>::storage);
     }
     template<typename T>

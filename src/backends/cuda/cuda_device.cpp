@@ -68,7 +68,7 @@ handle_ty CUDADevice::create_stream() noexcept {
     });
 }
 
-handle_ty CUDADevice::create_texture(uint2 res, PixelStorage pixel_storage) noexcept {
+handle_ty CUDADevice::create_image(uint2 res, PixelStorage pixel_storage) noexcept {
     return use_context([&] {
         auto texture = ocarina::new_with_allocator<CUDAImage>(this, res, pixel_storage);
         return reinterpret_cast<handle_ty>(texture);

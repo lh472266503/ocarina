@@ -70,7 +70,7 @@ public:
     [[nodiscard]] OptixDeviceContext optix_device_context() const noexcept { return _optix_device_context; }
     [[nodiscard]] handle_ty create_buffer(size_t size) noexcept override;
     void destroy_buffer(handle_ty handle) noexcept override;
-    [[nodiscard]] handle_ty create_texture(uint2 res, PixelStorage pixel_storage) noexcept override;
+    [[nodiscard]] handle_ty create_image(uint2 res, PixelStorage pixel_storage) noexcept override;
     void destroy_texture(handle_ty handle) noexcept override;
     [[nodiscard]] handle_ty create_shader(const Function &function) noexcept override;
     void destroy_shader(handle_ty handle) noexcept override;
