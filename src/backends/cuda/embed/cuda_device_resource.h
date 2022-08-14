@@ -30,36 +30,6 @@ __device__ auto oc_tex_sample_float4(ImageData obj, oc_float u, oc_float v) noex
     return oc_make_float4(ret.x, ret.y, ret.z, ret.w);
 }
 
-__device__ auto oc_tex_read_uchar1(ImageData obj, oc_uint x, oc_uint y) noexcept {
-    auto ret = surf2Dread<uchar>(obj.surface, x * sizeof(uchar), y, cudaBoundaryModeZero);
-    return ret;
-}
-
-__device__ auto oc_tex_read_uchar2(ImageData obj, oc_uint x, oc_uint y) noexcept {
-    auto ret = surf2Dread<uchar2>(obj.surface, x * sizeof(uchar2), y, cudaBoundaryModeZero);
-    return oc_make_uchar2(ret.x, ret.y);
-}
-
-__device__ auto oc_tex_read_uchar4(ImageData obj, oc_uint x, oc_uint y) noexcept {
-    auto ret = surf2Dread<uchar4>(obj.surface, x * sizeof(uchar4), y, cudaBoundaryModeZero);
-    return oc_make_uchar4(ret.x, ret.y, ret.x, ret.y);
-}
-
-__device__ auto oc_tex_read_float1(ImageData obj, oc_uint x, oc_uint y) noexcept {
-    auto ret = surf2Dread<float>(obj.surface, x * sizeof(float), y, cudaBoundaryModeZero);
-    return ret;
-}
-
-__device__ auto oc_tex_read_float2(ImageData obj, oc_uint x, oc_uint y) noexcept {
-    auto ret = surf2Dread<float2>(obj.surface, x * sizeof(float2), y, cudaBoundaryModeZero);
-    return oc_make_float2(ret.x, ret.y);
-}
-
-__device__ auto oc_tex_read_float4(ImageData obj, oc_uint x, oc_uint y) noexcept {
-    auto ret = surf2Dread<float4>(obj.surface, x * sizeof(float4), y, cudaBoundaryModeZero);
-    return oc_make_float4(ret.x, ret.y, ret.x, ret.y);
-}
-
 template<typename A, typename B>
 struct oc_is_same {
     static constexpr bool value = false;
