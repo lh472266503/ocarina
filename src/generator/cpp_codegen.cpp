@@ -145,6 +145,14 @@ void CppCodegen::visit(const PrintStmt *stmt) noexcept {
                 format_scratch.replace("{}", "%d");
                 break;
             }
+            case Type::Tag::UCHAR: {
+                format_scratch.replace("{}", "%u");
+                break;
+            }
+            case Type::Tag::CHAR: {
+                format_scratch.replace("{}", "%d");
+                break;
+            }
             default: break;
         }
         SCRATCH_GUARD(args_scratch);
