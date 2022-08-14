@@ -90,20 +90,20 @@ struct EnableTextureReadAndWrite {
     using texture_type = expr_value_t<T>;
     using element_type = texture_element_t<texture_type>;
 
-    template<typename X, typename Y>
+    template<typename Target = element_type, typename X, typename Y>
     requires(is_all_integral_expr_v<X, Y>)
-    OC_NODISCARD auto read(const X &x, const Y &y) const noexcept {
+        OC_NODISCARD auto read(const X &x, const Y &y) const noexcept {
         const T *texture = static_cast<const T *>(this);
-        const CallExpr *expr = Function::current()->call_builtin(Type::of<element_type>(), CallOp::TEX_READ,
-                                                                   {texture->expression(),
-                                                                    OC_EXPR(x), OC_EXPR(y)});
-        return eval<element_type>(expr);
+        const CallExpr *expr = Function::current()->call_builtin(Type::of<Target>(), CallOp::TEX_READ,
+                                                                 {texture->expression(),OC_EXPR(x), OC_EXPR(y)},
+                                                                 {Type::of<Target>(), Type::of<element_type>()});
+        return eval<Target>(expr);
     }
 
-    template<typename XY>
+    template<typename Target = element_type, typename XY>
     requires(is_int_vector2_v<expr_value_t<XY>>)
     OC_NODISCARD auto read(const XY &xy) const noexcept {
-        return read(xy.x, xy.y);
+        return read<Target>(xy.x, xy.y);
     }
 
     template<typename X, typename Y, typename Val>

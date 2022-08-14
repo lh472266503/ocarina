@@ -227,6 +227,7 @@ private:
     ocarina::vector<const Expression *> _arguments;
     const Function *_function{};
     CallOp _call_op{CallOp::CUSTOM};
+    ocarina::vector<const Type *> _template_args;
 
 private:
     void _mark(Usage) const noexcept override {}
@@ -239,10 +240,12 @@ public:
           _function(func),
           _arguments(std::move(args)) {}
     CallExpr(const Type *type, CallOp op,
-             ocarina::vector<const Expression *> &&args)
+             ocarina::vector<const Expression *> &&args,
+             ocarina::vector<const Type *>&& t_args = {})
         : Expression(Tag::CALL, type), _call_op(op),
-          _arguments(std::move(args)) {}
+          _arguments(std::move(args)),_template_args(std::move(t_args)) {}
     [[nodiscard]] ocarina::span<const Expression *const> arguments() const noexcept { return _arguments; }
+    [[nodiscard]] ocarina::span<const Type *const> template_args() const noexcept { return _template_args; }
     [[nodiscard]] auto call_op() const noexcept { return _call_op; }
     [[nodiscard]] auto function() const noexcept { return _function; }
     OC_MAKE_EXPRESSION_ACCEPT_VISITOR

@@ -67,8 +67,8 @@ int main(int argc, char *argv[]) {
         vec2 = -vec2;
         //        Var<bool3> pred = vec > make_int3(5);
         vec = select(vec > make_int3(5), vec, -vec);
-        Var tr = tex.read(20u,20u);
-        print("{}, {}---------{}--{}>>>>>{}", sqr(a), tv2.x, f_buffer.read(5), tex_v.x, tr.x.cast<int>());
+        Var tr = tex.read<float4>(20u,20u);
+        print("{}, {}---------{}--{}>>>>>{}", sqr(a), tv2.x, f_buffer.read(5), tex_v.x, tr.x);
         f_buffer.write(thread_id(), f_buffer.read(thread_id()) * 2);
 //        c.write(thread_id(), c.read(thread_id()) * 2);
         c[thread_id()] *= 2;

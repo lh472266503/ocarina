@@ -21,7 +21,7 @@ template<typename T>
 class Image;
 
 template<typename T>
-class TextureView;
+class ImageView;
 
 namespace detail {
 
@@ -30,35 +30,32 @@ struct TypeDesc {
     static_assert(always_false_v<T>, "Invalid type.");
 };
 
-#define OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(S)     \
+#define OC_MAKE_VECTOR_DESC_NAME(S, N)                                 \
+    template<>                                                         \
+    struct TypeDesc<Vector<S, N>> {                                    \
+        static constexpr ocarina::string_view description() noexcept { \
+            using namespace std::string_view_literals;                 \
+            return "vector<" #S ",N>"sv;                               \
+        }                                                              \
+        static constexpr ocarina::string_view name() noexcept {        \
+            return ocarina::string_view(#S #N);                        \
+        }                                                              \
+    };
+
+#define OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(S)          \
     template<>                                                         \
     struct TypeDesc<S> {                                               \
         static constexpr ocarina::string_view description() noexcept { \
             using namespace std::string_view_literals;                 \
             return #S##sv;                                             \
         }                                                              \
-    };                                                                 \
-    template<>                                                         \
-    struct TypeDesc<Vector<S, 2>> {                                    \
-        static constexpr ocarina::string_view description() noexcept { \
-            using namespace std::string_view_literals;                 \
-            return "vector<" #S ",2>"sv;                               \
+        static constexpr ocarina::string_view name() noexcept {        \
+            return description();                                      \
         }                                                              \
     };                                                                 \
-    template<>                                                         \
-    struct TypeDesc<Vector<S, 3>> {                                    \
-        static constexpr ocarina::string_view description() noexcept { \
-            using namespace std::string_view_literals;                 \
-            return "vector<" #S ",3>"sv;                               \
-        }                                                              \
-    };                                                                 \
-    template<>                                                         \
-    struct TypeDesc<Vector<S, 4>> {                                    \
-        static constexpr ocarina::string_view description() noexcept { \
-            using namespace std::string_view_literals;                 \
-            return "vector<" #S ",4>"sv;                               \
-        }                                                              \
-    };
+    OC_MAKE_VECTOR_DESC_NAME(S, 2)                                     \
+    OC_MAKE_VECTOR_DESC_NAME(S, 3)                                     \
+    OC_MAKE_VECTOR_DESC_NAME(S, 4)
 
 OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(bool)
 OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(float)
@@ -66,6 +63,7 @@ OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(int)
 OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(uint)
 OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(uchar)
 
+#undef OC_MAKE_VECTOR_DESC_NAME
 #undef OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION
 
 template<>
@@ -73,6 +71,10 @@ struct TypeDesc<void> {
     static constexpr ocarina::string_view description() noexcept {
         using namespace std::string_view_literals;
         return "void"sv;
+    }
+
+    static constexpr ocarina::string_view name() noexcept {
+        return description();
     }
 };
 
@@ -83,6 +85,10 @@ struct TypeDesc<float2x2> {
         using namespace std::string_view_literals;
         return "matrix<2>"sv;
     }
+
+    static constexpr ocarina::string_view name() noexcept {
+        return "float2x2";
+    }
 };
 
 template<>
@@ -91,6 +97,9 @@ struct TypeDesc<float3x3> {
         using namespace std::string_view_literals;
         return "matrix<3>"sv;
     }
+    static constexpr ocarina::string_view name() noexcept {
+        return "float3x3";
+    }
 };
 
 template<>
@@ -98,6 +107,9 @@ struct TypeDesc<float4x4> {
     static constexpr ocarina::string_view description() noexcept {
         using namespace std::string_view_literals;
         return "matrix<4>"sv;
+    }
+    static constexpr ocarina::string_view name() noexcept {
+        return "float4x4";
     }
 };
 
@@ -110,6 +122,10 @@ struct TypeDesc<std::array<T, N>> {
             TypeDesc<T>::description(), N);
         return s;
     }
+
+    static ocarina::string_view name() noexcept {
+        return description();
+    }
 };
 
 template<typename T>
@@ -121,6 +137,9 @@ struct TypeDesc<Buffer<T>> {
             TypeDesc<T>::description());
         return s;
     }
+    static ocarina::string_view name() noexcept {
+        return description();
+    }
 };
 
 template<typename T>
@@ -131,6 +150,9 @@ struct TypeDesc<Image<T>> {
             FMT_STRING("image<{}>"),
             TypeDesc<T>::description());
         return s;
+    }
+    static ocarina::string_view name() noexcept {
+        return description();
     }
 };
 
@@ -147,6 +169,9 @@ struct TypeDesc<ocarina::tuple<T...>> {
             return ret;
         }();
         return string_view(str);
+    }
+    static ocarina::string_view name() noexcept {
+        return description();
     }
 };
 
