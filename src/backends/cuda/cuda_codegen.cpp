@@ -78,7 +78,7 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         case CallOp::TEX_SAMPLE:
             current_scratch() << "oc_tex_sample_float" << expr->type()->dimension();
             break;
-        case CallOp::TEX_READ: {
+        case CallOp::IMAGE_READ: {
             auto t_args = expr->template_args();
             auto target_type = t_args[0];
             auto element_type = t_args[1];
@@ -87,7 +87,7 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
                                                  target_type->name());
             break;
         }
-        case CallOp::TEX_WRITE: break;
+        case CallOp::IMAGE_WRITE: break;
         case CallOp::COUNT: break;
         default: OC_ASSERT(0); break;
     }

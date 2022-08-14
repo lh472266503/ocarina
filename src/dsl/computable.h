@@ -94,7 +94,7 @@ struct EnableTextureReadAndWrite {
     requires(is_all_integral_expr_v<X, Y>)
         OC_NODISCARD auto read(const X &x, const Y &y) const noexcept {
         const T *texture = static_cast<const T *>(this);
-        const CallExpr *expr = Function::current()->call_builtin(Type::of<Target>(), CallOp::TEX_READ,
+        const CallExpr *expr = Function::current()->call_builtin(Type::of<Target>(), CallOp::IMAGE_READ,
                                                                  {texture->expression(),OC_EXPR(x), OC_EXPR(y)},
                                                                  {Type::of<Target>(), Type::of<element_type>()});
         return eval<Target>(expr);
@@ -110,7 +110,7 @@ struct EnableTextureReadAndWrite {
     requires(is_all_integral_expr_v<X, Y> && concepts::is_same_v<element_type, expr_value_t<Val>>)
     void write(const X &x, const Y &y, const Val &elm) noexcept {
         const T *texture = static_cast<const T *>(this);
-        const CallExpr *expr = Function::current()->call_builtin(Type::of<element_type>(), CallOp::TEX_READ,
+        const CallExpr *expr = Function::current()->call_builtin(Type::of<element_type>(), CallOp::IMAGE_READ,
                                                                    {texture->expression(),
                                                                     OC_EXPR(x), OC_EXPR(y), OC_EXPR(elm)});
         assign(expr, OC_FORWARD(elm));
