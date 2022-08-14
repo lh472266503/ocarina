@@ -56,7 +56,6 @@ namespace detail {
     memcpy_desc.srcY = 0;
     memcpy_desc.srcPitch = cmd->width_in_bytes();
     memcpy_desc.dstPitch = cmd->width_in_bytes();
-    memcpy_desc.dstArray = cmd->device_ptr<CUarray>();
     memcpy_desc.dstXInBytes = 0;
     memcpy_desc.dstY = 0;
     memcpy_desc.WidthInBytes = cmd->width_in_bytes();
@@ -70,8 +69,9 @@ void CUDACommandVisitor::visit(const TextureUploadCommand *cmd) noexcept {
     _device->use_context([&] {
         CUDA_MEMCPY2D desc = detail::memcpy_desc(cmd);
         desc.srcMemoryType = CU_MEMORYTYPE_HOST;
-        desc.dstMemoryType = CU_MEMORYTYPE_ARRAY;
         desc.srcHost = cmd->host_ptr<const void *>();
+        desc.dstMemoryType = CU_MEMORYTYPE_ARRAY;
+        desc.dstArray = cmd->device_ptr<CUarray>();
         if (cmd->async()) {
             OC_CU_CHECK(cuMemcpy2DAsync(&desc, _stream));
         } else {
@@ -85,6 +85,7 @@ void CUDACommandVisitor::visit(const TextureDownloadCommand *cmd) noexcept {
         CUDA_MEMCPY2D desc = detail::memcpy_desc(cmd);
         desc.srcMemoryType = CU_MEMORYTYPE_ARRAY;
         desc.dstMemoryType = CU_MEMORYTYPE_HOST;
+        desc.srcArray = cmd->device_ptr<CUarray>();
         desc.dstHost = reinterpret_cast<void *>(cmd->host_ptr());
         if (cmd->async()) {
             OC_CU_CHECK(cuMemcpy2DAsync(&desc, _stream));
