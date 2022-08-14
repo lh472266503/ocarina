@@ -112,13 +112,13 @@ const Type *TypeRegistry::parse_type(ocarina::string_view desc) noexcept {
     OC_USING_SV
 
     auto type = ocarina::make_unique<Type>();
-    type->_description = desc;
+
 #define OC_PARSE_BASIC_TYPE(T, TAG)    \
     if (desc == #T##sv) {              \
         type->_size = sizeof(T);       \
-        type->_alignment = alignof(T); \
-        type->_description = #T;       \
         type->_tag = Type::Tag::TAG;   \
+        type->_alignment = alignof(T); \
+        type->set_description(#T);     \
         type->_dimension = 1;          \
     } else
 
@@ -145,6 +145,7 @@ const Type *TypeRegistry::parse_type(ocarina::string_view desc) noexcept {
     } else {
         OC_ERROR("invalid data type ", desc);
     }
+    type->set_description(desc);
     const Type *ret = type.get();
     add_type(std::move(type));
     return ret;

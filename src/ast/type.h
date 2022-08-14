@@ -304,6 +304,13 @@ private:
     ocarina::vector<const Type *> _members;
     [[nodiscard]] uint64_t _compute_hash() const noexcept override { return hash64(_description); }
 
+private:
+    void update_name(ocarina::string_view desc) noexcept;
+    void set_description(ocarina::string_view desc) noexcept {
+        _description = desc;
+        update_name(desc);
+    }
+
 public:
     static void for_each(TypeVisitor *visitor);
     template<typename T>

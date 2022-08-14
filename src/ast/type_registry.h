@@ -34,8 +34,7 @@ struct TypeDesc {
     template<>                                                         \
     struct TypeDesc<Vector<S, N>> {                                    \
         static constexpr ocarina::string_view description() noexcept { \
-            using namespace std::string_view_literals;                 \
-            return "vector<" #S ",N>"sv;                               \
+            return ocarina::string_view("vector<" #S "," #N ">");      \
         }                                                              \
         static constexpr ocarina::string_view name() noexcept {        \
             return ocarina::string_view(#S #N);                        \
