@@ -180,10 +180,10 @@ __device__ auto oc_image_read(ImageData obj, oc_uint x, oc_uint y) noexcept {
     if constexpr (oc_is_same_v<Elm, uchar>) {
         auto v = surf2Dread<uchar>(obj.surface, x * sizeof(oc_uchar), y, cudaBoundaryModeZero);
         return oc_convert_scalar<Target>(v);
-    } else if constexpr (oc_is_same_v<Elm, oc_char2>) {
+    } else if constexpr (oc_is_same_v<Elm, oc_uchar2>) {
         auto v = surf2Dread<uchar2>(obj.surface, x * sizeof(uchar2), y, cudaBoundaryModeZero);
         return oc_convert_vector<Target>(oc_make_uchar2(v.x, v.y));
-    } else if constexpr (oc_is_same_v<Elm, oc_char4>) {
+    } else if constexpr (oc_is_same_v<Elm, oc_uchar4>) {
         auto v = surf2Dread<uchar4>(obj.surface, x * sizeof(uchar4), y, cudaBoundaryModeZero);
         return oc_convert_vector<Target>(oc_make_uchar4(v.x, v.y, v.z, v.w));
     } else if constexpr (oc_is_same_v<Elm, oc_float>) {

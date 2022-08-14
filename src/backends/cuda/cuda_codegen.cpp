@@ -79,7 +79,9 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
             current_scratch() << "oc_tex_sample_float" << expr->type()->dimension();
             break;
         case CallOp::TEX_READ:
-            current_scratch() << "oc_tex_read_uchar" << expr->type()->dimension();
+            current_scratch() << ocarina::format("oc_image_read<oc_{}{}>",
+                                                 expr->type()->element()->description(),
+                                                 expr->type()->dimension());
             break;
         case CallOp::TEX_WRITE: break;
         case CallOp::COUNT: break;
