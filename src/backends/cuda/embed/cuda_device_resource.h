@@ -191,8 +191,6 @@ __device__ void oc_image_write(ImageData obj, oc_uint x, oc_uint y, Input val) n
         oc_float4 v = oc_convert_vector<Elm>(val);
         surf2Dwrite(make_float4(v.x, v.y, v.z, v.w), obj.surface, x * sizeof(float4), y, cudaBoundaryModeZero);
     }
-    __builtin_unreachable();
+    // __builtin_unreachable();
 }
-
-
 

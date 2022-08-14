@@ -30,8 +30,8 @@ int main(int argc, char *argv[]) {
     stream << image.upload_sync(image_io.pixel_ptr());
 
     Kernel kernel = [&](ImageVar<uchar4> img) {
-        Var v = img.read(make_uint2(dispatch_idx()));
         img.write(make_uint2(dispatch_idx()), make_uchar4(0));
+        Var v = img.read(make_uint2(dispatch_idx()));
         print("-{}--{}--{}", v.x, v.y, v.z);
     };
 
