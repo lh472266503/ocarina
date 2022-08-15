@@ -199,6 +199,23 @@ OC_MAKE_FLOATING_BUILTIN_FUNC(saturate, SATURATE)
 
 #undef OC_MAKE_FLOATING_BUILTIN_FUNC
 
+#define OC_MAKE_BINARY_BUILTIN_FUNC(func, tag)                                                \
+    template<typename A, typename B>                                                          \
+    requires(is_basic_v<expr_value_t<A>> &&                                                   \
+             is_basic_v<expr_value_t<B>> &&                                                   \
+             is_same_expr_v<A, B>)                                                            \
+    OC_NODISCARD auto func(const A &a, const B &b) noexcept {                                 \
+        auto expr = Function::current()->call_builtin(Type::of<expr_value_t<A>>(),            \
+                                                      CallOp::tag, {OC_EXPR(a), OC_EXPR(b)}); \
+        return make_expr<expr_value_t<A>>(expr);                                              \
+    }
+
+OC_MAKE_BINARY_BUILTIN_FUNC(max, MAX)
+OC_MAKE_BINARY_BUILTIN_FUNC(min, MIN)
+OC_MAKE_BINARY_BUILTIN_FUNC(pow, POW)
+
+#undef OC_MAKE_BINARY_BUILTIN_FUNC
+
 #define OC_MAKE_VEC2_MAKER(type, tag)                                                        \
     template<typename T>                                                                     \
     requires(is_dsl_v<T> && (is_scalar_expr_v<T> || is_vector_expr_v<T>))                    \
