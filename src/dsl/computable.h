@@ -107,7 +107,7 @@ struct EnableTextureReadAndWrite {
     }
 
     template<typename X, typename Y, typename Val>
-    requires(is_all_integral_expr_v<X, Y> && concepts::is_same_v<element_type, expr_value_t<Val>>)
+    requires(is_all_integral_expr_v<X, Y> && (is_uchar_element_expr_v<Val> || is_float_element_expr_v<Val>))
     void write(const X &x, const Y &y, const Val &elm) noexcept {
         const T *texture = static_cast<const T *>(this);
         const CallExpr *expr = Function::current()->call_builtin(Type::of<element_type>(), CallOp::IMAGE_WRITE,
@@ -118,7 +118,7 @@ struct EnableTextureReadAndWrite {
     }
 
     template<typename XY, typename Val>
-    requires(is_uint_vector2_v<expr_value_t<XY>> && concepts::is_same_v<element_type, expr_value_t<Val>>)
+    requires(is_uint_vector2_v<expr_value_t<XY>>)
     void write(const XY &xy, const Val &elm) noexcept {
         write(xy.x, xy.y, elm);
     }
