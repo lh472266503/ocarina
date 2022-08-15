@@ -92,16 +92,18 @@ struct EnableTextureReadAndWrite {
 
     template<typename Target = element_type, typename X, typename Y>
     requires(is_all_integral_expr_v<X, Y>)
-        OC_NODISCARD auto read(const X &x, const Y &y) const noexcept {
+    OC_NODISCARD auto read(const X &x, const Y &y) const noexcept {
         const T *texture = static_cast<const T *>(this);
         const CallExpr *expr = Function::current()->call_builtin(Type::of<Target>(), CallOp::IMAGE_READ,
-                                                                 {texture->expression(),OC_EXPR(x), OC_EXPR(y)},
+                                                                 {texture->expression(), OC_EXPR(x), OC_EXPR(y)},
                                                                  {Type::of<Target>(), Type::of<element_type>()});
         return eval<Target>(expr);
     }
 
     template<typename Target = element_type, typename XY>
-    requires(is_int_vector2_v<expr_value_t<XY>> || is_uint_vector2_v<expr_value_t<XY>>)
+    requires(is_int_vector2_v<expr_value_t<XY>> ||
+             is_uint_vector2_v<expr_value_t<XY>> &&
+                 (is_uchar_element_expr_v<Target> || is_float_element_expr_v<Target>))
     OC_NODISCARD auto read(const XY &xy) const noexcept {
         return read<Target>(xy.x, xy.y);
     }
@@ -111,9 +113,9 @@ struct EnableTextureReadAndWrite {
     void write(const X &x, const Y &y, const Val &elm) noexcept {
         const T *texture = static_cast<const T *>(this);
         const CallExpr *expr = Function::current()->call_builtin(Type::of<element_type>(), CallOp::IMAGE_WRITE,
-                                                                   {texture->expression(),
-                                                                    OC_EXPR(x), OC_EXPR(y), OC_EXPR(elm)},
-                                                                    {Type::of<Val>(), Type::of<element_type>()});
+                                                                 {texture->expression(),
+                                                                  OC_EXPR(x), OC_EXPR(y), OC_EXPR(elm)},
+                                                                 {Type::of<Val>(), Type::of<element_type>()});
         Function::current()->expr_statement(expr);
     }
 
