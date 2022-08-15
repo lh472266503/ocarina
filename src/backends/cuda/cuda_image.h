@@ -31,7 +31,7 @@ public:
     [[nodiscard]] handle_ty tex_handle() const noexcept override {
         return _oc_texture.texture;
     }
-    [[nodiscard]] const handle_ty *tex_handle_address() const noexcept override {
+    [[nodiscard]] const handle_ty *handle_address() const noexcept override {
         return &_oc_texture.texture;
     }
     [[nodiscard]] PixelStorage pixel_storage() const noexcept override { return _oc_texture.pixel_storage; }

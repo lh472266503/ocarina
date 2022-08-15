@@ -19,7 +19,7 @@ public:
         [[nodiscard]] virtual PixelStorage pixel_storage() const noexcept = 0;
         [[nodiscard]] virtual handle_ty array_handle() const noexcept = 0;
         [[nodiscard]] virtual handle_ty tex_handle() const noexcept = 0;
-        [[nodiscard]] virtual const handle_ty *tex_handle_address() const noexcept = 0;
+        [[nodiscard]] virtual const handle_ty *handle_address() const noexcept = 0;
     };
 
 public:
@@ -44,6 +44,13 @@ public:
         return sample(uv.x, uv.y);
     }
 
+    template<typename Target = element_type, typename X, typename Y>
+    requires(is_all_integral_expr_v<X, Y>)
+    OC_NODISCARD auto read(const X &x, const Y &y) const noexcept {
+        const UniformBinding &uniform = Function::current()->get_uniform_var(Type::of<Image<T>>(),
+                                                                             tex_handle(),
+                                                                             Variable::Tag::TEXTURE);
+    }
 
 
     [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
@@ -51,7 +58,7 @@ public:
     [[nodiscard]] uint2 resolution() const noexcept { return impl()->resolution(); }
     [[nodiscard]] handle_ty array_handle() const noexcept { return impl()->array_handle(); }
     [[nodiscard]] handle_ty tex_handle() const noexcept { return impl()->tex_handle(); }
-    [[nodiscard]] const handle_ty *tex_handle_address() const noexcept { return impl()->tex_handle_address(); }
+    [[nodiscard]] const handle_ty *tex_handle_address() const noexcept { return impl()->handle_address(); }
     [[nodiscard]] PixelStorage pixel_storage() const noexcept { return impl()->pixel_storage(); }
     [[nodiscard]] ImageUploadCommand *upload(const void *data) const noexcept {
         return ImageUploadCommand::create(data, array_handle(), resolution(), pixel_storage(), true);

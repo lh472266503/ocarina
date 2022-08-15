@@ -330,7 +330,7 @@ public:
     [[nodiscard]] constexpr Tag tag() const noexcept { return _tag; }
     [[nodiscard]] auto description() const noexcept { return ocarina::string_view{_description}; }
     [[nodiscard]] ocarina::string name() const noexcept { return _name; }
-    [[nodiscard]] constexpr size_t dimension() const noexcept {
+    [[nodiscard]] constexpr int dimension() const noexcept {
         return _dimension;
     }
     [[nodiscard]] ocarina::span<const Type *const> members() const noexcept;
