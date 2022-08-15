@@ -32,10 +32,25 @@ int main(int argc, char *argv[]) {
     Kernel kernel = [&](ImageVar<uchar4> img, ImageVar<uchar4> img_out) {
         Var v = img.read(make_uint2(dispatch_idx()));
 
-        
+        uint2 res = image_io.resolution();
+        int r = 5;
+        Var<uint> min_x = max(0u, dispatch_idx().x - r);
+        Var<uint> max_x = min(res.x - 1, dispatch_idx().x + r);
+        Var<uint> min_y = max(0u, dispatch_idx().y - r);
+        Var<uint> max_y = min(res.y - 1, dispatch_idx().y + r);
 
-        img_out.write(make_uint2(dispatch_idx()), v);
-        //        print("-{}--{}--{}", v.x, v.y, v.z);
+        Var<float4> var = make_float4(0.f);
+        Var<uint> count = 0u;
+        $for(x, min_x, max_x) {
+            $for(y, min_y, max_y) {
+                Var v = img.read<float4>(x, y);
+                var += v;
+                count += 1;
+            };
+        };
+        var /= count.cast<float>();
+        img_out.write(make_uint2(dispatch_idx()), var);
+//                print("-{}--{}--{}", v.x, v.y, v.z);
     };
 
     auto shader = device.compile(kernel);
