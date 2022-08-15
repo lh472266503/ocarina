@@ -19,7 +19,7 @@ public:
         [[nodiscard]] virtual PixelStorage pixel_storage() const noexcept = 0;
         [[nodiscard]] virtual handle_ty array_handle() const noexcept = 0;
         [[nodiscard]] virtual handle_ty tex_handle() const noexcept = 0;
-        [[nodiscard]] virtual const handle_ty *handle_address() const noexcept = 0;
+        [[nodiscard]] virtual const handle_ty *handle_ptr() const noexcept = 0;
     };
 
 public:
@@ -33,7 +33,7 @@ public:
     requires(is_all_floating_point_expr_v<U, V>)
     [[nodiscard]] auto sample(const U &u, const V &v) const noexcept {
         const UniformBinding &uniform = Function::current()->get_uniform_var(Type::of<Image<T>>(),
-                                                                             handle_address(),
+                                                                             handle_ptr(),
                                                                              Variable::Tag::TEXTURE);
         return make_expr<Image<T>>(uniform.expression()).sample(u, v);
     }
@@ -48,7 +48,7 @@ public:
     requires(is_all_integral_expr_v<X, Y>)
     OC_NODISCARD auto read(const X &x, const Y &y) const noexcept {
         const UniformBinding &uniform = Function::current()->get_uniform_var(Type::of<Image<T>>(),
-                                                                             handle_address(),
+                                                                             handle_ptr(),
                                                                              Variable::Tag::TEXTURE);
         return make_expr<Image<T>>(uniform.expression()).read<Target>(x, y);
     }
@@ -66,7 +66,7 @@ public:
              (is_uchar_element_expr_v<Val> || is_float_element_expr_v<Val>))
     void write(const X &x, const Y &y, const Val &elm) noexcept {
         const UniformBinding &uniform = Function::current()->get_uniform_var(Type::of<Image<T>>(),
-                                                                             handle_address(),
+                                                                             handle_ptr(),
                                                                              Variable::Tag::TEXTURE);
         make_expr<Image<T>>(uniform.expression()).write(x, y, elm);
     }
@@ -82,7 +82,7 @@ public:
     [[nodiscard]] uint2 resolution() const noexcept { return impl()->resolution(); }
     [[nodiscard]] handle_ty array_handle() const noexcept { return impl()->array_handle(); }
     [[nodiscard]] handle_ty tex_handle() const noexcept { return impl()->tex_handle(); }
-    [[nodiscard]] const handle_ty *handle_address() const noexcept { return impl()->handle_address(); }
+    [[nodiscard]] const handle_ty *handle_ptr() const noexcept { return impl()->handle_ptr(); }
     [[nodiscard]] PixelStorage pixel_storage() const noexcept { return impl()->pixel_storage(); }
     [[nodiscard]] ImageUploadCommand *upload(const void *data) const noexcept {
         return ImageUploadCommand::create(data, array_handle(), resolution(), pixel_storage(), true);

@@ -34,7 +34,7 @@ Mesh Device::create_mesh(const Buffer<Vertex> &v_buffer, const Buffer<Tri> &t_bu
                          AccelUsageTag usage_tag, AccelGeomTag geom_tag) noexcept {
     MeshParams params;
     params.vert_handle = v_buffer.handle();
-    params.vert_handle_address = v_buffer.handle_address();
+    params.vert_handle_ptr = v_buffer.handle_ptr();
     params.vert_stride = sizeof(Vertex);
     params.vert_num = v_buffer.size();
 

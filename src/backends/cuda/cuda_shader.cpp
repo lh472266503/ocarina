@@ -21,7 +21,7 @@ CUDAShader::CUDAShader(Device::Impl *device,
         CUdeviceptr ptr{};
         size_t size{};
         OC_CU_CHECK(cuModuleGetGlobal(&ptr, &size, _module, var_name.c_str()));
-        OC_CU_CHECK(cuMemcpyHtoD(ptr, uniform.handle_address(), size));
+        OC_CU_CHECK(cuMemcpyHtoD(ptr, uniform.handle_ptr(), size));
     });
 #endif
 }

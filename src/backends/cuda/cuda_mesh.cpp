@@ -61,7 +61,7 @@ void CUDAMesh::init_build_input() noexcept {
         _build_input.triangleArray.vertexFormat = OPTIX_VERTEX_FORMAT_FLOAT3;
         _build_input.triangleArray.vertexStrideInBytes = _params.vert_stride;
         _build_input.triangleArray.numVertices = _params.vert_num;
-        _build_input.triangleArray.vertexBuffers = reinterpret_cast<const CUdeviceptr *>(_params.vert_handle_address);
+        _build_input.triangleArray.vertexBuffers = reinterpret_cast<const CUdeviceptr *>(_params.vert_handle_ptr);
     }
     {
         _build_input.triangleArray.indexFormat = OPTIX_INDICES_FORMAT_UNSIGNED_INT3;

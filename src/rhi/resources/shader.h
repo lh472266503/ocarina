@@ -54,12 +54,12 @@ private:
 
     template<typename T>
     void _encode_buffer(const Buffer<T> &buffer) noexcept {
-        push_handle_address(const_cast<handle_ty *>(buffer.handle_address()));
+        push_handle_ptr(const_cast<handle_ty *>(buffer.handle_ptr()));
     }
 
     template<typename T>
     void _encode_texture(const Image<T> &texture) noexcept {
-        push_handle_address(const_cast<handle_ty *>(texture.handle_address()));
+        push_handle_ptr(const_cast<handle_ty *>(texture.handle_ptr()));
     }
 
 public:
@@ -68,11 +68,10 @@ public:
     [[nodiscard]] size_t num() const noexcept { return _args.size(); }
     void clear() noexcept { _cursor = 0; }
 
-    void push_handle_address(handle_ty *address) noexcept {
+    void push_handle_ptr(handle_ty *address) noexcept {
         _cursor = mem_offset(_cursor, alignof(handle_ty));
         _args.push_back(address);
         _cursor += sizeof(handle_ty);
-        cout << "---------------" << *address << endl;
         OC_ASSERT(_cursor < Size);
     }
 
@@ -134,7 +133,7 @@ public:
         (_argument_list << ... << OC_FORWARD(args));
 #if CUDA_ARGUMENT_PUSH
         for (const auto &uniform : _function.uniform_vars()) {
-            _argument_list.push_handle_address(const_cast<handle_ty *>(uniform.handle_ptr()));
+            _argument_list.push_handle_ptr(const_cast<handle_ty *>(uniform.handle_ptr()));
         }
 #endif
         return *this;
