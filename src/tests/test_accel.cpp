@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) {
     };
 
     auto shader = device.compile(kernel);
-    stream << shader(v_buffer).dispatch(t_buffer.size());
+    stream << shader(v_buffer.view(0, v_buffer.size())).dispatch(t_buffer.size());
     stream << synchronize() << commit();
 
     return 0;
