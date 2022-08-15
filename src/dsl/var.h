@@ -96,6 +96,24 @@ using BufferVar = Var<Buffer<T>>;
 template<typename T>
 using ImageVar = Var<Image<T>>;
 
+#define OC_MAKE_DSL_TYPE_IMPL(dsl_type, type, dim) \
+    using dsl_type##dim = Var<type##dim>;
+
+#define OC_MAKE_DSL_TYPE(dsl_type, type)     \
+    OC_MAKE_DSL_TYPE_IMPL(dsl_type, type, )  \
+    OC_MAKE_DSL_TYPE_IMPL(dsl_type, type, 2) \
+    OC_MAKE_DSL_TYPE_IMPL(dsl_type, type, 3) \
+    OC_MAKE_DSL_TYPE_IMPL(dsl_type, type, 4)
+
+OC_MAKE_DSL_TYPE(Int, int)
+OC_MAKE_DSL_TYPE(UInt, uint)
+OC_MAKE_DSL_TYPE(Float, float)
+OC_MAKE_DSL_TYPE(Uchar, uchar)
+OC_MAKE_DSL_TYPE(Bool, bool)
+
+#undef OC_MAKE_DSL_TYPE
+#undef OC_MAKE_DSL_TYPE_IMPL
+
 template<typename T>
 Var(T &&) -> Var<expr_value_t<T>>;
 
