@@ -26,23 +26,24 @@ int main(int argc, char *argv[]) {
     auto image_io = ImageIO::load(path1, LINEAR);
 
     auto image = device.create_image<uchar4>(image_io.resolution());
-
+    auto image_out = device.create_image<uchar4>(image_io.resolution());
     stream << image.upload_sync(image_io.pixel_ptr());
 
-    Kernel kernel = [&](ImageVar<uchar4> img) {
-        img.write(make_uint2(dispatch_idx()), make_float4(0.5f));
-        Var v = img.read<float4>(make_uint2(dispatch_idx()));
-        print("-{}--{}--{}", v.x, v.y, v.z);
+    Kernel kernel = [&](ImageVar<uchar4> img, ImageVar<uchar4> img_out) {
+        Var v = img.read(make_uint2(dispatch_idx()));
+
+        
+
+        img_out.write(make_uint2(dispatch_idx()), v);
+        //        print("-{}--{}--{}", v.x, v.y, v.z);
     };
 
     auto shader = device.compile(kernel);
-    stream << shader(image).dispatch(50,50);
+    stream << shader(image, image_out).dispatch(image_io.resolution());
     stream << synchronize()
-           << image.download_sync(image_io.pixel_ptr())
+           << image_out.download_sync(image_io.pixel_ptr())
            << commit();
     image_io.save(path2);
-
-
 
     return 0;
 }

@@ -109,13 +109,14 @@ struct EnableImageReadAndWrite {
     }
 
     template<typename X, typename Y, typename Val>
-    requires(is_all_integral_expr_v<X, Y> && (is_uchar_element_expr_v<Val> || is_float_element_expr_v<Val>))
+    requires(is_all_integral_expr_v<X, Y> &&
+             (is_uchar_element_expr_v<Val> || is_float_element_expr_v<Val>))
     void write(const X &x, const Y &y, const Val &elm) noexcept {
         const T *texture = static_cast<const T *>(this);
         const CallExpr *expr = Function::current()->call_builtin(Type::of<element_type>(), CallOp::IMAGE_WRITE,
                                                                  {texture->expression(),
                                                                   OC_EXPR(x), OC_EXPR(y), OC_EXPR(elm)},
-                                                                 {Type::of<Val>(), Type::of<element_type>()});
+                                                                 {Type::of<expr_value_t<Val>>(), Type::of<element_type>()});
         Function::current()->expr_statement(expr);
     }
 

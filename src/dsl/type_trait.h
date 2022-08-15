@@ -225,7 +225,7 @@ EXPR_DIMENSION_TRAITS(matrix, 4)
     using is_##type##_element = std::is_same<type, vector_element_t<T>>;              \
     OC_DEFINE_TEMPLATE_VALUE(is_##type##_element)                                     \
     template<typename T>                                                              \
-    using is_##type##_element_expr = is_##type##_element<T>;                          \
+    using is_##type##_element_expr = is_##type##_element<expr_value_t<T>>;            \
     OC_DEFINE_TEMPLATE_VALUE(is_##type##_element_expr)                                \
     template<typename... T>                                                           \
     using is_all_##type##_element = std::conjunction<is_##type##_element<T>...>;      \
