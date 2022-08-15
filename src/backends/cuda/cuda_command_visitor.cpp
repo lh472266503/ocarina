@@ -50,7 +50,7 @@ void CUDACommandVisitor::visit(const ShaderDispatchCommand *cmd) noexcept {
 
 namespace detail {
 
-[[nodiscard]] CUDA_MEMCPY2D memcpy_desc(const TextureOpCommand *cmd) noexcept {
+[[nodiscard]] CUDA_MEMCPY2D memcpy_desc(const ImageOpCommand *cmd) noexcept {
     CUDA_MEMCPY2D memcpy_desc{};
     memcpy_desc.srcXInBytes = 0;
     memcpy_desc.srcY = 0;
@@ -65,7 +65,7 @@ namespace detail {
 
 }// namespace detail
 
-void CUDACommandVisitor::visit(const TextureUploadCommand *cmd) noexcept {
+void CUDACommandVisitor::visit(const ImageUploadCommand *cmd) noexcept {
     _device->use_context([&] {
         CUDA_MEMCPY2D desc = detail::memcpy_desc(cmd);
         desc.srcMemoryType = CU_MEMORYTYPE_HOST;
@@ -80,7 +80,7 @@ void CUDACommandVisitor::visit(const TextureUploadCommand *cmd) noexcept {
     });
 }
 
-void CUDACommandVisitor::visit(const TextureDownloadCommand *cmd) noexcept {
+void CUDACommandVisitor::visit(const ImageDownloadCommand *cmd) noexcept {
     _device->use_context([&] {
         CUDA_MEMCPY2D desc = detail::memcpy_desc(cmd);
         desc.srcMemoryType = CU_MEMORYTYPE_ARRAY;

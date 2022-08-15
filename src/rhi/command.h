@@ -11,14 +11,14 @@
 
 namespace ocarina {
 
-#define OC_RUNTIME_CMD          \
-    BufferUploadCommand,        \
-        BufferDownloadCommand,  \
-        TextureUploadCommand,   \
-        TextureDownloadCommand, \
-        SynchronizeCommand,     \
-        MeshBuildCommand,       \
-        AccelBuildCommand,      \
+#define OC_RUNTIME_CMD         \
+    BufferUploadCommand,       \
+        BufferDownloadCommand, \
+        ImageUploadCommand,    \
+        ImageDownloadCommand,  \
+        SynchronizeCommand,    \
+        MeshBuildCommand,      \
+        AccelBuildCommand,     \
         ShaderDispatchCommand
 
 /// forward declare
@@ -137,13 +137,13 @@ public:
     OC_MAKE_CMD_COMMON_FUNC(BufferDownloadCommand)
 };
 
-class TextureOpCommand : public DataOpCommand {
+class ImageOpCommand : public DataOpCommand {
 private:
     PixelStorage _pixel_storage{};
     uint2 _resolution{};
 
 public:
-    TextureOpCommand(handle_ty data, handle_ty device_ptr, uint2 resolution, PixelStorage storage, bool async)
+    ImageOpCommand(handle_ty data, handle_ty device_ptr, uint2 resolution, PixelStorage storage, bool async)
         : DataOpCommand(data, device_ptr, async), _pixel_storage(storage), _resolution(resolution) {}
     [[nodiscard]] PixelStorage pixel_storage() const noexcept { return _pixel_storage; }
     [[nodiscard]] size_t width() const noexcept { return _resolution.x; }
@@ -153,18 +153,18 @@ public:
     [[nodiscard]] uint2 resolution() const noexcept { return _resolution; }
 };
 
-class TextureUploadCommand final : public TextureOpCommand {
+class ImageUploadCommand final : public ImageOpCommand {
 public:
-    TextureUploadCommand(const void *data, handle_ty device_ptr, uint2 resolution, PixelStorage storage, bool async)
-        : TextureOpCommand(reinterpret_cast<handle_ty>(data), device_ptr, resolution, storage, async) {}
-    OC_MAKE_CMD_COMMON_FUNC(TextureUploadCommand)
+    ImageUploadCommand(const void *data, handle_ty device_ptr, uint2 resolution, PixelStorage storage, bool async)
+        : ImageOpCommand(reinterpret_cast<handle_ty>(data), device_ptr, resolution, storage, async) {}
+    OC_MAKE_CMD_COMMON_FUNC(ImageUploadCommand)
 };
 
-class TextureDownloadCommand final : public TextureOpCommand {
+class ImageDownloadCommand final : public ImageOpCommand {
 public:
-    TextureDownloadCommand(void *data, handle_ty device_ptr, uint2 resolution, PixelStorage storage, bool async)
-        : TextureOpCommand(reinterpret_cast<handle_ty>(data), device_ptr, resolution, storage, async) {}
-    OC_MAKE_CMD_COMMON_FUNC(TextureDownloadCommand)
+    ImageDownloadCommand(void *data, handle_ty device_ptr, uint2 resolution, PixelStorage storage, bool async)
+        : ImageOpCommand(reinterpret_cast<handle_ty>(data), device_ptr, resolution, storage, async) {}
+    OC_MAKE_CMD_COMMON_FUNC(ImageDownloadCommand)
 };
 
 class SynchronizeCommand final : public Command {

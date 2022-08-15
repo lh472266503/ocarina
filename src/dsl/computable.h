@@ -85,7 +85,7 @@ struct EnableReadAndWrite {
 };
 
 template<typename T>
-struct EnableTextureReadAndWrite {
+struct EnableImageReadAndWrite {
 
     using texture_type = expr_value_t<T>;
     using element_type = texture_element_t<texture_type>;
@@ -281,7 +281,7 @@ struct Computable<Buffer<T>>
 template<typename T>
 struct Computable<Image<T>>
     : detail::EnableTextureSample<Computable<Image<T>>>,
-      detail::EnableTextureReadAndWrite<Computable<Image<T>>> {
+      detail::EnableImageReadAndWrite<Computable<Image<T>>> {
     OC_COMPUTABLE_COMMON(Computable<Image>)
 };
 

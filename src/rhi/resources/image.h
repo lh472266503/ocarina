@@ -44,6 +44,8 @@ public:
         return sample(uv.x, uv.y);
     }
 
+
+
     [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
     [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(_handle); }
     [[nodiscard]] uint2 resolution() const noexcept { return impl()->resolution(); }
@@ -51,17 +53,17 @@ public:
     [[nodiscard]] handle_ty tex_handle() const noexcept { return impl()->tex_handle(); }
     [[nodiscard]] const handle_ty *tex_handle_address() const noexcept { return impl()->tex_handle_address(); }
     [[nodiscard]] PixelStorage pixel_storage() const noexcept { return impl()->pixel_storage(); }
-    [[nodiscard]] TextureUploadCommand *upload(const void *data) const noexcept {
-        return TextureUploadCommand::create(data, array_handle(), resolution(), pixel_storage(), true);
+    [[nodiscard]] ImageUploadCommand *upload(const void *data) const noexcept {
+        return ImageUploadCommand::create(data, array_handle(), resolution(), pixel_storage(), true);
     }
-    [[nodiscard]] TextureUploadCommand *upload_sync(const void *data) const noexcept {
-        return TextureUploadCommand::create(data, array_handle(), resolution(), pixel_storage(), false);
+    [[nodiscard]] ImageUploadCommand *upload_sync(const void *data) const noexcept {
+        return ImageUploadCommand::create(data, array_handle(), resolution(), pixel_storage(), false);
     }
-    [[nodiscard]] TextureDownloadCommand *download(void *data) const noexcept {
-        return TextureDownloadCommand::create(data, array_handle(), resolution(), pixel_storage(), true);
+    [[nodiscard]] ImageDownloadCommand *download(void *data) const noexcept {
+        return ImageDownloadCommand::create(data, array_handle(), resolution(), pixel_storage(), true);
     }
-    [[nodiscard]] TextureDownloadCommand *download_sync(void *data) const noexcept {
-        return TextureDownloadCommand::create(data, array_handle(), resolution(), pixel_storage(), false);
+    [[nodiscard]] ImageDownloadCommand *download_sync(void *data) const noexcept {
+        return ImageDownloadCommand::create(data, array_handle(), resolution(), pixel_storage(), false);
     }
 };
 
