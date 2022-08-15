@@ -45,10 +45,10 @@ ocarina::string_view Codegen::Scratch::view() const noexcept {
     return _buffer;
 }
 Codegen::Scratch &Codegen::Scratch::operator<<(uint v) noexcept {
-    return *this << detail::to_string(v);
+    return *this << detail::to_string(v) + "u";
 }
 Codegen::Scratch &Codegen::Scratch::operator<<(size_t v) noexcept {
-    return *this << detail::to_string(v);
+    return *this << detail::to_string(v) + "ul";
 }
 void Codegen::Scratch::pop_back() noexcept {
     _buffer.pop_back();
