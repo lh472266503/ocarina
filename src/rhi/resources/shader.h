@@ -134,7 +134,7 @@ public:
         (_argument_list << ... << OC_FORWARD(args));
 #if CUDA_ARGUMENT_PUSH
         for (const auto &uniform : _function.uniform_vars()) {
-            _argument_list.push_handle_address(const_cast<handle_ty *>(uniform.handle_address()));
+            _argument_list.push_handle_address(const_cast<handle_ty *>(uniform.handle_ptr()));
         }
 #endif
         return *this;

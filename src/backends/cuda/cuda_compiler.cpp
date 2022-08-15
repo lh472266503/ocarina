@@ -74,12 +74,12 @@ ocarina::string CUDACompiler::obtain_ptx() const noexcept {
             cout << cu << endl;
             context->write_cache(cu_fn, cu);
             ptx = compile(cu, cu_fn);
-            context->write_cache(ptx_fn, ptx);
+//            context->write_cache(ptx_fn, ptx);
         } else {
             const ocarina::string &cu = context->read_cache(cu_fn);
             cout << cu << endl;
             ptx = compile(cu, cu_fn);
-            context->write_cache(ptx_fn, ptx);
+//            context->write_cache(ptx_fn, ptx);
         }
     } else {
         ptx = context->read_cache(ptx_fn);

@@ -23,22 +23,21 @@ class IfStmt;
 class UniformBinding : public Hashable {
 private:
     const Type *_type;
-    handle_ty _handle;
+    const handle_ty *_handle_ptr;
     const RefExpr *_expr{nullptr};
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept final {
-        return hash64(type()->hash(), _handle);
+        return hash64(type()->hash(), reinterpret_cast<handle_ty>(_handle_ptr));
     }
 
 public:
-    UniformBinding(const RefExpr *expr, const Type *type, handle_ty handle)
-        : _type(type), _handle(handle), _expr(expr) {}
+    UniformBinding(const RefExpr *expr, const Type *type, const handle_ty *address)
+        : _type(type), _handle_ptr(address), _expr(expr) {}
 
     [[nodiscard]] const Type *type() const noexcept { return _type; }
-    [[nodiscard]] handle_ty handle() const noexcept { return _handle; }
-    [[nodiscard]] const handle_ty *handle_address() const noexcept {
-        return &_handle;
+    [[nodiscard]] const handle_ty *handle_ptr() const noexcept {
+        return _handle_ptr;
     }
     [[nodiscard]] const RefExpr *expression() const noexcept { return _expr; }
 };
@@ -100,7 +99,7 @@ private:
         _all_expressions.push_back(std::move(expr));
         return ret;
     }
-    [[nodiscard]] const RefExpr *_ref(const Variable& variable) noexcept {
+    [[nodiscard]] const RefExpr *_ref(const Variable &variable) noexcept {
         return _create_expression<RefExpr>(variable);
     }
 
@@ -148,7 +147,7 @@ public:
         }
     }
     void add_used_structure(const Type *type) noexcept { _used_struct.emplace(type); }
-    const UniformBinding & get_uniform_var(const Type *type, handle_ty handle, Variable::Tag tag) noexcept;
+    const UniformBinding &get_uniform_var(const Type *type, const handle_ty *handle, Variable::Tag tag) noexcept;
     [[nodiscard]] auto &uniform_vars() const noexcept { return _uniform_vars; }
     template<typename Visitor>
     void for_each_uniform_var(Visitor &&visitor) const noexcept {
