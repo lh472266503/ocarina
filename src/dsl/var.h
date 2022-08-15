@@ -111,6 +111,10 @@ OC_MAKE_DSL_TYPE(Float, float)
 OC_MAKE_DSL_TYPE(Uchar, uchar)
 OC_MAKE_DSL_TYPE(Bool, bool)
 
+using Float2x2 = Var<float2x2>;
+using Float3x3 = Var<float3x3>;
+using Float4x4 = Var<float4x4>;
+
 #undef OC_MAKE_DSL_TYPE
 #undef OC_MAKE_DSL_TYPE_IMPL
 
