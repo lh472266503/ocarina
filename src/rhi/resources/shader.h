@@ -59,7 +59,7 @@ private:
 
     template<typename T>
     void _encode_texture(const Image<T> &texture) noexcept {
-        push_handle_address(const_cast<handle_ty *>(texture.tex_handle_address()));
+        push_handle_address(const_cast<handle_ty *>(texture.handle_address()));
     }
 
 public:
@@ -72,6 +72,7 @@ public:
         _cursor = mem_offset(_cursor, alignof(handle_ty));
         _args.push_back(address);
         _cursor += sizeof(handle_ty);
+        cout << "---------------" << *address << endl;
         OC_ASSERT(_cursor < Size);
     }
 

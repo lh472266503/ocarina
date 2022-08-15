@@ -44,21 +44,45 @@ public:
         return sample(uv.x, uv.y);
     }
 
-    template<typename Target = element_type, typename X, typename Y>
+    template<typename Target = T, typename X, typename Y>
     requires(is_all_integral_expr_v<X, Y>)
     OC_NODISCARD auto read(const X &x, const Y &y) const noexcept {
         const UniformBinding &uniform = Function::current()->get_uniform_var(Type::of<Image<T>>(),
                                                                              tex_handle(),
                                                                              Variable::Tag::TEXTURE);
+        return make_expr<Image<T>>(uniform.expression()).read<Target>(x, y);
     }
 
+    template<typename Target = T, typename XY>
+    requires(is_int_vector2_v<expr_value_t<XY>> ||
+             is_uint_vector2_v<expr_value_t<XY>> &&
+                 (is_uchar_element_expr_v<Target> || is_float_element_expr_v<Target>))
+    OC_NODISCARD auto read(const XY &xy) const noexcept {
+        return read<Target>(xy.x, xy.y);
+    }
+
+    template<typename X, typename Y, typename Val>
+    requires(is_all_integral_expr_v<X, Y> &&
+             (is_uchar_element_expr_v<Val> || is_float_element_expr_v<Val>))
+    void write(const X &x, const Y &y, const Val &elm) noexcept {
+        const UniformBinding &uniform = Function::current()->get_uniform_var(Type::of<Image<T>>(),
+                                                                             tex_handle(),
+                                                                             Variable::Tag::TEXTURE);
+        make_expr<Image<T>>(uniform.expression()).write(x, y, elm);
+    }
+
+    template<typename XY, typename Val>
+    requires(is_uint_vector2_v<expr_value_t<XY>>)
+    void write(const XY &xy, const Val &elm) noexcept {
+        write(xy.x, xy.y, elm);
+    }
 
     [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
     [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(_handle); }
     [[nodiscard]] uint2 resolution() const noexcept { return impl()->resolution(); }
     [[nodiscard]] handle_ty array_handle() const noexcept { return impl()->array_handle(); }
     [[nodiscard]] handle_ty tex_handle() const noexcept { return impl()->tex_handle(); }
-    [[nodiscard]] const handle_ty *tex_handle_address() const noexcept { return impl()->handle_address(); }
+    [[nodiscard]] const handle_ty *handle_address() const noexcept { return impl()->handle_address(); }
     [[nodiscard]] PixelStorage pixel_storage() const noexcept { return impl()->pixel_storage(); }
     [[nodiscard]] ImageUploadCommand *upload(const void *data) const noexcept {
         return ImageUploadCommand::create(data, array_handle(), resolution(), pixel_storage(), true);

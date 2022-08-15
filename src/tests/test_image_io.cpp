@@ -30,8 +30,8 @@ int main(int argc, char *argv[]) {
     stream << image.upload_sync(image_io.pixel_ptr());
 
     Kernel kernel = [&](ImageVar<uchar4> img, ImageVar<uchar4> img_out) {
-        Var v = img.read(make_uint2(dispatch_idx()));
-
+        Var v = image.sample(0.f, 0.5f);
+//
         uint2 res = image_io.resolution();
         int r = 5;
         Var<uint> min_x = max(0u, dispatch_idx().x - r);
@@ -50,7 +50,6 @@ int main(int argc, char *argv[]) {
         };
         var /= count.cast<float>();
         img_out.write(make_uint2(dispatch_idx()), var);
-//                print("-{}--{}--{}", v.x, v.y, v.z);
     };
 
     auto shader = device.compile(kernel);
