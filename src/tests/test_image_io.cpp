@@ -32,7 +32,8 @@ int main(int argc, char *argv[]) {
     Kernel kernel = [&](ImageVar img) {
         uint2 res = image_io.resolution();
         int r = 5;
-//        Var p = img.sample<float4>(0.f,0.f);
+        Var p = img.sample<float4>(0.6f,0.6f);
+//        print("{}  {}", p.x, p.y);
         Var<uint> min_x = max(0u, dispatch_idx().x - r);
         Var<uint> max_x = min(res.x - 1, dispatch_idx().x + r);
         Var<uint> min_y = max(0u, dispatch_idx().y - r);

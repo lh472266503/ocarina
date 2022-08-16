@@ -126,19 +126,16 @@ struct EnableImageReadAndWrite {
 template<typename T>
 struct EnableTextureSample {
 
-    template<typename U, typename V>
+    template<typename Output, typename U, typename V>
     requires(is_all_floating_point_expr_v<U, V>)
     OC_NODISCARD auto sample(const U &u, const V &v) const noexcept {
-        using texture_type = expr_value_t<T>;
-        using element_type = texture_element_t<texture_type>;
         const T *texture = static_cast<const T *>(this);
-        using sample_type = texture_sample_t<element_type>;
-        const CallExpr *expr = Function::current()->call_builtin(Type::of<sample_type>(),
+        const CallExpr *expr = Function::current()->call_builtin(Type::of<Output>(),
                                                                  CallOp::TEX_SAMPLE,
                                                                  {texture->expression(),
                                                                   OC_EXPR(u),
                                                                   OC_EXPR(v)});
-        return make_expr<sample_type>(expr);
+        return make_expr<Output>(expr);
     }
 
     template<typename UV>
