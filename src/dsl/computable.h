@@ -87,14 +87,14 @@ struct EnableReadAndWrite {
 template<typename T>
 struct EnableImageReadAndWrite {
 
-    template<typename Target, typename X, typename Y>
+    template<typename Output, typename X, typename Y>
     requires(is_all_integral_expr_v<X, Y>)
     OC_NODISCARD auto read(const X &x, const Y &y) const noexcept {
         const T *texture = static_cast<const T *>(this);
-        const CallExpr *expr = Function::current()->call_builtin(Type::of<Target>(), CallOp::IMAGE_READ,
+        const CallExpr *expr = Function::current()->call_builtin(Type::of<Output>(), CallOp::IMAGE_READ,
                                                                  {texture->expression(), OC_EXPR(x), OC_EXPR(y)},
-                                                                 {Type::of<Target>(), Type::of<uchar4>()});
-        return eval<Target>(expr);
+                                                                 {Type::of<Output>()});
+        return eval<Output>(expr);
     }
 
     template<typename Target, typename XY>
@@ -112,8 +112,7 @@ struct EnableImageReadAndWrite {
         const T *texture = static_cast<const T *>(this);
         const CallExpr *expr = Function::current()->call_builtin(Type::of<uchar4>(), CallOp::IMAGE_WRITE,
                                                                  {texture->expression(),
-                                                                  OC_EXPR(x), OC_EXPR(y), OC_EXPR(elm)},
-                                                                 {Type::of<expr_value_t<Val>>(), Type::of<uchar4>()});
+                                                                  OC_EXPR(x), OC_EXPR(y), OC_EXPR(elm)});
         Function::current()->expr_statement(expr);
     }
 
