@@ -17,7 +17,7 @@
 using namespace ocarina;
 
 int main(int argc, char *argv[]) {
-    Window window{"Display", make_uint2(300)};
+    Window window{"Display", make_uint2(500)};
     window.run([&]{
 
     });

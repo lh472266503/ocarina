@@ -1,7 +1,7 @@
 file(GLOB_RECURSE HEADER_FILES *.h*)
 file(GLOB_RECURSE SOURCE_FILES *.c*)
 
-add_library(ocarina-gui MODULE ${SOURCE_FILES})
+add_library(ocarina-gui SHARED ${SOURCE_FILES})
 set_target_properties(ocarina-gui PROPERTIES
         PUBLIC_HEADER "${HEADER_FILES}"
         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
