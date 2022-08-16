@@ -144,6 +144,40 @@ __device__ auto oc_fit(const Src &src) noexcept {
     }
 }
 
+template<typename T>
+T image_read(ImageData obj, oc_uint x, oc_uint y) noexcept {
+    if constexpr (oc_is_same_v<T, uchar> || oc_is_same_v<T, float>) {
+        switch (obj.pixel_storage) {
+            case OCPixelStorage::BYTE1:
+                auto v = surf2Dread<uchar>(obj.surface, x * sizeof(oc_uchar), y, cudaBoundaryModeZero);
+                return oc_convert_scalar<T>(v);
+            case OCPixelStorage::FLOAT1:
+                auto v = surf2Dread<float>(obj.surface, x * sizeof(float), y, cudaBoundaryModeZero);
+                return oc_convert_scalar<T>(v);
+        }
+    } else if constexpr (oc_is_same_v<T, oc_uchar2> || oc_is_same_v<T, oc_float2>) {
+        switch (obj.pixel_storage) {
+            case OCPixelStorage::BYTE2:
+                auto v = surf2Dread<uchar2>(obj.surface, x * sizeof(uchar2), y, cudaBoundaryModeZero);
+                return oc_convert_vector<T>(oc_make_uchar2(v.x, v.y));
+            case OCPixelStorage::FLOAT2:
+                auto v = surf2Dread<float2>(obj.surface, x * sizeof(float2), y, cudaBoundaryModeZero);
+                return oc_convert_vector<T>(oc_make_float2(v.x, v.y));
+        }
+    } else if constexpr (oc_is_same_v<T, oc_uchar4> || oc_is_same_v<T, oc_float4>) {
+        switch (obj.pixel_storage) {
+            case OCPixelStorage::BYTE4:
+                auto v = surf2Dread<uchar4>(obj.surface, x * sizeof(uchar4), y, cudaBoundaryModeZero);
+                return oc_convert_vector<T>(oc_make_uchar4(v.x, v.y, v.z, v.w));
+            case OCPixelStorage::FLOAT4:
+                auto v = surf2Dread<float4>(obj.surface, x * sizeof(float4), y, cudaBoundaryModeZero);
+                return oc_convert_vector<T>(oc_make_float4(v.x, v.y, v.z, v.w));
+        }
+    }
+    assert(0);
+    __builtin_unreachable();
+}
+
 template<typename Elm, typename Target = Elm>
 __device__ auto oc_image_read(ImageData obj, oc_uint x, oc_uint y) noexcept {
     static_assert(oc_type_dim<Elm> == oc_type_dim<Target>);
