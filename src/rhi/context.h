@@ -7,6 +7,7 @@
 #include "core/header.h"
 #include "core/stl.h"
 #include "core/concepts.h"
+#include "gui/window.h"
 
 namespace ocarina {
 class Device;
@@ -15,6 +16,11 @@ class Context final : public concepts::Noncopyable {
 private:
     struct Impl;
     ocarina::unique_ptr<Impl> _impl;
+
+public:
+    using Creator = Window *(const char *name, uint2 initial_size, bool resizable);
+    using Deleter = void(Window *);
+    using WindowHandle = ocarina::unique_ptr<Window, Deleter *>;
 
 public:
     explicit Context(const fs::path &path, string_view cache_dir = ".cache");
@@ -27,6 +33,7 @@ public:
     [[nodiscard]] bool is_exist_cache(const string &fn) const noexcept;
     const DynamicModule *obtain_module(const string &module_name) noexcept;
     [[nodiscard]] Device create_device(const string &backend_name) noexcept;
+    [[nodiscard]] WindowHandle create_window(const char *name, uint2 initial_size, bool resizable = false);
 };
 
 }// namespace ocarina

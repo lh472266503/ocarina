@@ -29,7 +29,6 @@ target_link_libraries(ocarina-all INTERFACE
         ocarina-rhi
         ocarina-util
         ocarina-math
-        ocarina-gui
         ocarina-core)
 
 add_dependencies(ocarina-all ocarina-gui)

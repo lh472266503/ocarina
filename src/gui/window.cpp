@@ -103,10 +103,8 @@ public:
     }
 };
 
-Window::Window(const char *name, uint2 initial_size, bool resizable) noexcept
-    : _context{GLFWContext::retain()},
-      _resizable{resizable} {
 
+void Window::init(const char *name, uint2 initial_size, bool resizable) noexcept {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -137,7 +135,7 @@ Window::Window(const char *name, uint2 initial_size, bool resizable) noexcept
 
     glfwSetWindowUserPointer(_handle, this);
     glfwSetMouseButtonCallback(_handle, [](GLFWwindow *window, int button, int action, int mods) noexcept {
-        if (ImGui::GetIO().WantCaptureMouse) {  // ImGui is handling the mouse
+        if (ImGui::GetIO().WantCaptureMouse) {// ImGui is handling the mouse
             ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
         } else {
             auto self = static_cast<Window *>(glfwGetWindowUserPointer(window));
@@ -158,7 +156,7 @@ Window::Window(const char *name, uint2 initial_size, bool resizable) noexcept
         if (auto &&cb = self->_window_size_callback) { cb(make_uint2(width, height)); }
     });
     glfwSetKeyCallback(_handle, [](GLFWwindow *window, int key, int scancode, int action, int mods) noexcept {
-        if (ImGui::GetIO().WantCaptureKeyboard) {  // ImGui is handling the keyboard
+        if (ImGui::GetIO().WantCaptureKeyboard) {// ImGui is handling the keyboard
             ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
         } else {
             auto self = static_cast<Window *>(glfwGetWindowUserPointer(window));
@@ -166,7 +164,7 @@ Window::Window(const char *name, uint2 initial_size, bool resizable) noexcept
         }
     });
     glfwSetScrollCallback(_handle, [](GLFWwindow *window, double dx, double dy) noexcept {
-        if (ImGui::GetIO().WantCaptureMouse) {  // ImGui is handling the mouse
+        if (ImGui::GetIO().WantCaptureMouse) {// ImGui is handling the mouse
             ImGui_ImplGlfw_ScrollCallback(window, dx, dy);
         } else {
             auto self = static_cast<Window *>(glfwGetWindowUserPointer(window));
@@ -176,6 +174,12 @@ Window::Window(const char *name, uint2 initial_size, bool resizable) noexcept
         }
     });
     glfwSetCharCallback(_handle, ImGui_ImplGlfw_CharCallback);
+}
+
+Window::Window(const char *name, uint2 initial_size, bool resizable) noexcept
+    : _context{GLFWContext::retain()},
+      _resizable{resizable} {
+    init(name, initial_size, resizable);
 }
 
 Window::~Window() noexcept {
@@ -257,7 +261,7 @@ void Window::_end_frame() noexcept {
                 static_cast<float>(_texture->size().x),
                 static_cast<float>(_texture->size().y)};
             ImGui::GetBackgroundDrawList()->AddImage(
-                reinterpret_cast<ImTextureID>(_texture->handle()), {}, background_size);
+                reinterpret_cast<ImTextureID>(static_cast<uint64_t>(_texture->handle())), {}, background_size);
         }
         // rendering
         ImGui::Render();
@@ -277,6 +281,14 @@ void Window::set_size(uint2 size) noexcept {
     } else {
         OC_WARNING("Ignoring resize on non-resizable window.");
     }
+}
+
+OC_EXPORT_API ocarina::Window *create(const char *name, uint2 initial_size, bool resizable) {
+    return ocarina::new_with_allocator<ocarina::Window>(name, initial_size, resizable);
+}
+
+OC_EXPORT_API void destroy(ocarina::Window *ptr) {
+    ocarina::delete_with_allocator(ptr);
 }
 
 }// namespace ocarina

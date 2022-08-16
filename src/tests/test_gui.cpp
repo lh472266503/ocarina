@@ -13,12 +13,19 @@
 #include "util/image_io.h"
 #include "dsl/common.h"
 #include "gui/window.h"
+#include "util/image_io.h"
 
 using namespace ocarina;
 
 int main(int argc, char *argv[]) {
-    Window window{"Display", make_uint2(500)};
-    window.run([&]{
+    fs::path path(argv[0]);
+    Context context(path.parent_path());
 
-    });
+    auto window = context.create_window("display", make_uint2(500), false);
+    window->set_size(make_uint2(2));
+//    Window window{"Display", make_uint2(500)};
+    auto image_io = ImageIO::pure_color(make_float4(1,0,0,1), ColorSpace::LINEAR, make_uint2(500));
+//    window->run([&]{
+////        window->set_background(image_io.pixel_ptr<float4>(), make_uint2(500));
+//    });
 }

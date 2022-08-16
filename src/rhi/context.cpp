@@ -15,8 +15,10 @@ namespace ocarina {
 
 #ifdef _MSC_VER
 static constexpr string_view backend_prefix = "ocarina-backend-";
+static constexpr string_view window_lib_name = "ocarina-gui";
 #else
 static constexpr string_view backend_prefix = "libocarina-backend-";
+static constexpr string_view window_lib_name = "libocarina-gui";
 #endif
 
 namespace detail {
@@ -114,6 +116,14 @@ Device Context::create_device(const string &backend_name) noexcept {
     auto create_device = reinterpret_cast<Device::Creator *>(d->function_ptr("create"));
     auto destroy_func = reinterpret_cast<Device::Deleter *>(d->function_ptr("destroy"));
     return Device{Device::Handle{create_device(this), destroy_func}};
+}
+
+
+Context::WindowHandle Context::create_window(const char *name, uint2 initial_size, bool resizable) {
+    auto d = obtain_module(dynamic_module_name(window_lib_name));
+    auto create_window = reinterpret_cast<Creator *>(d->function_ptr("create"));
+    auto destroy_func = reinterpret_cast<Deleter *>(d->function_ptr("destroy"));
+    return WindowHandle(create_window(name, initial_size, resizable), destroy_func);
 }
 
 }// namespace ocarina

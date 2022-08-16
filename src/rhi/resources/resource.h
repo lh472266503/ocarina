@@ -46,6 +46,6 @@ public:
     [[nodiscard]] virtual const void *handle_ptr() const noexcept { return &_handle; }
     [[nodiscard]] bool valid() const noexcept { return bool(_device); }
     void destroy();
-    ~RHIResource() { destroy(); }
+    virtual ~RHIResource() { destroy(); }
 };
 }// namespace ocarina
