@@ -221,12 +221,12 @@ void TypeRegistry::parse_buffer(Type *type, ocarina::string_view desc) noexcept 
 
 void TypeRegistry::parse_texture(Type *type, ocarina::string_view desc) noexcept {
     type->_tag = Type::Tag::TEXTURE;
-    auto lst = detail::find_content(desc);
-    auto type_str = lst[0];
-    const Type *element_type = parse_type(type_str);
-    type->_members.push_back(element_type);
-    auto alignment = element_type->alignment();
-    type->_alignment = alignment;
+//    auto lst = detail::find_content(desc);
+//    auto type_str = lst[0];
+//    const Type *element_type = parse_type(type_str);
+//    type->_members.push_back(element_type);
+//    auto alignment = element_type->alignment();
+//    type->_alignment = alignment;
 }
 
 void TypeRegistry::parse_array(Type *type, ocarina::string_view desc) noexcept {

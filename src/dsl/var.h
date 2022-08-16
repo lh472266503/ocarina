@@ -93,8 +93,7 @@ struct Var : public Computable<T> {
 template<typename T>
 using BufferVar = Var<Buffer<T>>;
 
-template<typename T>
-using ImageVar = Var<Image<T>>;
+using ImageVar = Var<Image>;
 
 #define OC_MAKE_DSL_TYPE_IMPL(dsl_type, type, dim) \
     using dsl_type##dim = Var<type##dim>;

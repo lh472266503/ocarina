@@ -25,13 +25,11 @@ int main(int argc, char *argv[]) {
     auto path2 = R"(E:/work/compile/ocarina/res/test.jpg)";
     auto image_io = ImageIO::load(path1, LINEAR);
 
-    auto image = device.create_image<uchar4>(image_io.resolution());
-    auto image_out = device.create_image<uchar4>(image_io.resolution());
+    auto image = device.create_image(image_io.resolution(), image_io.pixel_storage());
+    auto image_out = device.create_image(image_io.resolution(), image_io.pixel_storage());
     stream << image.upload_sync(image_io.pixel_ptr());
 
     Kernel kernel = [&]() {
-        Var v = image.sample(0.f, 0.5f);
-//
         uint2 res = image_io.resolution();
         int r = 5;
         Var<uint> min_x = max(0u, dispatch_idx().x - r);

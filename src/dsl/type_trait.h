@@ -254,7 +254,6 @@ class Buffer;
 template<typename T>
 class BufferView;
 
-template<typename T>
 class Image;
 
 namespace detail {
@@ -308,18 +307,14 @@ namespace detail {
 template<typename T>
 struct is_texture_impl : std::false_type {};
 
-template<typename T>
-struct is_texture_impl<Image<T>> : std::true_type {};
+template<>
+struct is_texture_impl<Image> : std::true_type {};
 
 template<typename T>
 struct texture_element_impl {
     using type = T;
 };
 
-template<typename T>
-struct texture_element_impl<Image<T>> {
-    using type = T;
-};
 }// namespace detail
 
 template<typename T>

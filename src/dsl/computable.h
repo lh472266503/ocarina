@@ -87,20 +87,17 @@ struct EnableReadAndWrite {
 template<typename T>
 struct EnableImageReadAndWrite {
 
-    using texture_type = expr_value_t<T>;
-    using element_type = texture_element_t<texture_type>;
-
-    template<typename Target = element_type, typename X, typename Y>
+    template<typename Target, typename X, typename Y>
     requires(is_all_integral_expr_v<X, Y>)
     OC_NODISCARD auto read(const X &x, const Y &y) const noexcept {
         const T *texture = static_cast<const T *>(this);
         const CallExpr *expr = Function::current()->call_builtin(Type::of<Target>(), CallOp::IMAGE_READ,
                                                                  {texture->expression(), OC_EXPR(x), OC_EXPR(y)},
-                                                                 {Type::of<Target>(), Type::of<element_type>()});
+                                                                 {Type::of<Target>(), Type::of<uchar4>()});
         return eval<Target>(expr);
     }
 
-    template<typename Target = element_type, typename XY>
+    template<typename Target, typename XY>
     requires(is_int_vector2_v<expr_value_t<XY>> ||
              is_uint_vector2_v<expr_value_t<XY>> &&
                  (is_uchar_element_expr_v<Target> || is_float_element_expr_v<Target>))
@@ -113,10 +110,10 @@ struct EnableImageReadAndWrite {
              (is_uchar_element_expr_v<Val> || is_float_element_expr_v<Val>))
     void write(const X &x, const Y &y, const Val &elm) noexcept {
         const T *texture = static_cast<const T *>(this);
-        const CallExpr *expr = Function::current()->call_builtin(Type::of<element_type>(), CallOp::IMAGE_WRITE,
+        const CallExpr *expr = Function::current()->call_builtin(Type::of<uchar4>(), CallOp::IMAGE_WRITE,
                                                                  {texture->expression(),
                                                                   OC_EXPR(x), OC_EXPR(y), OC_EXPR(elm)},
-                                                                 {Type::of<expr_value_t<Val>>(), Type::of<element_type>()});
+                                                                 {Type::of<expr_value_t<Val>>(), Type::of<uchar4>()});
         Function::current()->expr_statement(expr);
     }
 
@@ -279,10 +276,10 @@ struct Computable<Buffer<T>>
     OC_COMPUTABLE_COMMON(Computable<Buffer<T>>)
 };
 
-template<typename T>
-struct Computable<Image<T>>
-    : detail::EnableTextureSample<Computable<Image<T>>>,
-      detail::EnableImageReadAndWrite<Computable<Image<T>>> {
+template<>
+struct Computable<Image>
+    : detail::EnableTextureSample<Computable<Image>>,
+      detail::EnableImageReadAndWrite<Computable<Image>> {
     OC_COMPUTABLE_COMMON(Computable<Image>)
 };
 

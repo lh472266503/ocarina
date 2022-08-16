@@ -43,7 +43,7 @@ public:
     }
     [[nodiscard]] Tag tag() const noexcept { return _tag; }
     [[nodiscard]] handle_ty handle() const noexcept { return _handle; }
-    [[nodiscard]] const handle_ty *handle_ptr() const noexcept { return &_handle; }
+    [[nodiscard]] virtual const handle_ty *handle_ptr() const noexcept { return &_handle; }
     [[nodiscard]] bool valid() const noexcept { return bool(_device); }
     void destroy();
     ~RHIResource() { destroy(); }

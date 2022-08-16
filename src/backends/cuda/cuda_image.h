@@ -10,7 +10,7 @@
 
 namespace ocarina {
 class CUDADevice;
-class CUDAImage : public Image<float>::Impl {
+class CUDAImage : public Image::Impl {
 private:
     struct ImageData {
         CUtexObject texture{};

@@ -16,5 +16,8 @@ Stream Device::create_stream() noexcept {
 Accel Device::create_accel() noexcept {
     return _create<Accel>();
 }
+Image Device::create_image(uint2 res, PixelStorage storage) noexcept {
+    return _create<Image>(res, storage);
+}
 
 }// namespace ocarina
