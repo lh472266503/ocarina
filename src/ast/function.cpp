@@ -79,7 +79,7 @@ const RefExpr *Function::argument(const Type *type) noexcept {
         case Type::Tag::BUFFER:
             tag = Variable::Tag::BUFFER;
             break;
-        case Type::Tag::TEXTURE:
+        case Type::Tag::IMAGE:
             tag = Variable::Tag::TEXTURE;
             break;
         default:

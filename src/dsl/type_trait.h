@@ -305,10 +305,10 @@ OC_DEFINE_TEMPLATE_VALUE(is_buffer_or_view)
 namespace detail {
 
 template<typename T>
-struct is_texture_impl : std::false_type {};
+struct is_image_impl : std::false_type {};
 
 template<>
-struct is_texture_impl<Image> : std::true_type {};
+struct is_image_impl<Image> : std::true_type {};
 
 template<typename T>
 struct texture_element_impl {
@@ -318,11 +318,7 @@ struct texture_element_impl {
 }// namespace detail
 
 template<typename T>
-using is_texture = detail::is_texture_impl<std::remove_cvref_t<T>>;
-OC_DEFINE_TEMPLATE_VALUE(is_texture)
-
-template<typename T>
-using texture_element = detail::texture_element_impl<std::remove_cvref_t<T>>;
-OC_DEFINE_TEMPLATE_TYPE(texture_element)
+using is_image = detail::is_image_impl<std::remove_cvref_t<T>>;
+OC_DEFINE_TEMPLATE_VALUE(is_image)
 
 }// namespace ocarina

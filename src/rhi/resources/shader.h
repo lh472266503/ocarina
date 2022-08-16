@@ -77,7 +77,7 @@ public:
             _encode_basic(OC_FORWARD(arg));
         } else if constexpr (is_buffer_v<T>) {
             _encode_buffer(OC_FORWARD(arg));
-        } else if constexpr (is_texture_v<T>) {
+        } else if constexpr (is_image_v<T>) {
             _encode_image(OC_FORWARD(arg));
         }
         return *this;

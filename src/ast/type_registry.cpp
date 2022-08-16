@@ -141,7 +141,7 @@ const Type *TypeRegistry::parse_type(ocarina::string_view desc) noexcept {
     } else if (desc.starts_with("buffer")) {
         parse_buffer(type.get(), desc);
     } else if (desc.starts_with("image")) {
-        parse_texture(type.get(), desc);
+        parse_image(type.get(), desc);
     } else {
         OC_ERROR("invalid data type ", desc);
     }
@@ -219,14 +219,8 @@ void TypeRegistry::parse_buffer(Type *type, ocarina::string_view desc) noexcept 
     type->_alignment = alignment;
 }
 
-void TypeRegistry::parse_texture(Type *type, ocarina::string_view desc) noexcept {
-    type->_tag = Type::Tag::TEXTURE;
-//    auto lst = detail::find_content(desc);
-//    auto type_str = lst[0];
-//    const Type *element_type = parse_type(type_str);
-//    type->_members.push_back(element_type);
-//    auto alignment = element_type->alignment();
-//    type->_alignment = alignment;
+void TypeRegistry::parse_image(Type *type, ocarina::string_view desc) noexcept {
+    type->_tag = Type::Tag::IMAGE;
 }
 
 void TypeRegistry::parse_array(Type *type, ocarina::string_view desc) noexcept {
