@@ -21,6 +21,8 @@ public:
     using WindowSizeCallback = ocarina::function<void(uint2 /* (width, height) */)>;
     using KeyCallback = ocarina::function<void(int /* key */, int /* action */)>;
     using ScrollCallback = ocarina::function<void(float2 /* (dx, dy) */)>;
+    using UpdateCallback = ocarina::function<void(double)>;
+
 private:
     ocarina::shared_ptr<GLFWContext> _context;
     GLFWwindow *_handle{nullptr};
@@ -31,6 +33,7 @@ private:
     KeyCallback _key_callback;
     ScrollCallback _scroll_callback;
     bool _resizable;
+
 private:
     void _begin_frame() noexcept;
     void _end_frame() noexcept;
@@ -44,34 +47,31 @@ public:
     Window &operator=(const Window &) noexcept = delete;
     ~Window() noexcept;
 
-    [[nodiscard]] uint2 size() const noexcept;
-    [[nodiscard]] bool should_close() const noexcept;
+    [[nodiscard]] virtual uint2 size() const noexcept;
+    [[nodiscard]] virtual bool should_close() const noexcept;
     [[nodiscard]] auto handle() const noexcept { return _handle; }
     [[nodiscard]] explicit operator bool() const noexcept { return !should_close(); }
 
-    Window &set_mouse_callback(MouseButtonCallback cb) noexcept;
-    Window &set_cursor_position_callback(CursorPositionCallback cb) noexcept;
-    Window &set_window_size_callback(WindowSizeCallback cb) noexcept;
-    Window &set_key_callback(KeyCallback cb) noexcept;
-    Window &set_scroll_callback(ScrollCallback cb) noexcept;
+    virtual Window &set_mouse_callback(MouseButtonCallback cb) noexcept;
+    virtual Window &set_cursor_position_callback(CursorPositionCallback cb) noexcept;
+    virtual Window &set_window_size_callback(WindowSizeCallback cb) noexcept;
+    virtual Window &set_key_callback(KeyCallback cb) noexcept;
+    virtual Window &set_scroll_callback(ScrollCallback cb) noexcept;
 
-    void set_background(const std::array<uint8_t, 4u> *pixels, uint2 size) noexcept;
-    void set_background(const float4 *pixels, uint2 size) noexcept;
-
+    virtual void set_background(const std::array<uint8_t, 4u> *pixels, uint2 size) noexcept;
+    virtual void set_background(const float4 *pixels, uint2 size) noexcept;
     void set_should_close() noexcept;
-    void set_size(uint2 size) noexcept;
+    virtual void set_size(uint2 size) noexcept;
 
-    template<typename F>
-    void run(F &&draw) noexcept {
+    virtual void run(UpdateCallback &&draw) noexcept {
         while (!should_close()) {
-            run_one_frame(draw);
+            run_one_frame(std::move(draw));
         }
     }
 
-    template<typename F>
-    void run_one_frame(F &&draw) noexcept {
+    virtual void run_one_frame(UpdateCallback &&draw) noexcept {
         _begin_frame();
-        std::invoke(std::forward<F>(draw));
+        draw(0);
         _end_frame();
     }
 };
