@@ -38,11 +38,11 @@ int main(int argc, char *argv[]) {
     auto path2 = R"(E:/work/compile/ocarina/res/test.png)";
     auto image = ImageIO::load(path2, LINEAR);
 
-    auto texture = device.create_image<uchar4>(image.resolution());
+    auto texture = device.create_image(image.resolution(), image.pixel_storage());
     stream << texture.upload_sync(image.pixel_ptr());
 
     Buffer<float> f_buffer = device.create_buffer<float>(count);
-    Kernel kn = [&](Var<float> a, Var<float> b, BufferVar<float> c, ImageVar<uchar4> tex) {
+    Kernel kn = [&](Var<float> a, Var<float> b, BufferVar<float> c, ImageVar tex) {
 
         Var<float3> v1 = make_float3(a), v2,v3;
 //        v1 = normalize(v1);
@@ -57,8 +57,8 @@ int main(int argc, char *argv[]) {
         Var<int2> v22 = make_int2(ii, ii);
         Var<bool2> bv;
 
-        Var tex_v = tex.sample(a, b);
-        Var tv2 = texture.sample(a, b);
+        Var tex_v = tex.sample<float4>(a, b);
+        Var tv2 = texture.sample<float4>(a, b);
 
         Var vv = all(bv);
         Var f = 0.5f;
@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
         vec2 = -vec2;
         //        Var<bool3> pred = vec > make_int3(5);
         vec = select(vec > make_int3(5), vec, -vec);
-        Var tr = tex.read(20u,20u);
+        Var tr = tex.read<float4>(20u,20u);
         print("{}, {}---------{}--{}>>>>>{}", sqr(a), tv2.x, f_buffer.read(5), tex_v.x, tr.x);
         f_buffer.write(thread_id(), f_buffer.read(thread_id()) * 2);
 //        c.write(thread_id(), c.read(thread_id()) * 2);

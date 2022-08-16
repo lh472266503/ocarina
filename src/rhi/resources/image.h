@@ -28,13 +28,13 @@ public:
                       device->create_image(res, pixel_storage)) {}
 
     /// for dsl
-    template<typename U, typename V>
+    template<typename Output, typename U, typename V>
     requires(is_all_floating_point_expr_v<U, V>)
     [[nodiscard]] auto sample(const U &u, const V &v) const noexcept {
         const UniformBinding &uniform = Function::current()->get_uniform_var(Type::of<Image>(),
                                                                              handle_ptr(),
                                                                              Variable::Tag::TEXTURE);
-        return make_expr<Image>(uniform.expression()).sample(u, v);
+        return make_expr<Image>(uniform.expression()).sample<Output>(u, v);
     }
 
     template<typename UV>
