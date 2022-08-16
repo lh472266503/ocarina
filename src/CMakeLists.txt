@@ -4,6 +4,8 @@ include_directories(ext/stblib/stb)
 include_directories(ext/xxHash)
 include_directories(ext/fmt/include)
 include_directories(ext/EASTL/include)
+include_directories(ext/imgui/glad)
+include_directories(ext/imgui)
 include_directories(src)
 
 add_subdirectory(ext)
@@ -31,7 +33,7 @@ target_link_libraries(ocarina-all INTERFACE
 
 add_dependencies(ocarina-all ocarina-gui)
 
-add_executable(ocarina main.cpp)
+add_executable(ocarina main.cpp tests/test_gui.cpp)
 target_link_libraries(ocarina ocarina-all)
 
 add_subdirectory(tests)

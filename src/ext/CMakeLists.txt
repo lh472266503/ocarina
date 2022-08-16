@@ -43,4 +43,5 @@ target_link_libraries(ocarina-gui-ext INTERFACE glfw_config ocarina-imgui)
 target_link_libraries(ocarina-ext PUBLIC
         ocarina-ext-stb
         ocarina-ext-tinyexr
+        ocarina-gui-ext
         )
