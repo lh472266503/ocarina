@@ -17,7 +17,7 @@ private:
         CUsurfObject surface{};
         PixelStorage pixel_storage{};
     };
-    ImageData _oc_texture;
+    ImageData _image_data;
     CUDADevice *_device{};
     uint2 _res{};
     CUarray _array_handle{};
@@ -29,11 +29,11 @@ public:
     [[nodiscard]] uint2 resolution() const noexcept override { return _res; }
     [[nodiscard]] handle_ty array_handle() const noexcept override { return reinterpret_cast<handle_ty>(_array_handle); }
     [[nodiscard]] handle_ty tex_handle() const noexcept override {
-        return _oc_texture.texture;
+        return _image_data.texture;
     }
-    [[nodiscard]] const handle_ty *handle_ptr() const noexcept override {
-        return &_oc_texture.texture;
+    [[nodiscard]] const void *handle_ptr() const noexcept override {
+        return &_image_data;
     }
-    [[nodiscard]] PixelStorage pixel_storage() const noexcept override { return _oc_texture.pixel_storage; }
+    [[nodiscard]] PixelStorage pixel_storage() const noexcept override { return _image_data.pixel_storage; }
 };
 }// namespace ocarina

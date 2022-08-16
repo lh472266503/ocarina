@@ -144,7 +144,7 @@ const CallExpr *Function::call_builtin(const Type *type, CallOp op,
     return _create_expression<CallExpr>(type, op, std::move(args), std::move(t_args));
 }
 
-const UniformBinding &Function::get_uniform_var(const Type *type, const handle_ty * handle_ptr,
+const UniformBinding &Function::get_uniform_var(const Type *type, const void * handle_ptr,
                                                 Variable::Tag tag) noexcept {
     OC_ASSERT(is_kernel());
     if (auto iter = std::find_if(_uniform_vars.begin(),

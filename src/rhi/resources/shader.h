@@ -54,10 +54,10 @@ private:
 
     template<typename T>
     void _encode_buffer(const Buffer<T> &buffer) noexcept {
-        push_handle_ptr(const_cast<handle_ty *>(buffer.handle_ptr()));
+        push_handle_ptr(const_cast<void *>(buffer.handle_ptr()));
     }
 
-    void _encode_texture(const Image &texture) noexcept;
+    void _encode_image(const Image &image) noexcept;
 
 public:
     ArgumentList() = default;
@@ -65,10 +65,9 @@ public:
     [[nodiscard]] size_t num() const noexcept { return _args.size(); }
     void clear() noexcept { _cursor = 0; }
 
-    void push_handle_ptr(handle_ty *address) noexcept {
+    void push_handle_ptr(void *address) noexcept {
         _cursor = mem_offset(_cursor, alignof(handle_ty));
         _args.push_back(address);
-        _cursor += sizeof(handle_ty);
         OC_ASSERT(_cursor < Size);
     }
 
@@ -79,7 +78,7 @@ public:
         } else if constexpr (is_buffer_v<T>) {
             _encode_buffer(OC_FORWARD(arg));
         } else if constexpr (is_texture_v<T>) {
-            _encode_texture(OC_FORWARD(arg));
+            _encode_image(OC_FORWARD(arg));
         }
         return *this;
     }
@@ -130,7 +129,7 @@ public:
         (_argument_list << ... << OC_FORWARD(args));
 #if CUDA_ARGUMENT_PUSH
         for (const auto &uniform : _function.uniform_vars()) {
-            _argument_list.push_handle_ptr(const_cast<handle_ty *>(uniform.handle_ptr()));
+            _argument_list.push_handle_ptr(const_cast<void *>(uniform.handle_ptr()));
         }
 #endif
         return *this;

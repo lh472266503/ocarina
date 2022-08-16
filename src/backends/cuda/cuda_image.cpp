@@ -9,7 +9,7 @@ namespace ocarina {
 
 CUDAImage::CUDAImage(CUDADevice *device, uint2 res, PixelStorage pixel_storage)
     : _device(device), _res(res) {
-    _oc_texture.pixel_storage = pixel_storage;
+    _image_data.pixel_storage = pixel_storage;
     init();
 }
 
@@ -17,7 +17,7 @@ void CUDAImage::init() {
     CUDA_ARRAY_DESCRIPTOR array_desc{};
     array_desc.Width = _res.x;
     array_desc.Height = _res.y;
-    switch (_oc_texture.pixel_storage) {
+    switch (_image_data.pixel_storage) {
         case PixelStorage::BYTE1:
             array_desc.Format = CU_AD_FORMAT_UNSIGNED_INT8;
             array_desc.NumChannels = 1;
@@ -59,13 +59,13 @@ void CUDAImage::init() {
     tex_desc.maxMipmapLevelClamp = 9;
     tex_desc.filterMode = CU_TR_FILTER_MODE_POINT;
     tex_desc.flags = CU_TRSF_NORMALIZED_COORDINATES;
-    OC_CU_CHECK(cuSurfObjectCreate(&_oc_texture.surface, &res_desc));
-    OC_CU_CHECK(cuTexObjectCreate(&_oc_texture.texture, &res_desc, &tex_desc, nullptr));
+    OC_CU_CHECK(cuSurfObjectCreate(&_image_data.surface, &res_desc));
+    OC_CU_CHECK(cuTexObjectCreate(&_image_data.texture, &res_desc, &tex_desc, nullptr));
 }
 CUDAImage::~CUDAImage() {
     OC_CU_CHECK(cuArrayDestroy(_array_handle));
-    OC_CU_CHECK(cuTexObjectDestroy(_oc_texture.texture));
-    OC_CU_CHECK(cuSurfObjectDestroy(_oc_texture.surface));
+    OC_CU_CHECK(cuTexObjectDestroy(_image_data.texture));
+    OC_CU_CHECK(cuSurfObjectDestroy(_image_data.surface));
 }
 
 }// namespace ocarina

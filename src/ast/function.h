@@ -23,7 +23,7 @@ class IfStmt;
 class UniformBinding : public Hashable {
 private:
     const Type *_type;
-    const handle_ty *_handle_ptr;
+    const void *_handle_ptr;
     const RefExpr *_expr{nullptr};
 
 private:
@@ -32,11 +32,11 @@ private:
     }
 
 public:
-    UniformBinding(const RefExpr *expr, const Type *type, const handle_ty *address)
+    UniformBinding(const RefExpr *expr, const Type *type, const void *address)
         : _type(type), _handle_ptr(address), _expr(expr) {}
 
     [[nodiscard]] const Type *type() const noexcept { return _type; }
-    [[nodiscard]] const handle_ty *handle_ptr() const noexcept {
+    [[nodiscard]] const void *handle_ptr() const noexcept {
         return _handle_ptr;
     }
     [[nodiscard]] const RefExpr *expression() const noexcept { return _expr; }
@@ -147,7 +147,7 @@ public:
         }
     }
     void add_used_structure(const Type *type) noexcept { _used_struct.emplace(type); }
-    const UniformBinding &get_uniform_var(const Type *type, const handle_ty *handle, Variable::Tag tag) noexcept;
+    const UniformBinding &get_uniform_var(const Type *type, const void *handle, Variable::Tag tag) noexcept;
     [[nodiscard]] auto &uniform_vars() const noexcept { return _uniform_vars; }
     template<typename Visitor>
     void for_each_uniform_var(Visitor &&visitor) const noexcept {

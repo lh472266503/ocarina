@@ -15,8 +15,6 @@ for root,dirs,files in os.walk(os.path.join(os.getcwd(), "src")):
         fn = os.path.join(root,file)
         if "ext\\" in fn:
             continue
-        if "gui" in fn:
-            continue
         if "tests" in fn:
             continue
         if "stats_line_num.py" in fn:
