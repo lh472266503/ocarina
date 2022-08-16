@@ -89,11 +89,7 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         }
         case CallOp::IMAGE_WRITE: {
             auto t_args = expr->template_args();
-            auto input_type = t_args[0];
-            auto element_type = t_args[1];
-            current_scratch() << ocarina::format("oc_image_write<oc_{}, oc_{}>",
-                                                 input_type->name(),
-                                                 element_type->name());
+            current_scratch() << "image_write";
             break;
         }
         case CallOp::COUNT: break;

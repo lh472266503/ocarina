@@ -148,30 +148,36 @@ template<typename T>
 __device__ T image_read(ImageData obj, oc_uint x, oc_uint y) noexcept {
     if constexpr (oc_is_same_v<T, uchar> || oc_is_same_v<T, float>) {
         switch (obj.pixel_storage) {
-            case OCPixelStorage::BYTE1:
+            case OCPixelStorage::BYTE1: {
                 auto v = surf2Dread<uchar>(obj.surface, x * sizeof(oc_uchar), y, cudaBoundaryModeZero);
                 return oc_convert_scalar<T>(v);
-            case OCPixelStorage::FLOAT1:
+            }
+            case OCPixelStorage::FLOAT1: {
                 auto v = surf2Dread<float>(obj.surface, x * sizeof(float), y, cudaBoundaryModeZero);
                 return oc_convert_scalar<T>(v);
+            }
         }
     } else if constexpr (oc_is_same_v<T, oc_uchar2> || oc_is_same_v<T, oc_float2>) {
         switch (obj.pixel_storage) {
-            case OCPixelStorage::BYTE2:
+            case OCPixelStorage::BYTE2: {
                 auto v = surf2Dread<uchar2>(obj.surface, x * sizeof(uchar2), y, cudaBoundaryModeZero);
                 return oc_convert_vector<T>(oc_make_uchar2(v.x, v.y));
-            case OCPixelStorage::FLOAT2:
+            }
+            case OCPixelStorage::FLOAT2: {
                 auto v = surf2Dread<float2>(obj.surface, x * sizeof(float2), y, cudaBoundaryModeZero);
                 return oc_convert_vector<T>(oc_make_float2(v.x, v.y));
+            }
         }
     } else if constexpr (oc_is_same_v<T, oc_uchar4> || oc_is_same_v<T, oc_float4>) {
         switch (obj.pixel_storage) {
-            case OCPixelStorage::BYTE4:
+            case OCPixelStorage::BYTE4: {
                 auto v = surf2Dread<uchar4>(obj.surface, x * sizeof(uchar4), y, cudaBoundaryModeZero);
                 return oc_convert_vector<T>(oc_make_uchar4(v.x, v.y, v.z, v.w));
-            case OCPixelStorage::FLOAT4:
+            }
+            case OCPixelStorage::FLOAT4: {
                 auto v = surf2Dread<float4>(obj.surface, x * sizeof(float4), y, cudaBoundaryModeZero);
                 return oc_convert_vector<T>(oc_make_float4(v.x, v.y, v.z, v.w));
+            }
         }
     }
     assert(0);
@@ -182,36 +188,42 @@ template<typename T>
 __device__ void image_write(ImageData obj, oc_uint x, oc_uint y, T val) noexcept {
     if constexpr (oc_is_same_v<T, uchar> || oc_is_same_v<T, float>) {
         switch (obj.pixel_storage) {
-            case OCPixelStorage::BYTE1:
+            case OCPixelStorage::BYTE1: {
                 uchar v = oc_convert_scalar<uchar>(val);
                 surf2Dwrite(v, obj.surface, x * sizeof(uchar), y, cudaBoundaryModeZero);
-                return ;
-            case OCPixelStorage::FLOAT1:
+                return;
+            }
+            case OCPixelStorage::FLOAT1: {
                 oc_float v = oc_convert_vector<float>(val);
                 surf2Dwrite(v, obj.surface, x * sizeof(float), y, cudaBoundaryModeZero);
-                return ;
+                return;
+            }
         }
     } else if constexpr (oc_is_same_v<T, oc_uchar2> || oc_is_same_v<T, oc_float2>) {
         switch (obj.pixel_storage) {
-            case OCPixelStorage::BYTE2:
+            case OCPixelStorage::BYTE2: {
                 oc_uchar2 v = oc_convert_vector<oc_uchar2>(val);
                 surf2Dwrite(make_uchar2(v.x, v.y), obj.surface, x * sizeof(uchar2), y, cudaBoundaryModeZero);
-                return ;
-            case OCPixelStorage::FLOAT2:
+                return;
+            }
+            case OCPixelStorage::FLOAT2: {
                 oc_float2 v = oc_convert_vector<oc_float2>(val);
                 surf2Dwrite(make_float2(v.x, v.y), obj.surface, x * sizeof(float2), y, cudaBoundaryModeZero);
-                return ;
+                return;
+            }
         }
     } else if constexpr (oc_is_same_v<T, oc_uchar4> || oc_is_same_v<T, oc_float4>) {
         switch (obj.pixel_storage) {
-            case OCPixelStorage::BYTE4:
+            case OCPixelStorage::BYTE4: {
                 oc_uchar4 v = oc_convert_vector<oc_uchar4>(val);
                 surf2Dwrite(make_uchar4(v.x, v.y, v.z, v.w), obj.surface, x * sizeof(uchar4), y, cudaBoundaryModeZero);
-                return ;
-            case OCPixelStorage::FLOAT4:
+                return;
+            }
+            case OCPixelStorage::FLOAT4: {
                 oc_float4 v = oc_convert_vector<oc_float4>(val);
                 surf2Dwrite(make_float4(v.x, v.y, v.z, v.w), obj.surface, x * sizeof(float4), y, cudaBoundaryModeZero);
-                return ;
+                return;
+            }
         }
     }
     assert(0);
