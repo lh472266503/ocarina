@@ -30,7 +30,17 @@ target_link_libraries(ocarina-ext PUBLIC EASTL)
 add_subdirectory(stblib)
 add_subdirectory(tinyexr)
 
+
+add_subdirectory(glfw)
+add_subdirectory(imgui)
+add_library(glfw_config INTERFACE)
+target_link_libraries(glfw_config INTERFACE glfw)
+
+add_library(ocarina-gui-ext INTERFACE)
+target_link_libraries(ocarina-gui-ext INTERFACE glfw_config ocarina-imgui)
+
+
 target_link_libraries(ocarina-ext PUBLIC
-#        ocarina-ext-stblib
+        ocarina-ext-stb
         ocarina-ext-tinyexr
         )
