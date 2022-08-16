@@ -171,6 +171,7 @@ using std::pair;
 using std::variant;
 using std::visit;
 using std::make_pair;
+using std::function;
 namespace fs = std::filesystem;
 
 }// namespace ocarina
