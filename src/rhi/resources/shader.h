@@ -57,9 +57,7 @@ private:
         push_handle_ptr(const_cast<handle_ty *>(buffer.handle_ptr()));
     }
 
-    void _encode_texture(const Image &texture) noexcept {
-//        push_handle_ptr(const_cast<handle_ty *>(texture.handle_ptr()));
-    }
+    void _encode_texture(const Image &texture) noexcept;
 
 public:
     ArgumentList() = default;

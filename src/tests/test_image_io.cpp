@@ -29,9 +29,10 @@ int main(int argc, char *argv[]) {
     auto image_out = device.create_image(image_io.resolution(), image_io.pixel_storage());
     stream << image.upload_sync(image_io.pixel_ptr());
 
-    Kernel kernel = [&]() {
+    Kernel kernel = [&](ImageVar img) {
         uint2 res = image_io.resolution();
         int r = 5;
+//        Var p = img.sample<float4>(0.f,0.f);
         Var<uint> min_x = max(0u, dispatch_idx().x - r);
         Var<uint> max_x = min(res.x - 1, dispatch_idx().x + r);
         Var<uint> min_y = max(0u, dispatch_idx().y - r);
@@ -41,7 +42,7 @@ int main(int argc, char *argv[]) {
         Var<uint> count = 0u;
         $for(x, min_x, max_x) {
             $for(y, min_y, max_y) {
-                Var v = image.read<float4>(x, y);
+                Var v = img.read<float4>(x, y);
                 var += v;
                 count += 1;
             };
@@ -51,7 +52,7 @@ int main(int argc, char *argv[]) {
     };
 
     auto shader = device.compile(kernel);
-    stream << shader().dispatch(image_io.resolution());
+    stream << shader(image).dispatch(image_io.resolution());
     stream << synchronize()
            << image_out.download_sync(image_io.pixel_ptr())
            << commit();
