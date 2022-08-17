@@ -11,8 +11,8 @@
 namespace ocarina {
 
 struct alignas(16) Hit {
-    uint inst_id{};
-    uint prim_id{};
+    uint inst_id{uint(-1)};
+    uint prim_id{uint(-1)};
     float2 bary;
 };
 
