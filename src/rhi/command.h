@@ -191,7 +191,7 @@ class AccelBuildCommand final : public Command {
 private:
     handle_ty _accel{};
 public:
-    AccelBuildCommand() = default;
+    explicit AccelBuildCommand(handle_ty accel) : _accel(accel) {}
     template<typename T>
     [[nodiscard]] T *accel() const { return reinterpret_cast<T *>(_accel); }
     OC_MAKE_CMD_COMMON_FUNC(AccelBuildCommand)

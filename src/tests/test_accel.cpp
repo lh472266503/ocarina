@@ -65,21 +65,22 @@ int main(int argc, char *argv[]) {
 
     Accel accel = device.create_accel();
     accel.add_mesh(std::move(cube), make_float4x4(1.f));
+    stream << accel.build_bvh();
 
-    Callable cb = [&](Var<Triangle> t) {
-        print("{},{},{}--", t.i,t.j,t.k);
-    };
+//    Callable cb = [&](Var<Triangle> t) {
+//        print("{},{},{}--", t.i,t.j,t.k);
+//    };
+//
+//    Kernel kernel = [&](const BufferVar<float3> &v) {
+//        Var<float3> pos = v_buffer.read(dispatch_idx().x);
+//        Var<float3> pos2 = v[dispatch_id()];
+//        Var t = t_buffer.read(dispatch_id());
+//        cb(t);
+//        print("{},{},{}, {}", pos.x, pos2.y, pos.z, dispatch_dim().x);
+//    };
 
-    Kernel kernel = [&](const BufferVar<float3> &v) {
-        Var<float3> pos = v_buffer.read(dispatch_idx().x);
-        Var<float3> pos2 = v[dispatch_id()];
-        Var t = t_buffer.read(dispatch_id());
-        cb(t);
-        print("{},{},{}, {}", pos.x, pos2.y, pos.z, dispatch_dim().x);
-    };
-
-    auto shader = device.compile(kernel);
-    stream << shader(v_buffer.view(0, v_buffer.size())).dispatch(t_buffer.size());
+//    auto shader = device.compile(kernel);
+//    stream << shader(v_buffer.view(0, v_buffer.size())).dispatch(t_buffer.size());
     stream << synchronize() << commit();
 
     return 0;

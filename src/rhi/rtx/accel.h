@@ -13,8 +13,11 @@ class Accel : public RHIResource {
 public:
     class Impl {
     public:
-        virtual void add_mesh(Mesh::Impl *mesh, float4x4 transform) noexcept = 0;
+        virtual void add_mesh(const Mesh::Impl *mesh, float4x4 transform) noexcept = 0;
     };
+
+private:
+    ocarina::vector<Mesh> _meshes;
 public:
     explicit Accel(Device::Impl *device)
         : RHIResource(device, Tag::ACCEL, device->create_accel()) {}
@@ -23,7 +26,11 @@ public:
     [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(_handle); }
     void add_mesh(Mesh &&mesh, float4x4 transform) noexcept {
         impl()->add_mesh(mesh.impl(), transform);
+        _meshes.push_back(std::move(mesh));
     }
 
+    [[nodiscard]] AccelBuildCommand *build_bvh() noexcept {
+        return AccelBuildCommand::create(_handle);
+    }
 };
 }// namespace ocarina

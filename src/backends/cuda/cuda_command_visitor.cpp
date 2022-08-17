@@ -7,6 +7,7 @@
 #include "cuda_device.h"
 #include "cuda_shader.h"
 #include "cuda_mesh.h"
+#include "optix_accel.h"
 
 namespace ocarina {
 void CUDACommandVisitor::visit(const BufferUploadCommand *cmd) noexcept {
@@ -98,6 +99,7 @@ void CUDACommandVisitor::visit(const MeshBuildCommand *cmd) noexcept {
     cmd->mesh<CUDAMesh>()->build_bvh(cmd);
 }
 void CUDACommandVisitor::visit(const AccelBuildCommand *cmd) noexcept {
+    cmd->accel<OptixAccel>()->build_bvh();
 }
 
 }// namespace ocarina

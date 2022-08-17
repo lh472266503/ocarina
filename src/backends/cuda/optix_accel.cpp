@@ -3,7 +3,13 @@
 //
 
 #include "optix_accel.h"
+#include "cuda_device.h"
 
 namespace ocarina {
 
+void OptixAccel::build_bvh() noexcept {
+    vector<OptixTraversableHandle> traversable_handles;
+
 }
+
+}// namespace ocarina
