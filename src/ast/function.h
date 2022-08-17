@@ -44,7 +44,7 @@ public:
 
 class OC_AST_API Function : public concepts::Noncopyable, public Hashable {
 public:
-    enum struct Tag : uint {
+    enum Tag : uint8_t {
         KERNEL,
         CALLABLE,
     };
@@ -64,6 +64,7 @@ private:
     Tag _tag{Tag::CALLABLE};
     ocarina::set<const Function *> _used_custom_func;
     ocarina::set<const Type *> _used_struct;
+    mutable bool _raytracing{false};
     mutable uint3 _block_dim{make_uint3(0)};
     mutable uint3 _grid_dim{make_uint3(0)};
 
@@ -255,7 +256,9 @@ public:
     [[nodiscard]] constexpr Tag tag() const noexcept { return _tag; }
     [[nodiscard]] constexpr bool is_callable() const noexcept { return _tag == Tag::CALLABLE; }
     [[nodiscard]] constexpr bool is_kernel() const noexcept { return _tag == Tag::KERNEL; }
+    [[nodiscard]] constexpr bool is_raytracing() const noexcept { return _raytracing; }
     [[nodiscard]] constexpr const Type *return_type() const noexcept { return _ret; }
+    constexpr void set_raytracing(bool val) const noexcept { _raytracing = val;}
 };
 
 }// namespace ocarina

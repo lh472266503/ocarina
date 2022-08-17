@@ -14,6 +14,8 @@
 
 namespace ocarina {
 
+static constexpr auto optix_include = OC_STRINGIFY(OPTIX_INCLUDE);
+
 CUDACompiler::CUDACompiler(CUDADevice *device, const Function &f)
     : _device(device), _function(f) {}
 
@@ -36,7 +38,10 @@ ocarina::string CUDACompiler::compile(const string &cu, const string &fn, int sm
         includes.push_back(ocarina::format("-include={}", header_name));
         compile_option.push_back(includes.back().c_str());
     }
-
+    if (_function.is_raytracing()) {
+        includes.push_back(ocarina::format("-I {}", optix_include));
+        compile_option.push_back(includes.back().c_str());
+    }
     OC_NVRTC_CHECK(nvrtcCreateProgram(&program, cu.c_str(), fn.c_str(),
                                       header_names.size(), header_sources.data(),
                                       header_names.data()));
