@@ -32,7 +32,7 @@ void CUDAMesh::build_bvh(const MeshBuildCommand *cmd) noexcept {
                        gas_buffer_sizes.outputSizeInBytes,
                        gas_buffer_sizes.tempSizeInBytes);
 
-        _blas_buffer = std::make_unique<Buffer<std::byte>>(_device, gas_buffer_sizes.outputSizeInBytes);
+        _blas_buffer = Buffer<std::byte>(_device, gas_buffer_sizes.outputSizeInBytes);
 
         Buffer temp_buffer = Buffer(_device, gas_buffer_sizes.tempSizeInBytes);
         Buffer compact_size_buffer = Buffer<uint64_t>(_device, 1);
@@ -43,7 +43,7 @@ void CUDAMesh::build_bvh(const MeshBuildCommand *cmd) noexcept {
         OC_OPTIX_CHECK(optixAccelBuild(_device->optix_device_context(), nullptr,
                                        &accel_options, &_build_input, 1,
                                        temp_buffer.handle(), gas_buffer_sizes.tempSizeInBytes,
-                                       _blas_buffer->handle(), gas_buffer_sizes.outputSizeInBytes,
+                                       _blas_buffer.handle(), gas_buffer_sizes.outputSizeInBytes,
                                        &_blas_handle, &emit_desc, 1));
 
         auto compacted_gas_size = _device->download<size_t>(emit_desc.result);
@@ -51,10 +51,10 @@ void CUDAMesh::build_bvh(const MeshBuildCommand *cmd) noexcept {
         OC_INFO_FORMAT("compacted_gas_size is {} byte", compacted_gas_size);
 
         if (compacted_gas_size < gas_buffer_sizes.outputSizeInBytes) {
-            _blas_buffer = std::make_unique<Buffer<std::byte>>(_device, compacted_gas_size);
+            _blas_buffer = Buffer<std::byte>(_device, compacted_gas_size);
             OC_OPTIX_CHECK(optixAccelCompact(_device->optix_device_context(), nullptr,
                                              _blas_handle,
-                                             _blas_buffer->handle(),
+                                             _blas_buffer.handle(),
                                              compacted_gas_size,
                                              &_blas_handle));
             OC_INFO("optixAccelCompact was executed");
