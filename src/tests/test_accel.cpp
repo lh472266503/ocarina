@@ -49,6 +49,7 @@ int main(int argc, char *argv[]) {
     Context context(path.parent_path());
     context.clear_cache();
     Device device = context.create_device("cuda");
+    device.init_rtx();
     Stream stream = device.create_stream();
     auto [vertices, triangle] = get_cube();
 

@@ -15,7 +15,7 @@ private:
     ocarina::unique_ptr<Buffer<std::byte>> _tlas_buffer;
     OptixTraversableHandle _tlas_handle;
     CUDADevice *_device;
-
+    
 public:
     explicit OptixAccel(CUDADevice *device) : _device(device) {}
 

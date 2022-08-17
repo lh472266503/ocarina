@@ -24,7 +24,6 @@ CUDADevice::CUDADevice(Context *context)
     OC_CU_CHECK(cuInit(0));
     OC_CU_CHECK(cuDeviceGet(&_cu_device, 0));
     OC_CU_CHECK(cuDevicePrimaryCtxRetain(&_cu_ctx, _cu_device));
-    init_optix_context();
 }
 
 handle_ty CUDADevice::create_buffer(size_t size) noexcept {

@@ -14,7 +14,7 @@ namespace ocarina {
 class Mesh : public RHIResource {
 public:
     class Impl {
-        virtual handle_ty blas_handle() const noexcept = 0;
+        [[nodiscard]] virtual handle_ty blas_handle() const noexcept = 0;
     };
 
 public:

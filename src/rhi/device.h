@@ -51,6 +51,7 @@ public:
         [[nodiscard]] virtual handle_ty create_mesh(const MeshParams &params) noexcept = 0;
         virtual void destroy_mesh(handle_ty handle) noexcept = 0;
         [[nodiscard]] Context *context() noexcept { return _context; }
+        virtual void init_rtx() noexcept = 0;
     };
 
     using Creator = Device::Impl *(Context *);
@@ -78,7 +79,7 @@ public:
                                    AccelGeomTag geom_tag = AccelGeomTag::DISABLE_ANYHIT) noexcept;// implement in mesh.h
     [[nodiscard]] Stream create_stream() noexcept;
     [[nodiscard]] Accel create_accel() noexcept;
-
+    void init_rtx() noexcept { _impl->init_rtx(); }
     [[nodiscard]] Image create_image(uint2 res, PixelStorage storage) noexcept;
     template<typename T>
     [[nodiscard]] auto compile(const Kernel<T> &kernel, ShaderTag tag = CS) noexcept {

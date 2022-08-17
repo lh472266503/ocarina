@@ -80,5 +80,6 @@ public:
     void destroy_stream(handle_ty handle) noexcept override;
     [[nodiscard]] handle_ty create_mesh(const MeshParams &params) noexcept override;
     void destroy_mesh(handle_ty handle) noexcept override;
+    void init_rtx() noexcept override { init_optix_context(); }
 };
 }// namespace ocarina
