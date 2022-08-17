@@ -17,6 +17,7 @@ private:
     ocarina::vector<const Mesh::Impl *> _meshes;
     ocarina::vector<float4x4> _transforms;
     CUDADevice *_device;
+    Buffer<OptixInstance> _instances{};
     
 public:
     explicit OptixAccel(CUDADevice *device) : _device(device) {}

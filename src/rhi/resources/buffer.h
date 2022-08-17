@@ -66,6 +66,8 @@ private:
     size_t _size{};
 
 public:
+    Buffer() = default;
+
     Buffer(Device::Impl *device, size_t size)
         : RHIResource(device, Tag::BUFFER, device->create_buffer(size * sizeof(T))),
           _size(size) {}
@@ -79,6 +81,28 @@ public:
         return BufferView<T>(_handle, offset, size, _size);
     }
 
+    // Move constructor
+    Buffer(Buffer &&other) noexcept
+        : RHIResource(std::move(other)) {
+        this->_size = other._size;
+    }
+
+    // Move assignment
+    Buffer &operator=(Buffer &&other) noexcept {
+        RHIResource::operator=(std::move(other));
+        this->_size = other._size;
+        return *this;
+    }
+
+    template<typename T>
+    [[nodiscard]] auto ptr() const noexcept {
+        if constexpr (std::is_same_v<T, handle_ty>) {
+            return handle();
+        } else {
+            return reinterpret_cast<T>(handle());
+        }
+    }
+
     /// head of the buffer
     [[nodiscard]] handle_ty head() const noexcept { return handle(); }
 
@@ -87,8 +111,8 @@ public:
 
     template<typename Index>
     requires ocarina::is_integral_v<expr_value_t<Index>>
-    OC_NODISCARD auto
-    read(Index &&index) const {
+        OC_NODISCARD auto
+        read(Index &&index) const {
         const UniformBinding &uniform = Function::current()->get_uniform_var(Type::of<Buffer<T>>(),
                                                                              handle_ptr(), Variable::Tag::BUFFER);
         return make_expr<Buffer<T>>(uniform.expression()).read(OC_FORWARD(index));

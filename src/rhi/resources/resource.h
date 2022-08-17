@@ -34,6 +34,8 @@ protected:
         : _device(device), _tag(tag), _handle(handle) {}
 
 public:
+    RHIResource() = default;
+
     RHIResource(RHIResource &&other) noexcept {
         if (&other == this) { return; }
         _tag = other._tag;
@@ -41,6 +43,16 @@ public:
         _handle = other._handle;
         other._device = nullptr;
     }
+
+    RHIResource &operator=(RHIResource &&other) noexcept {
+        if (&other == this) { return *this; }
+        _tag = other._tag;
+        _device = other._device;
+        _handle = other._handle;
+        other._device = nullptr;
+        return *this;
+    }
+
     [[nodiscard]] Tag tag() const noexcept { return _tag; }
     [[nodiscard]] handle_ty handle() const noexcept { return _handle; }
     [[nodiscard]] virtual const void *handle_ptr() const noexcept { return &_handle; }
