@@ -5,6 +5,8 @@
 #include "context.h"
 #include "core/logging.h"
 #include "device.h"
+#include "gui/window.h"
+
 #ifdef NDEBUG
 
 #include "context_impl.h"
@@ -121,8 +123,8 @@ Device Context::create_device(const string &backend_name) noexcept {
 
 Context::WindowHandle Context::create_window(const char *name, uint2 initial_size, bool resizable) {
     auto d = obtain_module(dynamic_module_name(window_lib_name));
-    auto create_window = reinterpret_cast<Creator *>(d->function_ptr("create"));
-    auto destroy_func = reinterpret_cast<Deleter *>(d->function_ptr("destroy"));
+    auto create_window = reinterpret_cast<WindowCreator *>(d->function_ptr("create"));
+    auto destroy_func = reinterpret_cast<WindowDeleter *>(d->function_ptr("destroy"));
     return WindowHandle(create_window(name, initial_size, resizable), destroy_func);
 }
 

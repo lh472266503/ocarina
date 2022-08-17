@@ -7,20 +7,20 @@
 #include "core/header.h"
 #include "core/stl.h"
 #include "core/concepts.h"
-#include "gui/window.h"
 
 namespace ocarina {
 class Device;
 class DynamicModule;
+class Window;
 class Context final : public concepts::Noncopyable {
 private:
     struct Impl;
     ocarina::unique_ptr<Impl> _impl;
 
 public:
-    using Creator = Window *(const char *name, uint2 initial_size, bool resizable);
-    using Deleter = void(Window *);
-    using WindowHandle = ocarina::unique_ptr<Window, Deleter *>;
+    using WindowCreator = Window *(const char *name, uint2 initial_size, bool resizable);
+    using WindowDeleter = void(Window *);
+    using WindowHandle = ocarina::unique_ptr<Window, WindowDeleter *>;
 
 public:
     explicit Context(const fs::path &path, string_view cache_dir = ".cache");
