@@ -43,7 +43,7 @@ public:
         return sample(uv.x, uv.y);
     }
 
-    template<typename Target = T, typename X, typename Y>
+    template<typename Target, typename X, typename Y>
     requires(is_all_integral_expr_v<X, Y>)
     OC_NODISCARD auto read(const X &x, const Y &y) const noexcept {
         const UniformBinding &uniform = Function::current()->get_uniform_var(Type::of<Image>(),
@@ -52,7 +52,7 @@ public:
         return make_expr<Image>(uniform.expression()).read<Target>(x, y);
     }
 
-    template<typename Target = T, typename XY>
+    template<typename Target, typename XY>
     requires(is_int_vector2_v<expr_value_t<XY>> ||
              is_uint_vector2_v<expr_value_t<XY>> &&
                  (is_uchar_element_expr_v<Target> || is_float_element_expr_v<Target>))

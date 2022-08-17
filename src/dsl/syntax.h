@@ -356,11 +356,6 @@ void configure(Args &&...args) noexcept {
     Function::current()->configure(OC_FORWARD(args)...);
 }
 
-template<typename... Args>
-void set_dispatch_dim(Args &&...args) noexcept {
-    Function::current()->set_dispatch_dim(OC_FORWARD(args)...);
-}
-
 template<typename T>
 void return_(T &&ret) noexcept {
     Function::current()->return_(OC_EXPR(ret));
