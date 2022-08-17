@@ -2,7 +2,76 @@
 // Created by Zero on 2022/8/17.
 //
 
+constexpr float ray_t_max = 1e16f;
+
+struct alignas(16) OCHit {
+    oc_uint inst_id{};
+    oc_uint prim_id{};
+    oc_float2 bary;
+};
+
+struct alignas(16) OCRay {
+public:
+    float org_x{0.f};
+    float org_y{0.f};
+    float org_z{0.f};
+    float dir_x{0.f};
+    float dir_y{0.f};
+    float dir_z{0.f};
+    float t_max{0.f};
+
+public:
+
+    __device__ OCRay(const oc_float3 origin, const oc_float3 direction,
+               float t_max = ray_t_max) noexcept : t_max(t_max) {
+        update_origin(origin);
+        update_direction(direction);
+    }
+
+    __device__ oc_float3 at(float t) const {
+        return origin() + direction() * t;
+    }
+
+    __device__ void update_origin(oc_float3 origin) noexcept {
+        org_x = origin.x;
+        org_y = origin.y;
+        org_z = origin.z;
+    }
+
+    __device__ void update_direction(oc_float3 direction) noexcept {
+        dir_x = direction.x;
+        dir_y = direction.y;
+        dir_z = direction.z;
+    }
+
+    __device__ oc_float3 origin() const noexcept {
+        return oc_make_float3(org_x, org_y, org_z);
+    }
+
+    __device__ oc_float3 direction() const noexcept {
+        return oc_make_float3(dir_x, dir_y, dir_z);
+    }
+};
+
 /// optix builtin start
+
+typedef enum OptixPayloadTypeID {
+    OPTIX_PAYLOAD_TYPE_DEFAULT = 0,
+    OPTIX_PAYLOAD_TYPE_ID_0 = (1 << 0u),
+    OPTIX_PAYLOAD_TYPE_ID_1 = (1 << 1u),
+    OPTIX_PAYLOAD_TYPE_ID_2 = (1 << 2u),
+    OPTIX_PAYLOAD_TYPE_ID_3 = (1 << 3u),
+    OPTIX_PAYLOAD_TYPE_ID_4 = (1 << 4u),
+    OPTIX_PAYLOAD_TYPE_ID_5 = (1 << 5u),
+    OPTIX_PAYLOAD_TYPE_ID_6 = (1 << 6u),
+    OPTIX_PAYLOAD_TYPE_ID_7 = (1 << 7u)
+} OptixPayloadTypeID;
+
+/// Traversable handle
+typedef unsigned long long OptixTraversableHandle;
+
+/// Visibility mask
+typedef unsigned int OptixVisibilityMask;
 
 static __forceinline__ __device__ oc_uint3 oc_optixGetLaunchIndex() {
     unsigned int u0, u1, u2;
@@ -50,8 +119,7 @@ static __forceinline__ __device__ oc_float2 oc_optixGetTriangleBarycentrics()
 }
 
 template <typename... Payload>
-static __forceinline__ __device__ void oc_optixTrace( OptixPayloadTypeID     type,
-                                                   OptixTraversableHandle handle,
+static __forceinline__ __device__ void oc_optixTrace( OptixTraversableHandle handle,
                                                    oc_float3              rayOrigin,
                                                    oc_float3              rayDirection,
                                                    float                  tmin,
@@ -64,18 +132,15 @@ static __forceinline__ __device__ void oc_optixTrace( OptixPayloadTypeID     typ
                                                    unsigned int           missSBTIndex,
                                                    Payload&...            payload )
 {
+    static_assert( sizeof...( Payload ) <= 32, "Only up to 32 payload values are allowed." );
     // std::is_same compares each type in the two TypePacks to make sure that all types are unsigned int.
     // TypePack 1    unsigned int    T0      T1      T2   ...   Tn-1        Tn
     // TypePack 2      T0            T1      T2      T3   ...   Tn        unsigned int
-    static_assert( sizeof...( Payload ) <= 32, "Only up to 32 payload values are allowed." );
-    static_assert( std::is_same<optix_internal::TypePack<unsigned int, Payload...>, optix_internal::TypePack<Payload..., unsigned int>>::value,
-                   "All payload parameters need to be unsigned int." );
 
     float        ox = rayOrigin.x, oy = rayOrigin.y, oz = rayOrigin.z;
     float        dx = rayDirection.x, dy = rayDirection.y, dz = rayDirection.z;
     unsigned int p[33]       = { 0, payload... };
     int          payloadSize = (int)sizeof...( Payload );
-
     asm volatile(
         "call"
         "(%0,%1,%2,%3,%4,%5,%6,%7,%8,%9,%10,%11,%12,%13,%14,%15,%16,%17,%18,%19,%20,%21,%22,%23,%24,%25,%26,%27,%28,%"
@@ -88,7 +153,7 @@ static __forceinline__ __device__ void oc_optixTrace( OptixPayloadTypeID     typ
           "=r"( p[15] ), "=r"( p[16] ), "=r"( p[17] ), "=r"( p[18] ), "=r"( p[19] ), "=r"( p[20] ), "=r"( p[21] ),
           "=r"( p[22] ), "=r"( p[23] ), "=r"( p[24] ), "=r"( p[25] ), "=r"( p[26] ), "=r"( p[27] ), "=r"( p[28] ),
           "=r"( p[29] ), "=r"( p[30] ), "=r"( p[31] ), "=r"( p[32] )
-        : "r"( type ), "l"( handle ), "f"( ox ), "f"( oy ), "f"( oz ), "f"( dx ), "f"( dy ), "f"( dz ), "f"( tmin ),
+        : "r"( 0 ), "l"( handle ), "f"( ox ), "f"( oy ), "f"( oz ), "f"( dx ), "f"( dy ), "f"( dz ), "f"( tmin ),
           "f"( tmax ), "f"( rayTime ), "r"( visibilityMask ), "r"( rayFlags ), "r"( SBToffset ), "r"( SBTstride ),
           "r"( missSBTIndex ), "r"( payloadSize ), "r"( p[1] ), "r"( p[2] ), "r"( p[3] ), "r"( p[4] ), "r"( p[5] ),
           "r"( p[6] ), "r"( p[7] ), "r"( p[8] ), "r"( p[9] ), "r"( p[10] ), "r"( p[11] ), "r"( p[12] ), "r"( p[13] ),
@@ -102,19 +167,46 @@ static __forceinline__ __device__ void oc_optixTrace( OptixPayloadTypeID     typ
 
 /// optix builtin end
 
-inline void *unpack_pointer(unsigned int i0, unsigned int i1) {
+template<typename... Args>
+static __device__ void trace(OptixTraversableHandle handle,
+                                OCRay ray,
+                                uint32_t flags,
+                                uint32_t SBToffset,
+                                uint32_t SBTstride,
+                                uint32_t missSBTIndex,
+                                Args &&... payload) {
+    auto origin = oc_make_float3(ray.org_x, ray.org_y, ray.org_z);
+    auto direction = oc_make_float3(ray.dir_x, ray.dir_y, ray.dir_z);
+
+    oc_optixTrace(
+            handle,
+            origin,
+            direction,
+            0,
+            ray.t_max,
+            0.0f,                // rayTime
+            OptixVisibilityMask(1),
+            flags,
+            SBToffset,        // SBT offset
+            SBTstride,           // SBT stride
+            missSBTIndex,        // missSBTIndex
+            std::forward<Args>(payload)...);
+}
+
+
+__device__ inline void *unpack_pointer(unsigned int i0, unsigned int i1) {
     const unsigned long long uptr = static_cast<unsigned long long>( i0 ) << 32 | i1;
     void *ptr = reinterpret_cast<void *>( uptr );
     return ptr;
 }
 
-inline void pack_pointer(void *ptr, unsigned int &i0, unsigned int &i1) {
+__device__ inline void pack_pointer(void *ptr, unsigned int &i0, unsigned int &i1) {
     const auto uptr = reinterpret_cast<unsigned long long>( ptr );
     i0 = uptr >> 32;
     i1 = uptr & 0x00000000ffffffff;
 }
 
-inline void setPayloadOcclusion(bool occluded) {
+__device__ inline void setPayloadOcclusion(bool occluded) {
     oc_optixSetPayload_0(static_cast<unsigned int>( occluded ));
 }
 
@@ -123,13 +215,8 @@ static LM_GPU_INLINE oc_float2 getTriangleBarycentric() {
     return oc_make_float2(1 - barycentric.y - barycentric.x, barycentric.x);
 }
 
-struct alignas(16) OCHit {
-    oc_uint inst_id{};
-    oc_uint prim_id{};
-    oc_float2 bary;
-};
 
-inline OCHit getClosestHit() {
+__device__ inline OCHit getClosestHit() {
     OCHit ret;
     ret.instance_id = oc_optixGetInstanceId();
     ret.prim_id = oc_optixGetPrimitiveIndex();
@@ -138,7 +225,7 @@ inline OCHit getClosestHit() {
 }
 
 template<typename T = OCHit>
-inline T *getPRD() {
+__device__ inline T *getPRD() {
     const unsigned int u0 = oc_optixGetPayload_0();
     const unsigned int u1 = oc_optixGetPayload_1();
     return reinterpret_cast<T *>(unpack_pointer(u0, u1));
@@ -152,3 +239,4 @@ extern "C" __global__ void __closesthit__closest() {
 extern "C" __global__ void __closesthit__any() {
     setPayloadOcclusion(true);
 }
+
