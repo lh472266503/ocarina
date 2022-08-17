@@ -4,6 +4,7 @@
 
 #include "optix_accel.h"
 #include "cuda_device.h"
+#include "cuda_command_visitor.h"
 
 namespace ocarina {
 
@@ -27,7 +28,7 @@ void mat4x4_to_array12(float4x4 mat, float *output) {
 }
 }// namespace detail
 
-void OptixAccel::build_bvh() noexcept {
+void OptixAccel::build_bvh(CUDACommandVisitor*visitor) noexcept {
     _device->use_context([&] {
         vector<OptixTraversableHandle> traversable_handles;
         for (const Mesh::Impl *mesh : _meshes) {
@@ -74,6 +75,30 @@ void OptixAccel::build_bvh() noexcept {
             detail::mat4x4_to_array12(transform, optix_instance.transform);
             optix_instances.push_back(optix_instance);
         }
+
+        _instances.upload_immediately(optix_instances.data(), visitor);
+        OC_OPTIX_CHECK(optixAccelBuild(_device->optix_device_context(),
+                                    nullptr, &accel_options,
+                                    &instance_input, 1,
+                                    temp_buffer.ptr<CUdeviceptr>(),
+                                    ias_buffer_sizes.tempSizeInBytes,
+                                    ias_buffer.ptr<CUdeviceptr>(),
+                                    ias_buffer_sizes.outputSizeInBytes,
+                                    &_tlas_handle, &emit_desc, 1));
+
+        auto compacted_gas_size = _device->download<size_t>(emit_desc.result);
+        OC_INFO_FORMAT("tlas : compacted_gas_size is {} byte", compacted_gas_size);
+
+        if (compacted_gas_size < ias_buffer_sizes.outputSizeInBytes) {
+            _tlas_buffer = Buffer<std::byte>(_device,compacted_gas_size);
+            OC_OPTIX_CHECK(optixAccelCompact(_device->optix_device_context(), nullptr,
+                                          _tlas_handle,
+                                          _tlas_buffer.ptr<CUdeviceptr>(),
+                                          compacted_gas_size,
+                                          &_tlas_handle));
+            OC_INFO("tlas : optixAccelCompact was executed");
+        }
+        OC_CU_CHECK(cuCtxSynchronize());
     });
 }
 

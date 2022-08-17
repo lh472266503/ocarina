@@ -99,7 +99,7 @@ void CUDACommandVisitor::visit(const MeshBuildCommand *cmd) noexcept {
     cmd->mesh<CUDAMesh>()->build_bvh(cmd);
 }
 void CUDACommandVisitor::visit(const AccelBuildCommand *cmd) noexcept {
-    cmd->accel<OptixAccel>()->build_bvh();
+    cmd->accel<OptixAccel>()->build_bvh(this);
 }
 
 }// namespace ocarina

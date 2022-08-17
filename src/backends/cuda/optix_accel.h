@@ -10,9 +10,10 @@
 
 namespace ocarina {
 class CUDADevice;
+class CUDACommandVisitor;
 class OptixAccel : public Accel::Impl {
 private:
-    ocarina::unique_ptr<Buffer<std::byte>> _tlas_buffer;
+    Buffer<std::byte> _tlas_buffer;
     OptixTraversableHandle _tlas_handle{};
     ocarina::vector<const Mesh::Impl *> _meshes;
     ocarina::vector<float4x4> _transforms;
@@ -27,6 +28,6 @@ public:
         _transforms.push_back(mat);
     }
 
-    void build_bvh() noexcept;
+    void build_bvh(CUDACommandVisitor *visitor) noexcept;
 };
 }// namespace ocarina

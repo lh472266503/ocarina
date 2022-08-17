@@ -137,6 +137,10 @@ public:
         return view(0, _size).upload(OC_FORWARD(args)...);
     }
 
+    void upload_immediately(const void *data, CommandVisitor *visitor) const noexcept {
+        upload_sync(data)->accept(*visitor);
+    }
+
     template<typename... Args>
     [[nodiscard]] BufferDownloadCommand *download(Args &&...args) const noexcept {
         return view(0, _size).download(OC_FORWARD(args)...);

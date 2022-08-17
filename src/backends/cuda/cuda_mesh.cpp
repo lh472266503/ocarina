@@ -48,7 +48,7 @@ void CUDAMesh::build_bvh(const MeshBuildCommand *cmd) noexcept {
 
         auto compacted_gas_size = _device->download<size_t>(emit_desc.result);
 
-        OC_INFO_FORMAT("compacted_gas_size is {} byte", compacted_gas_size);
+        OC_INFO_FORMAT("blas : compacted_gas_size is {} byte", compacted_gas_size);
 
         if (compacted_gas_size < gas_buffer_sizes.outputSizeInBytes) {
             _blas_buffer = Buffer<std::byte>(_device, compacted_gas_size);
@@ -57,7 +57,7 @@ void CUDAMesh::build_bvh(const MeshBuildCommand *cmd) noexcept {
                                              _blas_buffer.handle(),
                                              compacted_gas_size,
                                              &_blas_handle));
-            OC_INFO("optixAccelCompact was executed");
+            OC_INFO("blas : optixAccelCompact was executed");
         }
         OC_CU_CHECK(cuCtxSynchronize());
     });
