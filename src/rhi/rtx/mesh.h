@@ -29,18 +29,17 @@ public:
     }
 };
 
-template<typename Vertex, typename Tri>
-Mesh Device::create_mesh(const Buffer<Vertex> &v_buffer, const Buffer<Tri> &t_buffer,
+template<typename VBuffer, typename TBuffer>
+Mesh Device::create_mesh(const VBuffer &v_buffer, const TBuffer &t_buffer,
                          AccelUsageTag usage_tag, AccelGeomTag geom_tag) noexcept {
     MeshParams params;
-    params.vert_handle = v_buffer.handle();
-    params.vert_handle_ptr = v_buffer.handle_ptr();
-    params.vert_stride = sizeof(Vertex);
+    params.vert_handle = v_buffer.head();
+    params.vert_stride = VBuffer::element_size;
     params.vert_num = v_buffer.size();
 
-    params.tri_handle = t_buffer.handle();
+    params.tri_handle = t_buffer.head();
     params.tri_num = t_buffer.size();
-    params.tri_stride = sizeof(Tri);
+    params.tri_stride = TBuffer::element_size;
 
     params.usage_tag = usage_tag;
     params.geom_tag = geom_tag;

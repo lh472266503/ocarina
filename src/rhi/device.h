@@ -72,9 +72,9 @@ public:
     [[nodiscard]] Buffer<T> create_buffer(size_t size) noexcept {
         return Buffer<T>(_impl.get(), size);
     }
-    template<typename Vertex, typename Tri>
-    [[nodiscard]] Mesh create_mesh(const Buffer<Vertex> &v_buffer,
-                                   const Buffer<Tri> &t_buffer,
+    template<typename VBuffer, typename TBuffer>
+    [[nodiscard]] Mesh create_mesh(const VBuffer &v_buffer,
+                                   const TBuffer &t_buffer,
                                    AccelUsageTag usage_tag = AccelUsageTag::FAST_TRACE,
                                    AccelGeomTag geom_tag = AccelGeomTag::DISABLE_ANYHIT) noexcept;// implement in mesh.h
     [[nodiscard]] Stream create_stream() noexcept;

@@ -24,7 +24,7 @@ private:
     size_t _total_size{};
 
 public:
-    BufferView(Buffer<T> buffer);
+    BufferView(const Buffer<T> &buffer);
     [[nodiscard]] handle_ty handle() const { return _handle; }
     [[nodiscard]] size_t size() const { return _size; }
     BufferView(handle_ty handle, size_t offset, size_t size, size_t total_size)
@@ -33,28 +33,26 @@ public:
     BufferView(handle_ty handle, size_t total_size)
         : _handle(handle), _offset(0), _total_size(total_size), _size(total_size) {}
 
+    [[nodiscard]] handle_ty head() const { return _handle + _offset * element_size; }
+
     [[nodiscard]] BufferView<T> subview(size_t offset, size_t size) const noexcept {
         return BufferView<T>(_handle, _offset + offset, size, _total_size);
     }
 
     [[nodiscard]] BufferUploadCommand *upload(const void *data) const noexcept {
-        return BufferUploadCommand::create(data, _handle + _offset * element_size,
-                                           _size * element_size, true);
+        return BufferUploadCommand::create(data, head(), _size * element_size, true);
     }
 
     [[nodiscard]] BufferUploadCommand *upload_sync(const void *data) const noexcept {
-        return BufferUploadCommand::create(data, _handle + _offset * element_size,
-                                           _size * element_size, false);
+        return BufferUploadCommand::create(data, head(), _size * element_size, false);
     }
 
     [[nodiscard]] BufferDownloadCommand *download(void *data) const noexcept {
-        return BufferDownloadCommand::create(data, _handle + _offset * element_size,
-                                             _size * element_size, true);
+        return BufferDownloadCommand::create(data, head(), _size * element_size, true);
     }
 
     [[nodiscard]] BufferDownloadCommand *download_sync(void *data) const noexcept {
-        return BufferDownloadCommand::create(data, _handle + _offset * element_size,
-                                             _size * element_size, false);
+        return BufferDownloadCommand::create(data, head(), _size * element_size, false);
     }
 };
 
@@ -73,12 +71,16 @@ public:
           _size(size) {}
 
     Buffer(BufferView<T> buffer_view)
-        : RHIResource(nullptr, Tag::BUFFER, buffer_view.handle()),
+        : RHIResource(nullptr, Tag::BUFFER, buffer_view.head()),
           _size(buffer_view.size()) {}
 
-    [[nodiscard]] BufferView<T> view(size_t offset, size_t size) const noexcept {
+    [[nodiscard]] BufferView<T> view(size_t offset = 0, size_t size = 0) const noexcept {
+        size = size == 0 ? _size : size;
         return BufferView<T>(_handle, offset, size, _size);
     }
+
+    /// head of the buffer
+    [[nodiscard]] handle_ty head() const noexcept { return handle(); }
 
     /// for dsl trait
     auto operator[](int i) { return T{}; }
@@ -128,7 +130,7 @@ public:
 };
 
 template<typename T>
-BufferView<T>::BufferView(Buffer<T> buffer)
+BufferView<T>::BufferView(const Buffer<T> &buffer)
     : BufferView(buffer.handle(), buffer.size()) {}
 
 }// namespace ocarina

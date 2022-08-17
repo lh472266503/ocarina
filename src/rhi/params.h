@@ -30,7 +30,6 @@ enum AccelGeomTag : uint8_t {
 };
 
 struct MeshParams {
-    const void *vert_handle_ptr{};
     handle_ty vert_handle{};
     uint vert_stride{};
     uint vert_num{};
