@@ -506,6 +506,17 @@ def convert_cuda_device_resource():
         file.close()
         save_to_inl(cuda_device_resource, string, os.path.join(curr_dir, cuda_device_resource + "_embed.h"))
 
+def convert_optix_device_header():
+    curr_dir = dirname(realpath(__file__))
+    optix_device_header = "optix_device_header"
+
+    print(os.path.join(curr_dir, optix_device_header + ".h"))
+    
+    with open(os.path.join(curr_dir, optix_device_header + ".h"), "r") as file:
+        string = file.read()
+        file.close()
+        save_to_inl(optix_device_header, string, os.path.join(curr_dir, optix_device_header + "_embed.h"))
+
 def save_to_inl(var_name, content, fn):
     string = f"static const char {var_name}[] = " + "{\n    "
     line_len = 20
@@ -545,6 +556,7 @@ def main():
     define_triple_funcs()
     convert_cuda_math()
     convert_cuda_device_resource()
+    convert_optix_device_header()
     define_vec_func()
     define_make_vecs()
     define_make_matrix()
