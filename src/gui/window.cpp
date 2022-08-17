@@ -283,6 +283,18 @@ void Window::set_size(uint2 size) noexcept {
     }
 }
 
+void Window::run_one_frame(Window::UpdateCallback &&draw) noexcept  {
+    _begin_frame();
+    draw(0);
+    _end_frame();
+}
+
+void Window::run(Window::UpdateCallback &&draw) noexcept {
+    while (!should_close()) {
+        run_one_frame(std::move(draw));
+    }
+}
+
 OC_EXPORT_API ocarina::Window *create(const char *name, uint2 initial_size, bool resizable) {
     return ocarina::new_with_allocator<ocarina::Window>(name, initial_size, resizable);
 }
