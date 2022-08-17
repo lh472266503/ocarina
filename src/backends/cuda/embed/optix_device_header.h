@@ -16,8 +16,8 @@ static __forceinline__ __device__ void oc_optixSetPayload_0( unsigned int p ) {
     asm volatile( "call _optix_set_payload, (%0, %1);" : : "r"( 0 ), "r"( p ) : );
 }
 
-static __forceinline__ __device__ unsigned int oc_optixGetPayload_0() {
-    unsigned int result;
+static __forceinline__ __device__ unsigned int oc_oc_optixGetPayload_0() {
+    unsigned int resuoc_lt;
     asm volatile( "call (%0), _optix_get_payload, (%1);" : "=r"( result ) : "r"( 0 ) : );
     return result;
 }
@@ -102,20 +102,25 @@ static __forceinline__ __device__ void oc_optixTrace( OptixPayloadTypeID     typ
 
 /// optix builtin end
 
-inline void *unpackPointer(unsigned int i0, unsigned int i1) {
+inline void *unpack_pointer(unsigned int i0, unsigned int i1) {
     const unsigned long long uptr = static_cast<unsigned long long>( i0 ) << 32 | i1;
     void *ptr = reinterpret_cast<void *>( uptr );
     return ptr;
 }
 
-inline void packPointer(void *ptr, unsigned int &i0, unsigned int &i1) {
+inline void pack_pointer(void *ptr, unsigned int &i0, unsigned int &i1) {
     const auto uptr = reinterpret_cast<unsigned long long>( ptr );
     i0 = uptr >> 32;
     i1 = uptr & 0x00000000ffffffff;
 }
 
 inline void setPayloadOcclusion(bool occluded) {
-    optixSetPayload_0(static_cast<unsigned int>( occluded ));
+    oc_optixSetPayload_0(static_cast<unsigned int>( occluded ));
+}
+
+static LM_GPU_INLINE oc_float2 getTriangleBarycentric() {
+    auto barycentric = oc_optixGetTriangleBarycentrics();
+    return oc_make_float2(1 - barycentric.y - barycentric.x, barycentric.x);
 }
 
 struct alignas(16) OCHit {
@@ -124,18 +129,26 @@ struct alignas(16) OCHit {
     oc_float2 bary;
 };
 
+inline OCHit getClosestHit() {
+    OCHit ret;
+    ret.instance_id = oc_optixGetInstanceId();
+    ret.prim_id = oc_optixGetPrimitiveIndex();
+    ret.bary = getTriangleBarycentric();
+    return ret;
+}
+
 template<typename T = OCHit>
 inline T *getPRD() {
-    const unsigned int u0 = optixGetPayload_0();
-    const unsigned int u1 = optixGetPayload_1();
-    return reinterpret_cast<T *>(unpackPointer(u0, u1));
+    const unsigned int u0 = oc_optixGetPayload_0();
+    const unsigned int u1 = oc_optixGetPayload_1();
+    return reinterpret_cast<T *>(unpack_pointer(u0, u1));
 }
 
 
 extern "C" __global__ void __closesthit__closest() {
-
+    OCHit *hit = getPRD<OCHit>();
 }
 
 extern "C" __global__ void __closesthit__any() {
-
+    setPayloadOcclusion(true);
 }
