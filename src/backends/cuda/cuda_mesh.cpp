@@ -28,7 +28,7 @@ void CUDAMesh::build_bvh(const MeshBuildCommand *cmd) noexcept {
             1,// num_build_inputs
             &gas_buffer_sizes));
 
-        OC_INFO_FORMAT("outputSizeInBytes is {} byte, tempSizeInBytes is {} byte",
+        OC_INFO_FORMAT("blas outputSizeInBytes is {} byte, tempSizeInBytes is {} byte",
                        gas_buffer_sizes.outputSizeInBytes,
                        gas_buffer_sizes.tempSizeInBytes);
 
