@@ -35,12 +35,12 @@ ocarina::string CUDACompiler::compile(const string &cu, const string &fn, int sm
         "-default-device",
     };
     ocarina::vector<string> includes;
-//    if (_function.is_raytracing()) {
+    if (_function.is_raytracing()) {
         includes.push_back(ocarina::format("-I {}", optix_include));
         compile_option.push_back(includes.back().c_str());
         header_names.push_back("optix_device_header.h");
         header_sources.push_back(optix_device_header);
-//    }
+    }
     for (const auto & header_name: header_names) {
         includes.push_back(ocarina::format("-include={}", header_name));
         compile_option.push_back(includes.back().c_str());

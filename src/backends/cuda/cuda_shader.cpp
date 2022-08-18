@@ -57,4 +57,8 @@ void CUDAShader::compute_fit_size() noexcept {
     });
 }
 
+CUDAShader *CUDAShader::create(Device::Impl *device, const string &ptx, const Function &f) {
+    return ocarina::new_with_allocator<CUDAShader>(device, ptx, f);
+}
+
 }// namespace ocarina

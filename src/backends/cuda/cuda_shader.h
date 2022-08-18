@@ -21,11 +21,11 @@ public:
     CUDAShader(Device::Impl *device,
                const ocarina::string &ptx,
                const Function &f);
-
+    static CUDAShader *create(Device::Impl *device,
+                              const string &ptx,
+                              const Function &f);
     ~CUDAShader();
-
     void launch(handle_ty stream, ShaderDispatchCommand *cmd) noexcept override;
-
     void compute_fit_size() noexcept override;
 };
 
