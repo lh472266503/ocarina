@@ -15,6 +15,22 @@ struct ImageData {
     OCPixelStorage pixel_storage;
 };
 
+template<typename T, size_t N>
+class oc_array {
+private:
+    T _data[N];
+
+public:
+    template<typename... Elem>
+    __device__ constexpr oc_array(Elem... elem) noexcept : _data{elem...} {}
+    __device__ constexpr oc_array(oc_array &&) noexcept = default;
+    __device__ constexpr oc_array(const oc_array &) noexcept = default;
+    __device__ constexpr oc_array &operator=(oc_array &&) noexcept = default;
+    __device__ constexpr oc_array &operator=(const oc_array &) noexcept = default;
+    [[nodiscard]] __device__ T &operator[](size_t i) noexcept { return _data[i]; }
+    [[nodiscard]] __device__ T operator[](size_t i) const noexcept { return _data[i]; }
+};
+
 using uchar = unsigned char;
 
 __device__ auto oc_tex_sample_float1(ImageData obj, oc_float u, oc_float v) noexcept {

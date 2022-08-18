@@ -286,6 +286,15 @@ struct Computable<Matrix<N>>
     OC_COMPUTABLE_COMMON(Computable<Matrix<N>>)
 };
 
+class Accel;
+
+template<>
+struct Computable<Accel> {
+    OC_COMPUTABLE_COMMON(Computable<Accel>)
+
+
+};
+
 template<typename... T>
 struct Computable<ocarina::tuple<T...>> {
     using Tuple = ocarina::tuple<T...>;
