@@ -47,6 +47,7 @@ int main(int argc, char *argv[]) {
     Context context(path.parent_path());
     context.clear_cache();
     Device device = context.create_device("cuda");
+    device.init_rtx();
     Stream stream = device.create_stream();
     auto [vertices, triangle] = get_cube();
 
@@ -65,9 +66,9 @@ int main(int argc, char *argv[]) {
     stream << accel.build_bvh();
 
     Kernel kernel = [&](Int a) {
-        Var<Ray> r = make_ray(float3(0), float3());
+        //        Var<Ray> r = make_ray(float3(0), float3());
+        //        Float3 org = r->origin();
         Float3 pos = v_buffer.read(0);
-        Float3 org = r->origin();
     };
     auto shader = device.compile(kernel);
 

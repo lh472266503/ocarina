@@ -127,11 +127,9 @@ public:
     Shader &operator()(prototype_to_shader_invocation_t<Args> &&...args) noexcept {
         _argument_list.clear();
         (_argument_list << ... << OC_FORWARD(args));
-#if CUDA_ARGUMENT_PUSH
         for (const auto &uniform : _function.uniform_vars()) {
             _argument_list.push_handle_ptr(const_cast<void *>(uniform.handle_ptr()));
         }
-#endif
         return *this;
     }
 };

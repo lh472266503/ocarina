@@ -104,6 +104,5 @@ using handle_ty = uint64_t;
 #define OC_NDSC_INLINE [[nodiscard]] inline
 #define OC_NODISCARD [[nodiscard]]
 
-#define CUDA_ARGUMENT_PUSH 1
 
 #define TYPE_PREFIX "oc_"

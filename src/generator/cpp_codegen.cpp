@@ -419,12 +419,10 @@ void CppCodegen::_emit_arguments(const Function &f) noexcept {
         _emit_variable_define(v);
         current_scratch() << ",";
     }
-#if CUDA_ARGUMENT_PUSH
     for (const auto &uniform : f.uniform_vars()) {
         _emit_variable_define(uniform.expression()->variable());
         current_scratch() << ",";
     }
-#endif
     if (f.is_kernel()) {
         Variable dispatch_dim(Type::of<uint3>(), Variable::Tag::LOCAL, -1, "d_dim");
         _emit_variable_define(dispatch_dim);
@@ -438,11 +436,6 @@ void CppCodegen::_emit_arguments(const Function &f) noexcept {
 void CppCodegen::emit(const Function &func) noexcept {
     FUNCTION_GUARD(func)
     TIMER_TAG(codegen, "function " + func.func_name() + " generated");
-#if CUDA_ARGUMENT_PUSH == 0
-    func.for_each_uniform_var([&](const UniformBinding &uniform) {
-        _emit_uniform_var(uniform);
-    });
-#endif
     func.for_each_structure([&](const Type *type) {
         visit(type);
     });

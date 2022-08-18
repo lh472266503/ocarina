@@ -27,15 +27,6 @@ public:
                      const Function &f) : CUDAShader(device, f) {
         OC_CU_CHECK(cuModuleLoadData(&_module, ptx.c_str()));
         OC_CU_CHECK(cuModuleGetFunction(&_func_handle, _module, _function.func_name().c_str()));
-#if CUDA_ARGUMENT_PUSH == 0
-        _function.for_each_uniform_var([&](const UniformBinding &uniform) {
-            const string &var_name = uniform.expression()->variable().name();
-            CUdeviceptr ptr{};
-            size_t size{};
-            OC_CU_CHECK(cuModuleGetGlobal(&ptr, &size, _module, var_name.c_str()));
-            OC_CU_CHECK(cuMemcpyHtoD(ptr, uniform.handle_ptr(), size));
-        });
-#endif
     }
     ~CUDASimpleShader() override {
         OC_CU_CHECK(cuModuleUnload(_module));
