@@ -17,7 +17,6 @@ protected:
 
 public:
     CUDAShader(Device::Impl *device,
-               const ocarina::string &ptx,
                const Function &f);
     virtual ~CUDAShader() {}
     static CUDAShader *create(Device::Impl *device,
