@@ -66,6 +66,8 @@ int main(int argc, char *argv[]) {
 
     Kernel kernel = [&](Int a) {
         Var<Ray> r = make_ray(float3(0), float3());
+        Float3 pos = v_buffer.read(0);
+        Float3 org = r->origin();
     };
     auto shader = device.compile(kernel);
 

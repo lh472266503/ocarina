@@ -148,12 +148,22 @@ void CUDACodegen::_emit_function(const Function &f) noexcept {
 
 void CUDACodegen::_emit_builtin_vars_define(const Function &f) noexcept {
     if (f.is_kernel()) {
+        if (!f.is_raytracing()) {
+            _emit_indent();
+            current_scratch() << "oc_uint3 d_idx = oc_make_uint3(blockIdx.x * blockDim.x + threadIdx.x,"
+                                 "blockIdx.y * blockDim.y + threadIdx.y,"
+                                 "blockIdx.z * blockDim.z + threadIdx.z);\n";
+            _emit_indent();
+            current_scratch() << "if (oc_any(d_idx >= d_dim)) { return; }\n";
+        } else {
+            _emit_indent();
+            current_scratch() << "oc_uint3 d_idx = getLaunchIndex();\n";
+        }
+    } else {
         _emit_indent();
         current_scratch() << "oc_uint3 d_idx = oc_make_uint3(blockIdx.x * blockDim.x + threadIdx.x,"
                              "blockIdx.y * blockDim.y + threadIdx.y,"
                              "blockIdx.z * blockDim.z + threadIdx.z);\n";
-        _emit_indent();
-        current_scratch() << "if (oc_any(d_idx >= d_dim)) { return; }\n";
     }
     CppCodegen::_emit_builtin_vars_define(f);
 }

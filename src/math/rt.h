@@ -60,11 +60,11 @@ public:
     }
 
     [[nodiscard]] auto origin() const noexcept {
-        return make_float3(org_min);
+        return org_min.xyz();
     }
 
     [[nodiscard]] auto direction() const noexcept {
-        return make_float3(dir_max);
+        return dir_max.xyz();
     }
 
     [[nodiscard]] auto at(float t) const noexcept {

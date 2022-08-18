@@ -54,6 +54,11 @@ __device__ inline void trace(OptixTraversableHandle handle,
         std::forward<Args>(payload)...);
 }
 
+__device__ oc_uint3 getLaunchIndex() {
+    auto idx = optixGetLaunchIndex();
+    return oc_make_uint3(idx.x, idx.y, idx.z);
+}
+
 __device__ inline void *unpack_pointer(unsigned int i0, unsigned int i1) {
     const unsigned long long uptr = static_cast<unsigned long long>(i0) << 32 | i1;
     void *ptr = reinterpret_cast<void *>(uptr);
