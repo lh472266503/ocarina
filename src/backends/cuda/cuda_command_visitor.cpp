@@ -12,7 +12,7 @@
 namespace ocarina {
 void CUDACommandVisitor::visit(const BufferUploadCommand *cmd) noexcept {
     _device->use_context([&] {
-        if (cmd->async()) {
+        if (cmd->async() && _stream) {
             OC_CU_CHECK(cuMemcpyHtoDAsync(cmd->device_ptr(),
                                           cmd->host_ptr<const void *>(),
                                           cmd->size_in_bytes(),
@@ -27,7 +27,7 @@ void CUDACommandVisitor::visit(const BufferUploadCommand *cmd) noexcept {
 
 void CUDACommandVisitor::visit(const BufferDownloadCommand *cmd) noexcept {
     _device->use_context([&] {
-        if (cmd->async()) {
+        if (cmd->async() && _stream) {
             OC_CU_CHECK(cuMemcpyDtoHAsync(cmd->host_ptr<void *>(),
                                           cmd->device_ptr(),
                                           cmd->size_in_bytes(),
@@ -73,7 +73,7 @@ void CUDACommandVisitor::visit(const ImageUploadCommand *cmd) noexcept {
         desc.srcHost = cmd->host_ptr<const void *>();
         desc.dstMemoryType = CU_MEMORYTYPE_ARRAY;
         desc.dstArray = cmd->device_ptr<CUarray>();
-        if (cmd->async()) {
+        if (cmd->async() && _stream) {
             OC_CU_CHECK(cuMemcpy2DAsync(&desc, _stream));
         } else {
             OC_CU_CHECK(cuMemcpy2D(&desc));
@@ -88,7 +88,7 @@ void CUDACommandVisitor::visit(const ImageDownloadCommand *cmd) noexcept {
         desc.dstMemoryType = CU_MEMORYTYPE_HOST;
         desc.srcArray = cmd->device_ptr<CUarray>();
         desc.dstHost = reinterpret_cast<void *>(cmd->host_ptr());
-        if (cmd->async()) {
+        if (cmd->async() && _stream) {
             OC_CU_CHECK(cuMemcpy2DAsync(&desc, _stream));
         } else {
             OC_CU_CHECK(cuMemcpy2D(&desc));

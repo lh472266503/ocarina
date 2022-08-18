@@ -11,12 +11,13 @@ namespace ocarina {
 class CUDADevice;
 class CUDACommandVisitor final : public CommandVisitor {
 private:
-    CUstream _stream{};
     CUDADevice *_device{};
+    CUstream _stream{};
 
 public:
-    CUDACommandVisitor(CUstream stream, CUDADevice *device)
-        : _stream(stream), _device(device) {}
+    explicit CUDACommandVisitor(CUDADevice *device, CUstream stream = nullptr)
+        : _device(device),
+          _stream(stream) {}
     void visit(const BufferUploadCommand *cmd) noexcept override;
     void visit(const BufferDownloadCommand *cmd) noexcept override;
     void visit(const ImageUploadCommand *cmd) noexcept override;

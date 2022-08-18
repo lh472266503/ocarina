@@ -21,7 +21,7 @@ CUDAStream::~CUDAStream() noexcept {
 }
 
 void CUDAStream::commit(const Commit &commit) noexcept {
-    CUDACommandVisitor cmd_visitor{_stream, _device};
+    CUDACommandVisitor cmd_visitor{_device, _stream};
     for (auto &cmd : _command_queue) {
         cmd->accept(cmd_visitor);
     }
