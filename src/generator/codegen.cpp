@@ -82,7 +82,7 @@ void Codegen::_emit_struct_name(uint64_t hash) noexcept {
 }
 
 void Codegen::_emit_member_name(int index) noexcept {
-    current_scratch() << "member_" << index;
+    current_scratch() << detail::member_name(index);
 }
 
 }// namespace ocarina

@@ -12,49 +12,18 @@ struct alignas(16) OCHit {
 
 struct alignas(16) OCRay {
 public:
-    float org_x{0.f};
-    float org_y{0.f};
-    float org_z{0.f};
-    float dir_x{0.f};
-    float dir_y{0.f};
-    float dir_z{0.f};
-    float t_max{0.f};
-    float t_min{0.f};
-
-public:
-    explicit __device__ Ray(float t_max = ray_t_max) noexcept
-        : t_max(t_max) {}
-
-    __device__ OCRay(const oc_float3 origin, const oc_float3 direction,
-                     float t_max = ray_t_max) noexcept : t_max(t_max) {
-        update_origin(origin);
-        update_direction(direction);
-    }
-
-    __device__ oc_float3 at(float t) const {
-        return origin() + direction() * t;
-    }
-
-    __device__ void update_origin(oc_float3 origin) noexcept {
-        org_x = origin.x;
-        org_y = origin.y;
-        org_z = origin.z;
-    }
-
-    __device__ void update_direction(oc_float3 direction) noexcept {
-        dir_x = direction.x;
-        dir_y = direction.y;
-        dir_z = direction.z;
-    }
-
-    __device__ oc_float3 origin() const noexcept {
-        return oc_make_float3(org_x, org_y, org_z);
-    }
-
-    __device__ oc_float3 direction() const noexcept {
-        return oc_make_float3(dir_x, dir_y, dir_z);
-    }
+    oc_float4 m0;
+    oc_float4 m1;
 };
+
+__device__ inline OCRay oc_make_ray(oc_float3 org, oc_float3 dir, oc_float t_max = ray_t_max) noexcept {
+    OCRay ret;
+
+    ret.m0 = oc_make_float4(org, 0.f);
+    ret.m1 = oc_make_float4(dir, t_max);
+
+    return ret;
+}
 
 template<typename... Args>
 __device__ inline void trace(OptixTraversableHandle handle,

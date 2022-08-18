@@ -30,6 +30,10 @@ template<typename T>
     return "kernel_" + to_string(hash);
 }
 
+[[nodiscard]] inline string member_name(uint index) {
+    return "m" + to_string(index);
+}
+
 [[nodiscard]] inline string_view variable_prefix(Variable::Tag tag) {
     using Tag = Variable::Tag;
     switch (tag) {
