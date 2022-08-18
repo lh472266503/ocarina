@@ -11,9 +11,7 @@
 namespace ocarina {
 class CUDADevice;
 class CUDAShader : public Shader<>::Impl {
-private:
-    CUmodule _module{};
-    CUfunction _func_handle{};
+protected:
     const Function &_function;
     CUDADevice *_device{};
 
@@ -21,12 +19,10 @@ public:
     CUDAShader(Device::Impl *device,
                const ocarina::string &ptx,
                const Function &f);
+    virtual ~CUDAShader() {}
     static CUDAShader *create(Device::Impl *device,
                               const string &ptx,
                               const Function &f);
-    ~CUDAShader();
-    void launch(handle_ty stream, ShaderDispatchCommand *cmd) noexcept override;
-    void compute_fit_size() noexcept override;
 };
 
 }// namespace ocarina
