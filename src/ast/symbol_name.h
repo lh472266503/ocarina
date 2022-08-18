@@ -30,6 +30,10 @@ template<typename T>
     return "kernel_" + to_string(hash);
 }
 
+[[nodiscard]] inline string raygen_name(uint64_t hash) {
+    return "__raygen__" + to_string(hash);
+}
+
 [[nodiscard]] inline string member_name(uint index) {
     return "m" + to_string(index);
 }

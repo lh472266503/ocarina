@@ -52,7 +52,7 @@ public:
                                    block_dim.x, block_dim.y, block_dim.z,
                                    0, reinterpret_cast<CUstream>(stream), cmd->args().data(), nullptr));
     }
-    void compute_fit_size() noexcept {
+    void compute_fit_size() noexcept override {
         _device->use_context([&] {
             int min_grid_size;
             int auto_block_size;
@@ -65,11 +65,47 @@ public:
     }
 };
 
+struct alignas(OPTIX_SBT_RECORD_ALIGNMENT) SBTRecord {
+    std::byte data[OPTIX_SBT_RECORD_HEADER_SIZE];
+};
+
+struct ProgramName {
+    const char *raygen{};
+    const char *closesthit_closest{};
+    const char *closesthit_any{};
+};
+
+struct ProgramGroupTable {
+    OptixProgramGroup raygen_group{nullptr};
+    OptixProgramGroup miss_closest_group{nullptr};
+    OptixProgramGroup hit_closest_group{nullptr};
+    OptixProgramGroup hit_any_group{nullptr};
+
+    ProgramGroupTable() = default;
+
+    static constexpr auto size() {
+        return sizeof(ProgramGroupTable) / sizeof(OptixProgramGroup);
+    }
+
+    void clear() const {
+        OC_OPTIX_CHECK(optixProgramGroupDestroy(raygen_group));
+        OC_OPTIX_CHECK(optixProgramGroupDestroy(hit_closest_group));
+        OC_OPTIX_CHECK(optixProgramGroupDestroy(hit_any_group));
+        OC_OPTIX_CHECK(optixProgramGroupDestroy(miss_closest_group));
+    }
+
+    ~ProgramGroupTable() { clear(); }
+};
+
 class OptixShader : public CUDAShader {
 private:
     OptixModule _optix_module{};
     OptixPipeline _optix_pipeline{};
     OptixPipelineCompileOptions _pipeline_compile_options = {};
+    ProgramGroupTable _program_group_table;
+    Buffer<SBTRecord> _sbt_records{};
+    Buffer<SBTRecord> _callable_records{};
+    OptixShaderBindingTable _sbt{};
 
 public:
     void init_module(const string_view &ptx_code) {
@@ -108,15 +144,103 @@ public:
                                 log);
     }
 
+    void build_pipeline() noexcept {
+        string raygen_entry = _function.func_name();
+        ProgramName entries{
+            raygen_entry.c_str(),
+            "__closesthit__closest",
+            "__closesthit__any"};
+
+        _program_group_table = create_program_groups(_device->optix_device_context(), entries);
+    }
+
+    void build_sbt() {
+    }
+
+    ProgramGroupTable create_program_groups(OptixDeviceContext optix_device_context,
+                                            const ProgramName &program_name) {
+        OptixProgramGroupOptions program_group_options = {};
+        char log[2048];
+        size_t sizeof_log = sizeof(log);
+        ProgramGroupTable program_group_table;
+        {
+            OptixProgramGroupDesc raygen_prog_group_desc = {};
+            raygen_prog_group_desc.kind = OPTIX_PROGRAM_GROUP_KIND_RAYGEN;
+            raygen_prog_group_desc.raygen.module = _optix_module;
+            raygen_prog_group_desc.raygen.entryFunctionName = program_name.raygen;
+            OC_OPTIX_CHECK_WITH_LOG(optixProgramGroupCreate(
+                                        optix_device_context,
+                                        &raygen_prog_group_desc,
+                                        1,// num program groups
+                                        &program_group_options,
+                                        log,
+                                        &sizeof_log,
+                                        &(program_group_table.raygen_group)),
+                                    log);
+        }
+        {
+            OptixProgramGroupDesc hit_prog_group_desc = {};
+            hit_prog_group_desc.kind = OPTIX_PROGRAM_GROUP_KIND_HITGROUP;
+            hit_prog_group_desc.hitgroup.moduleCH = _optix_module;
+            hit_prog_group_desc.hitgroup.entryFunctionNameCH = program_name.closesthit_closest;
+            sizeof_log = sizeof(log);
+
+            OC_OPTIX_CHECK_WITH_LOG(optixProgramGroupCreate(
+                                        optix_device_context,
+                                        &hit_prog_group_desc,
+                                        1,// num program groups
+                                        &program_group_options,
+                                        log,
+                                        &sizeof_log,
+                                        &(program_group_table.hit_closest_group)),
+                                    log);
+
+            memset(&hit_prog_group_desc, 0, sizeof(OptixProgramGroupDesc));
+            hit_prog_group_desc.kind = OPTIX_PROGRAM_GROUP_KIND_HITGROUP;
+            hit_prog_group_desc.hitgroup.moduleCH = _optix_module;
+            hit_prog_group_desc.hitgroup.entryFunctionNameCH = program_name.closesthit_any;
+            sizeof_log = sizeof(log);
+
+            OC_OPTIX_CHECK_WITH_LOG(optixProgramGroupCreate(
+                                        optix_device_context,
+                                        &hit_prog_group_desc,
+                                        1,// num program groups
+                                        &program_group_options,
+                                        log,
+                                        &sizeof_log,
+                                        &(program_group_table.hit_any_group)),
+                                    log);
+        }
+        {
+            OptixProgramGroupDesc miss_prog_group_desc = {};
+            miss_prog_group_desc.kind = OPTIX_PROGRAM_GROUP_KIND_MISS;
+            sizeof_log = sizeof(log);
+            OC_OPTIX_CHECK_WITH_LOG(optixProgramGroupCreate(
+                                        optix_device_context,
+                                        &miss_prog_group_desc,
+                                        1,// num program groups
+                                        &program_group_options,
+                                        log,
+                                        &sizeof_log,
+                                        &(program_group_table.miss_closest_group)),
+                                    log);
+        }
+
+        return program_group_table;
+    }
+
     OptixShader(Device::Impl *device,
                 const ocarina::string &ptx,
                 const Function &f) : CUDAShader(device, f) {
         _device->init_optix_context();
         init_module(ptx);
+        build_pipeline();
     }
     void launch(handle_ty stream, ShaderDispatchCommand *cmd) noexcept override {
     }
     ~OptixShader() override {
+        optixModuleDestroy(_optix_module);
+        optixPipelineDestroy(_optix_pipeline);
     }
 };
 

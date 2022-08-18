@@ -217,7 +217,11 @@ ocarina::span<const Variable> Function::builtin_vars() const noexcept {
 
 ocarina::string Function::func_name() const noexcept {
     if (is_kernel()) {
-        return detail::kernel_name(hash());
+        if (is_raytracing()) {
+            return detail::raygen_name(hash());
+        } else {
+            return detail::kernel_name(hash());
+        }
     } else {
         return detail::func_name(hash());
     }
