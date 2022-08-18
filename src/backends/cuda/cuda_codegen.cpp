@@ -245,13 +245,13 @@ void CUDACodegen::_emit_type_name(const Type *type) noexcept {
     }
 }
 void CUDACodegen::_emit_struct_name(const Type *type) noexcept {
-//    if (type->description() == detail::TypeDesc<Ray>::description()) {
-//        current_scratch() << "OCRay";
-//    } else if (type->description() == detail::TypeDesc<Hit>::description()) {
-//        current_scratch() << "OCHit";
-//    } else {
+    if (type->description() == detail::TypeDesc<Ray>::description()) {
+        current_scratch() << "OCRay";
+    } else if (type->description() == detail::TypeDesc<Hit>::description()) {
+        current_scratch() << "OCHit";
+    } else {
         Codegen::_emit_struct_name(type);
-//    }
+    }
 }
 
 }// namespace ocarina

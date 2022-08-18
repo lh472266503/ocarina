@@ -4,10 +4,12 @@
 
 constexpr float ray_t_max = 1e16f;
 
+#include "optix.h"
+
 struct alignas(16) OCHit {
-    oc_uint inst_id{oc_uint(-1)};
-    oc_uint prim_id{oc_uint(-1)};
-    oc_float2 bary;
+    oc_uint m0{oc_uint(-1)};
+    oc_uint m1{oc_uint(-1)};
+    oc_float2 m2;
 };
 
 struct alignas(16) OCRay {
@@ -15,6 +17,7 @@ public:
     oc_float4 m0;
     oc_float4 m1;
 };
+
 
 __device__ inline OCRay oc_make_ray(oc_float3 org, oc_float3 dir, oc_float t_max = ray_t_max) noexcept {
     OCRay ret;
@@ -28,20 +31,20 @@ __device__ inline OCRay oc_make_ray(oc_float3 org, oc_float3 dir, oc_float t_max
 template<typename... Args>
 __device__ inline void trace(OptixTraversableHandle handle,
                              OCRay ray,
-                             uint32_t flags,
-                             uint32_t SBToffset,
-                             uint32_t SBTstride,
-                             uint32_t missSBTIndex,
+                             oc_uint flags,
+                             oc_uint SBToffset,
+                             oc_uint SBTstride,
+                             oc_uint missSBTIndex,
                              Args &&...payload) {
-    auto origin = ::make_float3(ray.org_x, ray.org_y, ray.org_z);
-    auto direction = ::make_float3(ray.dir_x, ray.dir_y, ray.dir_z);
+    auto origin = ::make_float3(ray.m0.x, ray.m0.y, ray.m0.z);
+    auto direction = ::make_float3(ray.m1.x, ray.m1.y, ray.m1.z);
 
     optixTrace(
         handle,
         origin,
         direction,
         0,
-        ray.t_max,
+        ray.m1.w,
         0.0f,// rayTime
         OptixVisibilityMask(1),
         flags,
@@ -76,7 +79,7 @@ __device__ inline OCHit traceClosestHit(OptixTraversableHandle handle,
                                           OCRay ray) {
     unsigned int u0, u1;
     OCHit hit;
-    pack_pointer(hit, u0, u1);
+    pack_pointer(&hit, u0, u1);
     trace(handle, ray, OPTIX_RAY_FLAG_DISABLE_ANYHIT,
           0,        // SBT offset
           0,           // SBT stride
@@ -98,9 +101,9 @@ __device__ inline bool traceAnyHit(OptixTraversableHandle handle, OCRay ray) {
 
 __device__ inline OCHit getClosestHit() {
     OCHit ret;
-    ret.instance_id = optixGetInstanceId();
-    ret.prim_id = optixGetPrimitiveIndex();
-    ret.bary = getTriangleBarycentric();
+    ret.m0 = optixGetInstanceId();
+    ret.m1 = optixGetPrimitiveIndex();
+    ret.m2 = getTriangleBarycentric();
     return ret;
 }
 
@@ -119,3 +122,5 @@ extern "C" __global__ void __closesthit__closest() {
 extern "C" __global__ void __closesthit__any() {
     setPayloadOcclusion(true);
 }
+
+

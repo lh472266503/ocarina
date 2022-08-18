@@ -8,6 +8,7 @@
 #include "embed/cuda_device_builtin_embed.h"
 #include "embed/cuda_device_math_embed.h"
 #include "embed/cuda_device_resource_embed.h"
+#include "embed/optix_device_header_embed.h"
 #include "cuda_codegen.h"
 #include "rhi/context.h"
 #include "core/util.h"
@@ -22,8 +23,8 @@ CUDACompiler::CUDACompiler(CUDADevice *device, const Function &f)
 ocarina::string CUDACompiler::compile(const string &cu, const string &fn, int sm) const noexcept {
     TIMER_TAG(compile, "compile " + fn);
     nvrtcProgram program{};
-    std::array header_names{"cuda_device_builtin.h", "cuda_device_math.h", "cuda_device_resource.h"};
-    std::array header_sources{cuda_device_builtin, cuda_device_math, cuda_device_resource};
+    std::vector header_names{"cuda_device_builtin.h", "cuda_device_math.h", "cuda_device_resource.h"};
+    std::vector header_sources{cuda_device_builtin, cuda_device_math, cuda_device_resource};
     auto compute_sm = ocarina::format("compute_{}", sm);
     ocarina::vector<const char *> compile_option = {
         "-std=c++17",
@@ -34,14 +35,17 @@ ocarina::string CUDACompiler::compile(const string &cu, const string &fn, int sm
         "-default-device",
     };
     ocarina::vector<string> includes;
+//    if (_function.is_raytracing()) {
+        includes.push_back(ocarina::format("-I {}", optix_include));
+        compile_option.push_back(includes.back().c_str());
+        header_names.push_back("optix_device_header.h");
+        header_sources.push_back(optix_device_header);
+//    }
     for (const auto & header_name: header_names) {
         includes.push_back(ocarina::format("-include={}", header_name));
         compile_option.push_back(includes.back().c_str());
     }
-//    if (_function.is_raytracing()) {
-        includes.push_back(ocarina::format("-I {}", optix_include));
-        compile_option.push_back(includes.back().c_str());
-//    }
+
     OC_NVRTC_CHECK(nvrtcCreateProgram(&program, cu.c_str(), fn.c_str(),
                                       header_names.size(), header_sources.data(),
                                       header_names.data()));

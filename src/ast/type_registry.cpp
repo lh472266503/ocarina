@@ -6,6 +6,7 @@
 #include "core/hash.h"
 #include "core/util.h"
 #include "core/logging.h"
+#include "math/rt.h"
 
 namespace ocarina {
 
@@ -66,7 +67,7 @@ namespace detail {
             }
         }
         if (pair_count == 0 && start != -1 && end != -1) {
-            break ;
+            break;
         }
     }
     return std::make_pair(start, end);
@@ -264,7 +265,9 @@ void TypeRegistry::parse_array(Type *type, ocarina::string_view desc) noexcept {
 void TypeRegistry::add_type(ocarina::unique_ptr<Type> type) {
     _type_set.insert(type.get());
     type->_index = _types.size();
-    if (auto f = Function::current(); f != nullptr && type->is_structure()) {
+    if (auto f = Function::current(); f != nullptr && type->is_structure() &&
+                                      type->description() != detail::TypeDesc<Ray>::description() &&
+                                      type->description() != detail::TypeDesc<Hit>::description()) {
         f->add_used_structure(type.get());
     }
     _types.push_back(std::move(type));
