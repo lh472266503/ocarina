@@ -94,13 +94,18 @@ public:
         return *this;
     }
 
-    template<typename T>
+    template<typename U>
     [[nodiscard]] auto ptr() const noexcept {
-        if constexpr (std::is_same_v<T, handle_ty>) {
+        if constexpr (std::is_same_v<U, handle_ty>) {
             return handle();
         } else {
-            return reinterpret_cast<T>(handle());
+            return reinterpret_cast<U>(handle());
         }
+    }
+
+    template<typename U = void *>
+    [[nodiscard]] auto address(size_t offset) const noexcept {
+        return (U) (handle() + offset * element_size);
     }
 
     /// head of the buffer

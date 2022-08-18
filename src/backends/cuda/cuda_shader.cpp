@@ -7,6 +7,7 @@
 #include "cuda_device.h"
 #include <optix_stack_size.h>
 #include <optix_stubs.h>
+#include "cuda_command_visitor.h"
 
 namespace ocarina {
 
@@ -93,8 +94,6 @@ struct ProgramGroupTable {
         OC_OPTIX_CHECK(optixProgramGroupDestroy(hit_any_group));
         OC_OPTIX_CHECK(optixProgramGroupDestroy(miss_closest_group));
     }
-
-    ~ProgramGroupTable() { clear(); }
 };
 
 class OptixShader : public CUDAShader {
@@ -144,17 +143,79 @@ public:
                                 log);
     }
 
-    void build_pipeline() noexcept {
+    void build_pipeline(OptixDeviceContext optix_device_context) noexcept {
         string raygen_entry = _function.func_name();
         ProgramName entries{
             raygen_entry.c_str(),
             "__closesthit__closest",
             "__closesthit__any"};
-
         _program_group_table = create_program_groups(_device->optix_device_context(), entries);
+        build_sbt();
+
+        constexpr int max_trace_depth = 2;
+
+        OptixPipelineLinkOptions pipeline_link_options = {};
+        pipeline_link_options.maxTraceDepth = max_trace_depth;
+#ifndef NDEBUG
+        pipeline_link_options.debugLevel = OPTIX_COMPILE_DEBUG_LEVEL_FULL;
+#else
+        pipeline_link_options.debugLevel = OPTIX_COMPILE_DEBUG_LEVEL_NONE;
+#endif
+        char log[2048];
+        size_t sizeof_log = sizeof(log);
+
+        OC_OPTIX_CHECK_WITH_LOG(optixPipelineCreate(
+                                    optix_device_context,
+                                    &_pipeline_compile_options,
+                                    &pipeline_link_options,
+                                    (OptixProgramGroup *)&_program_group_table,
+                                    _program_group_table.size(),
+                                    log, &sizeof_log,
+                                    &_optix_pipeline),
+                                log);
+
+        // Set shaders stack sizes.
+        OptixStackSizes stack_sizes = {};
+        OC_OPTIX_CHECK(optixUtilAccumulateStackSizes(_program_group_table.raygen_group, &stack_sizes));
+        OC_OPTIX_CHECK(optixUtilAccumulateStackSizes(_program_group_table.miss_closest_group, &stack_sizes));
+        OC_OPTIX_CHECK(optixUtilAccumulateStackSizes(_program_group_table.hit_closest_group, &stack_sizes));
+        OC_OPTIX_CHECK(optixUtilAccumulateStackSizes(_program_group_table.hit_any_group, &stack_sizes));
+
+        uint32_t direct_callable_stack_size_from_traversal;
+        uint32_t direct_callable_stack_size_from_state;
+        uint32_t continuation_stack_size;
+        OC_OPTIX_CHECK(optixUtilComputeStackSizes(&stack_sizes,
+                                                  max_trace_depth,
+                                                  0,// maxCCDepth
+                                                  0,// maxDCDEpth
+                                                  &direct_callable_stack_size_from_traversal,
+                                                  &direct_callable_stack_size_from_state,
+                                                  &continuation_stack_size));
+        OC_OPTIX_CHECK(optixPipelineSetStackSize(_optix_pipeline,
+                                                 direct_callable_stack_size_from_traversal,
+                                                 direct_callable_stack_size_from_state,
+                                                 continuation_stack_size,
+                                                 2// maxTraversableDepth
+                                                 ));
     }
 
     void build_sbt() {
+        _sbt_records = Buffer<SBTRecord>(_device, 4);
+        SBTRecord sbt[4] = {};
+        OC_OPTIX_CHECK(optixSbtRecordPackHeader(_program_group_table.raygen_group, &sbt[0]));
+        OC_OPTIX_CHECK(optixSbtRecordPackHeader(_program_group_table.hit_closest_group, &sbt[1]));
+        OC_OPTIX_CHECK(optixSbtRecordPackHeader(_program_group_table.hit_any_group, &sbt[2]));
+        OC_OPTIX_CHECK(optixSbtRecordPackHeader(_program_group_table.miss_closest_group, &sbt[3]));
+        CUDACommandVisitor cmd_visitor(_device);
+        _sbt_records.upload_immediately(sbt, cmd_visitor);
+
+        _sbt.raygenRecord = _sbt_records.ptr<CUdeviceptr>();
+        _sbt.hitgroupRecordBase = _sbt_records.address<CUdeviceptr>(1);
+        _sbt.hitgroupRecordStrideInBytes = sizeof(SBTRecord);
+        _sbt.hitgroupRecordCount = 2;
+        _sbt.missRecordBase = _sbt_records.address<CUdeviceptr>(3);
+        _sbt.missRecordStrideInBytes = sizeof(SBTRecord);
+        _sbt.missRecordCount = 1;
     }
 
     ProgramGroupTable create_program_groups(OptixDeviceContext optix_device_context,
@@ -234,11 +295,12 @@ public:
                 const Function &f) : CUDAShader(device, f) {
         _device->init_optix_context();
         init_module(ptx);
-        build_pipeline();
+        build_pipeline(_device->optix_device_context());
     }
     void launch(handle_ty stream, ShaderDispatchCommand *cmd) noexcept override {
     }
     ~OptixShader() override {
+        _program_group_table.clear();
         optixModuleDestroy(_optix_module);
         optixPipelineDestroy(_optix_pipeline);
     }
