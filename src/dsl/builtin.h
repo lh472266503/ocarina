@@ -234,14 +234,6 @@ OC_MAKE_BINARY_BUILTIN_FUNC(pow, POW)
         return make_expr<type##2>(expr);                                                     \
     }
 
-OC_MAKE_VEC2_MAKER(int, INT)
-OC_MAKE_VEC2_MAKER(float, FLOAT)
-OC_MAKE_VEC2_MAKER(uint, UINT)
-OC_MAKE_VEC2_MAKER(bool, BOOL)
-OC_MAKE_VEC2_MAKER(uchar, UCHAR)
-
-#undef OC_MAKE_VEC2_MAKER
-
 #define OC_MAKE_VEC3_MAKER(type, tag)                                                                            \
     template<typename T>                                                                                         \
     requires(is_dsl_v<T> && (is_scalar_expr_v<T> || is_vector_expr_v<T>))                                        \
@@ -270,12 +262,7 @@ OC_MAKE_VEC2_MAKER(uchar, UCHAR)
         return make_expr<type##3>(expr);                                                                         \
     }
 
-OC_MAKE_VEC3_MAKER(int, INT)
-OC_MAKE_VEC3_MAKER(float, FLOAT)
-OC_MAKE_VEC3_MAKER(uint, UINT)
-OC_MAKE_VEC3_MAKER(bool, BOOL)
 
-#undef OC_MAKE_VEC3_MAKER
 
 #define OC_MAKE_VEC4_MAKER(type, tag)                                                           \
     template<typename T>                                                                        \
@@ -319,12 +306,23 @@ OC_MAKE_VEC3_MAKER(bool, BOOL)
         return make_expr<type##4>(expr);                                                        \
     }
 
-OC_MAKE_VEC4_MAKER(int, INT)
-OC_MAKE_VEC4_MAKER(uint, UINT)
-OC_MAKE_VEC4_MAKER(float, FLOAT)
-OC_MAKE_VEC4_MAKER(bool, BOOL)
+#define OC_MAKE_VEC_MAKER(type, tag) \
+    OC_MAKE_VEC2_MAKER(type, tag)    \
+    OC_MAKE_VEC3_MAKER(type, tag)    \
+    OC_MAKE_VEC4_MAKER(type, tag)
 
+OC_MAKE_VEC_MAKER(int, INT)
+OC_MAKE_VEC_MAKER(uint, UINT)
+OC_MAKE_VEC_MAKER(float, FLOAT)
+OC_MAKE_VEC_MAKER(bool, BOOL)
+OC_MAKE_VEC_MAKER(uchar, UCHAR)
+
+
+#undef OC_MAKE_VEC2_MAKER
+#undef OC_MAKE_VEC3_MAKER
 #undef OC_MAKE_VEC4_MAKER
+#undef OC_MAKE_VEC_MAKER
+
 
 #define OC_MAKE_MATRIX(dim)                                                                                     \
     template<typename T>                                                                                        \

@@ -129,6 +129,9 @@ enum struct CallOp : uint32_t {
     MAKE_FLOAT3X3,
     MAKE_FLOAT4X4,
 
+    TRACE_CLOSEST,
+    TRACE_ANY,
+
     COUNT
 };
 
