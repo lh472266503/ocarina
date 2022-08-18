@@ -8,6 +8,7 @@
 #include "dsl/var.h"
 #include "dsl/expr.h"
 #include "ast/expression.h"
+#include "math/rt.h"
 
 namespace ocarina {
 
@@ -353,6 +354,14 @@ OC_MAKE_VEC_MAKER(uchar, UCHAR)
 OC_MAKE_MATRIX(2)
 OC_MAKE_MATRIX(3)
 OC_MAKE_MATRIX(4)
+
+
+template<typename Org, typename Dir>
+requires(is_all_float_vector3_v<Org, Dir>)
+OC_NODISCARD Var<Ray> make_ray(const Org &org, const Dir &dir) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<float2x2>(), CallOp::MAKE_RAY, {OC_EXPR(org), OC_EXPR(dir)});
+    return eval<Ray>(expr);
+}
 
 #undef OC_MAKE_MATRIX
 

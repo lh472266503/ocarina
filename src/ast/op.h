@@ -131,6 +131,7 @@ enum struct CallOp : uint32_t {
 
     TRACE_CLOSEST,
     TRACE_ANY,
+    MAKE_RAY,
 
     COUNT
 };

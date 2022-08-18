@@ -27,7 +27,7 @@ namespace detail {
     return ch >= '0' && ch <= '9';
 }
 
-[[nodiscard]] std::pair<int, int> bracket_matching(ocarina::string_view str, char l = '<', char r = '>') {
+[[nodiscard]] std::pair<int, int> bracket_matching_far(ocarina::string_view str, char l = '<', char r = '>') {
     int start = 0;
     int end = 0;
     int pair_count = 0;
@@ -48,6 +48,30 @@ namespace detail {
     return std::make_pair(start, end);
 }
 
+[[nodiscard]] std::pair<int, int> bracket_matching_near(ocarina::string_view str, char l = '<', char r = '>') {
+    int start = -1;
+    int end = -1;
+    int pair_count = 0;
+    for (int i = 0; i < str.size(); ++i) {
+        char ch = str[i];
+        if (ch == l) {
+            if (pair_count == 0) {
+                start = i;
+            }
+            pair_count += 1;
+        } else if (ch == r) {
+            pair_count -= 1;
+            if (pair_count == 0) {
+                end = i;
+            }
+        }
+        if (pair_count == 0 && start != -1 && end != -1) {
+            break ;
+        }
+    }
+    return std::make_pair(start, end);
+}
+
 [[nodiscard]] ocarina::string_view find_identifier(ocarina::string_view &str,
                                                    bool check_start_with_num = false) {
     OC_USING_SV
@@ -59,7 +83,7 @@ namespace detail {
         ret == "matrix"sv ||
         ret == "struct"sv ||
         ret == "array"sv) {
-        auto [start, end] = bracket_matching(str);
+        auto [start, end] = bracket_matching_near(str);
         ret = str.substr(0, end + 1);
         str = str.substr(end + 1);
     } else {
@@ -153,7 +177,7 @@ const Type *TypeRegistry::parse_type(ocarina::string_view desc) noexcept {
 
 void TypeRegistry::parse_vector(Type *type, ocarina::string_view desc) noexcept {
     type->_tag = Type::Tag::VECTOR;
-    auto [start, end] = detail::bracket_matching(desc, '<', '>');
+    auto [start, end] = detail::bracket_matching_far(desc, '<', '>');
     auto content = desc.substr(start + 1, end - start - 1);
     auto lst = string_split(content, ',');
     OC_ASSERT(lst.size() == 2);
@@ -172,7 +196,7 @@ void TypeRegistry::parse_vector(Type *type, ocarina::string_view desc) noexcept 
 
 void TypeRegistry::parse_matrix(Type *type, ocarina::string_view desc) noexcept {
     type->_tag = Type::Tag::MATRIX;
-    auto [start, end] = detail::bracket_matching(desc, '<', '>');
+    auto [start, end] = detail::bracket_matching_far(desc, '<', '>');
     auto dimension_str = desc.substr(start + 1, end - start - 1);
     auto dimension = std::stoi(string(dimension_str));
     type->_dimension = dimension;

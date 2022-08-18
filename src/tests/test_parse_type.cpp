@@ -29,17 +29,11 @@ int main() {
     //    tr.parse_type(detail::TypeDesc<float3>::description());
     auto lst = string_split(",adf,fad,gre,ger,", ',');
     //        tr.parse_type(detail::TypeDesc<bool3>::description());
-    using Test = ocarina::tuple<float3x3, int, bool, uint>;
+    using Test = ocarina::tuple<uint, uint, float2>;
 //        using Test = float3x3;
-    using Test2 = std::array<Test, 5>;
+    using Test2 = ocarina::tuple<float4, float4>;
     tr.parse_type(detail::TypeDesc<Test2>::description());
-//        cout << detail::TypeDesc<Test2>::description() << endl;
-//    for (auto iter = tr._type_set.begin(); iter != tr._type_set.end(); ++iter) {
-//        cout << (*iter)->description() << endl;
-//    }
-//    auto tp = std::tuple(1, 1.f, false);
-cout << typeid(linear_layout_t<array<array<array<float, 2>, 2>, 2>>).name() << endl;
-//cout << typeid(linear_layout_t<tuple<int, tuple<bool, float>>>).name();
-//    cout << typeid(to_tuple_t<int>).name() << endl;
+//    tr.parse_type(detail::TypeDesc<Test>::description());
+
     return 0;
 }

@@ -7,7 +7,6 @@
 #include "core/basic_traits.h"
 #include "dsl/operators.h"
 #include "dsl/struct.h"
-#include "dsl/builtin.h"
 
 namespace ocarina {
 
@@ -84,15 +83,15 @@ public:
 
 OC_STRUCT(ocarina::Ray, org_min, dir_max) {
 
-    [[nodiscard]] auto origin() const noexcept {
-        return ocarina::make_float3(org_min);
+    [[nodiscard]] auto origin()  noexcept {
+        return org_min.xyz();
     }
 
-    [[nodiscard]] auto direction() const noexcept {
-        return ocarina::make_float3(dir_max);
+    [[nodiscard]] auto direction()  noexcept {
+        return dir_max.xyz();
     }
 
-    [[nodiscard]] auto at(float t) const noexcept {
+    [[nodiscard]] auto at(Float t) noexcept {
         return origin() + direction();
     }
 
