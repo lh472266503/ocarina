@@ -78,7 +78,7 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         case CallOp::MAKE_FLOAT2X2: OC_GEN_FUNC_NAME(make_float2x2); break;
         case CallOp::MAKE_FLOAT3X3: OC_GEN_FUNC_NAME(make_float3x3); break;
         case CallOp::MAKE_FLOAT4X4: OC_GEN_FUNC_NAME(make_float4x4); break;
-        case CallOp::MAKE_RAY: OC_GEN_FUNC_NAME(make_ray); break ;
+        case CallOp::MAKE_RAY: OC_GEN_FUNC_NAME(make_ray); break;
         case CallOp::TEX_SAMPLE:
             current_scratch() << "oc_tex_sample_float" << expr->type()->dimension();
             break;
@@ -229,7 +229,7 @@ void CUDACodegen::_emit_type_name(const Type *type) noexcept {
                 current_scratch() << "]";
                 break;
             case Type::Tag::STRUCTURE:
-                _emit_struct_name(type->hash());
+                _emit_struct_name(type);
                 break;
             case Type::Tag::BUFFER:
                 _emit_type_name(type->element());
@@ -243,6 +243,15 @@ void CUDACodegen::_emit_type_name(const Type *type) noexcept {
             case Type::Tag::NONE: break;
         }
     }
+}
+void CUDACodegen::_emit_struct_name(const Type *type) noexcept {
+//    if (type->description() == detail::TypeDesc<Ray>::description()) {
+//        current_scratch() << "OCRay";
+//    } else if (type->description() == detail::TypeDesc<Hit>::description()) {
+//        current_scratch() << "OCHit";
+//    } else {
+        Codegen::_emit_struct_name(type);
+//    }
 }
 
 }// namespace ocarina

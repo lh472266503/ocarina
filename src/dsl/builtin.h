@@ -363,6 +363,15 @@ OC_NODISCARD Var<Ray> make_ray(const Org &org, const Dir &dir) noexcept {
     return eval<Ray>(expr);
 }
 
+template<typename Org, typename Dir, typename T>
+requires(is_all_float_vector3_v<Org, Dir>)
+OC_NODISCARD Var<Ray> make_ray(const Org &org, const Dir &dir, const T &t_max) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<float2x2>(), CallOp::MAKE_RAY, {OC_EXPR(org),
+                                                                                           OC_EXPR(dir),
+                                                                                           OC_EXPR(t_max)});
+    return eval<Ray>(expr);
+}
+
 #undef OC_MAKE_MATRIX
 
 }// namespace ocarina

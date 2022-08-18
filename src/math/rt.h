@@ -83,15 +83,15 @@ public:
 
 OC_STRUCT(ocarina::Ray, org_min, dir_max) {
 
-    [[nodiscard]] auto origin()  noexcept {
+    [[nodiscard]] auto origin() const noexcept {
         return org_min.xyz();
     }
 
-    [[nodiscard]] auto direction()  noexcept {
+    [[nodiscard]] auto direction() const noexcept {
         return dir_max.xyz();
     }
 
-    [[nodiscard]] auto at(Float t) noexcept {
+    [[nodiscard]] auto at(Float t) const noexcept {
         return origin() + direction();
     }
 

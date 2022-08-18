@@ -1,119 +1,119 @@
-[[nodiscard]] auto xx() { return eval<Vector<T, 2>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x00, 2)); }
-[[nodiscard]] auto xy() { return eval<Vector<T, 2>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x01, 2)); }
-[[nodiscard]] auto xz() { return eval<Vector<T, 2>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x02, 2)); }
-[[nodiscard]] auto yx() { return eval<Vector<T, 2>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x10, 2)); }
-[[nodiscard]] auto yy() { return eval<Vector<T, 2>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x11, 2)); }
-[[nodiscard]] auto yz() { return eval<Vector<T, 2>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x12, 2)); }
-[[nodiscard]] auto zx() { return eval<Vector<T, 2>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x20, 2)); }
-[[nodiscard]] auto zy() { return eval<Vector<T, 2>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x21, 2)); }
-[[nodiscard]] auto zz() { return eval<Vector<T, 2>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x22, 2)); }
+[[nodiscard]] auto xx() const { return eval<Vector<T, 2>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x00, 2)); }
+[[nodiscard]] auto xy() const { return eval<Vector<T, 2>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x01, 2)); }
+[[nodiscard]] auto xz() const { return eval<Vector<T, 2>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x02, 2)); }
+[[nodiscard]] auto yx() const { return eval<Vector<T, 2>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x10, 2)); }
+[[nodiscard]] auto yy() const { return eval<Vector<T, 2>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x11, 2)); }
+[[nodiscard]] auto yz() const { return eval<Vector<T, 2>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x12, 2)); }
+[[nodiscard]] auto zx() const { return eval<Vector<T, 2>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x20, 2)); }
+[[nodiscard]] auto zy() const { return eval<Vector<T, 2>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x21, 2)); }
+[[nodiscard]] auto zz() const { return eval<Vector<T, 2>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x22, 2)); }
 
-[[nodiscard]] auto xxx() { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x000, 3)); }
-[[nodiscard]] auto xxy() { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x001, 3)); }
-[[nodiscard]] auto xxz() { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x002, 3)); }
-[[nodiscard]] auto xyx() { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x010, 3)); }
-[[nodiscard]] auto xyy() { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x011, 3)); }
-[[nodiscard]] auto xyz() { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x012, 3)); }
-[[nodiscard]] auto xzx() { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x020, 3)); }
-[[nodiscard]] auto xzy() { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x021, 3)); }
-[[nodiscard]] auto xzz() { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x022, 3)); }
-[[nodiscard]] auto yxx() { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x100, 3)); }
-[[nodiscard]] auto yxy() { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x101, 3)); }
-[[nodiscard]] auto yxz() { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x102, 3)); }
-[[nodiscard]] auto yyx() { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x110, 3)); }
-[[nodiscard]] auto yyy() { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x111, 3)); }
-[[nodiscard]] auto yyz() { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x112, 3)); }
-[[nodiscard]] auto yzx() { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x120, 3)); }
-[[nodiscard]] auto yzy() { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x121, 3)); }
-[[nodiscard]] auto yzz() { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x122, 3)); }
-[[nodiscard]] auto zxx() { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x200, 3)); }
-[[nodiscard]] auto zxy() { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x201, 3)); }
-[[nodiscard]] auto zxz() { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x202, 3)); }
-[[nodiscard]] auto zyx() { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x210, 3)); }
-[[nodiscard]] auto zyy() { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x211, 3)); }
-[[nodiscard]] auto zyz() { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x212, 3)); }
-[[nodiscard]] auto zzx() { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x220, 3)); }
-[[nodiscard]] auto zzy() { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x221, 3)); }
-[[nodiscard]] auto zzz() { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x222, 3)); }
+[[nodiscard]] auto xxx() const { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x000, 3)); }
+[[nodiscard]] auto xxy() const { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x001, 3)); }
+[[nodiscard]] auto xxz() const { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x002, 3)); }
+[[nodiscard]] auto xyx() const { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x010, 3)); }
+[[nodiscard]] auto xyy() const { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x011, 3)); }
+[[nodiscard]] auto xyz() const { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x012, 3)); }
+[[nodiscard]] auto xzx() const { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x020, 3)); }
+[[nodiscard]] auto xzy() const { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x021, 3)); }
+[[nodiscard]] auto xzz() const { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x022, 3)); }
+[[nodiscard]] auto yxx() const { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x100, 3)); }
+[[nodiscard]] auto yxy() const { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x101, 3)); }
+[[nodiscard]] auto yxz() const { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x102, 3)); }
+[[nodiscard]] auto yyx() const { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x110, 3)); }
+[[nodiscard]] auto yyy() const { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x111, 3)); }
+[[nodiscard]] auto yyz() const { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x112, 3)); }
+[[nodiscard]] auto yzx() const { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x120, 3)); }
+[[nodiscard]] auto yzy() const { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x121, 3)); }
+[[nodiscard]] auto yzz() const { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x122, 3)); }
+[[nodiscard]] auto zxx() const { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x200, 3)); }
+[[nodiscard]] auto zxy() const { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x201, 3)); }
+[[nodiscard]] auto zxz() const { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x202, 3)); }
+[[nodiscard]] auto zyx() const { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x210, 3)); }
+[[nodiscard]] auto zyy() const { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x211, 3)); }
+[[nodiscard]] auto zyz() const { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x212, 3)); }
+[[nodiscard]] auto zzx() const { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x220, 3)); }
+[[nodiscard]] auto zzy() const { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x221, 3)); }
+[[nodiscard]] auto zzz() const { return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x222, 3)); }
 
-[[nodiscard]] auto xxxx() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0000, 4)); }
-[[nodiscard]] auto xxxy() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0001, 4)); }
-[[nodiscard]] auto xxxz() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0002, 4)); }
-[[nodiscard]] auto xxyx() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0010, 4)); }
-[[nodiscard]] auto xxyy() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0011, 4)); }
-[[nodiscard]] auto xxyz() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0012, 4)); }
-[[nodiscard]] auto xxzx() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0020, 4)); }
-[[nodiscard]] auto xxzy() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0021, 4)); }
-[[nodiscard]] auto xxzz() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0022, 4)); }
-[[nodiscard]] auto xyxx() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0100, 4)); }
-[[nodiscard]] auto xyxy() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0101, 4)); }
-[[nodiscard]] auto xyxz() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0102, 4)); }
-[[nodiscard]] auto xyyx() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0110, 4)); }
-[[nodiscard]] auto xyyy() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0111, 4)); }
-[[nodiscard]] auto xyyz() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0112, 4)); }
-[[nodiscard]] auto xyzx() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0120, 4)); }
-[[nodiscard]] auto xyzy() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0121, 4)); }
-[[nodiscard]] auto xyzz() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0122, 4)); }
-[[nodiscard]] auto xzxx() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0200, 4)); }
-[[nodiscard]] auto xzxy() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0201, 4)); }
-[[nodiscard]] auto xzxz() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0202, 4)); }
-[[nodiscard]] auto xzyx() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0210, 4)); }
-[[nodiscard]] auto xzyy() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0211, 4)); }
-[[nodiscard]] auto xzyz() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0212, 4)); }
-[[nodiscard]] auto xzzx() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0220, 4)); }
-[[nodiscard]] auto xzzy() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0221, 4)); }
-[[nodiscard]] auto xzzz() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0222, 4)); }
-[[nodiscard]] auto yxxx() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1000, 4)); }
-[[nodiscard]] auto yxxy() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1001, 4)); }
-[[nodiscard]] auto yxxz() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1002, 4)); }
-[[nodiscard]] auto yxyx() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1010, 4)); }
-[[nodiscard]] auto yxyy() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1011, 4)); }
-[[nodiscard]] auto yxyz() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1012, 4)); }
-[[nodiscard]] auto yxzx() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1020, 4)); }
-[[nodiscard]] auto yxzy() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1021, 4)); }
-[[nodiscard]] auto yxzz() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1022, 4)); }
-[[nodiscard]] auto yyxx() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1100, 4)); }
-[[nodiscard]] auto yyxy() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1101, 4)); }
-[[nodiscard]] auto yyxz() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1102, 4)); }
-[[nodiscard]] auto yyyx() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1110, 4)); }
-[[nodiscard]] auto yyyy() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1111, 4)); }
-[[nodiscard]] auto yyyz() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1112, 4)); }
-[[nodiscard]] auto yyzx() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1120, 4)); }
-[[nodiscard]] auto yyzy() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1121, 4)); }
-[[nodiscard]] auto yyzz() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1122, 4)); }
-[[nodiscard]] auto yzxx() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1200, 4)); }
-[[nodiscard]] auto yzxy() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1201, 4)); }
-[[nodiscard]] auto yzxz() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1202, 4)); }
-[[nodiscard]] auto yzyx() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1210, 4)); }
-[[nodiscard]] auto yzyy() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1211, 4)); }
-[[nodiscard]] auto yzyz() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1212, 4)); }
-[[nodiscard]] auto yzzx() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1220, 4)); }
-[[nodiscard]] auto yzzy() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1221, 4)); }
-[[nodiscard]] auto yzzz() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1222, 4)); }
-[[nodiscard]] auto zxxx() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2000, 4)); }
-[[nodiscard]] auto zxxy() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2001, 4)); }
-[[nodiscard]] auto zxxz() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2002, 4)); }
-[[nodiscard]] auto zxyx() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2010, 4)); }
-[[nodiscard]] auto zxyy() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2011, 4)); }
-[[nodiscard]] auto zxyz() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2012, 4)); }
-[[nodiscard]] auto zxzx() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2020, 4)); }
-[[nodiscard]] auto zxzy() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2021, 4)); }
-[[nodiscard]] auto zxzz() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2022, 4)); }
-[[nodiscard]] auto zyxx() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2100, 4)); }
-[[nodiscard]] auto zyxy() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2101, 4)); }
-[[nodiscard]] auto zyxz() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2102, 4)); }
-[[nodiscard]] auto zyyx() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2110, 4)); }
-[[nodiscard]] auto zyyy() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2111, 4)); }
-[[nodiscard]] auto zyyz() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2112, 4)); }
-[[nodiscard]] auto zyzx() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2120, 4)); }
-[[nodiscard]] auto zyzy() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2121, 4)); }
-[[nodiscard]] auto zyzz() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2122, 4)); }
-[[nodiscard]] auto zzxx() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2200, 4)); }
-[[nodiscard]] auto zzxy() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2201, 4)); }
-[[nodiscard]] auto zzxz() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2202, 4)); }
-[[nodiscard]] auto zzyx() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2210, 4)); }
-[[nodiscard]] auto zzyy() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2211, 4)); }
-[[nodiscard]] auto zzyz() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2212, 4)); }
-[[nodiscard]] auto zzzx() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2220, 4)); }
-[[nodiscard]] auto zzzy() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2221, 4)); }
-[[nodiscard]] auto zzzz() { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2222, 4)); }
+[[nodiscard]] auto xxxx() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0000, 4)); }
+[[nodiscard]] auto xxxy() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0001, 4)); }
+[[nodiscard]] auto xxxz() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0002, 4)); }
+[[nodiscard]] auto xxyx() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0010, 4)); }
+[[nodiscard]] auto xxyy() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0011, 4)); }
+[[nodiscard]] auto xxyz() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0012, 4)); }
+[[nodiscard]] auto xxzx() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0020, 4)); }
+[[nodiscard]] auto xxzy() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0021, 4)); }
+[[nodiscard]] auto xxzz() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0022, 4)); }
+[[nodiscard]] auto xyxx() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0100, 4)); }
+[[nodiscard]] auto xyxy() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0101, 4)); }
+[[nodiscard]] auto xyxz() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0102, 4)); }
+[[nodiscard]] auto xyyx() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0110, 4)); }
+[[nodiscard]] auto xyyy() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0111, 4)); }
+[[nodiscard]] auto xyyz() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0112, 4)); }
+[[nodiscard]] auto xyzx() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0120, 4)); }
+[[nodiscard]] auto xyzy() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0121, 4)); }
+[[nodiscard]] auto xyzz() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0122, 4)); }
+[[nodiscard]] auto xzxx() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0200, 4)); }
+[[nodiscard]] auto xzxy() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0201, 4)); }
+[[nodiscard]] auto xzxz() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0202, 4)); }
+[[nodiscard]] auto xzyx() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0210, 4)); }
+[[nodiscard]] auto xzyy() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0211, 4)); }
+[[nodiscard]] auto xzyz() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0212, 4)); }
+[[nodiscard]] auto xzzx() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0220, 4)); }
+[[nodiscard]] auto xzzy() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0221, 4)); }
+[[nodiscard]] auto xzzz() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x0222, 4)); }
+[[nodiscard]] auto yxxx() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1000, 4)); }
+[[nodiscard]] auto yxxy() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1001, 4)); }
+[[nodiscard]] auto yxxz() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1002, 4)); }
+[[nodiscard]] auto yxyx() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1010, 4)); }
+[[nodiscard]] auto yxyy() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1011, 4)); }
+[[nodiscard]] auto yxyz() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1012, 4)); }
+[[nodiscard]] auto yxzx() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1020, 4)); }
+[[nodiscard]] auto yxzy() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1021, 4)); }
+[[nodiscard]] auto yxzz() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1022, 4)); }
+[[nodiscard]] auto yyxx() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1100, 4)); }
+[[nodiscard]] auto yyxy() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1101, 4)); }
+[[nodiscard]] auto yyxz() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1102, 4)); }
+[[nodiscard]] auto yyyx() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1110, 4)); }
+[[nodiscard]] auto yyyy() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1111, 4)); }
+[[nodiscard]] auto yyyz() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1112, 4)); }
+[[nodiscard]] auto yyzx() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1120, 4)); }
+[[nodiscard]] auto yyzy() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1121, 4)); }
+[[nodiscard]] auto yyzz() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1122, 4)); }
+[[nodiscard]] auto yzxx() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1200, 4)); }
+[[nodiscard]] auto yzxy() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1201, 4)); }
+[[nodiscard]] auto yzxz() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1202, 4)); }
+[[nodiscard]] auto yzyx() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1210, 4)); }
+[[nodiscard]] auto yzyy() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1211, 4)); }
+[[nodiscard]] auto yzyz() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1212, 4)); }
+[[nodiscard]] auto yzzx() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1220, 4)); }
+[[nodiscard]] auto yzzy() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1221, 4)); }
+[[nodiscard]] auto yzzz() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x1222, 4)); }
+[[nodiscard]] auto zxxx() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2000, 4)); }
+[[nodiscard]] auto zxxy() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2001, 4)); }
+[[nodiscard]] auto zxxz() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2002, 4)); }
+[[nodiscard]] auto zxyx() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2010, 4)); }
+[[nodiscard]] auto zxyy() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2011, 4)); }
+[[nodiscard]] auto zxyz() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2012, 4)); }
+[[nodiscard]] auto zxzx() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2020, 4)); }
+[[nodiscard]] auto zxzy() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2021, 4)); }
+[[nodiscard]] auto zxzz() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2022, 4)); }
+[[nodiscard]] auto zyxx() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2100, 4)); }
+[[nodiscard]] auto zyxy() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2101, 4)); }
+[[nodiscard]] auto zyxz() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2102, 4)); }
+[[nodiscard]] auto zyyx() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2110, 4)); }
+[[nodiscard]] auto zyyy() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2111, 4)); }
+[[nodiscard]] auto zyyz() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2112, 4)); }
+[[nodiscard]] auto zyzx() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2120, 4)); }
+[[nodiscard]] auto zyzy() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2121, 4)); }
+[[nodiscard]] auto zyzz() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2122, 4)); }
+[[nodiscard]] auto zzxx() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2200, 4)); }
+[[nodiscard]] auto zzxy() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2201, 4)); }
+[[nodiscard]] auto zzxz() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2202, 4)); }
+[[nodiscard]] auto zzyx() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2210, 4)); }
+[[nodiscard]] auto zzyy() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2211, 4)); }
+[[nodiscard]] auto zzyz() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2212, 4)); }
+[[nodiscard]] auto zzzx() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2220, 4)); }
+[[nodiscard]] auto zzzy() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2221, 4)); }
+[[nodiscard]] auto zzzz() const { return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x2222, 4)); }

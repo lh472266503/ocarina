@@ -77,8 +77,8 @@ void Codegen::_emit_func_name(const Function &f) noexcept {
     current_scratch() << f.func_name();
 }
 
-void Codegen::_emit_struct_name(uint64_t hash) noexcept {
-    current_scratch() << detail::struct_name(hash);
+void Codegen::_emit_struct_name(const Type *type) noexcept {
+    current_scratch() << detail::struct_name(type->hash());
 }
 
 void Codegen::_emit_member_name(int index) noexcept {

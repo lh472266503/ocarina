@@ -269,7 +269,7 @@ void CppCodegen::visit(const Type *type) noexcept {
     current_scratch() << "alignas(";
     current_scratch() << type->alignment();
     current_scratch() << ") ";
-    _emit_struct_name(type->hash());
+    _emit_struct_name(type);
     current_scratch() << " {\n";
     indent_inc();
     for (int i = 0; i < type->members().size(); ++i) {
@@ -375,7 +375,7 @@ void CppCodegen::_emit_type_name(const Type *type) noexcept {
                 break;
             }
             case Type::Tag::STRUCTURE:
-                _emit_struct_name(type->hash());
+                _emit_struct_name(type);
                 break;
             case Type::Tag::BUFFER:
                 _emit_type_name(type->element());
