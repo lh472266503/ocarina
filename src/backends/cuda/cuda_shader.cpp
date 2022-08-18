@@ -111,6 +111,7 @@ public:
     OptixShader(Device::Impl *device,
                 const ocarina::string &ptx,
                 const Function &f) : CUDAShader(device, f) {
+        _device->init_optix_context();
         init_module(ptx);
     }
     void launch(handle_ty stream, ShaderDispatchCommand *cmd) noexcept override {

@@ -41,6 +41,9 @@ void context_log_cb(unsigned int level, const char *tag, const char *message, vo
 }// namespace detail
 
 void CUDADevice::init_optix_context() noexcept {
+    if (_optix_device_context) {
+        return;
+    }
     use_context([&] {
         OC_CU_CHECK(cuMemFree(0));
         OC_OPTIX_CHECK(optixInit());

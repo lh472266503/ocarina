@@ -141,6 +141,9 @@ const CallExpr *Function::call(const Type *type, const Function *func,
 const CallExpr *Function::call_builtin(const Type *type, CallOp op,
                                        ocarina::vector<const Expression *> args,
                                        ocarina::vector<const Type *> t_args) noexcept {
+    if (to_underlying(op) >= to_underlying(CallOp::TRACE_CLOSEST)) {
+        set_raytracing(true);
+    }
     return _create_expression<CallExpr>(type, op, std::move(args), std::move(t_args));
 }
 
