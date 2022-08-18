@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
     stream << cube.build_bvh();
 
     Accel accel = device.create_accel();
-    accel.add_mesh(std::move(cube), make_float4x4(1.f));
+    accel.add_mesh(cube, make_float4x4(1.f));
     stream << accel.build_bvh();
 
     Callable cb = [&](Var<Triangle> t) {
