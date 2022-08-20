@@ -92,7 +92,7 @@ OC_STRUCT(ocarina::Ray, org_min, dir_max) {
     }
 
     [[nodiscard]] auto at(Float t) const noexcept {
-        return origin() + direction();
+        return origin() + direction() * t;
     }
 
     [[nodiscard]] auto t_max() const noexcept {
@@ -113,3 +113,31 @@ public:
 };
 }// namespace ocarina
 OC_STRUCT(ocarina::Triangle, i, j, k){};
+
+namespace ocarina {
+namespace detail {
+
+template<typename TRay>
+requires std::is_same_v<expr_value_t<TRay>, Ray>
+    Var<bool> Computable<Accel>::trace_any(const TRay &ray)
+const noexcept {
+    const CallExpr *expr = Function::current()->call_builtin(Type::of<bool>(),
+                                                             CallOp::TRACE_ANY,
+                                                             {OC_EXPR(ray)});
+
+    return eval<bool>(expr);
+}
+
+template<typename TRay>
+requires std::is_same_v<expr_value_t<TRay>, Ray>
+    Var<Hit> Computable<Accel>::trace_closest(const TRay &ray)
+const noexcept {
+    const CallExpr *expr = Function::current()->call_builtin(Type::of<bool>(),
+                                                             CallOp::TRACE_CLOSEST,
+                                                             {OC_EXPR(ray)});
+
+    return eval<Hit>(expr);
+}
+
+}
+}// namespace ocarina::detail

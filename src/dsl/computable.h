@@ -30,6 +30,11 @@ template<typename T>
 template<typename T>
 [[nodiscard]] inline Expr<expr_value_t<T>> make_expr(const Expression *expr) noexcept;// implement in syntax.h
 
+
+class Accel;
+class Hit;
+class Ray;
+
 namespace detail {
 
 template<typename T>
@@ -286,13 +291,17 @@ struct Computable<Matrix<N>>
     OC_COMPUTABLE_COMMON(Computable<Matrix<N>>)
 };
 
-class Accel;
-
 template<>
 struct Computable<Accel> {
     OC_COMPUTABLE_COMMON(Computable<Accel>)
 
+    template<typename TRay>
+    requires std::is_same_v<expr_value_t<TRay>, Ray>
+    [[nodiscard]] Var<Hit> trace_closest(const TRay &ray) const noexcept; // implement in rtx_type.h
 
+    template<typename TRay>
+    requires std::is_same_v<expr_value_t<TRay>, Ray>
+    [[nodiscard]] Var<bool> trace_any(const TRay &ray) const noexcept; // implement in rtx_type.h
 };
 
 template<typename... T>
