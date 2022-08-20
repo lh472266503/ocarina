@@ -6,7 +6,6 @@
 #include "core/stl.h"
 #include "dsl/common.h"
 #include "rhi/common.h"
-#include <windows.h>
 #include "math/base.h"
 #include "math/geometry.h"
 
@@ -74,9 +73,10 @@ int main(int argc, char *argv[]) {
 //        Float3 org = r->origin();
         Float3 pos = v_buffer.read(0);
         Var<Triangle> tri = t_buffer.read(0);
+        print("{},{},{}", tri.i, tri.j, tri.k);
     };
     auto shader = device.compile(kernel);
-    shader();
+    stream << shader().dispatch(5,5);
     stream << synchronize() << commit();
 
     return 0;

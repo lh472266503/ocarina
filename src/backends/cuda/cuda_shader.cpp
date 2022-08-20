@@ -96,6 +96,7 @@ private:
     Buffer<SBTRecord> _sbt_records{};
     Buffer<SBTRecord> _callable_records{};
     OptixShaderBindingTable _sbt{};
+    Buffer<handle_ty> _params;
 
 public:
     void init_module(const string_view &ptx_code) {
@@ -293,10 +294,12 @@ public:
         uint y = dim.y;
         uint z = dim.z;
         auto cu_stream = reinterpret_cast<CUstream>(stream);
+        _params = Buffer<handle_ty>(_device, cmd->params().size());
+        _params.upload_immediately(cmd->params().data());
         OC_OPTIX_CHECK(optixLaunch(_optix_pipeline,
                     cu_stream,
-                    0,
-                    0,
+                    _params.handle(),
+                    sizeof(handle_ty) * cmd->params().size(),
                     &_sbt,
                     x,y,z));
     }

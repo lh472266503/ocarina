@@ -54,7 +54,7 @@ public:
     }
 
     [[nodiscard]] Tag tag() const noexcept { return _tag; }
-    virtual [[nodiscard]] handle_ty handle() const noexcept { return _handle; }
+    [[nodiscard]] virtual handle_ty handle() const noexcept { return _handle; }
     [[nodiscard]] virtual const void *handle_ptr() const noexcept { return &_handle; }
     [[nodiscard]] bool valid() const noexcept { return bool(_device); }
     void destroy();

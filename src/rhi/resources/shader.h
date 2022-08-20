@@ -37,6 +37,7 @@ class ArgumentList {
 private:
     static constexpr auto Size = 200;
     ocarina::vector<void *> _args;
+    ocarina::vector<handle_ty> _params;
     ocarina::array<std::byte, Size> _argument_data{};
     size_t _cursor{};
 
@@ -70,6 +71,12 @@ public:
         _args.push_back(address);
         OC_ASSERT(_cursor < Size);
     }
+
+    void add_param(handle_ty handle) noexcept {
+        _params.push_back(handle);
+    }
+
+    [[nodiscard]] span<handle_ty> params() noexcept { return _params; }
 
     template<typename T>
     ArgumentList &operator<<(T &&arg) {
@@ -114,8 +121,12 @@ public:
           _shader_tag(tag), _function(function) {}
 
     [[nodiscard]] ShaderDispatchCommand *dispatch(uint x, uint y = 1, uint z = 1) {
-        _argument_list << make_uint3(x, y, z);
-        return ShaderDispatchCommand::create(_function, handle(), _argument_list.ptr(), make_uint3(x, y, z));
+        if (_function.is_raytracing()) {
+            return ShaderDispatchCommand::create(_function, handle(), _argument_list.params(), make_uint3(x, y, z));
+        } else {
+            _argument_list << make_uint3(x, y, z);
+            return ShaderDispatchCommand::create(_function, handle(), _argument_list.ptr(), make_uint3(x, y, z));
+        }
     }
     [[nodiscard]] ShaderDispatchCommand *dispatch(uint2 dim) { return dispatch(dim.x, dim.y, 1); }
     [[nodiscard]] ShaderDispatchCommand *dispatch(uint3 dim) { return dispatch(dim.x, dim.y, dim.z); }
@@ -129,7 +140,8 @@ public:
         (_argument_list << ... << OC_FORWARD(args));
         if (_function.is_raytracing()) {
             for (const auto &uniform : _function.uniform_vars()) {
-
+                handle_ty handle = *(reinterpret_cast<const handle_ty *>(uniform.handle_ptr()));
+                _argument_list.add_param(handle);
             }
         } else {
             for (const auto &uniform : _function.uniform_vars()) {
