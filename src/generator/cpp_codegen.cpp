@@ -423,7 +423,7 @@ void CppCodegen::_emit_arguments(const Function &f) noexcept {
         _emit_variable_define(uniform.expression()->variable());
         current_scratch() << ",";
     }
-    if (f.is_kernel()) {
+    if (f.is_kernel() && !f.is_raytracing()) {
         Variable dispatch_dim(Type::of<uint3>(), Variable::Tag::LOCAL, -1, "d_dim");
         _emit_variable_define(dispatch_dim);
     } else {

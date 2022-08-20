@@ -288,6 +288,17 @@ public:
         build_pipeline(_device->optix_device_context());
     }
     void launch(handle_ty stream, ShaderDispatchCommand *cmd) noexcept override {
+        auto dim = cmd->dispatch_dim();
+        uint x = dim.x;
+        uint y = dim.y;
+        uint z = dim.z;
+        auto cu_stream = reinterpret_cast<CUstream>(stream);
+        OC_OPTIX_CHECK(optixLaunch(_optix_pipeline,
+                    cu_stream,
+                    0,
+                    0,
+                    &_sbt,
+                    x,y,z));
     }
     ~OptixShader() override {
         _program_group_table.clear();
