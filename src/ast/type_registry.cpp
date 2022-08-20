@@ -6,7 +6,7 @@
 #include "core/hash.h"
 #include "core/util.h"
 #include "core/logging.h"
-#include "math/rt.h"
+#include "math/rtx_type.h"
 
 namespace ocarina {
 

@@ -66,12 +66,12 @@ int main(int argc, char *argv[]) {
     stream << accel.build_bvh();
 
     Kernel kernel = [&]() {
-                Var<Ray> r = make_ray(float3(0), float3());
-                Float3 org = r->origin();
-//        Float3 pos = v_buffer.read(0);
+        Var<Ray> r = make_ray(float3(0), float3());
+        Float3 org = r->origin();
+        //        Float3 pos = v_buffer.read(0);
     };
     auto shader = device.compile(kernel);
-    stream << shader().dispatch(20,20);
+    //    stream << shader().dispatch(20,20);
     stream << synchronize() << commit();
 
     return 0;

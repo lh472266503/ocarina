@@ -7,7 +7,7 @@
 #include "core/header.h"
 #include "core/stl.h"
 #include "dsl/func.h"
-#include "math/rt.h"
+#include "math/rtx_type.h"
 #include "core/image_base.h"
 #include "core/concepts.h"
 #include "params.h"

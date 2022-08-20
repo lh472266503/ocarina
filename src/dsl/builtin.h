@@ -8,7 +8,7 @@
 #include "dsl/var.h"
 #include "dsl/expr.h"
 #include "ast/expression.h"
-#include "math/rt.h"
+#include "math/rtx_type.h"
 
 namespace ocarina {
 
