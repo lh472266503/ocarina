@@ -28,7 +28,7 @@ private:
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept final {
-        return hash64(type()->hash(), reinterpret_cast<handle_ty>(_handle_ptr));
+        return hash64(type()->hash(), _expr->hash());
     }
 
 public:
