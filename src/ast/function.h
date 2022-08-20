@@ -256,9 +256,11 @@ public:
     [[nodiscard]] constexpr Tag tag() const noexcept { return _tag; }
     [[nodiscard]] constexpr bool is_callable() const noexcept { return _tag == Tag::CALLABLE; }
     [[nodiscard]] constexpr bool is_kernel() const noexcept { return _tag == Tag::KERNEL; }
+    [[nodiscard]] constexpr bool is_raytracing_kernel() const noexcept { return is_raytracing() && is_kernel(); }
+    [[nodiscard]] constexpr bool is_general_kernel() const noexcept { return !is_raytracing() && is_kernel(); }
     [[nodiscard]] constexpr bool is_raytracing() const noexcept { return _raytracing; }
     [[nodiscard]] constexpr const Type *return_type() const noexcept { return _ret; }
-    constexpr void set_raytracing(bool val) const noexcept { _raytracing = val;}
+    constexpr void set_raytracing(bool val) const noexcept { _raytracing = val; }
 };
 
 }// namespace ocarina

@@ -127,8 +127,14 @@ public:
     Shader &operator()(prototype_to_shader_invocation_t<Args> &&...args) noexcept {
         _argument_list.clear();
         (_argument_list << ... << OC_FORWARD(args));
-        for (const auto &uniform : _function.uniform_vars()) {
-            _argument_list.push_handle_ptr(const_cast<void *>(uniform.handle_ptr()));
+        if (_function.is_raytracing()) {
+            for (const auto &uniform : _function.uniform_vars()) {
+
+            }
+        } else {
+            for (const auto &uniform : _function.uniform_vars()) {
+                _argument_list.push_handle_ptr(const_cast<void *>(uniform.handle_ptr()));
+            }
         }
         return *this;
     }
