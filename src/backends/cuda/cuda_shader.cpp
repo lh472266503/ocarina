@@ -104,7 +104,7 @@ public:
         module_compile_options.maxRegisterCount = OPTIX_COMPILE_DEFAULT_MAX_REGISTER_COUNT;
 #ifndef NDEBUG
         module_compile_options.optLevel = OPTIX_COMPILE_OPTIMIZATION_DEFAULT;
-        module_compile_options.debugLevel = OPTIX_COMPILE_DEBUG_LEVEL_LINEINFO;
+//        module_compile_options.debugLevel = OPTIX_COMPILE_DEBUG_LEVEL_LINEINFO;
 #else
         module_compile_options.optLevel = OPTIX_COMPILE_OPTIMIZATION_DEFAULT;
         module_compile_options.debugLevel = OPTIX_COMPILE_DEBUG_LEVEL_NONE;
@@ -197,8 +197,7 @@ public:
         OC_OPTIX_CHECK(optixSbtRecordPackHeader(_program_group_table.hit_closest_group, &sbt[1]));
         OC_OPTIX_CHECK(optixSbtRecordPackHeader(_program_group_table.hit_any_group, &sbt[2]));
         OC_OPTIX_CHECK(optixSbtRecordPackHeader(_program_group_table.miss_closest_group, &sbt[3]));
-        CUDACommandVisitor cmd_visitor(_device);
-        _sbt_records.upload_immediately(sbt, cmd_visitor);
+        _sbt_records.upload_immediately(sbt);
 
         _sbt.raygenRecord = _sbt_records.ptr<CUdeviceptr>();
         _sbt.hitgroupRecordBase = _sbt_records.address<CUdeviceptr>(1);

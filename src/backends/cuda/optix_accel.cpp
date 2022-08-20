@@ -76,7 +76,7 @@ void OptixAccel::build_bvh(CUDACommandVisitor*visitor) noexcept {
             optix_instances.push_back(optix_instance);
         }
 
-        _instances.upload_immediately(optix_instances.data(), *visitor);
+        _instances.upload_immediately(optix_instances.data());
         OC_OPTIX_CHECK(optixAccelBuild(_device->optix_device_context(),
                                     nullptr, &accel_options,
                                     &instance_input, 1,

@@ -16,6 +16,8 @@
 #include "embed/cuda_device_resource_embed.h"
 #include "cuda_compiler.h"
 #include "optix_accel.h"
+#include "cuda_command_visitor.h"
+
 
 namespace ocarina {
 
@@ -24,6 +26,7 @@ CUDADevice::CUDADevice(Context *context)
     OC_CU_CHECK(cuInit(0));
     OC_CU_CHECK(cuDeviceGet(&_cu_device, 0));
     OC_CU_CHECK(cuDevicePrimaryCtxRetain(&_cu_ctx, _cu_device));
+    _cmd_visitor = std::make_unique<CUDACommandVisitor>(this);
 }
 
 handle_ty CUDADevice::create_buffer(size_t size) noexcept {
@@ -123,6 +126,9 @@ handle_ty CUDADevice::create_accel() noexcept {
 }
 void CUDADevice::destroy_accel(handle_ty handle) noexcept {
     ocarina::delete_with_allocator(reinterpret_cast<OptixAccel *>(handle));
+}
+CommandVisitor *CUDADevice::command_visitor() noexcept {
+    return _cmd_visitor.get();
 }
 
 }// namespace ocarina

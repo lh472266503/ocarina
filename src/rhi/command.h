@@ -62,6 +62,8 @@ class CommandVisitor {
 public:
 #define OC_MAKE_COMMAND_VISIT(CMD) virtual void visit(const CMD *cmd) noexcept = 0;
     MAP(OC_MAKE_COMMAND_VISIT, OC_RUNTIME_CMD)
+
+    virtual ~CommandVisitor() {}
 };
 
 class Command {
@@ -190,6 +192,7 @@ public:
 class AccelBuildCommand final : public Command {
 private:
     handle_ty _accel{};
+
 public:
     explicit AccelBuildCommand(handle_ty accel) : _accel(accel) {}
     template<typename T>

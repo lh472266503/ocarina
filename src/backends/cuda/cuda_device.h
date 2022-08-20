@@ -18,6 +18,7 @@ private:
     CUcontext _cu_ctx{};
     OptixDeviceContext _optix_device_context{};
     OptixPipeline _optix_pipeline{};
+    std::unique_ptr<CommandVisitor> _cmd_visitor;
 
     class ContextGuard {
     private:
@@ -81,5 +82,6 @@ public:
     [[nodiscard]] handle_ty create_mesh(const MeshParams &params) noexcept override;
     void destroy_mesh(handle_ty handle) noexcept override;
     void init_rtx() noexcept override { init_optix_context(); }
+    [[nodiscard]] CommandVisitor *command_visitor() noexcept override;
 };
 }// namespace ocarina

@@ -142,12 +142,12 @@ public:
         return view(0, _size).upload(OC_FORWARD(args)...);
     }
 
-    void upload_immediately(const void *data, CommandVisitor &visitor) const noexcept {
-        upload_sync(data)->accept(visitor);
+    void upload_immediately(const void *data) const noexcept {
+        upload_sync(data)->accept(*_device->command_visitor());
     }
 
-    void download_immediately(void *data, CommandVisitor &visitor) const noexcept {
-        download_sync(data)->accept(visitor);
+    void download_immediately(void *data) const noexcept {
+        download_sync(data)->accept(*_device->command_visitor());
     }
 
     template<typename... Args>

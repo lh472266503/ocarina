@@ -29,6 +29,8 @@ class Mesh;
 
 class Accel;
 
+class CommandVisitor;
+
 class Device : public concepts::Noncopyable {
 public:
     class Impl : public concepts::Noncopyable {
@@ -52,6 +54,7 @@ public:
         virtual void destroy_mesh(handle_ty handle) noexcept = 0;
         [[nodiscard]] Context *context() noexcept { return _context; }
         virtual void init_rtx() noexcept = 0;
+        [[nodiscard]] virtual CommandVisitor *command_visitor() noexcept = 0;
     };
 
     using Creator = Device::Impl *(Context *);
