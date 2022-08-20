@@ -14,7 +14,7 @@
 #include "core/platform.h"
 #include "dsl/syntax_sugar.h"
 #include "core/util.h"
-#include "math/rtx_type.h"
+#include "dsl/rtx_type.h"
 #include "rhi/resources/stream.h"
 #include "math/base.h"
 #include "core/basic_types.h"

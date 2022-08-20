@@ -6,5 +6,5 @@
 #include "base.h"
 #include "prims.h"
 #include "geometry.h"
-#include "rtx_type.h"
+#include "dsl/rtx_type.h"
 #include "sampling.h"
