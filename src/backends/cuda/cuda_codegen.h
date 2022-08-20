@@ -9,6 +9,7 @@
 namespace ocarina {
 class CUDACodegen final : public CppCodegen {
 protected:
+    void _emit_raytracing_param(const Function &f) noexcept override;
     void visit(const MemberExpr *expr) noexcept override;
     void visit(const CallExpr *expr) noexcept override;
     void _emit_function(const Function &f) noexcept override;

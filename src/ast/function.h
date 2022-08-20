@@ -156,6 +156,13 @@ public:
             visitor(uniform);
         }
     }
+    [[nodiscard]] uint64_t uniform_hash() const noexcept {
+        uint64_t ret = Hash64::default_seed;
+        for (const UniformBinding &uniform : _uniform_vars) {
+            ret = hash64(ret, uniform.hash());
+        }
+        return ret;
+    }
     [[nodiscard]] static Function *current() noexcept {
         if (_function_stack().empty()) {
             return nullptr;

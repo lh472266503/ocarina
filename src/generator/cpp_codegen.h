@@ -52,6 +52,7 @@ protected:
     virtual void _emit_uniform_var(const UniformBinding &uniform) noexcept;
     virtual void _emit_variable_define(const Variable &v) noexcept;
     virtual void _emit_type_name(const Type *type) noexcept;
+    virtual void _emit_raytracing_param(const Function &f) noexcept {}
     virtual void _emit_function(const Function &f) noexcept;
     virtual void _emit_arguments(const Function &f) noexcept;
     virtual void _emit_body(const Function &f) noexcept;

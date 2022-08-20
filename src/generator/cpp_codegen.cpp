@@ -432,6 +432,9 @@ void CppCodegen::emit(const Function &func) noexcept {
     func.for_each_structure([&](const Type *type) {
         visit(type);
     });
+    if (func.is_raytracing_kernel()) {
+        _emit_raytracing_param(func);
+    }
     func.for_each_custom_func([&](const Function *f) {
         emit(*f);
     });

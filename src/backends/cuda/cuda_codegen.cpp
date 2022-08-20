@@ -137,6 +137,14 @@ void CUDACodegen::visit(const MemberExpr *expr) noexcept {
     }
 }
 
+void CUDACodegen::_emit_raytracing_param(const Function &f) noexcept {
+    current_scratch() << "struct Params {};";
+    f.for_each_uniform_var([&](const UniformBinding &uniform) {
+
+    });
+    current_scratch() << "extern \"C\" __constant__ int params;\n";
+}
+
 void CUDACodegen::_emit_function(const Function &f) noexcept {
     if (has_generated(&f)) {
         return;
@@ -228,8 +236,6 @@ void CUDACodegen::_emit_arguments(const Function &f) noexcept {
         }
         Variable dispatch_dim(Type::of<uint3>(), Variable::Tag::LOCAL, -1, "d_dim");
         _emit_variable_define(dispatch_dim);
-    } else if (f.is_raytracing_kernel()) {
-
     } else if (f.is_callable()) {
         if (f.arguments().size() + f.uniform_vars().size() > 0) {
             current_scratch().pop_back();
