@@ -314,7 +314,7 @@ void CppCodegen::_emit_variable_define(const Variable &v) noexcept {
         _emit_type_name(v.type());
         _emit_space();
         _emit_variable_name(v);
-    } else if (!v.type()->is_array()) {
+    } else {
         _emit_type_name(v.type());
         _emit_space();
         switch (v.tag()) {
@@ -322,13 +322,6 @@ void CppCodegen::_emit_variable_define(const Variable &v) noexcept {
             default: break;
         }
         _emit_variable_name(v);
-    } else {
-        _emit_type_name(v.type()->element());
-        _emit_space();
-        _emit_variable_name(v);
-        current_scratch() << "[";
-        current_scratch() << v.type()->dimension();
-        current_scratch() << "]";
     }
 }
 
