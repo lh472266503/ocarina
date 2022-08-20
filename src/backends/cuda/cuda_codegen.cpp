@@ -138,11 +138,17 @@ void CUDACodegen::visit(const MemberExpr *expr) noexcept {
 }
 
 void CUDACodegen::_emit_raytracing_param(const Function &f) noexcept {
-    current_scratch() << "struct Params {};";
+    current_scratch() << "struct Params {\n";
+    indent_inc();
     f.for_each_uniform_var([&](const UniformBinding &uniform) {
-
+        _emit_indent();
+        _emit_variable_define(uniform.expression()->variable());
+        current_scratch() << ";";
+        _emit_newline();
     });
-    current_scratch() << "extern \"C\" __constant__ int params;\n";
+    indent_dec();
+    current_scratch() << "};\n";
+    current_scratch() << "extern \"C\" __constant__ Params params;\n";
 }
 
 void CUDACodegen::_emit_function(const Function &f) noexcept {
@@ -157,23 +163,29 @@ void CUDACodegen::_emit_function(const Function &f) noexcept {
 }
 
 void CUDACodegen::_emit_builtin_vars_define(const Function &f) noexcept {
-    if (f.is_kernel()) {
-        if (!f.is_raytracing()) {
-            _emit_indent();
-            current_scratch() << "oc_uint3 d_idx = oc_make_uint3(blockIdx.x * blockDim.x + threadIdx.x,"
-                                 "blockIdx.y * blockDim.y + threadIdx.y,"
-                                 "blockIdx.z * blockDim.z + threadIdx.z);\n";
-            _emit_indent();
-            current_scratch() << "if (oc_any(d_idx >= d_dim)) { return; }\n";
-        } else {
-            _emit_indent();
-            current_scratch() << "oc_uint3 d_idx = getLaunchIndex();\n";
-        }
-    } else {
+    const char *str = "oc_uint3 d_idx = oc_make_uint3(blockIdx.x * blockDim.x + threadIdx.x,"
+                      "blockIdx.y * blockDim.y + threadIdx.y,"
+                      "blockIdx.z * blockDim.z + threadIdx.z);\n";
+    if (f.is_general_kernel()) {
         _emit_indent();
-        current_scratch() << "oc_uint3 d_idx = oc_make_uint3(blockIdx.x * blockDim.x + threadIdx.x,"
-                             "blockIdx.y * blockDim.y + threadIdx.y,"
-                             "blockIdx.z * blockDim.z + threadIdx.z);\n";
+        current_scratch() << str;
+        _emit_indent();
+        current_scratch() << "if (oc_any(d_idx >= d_dim)) { return; }\n";
+    } else if (f.is_raytracing_kernel()) {
+        _emit_indent();
+        current_scratch() << "oc_uint3 d_idx = getLaunchIndex();\n";
+        f.for_each_uniform_var([&](const UniformBinding &uniform) {
+            _emit_indent();
+            _emit_type_name(uniform.type());
+            _emit_space();
+            _emit_variable_name(uniform.expression()->variable());
+            current_scratch() << " = params.";
+            _emit_variable_name(uniform.expression()->variable());
+            current_scratch() << ";\n";
+        });
+    } else if (f.is_callable()) {
+        _emit_indent();
+        current_scratch() << str;
     }
     CppCodegen::_emit_builtin_vars_define(f);
 }
