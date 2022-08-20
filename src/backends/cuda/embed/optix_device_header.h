@@ -80,7 +80,7 @@ __device__ inline oc_float2 getTriangleBarycentric() {
     return oc_make_float2(1 - barycentric.y - barycentric.x, barycentric.x);
 }
 
-__device__ inline OCHit traceClosestHit(OptixTraversableHandle handle,
+__device__ inline OCHit oc_trace_closest(OptixTraversableHandle handle,
                                           OCRay ray) {
     unsigned int u0, u1;
     OCHit hit;
@@ -93,7 +93,7 @@ __device__ inline OCHit traceClosestHit(OptixTraversableHandle handle,
     return hit;
 }
 
-__device__ inline bool traceAnyHit(OptixTraversableHandle handle, OCRay ray) {
+__device__ inline bool oc_trace_any(OptixTraversableHandle handle, OCRay ray) {
     unsigned int occluded = 0u;
     trace(handle, ray, OPTIX_RAY_FLAG_DISABLE_ANYHIT
                        | OPTIX_RAY_FLAG_TERMINATE_ON_FIRST_HIT,

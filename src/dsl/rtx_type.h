@@ -123,8 +123,7 @@ requires std::is_same_v<expr_value_t<TRay>, Ray>
 const noexcept {
     const CallExpr *expr = Function::current()->call_builtin(Type::of<bool>(),
                                                              CallOp::TRACE_ANY,
-                                                             {OC_EXPR(ray)});
-
+                                                             {expression(), OC_EXPR(ray)});
     return eval<bool>(expr);
 }
 
@@ -134,8 +133,7 @@ requires std::is_same_v<expr_value_t<TRay>, Ray>
 const noexcept {
     const CallExpr *expr = Function::current()->call_builtin(Type::of<bool>(),
                                                              CallOp::TRACE_CLOSEST,
-                                                             {OC_EXPR(ray)});
-
+                                                             {expression(), OC_EXPR(ray)});
     return eval<Hit>(expr);
 }
 

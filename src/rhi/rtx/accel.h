@@ -26,6 +26,12 @@ public:
     void add_mesh(const Mesh &mesh, float4x4 transform) noexcept {
         impl()->add_mesh(mesh.impl(), transform);
     }
+
+//    template<typename TRay>
+//    [[nodiscard]] Var<bool> trace_any(const TRay &ray) const noexcept {
+//
+//    }
+
     [[nodiscard]] handle_ty handle() const noexcept override {
         return impl()->handle();
     }
