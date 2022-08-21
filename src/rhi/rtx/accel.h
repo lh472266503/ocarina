@@ -41,7 +41,8 @@ public:
     [[nodiscard]] Var<Hit> trace_closest(const TRay &ray) const noexcept {
         const UniformBinding &uniform = Function::current()->get_uniform_var(Type::of<Accel>(),
                                                                              handle_ptr(),
-                                                                             Variable::Tag::ACCEL);
+                                                                             Variable::Tag::ACCEL,
+                                                                             data_size());
         return make_expr<Accel>(uniform.expression()).trace_closest(ray);
     }
 
