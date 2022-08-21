@@ -38,11 +38,10 @@ class ArgumentList {
 private:
     static constexpr auto Size = 200;
     ocarina::vector<void *> _args;
-    ocarina::vector<handle_ty> _params;
     ocarina::array<std::byte, Size> _argument_data{};
     const Function &_function;
     size_t _cursor{};
-//    ocarina::vector<MemoryBlock> _params;
+    ocarina::vector<MemoryBlock> _params;
 
 
 private:
@@ -59,13 +58,13 @@ private:
 
     template<typename T>
     void _encode_buffer(const Buffer<T> &buffer) noexcept {
-        push_handle_ptr(const_cast<void *>(buffer.handle_ptr()));
+        push_handle_ptr(const_cast<void *>(buffer.handle_ptr()), buffer.data_size());
     }
 
     void _encode_image(const Image &image) noexcept;
 
     void _encode_accel(const Accel &accel) noexcept {
-        push_handle_ptr(const_cast<void *>(accel.handle_ptr()));
+        push_handle_ptr(const_cast<void *>(accel.handle_ptr()), accel.data_size());
     }
 
 public:
@@ -74,21 +73,20 @@ public:
     [[nodiscard]] size_t num() const noexcept { return _args.size(); }
     void clear() noexcept { _cursor = 0; }
 
-    void push_handle_ptr(void *address) noexcept {
+    void push_handle_ptr(void *address, size_t size) noexcept {
         _cursor = mem_offset(_cursor, alignof(handle_ty));
         _args.push_back(address);
         OC_ASSERT(_cursor < Size);
         if (_function.is_raytracing()) {
-            handle_ty handle = *(reinterpret_cast<const handle_ty *>(address));
-            add_param(handle);
+            add_param(address, size);
         }
     }
 
-    void add_param(handle_ty handle) noexcept {
-        _params.push_back(handle);
+    void add_param(const void *ptr, size_t size) noexcept {
+        _params.emplace_back(ptr, size);
     }
 
-    [[nodiscard]] span<handle_ty> params() noexcept { return _params; }
+    [[nodiscard]] span<const MemoryBlock> params() noexcept { return _params; }
 
     template<typename T>
     ArgumentList &operator<<(T &&arg) {
@@ -156,12 +154,11 @@ public:
         (_argument_list << ... << OC_FORWARD(args));
         if (_function.is_raytracing()) {
             for (const auto &uniform : _function.uniform_vars()) {
-                handle_ty handle = *(reinterpret_cast<const handle_ty *>(uniform.handle_ptr()));
-                _argument_list.add_param(handle);
+                _argument_list.add_param(uniform.handle_ptr(), uniform.block_size());
             }
         } else {
             for (const auto &uniform : _function.uniform_vars()) {
-                _argument_list.push_handle_ptr(const_cast<void *>(uniform.handle_ptr()));
+                _argument_list.push_handle_ptr(const_cast<void *>(uniform.handle_ptr()), uniform.block_size());
             }
         }
         return *this;

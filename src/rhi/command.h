@@ -207,17 +207,24 @@ private:
     // arguments for general kernel
     span<void *> _args;
     // params for ray tracing kernel
-    span<handle_ty> _params;
+    span<const MemoryBlock> _params;
     uint3 _dispatch_dim;
     handle_ty _entry{};
 
 public:
     explicit ShaderDispatchCommand(const Function &function, handle_ty entry, span<void *> args, uint3 dim)
         : Command(true), _function(function), _entry(entry), _args(args), _dispatch_dim(dim) {}
-    explicit ShaderDispatchCommand(const Function &function, handle_ty entry, span<handle_ty> params, uint3 dim)
+    explicit ShaderDispatchCommand(const Function &function, handle_ty entry, span<const MemoryBlock> params, uint3 dim)
         : Command(true), _function(function), _entry(entry), _params(params), _dispatch_dim(dim) {}
     [[nodiscard]] span<void *> args() noexcept { return _args; }
-    [[nodiscard]] span<handle_ty> params() noexcept { return _params; }
+    [[nodiscard]] span<const MemoryBlock> params() noexcept { return _params; }
+    [[nodiscard]] size_t params_size() noexcept {
+        size_t ret = 0u;
+        for (const MemoryBlock &block : _params) {
+            ret += block.size;
+        }
+        return ret;
+    }
     [[nodiscard]] uint3 dispatch_dim() const noexcept { return _dispatch_dim; }
     [[nodiscard]] const Function &function() const noexcept { return _function; }
     [[nodiscard]] Function &function_nc() noexcept {

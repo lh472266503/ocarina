@@ -94,9 +94,8 @@ private:
     OptixPipelineCompileOptions _pipeline_compile_options = {};
     ProgramGroupTable _program_group_table;
     Buffer<SBTRecord> _sbt_records{};
-    Buffer<SBTRecord> _callable_records{};
     OptixShaderBindingTable _sbt{};
-    Buffer<handle_ty> _params;
+    Buffer<std::byte> _params;
 
 public:
     void init_module(const string_view &ptx_code) {
@@ -294,8 +293,14 @@ public:
         uint y = dim.y;
         uint z = dim.z;
         auto cu_stream = reinterpret_cast<CUstream>(stream);
-        _params = Buffer<handle_ty>(_device, cmd->params().size());
-        _params.upload_immediately(cmd->params().data());
+        size_t total_size = cmd->params_size();
+        span<const MemoryBlock> blocks = cmd->params();
+        _params = Buffer<std::byte>(_device, total_size);
+        size_t offset = 0;
+        for (const MemoryBlock &block : blocks) {
+            _params.upload_immediately(block.address, offset, block.size);
+            offset += block.size;
+        }
         _device->use_context([&] {
             OC_OPTIX_CHECK(optixLaunch(_optix_pipeline,
                                        cu_stream,

@@ -148,6 +148,10 @@ public:
         upload_sync(data)->accept(*_device->command_visitor());
     }
 
+    void upload_immediately(const void *data, size_t offset, size_t size) const noexcept {
+        view(offset, size).upload_sync(data)->accept(*_device->command_visitor());
+    }
+
     void download_immediately(void *data) const noexcept {
         download_sync(data)->accept(*_device->command_visitor());
     }

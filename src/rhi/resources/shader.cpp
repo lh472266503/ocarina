@@ -8,6 +8,6 @@
 namespace ocarina {
 
 void ArgumentList::_encode_image(const Image &image) noexcept {
-    push_handle_ptr(const_cast<void *>(image.handle_ptr()));
+    push_handle_ptr(const_cast<void *>(image.handle_ptr()), image.data_size());
 }
 }// namespace ocarina

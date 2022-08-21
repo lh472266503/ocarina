@@ -43,6 +43,7 @@ public:
     [[nodiscard]] const MemoryBlock &block() const noexcept {
         return _block;
     }
+    [[nodiscard]] size_t block_size() const noexcept { return _block.size; }
     [[nodiscard]] const RefExpr *expression() const noexcept { return _expr; }
 };
 
