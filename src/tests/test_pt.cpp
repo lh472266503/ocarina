@@ -117,6 +117,13 @@ int main(int argc, char *argv[]) {
         accel.add_mesh(mesh, make_float4x4(1.f));
     }
 
+    Callable lcg = [](UInt &state) noexcept {
+        constexpr auto lcg_a = 1664525u;
+        constexpr auto lcg_c = 1013904223u;
+        state = lcg_a * state + lcg_c;
+        return cast<float>(state & 0x00ffffffu) * (1.0f / static_cast<float>(0x01000000u));
+    };
+
     stream << accel.build_bvh() << synchronize() << commit();
 
     std::vector<Material> materials;
@@ -131,10 +138,15 @@ int main(int argc, char *argv[]) {
 
     auto material_buffer = device.create_buffer<Material>(materials.size());
     stream << material_buffer.upload_sync(materials.data());
+    static constexpr auto fov = radians(27.8f);
+    static constexpr auto origin = make_float3(-0.01f, 0.995f, 5.0f);
+
+    auto seed_buffer = device.create_buffer<uint>(res.x * res.y);
+
+
 
     Callable generate_ray = [](Float2 p) noexcept {
-        static constexpr auto fov = radians(27.8f);
-        static constexpr auto origin = make_float3(-0.01f, 0.995f, 5.0f);
+
         Var pixel = origin + make_float3(p * tan(0.5f * fov), -1.0f);
         Var direction = normalize(pixel - origin);
         return make_ray(origin, direction);
@@ -146,21 +158,27 @@ int main(int argc, char *argv[]) {
     Kernel raytracing = [&](Var<Image> output) {
         //        Var ray = make_ray(make_float3(0), make_float3(0));
         Var coord = dispatch_idx().xy();
-        Var pixel = (make_float2(coord)) / (res.x * 2.0f) - 1.0f;
+        Var state = seed_buffer.read(dispatch_id());
+        Var rx = lcg(state);
+        Var ry = lcg(state);
+        Var pixel = (make_float2(coord) + make_float2(rx, ry)) / (res.x * 2.0f) - 1.0f;
         Var ray = generate_ray(pixel * make_float2(1.0f, -1.0f));
+//        Var ray = make_ray(origin, make_float3(0,0,-1));
         output.write(make_uint2(dispatch_idx()), make_float4(1, 1, 0, 1));
+        Var hit = accel.trace_closest(ray);
+//        print("{},{},{}", hit.bary.x, hit.bary.y, hit.inst_id);
         //        Var mat = material_buffer.read(0).emission;
     };
     auto shader = device.compile(raytracing);
 
     auto window = context.create_window("display", res);
-    window->run([&](double t) {
+//    window->run([&](double t) {
 
         stream << shader(frame).dispatch(res);
         stream << synchronize() << commit();
         stream << frame.download_sync(image.pixel_ptr()) << commit();
         window->set_background(image.pixel_ptr<float4>(), res);
-    });
+//    });
 
     return 0;
 }

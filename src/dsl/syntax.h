@@ -52,6 +52,11 @@ template<typename T>
     return Expr<RawType>(expr);
 }
 
+template<typename T, typename Arg>
+[[nodiscard]] inline auto cast(Arg &&arg) {
+    return arg.cast<T>();
+}
+
 namespace detail {
 
 class IfStmtBuilder {

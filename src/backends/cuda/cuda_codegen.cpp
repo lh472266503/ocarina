@@ -182,7 +182,8 @@ void CUDACodegen::_emit_builtin_vars_define(const Function &f) noexcept {
     } else if (f.is_raytracing_kernel()) {
         _emit_indent();
         current_scratch() << "oc_uint3 d_idx = getLaunchIndex();\n";
-
+        _emit_indent();
+        current_scratch() << "oc_uint3 d_dim = getLaunchDim();\n";
         for (const Variable &arg : f.arguments()) {
             _emit_indent();
             current_scratch() << "const auto &";

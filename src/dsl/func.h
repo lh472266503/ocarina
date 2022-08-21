@@ -111,6 +111,26 @@ class Callable {
 template<typename T>
 struct is_callable : std::false_type {};
 
+namespace detail {
+template<typename T>
+struct prototype_to_callable_invocation {
+    using type = Var<T>;
+};
+
+template<typename T>
+struct prototype_to_callable_invocation<const T &> {
+    using type = Var<T>;
+};
+
+template<typename T>
+struct prototype_to_callable_invocation<T &> {
+    using type = Var<T>;
+};
+}// namespace detail
+
+template<typename T>
+using prototype_to_callable_invocation_t = typename detail::prototype_to_callable_invocation<T>::type;
+
 template<typename T>
 struct is_callable<Callable<T>> : std::true_type {};
 
@@ -206,10 +226,11 @@ public:
               }
           }))) {}
 
-    template<typename... A>
-    requires std::is_invocable_v<signature, expr_value_t<A>
-                                            ...> auto
-    operator()(A &&...args) const noexcept {
+    //    template<typename... A>
+    //    requires std::is_invocable_v<signature, expr_value_t<A>
+    //                                            ...>
+    auto
+    operator()(prototype_to_callable_invocation_t<Args> ...args) const noexcept {
         const CallExpr *expr = Function::current()->call(Type::of<Ret>(), _function.get(), {(OC_EXPR(args))...});
         if constexpr (!std::is_same_v<std::remove_cvref_t<Ret>, void>) {
             return eval<Ret>(expr);
