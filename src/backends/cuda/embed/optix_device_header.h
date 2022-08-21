@@ -43,7 +43,7 @@ __device__ inline void trace(OptixTraversableHandle handle,
         handle,
         origin,
         direction,
-        0,
+        ray.m0.w,
         ray.m1.w,
         0.0f,// rayTime
         OptixVisibilityMask(1),
