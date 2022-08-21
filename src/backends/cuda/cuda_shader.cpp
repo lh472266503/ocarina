@@ -136,13 +136,6 @@ public:
     }
 
     void build_pipeline(OptixDeviceContext optix_device_context) noexcept {
-        string raygen_entry = _function.func_name();
-        ProgramName entries{
-            raygen_entry.c_str(),
-            "__closesthit__closest",
-            "__closesthit__any"};
-        _program_group_table = create_program_groups(_device->optix_device_context(), entries);
-        build_sbt();
 
         constexpr int max_trace_depth = 2;
 
@@ -191,13 +184,13 @@ public:
                                                  ));
     }
 
-    void build_sbt() {
+    void build_sbt(ProgramGroupTable program_group_table) {
         _sbt_records = Buffer<SBTRecord>(_device, 4);
         SBTRecord sbt[4] = {};
-        OC_OPTIX_CHECK(optixSbtRecordPackHeader(_program_group_table.raygen_group, &sbt[0]));
-        OC_OPTIX_CHECK(optixSbtRecordPackHeader(_program_group_table.hit_closest_group, &sbt[1]));
-        OC_OPTIX_CHECK(optixSbtRecordPackHeader(_program_group_table.hit_any_group, &sbt[2]));
-        OC_OPTIX_CHECK(optixSbtRecordPackHeader(_program_group_table.miss_closest_group, &sbt[3]));
+        OC_OPTIX_CHECK(optixSbtRecordPackHeader(program_group_table.raygen_group, &sbt[0]));
+        OC_OPTIX_CHECK(optixSbtRecordPackHeader(program_group_table.hit_closest_group, &sbt[1]));
+        OC_OPTIX_CHECK(optixSbtRecordPackHeader(program_group_table.hit_any_group, &sbt[2]));
+        OC_OPTIX_CHECK(optixSbtRecordPackHeader(program_group_table.miss_closest_group, &sbt[3]));
         _sbt_records.upload_immediately(sbt);
 
         _sbt.raygenRecord = _sbt_records.ptr<CUdeviceptr>();
@@ -286,6 +279,13 @@ public:
                 const Function &f) : CUDAShader(device, f) {
         _device->init_optix_context();
         init_module(ptx);
+        string raygen_entry = _function.func_name();
+        ProgramName entries{
+            raygen_entry.c_str(),
+            "__closesthit__closest",
+            "__closesthit__any"};
+        _program_group_table = create_program_groups(_device->optix_device_context(), entries);
+        build_sbt(_program_group_table);
         build_pipeline(_device->optix_device_context());
     }
     void launch(handle_ty stream, ShaderDispatchCommand *cmd) noexcept override {
@@ -296,12 +296,14 @@ public:
         auto cu_stream = reinterpret_cast<CUstream>(stream);
         _params = Buffer<handle_ty>(_device, cmd->params().size());
         _params.upload_immediately(cmd->params().data());
-        OC_OPTIX_CHECK(optixLaunch(_optix_pipeline,
-                    cu_stream,
-                    _params.handle(),
-                    sizeof(handle_ty) * cmd->params().size(),
-                    &_sbt,
-                    x,y,z));
+        _device->use_context([&] {
+            OC_OPTIX_CHECK(optixLaunch(_optix_pipeline,
+                                       cu_stream,
+                                       _params.handle(),
+                                       sizeof(handle_ty) * cmd->params().size(),
+                                       &_sbt,
+                                       x, y, z));
+        });
     }
     ~OptixShader() override {
         _program_group_table.clear();
