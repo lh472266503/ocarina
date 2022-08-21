@@ -56,6 +56,8 @@ public:
     [[nodiscard]] Tag tag() const noexcept { return _tag; }
     [[nodiscard]] virtual handle_ty handle() const noexcept { return _handle; }
     [[nodiscard]] virtual const void *handle_ptr() const noexcept { return &_handle; }
+    // size of data on device side
+    [[nodiscard]] virtual size_t data_size() const noexcept { return sizeof(handle_ty); }
     [[nodiscard]] bool valid() const noexcept { return bool(_device); }
     void destroy();
     virtual ~RHIResource() { destroy(); }

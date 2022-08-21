@@ -19,6 +19,7 @@ public:
         [[nodiscard]] virtual handle_ty array_handle() const noexcept = 0;
         [[nodiscard]] virtual handle_ty tex_handle() const noexcept = 0;
         [[nodiscard]] virtual const void *handle_ptr() const noexcept = 0;
+        [[nodiscard]] virtual size_t data_size() const noexcept = 0;
     };
 
 public:
@@ -83,6 +84,7 @@ public:
     [[nodiscard]] handle_ty tex_handle() const noexcept { return impl()->tex_handle(); }
     [[nodiscard]] const void *handle_ptr() const noexcept override { return impl()->handle_ptr(); }
     [[nodiscard]] PixelStorage pixel_storage() const noexcept { return impl()->pixel_storage(); }
+    [[nodiscard]] size_t data_size() const noexcept override { return impl()->data_size(); }
     [[nodiscard]] ImageUploadCommand *upload(const void *data) const noexcept {
         return ImageUploadCommand::create(data, array_handle(), resolution(), pixel_storage(), true);
     }
