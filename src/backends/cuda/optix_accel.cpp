@@ -90,14 +90,15 @@ void OptixAccel::build_bvh(CUDACommandVisitor*visitor) noexcept {
         OC_INFO_FORMAT("tlas : compacted_gas_size is {} byte", compacted_gas_size);
 
         if (compacted_gas_size < ias_buffer_sizes.outputSizeInBytes) {
-            _tlas_buffer = Buffer<std::byte>(_device,compacted_gas_size);
+            _tlas_buffer = Buffer<std::byte>(_device, compacted_gas_size);
             OC_OPTIX_CHECK(optixAccelCompact(_device->optix_device_context(), nullptr,
-                                          _tlas_handle,
-                                          _tlas_buffer.ptr<CUdeviceptr>(),
-                                          compacted_gas_size,
-                                          &_tlas_handle));
+                                             _tlas_handle,
+                                             _tlas_buffer.ptr<CUdeviceptr>(),
+                                             compacted_gas_size,
+                                             &_tlas_handle));
             OC_INFO("tlas : optixAccelCompact was executed");
         }
+        OC_INFO("tlas handle is ", _tlas_handle);
         OC_CU_CHECK(cuCtxSynchronize());
     });
 }
