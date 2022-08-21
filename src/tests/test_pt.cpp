@@ -48,7 +48,7 @@ OC_STRUCT(Onb, tangent, binormal, normal) {
 int main(int argc, char *argv[]) {
     fs::path path(argv[0]);
     Context context(path.parent_path());
-//    context.clear_cache();
+    context.clear_cache();
     Device device = context.create_device("cuda");
     device.init_rtx();
     Stream stream = device.create_stream();
@@ -132,16 +132,26 @@ int main(int argc, char *argv[]) {
     auto material_buffer = device.create_buffer<Material>(materials.size());
     stream << material_buffer.upload_sync(materials.data());
 
-
+    Callable generate_ray = [](Float2 p) noexcept {
+        static constexpr auto fov = radians(27.8f);
+        static constexpr auto origin = make_float3(-0.01f, 0.995f, 5.0f);
+        Var pixel = origin + make_float3(p * tan(0.5f * fov), -1.0f);
+        Var direction = normalize(pixel - origin);
+        return make_ray(origin, direction);
+    };
 
     auto image = ImageIO::pure_color(make_float4(0, 0, 0, 1), ColorSpace::LINEAR, res);
     auto frame = device.create_image(res, PixelStorage::FLOAT4);
 
     Kernel raytracing = [&](Var<Image> output) {
-        output.write(make_uint2(dispatch_idx()), make_float4(1,1,0,1));
+        //        Var ray = make_ray(make_float3(0), make_float3(0));
+        Var coord = dispatch_idx().xy();
+        Var pixel = (make_float2(coord)) / (res.x * 2.0f) - 1.0f;
+        Var ray = generate_ray(pixel * make_float2(1.0f, -1.0f));
+        output.write(make_uint2(dispatch_idx()), make_float4(1, 1, 0, 1));
+        //        Var mat = material_buffer.read(0).emission;
     };
     auto shader = device.compile(raytracing);
-
 
     auto window = context.create_window("display", res);
     window->run([&](double t) {
