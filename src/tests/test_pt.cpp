@@ -63,19 +63,20 @@ int main(int argc, char *argv[]) {
     Accel accel = device.create_accel();
     accel.add_mesh(cube, make_float4x4(1.f));
     stream << accel.build_bvh();
+    stream << synchronize() << commit();
 
     Callable cb = [&]() {
         return Var<std::array<float, 10>>();
     };
 
     Kernel kernel = [&]() {
-        Var<Ray> r = make_ray(float3(0), float3(0,0,1));
-        accel.trace_any(r);
+        Var<Ray> r = make_ray(float3(0,0, 0), float3(0,0,1),0.499f);
+        Bool hit= accel.trace_any(r);
 //        Float3 org = r->origin();
-        Float3 pos = v_buffer.read(0);
+        Float3 pos = r->direction();
         Var<Triangle> tri = t_buffer.read(0);
-        print("{},{},{}", tri.i, tri.j, tri.k);
-        print("{}  {}  {}", pos.x, pos.y, pos.z);
+        print("{},{},{}, {}", tri.i, tri.j, tri.k, hit);
+        print("{}  {}  {}  {}", pos.x, pos.y, pos.z, r->t_min());
     };
     auto shader = device.compile(kernel);
     stream << shader().dispatch(1);
