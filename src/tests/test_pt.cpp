@@ -26,6 +26,16 @@ struct Onb {
     float3 normal;
 };
 
+struct MeshHandle {
+    uint tri_offset;
+    uint tri_num;
+
+public:
+    MeshHandle(uint o, uint n) : tri_offset(o), tri_num(n) {}
+};
+
+OC_STRUCT(MeshHandle, tri_offset, tri_num){};
+
 // clang-format off
 OC_STRUCT(Material, albedo, emission) {};
 OC_STRUCT(Onb, tangent, binormal, normal) {
@@ -72,22 +82,42 @@ int main(int argc, char *argv[]) {
     auto vertex_buffer = device.create_buffer<float3>(vertices.size());
     stream << vertex_buffer.upload_sync(vertices.data())
            << commit();
-    std::vector<Mesh> meshes;
     size_t num = 0;
     std::vector<Triangle> triangles;
+    std::vector<MeshHandle> meshHandles;
+
+    uint offset = 0;
     for (auto &&shape : obj_reader.GetShapes()) {
         auto &&t = shape.mesh.indices;
-        auto triangle_count = t.size() / 3u;
+        uint triangle_count = t.size() / 3u;
         OC_INFO_FORMAT(
             "Processing shape '{}' at index {} with {} triangle(s).",
             shape.name, num++, triangle_count);
         for (int i = 0; i < t.size(); i += 3) {
             triangles.emplace_back(t[i].vertex_index, t[i + 1].vertex_index, t[i + 2].vertex_index);
         }
+        meshHandles.emplace_back(offset, triangle_count);
+        offset += triangle_count;
     }
     auto triangle_buffer = device.create_buffer<Triangle>(triangles.size());
     stream << triangle_buffer.upload_sync(triangles.data());
     stream << synchronize() << commit();
+    std::vector<Mesh> meshes;
+    for (auto handle : meshHandles) {
+        auto mesh = device.create_mesh(vertex_buffer, triangle_buffer.view(handle.tri_offset, handle.tri_num));
+        meshes.push_back(std::move(mesh));
+    }
+    for (Mesh &mesh : meshes) {
+        stream << mesh.build_bvh();
+    }
+    stream << synchronize() << commit();
+
+    auto accel = device.create_accel();
+    for (const Mesh &mesh : meshes) {
+        accel.add_mesh(mesh, make_float4x4(1.f));
+    }
+
+    stream << accel.build_bvh() << synchronize() << commit();
 
     std::vector<Material> materials;
     materials.emplace_back(Material{make_float3(0.725f, 0.71f, 0.68f), make_float3(0.0f)});// floor
@@ -101,12 +131,6 @@ int main(int argc, char *argv[]) {
 
     auto material_buffer = device.create_buffer<Material>(materials.size());
     stream << material_buffer.upload_sync(materials.data());
-
-    auto mesh = device.create_mesh(vertex_buffer, triangle_buffer);
-    stream << mesh.build_bvh() << synchronize() << commit();
-    auto accel = device.create_accel();
-    accel.add_mesh(mesh, make_float4x4(1.f));
-    stream << accel.build_bvh() << synchronize() << commit();
 
     auto image = ImageIO::pure_color(make_float4(0, 0, 0, 1), ColorSpace::LINEAR, res);
 
