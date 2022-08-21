@@ -39,6 +39,7 @@ private:
     ocarina::vector<void *> _args;
     ocarina::vector<handle_ty> _params;
     ocarina::array<std::byte, Size> _argument_data{};
+    const Function &_function;
     size_t _cursor{};
 
 private:
@@ -61,7 +62,7 @@ private:
     void _encode_image(const Image &image) noexcept;
 
 public:
-    ArgumentList() = default;
+    explicit ArgumentList(const Function &f) : _function(f){}
     [[nodiscard]] span<void *> ptr() noexcept { return _args; }
     [[nodiscard]] size_t num() const noexcept { return _args.size(); }
     void clear() noexcept { _cursor = 0; }
@@ -70,6 +71,10 @@ public:
         _cursor = mem_offset(_cursor, alignof(handle_ty));
         _args.push_back(address);
         OC_ASSERT(_cursor < Size);
+        if (_function.is_raytracing()) {
+            handle_ty handle = *(reinterpret_cast<const handle_ty *>(address));
+            add_param(handle);
+        }
     }
 
     void add_param(handle_ty handle) noexcept {
@@ -112,7 +117,7 @@ public:
 private:
     ShaderTag _shader_tag;
     const Function &_function;
-    ArgumentList _argument_list;
+    ArgumentList _argument_list{_function};
 
 public:
     Shader(Device::Impl *device, const Function &function, ShaderTag tag) noexcept

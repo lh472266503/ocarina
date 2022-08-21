@@ -46,7 +46,7 @@ auto get_cube(float x = 1, float y = 1, float z = 1) {
 int main(int argc, char *argv[]) {
     fs::path path(argv[0]);
     Context context(path.parent_path());
-//    context.clear_cache();
+    context.clear_cache();
     Device device = context.create_device("cuda");
     device.init_rtx();
     Stream stream = device.create_stream();
@@ -81,19 +81,19 @@ int main(int argc, char *argv[]) {
         return Var<std::array<float, 10>>();
     };
 
-    Kernel kernel = [&]() {
+    Kernel kernel = [&](const BufferVar<Triangle> t_buffer) {
         Var<Ray> r = make_ray(float3(0,0.1, -5), float3(0,0,1));
         Var hit= accel.trace_closest(r);
         //        Float3 org = r->origin();
         Float3 pos = r->direction();
         Var<Triangle> tri = t_buffer.read(0);
-        Float4 pix = image.read<float4>(0,0);
+//        Float4 pix = image.read<float4>(0,0);
         print("{},{}----------{} {}", hit.prim_id, hit.inst_id, hit->bary.x, hit.bary.y);
-        print("{}  {}  {}  {}", pix.x, pix.y, pix.z, r->t_max());
+        print("{}  {}  {}  {}", tri.i, tri.j, tri.k, r->t_max());
     };
     auto shader = device.compile(kernel);
-    stream << shader().dispatch(1);
-    stream << synchronize() << commit();
+//    stream << shader(t_buffer).dispatch(1);
+//    stream << synchronize() << commit();
 
     return 0;
 }

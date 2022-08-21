@@ -140,6 +140,14 @@ void CUDACodegen::visit(const MemberExpr *expr) noexcept {
 void CUDACodegen::_emit_raytracing_param(const Function &f) noexcept {
     current_scratch() << "struct Params {\n";
     indent_inc();
+
+    for (const Variable &arg : f.arguments()) {
+        _emit_indent();
+        _emit_variable_define(arg);
+        current_scratch() << ";";
+        _emit_newline();
+    }
+
     f.for_each_uniform_var([&](const UniformBinding &uniform) {
         _emit_indent();
         _emit_variable_define(uniform.expression()->variable());
@@ -174,10 +182,19 @@ void CUDACodegen::_emit_builtin_vars_define(const Function &f) noexcept {
     } else if (f.is_raytracing_kernel()) {
         _emit_indent();
         current_scratch() << "oc_uint3 d_idx = getLaunchIndex();\n";
+
+        for (const Variable &arg : f.arguments()) {
+            _emit_indent();
+            current_scratch() << "const auto &";
+            _emit_variable_name(arg);
+            current_scratch() << " = params.";
+            _emit_variable_name(arg);
+            current_scratch() << ";\n";
+        }
+
         f.for_each_uniform_var([&](const UniformBinding &uniform) {
             _emit_indent();
-            _emit_type_name(uniform.type());
-            _emit_space();
+            current_scratch() << "const auto &";
             _emit_variable_name(uniform.expression()->variable());
             current_scratch() << " = params.";
             _emit_variable_name(uniform.expression()->variable());
@@ -237,11 +254,11 @@ void CUDACodegen::_emit_uniform_var(const UniformBinding &uniform) noexcept {
 
 void CUDACodegen::_emit_arguments(const Function &f) noexcept {
     current_scratch() << "(";
-    for (const auto &v : f.arguments()) {
-        _emit_variable_define(v);
-        current_scratch() << ",";
-    }
     if (f.is_general_kernel()) {
+        for (const auto &v : f.arguments()) {
+            _emit_variable_define(v);
+            current_scratch() << ",";
+        }
         for (const auto &uniform : f.uniform_vars()) {
             _emit_variable_define(uniform.expression()->variable());
             current_scratch() << ",";
@@ -249,6 +266,10 @@ void CUDACodegen::_emit_arguments(const Function &f) noexcept {
         Variable dispatch_dim(Type::of<uint3>(), Variable::Tag::LOCAL, -1, "d_dim");
         _emit_variable_define(dispatch_dim);
     } else if (f.is_callable()) {
+        for (const auto &v : f.arguments()) {
+            _emit_variable_define(v);
+            current_scratch() << ",";
+        }
         if (f.arguments().size() + f.uniform_vars().size() > 0) {
             current_scratch().pop_back();
         }
