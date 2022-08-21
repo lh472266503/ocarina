@@ -38,7 +38,7 @@ auto get_cube(float x = 1, float y = 1, float z = 1) {
         Triangle(17, 16, 19),
         Triangle(21, 22, 23),
         Triangle(20, 21, 23),
-    };
+        };
 
     return ocarina::make_pair(vertices, triangles);
 }
@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
     Kernel kernel = [&]() {
         Var<Ray> r = make_ray(float3(0,0.1, -5), float3(0,0,1));
         Var hit= accel.trace_closest(r);
-//        Float3 org = r->origin();
+        //        Float3 org = r->origin();
         Float3 pos = r->direction();
         Var<Triangle> tri = t_buffer.read(0);
         print("{},{}----------{} {}", hit.prim_id, hit.inst_id, hit->bary.x, hit.bary.y);
