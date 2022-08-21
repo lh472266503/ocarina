@@ -124,7 +124,7 @@ struct prototype_to_callable_invocation<const T &> {
 
 template<typename T>
 struct prototype_to_callable_invocation<T &> {
-    using type = Var<T>;
+    using type = Var<T> &;
 };
 }// namespace detail
 
@@ -226,11 +226,8 @@ public:
               }
           }))) {}
 
-    //    template<typename... A>
-    //    requires std::is_invocable_v<signature, expr_value_t<A>
-    //                                            ...>
-    auto
-    operator()(prototype_to_callable_invocation_t<Args> ...args) const noexcept {
+
+    auto operator()(prototype_to_callable_invocation_t<Args> ...args) const noexcept {
         const CallExpr *expr = Function::current()->call(Type::of<Ret>(), _function.get(), {(OC_EXPR(args))...});
         if constexpr (!std::is_same_v<std::remove_cvref_t<Ret>, void>) {
             return eval<Ret>(expr);
