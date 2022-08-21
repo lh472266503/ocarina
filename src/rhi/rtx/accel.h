@@ -16,6 +16,7 @@ public:
     public:
         virtual void add_mesh(const Mesh::Impl *mesh, float4x4 transform) noexcept = 0;
         [[nodiscard]] virtual handle_ty handle() const noexcept = 0;
+        [[nodiscard]] virtual const void *handle_ptr() const noexcept = 0;
     };
 
 public:
@@ -39,6 +40,9 @@ public:
 
     [[nodiscard]] handle_ty handle() const noexcept override {
         return impl()->handle();
+    }
+    [[nodiscard]] const void *handle_ptr() const noexcept override {
+        return impl()->handle_ptr();
     }
     [[nodiscard]] AccelBuildCommand *build_bvh() noexcept {
         return AccelBuildCommand::create(_handle);

@@ -30,5 +30,6 @@ public:
 
     void build_bvh(CUDACommandVisitor *visitor) noexcept;
     [[nodiscard]] handle_ty handle() const noexcept override { return _tlas_handle; }
+    [[nodiscard]] const void *handle_ptr() const noexcept override { return &_tlas_handle; }
 };
 }// namespace ocarina
