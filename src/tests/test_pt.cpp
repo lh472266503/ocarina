@@ -8,6 +8,7 @@
 #include "rhi/common.h"
 #include "math/base.h"
 #include "math/geometry.h"
+#define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
 #include "cornell_box.h"
 
@@ -53,39 +54,67 @@ int main(int argc, char *argv[]) {
     tinyobj::ObjReaderConfig obj_reader_config;
     obj_reader_config.triangulate = true;
     obj_reader_config.vertex_color = false;
-    auto [vertices, triangle] = get_cube();
 
-    Buffer v_buffer = device.create_buffer<float3>(vertices.size());
-    Buffer t_buffer = device.create_buffer<Triangle>(triangle.size());
+    tinyobj::ObjReader obj_reader;
+    if (!obj_reader.ParseFromString(obj_string, "", obj_reader_config)) {
+        std::string_view error_message = "unknown error.";
+        if (auto &&e = obj_reader.Error(); !e.empty()) { error_message = e; }
+        OC_ERROR_FORMAT("Failed to load OBJ file: {}", error_message);
+    }
+    if (auto &&e = obj_reader.Warning(); !e.empty()) {
+        OC_ERROR_FORMAT("{}", e);
+    }
 
-    Mesh cube = device.create_mesh(v_buffer.view(), t_buffer.view());
+    auto &&p = obj_reader.GetAttrib().vertices;
+    std::vector<float3> vertices;
+    vertices.reserve(p.size() / 3u);
+    for (auto i = 0u; i < p.size(); i += 3u) {
+        vertices.emplace_back(float3{
+            p[i + 0u],
+            p[i + 1u],
+            p[i + 2u]});
+    }
+    OC_INFO_FORMAT(
+        "Loaded mesh with {} shape(s) and {} vertices.",
+        obj_reader.GetShapes().size(), vertices.size());
+    auto vertex_buffer = device.create_buffer<float3>(vertices.size());
+    stream << vertex_buffer.upload_sync(vertices.data())
+           << commit();
+    std::vector<Mesh> meshes;
+    auto triangle_count = 0;
+    for (auto &&shape : obj_reader.GetShapes()) {
+        auto &&t = shape.mesh.indices;
+        triangle_count += t.size() / 3u;
+    }
+    auto triangle_buffer = device.create_buffer<Triangle>(triangle_count);
 
-    stream << v_buffer.upload_sync(vertices.data());
-    stream << t_buffer.upload_sync(triangle.data());
+    size_t offset = 0;
+    for (auto &&shape: obj_reader.GetShapes()) {
+        auto &&t = shape.mesh.indices;
+        auto triangle_count = t.size() / 3u;
+        std::vector<Triangle> triangles;
+        for (int i = 0; i < t.size(); i += 3) {
+            triangles.emplace_back(i, i + 1, i + 2);
+        }
+        offset += triangles.size();
+    }
 
-    stream << cube.build_bvh();
-
-    Accel accel = device.create_accel();
-    accel.add_mesh(cube, make_float4x4(1.f));
-    stream << accel.build_bvh();
-    stream << synchronize() << commit();
-
-    Callable cb = [&]() {
-        return Var<std::array<float, 10>>();
-    };
-
-    Kernel kernel = [&]() {
-        Var<Ray> r = make_ray(float3(0,0.1, -5), float3(0,0,1));
-        Var hit= accel.trace_closest(r);
-//        Float3 org = r->origin();
-        Float3 pos = r->direction();
-        Var<Triangle> tri = t_buffer.read(0);
-        print("{},{}----------{} {}", hit.prim_id, hit.inst_id, hit->bary.x, hit.bary.y);
-        print("{}  {}  {}  {}", pos.x, pos.y, pos.z, r->t_max());
-    };
-    auto shader = device.compile(kernel);
-    stream << shader().dispatch(1);
-    stream << synchronize() << commit();
+    for (auto &&shape : obj_reader.GetShapes()) {
+        auto index = static_cast<uint>(meshes.size());
+        auto &&t = shape.mesh.indices;
+        auto triangle_count = t.size() / 3u;
+        OC_INFO_FORMAT(
+            "Processing shape '{}' at index {} with {} triangle(s).",
+            shape.name, index, triangle_count);
+        std::vector<uint> indices;
+        indices.reserve(t.size());
+        for (auto i : t) { indices.emplace_back(i.vertex_index); }
+//        auto &&triangle_buffer = triangle_buffers.emplace_back(device.create_buffer<Triangle>(triangle_count));
+//        auto &&mesh = meshes.emplace_back(device.create_mesh(vertex_buffer, triangle_buffer));
+//        heap.emplace(index, triangle_buffer);
+//        stream << triangle_buffer.upload(indices.data())
+//        << mesh.build_bvh();
+    }
 
     return 0;
 }
