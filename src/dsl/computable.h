@@ -293,15 +293,15 @@ struct Computable<Matrix<N>>
 
 template<>
 struct Computable<Accel> {
+public:
+    template<typename TRay>
+    requires std::is_same_v<expr_value_t<TRay>, Ray>
+    [[nodiscard]] Var<Hit> trace_closest(const TRay &ray) const noexcept;// implement in rtx_type.h
+
+    template<typename TRay>
+    requires std::is_same_v<expr_value_t<TRay>, Ray>
+    [[nodiscard]] Var<bool> trace_any(const TRay &ray) const noexcept;// implement in rtx_type.h
     OC_COMPUTABLE_COMMON(Computable<Accel>)
-
-    template<typename TRay>
-    requires std::is_same_v<expr_value_t<TRay>, Ray>
-    [[nodiscard]] Var<Hit> trace_closest(const TRay &ray) const noexcept; // implement in rtx_type.h
-
-    template<typename TRay>
-    requires std::is_same_v<expr_value_t<TRay>, Ray>
-    [[nodiscard]] Var<bool> trace_any(const TRay &ray) const noexcept; // implement in rtx_type.h
 };
 
 template<typename... T>

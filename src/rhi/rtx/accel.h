@@ -29,12 +29,12 @@ public:
     }
 
     template<typename TRay>
-    [[nodiscard]] void trace_any(const TRay &ray) const noexcept {
+    [[nodiscard]] Var<bool> trace_any(const TRay &ray) const noexcept {
         const UniformBinding &uniform = Function::current()->get_uniform_var(Type::of<Accel>(),
                                                                              handle_ptr(),
                                                                              Variable::Tag::ACCEL);
-        auto accel =  make_expr<Accel>(uniform.expression());
-        int i =0;
+        auto accel = make_expr<Accel>(uniform.expression());
+        return accel.trace_any(ray);
     }
 
     [[nodiscard]] handle_ty handle() const noexcept override {
