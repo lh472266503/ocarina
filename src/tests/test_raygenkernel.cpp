@@ -46,7 +46,7 @@ auto get_cube(float x = 1, float y = 1, float z = 1) {
 int main(int argc, char *argv[]) {
     fs::path path(argv[0]);
     Context context(path.parent_path());
-    context.clear_cache();
+//    context.clear_cache();
     Device device = context.create_device("cuda");
     device.init_rtx();
     Stream stream = device.create_stream();
@@ -62,6 +62,13 @@ int main(int argc, char *argv[]) {
 
     stream << v_buffer.upload_sync(vertices.data());
     stream << t_buffer.upload_sync(triangle.data());
+
+    auto path1 = R"(E:/work/compile/ocarina/res/test.png)";
+    auto path2 = R"(E:/work/compile/ocarina/res/test.jpg)";
+    auto image_io = ImageIO::load(path1, LINEAR);
+
+    auto image = device.create_image(image_io.resolution(), image_io.pixel_storage());
+    stream << image.upload_sync(image_io.pixel_ptr());
 
     stream << cube.build_bvh();
 
@@ -80,8 +87,9 @@ int main(int argc, char *argv[]) {
         //        Float3 org = r->origin();
         Float3 pos = r->direction();
         Var<Triangle> tri = t_buffer.read(0);
+        Float4 pix = image.read<float4>(0,0);
         print("{},{}----------{} {}", hit.prim_id, hit.inst_id, hit->bary.x, hit.bary.y);
-        print("{}  {}  {}  {}", pos.x, pos.y, pos.z, r->t_max());
+        print("{}  {}  {}  {}", pix.x, pix.y, pix.z, r->t_max());
     };
     auto shader = device.compile(kernel);
     stream << shader().dispatch(1);
