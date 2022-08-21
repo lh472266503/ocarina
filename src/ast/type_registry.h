@@ -22,6 +22,8 @@ class Image;
 template<typename T>
 class ImageView;
 
+class Accel;
+
 namespace detail {
 
 template<typename T>
@@ -150,6 +152,16 @@ struct TypeDesc<Image> {
     }
 };
 
+template<>
+struct TypeDesc<Accel> {
+    static ocarina::string_view description() noexcept {
+        return "accel";
+    }
+    static ocarina::string_view name() noexcept {
+        return description();
+    }
+};
+
 template<typename T, size_t N>
 struct TypeDesc<T[N]> : public TypeDesc<std::array<T, N>> {};
 
@@ -268,6 +280,7 @@ private:
     void parse_array(Type *type, ocarina::string_view desc) noexcept;
     void parse_buffer(Type *type, ocarina::string_view desc) noexcept;
     void parse_image(Type *type, ocarina::string_view desc) noexcept;
+    void parse_accel(Type *type, ocarina::string_view desc) noexcept;
     void parse_struct(Type *type, ocarina::string_view desc) noexcept;
 
 public:

@@ -7,6 +7,7 @@
 #include "rhi/resources/resource.h"
 #include "rhi/command.h"
 #include "mesh.h"
+#include "dsl/var.h"
 
 namespace ocarina {
 class Accel : public RHIResource {
@@ -27,10 +28,14 @@ public:
         impl()->add_mesh(mesh.impl(), transform);
     }
 
-//    template<typename TRay>
-//    [[nodiscard]] Var<bool> trace_any(const TRay &ray) const noexcept {
-//
-//    }
+    template<typename TRay>
+    [[nodiscard]] void trace_any(const TRay &ray) const noexcept {
+        const UniformBinding &uniform = Function::current()->get_uniform_var(Type::of<Accel>(),
+                                                                             handle_ptr(),
+                                                                             Variable::Tag::ACCEL);
+        auto accel =  make_expr<Accel>(uniform.expression());
+        int i =0;
+    }
 
     [[nodiscard]] handle_ty handle() const noexcept override {
         return impl()->handle();

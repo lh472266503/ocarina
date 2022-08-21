@@ -167,6 +167,8 @@ const Type *TypeRegistry::parse_type(ocarina::string_view desc) noexcept {
         parse_buffer(type.get(), desc);
     } else if (desc.starts_with("image")) {
         parse_image(type.get(), desc);
+    } else if (desc.starts_with("accel")) {
+        parse_accel(type.get(), desc);
     } else {
         OC_ERROR("invalid data type ", desc);
     }
@@ -246,6 +248,10 @@ void TypeRegistry::parse_buffer(Type *type, ocarina::string_view desc) noexcept 
 
 void TypeRegistry::parse_image(Type *type, ocarina::string_view desc) noexcept {
     type->_tag = Type::Tag::IMAGE;
+}
+
+void TypeRegistry::parse_accel(Type *type, ocarina::string_view desc) noexcept {
+    type->_tag = Type::Tag::ACCEL;
 }
 
 void TypeRegistry::parse_array(Type *type, ocarina::string_view desc) noexcept {

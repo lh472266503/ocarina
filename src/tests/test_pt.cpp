@@ -69,14 +69,16 @@ int main(int argc, char *argv[]) {
     };
 
     Kernel kernel = [&]() {
-        Var<Ray> r = make_ray(float3(0), float3());
+        Var<Ray> r = make_ray(float3(0), float3(0,0,1));
+        accel.trace_any(r);
 //        Float3 org = r->origin();
         Float3 pos = v_buffer.read(0);
         Var<Triangle> tri = t_buffer.read(0);
         print("{},{},{}", tri.i, tri.j, tri.k);
+        print("{}  {}  {}", pos.x, pos.y, pos.z);
     };
     auto shader = device.compile(kernel);
-    stream << shader().dispatch(5,5);
+    stream << shader().dispatch(1);
     stream << synchronize() << commit();
 
     return 0;

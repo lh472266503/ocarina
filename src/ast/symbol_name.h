@@ -59,6 +59,8 @@ template<typename T>
             return "b";
         case Tag::TEXTURE:
             return "t";
+        case Tag::ACCEL:
+            return "acc";
         default:
             break;
     }
