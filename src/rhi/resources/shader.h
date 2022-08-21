@@ -71,7 +71,11 @@ public:
     explicit ArgumentList(const Function &f) : _function(f){}
     [[nodiscard]] span<void *> ptr() noexcept { return _args; }
     [[nodiscard]] size_t num() const noexcept { return _args.size(); }
-    void clear() noexcept { _cursor = 0; }
+    void clear() noexcept {
+        _cursor = 0;
+        _args.clear();
+        _params.clear();
+    }
 
     void push_handle_ptr(void *address, size_t size) noexcept {
         _cursor = mem_offset(_cursor, alignof(handle_ty));
