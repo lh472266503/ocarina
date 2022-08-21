@@ -305,7 +305,7 @@ public:
             OC_OPTIX_CHECK(optixLaunch(_optix_pipeline,
                                        cu_stream,
                                        _params.handle(),
-                                       sizeof(handle_ty) * cmd->params().size(),
+                                       total_size,
                                        &_sbt,
                                        x, y, z));
         });

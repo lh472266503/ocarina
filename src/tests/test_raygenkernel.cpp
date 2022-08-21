@@ -81,18 +81,21 @@ int main(int argc, char *argv[]) {
         return Var<std::array<float, 10>>();
     };
 
-    Kernel kernel = [&](const BufferVar<Triangle> t_buffer, const Var<Accel> acc) {
+    Kernel kernel = [&](const BufferVar<Triangle> t_buffer,
+                        const Var<Accel> acc,
+                        const ImageVar img) {
         Var<Ray> r = make_ray(float3(0,0.1, -5), float3(0,0,1));
         Var hit= acc.trace_closest(r);
         //        Float3 org = r->origin();
         Float3 pos = r->direction();
         Var<Triangle> tri = t_buffer.read(3);
-//        Float4 pix = image.read<float4>(0,0);
+        Float4 pix = image.read<float4>(200,150);
+        Float4 pix2 = img.read<float4>(200,150);
         print("{},{}----------{} {}", hit.prim_id, hit.inst_id, hit->bary.x, hit.bary.y);
-        print("{}  {}  {}  {}", tri.i, tri.j, tri.k, r->t_max());
+        print("{}  {}  {}  {} {}", tri.i, tri.j, tri.k, pix.x, pix.x);
     };
     auto shader = device.compile(kernel);
-    stream << shader(t_buffer, accel).dispatch(1);
+    stream << shader(t_buffer, accel, image).dispatch(1);
     stream << synchronize() << commit();
 
     return 0;
