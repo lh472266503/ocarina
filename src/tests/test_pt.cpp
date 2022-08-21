@@ -48,7 +48,7 @@ OC_STRUCT(Onb, tangent, binormal, normal) {
 int main(int argc, char *argv[]) {
     fs::path path(argv[0]);
     Context context(path.parent_path());
-    context.clear_cache();
+//    context.clear_cache();
     Device device = context.create_device("cuda");
     device.init_rtx();
     Stream stream = device.create_stream();
@@ -132,11 +132,23 @@ int main(int argc, char *argv[]) {
     auto material_buffer = device.create_buffer<Material>(materials.size());
     stream << material_buffer.upload_sync(materials.data());
 
+
+
     auto image = ImageIO::pure_color(make_float4(0, 0, 0, 1), ColorSpace::LINEAR, res);
+    auto frame = device.create_image(res, PixelStorage::FLOAT4);
+
+    Kernel raytracing = [&](Var<Image> output) {
+        output.write(make_uint2(dispatch_idx()), make_float4(1,1,0,1));
+    };
+    auto shader = device.compile(raytracing);
+
 
     auto window = context.create_window("display", res);
-
     window->run([&](double t) {
+
+        stream << shader(frame).dispatch(res);
+        stream << synchronize() << commit();
+        stream << frame.download_sync(image.pixel_ptr()) << commit();
         window->set_background(image.pixel_ptr<float4>(), res);
     });
 

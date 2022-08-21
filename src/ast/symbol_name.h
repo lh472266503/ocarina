@@ -41,6 +41,7 @@ template<typename T>
 [[nodiscard]] inline string_view variable_prefix(Variable::Tag tag) {
     using Tag = Variable::Tag;
     switch (tag) {
+        case Tag::REFERENCE:
         case Tag::LOCAL:
             return "v";
         case Tag::DISPATCH_IDX:
