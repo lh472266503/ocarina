@@ -11,38 +11,29 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
 #include "cornell_box.h"
+#include "gui/window.h"
 
 using namespace ocarina;
 
-auto get_cube(float x = 1, float y = 1, float z = 1) {
-    x = x / 2.f;
-    y = y / 2.f;
-    z = z / 2.f;
-    auto vertices = vector<float3>{
-        float3(-x, -y, z), float3(x, -y, z), float3(-x, y, z), float3(x, y, z),    // +z
-        float3(-x, y, -z), float3(x, y, -z), float3(-x, -y, -z), float3(x, -y, -z),// -z
-        float3(-x, y, z), float3(x, y, z), float3(-x, y, -z), float3(x, y, -z),    // +y
-        float3(-x, -y, z), float3(x, -y, z), float3(-x, -y, -z), float3(x, -y, -z),// -y
-        float3(x, -y, z), float3(x, y, z), float3(x, y, -z), float3(x, -y, -z),    // +x
-        float3(-x, -y, z), float3(-x, y, z), float3(-x, y, -z), float3(-x, -y, -z),// -x
-    };
-    auto triangles = vector<Triangle>{
-        Triangle(0, 1, 3),
-        Triangle(0, 3, 2),
-        Triangle(6, 5, 7),
-        Triangle(4, 5, 6),
-        Triangle(10, 9, 11),
-        Triangle(8, 9, 10),
-        Triangle(13, 14, 15),
-        Triangle(13, 12, 14),
-        Triangle(18, 17, 19),
-        Triangle(17, 16, 19),
-        Triangle(21, 22, 23),
-        Triangle(20, 21, 23),
-    };
+struct Material {
+    float3 albedo;
+    float3 emission;
+};
 
-    return ocarina::make_pair(vertices, triangles);
-}
+struct Onb {
+    float3 tangent;
+    float3 binormal;
+    float3 normal;
+};
+
+// clang-format off
+OC_STRUCT(Material, albedo, emission) {};
+OC_STRUCT(Onb, tangent, binormal, normal) {
+    [[nodiscard]] auto to_world(Var<float3> v) const noexcept {
+        return v.x * tangent + v.y * binormal + v.z * normal;
+    }
+};
+// clang-format on
 
 int main(int argc, char *argv[]) {
     fs::path path(argv[0]);
@@ -54,6 +45,7 @@ int main(int argc, char *argv[]) {
     tinyobj::ObjReaderConfig obj_reader_config;
     obj_reader_config.triangulate = true;
     obj_reader_config.vertex_color = false;
+    uint2 res = make_uint2(768, 768);
 
     tinyobj::ObjReader obj_reader;
     if (!obj_reader.ParseFromString(obj_string, "", obj_reader_config)) {
@@ -81,40 +73,48 @@ int main(int argc, char *argv[]) {
     stream << vertex_buffer.upload_sync(vertices.data())
            << commit();
     std::vector<Mesh> meshes;
-    auto triangle_count = 0;
+    size_t num = 0;
+    std::vector<Triangle> triangles;
     for (auto &&shape : obj_reader.GetShapes()) {
-        auto &&t = shape.mesh.indices;
-        triangle_count += t.size() / 3u;
-    }
-    auto triangle_buffer = device.create_buffer<Triangle>(triangle_count);
-
-    size_t offset = 0;
-    for (auto &&shape: obj_reader.GetShapes()) {
-        auto &&t = shape.mesh.indices;
-        auto triangle_count = t.size() / 3u;
-        std::vector<Triangle> triangles;
-        for (int i = 0; i < t.size(); i += 3) {
-            triangles.emplace_back(i, i + 1, i + 2);
-        }
-        offset += triangles.size();
-    }
-
-    for (auto &&shape : obj_reader.GetShapes()) {
-        auto index = static_cast<uint>(meshes.size());
         auto &&t = shape.mesh.indices;
         auto triangle_count = t.size() / 3u;
         OC_INFO_FORMAT(
             "Processing shape '{}' at index {} with {} triangle(s).",
-            shape.name, index, triangle_count);
-        std::vector<uint> indices;
-        indices.reserve(t.size());
-        for (auto i : t) { indices.emplace_back(i.vertex_index); }
-//        auto &&triangle_buffer = triangle_buffers.emplace_back(device.create_buffer<Triangle>(triangle_count));
-//        auto &&mesh = meshes.emplace_back(device.create_mesh(vertex_buffer, triangle_buffer));
-//        heap.emplace(index, triangle_buffer);
-//        stream << triangle_buffer.upload(indices.data())
-//        << mesh.build_bvh();
+            shape.name, num++, triangle_count);
+        for (int i = 0; i < t.size(); i += 3) {
+            triangles.emplace_back(t[i].vertex_index, t[i + 1].vertex_index, t[i + 2].vertex_index);
+        }
     }
+    auto triangle_buffer = device.create_buffer<Triangle>(triangles.size());
+    stream << triangle_buffer.upload_sync(triangles.data());
+    stream << synchronize() << commit();
+
+    std::vector<Material> materials;
+    materials.emplace_back(Material{make_float3(0.725f, 0.71f, 0.68f), make_float3(0.0f)});// floor
+    materials.emplace_back(Material{make_float3(0.725f, 0.71f, 0.68f), make_float3(0.0f)});// ceiling
+    materials.emplace_back(Material{make_float3(0.725f, 0.71f, 0.68f), make_float3(0.0f)});// back wall
+    materials.emplace_back(Material{make_float3(0.14f, 0.45f, 0.091f), make_float3(0.0f)});// right wall
+    materials.emplace_back(Material{make_float3(0.63f, 0.065f, 0.05f), make_float3(0.0f)});// left wall
+    materials.emplace_back(Material{make_float3(0.725f, 0.71f, 0.68f), make_float3(0.0f)});// short box
+    materials.emplace_back(Material{make_float3(0.725f, 0.71f, 0.68f), make_float3(0.0f)});// tall box
+    materials.emplace_back(Material{make_float3(0.0f), make_float3(17.0f, 12.0f, 4.0f)});  // light
+
+    auto material_buffer = device.create_buffer<Material>(materials.size());
+    stream << material_buffer.upload_sync(materials.data());
+
+    auto mesh = device.create_mesh(vertex_buffer, triangle_buffer);
+    stream << mesh.build_bvh() << synchronize() << commit();
+    auto accel = device.create_accel();
+    accel.add_mesh(mesh, make_float4x4(1.f));
+    stream << accel.build_bvh() << synchronize() << commit();
+
+    auto image = ImageIO::pure_color(make_float4(0, 0, 0, 1), ColorSpace::LINEAR, res);
+
+    auto window = context.create_window("display", res);
+
+    window->run([&](double t) {
+        window->set_background(image.pixel_ptr<float4>(), res);
+    });
 
     return 0;
 }
