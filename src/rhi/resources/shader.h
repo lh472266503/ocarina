@@ -6,6 +6,7 @@
 
 #include "rhi/device.h"
 #include "buffer.h"
+#include "rhi/rtx/accel.h"
 #include "stream.h"
 #include "rhi/command.h"
 #include "core/concepts.h"
@@ -61,6 +62,10 @@ private:
 
     void _encode_image(const Image &image) noexcept;
 
+    void _encode_accel(const Accel &accel) noexcept {
+        push_handle_ptr(const_cast<void *>(accel.handle_ptr()));
+    }
+
 public:
     explicit ArgumentList(const Function &f) : _function(f){}
     [[nodiscard]] span<void *> ptr() noexcept { return _args; }
@@ -91,6 +96,10 @@ public:
             _encode_buffer(OC_FORWARD(arg));
         } else if constexpr (is_image_v<T>) {
             _encode_image(OC_FORWARD(arg));
+        } else if constexpr (is_accel_v<T>) {
+            _encode_accel(OC_FORWARD(arg));
+        } else {
+            static_assert(always_false_v<T>);
         }
         return *this;
     }

@@ -256,6 +256,8 @@ class BufferView;
 
 class Image;
 
+class Accel;
+
 namespace detail {
 
 template<typename T>
@@ -320,5 +322,18 @@ struct texture_element_impl {
 template<typename T>
 using is_image = detail::is_image_impl<std::remove_cvref_t<T>>;
 OC_DEFINE_TEMPLATE_VALUE(is_image)
+
+namespace detail {
+template<typename T>
+struct is_accel_impl : std::false_type {};
+
+template<>
+struct is_accel_impl<Accel> : std::true_type {};
+
+}// namespace detail
+
+template<typename T>
+using is_accel = detail::is_accel_impl<std::remove_cvref_t<T>>;
+OC_DEFINE_TEMPLATE_VALUE(is_accel)
 
 }// namespace ocarina
