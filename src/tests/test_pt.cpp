@@ -70,13 +70,13 @@ int main(int argc, char *argv[]) {
     };
 
     Kernel kernel = [&]() {
-        Var<Ray> r = make_ray(float3(0,0, 0), float3(0,0,1),0.499f);
-        Bool hit= accel.trace_any(r);
+        Var<Ray> r = make_ray(float3(0,0.1, -5), float3(0,0,1));
+        Var hit= accel.trace_closest(r);
 //        Float3 org = r->origin();
         Float3 pos = r->direction();
         Var<Triangle> tri = t_buffer.read(0);
-        print("{},{},{}, {}", tri.i, tri.j, tri.k, hit);
-        print("{}  {}  {}  {}", pos.x, pos.y, pos.z, r->t_min());
+        print("{},{}----------{} {}", hit.prim_id, hit.inst_id, hit->bary.x, hit.bary.y);
+        print("{}  {}  {}  {}", pos.x, pos.y, pos.z, r->t_max());
     };
     auto shader = device.compile(kernel);
     stream << shader().dispatch(1);

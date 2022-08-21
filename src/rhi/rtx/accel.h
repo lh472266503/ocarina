@@ -34,8 +34,15 @@ public:
         const UniformBinding &uniform = Function::current()->get_uniform_var(Type::of<Accel>(),
                                                                              handle_ptr(),
                                                                              Variable::Tag::ACCEL);
-        auto accel = make_expr<Accel>(uniform.expression());
-        return accel.trace_any(ray);
+        return make_expr<Accel>(uniform.expression()).trace_any(ray);
+    }
+
+    template<typename TRay>
+    [[nodiscard]] Var<Hit> trace_closest(const TRay &ray) const noexcept {
+        const UniformBinding &uniform = Function::current()->get_uniform_var(Type::of<Accel>(),
+                                                                             handle_ptr(),
+                                                                             Variable::Tag::ACCEL);
+        return make_expr<Accel>(uniform.expression()).trace_closest(ray);
     }
 
     [[nodiscard]] handle_ty handle() const noexcept override {
