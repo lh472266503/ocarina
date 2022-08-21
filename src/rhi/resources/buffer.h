@@ -119,7 +119,8 @@ public:
         OC_NODISCARD auto
         read(Index &&index) const {
         const UniformBinding &uniform = Function::current()->get_uniform_var(Type::of<Buffer<T>>(),
-                                                                             handle_ptr(), Variable::Tag::BUFFER);
+                                                                             handle_ptr(), Variable::Tag::BUFFER,
+                                                                             data_size());
         return make_expr<Buffer<T>>(uniform.expression()).read(OC_FORWARD(index));
     }
 
@@ -128,7 +129,8 @@ public:
     void write(Index &&index, Val &&elm) {
         const UniformBinding &uniform = Function::current()->get_uniform_var(Type::of<Buffer<T>>(),
                                                                              handle_ptr(),
-                                                                             Variable::Tag::BUFFER);
+                                                                             Variable::Tag::BUFFER,
+                                                                             data_size());
         const AccessExpr *expr = Function::current()->access(Type::of<element_type>(),
                                                              uniform.expression(),
                                                              OC_EXPR(index));

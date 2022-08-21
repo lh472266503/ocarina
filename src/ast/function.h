@@ -20,11 +20,12 @@ class ScopeStmt;
 class RefExpr;
 class IfStmt;
 
+
 class UniformBinding : public Hashable {
 private:
     const Type *_type;
-    const void *_handle_ptr;
     const RefExpr *_expr{nullptr};
+    MemoryBlock _block;
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept final {
@@ -32,12 +33,15 @@ private:
     }
 
 public:
-    UniformBinding(const RefExpr *expr, const Type *type, const void *address)
-        : _type(type), _handle_ptr(address), _expr(expr) {}
+    UniformBinding(const RefExpr *expr, const Type *type, const void *address, size_t size)
+        : _type(type), _block(address, size), _expr(expr) {}
 
     [[nodiscard]] const Type *type() const noexcept { return _type; }
     [[nodiscard]] const void *handle_ptr() const noexcept {
-        return _handle_ptr;
+        return _block.address;
+    }
+    [[nodiscard]] const MemoryBlock &block() const noexcept {
+        return _block;
     }
     [[nodiscard]] const RefExpr *expression() const noexcept { return _expr; }
 };
@@ -148,7 +152,7 @@ public:
         }
     }
     void add_used_structure(const Type *type) noexcept { _used_struct.emplace(type); }
-    const UniformBinding &get_uniform_var(const Type *type, const void *handle, Variable::Tag tag) noexcept;
+    const UniformBinding &get_uniform_var(const Type *type, const void *handle, Variable::Tag tag, size_t size) noexcept;
     [[nodiscard]] auto &uniform_vars() const noexcept { return _uniform_vars; }
     template<typename Visitor>
     void for_each_uniform_var(Visitor &&visitor) const noexcept {

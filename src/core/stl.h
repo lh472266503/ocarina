@@ -114,6 +114,17 @@ inline void oc_memcpy(void *dst, const void *src, size_t size) {
 #endif
 }
 
+struct MemoryBlock {
+public:
+    const void *address{};
+    size_t size{};
+
+public:
+    MemoryBlock() = default;
+    MemoryBlock(const void *address, size_t size)
+    : address(address), size(size) {}
+};
+
 // string
 using std::string;
 using std::string_view;

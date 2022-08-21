@@ -34,7 +34,8 @@ public:
     [[nodiscard]] auto sample(const U &u, const V &v) const noexcept {
         const UniformBinding &uniform = Function::current()->get_uniform_var(Type::of<Image>(),
                                                                              handle_ptr(),
-                                                                             Variable::Tag::TEXTURE);
+                                                                             Variable::Tag::TEXTURE,
+                                                                             data_size());
         return make_expr<Image>(uniform.expression()).sample<Output>(u, v);
     }
 
@@ -49,7 +50,8 @@ public:
     OC_NODISCARD auto read(const X &x, const Y &y) const noexcept {
         const UniformBinding &uniform = Function::current()->get_uniform_var(Type::of<Image>(),
                                                                              handle_ptr(),
-                                                                             Variable::Tag::TEXTURE);
+                                                                             Variable::Tag::TEXTURE,
+                                                                             data_size());
         return make_expr<Image>(uniform.expression()).read<Target>(x, y);
     }
 
@@ -67,7 +69,8 @@ public:
     void write(const X &x, const Y &y, const Val &elm) noexcept {
         const UniformBinding &uniform = Function::current()->get_uniform_var(Type::of<Image>(),
                                                                              handle_ptr(),
-                                                                             Variable::Tag::TEXTURE);
+                                                                             Variable::Tag::TEXTURE,
+                                                                             data_size());
         make_expr<Image>(uniform.expression()).write(x, y, elm);
     }
 
