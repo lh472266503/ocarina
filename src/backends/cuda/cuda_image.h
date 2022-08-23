@@ -12,11 +12,6 @@ namespace ocarina {
 class CUDADevice;
 class CUDAImage : public Image::Impl {
 private:
-    struct ImageData {
-        CUtexObject texture{};
-        CUsurfObject surface{};
-        PixelStorage pixel_storage{};
-    };
     ImageData _image_data;
     CUDADevice *_device{};
     uint2 _res{};

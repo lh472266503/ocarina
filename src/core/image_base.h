@@ -86,6 +86,12 @@ OC_NDSC_INLINE size_t channel_num(PixelStorage pixel_storage) {
     return 4u;
 }
 
+struct ImageData {
+    handle_ty texture{};
+    handle_ty surface{};
+    PixelStorage pixel_storage{};
+};
+
 class ImageBase : public concepts::Noncopyable {
 protected:
     PixelStorage _pixel_storage{PixelStorage::UNKNOWN};
