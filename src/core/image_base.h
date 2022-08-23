@@ -7,9 +7,20 @@
 #include "core/stl.h"
 #include "core/basic_types.h"
 #include "core/concepts.h"
-#include "math/optics.h"
 
 namespace ocarina {
+
+enum ColorSpace {
+    LINEAR,
+    SRGB
+};
+
+enum EToneMap {
+    Gamma,
+    Filmic,
+    Reinhard,
+    Linear
+};
 
 enum struct PixelStorage : uint {
     BYTE1,

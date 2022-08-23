@@ -11,17 +11,7 @@
 
 namespace ocarina {
 
-enum ColorSpace {
-    LINEAR,
-    SRGB
-};
 
-enum EToneMap {
-    Gamma,
-    Filmic,
-    Reinhard,
-    Linear
-};
 
 [[nodiscard]] inline uint32_t make_8bit(const float f) {
     return fmin(255, fmax(0, int(f * 256.f)));

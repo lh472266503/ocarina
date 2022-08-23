@@ -14,6 +14,7 @@
 //#define TINYEXR_IMPLEMENTATION
 
 #include <limits>
+#include "math/optics.h"
 #include "ext/tinyexr/tinyexr.h"
 #include "core/logging.h"
 
