@@ -140,22 +140,28 @@ void CUDACodegen::visit(const MemberExpr *expr) noexcept {
 void CUDACodegen::_emit_raytracing_param(const Function &f) noexcept {
     current_scratch() << "struct Params {\n";
     indent_inc();
-
+    size_t size = 0;
     for (const Variable &arg : f.arguments()) {
         _emit_indent();
         _emit_variable_define(arg);
+        size += arg.size();
         current_scratch() << ";";
+        current_scratch() << ocarina::format("    // {} bytes", arg.size());
         _emit_newline();
     }
 
     f.for_each_uniform_var([&](const UniformBinding &uniform) {
         _emit_indent();
-        _emit_variable_define(uniform.expression()->variable());
+        const Variable &arg = uniform.expression()->variable();
+        _emit_variable_define(arg);
+        size += arg.size();
         current_scratch() << ";";
+        current_scratch() << ocarina::format("    // {} bytes", arg.size());
         _emit_newline();
     });
     indent_dec();
     current_scratch() << "};\n";
+    current_scratch() << ocarina::format("static_assert(sizeof(Params) == {});\n", size);
     current_scratch() << "extern \"C\" __constant__ Params params;\n";
 }
 
