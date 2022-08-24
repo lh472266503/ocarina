@@ -295,7 +295,9 @@ public:
         auto cu_stream = reinterpret_cast<CUstream>(stream);
         size_t total_size = cmd->params_size();
         span<const MemoryBlock> blocks = cmd->params();
-        _params = Buffer<std::byte>(_device, total_size);
+        if (!_params.valid() || _params.size() < total_size) {
+            _params = Buffer<std::byte>(_device, total_size);
+        }
         size_t offset = 0;
         for (const MemoryBlock &block : blocks) {
             _params.upload_immediately(block.address, offset, block.size);

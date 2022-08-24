@@ -33,8 +33,8 @@ private:
     }
 
 public:
-    UniformBinding(const RefExpr *expr, const Type *type, const void *address, size_t size)
-        : _type(type), _block(address, size), _expr(expr) {}
+    UniformBinding(const RefExpr *expr, const Type *type, MemoryBlock block)
+        : _type(type), _block(block), _expr(expr) {}
 
     [[nodiscard]] const Type *type() const noexcept { return _type; }
     [[nodiscard]] const void *handle_ptr() const noexcept {
@@ -44,6 +44,7 @@ public:
         return _block;
     }
     [[nodiscard]] size_t block_size() const noexcept { return _block.size; }
+    [[nodiscard]] size_t block_alignment() const noexcept { return _block.alignment; }
     [[nodiscard]] const RefExpr *expression() const noexcept { return _expr; }
 };
 
@@ -153,7 +154,7 @@ public:
         }
     }
     void add_used_structure(const Type *type) noexcept { _used_struct.emplace(type); }
-    const UniformBinding &get_uniform_var(const Type *type, const void *handle, Variable::Tag tag, size_t size) noexcept;
+    const UniformBinding &get_uniform_var(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept;
     [[nodiscard]] auto &uniform_vars() const noexcept { return _uniform_vars; }
     template<typename Visitor>
     void for_each_uniform_var(Visitor &&visitor) const noexcept {

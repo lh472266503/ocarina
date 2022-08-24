@@ -60,6 +60,9 @@ public:
     [[nodiscard]] virtual size_t data_size() const noexcept { return sizeof(handle_ty); }
     // alignment of data on device side
     [[nodiscard]] virtual size_t data_alignment() const noexcept { return sizeof(handle_ty); }
+    [[nodiscard]] virtual MemoryBlock memory_block() const noexcept {
+        return {const_cast<void*>(handle_ptr()), data_size(), data_alignment()};
+    }
     [[nodiscard]] bool valid() const noexcept { return bool(_device); }
     void destroy();
     virtual ~RHIResource() { destroy(); }

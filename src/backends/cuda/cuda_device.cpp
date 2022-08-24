@@ -30,6 +30,7 @@ CUDADevice::CUDADevice(Context *context)
 }
 
 handle_ty CUDADevice::create_buffer(size_t size) noexcept {
+    OC_ASSERT(size > 0);
     return use_context([&] {
         handle_ty handle{};
         OC_CU_CHECK(cuMemAlloc(&handle, size));

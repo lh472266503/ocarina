@@ -43,7 +43,6 @@ private:
     size_t _cursor{};
     ocarina::vector<MemoryBlock> _params;
 
-
 private:
     template<typename T>
     requires concepts::basic<T>
@@ -58,13 +57,15 @@ private:
 
     template<typename T>
     void _encode_buffer(const Buffer<T> &buffer) noexcept {
-        push_handle_ptr(const_cast<void *>(buffer.handle_ptr()), buffer.data_size());
+        push_handle_ptr(const_cast<void *>(buffer.handle_ptr()), buffer.data_size(), buffer.data_alignment());
     }
 
     void _encode_image(const Image &image) noexcept;
 
     void _encode_accel(const Accel &accel) noexcept {
-        push_handle_ptr(const_cast<void *>(accel.handle_ptr()), accel.data_size());
+        push_handle_ptr(const_cast<void *>(accel.handle_ptr()),
+                        accel.data_size(),
+                        accel.data_alignment());
     }
 
 public:
@@ -77,17 +78,17 @@ public:
         _params.clear();
     }
 
-    void push_handle_ptr(void *address, size_t size) noexcept {
+    void push_handle_ptr(void *address, size_t size, size_t alignment) noexcept {
         _cursor = mem_offset(_cursor, alignof(handle_ty));
         _args.push_back(address);
         OC_ASSERT(_cursor < Size);
         if (_function.is_raytracing()) {
-            add_param(address, size);
+            add_param(address, size, alignment);
         }
     }
 
-    void add_param(const void *ptr, size_t size) noexcept {
-        _params.emplace_back(ptr, size);
+    void add_param(const void *ptr, size_t size, size_t alignment) noexcept {
+        _params.emplace_back(ptr, size, alignment);
     }
 
     [[nodiscard]] span<const MemoryBlock> params() noexcept { return _params; }
@@ -158,11 +159,15 @@ public:
         (_argument_list << ... << OC_FORWARD(args));
         if (_function.is_raytracing()) {
             for (const auto &uniform : _function.uniform_vars()) {
-                _argument_list.add_param(uniform.handle_ptr(), uniform.block_size());
+                _argument_list.add_param(uniform.handle_ptr(),
+                                         uniform.block_size(),
+                                         uniform.block_alignment());
             }
         } else {
             for (const auto &uniform : _function.uniform_vars()) {
-                _argument_list.push_handle_ptr(const_cast<void *>(uniform.handle_ptr()), uniform.block_size());
+                _argument_list.push_handle_ptr(const_cast<void *>(uniform.handle_ptr()),
+                                               uniform.block_size(),
+                                               uniform.block_alignment());
             }
         }
         return *this;

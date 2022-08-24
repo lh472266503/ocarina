@@ -118,11 +118,12 @@ struct MemoryBlock {
 public:
     const void *address{};
     size_t size{};
+    size_t alignment{};
 
 public:
     MemoryBlock() = default;
-    MemoryBlock(const void *address, size_t size)
-    : address(address), size(size) {}
+    MemoryBlock(const void *address, size_t size, size_t alignment)
+        : address(address), size(size), alignment(alignment) {}
 };
 
 // string
