@@ -33,10 +33,9 @@ public:
     template<typename Output, typename U, typename V>
     requires(is_all_floating_point_expr_v<U, V>)
     [[nodiscard]] auto sample(const U &u, const V &v) const noexcept {
-        MemoryBlock block(handle_ptr(), data_size(), data_alignment());
         const UniformBinding &uniform = Function::current()->get_uniform_var(Type::of<Image>(),
                                                                              Variable::Tag::TEXTURE,
-                                                                             block);
+                                                                             memory_block());
         return make_expr<Image>(uniform.expression()).sample<Output>(u, v);
     }
 
@@ -49,10 +48,9 @@ public:
     template<typename Target, typename X, typename Y>
     requires(is_all_integral_expr_v<X, Y>)
     OC_NODISCARD auto read(const X &x, const Y &y) const noexcept {
-        MemoryBlock block(handle_ptr(), data_size(), data_alignment());
         const UniformBinding &uniform = Function::current()->get_uniform_var(Type::of<Image>(),
                                                                              Variable::Tag::TEXTURE,
-                                                                             block);
+                                                                             memory_block());
         return make_expr<Image>(uniform.expression()).read<Target>(x, y);
     }
 
@@ -68,10 +66,9 @@ public:
     requires(is_all_integral_expr_v<X, Y> &&
              (is_uchar_element_expr_v<Val> || is_float_element_expr_v<Val>))
     void write(const X &x, const Y &y, const Val &elm) noexcept {
-        MemoryBlock block(handle_ptr(), data_size(), data_alignment());
         const UniformBinding &uniform = Function::current()->get_uniform_var(Type::of<Image>(),
                                                                              Variable::Tag::TEXTURE,
-                                                                             block);
+                                                                             memory_block());
         make_expr<Image>(uniform.expression()).write(x, y, elm);
     }
 

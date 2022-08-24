@@ -118,20 +118,18 @@ public:
     requires ocarina::is_integral_v<expr_value_t<Index>>
         OC_NODISCARD auto
         read(Index &&index) const {
-        MemoryBlock block(handle_ptr(), data_size(), data_alignment());
         const UniformBinding &uniform = Function::current()->get_uniform_var(Type::of<Buffer<T>>(),
-                                                                              Variable::Tag::BUFFER,
-                                                                             block);
+                                                                             Variable::Tag::BUFFER,
+                                                                             memory_block());
         return make_expr<Buffer<T>>(uniform.expression()).read(OC_FORWARD(index));
     }
 
     template<typename Index, typename Val>
     requires concepts::integral<expr_value_t<Index>> && concepts::is_same_v<element_type, expr_value_t<Val>>
     void write(Index &&index, Val &&elm) {
-        MemoryBlock block(handle_ptr(), data_size(), data_alignment());
         const UniformBinding &uniform = Function::current()->get_uniform_var(Type::of<Buffer<T>>(),
                                                                              Variable::Tag::BUFFER,
-                                                                             block);
+                                                                             memory_block());
         const AccessExpr *expr = Function::current()->access(Type::of<element_type>(),
                                                              uniform.expression(),
                                                              OC_EXPR(index));

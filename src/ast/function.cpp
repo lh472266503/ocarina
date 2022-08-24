@@ -82,6 +82,9 @@ const RefExpr *Function::argument(const Type *type) noexcept {
         case Type::Tag::IMAGE:
             tag = Variable::Tag::TEXTURE;
             break;
+        case Type::Tag::ACCEL:
+            tag = Variable::Tag::ACCEL;
+            break;
         default:
             tag = Variable::Tag::LOCAL;
             break;

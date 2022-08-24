@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
                         const Var<Accel> acc,
                         const ImageVar img) {
         Var<Ray> r = make_ray(float3(0,0.1, -5), float3(0,0,1));
-        Var hit= acc.trace_closest(r);
+        Var hit= accel.trace_closest(r);
         //        Float3 org = r->origin();
         Float3 pos = r->direction();
         Var<Triangle> tri = t_buffer.read(3);
