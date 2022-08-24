@@ -13,6 +13,38 @@
 
 namespace ocarina {
 class CUDADevice : public Device::Impl {
+public:
+    static constexpr size_t size(Type::Tag tag) {
+        using Tag = Type::Tag;
+        switch (tag) {
+            case Tag::BUFFER: return sizeof(handle_ty);
+            case Tag::ACCEL: return sizeof(handle_ty);
+            case Tag::IMAGE: return sizeof(ImageData);
+            default:
+                return 0;
+        }
+    }
+    // return size of type on device memory
+    static constexpr size_t size(const Type *type) {
+        auto ret = size(type->tag());
+        return ret == 0 ? type->size() : ret;
+    }
+    static constexpr size_t alignment(Type::Tag tag) {
+        using Tag = Type::Tag;
+        switch (tag) {
+            case Tag::BUFFER: return alignof(handle_ty);
+            case Tag::ACCEL: return alignof(handle_ty);
+            case Tag::IMAGE: return alignof(ImageData);
+            default:
+                return 0;
+        }
+    }
+    // return alignment of type on device memory
+    static constexpr size_t alignment(const Type *type) {
+        auto ret = alignment(type->tag());
+        return ret == 0 ? type->alignment() : ret;
+    }
+
 private:
     CUdevice _cu_device{};
     CUcontext _cu_ctx{};

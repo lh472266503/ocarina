@@ -29,7 +29,8 @@ public:
     [[nodiscard]] const void *handle_ptr() const noexcept override {
         return &_image_data;
     }
-    [[nodiscard]] size_t data_size() const noexcept override { return Type::size(Type::Tag::IMAGE); }
+    [[nodiscard]] size_t data_size() const noexcept override;
+    [[nodiscard]] size_t data_alignment() const noexcept override;
     [[nodiscard]] PixelStorage pixel_storage() const noexcept override { return _image_data.pixel_storage; }
 };
 }// namespace ocarina

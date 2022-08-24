@@ -29,6 +29,8 @@ public:
     }
 
     void build_bvh(CUDACommandVisitor *visitor) noexcept;
+    [[nodiscard]] size_t data_size() const noexcept override;
+    [[nodiscard]] size_t data_alignment() const noexcept override;
     [[nodiscard]] handle_ty handle() const noexcept override { return _tlas_handle; }
     [[nodiscard]] const void *handle_ptr() const noexcept override { return &_tlas_handle; }
 };

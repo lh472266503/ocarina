@@ -103,4 +103,12 @@ void OptixAccel::build_bvh(CUDACommandVisitor*visitor) noexcept {
     });
 }
 
+size_t OptixAccel::data_size() const noexcept {
+    return CUDADevice::size(Type::Tag::ACCEL);
+}
+
+size_t OptixAccel::data_alignment() const noexcept {
+    return CUDADevice::alignment(Type::Tag::ACCEL);
+}
+
 }// namespace ocarina

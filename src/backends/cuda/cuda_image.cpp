@@ -4,6 +4,7 @@
 
 #include "cuda_image.h"
 #include "util.h"
+#include "cuda_device.h"
 
 namespace ocarina {
 
@@ -67,5 +68,7 @@ CUDAImage::~CUDAImage() {
     OC_CU_CHECK(cuTexObjectDestroy(_image_data.texture));
     OC_CU_CHECK(cuSurfObjectDestroy(_image_data.surface));
 }
+size_t CUDAImage::data_size() const noexcept { return CUDADevice::size(Type::Tag::IMAGE); }
+size_t CUDAImage::data_alignment() const noexcept { return CUDADevice::alignment(Type::Tag::IMAGE); }
 
 }// namespace ocarina

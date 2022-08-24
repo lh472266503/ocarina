@@ -4,6 +4,7 @@
 
 #include "cuda_codegen.h"
 #include "ast/expression.h"
+#include "cuda_device.h"
 
 namespace ocarina {
 
@@ -140,13 +141,14 @@ void CUDACodegen::visit(const MemberExpr *expr) noexcept {
 void CUDACodegen::_emit_raytracing_param(const Function &f) noexcept {
     current_scratch() << "struct Params {\n";
     indent_inc();
-    size_t size = 0;
+    size_t params_size = 0;
     for (const Variable &arg : f.arguments()) {
         _emit_indent();
-        current_scratch() << ocarina::format("// {} bytes\n", arg.size());
+        size_t size = CUDADevice::size(arg.type());
+        current_scratch() << ocarina::format("// {} bytes\n", size);
         _emit_indent();
         _emit_variable_define(arg);
-        size += arg.size();
+        params_size += size;
         current_scratch() << ";";
         _emit_newline();
     }
@@ -154,16 +156,17 @@ void CUDACodegen::_emit_raytracing_param(const Function &f) noexcept {
     f.for_each_uniform_var([&](const UniformBinding &uniform) {
         _emit_indent();
         const Variable &arg = uniform.expression()->variable();
-        current_scratch() << ocarina::format("// {} bytes\n", arg.size());
+        size_t size = CUDADevice::size(arg.type());
+        current_scratch() << ocarina::format("// {} bytes\n", size);
         _emit_indent();
         _emit_variable_define(arg);
-        size += arg.size();
+        params_size += size;
         current_scratch() << ";";
         _emit_newline();
     });
     indent_dec();
     current_scratch() << "};\n";
-    current_scratch() << ocarina::format("static_assert(sizeof(Params) == {});\n", size);
+    current_scratch() << ocarina::format("static_assert(sizeof(Params) == {});\n", params_size);
     current_scratch() << "extern \"C\" __constant__ Params params;\n";
 }
 

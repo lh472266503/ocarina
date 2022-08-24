@@ -293,27 +293,6 @@ public:
         NONE
     };
     friend class TypeRegistry;
-    static constexpr size_t size(Tag tag) {
-        switch (tag) {
-            case Tag::BOOL: return sizeof(bool);
-            case Tag::FLOAT: return sizeof(float);
-            case Tag::INT: return sizeof(int);
-            case Tag::UINT: return sizeof(uint);
-            case Tag::UCHAR: return sizeof(uchar);
-            case Tag::CHAR: return sizeof(char);
-            case Tag::BUFFER: return sizeof(handle_ty);
-            case Tag::ACCEL: return sizeof(handle_ty);
-            case Tag::IMAGE: return sizeof(ImageData);
-            case Tag::VECTOR:
-            case Tag::MATRIX:
-            case Tag::ARRAY:
-            case Tag::STRUCTURE:
-            case Tag::BINDLESS_ARRAY:
-            case Tag::NONE:
-            default:
-                return 0;
-        }
-    }
 
 private:
     size_t _size{0};

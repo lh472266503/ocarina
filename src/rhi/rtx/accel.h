@@ -17,6 +17,8 @@ public:
         virtual void add_mesh(const Mesh::Impl *mesh, float4x4 transform) noexcept = 0;
         [[nodiscard]] virtual handle_ty handle() const noexcept = 0;
         [[nodiscard]] virtual const void *handle_ptr() const noexcept = 0;
+        [[nodiscard]] virtual size_t data_size() const noexcept = 0;
+        [[nodiscard]] virtual size_t data_alignment() const noexcept = 0;
     };
 
 public:
@@ -46,12 +48,8 @@ public:
         return make_expr<Accel>(uniform.expression()).trace_closest(ray);
     }
 
-    [[nodiscard]] handle_ty handle() const noexcept override {
-        return impl()->handle();
-    }
-    [[nodiscard]] const void *handle_ptr() const noexcept override {
-        return impl()->handle_ptr();
-    }
+    [[nodiscard]] handle_ty handle() const noexcept override { return impl()->handle(); }
+    [[nodiscard]] const void *handle_ptr() const noexcept override { return impl()->handle_ptr(); }
     [[nodiscard]] AccelBuildCommand *build_bvh() noexcept {
         return AccelBuildCommand::create(_handle);
     }

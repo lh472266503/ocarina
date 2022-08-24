@@ -57,7 +57,6 @@ public:
     [[nodiscard]] constexpr uint uid() const noexcept { return _uid; }
     [[nodiscard]] constexpr bool operator==(const Variable &rhs) const noexcept { return _uid == rhs._uid; }
     [[nodiscard]] string name() const noexcept;
-    [[nodiscard]] constexpr size_t size() const noexcept { return type()->size(); }
     void set_name(const char *name) noexcept { _name = name; }
 };
 

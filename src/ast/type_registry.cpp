@@ -244,18 +244,15 @@ void TypeRegistry::parse_buffer(Type *type, ocarina::string_view desc) noexcept 
     type->_members.push_back(element_type);
     auto alignment = element_type->alignment();
     type->_alignment = alignment;
-    type->_size = Type::size(type->tag());
 }
 
 void TypeRegistry::parse_image(Type *type, ocarina::string_view desc) noexcept {
     type->_tag = Type::Tag::IMAGE;
-    type->_size = Type::size(type->tag());
     type->_alignment = alignof(ImageData);
 }
 
 void TypeRegistry::parse_accel(Type *type, ocarina::string_view desc) noexcept {
     type->_tag = Type::Tag::ACCEL;
-    type->_size = Type::size(type->tag());
 }
 
 void TypeRegistry::parse_array(Type *type, ocarina::string_view desc) noexcept {
@@ -273,7 +270,6 @@ void TypeRegistry::parse_array(Type *type, ocarina::string_view desc) noexcept {
 }
 
 void TypeRegistry::add_type(ocarina::unique_ptr<Type> type) {
-    OC_ASSERT(type->size() > 0);
     _type_set.insert(type.get());
     type->_index = _types.size();
     if (auto f = Function::current(); f != nullptr && type->is_structure() &&
