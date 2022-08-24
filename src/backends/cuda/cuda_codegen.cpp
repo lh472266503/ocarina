@@ -143,20 +143,22 @@ void CUDACodegen::_emit_raytracing_param(const Function &f) noexcept {
     size_t size = 0;
     for (const Variable &arg : f.arguments()) {
         _emit_indent();
+        current_scratch() << ocarina::format("// {} bytes\n", arg.size());
+        _emit_indent();
         _emit_variable_define(arg);
         size += arg.size();
         current_scratch() << ";";
-        current_scratch() << ocarina::format("    // {} bytes", arg.size());
         _emit_newline();
     }
 
     f.for_each_uniform_var([&](const UniformBinding &uniform) {
         _emit_indent();
         const Variable &arg = uniform.expression()->variable();
+        current_scratch() << ocarina::format("// {} bytes\n", arg.size());
+        _emit_indent();
         _emit_variable_define(arg);
         size += arg.size();
         current_scratch() << ";";
-        current_scratch() << ocarina::format("    // {} bytes", arg.size());
         _emit_newline();
     });
     indent_dec();

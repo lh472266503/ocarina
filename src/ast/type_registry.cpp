@@ -250,6 +250,7 @@ void TypeRegistry::parse_buffer(Type *type, ocarina::string_view desc) noexcept 
 void TypeRegistry::parse_image(Type *type, ocarina::string_view desc) noexcept {
     type->_tag = Type::Tag::IMAGE;
     type->_size = Type::size(type->tag());
+    type->_alignment = alignof(ImageData);
 }
 
 void TypeRegistry::parse_accel(Type *type, ocarina::string_view desc) noexcept {
