@@ -71,7 +71,7 @@ int main(int argc, char *argv[]) {
         print("{},{},{}--", t.i,t.j,t.k);
     };
 
-    Kernel kernel = [&](const BufferVar<float3> &v) {
+    Kernel kernel = [&](BufferVar<float3> v, Var<Triangle> triangle) {
         Var<float3> pos = v_buffer.read(dispatch_idx().x);
         Var<float3> pos2 = v[dispatch_id()];
         Var t = t_buffer.read(dispatch_id());
@@ -80,7 +80,7 @@ int main(int argc, char *argv[]) {
     };
 
     auto shader = device.compile(kernel);
-    stream << shader(v_buffer.view(0, v_buffer.size())).dispatch(t_buffer.size());
+    stream << shader(v_buffer, triangle[2]).dispatch(t_buffer.size());
     stream << synchronize() << commit();
 
     return 0;

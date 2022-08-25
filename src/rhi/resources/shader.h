@@ -45,8 +45,8 @@ private:
 
 private:
     template<typename T>
-    requires concepts::basic<T>
-    void _encode_basic(T &&arg) noexcept {
+    requires std::is_trivially_destructible_v<T>
+    void _encode_pod_type(T &&arg) noexcept {
         _cursor = mem_offset(_cursor, alignof(T));
         auto dst_ptr = _argument_data.data() + _cursor;
         _cursor += sizeof(T);
@@ -95,16 +95,14 @@ public:
 
     template<typename T>
     ArgumentList &operator<<(T &&arg) {
-        if constexpr (concepts::basic<T>) {
-            _encode_basic(OC_FORWARD(arg));
-        } else if constexpr (is_buffer_v<T>) {
+        if constexpr (is_buffer_v<T>) {
             _encode_buffer(OC_FORWARD(arg));
         } else if constexpr (is_image_v<T>) {
             _encode_image(OC_FORWARD(arg));
         } else if constexpr (is_accel_v<T>) {
             _encode_accel(OC_FORWARD(arg));
         } else {
-            static_assert(always_false_v<T>);
+            _encode_pod_type(OC_FORWARD(arg));
         }
         return *this;
     }
