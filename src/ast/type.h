@@ -311,7 +311,6 @@ private:
         _description = desc;
         update_name(desc);
     }
-
 public:
     static void for_each(TypeVisitor *visitor);
     template<typename T>
@@ -340,6 +339,7 @@ public:
         return _tag == Tag::BOOL || _tag == Tag::FLOAT || _tag == Tag::INT ||
                _tag == Tag::UINT || _tag == Tag::UCHAR || _tag == Tag::CHAR;
     }
+    [[nodiscard]] size_t max_member_size() const noexcept;
     [[nodiscard]] constexpr bool is_basic() const noexcept { return is_scalar() || is_vector() || is_matrix(); }
     [[nodiscard]] constexpr bool is_array() const noexcept { return _tag == Tag::ARRAY; }
     [[nodiscard]] constexpr bool is_vector() const noexcept { return _tag == Tag::VECTOR; }

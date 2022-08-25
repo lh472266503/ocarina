@@ -44,6 +44,11 @@ public:
         auto ret = alignment(type->tag());
         return ret == 0 ? type->alignment() : ret;
     }
+    // return the size of max member recursive
+    static size_t max_member_size(const Type *type) {
+        auto ret = type->max_member_size();
+        return ret == 0 ? sizeof(handle_ty) : ret;
+    }
 
 private:
     CUdevice _cu_device{};

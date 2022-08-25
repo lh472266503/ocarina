@@ -28,6 +28,31 @@ const Type *Type::element() const noexcept {
     return _members.front();
 }
 
+size_t Type::max_member_size() const noexcept {
+    switch (_tag) {
+        case Tag::BOOL:
+        case Tag::FLOAT:
+        case Tag::INT:
+        case Tag::UINT:
+        case Tag::UCHAR:
+        case Tag::CHAR: return size();
+        case Tag::VECTOR:
+        case Tag::MATRIX:
+        case Tag::ARRAY: return element()->max_member_size();
+        case Tag::STRUCTURE: {
+            size_t size = 0;
+            for (const Type *member : _members) {
+                if (member->size() > size) {
+                    size = member->size();
+                }
+            }
+            return size;
+        }
+        default:
+            return 0;
+    }
+}
+
 void Type::for_each(TypeVisitor *visitor) {
     TypeRegistry::instance().for_each(visitor);
 }
