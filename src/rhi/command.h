@@ -219,11 +219,7 @@ public:
     [[nodiscard]] span<void *> args() noexcept { return _args; }
     [[nodiscard]] span<const MemoryBlock> params() noexcept { return _params; }
     [[nodiscard]] size_t params_size() noexcept {
-        size_t ret = 0u;
-        for (const MemoryBlock &block : _params) {
-            ret += block.size;
-        }
-        return ret;
+        return structure_size(_params);
     }
     [[nodiscard]] uint3 dispatch_dim() const noexcept { return _dispatch_dim; }
     [[nodiscard]] const Function &function() const noexcept { return _function; }

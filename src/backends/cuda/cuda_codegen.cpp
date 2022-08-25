@@ -142,11 +142,14 @@ void CUDACodegen::_emit_raytracing_param(const Function &f) noexcept {
     current_scratch() << "struct Params {\n";
     indent_inc();
     size_t offset = 0;
-
+    ocarina::vector<MemoryBlock> blocks;
+    blocks.reserve(f.arguments().size() + f.uniform_vars().size());
     auto func = [&](const Variable &arg) {
         _emit_indent();
         size_t size = CUDADevice::size(arg.type());
-        offset = mem_offset(offset, CUDADevice::alignment(arg.type()));
+        size_t alignment = CUDADevice::alignment(arg.type());
+        blocks.emplace_back(nullptr, size, alignment);
+        offset = mem_offset(offset, alignment);
         current_scratch() << ocarina::format("// {} bytes\n", size);
         _emit_indent();
         _emit_variable_define(arg);
@@ -165,7 +168,7 @@ void CUDACodegen::_emit_raytracing_param(const Function &f) noexcept {
     });
     indent_dec();
     current_scratch() << "};\n";
-    current_scratch() << ocarina::format("static_assert(sizeof(Params) == {});\n", offset);
+    current_scratch() << ocarina::format("static_assert(sizeof(Params) == {});\n", structure_size(blocks));
     current_scratch() << "extern \"C\" __constant__ Params params;\n";
 }
 

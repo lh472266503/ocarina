@@ -119,7 +119,7 @@ public:
     const void *address{};
     size_t size{};
     size_t alignment{};
-
+    size_t max_member_size = 8;
 public:
     MemoryBlock() = default;
     MemoryBlock(const void *address, size_t size, size_t alignment)

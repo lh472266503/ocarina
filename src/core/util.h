@@ -18,6 +18,23 @@ requires is_integral_v<T> && is_integral_v<U>
     return (offset + alignment - 1u) / alignment * alignment;
 }
 
+inline size_t structure_size(ocarina::span<const MemoryBlock> members) noexcept {
+    size_t size = 0;
+    size_t max_member_size = 0;
+    for (const MemoryBlock block : members) {
+        size = mem_offset(size, block.alignment);
+        size += block.size;
+        if (block.max_member_size > max_member_size) {
+            max_member_size = block.max_member_size;
+        }
+    }
+    auto mod = size % max_member_size;
+    if (mod != 0) {
+        size += (max_member_size) - mod;
+    }
+    return size;
+}
+
 inline namespace size_literals {
 [[nodiscard]] constexpr auto operator""_kb(size_t bytes) noexcept {
     return static_cast<size_t>(bytes * 1024u);

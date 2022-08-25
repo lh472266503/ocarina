@@ -52,7 +52,8 @@ private:
         _cursor += sizeof(T);
         OC_ASSERT(_cursor < Size);
         oc_memcpy(dst_ptr, &arg, sizeof(T));
-        _args.push_back(dst_ptr);
+        push_handle_ptr(dst_ptr, sizeof(T), alignof(T));
+//        _args.push_back(dst_ptr);
     }
 
     template<typename T>
@@ -79,11 +80,10 @@ public:
     }
 
     void push_handle_ptr(void *address, size_t size, size_t alignment) noexcept {
-        _cursor = mem_offset(_cursor, alignof(handle_ty));
-        _args.push_back(address);
-        OC_ASSERT(_cursor < Size);
         if (_function.is_raytracing()) {
             add_param(address, size, alignment);
+        } else {
+            _args.push_back(address);
         }
     }
 
