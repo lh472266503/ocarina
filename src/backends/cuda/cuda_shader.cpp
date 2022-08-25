@@ -287,6 +287,7 @@ public:
         build_sbt(_program_group_table);
         build_pipeline(_device->optix_device_context());
     }
+
     void launch(handle_ty stream, ShaderDispatchCommand *cmd) noexcept override {
         auto dim = cmd->dispatch_dim();
         uint x = dim.x;
@@ -299,7 +300,9 @@ public:
             _params = Buffer<std::byte>(_device, total_size);
         }
         size_t offset = 0;
+        
         for (const MemoryBlock &block : blocks) {
+            offset = mem_offset(offset, block.alignment);
             _params.upload_immediately(block.address, offset, block.size);
             offset += block.size;
         }
@@ -307,7 +310,7 @@ public:
             OC_OPTIX_CHECK(optixLaunch(_optix_pipeline,
                                        cu_stream,
                                        _params.handle(),
-                                       total_size,
+                                       offset,
                                        &_sbt,
                                        x, y, z));
         });
