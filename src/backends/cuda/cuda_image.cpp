@@ -70,5 +70,6 @@ CUDAImage::~CUDAImage() {
 }
 size_t CUDAImage::data_size() const noexcept { return CUDADevice::size(Type::Tag::IMAGE); }
 size_t CUDAImage::data_alignment() const noexcept { return CUDADevice::alignment(Type::Tag::IMAGE); }
+size_t CUDAImage::max_member_size() const noexcept { return sizeof(handle_ty); }
 
 }// namespace ocarina

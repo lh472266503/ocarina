@@ -31,6 +31,7 @@ public:
     }
     [[nodiscard]] size_t data_size() const noexcept override;
     [[nodiscard]] size_t data_alignment() const noexcept override;
+    [[nodiscard]] size_t max_member_size() const noexcept override;
     [[nodiscard]] PixelStorage pixel_storage() const noexcept override { return _image_data.pixel_storage; }
 };
 }// namespace ocarina
