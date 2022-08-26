@@ -126,7 +126,7 @@ public:
 public:
     MemoryBlock() = default;
     MemoryBlock(const void *address, size_t size,
-                size_t alignment, size_t max_member_size = 8)
+                size_t alignment, size_t max_member_size)
         : address(address), size(size),
           alignment(alignment), max_member_size(max_member_size) {}
 };

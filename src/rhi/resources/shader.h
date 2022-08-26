@@ -52,21 +52,18 @@ private:
         _cursor += sizeof(T);
         OC_ASSERT(_cursor < Size);
         oc_memcpy(dst_ptr, &arg, sizeof(T));
-        push_handle_ptr(dst_ptr, sizeof(T), alignof(T));
-//        _args.push_back(dst_ptr);
+        push_memory_block({dst_ptr, sizeof(T), alignof(T), sizeof(T)});
     }
 
     template<typename T>
     void _encode_buffer(const Buffer<T> &buffer) noexcept {
-        push_handle_ptr(const_cast<void *>(buffer.handle_ptr()), buffer.data_size(), buffer.data_alignment());
+        push_memory_block(buffer.memory_block());
     }
 
     void _encode_image(const Image &image) noexcept;
 
     void _encode_accel(const Accel &accel) noexcept {
-        push_handle_ptr(const_cast<void *>(accel.handle_ptr()),
-                        accel.data_size(),
-                        accel.data_alignment());
+        push_memory_block(accel.memory_block());
     }
 
 public:
@@ -79,16 +76,20 @@ public:
         _params.clear();
     }
 
-    void push_handle_ptr(void *address, size_t size, size_t alignment) noexcept {
+    void push_memory_block(const MemoryBlock &block) noexcept {
         if (_function.is_raytracing()) {
-            add_param(address, size, alignment);
+            add_param(block);
         } else {
-            _args.push_back(address);
+            _args.push_back(const_cast<void *>(block.address));
         }
     }
 
     void add_param(const void *ptr, size_t size, size_t alignment) noexcept {
-        _params.emplace_back(ptr, size, alignment);
+        _params.emplace_back(ptr, size, alignment, 8);
+    }
+
+    void add_param(const MemoryBlock &block) noexcept {
+        _params.push_back(block);
     }
 
     [[nodiscard]] span<const MemoryBlock> params() noexcept { return _params; }
@@ -155,18 +156,9 @@ public:
     Shader &operator()(prototype_to_shader_invocation_t<Args> &&...args) noexcept {
         _argument_list.clear();
         (_argument_list << ... << OC_FORWARD(args));
-        if (_function.is_raytracing()) {
-            for (const auto &uniform : _function.uniform_vars()) {
-                _argument_list.add_param(uniform.handle_ptr(),
-                                         uniform.block_size(),
-                                         uniform.block_alignment());
-            }
-        } else {
-            for (const auto &uniform : _function.uniform_vars()) {
-                _argument_list.push_handle_ptr(const_cast<void *>(uniform.handle_ptr()),
-                                               uniform.block_size(),
-                                               uniform.block_alignment());
-            }
+
+        for (const auto &uniform : _function.uniform_vars()) {
+            _argument_list.push_memory_block(uniform.block());
         }
         return *this;
     }
