@@ -136,6 +136,22 @@ using std::string;
 using std::string_view;
 using std::to_string;
 
+template<class To, class From>
+requires(sizeof(To) == sizeof(From) &&
+         std::is_trivially_copyable_v<From> &&
+         std::is_trivially_copyable_v<To>)
+    [[nodiscard]] To bit_cast(const From &src) noexcept {
+    static_assert(std::is_trivially_constructible_v<To>,
+                  "This implementation requires the destination type to be trivially "
+                  "constructible");
+    union {
+        From from;
+        To to;
+    } u;
+    u.from = src;
+    return u.to;
+}
+
 inline size_t substr_count(string_view str, string_view target) noexcept {
     string::size_type pos = 0;
     size_t ret = 0;

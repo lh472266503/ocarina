@@ -133,6 +133,7 @@ enum struct CallOp : uint32_t {
     TRACE_CLOSEST,
     TRACE_ANY,
     MAKE_RAY,
+    RAY_OFFSET_ORIGIN,
 
     COUNT
 };
