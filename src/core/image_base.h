@@ -26,9 +26,15 @@ enum struct PixelStorage : uint {
     BYTE1,
     BYTE2,
     BYTE4,
+
+    UINT1,
+    UINT2,
+    UINT4,
+
     FLOAT1,
     FLOAT2,
     FLOAT4,
+
     UNKNOWN
 };
 

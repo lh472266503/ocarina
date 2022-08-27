@@ -3,9 +3,15 @@ enum struct OCPixelStorage : oc_uint {
     BYTE1,
     BYTE2,
     BYTE4,
+
+    UINT1,
+    UINT2,
+    UINT4,
+
     FLOAT1,
     FLOAT2,
     FLOAT4,
+
     UNKNOWN
 };
 
@@ -195,6 +201,15 @@ __device__ T oc_image_read(ImageData obj, oc_uint x, oc_uint y) noexcept {
                 return oc_convert_vector<T>(oc_make_float4(v.x, v.y, v.z, v.w));
             }
         }
+    } else if constexpr (oc_is_same_v<T, oc_uint>) {
+        auto v = surf2Dread<unsigned int>(obj.surface, x * sizeof(unsigned int), y, cudaBoundaryModeZero);
+        return v;
+    } else if constexpr (oc_is_same_v<T, oc_uint2>) {
+        auto v = surf2Dread<uint2>(obj.surface, x * sizeof(uint2), y, cudaBoundaryModeZero);
+        return oc_make_uint2(v.x, v.y);
+    } else if constexpr (oc_is_same_v<T, oc_uint4>) {
+        auto v = surf2Dread<uint4>(obj.surface, x * sizeof(uint4), y, cudaBoundaryModeZero);
+        return oc_make_uint4(v.x, v.y, v.z, v.w);
     }
     assert(0);
     __builtin_unreachable();
@@ -241,6 +256,15 @@ __device__ void oc_image_write(ImageData obj, oc_uint x, oc_uint y, T val) noexc
                 return;
             }
         }
+    } else if constexpr (oc_is_same_v<T, oc_uint>) {
+        surf2Dwrite(val, obj.surface, x * sizeof(oc_uint), y, cudaBoundaryModeZero);
+        return;
+    } else if constexpr (oc_is_same_v<T, oc_uint2>) {
+        surf2Dwrite(make_uint2(val.x, val.y), obj.surface, x * sizeof(uint2), y, cudaBoundaryModeZero);
+        return;
+    } else if constexpr (oc_is_same_v<T, oc_uint4>) {
+        surf2Dwrite(make_uint4(val.x, val.y, val.z, val.w), obj.surface, x * sizeof(uint4), y, cudaBoundaryModeZero);
+        return;
     }
     assert(0);
     __builtin_unreachable();
