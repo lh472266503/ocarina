@@ -84,10 +84,6 @@ public:
         }
     }
 
-    void add_param(const void *ptr, size_t size, size_t alignment) noexcept {
-        _params.emplace_back(ptr, size, alignment, 8);
-    }
-
     void add_param(const MemoryBlock &block) noexcept {
         _params.push_back(block);
     }
