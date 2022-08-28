@@ -37,6 +37,17 @@ public:
     [[nodiscard]] __device__ T operator[](size_t i) const noexcept { return _data[i]; }
 };
 
+template<class To, class From>
+[[nodiscard]] __device__ To bit_cast(const From &src) noexcept {
+    static_assert(sizeof(To) == sizeof(From));
+    union {
+        From from;
+        To to;
+    } u;
+    u.from = src;
+    return u.to;
+}
+
 using uchar = unsigned char;
 
 __device__ auto oc_tex_sample_float1(ImageData obj, oc_float u, oc_float v) noexcept {

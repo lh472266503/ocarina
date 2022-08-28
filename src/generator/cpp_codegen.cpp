@@ -255,7 +255,7 @@ void CppCodegen::visit(const CallExpr *expr) noexcept {
 void CppCodegen::visit(const CastExpr *expr) noexcept {
     switch (expr->cast_op()) {
         case CastOp::STATIC: current_scratch() << "static_cast<"; break;
-        case CastOp::BITWISE: current_scratch() << "reinterpret_cast<"; break;
+        case CastOp::BITWISE: current_scratch() << "bit_cast<"; break;
     }
     _emit_type_name(expr->type());
     current_scratch() << ">(";
