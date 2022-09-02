@@ -36,7 +36,12 @@ add_dependencies(ocarina-all ocarina-gui)
 add_executable(ocarina main.cpp)
 target_link_libraries(ocarina ocarina-all)
 
-add_subdirectory(tests)
+
+option(OCARINA_BUILD_TESTS "Build tests" TRUE)
+
+if(${OCARINA_BUILD_TESTS})
+    add_subdirectory(tests)
+endif()
 
 set_target_properties(ocarina PROPERTIES
         PUBLIC_HEADER "${HEADER_FILES}"
