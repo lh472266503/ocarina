@@ -12,8 +12,6 @@ target_compile_definitions(xxhash INTERFACE XXH_INLINE_ALL)
 set_target_properties(xxhash PROPERTIES
         UNITY_BUILD OFF)
 
-target_link_libraries(ocarina-ext PUBLIC xxhash)
-
 set(FMT_OS OFF CACHE BOOL "" FORCE)
 add_subdirectory(fmt)
 target_compile_definitions(fmt-header-only INTERFACE
@@ -29,7 +27,7 @@ target_link_libraries(ocarina-ext PUBLIC EASTL)
 
 add_subdirectory(stblib)
 add_subdirectory(tinyexr)
-
+add_subdirectory(spdlog)
 
 add_subdirectory(glfw)
 add_subdirectory(imgui)
@@ -42,5 +40,8 @@ target_link_libraries(ocarina-gui-ext INTERFACE glfw_config ocarina-imgui)
 
 target_link_libraries(ocarina-ext PUBLIC
 #        ocarina-ext-stb
+        xxhash
+#        spdlog
+#        spdlog_header_only
         ocarina-ext-tinyexr
         )
