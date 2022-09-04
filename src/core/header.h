@@ -10,6 +10,7 @@
 #include <cstddef>
 #include <tuple>
 #include <type_traits>
+#include "oc_windows.h"
 
 #ifdef OC_AST_EXPORT_DLL
 #define OC_AST_API __declspec(dllexport)

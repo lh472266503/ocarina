@@ -27,7 +27,12 @@ target_link_libraries(ocarina-ext PUBLIC EASTL)
 
 add_subdirectory(stblib)
 add_subdirectory(tinyexr)
+
 add_subdirectory(spdlog)
+set_target_properties(spdlog PROPERTIES
+        UNITY_BUILD FALSE)
+target_link_libraries(spdlog PUBLIC fmt::fmt-header-only)
+target_link_libraries(ocarina-ext PUBLIC spdlog)
 
 add_subdirectory(glfw)
 add_subdirectory(imgui)
@@ -41,7 +46,8 @@ target_link_libraries(ocarina-gui-ext INTERFACE glfw_config ocarina-imgui)
 target_link_libraries(ocarina-ext PUBLIC
 #        ocarina-ext-stb
         xxhash
-#        spdlog
+#        spdlog_config
+        spdlog
 #        spdlog_header_only
         ocarina-ext-tinyexr
         )
