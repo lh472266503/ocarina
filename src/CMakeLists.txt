@@ -8,6 +8,9 @@ include_directories(ext/imgui/glad)
 include_directories(ext/imgui)
 include_directories(src)
 
+add_library(ocarina-include INTERFACE)
+target_include_directories(ocarina-include INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+
 add_subdirectory(ext)
 add_subdirectory(core)
 add_subdirectory(ast)
