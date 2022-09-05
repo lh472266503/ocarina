@@ -2,8 +2,8 @@
 file(GLOB_RECURSE HEADER_FILES *.h*)
 file(GLOB_RECURSE SOURCE_FILES *.c*)
 
-
 add_library(ocarina-ext-stb SHARED ${HEADER_FILES} ${SOURCE_FILES})
+target_include_directories(ocarina-ext-stb PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/stb)
 
 set_target_properties(ocarina-ext-stb PROPERTIES
         PUBLIC_HEADER "${HEADER_FILES}"

@@ -1,5 +1,4 @@
 
-include_directories(ext/stblib/stb)
 include_directories(ext/fmt/include)
 include_directories(ext/EASTL/include)
 include_directories(ext/imgui/glad)

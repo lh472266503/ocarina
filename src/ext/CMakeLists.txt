@@ -39,16 +39,15 @@ add_library(glfw_config INTERFACE)
 target_link_libraries(glfw_config INTERFACE glfw)
 
 add_subdirectory(stblib)
-add_library(ocarina-stblib-header INTERFACE)
-target_include_directories(ocarina-stblib-header INTERFACE ocarina-ext-stb)
 
 add_library(ocarina-gui-ext INTERFACE)
 target_link_libraries(ocarina-gui-ext INTERFACE glfw_config ocarina-imgui)
 
 
-target_link_libraries(ocarina-ext PUBLIC
+target_link_libraries(ocarina-ext
+        PUBLIC
+        ocarina-gui-ext
         ocarina-ext-stb
         xxhash
         spdlog
-        ocarina-ext-tinyexr
-        )
+        ocarina-ext-tinyexr)
