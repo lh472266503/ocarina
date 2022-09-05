@@ -24,6 +24,7 @@ target_include_directories(fmt-header-only INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}
 target_link_libraries(ocarina-ext PUBLIC fmt::fmt-header-only)
 
 add_subdirectory(EASTL)
+target_include_directories(EASTL PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/EASTL/include)
 target_link_libraries(ocarina-ext PUBLIC EASTL)
 
 add_subdirectory(tinyexr)

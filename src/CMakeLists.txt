@@ -1,5 +1,5 @@
 
-include_directories(ext/EASTL/include)
+#include_directories(ext/EASTL/include)
 include_directories(ext/imgui/glad)
 include_directories(ext/imgui)
 
