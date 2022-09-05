@@ -1,7 +1,4 @@
 
-#include_directories(ext/EASTL/include)
-include_directories(ext/imgui/glad)
-include_directories(ext/imgui)
 
 add_library(ocarina-include INTERFACE)
 target_include_directories(ocarina-include INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
