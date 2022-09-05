@@ -19,6 +19,7 @@ target_compile_definitions(fmt-header-only INTERFACE
         FMT_EXCEPTIONS=0
         FMT_HEADER_ONLY=1
         FMT_USE_NOEXCEPT=1)
+target_include_directories(fmt-header-only INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/fmt/include)
 
 target_link_libraries(ocarina-ext PUBLIC fmt::fmt-header-only)
 
