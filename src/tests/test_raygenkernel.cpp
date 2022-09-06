@@ -7,7 +7,6 @@
 #include "dsl/common.h"
 #include "rhi/common.h"
 #include "math/base.h"
-#include "math/geometry.h"
 #include "tiny_obj_loader.h"
 #include "cornell_box.h"
 

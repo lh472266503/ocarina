@@ -7,7 +7,6 @@
 #include "dsl/common.h"
 #include "rhi/common.h"
 #include "math/base.h"
-#include "math/geometry.h"
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
 #include "cornell_box.h"

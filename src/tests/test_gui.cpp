@@ -9,7 +9,6 @@
 #include "rhi/common.h"
 #include <windows.h>
 #include "math/base.h"
-#include "math/geometry.h"
 #include "util/image_io.h"
 #include "dsl/common.h"
 #include "gui/window.h"
