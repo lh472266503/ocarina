@@ -33,7 +33,7 @@ public:
 
     template<typename TRay>
     [[nodiscard]] Var<bool> trace_any(const TRay &ray) const noexcept {
-        const UniformBinding &uniform = Function::current()->get_uniform_var(Type::of<Accel>(),
+        const ArgumentBinding &uniform = Function::current()->get_uniform_var(Type::of<Accel>(),
                                                                              Variable::Tag::ACCEL,
                                                                              memory_block());
         return make_expr<Accel>(uniform.expression()).trace_any(ray);
@@ -41,7 +41,7 @@ public:
 
     template<typename TRay>
     [[nodiscard]] Var<Hit> trace_closest(const TRay &ray) const noexcept {
-        const UniformBinding &uniform = Function::current()->get_uniform_var(Type::of<Accel>(),
+        const ArgumentBinding &uniform = Function::current()->get_uniform_var(Type::of<Accel>(),
                                                                              Variable::Tag::ACCEL,
                                                                              memory_block());
         return make_expr<Accel>(uniform.expression()).trace_closest(ray);

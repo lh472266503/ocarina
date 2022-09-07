@@ -150,7 +150,7 @@ const CallExpr *Function::call_builtin(const Type *type, CallOp op,
     return _create_expression<CallExpr>(type, op, std::move(args), std::move(t_args));
 }
 
-const UniformBinding &Function::get_uniform_var(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept {
+const ArgumentBinding &Function::get_uniform_var(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept {
     OC_ASSERT(is_kernel());
     if (auto iter = std::find_if(_uniform_vars.begin(),
                                  _uniform_vars.end(),
@@ -242,7 +242,7 @@ uint64_t Function::_compute_hash() const noexcept {
     for (const Variable &v : _builtin_vars) {
         ret = hash64(ret, v.hash());
     }
-    for (const UniformBinding &v : _uniform_vars) {
+    for (const ArgumentBinding &v : _uniform_vars) {
         ret = hash64(ret, v.hash());
     }
     ret = hash64(ret, _body.hash());

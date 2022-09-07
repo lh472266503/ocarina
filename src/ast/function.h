@@ -21,7 +21,7 @@ class RefExpr;
 class IfStmt;
 
 
-class UniformBinding : public Hashable {
+class ArgumentBinding : public Hashable {
 private:
     const Type *_type;
     const RefExpr *_expr{nullptr};
@@ -33,7 +33,7 @@ private:
     }
 
 public:
-    UniformBinding(const RefExpr *expr, const Type *type, MemoryBlock block)
+    ArgumentBinding(const RefExpr *expr, const Type *type, MemoryBlock block)
         : _type(type), _block(block), _expr(expr) {}
 
     [[nodiscard]] const Type *type() const noexcept { return _type; }
@@ -60,7 +60,7 @@ private:
     ocarina::vector<ocarina::unique_ptr<Expression>> _all_expressions;
     ocarina::vector<ocarina::unique_ptr<Statement>> _all_statements;
     ocarina::vector<Variable> _arguments;
-    ocarina::vector<UniformBinding> _uniform_vars;
+    ocarina::vector<ArgumentBinding> _uniform_vars;
     ocarina::vector<Variable> _builtin_vars;
     ocarina::vector<Usage> _variable_usages;
     ocarina::vector<ScopeStmt *> _scope_stack;
@@ -154,17 +154,17 @@ public:
         }
     }
     void add_used_structure(const Type *type) noexcept { _used_struct.emplace(type); }
-    const UniformBinding &get_uniform_var(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept;
+    const ArgumentBinding &get_uniform_var(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept;
     [[nodiscard]] auto &uniform_vars() const noexcept { return _uniform_vars; }
     template<typename Visitor>
     void for_each_uniform_var(Visitor &&visitor) const noexcept {
-        for (const UniformBinding &uniform : _uniform_vars) {
+        for (const ArgumentBinding &uniform : _uniform_vars) {
             visitor(uniform);
         }
     }
     [[nodiscard]] uint64_t uniform_hash() const noexcept {
         uint64_t ret = Hash64::default_seed;
-        for (const UniformBinding &uniform : _uniform_vars) {
+        for (const ArgumentBinding &uniform : _uniform_vars) {
             ret = hash64(ret, uniform.hash());
         }
         return ret;

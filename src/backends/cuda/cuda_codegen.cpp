@@ -163,7 +163,7 @@ void CUDACodegen::_emit_raytracing_param(const Function &f) noexcept {
         func(arg);
     }
 
-    f.for_each_uniform_var([&](const UniformBinding &uniform) {
+    f.for_each_uniform_var([&](const ArgumentBinding &uniform) {
         const Variable &arg = uniform.expression()->variable();
         func(arg);
     });
@@ -207,7 +207,7 @@ void CUDACodegen::_emit_builtin_vars_define(const Function &f) noexcept {
             current_scratch() << ";\n";
         }
 
-        f.for_each_uniform_var([&](const UniformBinding &uniform) {
+        f.for_each_uniform_var([&](const ArgumentBinding &uniform) {
             _emit_indent();
             current_scratch() << "const auto &";
             _emit_variable_name(uniform.expression()->variable());
@@ -258,7 +258,7 @@ void CUDACodegen::_emit_builtin_var(Variable v) noexcept {
     }
 }
 
-void CUDACodegen::_emit_uniform_var(const UniformBinding &uniform) noexcept {
+void CUDACodegen::_emit_uniform_var(const ArgumentBinding &uniform) noexcept {
     current_scratch() << "extern \"C\" __constant__ ";
     _emit_type_name(uniform.type());
     _emit_space();
