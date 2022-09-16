@@ -18,8 +18,8 @@ using std::min;
 using std::pow;
 using std::sqrt;
 
-template<typename T>
-[[nodiscard]] constexpr auto select(bool pred, T &&t, T &&f) noexcept {
+template<typename T, typename F>
+[[nodiscard]] constexpr auto select(bool pred, T &&t, F &&f) noexcept {
     return pred ? t : f;
 }
 
