@@ -17,7 +17,17 @@ struct LiteralPrinter {
     requires(is_scalar_v<T> || is_vector_v<T>)
     void operator()(T v) {
         if constexpr (ocarina::is_scalar_v<T>) {
-            scratch << v;
+            if constexpr (ocarina::is_floating_point_v<T>) {
+                if (std::isnan(v)) [[unlikely]] {
+                    OC_ERROR("nan error!");
+                } else if (std::isinf(v)) {
+                    scratch << (v < 0.f ? "(1.f/-0.f)" : "1.f/+0.f");
+                } else {
+                    scratch << v;
+                }
+            } else {
+                scratch << v;
+            }
         } else {
             static constexpr auto dim = ocarina::vector_dimension_v<T>;
             auto printer = *this;
