@@ -25,6 +25,14 @@ struct Onb {
     float3 normal;
 };
 
+struct Triangle {
+public:
+    uint i, j, k;
+    Triangle(uint i, uint j, uint k) : i(i), j(j), k(k) {}
+    Triangle() = default;
+};
+OC_STRUCT(Triangle, i, j, k){};
+
 struct MeshHandle {
     uint tri_offset;
     uint tri_num;

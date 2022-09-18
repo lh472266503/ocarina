@@ -83,6 +83,18 @@ public:
 
 OC_STRUCT(ocarina::Ray, org_min, dir_max) {
 
+    void update_origin(Float3 origin) noexcept {
+        org_min.x = origin.x;
+        org_min.y = origin.y;
+        org_min.z = origin.z;
+    }
+
+    void update_direction(Float3 direction) noexcept {
+        dir_max.x = direction.x;
+        dir_max.y = direction.y;
+        dir_max.z = direction.z;
+    }
+
     [[nodiscard]] auto origin() const noexcept {
         return org_min.xyz();
     }
@@ -103,16 +115,6 @@ OC_STRUCT(ocarina::Ray, org_min, dir_max) {
         return org_min.w;
     }
 };
-
-namespace ocarina {
-struct Triangle {
-public:
-    uint i, j, k;
-    Triangle(uint i, uint j, uint k) : i(i), j(j), k(k) {}
-    Triangle() = default;
-};
-}// namespace ocarina
-OC_STRUCT(ocarina::Triangle, i, j, k){};
 
 namespace ocarina {
 namespace detail {
