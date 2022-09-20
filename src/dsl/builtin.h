@@ -132,16 +132,16 @@ requires(any_dsl_v<T, U> &&is_vector3_v<expr_value_t<T>> &&is_vector3_v<expr_val
     return eval<expr_value_t<T>>(expr);
 }
 
-#define OC_MAKE_BINARY_VECTOR_FUNC(func, tag)                                                 \
-    template<typename T, typename U>                                                          \
-    requires(any_dsl_v<T, U> && is_vector_same_dimension_v<expr_value_t<U>, expr_value_t<T>>) \
-        OC_NODISCARD auto                                                                     \
-        func(const T &t, const U &u) noexcept {                                               \
-        auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),            \
-                                                      CallOp::tag, {OC_EXPR(t), OC_EXPR(u)}); \
-        return eval<expr_value_t<T>>(expr);                                                   \
+#define OC_MAKE_BINARY_VECTOR_FUNC(func, tag)                                                              \
+    template<typename T, typename U>                                                                       \
+    requires(any_dsl_v<T, U> && is_vector_same_dimension_v<expr_value_t<U>, expr_value_t<T>>)              \
+        OC_NODISCARD auto                                                                                  \
+        func(const T &t, const U &u) noexcept {                                                            \
+        using ret_type = decltype(func(std::declval<expr_value_t<T>>(), std::declval<expr_value_t<U>>())); \
+        auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),                         \
+                                                      CallOp::tag, {OC_EXPR(t), OC_EXPR(u)});              \
+        return eval<expr_value_t<ret_type>>(expr);                                                         \
     }
-
 OC_MAKE_BINARY_VECTOR_FUNC(dot, DOT)
 OC_MAKE_BINARY_VECTOR_FUNC(distance, DISTANCE)
 OC_MAKE_BINARY_VECTOR_FUNC(distance_squared, DISTANCE_SQUARED)
@@ -171,9 +171,10 @@ requires(is_all_float_element_expr_v<A> &&
     requires(is_dsl_v<T> && is_float_element_v<expr_value_t<T>>)                   \
         OC_NODISCARD auto                                                          \
         func(const T &t) noexcept {                                                \
+        using ret_type = decltype(func(std::declval<expr_value_t<T>>()));          \
         auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(), \
                                                       CallOp::tag, {OC_EXPR(t)});  \
-        return eval<expr_value_t<T>>(expr);                                        \
+        return eval<expr_value_t<ret_type>>(expr);                                 \
     }
 
 OC_MAKE_FLOATING_BUILTIN_FUNC(exp, EXP)
@@ -199,16 +200,17 @@ OC_MAKE_FLOATING_BUILTIN_FUNC(saturate, SATURATE)
 
 #undef OC_MAKE_FLOATING_BUILTIN_FUNC
 
-#define OC_MAKE_BINARY_BUILTIN_FUNC(func, tag)                                                \
-    template<typename A, typename B>                                                          \
-    requires(is_basic_v<expr_value_t<A>> &&                                                   \
-             is_basic_v<expr_value_t<B>> &&                                                   \
-             is_same_expr_v<A, B>)                                                            \
-        OC_NODISCARD auto                                                                     \
-        func(const A &a, const B &b) noexcept {                                               \
-        auto expr = Function::current()->call_builtin(Type::of<expr_value_t<A>>(),            \
-                                                      CallOp::tag, {OC_EXPR(a), OC_EXPR(b)}); \
-        return eval<expr_value_t<A>>(expr);                                                   \
+#define OC_MAKE_BINARY_BUILTIN_FUNC(func, tag)                                                             \
+    template<typename A, typename B>                                                                       \
+    requires(is_basic_v<expr_value_t<A>> &&                                                                \
+             is_basic_v<expr_value_t<B>> &&                                                                \
+             is_same_expr_v<A, B>)                                                                         \
+        OC_NODISCARD auto                                                                                  \
+        func(const A &a, const B &b) noexcept {                                                            \
+        using ret_type = decltype(func(std::declval<expr_value_t<A>>(), std::declval<expr_value_t<B>>())); \
+        auto expr = Function::current()->call_builtin(Type::of<expr_value_t<A>>(),                         \
+                                                      CallOp::tag, {OC_EXPR(a), OC_EXPR(b)});              \
+        return eval<expr_value_t<ret_type>>(expr);                                                         \
     }
 
 OC_MAKE_BINARY_BUILTIN_FUNC(max, MAX)

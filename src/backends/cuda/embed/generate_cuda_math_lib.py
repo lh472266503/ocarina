@@ -414,7 +414,7 @@ def define_vec_func():
         for d in range(0, dim):
             field_name = name_lst[d]
             split = " + " if d != dim - 1 else ";"
-            body += f"a.{field_name} + b.{field_name}" + split
+            body += f"a.{field_name} * b.{field_name}" + split
         func = f"__device__ inline auto oc_dot(oc_float{dim} a, oc_float{dim} b) {{ {body} }}\n"
         content += func
         content += f"__device__ inline auto oc_length(oc_float{dim} v) noexcept {{ return oc_sqrt(oc_dot(v, v)); }}\n"
