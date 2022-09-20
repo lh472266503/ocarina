@@ -10,7 +10,14 @@ Codegen::Scratch &Codegen::Scratch::operator<<(int v) noexcept {
     return *this << detail::to_string(v);
 }
 Codegen::Scratch &Codegen::Scratch::operator<<(float v) noexcept {
-    return *this << detail::to_string(v);
+    auto s = detail::to_string(v);
+    *this << s;
+    if (s.find('.') == std::string::npos && s.find('e') == std::string::npos) {
+        *this << ".f";
+    } else if (s.find('.') != std::string::npos) {
+        *this << "f";
+    }
+    return *this;
 }
 Codegen::Scratch &Codegen::Scratch::operator<<(bool v) noexcept {
     return *this << detail::to_string(v);
