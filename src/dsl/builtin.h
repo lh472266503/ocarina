@@ -32,7 +32,7 @@ OC_MAKE_BUILTIN_FUNC(dispatch_dim, uint3)
         func(const T &t) noexcept {                                               \
         auto expr = Function::current()->call_builtin(Type::of<bool>(),           \
                                                       CallOp::tag, {OC_EXPR(t)}); \
-        return eval<bool>(expr);                                                  \
+        return make_expr<bool>(expr);                                             \
     }
 
 OC_MAKE_LOGIC_FUNC(all, ALL)
@@ -48,7 +48,7 @@ requires(any_dsl_v<U, T, F> &&
     auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
                                                   CallOp::SELECT,
                                                   {OC_EXPR(pred), OC_EXPR(t), OC_EXPR(f)});
-    return eval<T>(expr);
+    return make_expr<T>(expr);
 }
 
 #define OC_MAKE_TRIPLE_FUNC(func, tag)                                                       \
@@ -59,7 +59,7 @@ requires(any_dsl_v<U, T, F> &&
         auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),           \
                                                       CallOp::tag,                           \
                                                       {OC_EXPR(t), OC_EXPR(a), OC_EXPR(b)}); \
-        return eval<expr_value_t<T>>(expr);                                                  \
+        return make_expr<expr_value_t<T>>(expr);                                             \
     }
 
 OC_MAKE_TRIPLE_FUNC(fma, FMA)
@@ -73,7 +73,7 @@ requires(is_dsl_v<T> &&is_signed_element_v<expr_value_t<T>>)
     OC_NODISCARD auto abs(const T &t) noexcept {
     auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
                                                   CallOp::ABS, {OC_EXPR(t)});
-    return eval<expr_value_t<T>>(expr);
+    return make_expr<expr_value_t<T>>(expr);
 }
 
 template<typename T>
@@ -81,7 +81,7 @@ requires(is_dsl_v<T>)
     OC_NODISCARD auto rcp(const T &t) noexcept {
     auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
                                                   CallOp::RCP, {OC_EXPR(t)});
-    return eval<expr_value_t<T>>(expr);
+    return make_expr<expr_value_t<T>>(expr);
 }
 
 template<typename T>
@@ -89,7 +89,7 @@ requires(is_dsl_v<T>)
     OC_NODISCARD auto sqr(const T &t) noexcept {
     auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
                                                   CallOp::SQR, {OC_EXPR(t)});
-    return eval<expr_value_t<T>>(expr);
+    return make_expr<expr_value_t<T>>(expr);
 }
 
 #define OC_MAKE_UNARY_VECTOR_FUNC(func, tag)                                       \
@@ -99,7 +99,7 @@ requires(is_dsl_v<T>)
         func(const T &t) noexcept {                                                \
         auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(), \
                                                       CallOp::tag, {OC_EXPR(t)});  \
-        return eval<expr_value_t<T>>(expr);                                        \
+        return make_expr<expr_value_t<T>>(expr);                                   \
     }
 
 OC_MAKE_UNARY_VECTOR_FUNC(normalize, NORMALIZE)
@@ -115,7 +115,7 @@ OC_MAKE_UNARY_VECTOR_FUNC(length_squared, LENGTH_SQUARED)
         func(const T &m) noexcept {                                                \
         auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(), \
                                                       CallOp::tag, {OC_EXPR(m)});  \
-        return eval<expr_value_t<T>>(expr);                                        \
+        return make_expr<expr_value_t<T>>(expr);                                   \
     }
 
 OC_MAKE_MATRIX_FUNC(determinant, DETERMINANT)
@@ -129,7 +129,7 @@ requires(any_dsl_v<T, U> &&is_vector3_v<expr_value_t<T>> &&is_vector3_v<expr_val
     OC_NODISCARD auto cross(const T &t, const U &u) noexcept {
     auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
                                                   CallOp::CROSS, {OC_EXPR(t), OC_EXPR(u)});
-    return eval<expr_value_t<T>>(expr);
+    return make_expr<expr_value_t<T>>(expr);
 }
 
 #define OC_MAKE_BINARY_VECTOR_FUNC(func, tag)                                                              \
@@ -140,7 +140,7 @@ requires(any_dsl_v<T, U> &&is_vector3_v<expr_value_t<T>> &&is_vector3_v<expr_val
         using ret_type = decltype(func(std::declval<expr_value_t<T>>(), std::declval<expr_value_t<U>>())); \
         auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),                         \
                                                       CallOp::tag, {OC_EXPR(t), OC_EXPR(u)});              \
-        return eval<expr_value_t<ret_type>>(expr);                                                         \
+        return make_expr<expr_value_t<ret_type>>(expr);                                                    \
     }
 OC_MAKE_BINARY_VECTOR_FUNC(dot, DOT)
 OC_MAKE_BINARY_VECTOR_FUNC(distance, DISTANCE)
@@ -155,7 +155,7 @@ requires(any_dsl_v<A, B, C> &&
     OC_NODISCARD auto face_forward(const A &a, const B &b, const C &c) noexcept {
     auto expr = Function::current()->call_builtin(Type::of<expr_value_t<A>>(),
                                                   CallOp::FACE_FORWARD, {OC_EXPR(a), OC_EXPR(b), OC_EXPR(c)});
-    return eval<expr_value_t<A>>(expr);
+    return make_expr<expr_value_t<A>>(expr);
 }
 
 template<typename A>
@@ -174,7 +174,7 @@ requires(is_all_float_element_expr_v<A> &&
         using ret_type = decltype(func(std::declval<expr_value_t<T>>()));          \
         auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(), \
                                                       CallOp::tag, {OC_EXPR(t)});  \
-        return eval<expr_value_t<ret_type>>(expr);                                 \
+        return make_expr<expr_value_t<ret_type>>(expr);                            \
     }
 
 OC_MAKE_FLOATING_BUILTIN_FUNC(exp, EXP)
@@ -210,7 +210,7 @@ OC_MAKE_FLOATING_BUILTIN_FUNC(saturate, SATURATE)
         using ret_type = decltype(func(std::declval<expr_value_t<A>>(), std::declval<expr_value_t<B>>())); \
         auto expr = Function::current()->call_builtin(Type::of<expr_value_t<A>>(),                         \
                                                       CallOp::tag, {OC_EXPR(a), OC_EXPR(b)});              \
-        return eval<expr_value_t<ret_type>>(expr);                                                         \
+        return make_expr<expr_value_t<ret_type>>(expr);                                                    \
     }
 
 OC_MAKE_BINARY_BUILTIN_FUNC(max, MAX)
@@ -226,7 +226,7 @@ OC_MAKE_BINARY_BUILTIN_FUNC(pow, POW)
         auto expr = Function::current()->call_builtin(Type::of<type##2>(),                   \
                                                       CallOp::MAKE_##tag##2,                 \
                                                       {OC_EXPR(t)});                         \
-        return eval<type##2>(expr);                                                          \
+        return make_expr<type##2>(expr);                                                     \
     }                                                                                        \
     template<typename A, typename B>                                                         \
     requires(any_dsl_v<A, B> && is_all_##type##_element_v<expr_value_t<A>, expr_value_t<B>>) \
@@ -234,7 +234,7 @@ OC_MAKE_BINARY_BUILTIN_FUNC(pow, POW)
         auto expr = Function::current()->call_builtin(Type::of<type##2>(),                   \
                                                       CallOp::MAKE_##tag##2,                 \
                                                       {OC_EXPR(a), OC_EXPR(b)});             \
-        return eval<type##2>(expr);                                                          \
+        return make_expr<type##2>(expr);                                                     \
     }
 
 #define OC_MAKE_VEC3_MAKER(type, tag)                                                                            \
@@ -244,7 +244,7 @@ OC_MAKE_BINARY_BUILTIN_FUNC(pow, POW)
         auto expr = Function::current()->call_builtin(Type::of<type##3>(),                                       \
                                                       CallOp::MAKE_##tag##3,                                     \
                                                       {OC_EXPR(t)});                                             \
-        return eval<type##3>(expr);                                                                              \
+        return make_expr<type##3>(expr);                                                                         \
     }                                                                                                            \
     template<typename A, typename B>                                                                             \
     requires(any_dsl_v<A, B> &&                                                                                  \
@@ -254,7 +254,7 @@ OC_MAKE_BINARY_BUILTIN_FUNC(pow, POW)
         auto expr = Function::current()->call_builtin(Type::of<type##3>(),                                       \
                                                       CallOp::MAKE_##tag##3,                                     \
                                                       {OC_EXPR(a), OC_EXPR(b)});                                 \
-        return eval<type##3>(expr);                                                                              \
+        return make_expr<type##3>(expr);                                                                         \
     }                                                                                                            \
     template<typename A, typename B, typename C>                                                                 \
     requires(any_dsl_v<A, B, C> && is_all_##type##_element_v<expr_value_t<A>, expr_value_t<B>, expr_value_t<C>>) \
@@ -262,7 +262,7 @@ OC_MAKE_BINARY_BUILTIN_FUNC(pow, POW)
         auto expr = Function::current()->call_builtin(Type::of<type##3>(),                                       \
                                                       CallOp::MAKE_##tag##3,                                     \
                                                       {OC_EXPR(a), OC_EXPR(b), OC_EXPR(c)});                     \
-        return eval<type##3>(expr);                                                                              \
+        return make_expr<type##3>(expr);                                                                         \
     }
 
 #define OC_MAKE_VEC4_MAKER(type, tag)                                                               \
@@ -271,7 +271,7 @@ OC_MAKE_BINARY_BUILTIN_FUNC(pow, POW)
         OC_NODISCARD auto make_##type##4(const T &t) noexcept {                                     \
         auto expr = Function::current()->call_builtin(Type::of<type##4>(),                          \
                                                       CallOp::MAKE_##tag##4, {OC_EXPR(t)});         \
-        return eval<type##4>(expr);                                                                 \
+        return make_expr<type##4>(expr);                                                            \
     }                                                                                               \
     template<typename T, typename U>                                                                \
     requires(any_dsl_v<T, U> &&                                                                     \
@@ -283,7 +283,7 @@ OC_MAKE_BINARY_BUILTIN_FUNC(pow, POW)
         auto expr = Function::current()->call_builtin(Type::of<type##4>(),                          \
                                                       CallOp::MAKE_##tag##4,                        \
                                                       {OC_EXPR(t), OC_EXPR(u)});                    \
-        return eval<type##4>(expr);                                                                 \
+        return make_expr<type##4>(expr);                                                            \
     }                                                                                               \
     template<typename A, typename B, typename C>                                                    \
     requires(any_dsl_v<A, B, C> &&                                                                  \
@@ -295,7 +295,7 @@ OC_MAKE_BINARY_BUILTIN_FUNC(pow, POW)
         auto expr = Function::current()->call_builtin(Type::of<type##4>(),                          \
                                                       CallOp::MAKE_##tag##4,                        \
                                                       {OC_EXPR(a), OC_EXPR(b), OC_EXPR(c)});        \
-        return eval<type##4>(expr);                                                                 \
+        return make_expr<type##4>(expr);                                                            \
     }                                                                                               \
     template<typename A, typename B, typename C, typename D>                                        \
     requires(any_dsl_v<A, B, C, D> && is_all_int_element_expr_v<A, B, C, D>)                        \
@@ -304,7 +304,7 @@ OC_MAKE_BINARY_BUILTIN_FUNC(pow, POW)
                                                       CallOp::MAKE_##tag##4,                        \
                                                       {OC_EXPR(a), OC_EXPR(b),                      \
                                                        OC_EXPR(c), OC_EXPR(d)});                    \
-        return eval<type##4>(expr);                                                                 \
+        return make_expr<type##4>(expr);                                                            \
     }
 
 #define OC_MAKE_VEC_MAKER(type, tag) \
@@ -330,7 +330,7 @@ OC_MAKE_VEC_MAKER(uchar, UCHAR)
             make_float##dim##x##dim(const T &t) noexcept {                                                      \
         auto expr = Function::current()->call_builtin(Type::of<float##dim##x##dim>(),                           \
                                                       CallOp::MAKE_FLOAT##dim##X##dim, {OC_EXPR(t)});           \
-        return eval<float##dim##x##dim>(expr);                                                                  \
+        return make_expr<float##dim##x##dim>(expr);                                                             \
     }                                                                                                           \
     template<typename... Args>                                                                                  \
     requires(any_dsl_v<Args...> && sizeof...(Args) == dim * dim && is_all_float_element_expr_v<Args...>)        \
@@ -338,7 +338,7 @@ OC_MAKE_VEC_MAKER(uchar, UCHAR)
             make_float##dim##x##dim(const Args &...args) {                                                      \
         auto expr = Function::current()->call_builtin(Type::of<float##dim##x##dim>(),                           \
                                                       CallOp::MAKE_FLOAT##dim##X##dim, {OC_EXPR(args)...});     \
-        return eval<float##dim##x##dim>(expr);                                                                  \
+        return make_expr<float##dim##x##dim>(expr);                                                             \
     }                                                                                                           \
     template<typename... Args>                                                                                  \
     requires(any_dsl_v<Args...> && sizeof...(Args) == dim && is_all_int_vector##dim##_v<expr_value_t<Args>...>) \
@@ -346,7 +346,7 @@ OC_MAKE_VEC_MAKER(uchar, UCHAR)
             make_float##dim##x##dim(const Args &...args) {                                                      \
         auto expr = Function::current()->call_builtin(Type::of<float##dim##x##dim>(),                           \
                                                       CallOp::MAKE_FLOAT##dim##X##dim, {OC_EXPR(args)...});     \
-        return eval<float##dim##x##dim>(expr);                                                                  \
+        return make_expr<float##dim##x##dim>(expr);                                                             \
     }
 
 OC_MAKE_MATRIX(2)
@@ -358,7 +358,7 @@ requires(is_all_float_vector3_v<expr_value_t<Org>, expr_value_t<Dir>>)
     OC_NODISCARD Var<Ray> make_ray(const Org &org, const Dir &dir)
 noexcept {
     auto expr = Function::current()->call_builtin(Type::of<float2x2>(), CallOp::MAKE_RAY, {OC_EXPR(org), OC_EXPR(dir)});
-    return eval<Ray>(expr);
+    return make_expr<Ray>(expr);
 }
 
 template<typename Org, typename Dir, typename T>
@@ -366,7 +366,7 @@ requires(is_all_float_vector3_v<expr_value_t<Org>, expr_value_t<Dir>> &&is_float
     OC_NODISCARD Var<Ray> make_ray(const Org &org, const Dir &dir, const T &t_max)
 noexcept {
     auto expr = Function::current()->call_builtin(Type::of<float2x2>(), CallOp::MAKE_RAY, {OC_EXPR(org), OC_EXPR(dir), OC_EXPR(t_max)});
-    return eval<Ray>(expr);
+    return make_expr<Ray>(expr);
 }
 
 #undef OC_MAKE_MATRIX
