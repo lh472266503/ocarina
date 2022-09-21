@@ -299,11 +299,4 @@ using is_basic = std::disjunction<is_scalar<T>, is_vector<T>, is_matrix<T>>;
 template<typename T>
 constexpr auto is_basic_v = is_basic<T>::value;
 
-template<typename TVec>
-struct extract_element {
-    using type = decltype(TVec::x);
-};
-
-OC_DEFINE_TEMPLATE_TYPE(extract_element)
-
 }// namespace ocarina
