@@ -12,7 +12,7 @@ namespace ocarina {
 class Device;
 class DynamicModule;
 class Window;
-class Context final : public concepts::Noncopyable {
+class Context : public concepts::Noncopyable {
 private:
     struct Impl;
     ocarina::unique_ptr<Impl> _impl;
