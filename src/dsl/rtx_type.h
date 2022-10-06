@@ -117,32 +117,6 @@ OC_STRUCT(ocarina::Ray, org_min, dir_max) {
 };
 
 namespace ocarina {
-
-inline float3 offset_ray_origin(const float3 &p_in, const float3 &n_in) noexcept {
-    constexpr auto origin = 1.0f / 32.0f;
-    constexpr auto float_scale = 1.0f / 65536.0f;
-    constexpr auto int_scale = 256.0f;
-    float3 n = n_in;
-    auto of_i = make_int3(static_cast<int>(int_scale * n.x),
-                          static_cast<int>(int_scale * n.y),
-                          static_cast<int>(int_scale * n.z));
-    float3 p = p_in;
-    float3 p_i = make_float3(
-        bit_cast<float>(bit_cast<int>(p.x) + select(p.x < 0, -of_i.x, of_i.x)),
-        bit_cast<float>(bit_cast<int>(p.y) + select(p.y < 0, -of_i.y, of_i.y)),
-        bit_cast<float>(bit_cast<int>(p.z) + select(p.z < 0, -of_i.z, of_i.z)));
-    return select(abs(p) < origin, p + float_scale * n, p_i);
-}
-
-Ray spawn_ray(float3 pos, float3 normal, float3 dir) {
-    normal *= select(dot(normal, dir) > 0, 1.f, -1.f);
-    float3 org = offset_ray_origin(pos, normal);
-    return Ray(pos, dir);
-}
-
-} // ocarina
-
-namespace ocarina {
 namespace detail {
 
 template<typename TRay>
