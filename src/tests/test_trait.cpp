@@ -13,7 +13,7 @@ int main() {
     //    cout << is_vector_v<float2>;
     //    cout << (!is_dsl_v<Float3>) && is_vector_v<Float3> ;
 
-    cout << typeid(scalar_t<float3>).name() << endl;
+    cout << typeid(scalar_t<int3>).name() << endl;
     cout << typeid(scalar_t<float>).name() << endl;
     cout << typeid(scalar_t<float4x4>).name() << endl;
     cout << typeid(scalar_t<Float3>).name() << endl;
@@ -37,6 +37,9 @@ int main() {
     cout << typeid(matrix_t<Float3, 2>).name() << endl;
     cout << typeid(matrix_t<Float, 2>).name() << endl;
     cout << typeid(matrix_t<Float4x4, 2>).name() << endl;
+
+    cout << typeid(boolean_t<Float>).name() << endl;
+    cout << typeid(boolean_t<float>).name() << endl;
 
     return 0;
 }

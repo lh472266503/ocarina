@@ -343,6 +343,24 @@ namespace ocarina {
 namespace detail {
 
 template<typename T>
+requires is_dsl_v<T> Var<bool> boolean_deduce();
+
+template<typename T>
+requires(!is_dsl_v<T>) bool boolean_deduce();
+
+template<typename T>
+struct boolean {
+    using type = decltype(boolean_deduce<T>());
+};
+
+}// namespace detail
+
+template<typename T>
+using boolean_t = typename detail::boolean<std::remove_cvref_t<T>>::type;
+
+namespace detail {
+
+template<typename T>
 requires is_scalar_v<expr_value_t<T>> T scalar_deduce();
 
 template<typename T>
