@@ -340,6 +340,26 @@ OC_DEFINE_TEMPLATE_VALUE(is_accel)
 
 namespace ocarina {
 
+class Ray;
+
+namespace detail {
+
+template<typename T>
+requires is_dsl_v<T> Var<Ray> ray_deduce();
+
+template<typename T>
+requires(!is_dsl_v<T>) Ray ray_deduce();
+
+template<typename T>
+struct ray {
+    using type = decltype(ray_deduce<T>());
+};
+
+}// namespace detail
+
+template<typename T>
+using ray_t = typename detail::ray<std::remove_cvref_t<T>>::type;
+
 namespace detail {
 
 template<typename T>

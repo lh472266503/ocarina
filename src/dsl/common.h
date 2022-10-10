@@ -14,3 +14,4 @@
 #include "operators.h"
 #include "func.h"
 #include "struct.h"
+#include "rtx_type.h"
