@@ -59,26 +59,19 @@ public:
         dir_max.z = direction.z;
     }
 
-    [[nodiscard]] auto origin() const noexcept {
-        return org_min.xyz();
-    }
-
-    [[nodiscard]] auto direction() const noexcept {
-        return dir_max.xyz();
-    }
-
-    [[nodiscard]] auto at(float t) const noexcept {
-        return origin() + direction() * t;
-    }
-
-    [[nodiscard]] auto t_max() const noexcept {
-        return dir_max.w;
-    }
-
-    [[nodiscard]] auto t_min() const noexcept {
-        return org_min.w;
-    }
+    [[nodiscard]] auto origin() const noexcept { return org_min.xyz(); }
+    [[nodiscard]] auto direction() const noexcept { return dir_max.xyz(); }
+    [[nodiscard]] auto at(float t) const noexcept { return origin() + direction() * t; }
+    [[nodiscard]] auto t_max() const noexcept { return dir_max.w; }
+    [[nodiscard]] auto t_min() const noexcept { return org_min.w; }
 };
+
+template<typename ...Args>
+requires none_dsl_v<Args...>
+[[nodiscard]] Ray make_ray(Args &&...args) noexcept {
+    return Ray{OC_FORWARD(args)...};
+}
+
 }// namespace ocarina
 
 OC_STRUCT(ocarina::Ray, org_min, dir_max) {
@@ -95,25 +88,11 @@ OC_STRUCT(ocarina::Ray, org_min, dir_max) {
         dir_max.z = direction.z;
     }
 
-    [[nodiscard]] auto origin() const noexcept {
-        return org_min.xyz();
-    }
-
-    [[nodiscard]] auto direction() const noexcept {
-        return dir_max.xyz();
-    }
-
-    [[nodiscard]] auto at(Float t) const noexcept {
-        return origin() + direction() * t;
-    }
-
-    [[nodiscard]] auto t_max() const noexcept {
-        return dir_max.w;
-    }
-
-    [[nodiscard]] auto t_min() const noexcept {
-        return org_min.w;
-    }
+    [[nodiscard]] auto origin() const noexcept { return org_min.xyz(); }
+    [[nodiscard]] auto direction() const noexcept { return dir_max.xyz(); }
+    [[nodiscard]] auto at(float t) const noexcept { return origin() + direction() * t; }
+    [[nodiscard]] auto t_max() const noexcept { return dir_max.w; }
+    [[nodiscard]] auto t_min() const noexcept { return org_min.w; }
 };
 
 namespace ocarina {

@@ -354,7 +354,7 @@ OC_MAKE_MATRIX(3)
 OC_MAKE_MATRIX(4)
 
 template<typename Org, typename Dir>
-requires(is_all_float_vector3_v<expr_value_t<Org>, expr_value_t<Dir>>)
+requires(is_all_float_vector3_v<expr_value_t<Org>, expr_value_t<Dir>> &&any_dsl_v<Org, Dir>)
     OC_NODISCARD Var<Ray> make_ray(const Org &org, const Dir &dir)
 noexcept {
     auto expr = Function::current()->call_builtin(Type::of<float2x2>(), CallOp::MAKE_RAY, {OC_EXPR(org), OC_EXPR(dir)});
@@ -362,7 +362,9 @@ noexcept {
 }
 
 template<typename Org, typename Dir, typename T>
-requires(is_all_float_vector3_v<expr_value_t<Org>, expr_value_t<Dir>> &&is_floating_point_expr_v<T>)
+requires(is_all_float_vector3_v<expr_value_t<Org>, expr_value_t<Dir>>
+             &&is_floating_point_expr_v<T>
+                 &&any_dsl_v<Org, Dir, T>)
     OC_NODISCARD Var<Ray> make_ray(const Org &org, const Dir &dir, const T &t_max)
 noexcept {
     auto expr = Function::current()->call_builtin(Type::of<float2x2>(), CallOp::MAKE_RAY, {OC_EXPR(org), OC_EXPR(dir), OC_EXPR(t_max)});
