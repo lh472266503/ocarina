@@ -433,13 +433,10 @@ struct vec {
 
 template<typename T, size_t N>
 using vec_t = typename detail::vec<T, N>::type;
-
 template<typename T>
 using vec2_t = vec_t<T, 2>;
-
 template<typename T>
 using vec3_t = vec_t<T, 3>;
-
 template<typename T>
 using vec4_t = vec_t<T, 4>;
 
@@ -459,40 +456,47 @@ struct matrix {
 
 template<typename T, size_t N>
 using matrix_t = typename detail::matrix<T, N>::type;
-
 template<typename T>
 using matrix2_t = matrix_t<T, 2>;
-
 template<typename T>
 using matrix3_t = matrix_t<T, 3>;
-
 template<typename T>
 using matrix4_t = matrix_t<T, 4>;
 
+}// namespace ocarina
+
+namespace ocarina {
+
+// Used to determine where the function runs (host or device)
+enum EPort {
+    H,
+    D
+};
+
 namespace detail {
 
-template<typename T, bool is_dsl_type>
+template<typename T, EPort>
 struct var_impl {};
 
 template<typename T>
-struct var_impl<T, true> {
+struct var_impl<T, D> {
     using type = Var<expr_value_t<T>>;
 };
 
 template<typename T>
-struct var_impl<T, false> {
+struct var_impl<T, H> {
     using type = expr_value_t<T>;
 };
 
 }// namespace detail
 
-template<typename T, bool is_dsl_type>
-using var_t = typename detail::var_impl<T, is_dsl_type>::type;
+template<typename T, EPort port>
+using var_t = typename detail::var_impl<T, port>::type;
 
 namespace detail {
 template<typename T, typename... Args>
 struct condition_impl {
-    using type = var_t<T, any_dsl_v<Args...>>;
+    using type = var_t<T, any_dsl_v<Args...> ? D : H>;
 };
 }// namespace detail
 
@@ -500,8 +504,8 @@ template<typename T, typename... Args>
 using condition_t = typename detail::condition_impl<T, Args...>::type;
 
 #define OC_MAKE_VAR_TYPE_IMPL(type, dim) \
-    template<bool is_dsl_type>           \
-    using oc_##type##dim = var_t<type##dim, is_dsl_type>;
+    template<EPort port>                 \
+    using oc_##type##dim = var_t<type##dim, port>;
 
 #define OC_MAKE_VAR_TYPE(type)     \
     OC_MAKE_VAR_TYPE_IMPL(type, )  \
@@ -516,8 +520,8 @@ OC_MAKE_VAR_TYPE(char)
 OC_MAKE_VAR_TYPE(uchar)
 
 #define OC_MAKE_VAR_MAT(dim) \
-template<bool is_dsl_type> \
-using oc_float##dim##x##dim = var_t<float##dim##x##dim, is_dsl_type>;
+    template<EPort port>     \
+    using oc_float##dim##x##dim = var_t<float##dim##x##dim, port>;
 
 OC_MAKE_VAR_MAT(2)
 OC_MAKE_VAR_MAT(3)
@@ -526,5 +530,4 @@ OC_MAKE_VAR_MAT(4)
 #undef OC_MAKE_VAR_MAT
 #undef OC_MAKE_VAR_TYPE
 #undef OC_MAKE_VAR_TYPE_IMPL
-
 }// namespace ocarina
