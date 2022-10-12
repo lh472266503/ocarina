@@ -518,6 +518,7 @@ OC_MAKE_VAR_TYPE(uint)
 OC_MAKE_VAR_TYPE(float)
 OC_MAKE_VAR_TYPE(char)
 OC_MAKE_VAR_TYPE(uchar)
+OC_MAKE_VAR_TYPE(bool)
 
 #define OC_MAKE_VAR_MAT(dim) \
     template<EPort port>     \
