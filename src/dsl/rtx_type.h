@@ -28,6 +28,10 @@ OC_STRUCT(ocarina::Hit, inst_id, prim_id, bary){
     }
 };
 
+namespace ocarina {
+using OCHit = Var<Hit>;
+}
+
 constexpr float ray_t_max = 1e16f;
 
 namespace ocarina {
@@ -94,6 +98,10 @@ OC_STRUCT(ocarina::Ray, org_min, dir_max) {
     [[nodiscard]] auto t_max() const noexcept { return dir_max.w; }
     [[nodiscard]] auto t_min() const noexcept { return org_min.w; }
 };
+
+namespace ocarina {
+using OCRay = Var<Ray>;
+}
 
 namespace ocarina {
 
