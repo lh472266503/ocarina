@@ -499,4 +499,32 @@ struct condition_impl {
 template<typename T, typename... Args>
 using condition_t = typename detail::condition_impl<T, Args...>::type;
 
+#define OC_MAKE_VAR_TYPE_IMPL(type, dim) \
+    template<bool is_dsl_type>           \
+    using oc_##type##dim = var_t<type##dim, is_dsl_type>;
+
+#define OC_MAKE_VAR_TYPE(type)     \
+    OC_MAKE_VAR_TYPE_IMPL(type, )  \
+    OC_MAKE_VAR_TYPE_IMPL(type, 2) \
+    OC_MAKE_VAR_TYPE_IMPL(type, 3) \
+    OC_MAKE_VAR_TYPE_IMPL(type, 4)
+
+OC_MAKE_VAR_TYPE(int)
+OC_MAKE_VAR_TYPE(uint)
+OC_MAKE_VAR_TYPE(float)
+OC_MAKE_VAR_TYPE(char)
+OC_MAKE_VAR_TYPE(uchar)
+
+#define OC_MAKE_VAR_MAT(dim) \
+template<bool is_dsl_type> \
+using oc_float##dim##x##dim = var_t<float##dim##x##dim, is_dsl_type>;
+
+OC_MAKE_VAR_MAT(2)
+OC_MAKE_VAR_MAT(3)
+OC_MAKE_VAR_MAT(4)
+
+#undef OC_MAKE_VAR_MAT
+#undef OC_MAKE_VAR_TYPE
+#undef OC_MAKE_VAR_TYPE_IMPL
+
 }// namespace ocarina
