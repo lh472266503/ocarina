@@ -494,9 +494,19 @@ template<typename T, EPort port>
 using var_t = typename detail::var_impl<T, port>::type;
 
 namespace detail {
+template<typename... Ts>
+struct port_impl {
+    static constexpr EPort value = any_dsl_v<Ts...> ? D : H;
+};
+}// namespace detail
+
+template<typename ...Ts>
+static constexpr auto port_v = detail::port_impl<Ts...>::value;
+
+namespace detail {
 template<typename T, typename... Args>
 struct condition_impl {
-    using type = var_t<T, any_dsl_v<Args...> ? D : H>;
+    using type = var_t<T, port_v<Args...>>;
 };
 }// namespace detail
 
@@ -513,12 +523,16 @@ using condition_t = typename detail::condition_impl<T, Args...>::type;
     OC_MAKE_VAR_TYPE_IMPL(type, 3) \
     OC_MAKE_VAR_TYPE_IMPL(type, 4)
 
+struct Hit;
+
 OC_MAKE_VAR_TYPE(int)
 OC_MAKE_VAR_TYPE(uint)
 OC_MAKE_VAR_TYPE(float)
 OC_MAKE_VAR_TYPE(char)
 OC_MAKE_VAR_TYPE(uchar)
 OC_MAKE_VAR_TYPE(bool)
+OC_MAKE_VAR_TYPE_IMPL(Ray, )
+OC_MAKE_VAR_TYPE_IMPL(Hit, )
 
 #define OC_MAKE_VAR_MAT(dim) \
     template<EPort port>     \
