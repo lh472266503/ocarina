@@ -13,6 +13,8 @@ int main() {
     //    cout << is_vector_v<float2>;
     //    cout << (!is_dsl_v<Float3>) && is_vector_v<Float3> ;
 
+    cout << typeid(var_t<float, true>).name() << endl;
+
     cout << typeid(scalar_t<int3>).name() << endl;
     cout << typeid(scalar_t<float>).name() << endl;
     cout << typeid(scalar_t<float4x4>).name() << endl;

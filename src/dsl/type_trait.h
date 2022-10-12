@@ -338,6 +338,7 @@ OC_DEFINE_TEMPLATE_VALUE(is_accel)
 
 }// namespace ocarina
 
+
 namespace ocarina {
 
 class Ray;
@@ -467,5 +468,35 @@ using matrix3_t = matrix_t<T, 3>;
 
 template<typename T>
 using matrix4_t = matrix_t<T, 4>;
+
+namespace detail {
+
+template<typename T, bool is_dsl_type>
+struct var_impl {};
+
+template<typename T>
+struct var_impl<T, true> {
+    using type = Var<expr_value_t<T>>;
+};
+
+template<typename T>
+struct var_impl<T, false> {
+    using type = expr_value_t<T>;
+};
+
+}// namespace detail
+
+template<typename T, bool is_dsl_type>
+using var_t = typename detail::var_impl<T, is_dsl_type>::type;
+
+namespace detail {
+template<typename T, typename... Args>
+struct condition {
+    using type = var_t<T, any_dsl_v<Args...>>;
+};
+}// namespace detail
+
+template<typename T, typename... Args>
+using condition_t = typename detail::condition<T, Args...>::type;
 
 }// namespace ocarina
