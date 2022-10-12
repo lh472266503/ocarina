@@ -491,12 +491,12 @@ using var_t = typename detail::var_impl<T, is_dsl_type>::type;
 
 namespace detail {
 template<typename T, typename... Args>
-struct condition {
+struct condition_impl {
     using type = var_t<T, any_dsl_v<Args...>>;
 };
 }// namespace detail
 
 template<typename T, typename... Args>
-using condition_t = typename detail::condition<T, Args...>::type;
+using condition_t = typename detail::condition_impl<T, Args...>::type;
 
 }// namespace ocarina
