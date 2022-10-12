@@ -106,6 +106,19 @@ using std::static_pointer_cast;
 using std::unique_ptr;
 using std::weak_ptr;
 
+// math
+using std::abs;
+using std::atan2;
+using std::max;
+using std::min;
+using std::pow;
+using std::sqrt;
+using std::sin;
+using std::cos;
+using std::asin;
+using std::acos;
+using std::atan;
+
 inline void oc_memcpy(void *dst, const void *src, size_t size) {
 #ifdef _MSC_VER
     std::memcpy(dst, src, size);

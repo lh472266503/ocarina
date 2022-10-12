@@ -11,13 +11,6 @@
 
 namespace ocarina {
 
-using std::abs;
-using std::atan2;
-using std::max;
-using std::min;
-using std::pow;
-using std::sqrt;
-
 template<typename T, typename F>
 [[nodiscard]] constexpr auto select(bool pred, T &&t, F &&f) noexcept {
     return pred ? t : f;
@@ -39,27 +32,27 @@ select(Vector<bool, N> pred, Vector<T, N> t, Vector<T, N> f) noexcept {
 }
 
 template<typename T>
-requires is_scalar_v<expr_value_t<T>>
+requires is_scalar_v<T>
 OC_NODISCARD constexpr T sign(T val) {
     return select(val >= 0, T(1), T(-1));
 }
 
 template<typename T>
-requires is_scalar_v<expr_value_t<T>>
+requires is_scalar_v<T>
 OC_NODISCARD constexpr auto
 radians(const T &deg) noexcept {
     return deg * (constants::Pi / 180.0f);
 }
 
 template<typename T>
-requires is_scalar_v<expr_value_t<T>>
+requires is_scalar_v<T>
 OC_NODISCARD constexpr auto
 degrees(T rad) noexcept {
     return rad * (constants::InvPi * 180.0f);
 }
 
 template<typename T>
-requires is_scalar_v<expr_value_t<T>>
+requires is_scalar_v<T>
 OC_NODISCARD constexpr auto
 rcp(const T &v) {
     return 1.f / v;
@@ -95,6 +88,8 @@ MAKE_VECTOR_UNARY_FUNC(abs)
 MAKE_VECTOR_UNARY_FUNC(sqrt)
 MAKE_VECTOR_UNARY_FUNC(sqr)
 MAKE_VECTOR_UNARY_FUNC(sign)
+MAKE_VECTOR_UNARY_FUNC(cos)
+MAKE_VECTOR_UNARY_FUNC(sin)
 MAKE_VECTOR_UNARY_FUNC(degrees)
 MAKE_VECTOR_UNARY_FUNC(radians)
 
