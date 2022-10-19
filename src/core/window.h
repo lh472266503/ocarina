@@ -17,6 +17,10 @@ public:
     using ScrollCallback = ocarina::function<void(float2 /* (dx, dy) */)>;
     using UpdateCallback = ocarina::function<void(double)>;
 
+    using Creator = Window *(const char *name, uint2 initial_size, bool resizable);
+    using Deleter = void(Window *);
+    using Handle = ocarina::unique_ptr<Window, Deleter *>;
+
 protected:
     MouseButtonCallback _mouse_button_callback;
     CursorPositionCallback _cursor_position_callback;
