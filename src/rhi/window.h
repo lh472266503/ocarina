@@ -34,7 +34,7 @@ protected:
     virtual void _end_frame() noexcept = 0;
 
 public:
-    Window(bool resizable = false) noexcept;
+    explicit Window(bool resizable = false) noexcept;
     virtual void init(const char *name, uint2 initial_size, bool resizable) noexcept = 0;
     Window(Window &&) noexcept = delete;
     Window(const Window &) noexcept = delete;

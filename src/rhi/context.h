@@ -7,7 +7,7 @@
 #include "core/header.h"
 #include "core/stl.h"
 #include "core/concepts.h"
-#include "core/window.h"
+#include "window.h"
 
 namespace ocarina {
 class Device;
