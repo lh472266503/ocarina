@@ -6,9 +6,8 @@
 
 namespace ocarina {
 
-Window::Window(const char *name, uint2 initial_size, bool resizable) noexcept
-    : _resizable{resizable} {
-}
+Window::Window(bool resizable) noexcept
+    : _resizable{resizable} {}
 
 Window &Window::set_mouse_callback(Window::MouseButtonCallback cb) noexcept {
     _mouse_button_callback = std::move(cb);

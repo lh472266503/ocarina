@@ -177,8 +177,7 @@ void GLWindow::init(const char *name, uint2 initial_size, bool resizable) noexce
 }
 
 GLWindow::GLWindow(const char *name, uint2 initial_size, bool resizable) noexcept
-    : _context{GLFWContext::retain()},
-      _resizable{resizable} {
+    : Window(resizable), _context{GLFWContext::retain()} {
     init(name, initial_size, resizable);
 }
 
@@ -202,31 +201,6 @@ uint2 GLWindow::size() const noexcept {
 
 bool GLWindow::should_close() const noexcept {
     return glfwWindowShouldClose(_handle);
-}
-
-GLWindow &GLWindow::set_mouse_callback(GLWindow::MouseButtonCallback cb) noexcept {
-    _mouse_button_callback = std::move(cb);
-    return *this;
-}
-
-GLWindow &GLWindow::set_cursor_position_callback(GLWindow::CursorPositionCallback cb) noexcept {
-    _cursor_position_callback = std::move(cb);
-    return *this;
-}
-
-GLWindow &GLWindow::set_window_size_callback(GLWindow::WindowSizeCallback cb) noexcept {
-    _window_size_callback = std::move(cb);
-    return *this;
-}
-
-GLWindow &GLWindow::set_key_callback(GLWindow::KeyCallback cb) noexcept {
-    _key_callback = std::move(cb);
-    return *this;
-}
-
-GLWindow &GLWindow::set_scroll_callback(GLWindow::ScrollCallback cb) noexcept {
-    _scroll_callback = std::move(cb);
-    return *this;
 }
 
 void GLWindow::set_background(const std::array<uint8_t, 4u> *pixels, uint2 size) noexcept {

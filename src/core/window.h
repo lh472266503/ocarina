@@ -17,7 +17,7 @@ public:
     using ScrollCallback = ocarina::function<void(float2 /* (dx, dy) */)>;
     using UpdateCallback = ocarina::function<void(double)>;
 
-private:
+protected:
     MouseButtonCallback _mouse_button_callback;
     CursorPositionCallback _cursor_position_callback;
     WindowSizeCallback _window_size_callback;
@@ -25,12 +25,12 @@ private:
     ScrollCallback _scroll_callback;
     bool _resizable;
 
-private:
+protected:
     virtual void _begin_frame() noexcept = 0;
     virtual void _end_frame() noexcept = 0;
 
 public:
-    Window(const char *name, uint2 initial_size, bool resizable = false) noexcept;
+    Window(bool resizable = false) noexcept;
     virtual void init(const char *name, uint2 initial_size, bool resizable) noexcept = 0;
     Window(Window &&) noexcept = delete;
     Window(const Window &) noexcept = delete;
