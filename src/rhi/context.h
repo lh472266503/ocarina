@@ -33,7 +33,7 @@ public:
     [[nodiscard]] bool is_exist_cache(const string &fn) const noexcept;
     const DynamicModule *obtain_module(const string &module_name) noexcept;
     [[nodiscard]] Device create_device(const string &backend_name) noexcept;
-    [[nodiscard]] WindowHandle create_window(const char *name, uint2 initial_size, bool resizable = false);
+    [[nodiscard]] WindowHandle create_window(const char *name, uint2 initial_size, const char *type = "gl", bool resizable = false);
 };
 
 }// namespace ocarina

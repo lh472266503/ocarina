@@ -5,7 +5,7 @@
 #include "context.h"
 #include "core/logging.h"
 #include "device.h"
-#include "windows/window.h"
+#include "windows/gl.h"
 
 #ifdef NDEBUG
 
@@ -17,10 +17,10 @@ namespace ocarina {
 
 #ifdef _MSC_VER
 static constexpr string_view backend_prefix = "ocarina-backend-";
-static constexpr string_view window_lib_name = "ocarina-window-gl";
+static constexpr string_view window_lib_prefix = "ocarina-window-";
 #else
-static constexpr string_view backend_prefix = "libocarina-backend-";
-static constexpr string_view window_lib_name = "libocarina-gui";
+static constexpr string_view window_lib_prefix = "libocarina-backend-";
+static constexpr string_view window_lib_name = "libocarina-window-";
 #endif
 
 namespace detail {
@@ -47,6 +47,10 @@ bool create_directory_if_necessary(const fs::path &path) {
 
 [[nodiscard]] ocarina::string backend_full_name(const string &name) {
     return string(backend_prefix) + name;
+}
+
+[[nodiscard]] string window_name(const string &name) {
+    return string(window_lib_prefix) + name;
 }
 
 }// namespace detail
@@ -120,9 +124,8 @@ Device Context::create_device(const string &backend_name) noexcept {
     return Device{Device::Handle{create_device(this), destroy_func}};
 }
 
-
-Context::WindowHandle Context::create_window(const char *name, uint2 initial_size, bool resizable) {
-    auto d = obtain_module(dynamic_module_name(window_lib_name));
+Context::WindowHandle Context::create_window(const char *name, uint2 initial_size, const char *type, bool resizable) {
+    auto d = obtain_module(dynamic_module_name(detail::window_name(type)));
     auto create_window = reinterpret_cast<WindowCreator *>(d->function_ptr("create"));
     auto destroy_func = reinterpret_cast<WindowDeleter *>(d->function_ptr("destroy"));
     return WindowHandle(create_window(name, initial_size, resizable), destroy_func);

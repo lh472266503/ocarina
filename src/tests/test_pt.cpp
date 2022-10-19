@@ -10,7 +10,7 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
 #include "cornell_box.h"
-#include "gui/window.h"
+#include "windows/gl.h"
 
 using namespace ocarina;
 

@@ -20,7 +20,7 @@ function(ocarina_add_window_plugin name)
             DEBUG_POSTFIX "")
 endfunction()
 
-ocarina_add_window_plugin(gl CATEGORY window SOURCES window.cpp)
+ocarina_add_window_plugin(gl CATEGORY window SOURCES gl.cpp)
 
 #add_library(ocarina-gui MODULE ${SOURCE_FILES})
 #set_target_properties(ocarina-gui PROPERTIES
