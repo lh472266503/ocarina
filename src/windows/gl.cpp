@@ -295,12 +295,12 @@ void GLWindow::run(GLWindow::UpdateCallback &&draw) noexcept {
     }
 }
 
-OC_EXPORT_API ocarina::GLWindow *create(const char *name, uint2 initial_size, bool resizable) {
+}// namespace ocarina
+
+OC_EXPORT_API ocarina::GLWindow *create(const char *name, ocarina::uint2 initial_size, bool resizable) {
     return ocarina::new_with_allocator<ocarina::GLWindow>(name, initial_size, resizable);
 }
 
 OC_EXPORT_API void destroy(ocarina::GLWindow *ptr) {
     ocarina::delete_with_allocator(ptr);
 }
-
-}// namespace ocarina
