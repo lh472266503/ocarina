@@ -124,7 +124,7 @@ int main(int argc, char *argv[]) {
         accel.add_mesh(mesh, make_float4x4(1.f));
     }
 
-    Callable lcg = [](UInt &state) noexcept {
+    Callable lcg = [](Uint &state) noexcept {
         constexpr auto lcg_a = 1664525u;
         constexpr auto lcg_c = 1013904223u;
         state = lcg_a * state + lcg_c;

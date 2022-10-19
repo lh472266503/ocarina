@@ -105,7 +105,7 @@ using ImageVar = Var<Image>;
     OC_MAKE_DSL_TYPE_IMPL(dsl_type, type, 4)
 
 OC_MAKE_DSL_TYPE(Int, int)
-OC_MAKE_DSL_TYPE(UInt, uint)
+OC_MAKE_DSL_TYPE(Uint, uint)
 OC_MAKE_DSL_TYPE(Float, float)
 OC_MAKE_DSL_TYPE(Uchar, uchar)
 OC_MAKE_DSL_TYPE(Bool, bool)
