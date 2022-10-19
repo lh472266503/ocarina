@@ -11,7 +11,7 @@
 #include "math/base.h"
 #include "util/image_io.h"
 #include "dsl/common.h"
-#include "gui/window.h"
+#include "windows/window.h"
 #include "util/image_io.h"
 
 using namespace ocarina;

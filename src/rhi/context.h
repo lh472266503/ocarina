@@ -11,16 +11,16 @@
 namespace ocarina {
 class Device;
 class DynamicModule;
-class Window;
+class GLWindow;
 class Context : public concepts::Noncopyable {
 private:
     struct Impl;
     ocarina::unique_ptr<Impl> _impl;
 
 public:
-    using WindowCreator = Window *(const char *name, uint2 initial_size, bool resizable);
-    using WindowDeleter = void(Window *);
-    using WindowHandle = ocarina::unique_ptr<Window, WindowDeleter *>;
+    using WindowCreator = GLWindow *(const char *name, uint2 initial_size, bool resizable);
+    using WindowDeleter = void(GLWindow *);
+    using WindowHandle = ocarina::unique_ptr<GLWindow, WindowDeleter *>;
 
 public:
     explicit Context(const fs::path &path, string_view cache_dir = ".cache");

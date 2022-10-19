@@ -5,7 +5,7 @@
 #include "context.h"
 #include "core/logging.h"
 #include "device.h"
-#include "gui/window.h"
+#include "windows/window.h"
 
 #ifdef NDEBUG
 
@@ -17,7 +17,7 @@ namespace ocarina {
 
 #ifdef _MSC_VER
 static constexpr string_view backend_prefix = "ocarina-backend-";
-static constexpr string_view window_lib_name = "ocarina-gui";
+static constexpr string_view window_lib_name = "ocarina-window-gl";
 #else
 static constexpr string_view backend_prefix = "libocarina-backend-";
 static constexpr string_view window_lib_name = "libocarina-gui";

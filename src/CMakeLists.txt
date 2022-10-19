@@ -12,7 +12,7 @@ add_subdirectory(rhi)
 add_subdirectory(backends)
 add_subdirectory(util)
 add_subdirectory(math)
-add_subdirectory(gui)
+add_subdirectory(windows)
 
 add_library(ocarina-all INTERFACE)
 target_link_libraries(ocarina-all INTERFACE
@@ -26,7 +26,7 @@ target_link_libraries(ocarina-all INTERFACE
         ocarina-math
         ocarina-core)
 
-add_dependencies(ocarina-all ocarina-gui)
+add_dependencies(ocarina-all ocarina-windows)
 
 add_library(ocarina SHARED main.cpp)
 target_link_libraries(ocarina ocarina-all)

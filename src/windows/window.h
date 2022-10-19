@@ -14,7 +14,7 @@ namespace ocarina {
 class GLTexture;
 class GLFWContext;
 
-class OC_GUI_API Window {
+class GLWindow {
 public:
     using MouseButtonCallback = ocarina::function<void(int /* button */, int /* action */, float2 /* (x, y) */)>;
     using CursorPositionCallback = ocarina::function<void(float2 /* (x, y) */)>;
@@ -39,22 +39,22 @@ private:
     void _end_frame() noexcept;
 
 public:
-    Window(const char *name, uint2 initial_size, bool resizable = false) noexcept;
+    GLWindow(const char *name, uint2 initial_size, bool resizable = false) noexcept;
     void init(const char *name, uint2 initial_size, bool resizable = false) noexcept;
-    Window(Window &&) noexcept = delete;
-    Window(const Window &) noexcept = delete;
-    Window &operator=(Window &&) noexcept = delete;
-    Window &operator=(const Window &) noexcept = delete;
-    ~Window() noexcept;
+    GLWindow(GLWindow &&) noexcept = delete;
+    GLWindow(const GLWindow &) noexcept = delete;
+    GLWindow &operator=(GLWindow &&) noexcept = delete;
+    GLWindow &operator=(const GLWindow &) noexcept = delete;
+    ~GLWindow() noexcept;
     [[nodiscard]] virtual uint2 size() const noexcept;
     [[nodiscard]] virtual bool should_close() const noexcept;
     [[nodiscard]] auto handle() const noexcept { return _handle; }
     [[nodiscard]] explicit operator bool() const noexcept { return !should_close(); }
-    virtual Window &set_mouse_callback(MouseButtonCallback cb) noexcept;
-    virtual Window &set_cursor_position_callback(CursorPositionCallback cb) noexcept;
-    virtual Window &set_window_size_callback(WindowSizeCallback cb) noexcept;
-    virtual Window &set_key_callback(KeyCallback cb) noexcept;
-    virtual Window &set_scroll_callback(ScrollCallback cb) noexcept;
+    virtual GLWindow &set_mouse_callback(MouseButtonCallback cb) noexcept;
+    virtual GLWindow &set_cursor_position_callback(CursorPositionCallback cb) noexcept;
+    virtual GLWindow &set_window_size_callback(WindowSizeCallback cb) noexcept;
+    virtual GLWindow &set_key_callback(KeyCallback cb) noexcept;
+    virtual GLWindow &set_scroll_callback(ScrollCallback cb) noexcept;
     virtual void set_background(const std::array<uint8_t, 4u> *pixels, uint2 size) noexcept;
     virtual void set_background(const float4 *pixels, uint2 size) noexcept;
     void set_should_close() noexcept;
