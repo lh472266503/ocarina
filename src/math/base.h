@@ -8,6 +8,7 @@
 #include "core/concepts.h"
 #include "core/constants.h"
 #include "dsl/operators.h"
+#include "dsl/type_trait.h"
 
 namespace ocarina {
 
@@ -201,9 +202,14 @@ template<typename T, size_t N>
     }
 }
 
-template<typename T, size_t N>
-[[nodiscard]] constexpr auto abs_dot(Vector<T, N> u, Vector<T, N> v) noexcept {
+template<typename U, typename V>
+[[nodiscard]] constexpr auto abs_dot(const U &u, const V &v) noexcept {
     return abs(dot(u, v));
+}
+
+template<typename T>
+[[nodiscard]] constexpr T safe_sqrt(const T& t) noexcept {
+    return sqrt(max(0.f, t));
 }
 
 template<typename T, size_t N>

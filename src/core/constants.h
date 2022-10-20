@@ -20,6 +20,10 @@ constexpr float PiOver4 = 0.785398163397448309615660845819875721f;
 constexpr float InvPi = 1.f / Pi;
 /// 2/pi
 constexpr float _2OverPi = 2.f / Pi;
+/// 1 / (4 * pi)
+constexpr float Inv4Pi = 1 / (4 * Pi);
+/// 1 / (2 * pi)
+constexpr float Inv2Pi = 1 / (2 * Pi);
 /// sqrt(2)
 constexpr float Sqrt2 = 1.41421356237309504880168872420969808f;
 /// 1/sqrt(2)
