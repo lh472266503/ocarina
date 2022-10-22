@@ -34,15 +34,18 @@ Window &Window::set_scroll_callback(Window::ScrollCallback cb) noexcept {
     return *this;
 }
 
-void Window::run_one_frame(Window::UpdateCallback &&draw) noexcept {
+void Window::run_one_frame(Window::UpdateCallback &&draw, double dt) noexcept {
     _begin_frame();
-    draw(0);
+    draw(dt);
     _end_frame();
 }
 
 void Window::run(Window::UpdateCallback &&draw) noexcept {
+    double dt = 0;
     while (!should_close()) {
-        run_one_frame(OC_FORWARD(draw));
+        _clock.begin();
+        run_one_frame(OC_FORWARD(draw), dt);
+        dt = _clock.elapse_s();
     }
 }
 

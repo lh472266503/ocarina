@@ -265,18 +265,6 @@ void GLWindow::set_size(uint2 size) noexcept {
     }
 }
 
-void GLWindow::run_one_frame(GLWindow::UpdateCallback &&draw) noexcept  {
-    _begin_frame();
-    draw(0);
-    _end_frame();
-}
-
-void GLWindow::run(GLWindow::UpdateCallback &&draw) noexcept {
-    while (!should_close()) {
-        run_one_frame(std::move(draw));
-    }
-}
-
 }// namespace ocarina
 
 OC_EXPORT_API ocarina::GLWindow *create(const char *name, ocarina::uint2 initial_size, bool resizable) {

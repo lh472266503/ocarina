@@ -25,7 +25,7 @@ private:
 
 public:
     GLWindow(const char *name, uint2 initial_size, bool resizable = false) noexcept;
-    void init(const char *name, uint2 initial_size, bool resizable = false) noexcept override;
+    void init(const char *name, uint2 initial_size, bool resizable) noexcept override;
     GLWindow(GLWindow &&) noexcept = delete;
     GLWindow(const GLWindow &) noexcept = delete;
     GLWindow &operator=(GLWindow &&) noexcept = delete;
@@ -40,7 +40,5 @@ public:
     void set_background(const float4 *pixels) noexcept override;
     void set_should_close() noexcept override;
     void set_size(uint2 size) noexcept override;
-    void run(UpdateCallback &&draw) noexcept override;
-    void run_one_frame(UpdateCallback &&draw) noexcept override;
 };
 }// namespace ocarina

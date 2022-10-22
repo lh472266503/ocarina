@@ -6,6 +6,7 @@
 
 #include "core/stl.h"
 #include "core/basic_types.h"
+#include "core/util.h"
 
 namespace ocarina {
 class Window {
@@ -29,6 +30,7 @@ protected:
     ScrollCallback _scroll_callback;
     float4 _clear_color{make_float4(0, 0, 0, 0)};
     bool _resizable{false};
+    Clock _clock;
 
 protected:
     virtual void _begin_frame() noexcept = 0;
@@ -58,6 +60,9 @@ public:
     virtual void set_should_close() noexcept = 0;
     virtual void set_size(uint2 size) noexcept = 0;
     virtual void run(UpdateCallback &&draw) noexcept;
-    virtual void run_one_frame(UpdateCallback &&draw) noexcept;
+    virtual void run_one_frame(UpdateCallback &&draw, double dt) noexcept;
+    virtual void run_one_frame(UpdateCallback &&draw) noexcept {
+        run_one_frame(OC_FORWARD(draw), 0);
+    }
 };
 }
