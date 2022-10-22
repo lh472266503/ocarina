@@ -47,7 +47,7 @@ void dynamic_module_destroy(void *handle) noexcept {
 void *dynamic_module_find_symbol(void *handle, ocarina::string_view name_view) noexcept {
     static thread_local ocarina::string name;
     name = name_view;
-    OC_INFO_FORMAT("Loading dynamic symbol: {}.", name);
+    OC_DEBUG_FORMAT("Loading dynamic symbol: {}.", name);
     auto symbol = GetProcAddress(reinterpret_cast<HMODULE>(handle), name.c_str());
     if (symbol == nullptr) [[unlikely]] {
         OC_INFO_FORMAT("Failed to load symbol '{}', reason: {}.",

@@ -81,6 +81,7 @@ public:
 
     void begin() noexcept override {
         start();
+        OC_INFO_FORMAT("task {} start !", _tag.c_str());
     }
 
     void end() noexcept override {
@@ -98,7 +99,7 @@ private:
     T t;
 
 public:
-    Guard(T t) : t(t) {
+    explicit Guard(T t) : t(t) {
         t.begin();
     }
 

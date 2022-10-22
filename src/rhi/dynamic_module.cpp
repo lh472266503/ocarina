@@ -36,7 +36,7 @@ DynamicModule::DynamicModule(const string &name) noexcept {
     for (const auto &path : _search_path()) {
         _handle = dynamic_module_load(path / name);
         if (_handle) {
-            OC_INFO_FORMAT_WITH_LOCATION("load {} success", (path/ name).string());
+            OC_DEBUG_FORMAT_WITH_LOCATION("load {} success", (path/ name).string());
             return;
         }
     }
