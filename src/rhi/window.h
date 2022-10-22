@@ -50,7 +50,9 @@ public:
     virtual Window &set_key_callback(KeyCallback cb) noexcept;
     virtual Window &set_scroll_callback(ScrollCallback cb) noexcept;
     virtual void set_background(const std::array<uint8_t, 4u> *pixels, uint2 size) noexcept = 0;
+    virtual void set_background(const std::array<uint8_t, 4u> *pixels) noexcept = 0;
     virtual void set_background(const float4 *pixels, uint2 size) noexcept = 0;
+    virtual void set_background(const float4 *pixels) noexcept = 0;
     virtual void set_should_close() noexcept = 0;
     virtual void set_size(uint2 size) noexcept = 0;
     virtual void run(UpdateCallback &&draw) noexcept;

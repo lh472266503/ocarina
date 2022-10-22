@@ -208,9 +208,17 @@ void GLWindow::set_background(const std::array<uint8_t, 4u> *pixels, uint2 size)
     _texture->load(pixels, size);
 }
 
+void GLWindow::set_background(const std::array<uint8_t, 4u> *pixels) noexcept {
+    set_background(pixels, size());
+}
+
 void GLWindow::set_background(const float4 *pixels, uint2 size) noexcept {
     if (_texture == nullptr) { _texture = ocarina::make_unique<GLTexture>(); }
     _texture->load(pixels, size);
+}
+
+void GLWindow::set_background(const float4 *pixels) noexcept {
+    set_background(pixels, size());
 }
 
 void GLWindow::set_should_close() noexcept {
