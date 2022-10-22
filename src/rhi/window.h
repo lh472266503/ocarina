@@ -27,7 +27,8 @@ protected:
     WindowSizeCallback _window_size_callback;
     KeyCallback _key_callback;
     ScrollCallback _scroll_callback;
-    bool _resizable;
+    float4 _clear_color{make_float4(0, 0, 0, 0)};
+    bool _resizable{false};
 
 protected:
     virtual void _begin_frame() noexcept = 0;
@@ -51,6 +52,7 @@ public:
     virtual Window &set_scroll_callback(ScrollCallback cb) noexcept;
     virtual void set_background(const std::array<uint8_t, 4u> *pixels, uint2 size) noexcept = 0;
     virtual void set_background(const std::array<uint8_t, 4u> *pixels) noexcept = 0;
+    void set_clear_color(float4 color) noexcept { _clear_color = color; }
     virtual void set_background(const float4 *pixels, uint2 size) noexcept = 0;
     virtual void set_background(const float4 *pixels) noexcept = 0;
     virtual void set_should_close() noexcept = 0;

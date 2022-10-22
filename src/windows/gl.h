@@ -20,17 +20,17 @@ private:
     mutable ocarina::unique_ptr<GLTexture> _texture;
 
 private:
-    void _begin_frame() noexcept;
-    void _end_frame() noexcept;
+    void _begin_frame() noexcept override;
+    void _end_frame() noexcept override;
 
 public:
     GLWindow(const char *name, uint2 initial_size, bool resizable = false) noexcept;
-    void init(const char *name, uint2 initial_size, bool resizable = false) noexcept;
+    void init(const char *name, uint2 initial_size, bool resizable = false) noexcept override;
     GLWindow(GLWindow &&) noexcept = delete;
     GLWindow(const GLWindow &) noexcept = delete;
     GLWindow &operator=(GLWindow &&) noexcept = delete;
     GLWindow &operator=(const GLWindow &) noexcept = delete;
-    ~GLWindow() noexcept;
+    ~GLWindow() noexcept override;
     [[nodiscard]] uint2 size() const noexcept override;
     [[nodiscard]] bool should_close() const noexcept override;
     [[nodiscard]] auto handle() const noexcept { return _handle; }
