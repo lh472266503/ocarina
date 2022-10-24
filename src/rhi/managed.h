@@ -23,6 +23,10 @@ public:
         host_ty::reserve(size);
     }
 
+    explicit Managed(size_t size) {
+        host_ty::reserve(size);
+    }
+
     // Move constructor
     Managed(Managed &&other) noexcept
         : device_ty(std::move(other)),
@@ -42,7 +46,7 @@ public:
     void set_host(host_ty &&val) noexcept {host() = std::move(val);}
     [[nodiscard]] const T *operator->() const {return host_ty::data();}
     [[nodiscard]] T *operator->() {return host_ty::data();}
-    auto operator[](int i) { return host_ty::operator[](i);}
+    [[nodiscard]] auto operator[](int i) { return host_ty::operator[](i);}
 
     [[nodiscard]] BufferUploadCommand *upload() const noexcept {
         return device_ty::upload(host_ty::data());
