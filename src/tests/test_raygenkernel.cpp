@@ -104,7 +104,7 @@ int main(int argc, char *argv[]) {
 //        Var<Triangle> tri = t_buffer.read(3);
         Float4 pix = img.read<float4>(200,150);
         Float4 pix2 = img.read<float4>(200,150);
-        Float3 p = vert.read(0);
+        Float3 p = vert.read(1);
         Var f2 = make_float2(Var(7.f));
         print("{},{}----------{} {}", hit.prim_id, hit.inst_id, hit->bary.x, hit.bary.y);
         print("{}  {}  {}  {} {}", tri.i, f2.x, f2.y, p.x, p.y);
@@ -112,6 +112,8 @@ int main(int argc, char *argv[]) {
     auto shader = device.compile(kernel);
     stream << shader(t_buffer, accel, image,triangle[0]).dispatch(1);
     stream << synchronize() << commit();
+
+    cout << vert[0].x << endl;
 
     return 0;
 }

@@ -35,9 +35,14 @@ public:
         return *this;
     }
 
-    void set_host(host_ty &&val) noexcept {
-        host() = std::move(val);
-    }
+    [[nodiscard]] device_ty &device() noexcept { return *this; }
+    [[nodiscard]] const device_ty &device() const noexcept { return *this; }
+    [[nodiscard]] host_ty &host() noexcept { return *this; }
+    [[nodiscard]] const host_ty &host() const noexcept { return *this; }
+    void set_host(host_ty &&val) noexcept {host() = std::move(val);}
+    [[nodiscard]] const T *operator->() const {return host_ty::data();}
+    [[nodiscard]] T *operator->() {return host_ty::data();}
+    auto operator[](int i) { return host_ty::operator[](i);}
 
     [[nodiscard]] BufferUploadCommand *upload() const noexcept {
         return device_ty::upload(host_ty::data());
@@ -63,10 +68,6 @@ public:
         return device_ty::download_sync(host_ty::data());
     }
 
-    [[nodiscard]] device_ty &device() noexcept { return *this; }
-    [[nodiscard]] const device_ty &device() const noexcept { return *this; }
-    [[nodiscard]] host_ty &host() noexcept { return *this; }
-    [[nodiscard]] const host_ty &host() const noexcept { return *this; }
 };
 
 }// namespace ocarina
