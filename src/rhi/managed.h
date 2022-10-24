@@ -43,10 +43,16 @@ public:
     [[nodiscard]] const device_ty &device() const noexcept { return *this; }
     [[nodiscard]] host_ty &host() noexcept { return *this; }
     [[nodiscard]] const host_ty &host() const noexcept { return *this; }
-    void set_host(host_ty &&val) noexcept { host() = std::move(val); }
+    void set_host(host_ty val) noexcept { host() = std::move(val); }
     [[nodiscard]] const T *operator->() const { return host_ty::data(); }
     [[nodiscard]] T *operator->() { return host_ty::data(); }
     [[nodiscard]] auto operator[](int i) { return host_ty::operator[](i); }
+
+    template<typename V>
+    requires concepts::iterable<V>
+    void append(V &&v) {
+        host_ty::insert(host_ty::cend(), v.cbegin(), v.cend());
+    }
 
     void reset_device_buffer(Device &d, size_t num = 0) {
         num = num == 0 ? host_ty ::size() : num;
