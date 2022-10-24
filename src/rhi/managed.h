@@ -47,7 +47,12 @@ public:
     [[nodiscard]] const T *operator->() const { return host_ty::data(); }
     [[nodiscard]] T *operator->() { return host_ty::data(); }
     [[nodiscard]] auto operator[](int i) { return host_ty::operator[](i); }
-    void reset_device_buffer(Device &d, size_t num) { device() = d.create_buffer<T>(num); }
+
+    void reset_device_buffer(Device &d, size_t num = 0) {
+        num = num == 0 ? host_ty ::size() : num;
+        OC_ASSERT(num != 0 && num == host_ty ::size());
+        device() = d.create_buffer<T>(num);
+    }
 
     [[nodiscard]] BufferUploadCommand *upload() const noexcept {
         return device_ty::upload(host_ty::data());
