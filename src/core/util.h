@@ -81,10 +81,12 @@ public:
 
     void begin() noexcept override {
         start();
+        if (_tag.empty()) { return; }
         OC_INFO_FORMAT("task {} start !", _tag.c_str());
     }
 
     void end() noexcept override {
+        if (_tag.empty()) { return; }
         if (elapse_ms() < 1000) {
             OC_INFO_FORMAT("task {} is take {} ms", _tag.c_str(), elapse_ms());
         } else {

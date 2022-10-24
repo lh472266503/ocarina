@@ -43,10 +43,11 @@ public:
     [[nodiscard]] const device_ty &device() const noexcept { return *this; }
     [[nodiscard]] host_ty &host() noexcept { return *this; }
     [[nodiscard]] const host_ty &host() const noexcept { return *this; }
-    void set_host(host_ty &&val) noexcept {host() = std::move(val);}
-    [[nodiscard]] const T *operator->() const {return host_ty::data();}
-    [[nodiscard]] T *operator->() {return host_ty::data();}
-    [[nodiscard]] auto operator[](int i) { return host_ty::operator[](i);}
+    void set_host(host_ty &&val) noexcept { host() = std::move(val); }
+    [[nodiscard]] const T *operator->() const { return host_ty::data(); }
+    [[nodiscard]] T *operator->() { return host_ty::data(); }
+    [[nodiscard]] auto operator[](int i) { return host_ty::operator[](i); }
+    void reset_device_buffer(Device &d, size_t num) { device() = d.create_buffer<T>(num); }
 
     [[nodiscard]] BufferUploadCommand *upload() const noexcept {
         return device_ty::upload(host_ty::data());
