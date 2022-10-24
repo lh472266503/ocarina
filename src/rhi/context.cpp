@@ -124,11 +124,11 @@ Device Context::create_device(const string &backend_name) noexcept {
     return Device{Device::Handle{create_device(this), destroy_func}};
 }
 
-Window::Handle Context::create_window(const char *name, uint2 initial_size, const char *type, bool resizable) {
+Window::Wrapper Context::create_window(const char *name, uint2 initial_size, const char *type, bool resizable) {
     auto d = obtain_module(dynamic_module_name(detail::window_name(type)));
     auto create_window = reinterpret_cast<Window::Creator *>(d->function_ptr("create"));
     auto destroy_func = reinterpret_cast<Window::Deleter *>(d->function_ptr("destroy"));
-    return Window::Handle(create_window(name, initial_size, resizable), destroy_func);
+    return Window::Wrapper(create_window(name, initial_size, resizable), destroy_func);
 }
 
 }// namespace ocarina

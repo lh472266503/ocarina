@@ -20,7 +20,7 @@ public:
 
     using Creator = Window *(const char *name, uint2 initial_size, bool resizable);
     using Deleter = void(Window *);
-    using Handle = ocarina::unique_ptr<Window, Deleter *>;
+    using Wrapper = ocarina::unique_ptr<Window, Deleter *>;
 
 protected:
     MouseButtonCallback _mouse_button_callback;
