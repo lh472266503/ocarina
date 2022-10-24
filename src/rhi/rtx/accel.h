@@ -22,6 +22,8 @@ public:
     };
 
 public:
+    Accel() = default;
+
     explicit Accel(Device::Impl *device)
         : RHIResource(device, Tag::ACCEL, device->create_accel()) {}
 
