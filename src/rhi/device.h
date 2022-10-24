@@ -19,6 +19,9 @@ template<typename T>
 class Buffer;
 
 template<typename T>
+class Managed;
+
+template<typename T>
 class Shader;
 
 class Stream;
@@ -71,10 +74,17 @@ private:
 public:
     explicit Device(Handle impl) : _impl(std::move(impl)) {}
     [[nodiscard]] Context *context() const noexcept { return _impl->_context; }
+
     template<typename T = std::byte>
     [[nodiscard]] Buffer<T> create_buffer(size_t size) noexcept {
         return Buffer<T>(_impl.get(), size);
     }
+
+    template<typename T = std::byte>
+    [[nodiscard]] Managed<T> create_managed(size_t size) noexcept {
+        return Managed<T>(_impl.get(), size);
+    }
+
     template<typename VBuffer, typename TBuffer>
     [[nodiscard]] Mesh create_mesh(const VBuffer &v_buffer,
                                    const TBuffer &t_buffer,

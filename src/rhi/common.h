@@ -11,6 +11,7 @@
 #include "resources/shader.h"
 #include "resources/buffer.h"
 #include "resources/image.h"
+#include "managed.h"
 #include "rtx/mesh.h"
 #include "rtx/accel.h"
 #include "context.h"

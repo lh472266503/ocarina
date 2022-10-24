@@ -62,12 +62,17 @@ int main(int argc, char *argv[]) {
     obj_reader_config.vertex_color = false;
     auto [vertices, triangle] = get_cube();
 
-    Buffer v_buffer = device.create_buffer<float3>(vertices.size());
+    auto vert = device.create_managed<float3>(vertices.size());
+
+    vert.host() = std::move(vertices);
+
+    Buffer v_buffer = device.create_buffer<float3>(vert.host().size());
     Buffer t_buffer = device.create_buffer<Triangle>(triangle.size());
 
-    Mesh cube = device.create_mesh(v_buffer.view(), t_buffer.view());
+    Mesh cube = device.create_mesh(vert.device(), t_buffer);
 
-    stream << v_buffer.upload_sync(vertices.data());
+    stream << vert.upload_sync();
+    stream << v_buffer.upload_sync(vert.host().data());
     stream << t_buffer.upload_sync(triangle.data());
 
     auto path1 = R"(E:/work/compile/ocarina/res/test.png)";
@@ -97,11 +102,12 @@ int main(int argc, char *argv[]) {
         //        Float3 org = r->origin();
         Float3 pos = r->direction();
 //        Var<Triangle> tri = t_buffer.read(3);
-Float4 pix = img.read<float4>(200,150);
+        Float4 pix = img.read<float4>(200,150);
         Float4 pix2 = img.read<float4>(200,150);
+        Float3 p = vert.read(0);
         Var f2 = make_float2(Var(7.f));
         print("{},{}----------{} {}", hit.prim_id, hit.inst_id, hit->bary.x, hit.bary.y);
-        print("{}  {}  {}  {} {}", tri.i, f2.x, f2.y, pix.x, pix.x);
+        print("{}  {}  {}  {} {}", tri.i, f2.x, f2.y, p.x, p.y);
     };
     auto shader = device.compile(kernel);
     stream << shader(t_buffer, accel, image,triangle[0]).dispatch(1);
