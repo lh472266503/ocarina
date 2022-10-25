@@ -77,7 +77,7 @@ public:
           _size(buffer_view.size()) {}
 
     [[nodiscard]] BufferView<T> view(size_t offset = 0, size_t size = 0) const noexcept {
-        size = size == 0 ? _size : size;
+        size = size == 0 ? _size - offset : size;
         return BufferView<T>(_handle, offset, size, _size);
     }
 
