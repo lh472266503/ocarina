@@ -115,6 +115,7 @@ using std::pow;
 using std::sqrt;
 using std::sin;
 using std::cos;
+using std::tan;
 using std::asin;
 using std::acos;
 using std::atan;
