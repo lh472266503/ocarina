@@ -19,6 +19,7 @@ public:
     };
 
 public:
+    Mesh() = default;
     Mesh(Device::Impl *device, const MeshParams &params)
         : RHIResource(device, Tag::MESH,
                       device->create_mesh(params)) {}
