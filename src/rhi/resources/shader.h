@@ -143,8 +143,8 @@ public:
             return ShaderDispatchCommand::create(*_function, handle(), _argument_list.ptr(), make_uint3(x, y, z));
         }
     }
-    [[nodiscard]] ShaderDispatchCommand *dispatch(uint2 dim) { return dispatch(dim.x, dim.y, 1); }
-    [[nodiscard]] ShaderDispatchCommand *dispatch(uint3 dim) { return dispatch(dim.x, dim.y, dim.z); }
+    [[nodiscard]] ShaderDispatchCommand *dispatch(uint2 dim) const noexcept { return dispatch(dim.x, dim.y, 1); }
+    [[nodiscard]] ShaderDispatchCommand *dispatch(uint3 dim) const noexcept { return dispatch(dim.x, dim.y, dim.z); }
     [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(_handle); }
     [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
     [[nodiscard]] ShaderTag shader_tag() const noexcept { return _shader_tag; }

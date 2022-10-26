@@ -182,6 +182,7 @@ auto create(Func &&func, ocarina::index_sequence<i...>) {
 class FuncWrapper : public concepts::Noncopyable {
 protected:
     ocarina::unique_ptr<Function> _function;
+    FuncWrapper() = default;
     explicit FuncWrapper(ocarina::unique_ptr<Function> f) : _function(std::move(f)) {}
 
 public:
@@ -257,6 +258,7 @@ private:
     using signature = typename detail::canonical_signature_t<void(Args...)>;
 
 public:
+    Kernel() = default;
     template<typename Func>
     Kernel(Func &&func) noexcept
         : FuncWrapper(std::move(Function::define_kernel([&] {
