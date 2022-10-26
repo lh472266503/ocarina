@@ -41,11 +41,10 @@ void Window::run_one_frame(Window::UpdateCallback &&draw, double dt) noexcept {
 }
 
 void Window::run(Window::UpdateCallback &&draw) noexcept {
-    double dt = 0;
     while (!should_close()) {
         _clock.begin();
-        run_one_frame(OC_FORWARD(draw), dt);
-        dt = _clock.elapse_s();
+        run_one_frame(OC_FORWARD(draw), _dt);
+        _dt = _clock.elapse_s();
     }
 }
 

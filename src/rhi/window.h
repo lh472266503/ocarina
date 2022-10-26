@@ -31,6 +31,7 @@ protected:
     float4 _clear_color{make_float4(0, 0, 0, 0)};
     bool _resizable{false};
     Clock _clock;
+    double _dt{};
 
 protected:
     virtual void _begin_frame() noexcept = 0;
@@ -44,6 +45,7 @@ public:
     Window &operator=(Window &&) noexcept = delete;
     Window &operator=(const Window &) noexcept = delete;
     virtual ~Window() noexcept = default;
+    [[nodiscard]] double dt() const noexcept { return _dt; }
     [[nodiscard]] virtual uint2 size() const noexcept = 0;
     [[nodiscard]] virtual bool should_close() const noexcept = 0;
     [[nodiscard]] explicit operator bool() const noexcept { return !should_close(); }
