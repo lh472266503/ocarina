@@ -39,7 +39,7 @@ private:
     static constexpr auto Size = 200;
     ocarina::vector<void *> _args;
     ocarina::array<std::byte, Size> _argument_data{};
-    const Function &_function;
+    const Function *_function{};
     size_t _cursor{};
     ocarina::vector<MemoryBlock> _params;
 
@@ -67,7 +67,7 @@ private:
     }
 
 public:
-    explicit ArgumentList(const Function &f) : _function(f){}
+    explicit ArgumentList(const Function *f = nullptr) : _function(f) {}
     [[nodiscard]] span<void *> ptr() noexcept { return _args; }
     [[nodiscard]] size_t num() const noexcept { return _args.size(); }
     void clear() noexcept {
@@ -77,7 +77,7 @@ public:
     }
 
     void push_memory_block(const MemoryBlock &block) noexcept {
-        if (_function.is_raytracing()) {
+        if (_function->is_raytracing()) {
             add_param(block);
         } else {
             _args.push_back(const_cast<void *>(block.address));
@@ -125,21 +125,22 @@ public:
 
 private:
     ShaderTag _shader_tag;
-    const Function &_function;
+    const Function *_function;
     ArgumentList _argument_list{_function};
 
 public:
+    Shader() = default;
     Shader(Device::Impl *device, const Function &function, ShaderTag tag) noexcept
         : RHIResource(device, SHADER,
                       device->create_shader(function)),
-          _shader_tag(tag), _function(function) {}
+          _shader_tag(tag), _function(&function), _argument_list(_function) {}
 
     [[nodiscard]] ShaderDispatchCommand *dispatch(uint x, uint y = 1, uint z = 1) {
-        if (_function.is_raytracing()) {
-            return ShaderDispatchCommand::create(_function, handle(), _argument_list.params(), make_uint3(x, y, z));
+        if (_function->is_raytracing()) {
+            return ShaderDispatchCommand::create(*_function, handle(), _argument_list.params(), make_uint3(x, y, z));
         } else {
             _argument_list << make_uint3(x, y, z);
-            return ShaderDispatchCommand::create(_function, handle(), _argument_list.ptr(), make_uint3(x, y, z));
+            return ShaderDispatchCommand::create(*_function, handle(), _argument_list.ptr(), make_uint3(x, y, z));
         }
     }
     [[nodiscard]] ShaderDispatchCommand *dispatch(uint2 dim) { return dispatch(dim.x, dim.y, 1); }
@@ -148,12 +149,12 @@ public:
     [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
     [[nodiscard]] ShaderTag shader_tag() const noexcept { return _shader_tag; }
     void compute_fit_size() noexcept { impl()->compute_fit_size(); }
-
+    [[nodiscard]] bool valid() const noexcept { return _function != nullptr; }
     Shader &operator()(prototype_to_shader_invocation_t<Args> &&...args) noexcept {
         _argument_list.clear();
         (_argument_list << ... << OC_FORWARD(args));
 
-        for (const auto &uniform : _function.uniform_vars()) {
+        for (const auto &uniform : _function->uniform_vars()) {
             _argument_list.push_memory_block(uniform.block());
         }
         return *this;
