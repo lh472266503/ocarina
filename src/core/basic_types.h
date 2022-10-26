@@ -361,14 +361,14 @@ OC_MAKE_VECTOR_ASSIGN_OPERATOR(^=, ocarina::is_integral_v<T>)
         operator op(T lhs, ocarina::Vector<U, N> rhs) noexcept {             \
         return ocarina::Vector<T, N>{lhs} op rhs;                            \
     }
-OC_MAKE_VECTOR_LOGIC_OPERATOR(||, ocarina::is_boolean_v<T>)
-OC_MAKE_VECTOR_LOGIC_OPERATOR(&&, ocarina::is_boolean_v<T>)
-OC_MAKE_VECTOR_LOGIC_OPERATOR(==, true)
-OC_MAKE_VECTOR_LOGIC_OPERATOR(!=, true)
-OC_MAKE_VECTOR_LOGIC_OPERATOR(<, ocarina::is_number_v<T>)
-OC_MAKE_VECTOR_LOGIC_OPERATOR(>, ocarina::is_number_v<T>)
-OC_MAKE_VECTOR_LOGIC_OPERATOR(<=, ocarina::is_number_v<T>)
-OC_MAKE_VECTOR_LOGIC_OPERATOR(>=, ocarina::is_number_v<T>)
+OC_MAKE_VECTOR_LOGIC_OPERATOR(||, ocarina::is_all_boolean_v<T, U>)
+OC_MAKE_VECTOR_LOGIC_OPERATOR(&&, ocarina::is_all_boolean_v<T, U>)
+OC_MAKE_VECTOR_LOGIC_OPERATOR(==, ocarina::is_all_number_v<T, U>)
+OC_MAKE_VECTOR_LOGIC_OPERATOR(!=, ocarina::is_all_number_v<T, U>)
+OC_MAKE_VECTOR_LOGIC_OPERATOR(<, ocarina::is_all_number_v<T, U>)
+OC_MAKE_VECTOR_LOGIC_OPERATOR(>, ocarina::is_all_number_v<T, U>)
+OC_MAKE_VECTOR_LOGIC_OPERATOR(<=, ocarina::is_all_number_v<T, U>)
+OC_MAKE_VECTOR_LOGIC_OPERATOR(>=, ocarina::is_all_number_v<T, U>)
 
 #undef OC_MAKE_VECTOR_LOGIC_OPERATOR
 

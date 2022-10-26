@@ -105,6 +105,19 @@ using is_number = std::disjunction<is_integral<T>,
 template<typename T>
 constexpr auto is_number_v = is_number<T>::value;
 
+#define MAKE_ALL_TYPE_TRAITS(type)                           \
+    template<typename... T>                                  \
+    using is_all_##type = std::disjunction<is_##type<T>...>; \
+    OC_DEFINE_TEMPLATE_VALUE_MULTI(is_all_##type)
+
+MAKE_ALL_TYPE_TRAITS(scalar)
+MAKE_ALL_TYPE_TRAITS(number)
+MAKE_ALL_TYPE_TRAITS(integral)
+MAKE_ALL_TYPE_TRAITS(floating_point)
+MAKE_ALL_TYPE_TRAITS(boolean)
+
+#undef MAKE_ALL_TYPE_TRAITS
+
 template<typename T, size_t N>
 struct Vector;
 
