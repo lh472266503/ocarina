@@ -124,8 +124,8 @@ public:
     using Impl = typename Shader<>::Impl;
 
 private:
-    ShaderTag _shader_tag;
-    const Function *_function;
+    ShaderTag _shader_tag{};
+    const Function *_function{};
     ArgumentList _argument_list{_function};
 
 public:
