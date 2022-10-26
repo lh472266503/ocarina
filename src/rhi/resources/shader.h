@@ -106,16 +106,16 @@ public:
 };
 
 template<typename T = int>
-class Shader {
-    static_assert(std::is_same_v<T, int>);
+    class Shader {
+        static_assert(std::is_same_v<T, int>);
 
-public:
-    class Impl {
     public:
-        virtual void launch(handle_ty stream, ShaderDispatchCommand *cmd) noexcept = 0;
-        virtual void compute_fit_size() noexcept {};
+        class Impl {
+        public:
+            virtual void launch(handle_ty stream, ShaderDispatchCommand *cmd) noexcept = 0;
+            virtual void compute_fit_size() noexcept {};
+        };
     };
-};
 
 template<typename... Args>
 class Shader<void(Args...)> final : public RHIResource {
@@ -126,16 +126,16 @@ public:
 private:
     ShaderTag _shader_tag{};
     const Function *_function{};
-    ArgumentList _argument_list{_function};
+    mutable ArgumentList _argument_list{_function};
 
 public:
     Shader() = default;
     Shader(Device::Impl *device, const Function &function, ShaderTag tag) noexcept
-        : RHIResource(device, SHADER,
-                      device->create_shader(function)),
-          _shader_tag(tag), _function(&function), _argument_list(_function) {}
+    : RHIResource(device, SHADER,
+                  device->create_shader(function)),
+                  _shader_tag(tag), _function(&function), _argument_list(_function) {}
 
-    [[nodiscard]] ShaderDispatchCommand *dispatch(uint x, uint y = 1, uint z = 1) {
+    [[nodiscard]] ShaderDispatchCommand *dispatch(uint x, uint y = 1, uint z = 1) const noexcept  {
         if (_function->is_raytracing()) {
             return ShaderDispatchCommand::create(*_function, handle(), _argument_list.params(), make_uint3(x, y, z));
         } else {
@@ -150,7 +150,7 @@ public:
     [[nodiscard]] ShaderTag shader_tag() const noexcept { return _shader_tag; }
     void compute_fit_size() noexcept { impl()->compute_fit_size(); }
     [[nodiscard]] bool valid() const noexcept { return _function != nullptr; }
-    Shader &operator()(prototype_to_shader_invocation_t<Args> &&...args) noexcept {
+    [[nodiscard]] const Shader &operator()(prototype_to_shader_invocation_t<Args> &&...args) const noexcept {
         _argument_list.clear();
         (_argument_list << ... << OC_FORWARD(args));
 
