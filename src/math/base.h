@@ -68,6 +68,16 @@ OC_NODISCARD constexpr auto sqr(const T &v) {
     return v * v;
 }
 
+template<typename T>
+OC_NODISCARD auto is_zero(const T &v) noexcept {
+    return all(v == T(0));
+}
+
+template<typename T>
+OC_NODISCARD auto nonzero(const T&v) noexcept {
+    return any(v != T(0));
+}
+
 #define MAKE_VECTOR_UNARY_FUNC(func)                              \
     template<typename T>                                          \
     requires is_vector_v<T>                                       \
