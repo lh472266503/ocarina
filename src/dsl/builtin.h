@@ -97,9 +97,10 @@ requires(is_dsl_v<T>)
     requires(is_dsl_v<T> && is_vector_v<expr_value_t<T>>)                          \
         OC_NODISCARD auto                                                          \
         func(const T &t) noexcept {                                                \
+        using ret_type = decltype(func(std::declval<expr_value_t<T>>()));          \
         auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(), \
                                                       CallOp::tag, {OC_EXPR(t)});  \
-        return make_expr<expr_value_t<T>>(expr);                                   \
+        return make_expr<ret_type>(expr);                                          \
     }
 
 OC_MAKE_UNARY_VECTOR_FUNC(normalize, NORMALIZE)

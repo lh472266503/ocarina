@@ -88,6 +88,10 @@ struct Var : public Computable<T> {
     void operator=(Arg &&arg) {
         ocarina::detail::assign(*this, std::forward<Arg>(arg));
     }
+
+    void operator=(const Var &other) {
+        ocarina::detail::assign(*this, other);
+    }
 };
 
 template<typename T>
