@@ -90,7 +90,7 @@ int main(int argc, char *argv[]) {
 
     Callable callable = func<Var<int>>;
 
-    Callable add = [&](Var<int> a, Var<int> b, Var<int>) {
+    Callable add = [&](Var<int> a, Var<int> b, Var<int>) noexcept {
         a = a + b;
         print("{}, {}---",a, 1.f);
         return a;

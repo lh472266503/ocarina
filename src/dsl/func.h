@@ -64,14 +64,22 @@ using function_signature = R(Args...);
 template<typename T>
 struct canonical_signature;
 
-template<typename Ret, typename... Args>
-struct canonical_signature<Ret(Args...)> {
-    using type = function_signature<Ret, Args...>;
-};
+#define OC_MAKE_FUNC_SIGNATURE(...)                        \
+    template<typename Ret, typename... Args>               \
+    struct canonical_signature<Ret(Args...) __VA_ARGS__> { \
+        using type = function_signature<Ret, Args...>;     \
+    };
+OC_MAKE_FUNC_SIGNATURE()
+OC_MAKE_FUNC_SIGNATURE(noexcept)
+#undef OC_MAKE_FUNC_SIGNATURE
 
-template<typename Ret, typename... Args>
-struct canonical_signature<Ret (*)(Args...)>
-    : canonical_signature<Ret(Args...)> {};
+#define OC_MAKE_FUNC_PTR_SIGNATURE(...)                      \
+    template<typename Ret, typename... Args>                 \
+    struct canonical_signature<Ret (*)(Args...) __VA_ARGS__> \
+        : canonical_signature<Ret(Args...)> {};
+OC_MAKE_FUNC_PTR_SIGNATURE()
+OC_MAKE_FUNC_PTR_SIGNATURE(noexcept)
+#undef OC_MAKE_FUNC_PTR_SIGNATURE
 
 template<typename F>
 struct canonical_signature
