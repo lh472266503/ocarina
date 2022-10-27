@@ -374,13 +374,24 @@ noexcept {
 }
 
 template<typename Pos, typename Normal>
-requires(is_all_float_vector3_v<expr_value_t<Pos>, expr_value_t<Normal>> && any_dsl_v<Pos, Normal>)
-OC_NODISCARD Var<float3> offset_ray_origin(const Pos &p_in, const Normal &n_in) noexcept {
+requires(is_all_float_vector3_v<expr_value_t<Pos>, expr_value_t<Normal>> &&any_dsl_v<Pos, Normal>)
+    OC_NODISCARD Var<float3> offset_ray_origin(const Pos &p_in, const Normal &n_in)
+noexcept {
     auto expr = Function::current()->call_builtin(Type::of<float3>(), CallOp::RAY_OFFSET_ORIGIN,
                                                   {OC_EXPR(p_in), OC_EXPR(n_in)});
     return make_expr<float3>(expr);
 }
 
 #undef OC_MAKE_MATRIX
+
+template<typename T>
+OC_NODISCARD auto is_zero(const T &v) noexcept {
+    return all(v == expr_value_t<T>(0));
+}
+
+template<typename T>
+OC_NODISCARD auto nonzero(const T &v) noexcept {
+    return any(v != expr_value_t<T>(0));
+}
 
 }// namespace ocarina
