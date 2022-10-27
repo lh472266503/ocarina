@@ -33,15 +33,28 @@ select(Vector<bool, N> pred, Vector<T, N> t, Vector<T, N> f) noexcept {
 }
 
 template<typename T>
+requires std::is_unsigned_v<T> &&(sizeof(T) == 4u || sizeof(T) == 8u)
+    [[nodiscard]] constexpr auto next_pow2(T v) noexcept {
+    v--;
+    v |= v >> 1u;
+    v |= v >> 2u;
+    v |= v >> 4u;
+    v |= v >> 8u;
+    v |= v >> 16u;
+    if constexpr (sizeof(T) == 8u) { v |= v >> 32u; }
+    return v + 1u;
+}
+
+template<typename T>
 requires is_scalar_v<T>
-OC_NODISCARD constexpr T sign(T val) {
+    OC_NODISCARD constexpr T sign(T val) {
     return select(val >= 0, T(1), T(-1));
 }
 
 template<typename T>
 requires is_scalar_v<T>
-OC_NODISCARD constexpr auto
-radians(const T &deg) noexcept {
+    OC_NODISCARD constexpr auto
+    radians(const T &deg) noexcept {
     return deg * (constants::Pi / 180.0f);
 }
 
