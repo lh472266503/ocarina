@@ -82,7 +82,7 @@ public:
     [[nodiscard]] auto handle() const noexcept { return _handle; }
     [[nodiscard]] auto size() const noexcept { return _size; }
 
-    void load(const std::array<uint8_t, 4u> *pixels, uint2 size) noexcept {
+    void load(const uchar4 *pixels, uint2 size) noexcept {
         CHECK_GL(glBindTexture(GL_TEXTURE_2D, _handle));
         if (any(_size != size) || _is_float4) {
             _size = size;
@@ -203,12 +203,12 @@ bool GLWindow::should_close() const noexcept {
     return glfwWindowShouldClose(_handle);
 }
 
-void GLWindow::set_background(const std::array<uint8_t, 4u> *pixels, uint2 size) noexcept {
+void GLWindow::set_background(const uchar4 *pixels, uint2 size) noexcept {
     if (_texture == nullptr) { _texture = ocarina::make_unique<GLTexture>(); }
     _texture->load(pixels, size);
 }
 
-void GLWindow::set_background(const std::array<uint8_t, 4u> *pixels) noexcept {
+void GLWindow::set_background(const uchar4 *pixels) noexcept {
     set_background(pixels, size());
 }
 
