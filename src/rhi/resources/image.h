@@ -27,6 +27,7 @@ public:
     };
 
 public:
+    Image() = default;
     explicit Image(Device::Impl *device, uint2 res,
                         PixelStorage pixel_storage)
         : RHIResource(device, Tag::TEXTURE,
@@ -102,6 +103,14 @@ public:
     }
     [[nodiscard]] ImageDownloadCommand *download_sync(void *data) const noexcept {
         return ImageDownloadCommand::create(data, array_handle(), resolution(), pixel_storage(), false);
+    }
+
+    void upload_immediately(const void *data) const noexcept {
+        upload_sync(data)->accept(*_device->command_visitor());
+    }
+
+    void download_immediately(void *data) const noexcept {
+        download_sync(data)->accept(*_device->command_visitor());
     }
 };
 
