@@ -232,6 +232,7 @@ template<typename T>
 using vector_element = detail::vector_element_impl<std::remove_cvref_t<T>>;
 OC_DEFINE_TEMPLATE_TYPE(vector_element)
 
+//todo clear up the trait
 template<typename T, size_t N = 0u>
 using is_vector = detail::is_vector_impl<std::remove_cvref_t<T>, N>;
 
