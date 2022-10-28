@@ -105,6 +105,8 @@ using std::shared_ptr;
 using std::static_pointer_cast;
 using std::unique_ptr;
 using std::weak_ptr;
+using UP = unique_ptr;
+using SP = shared_ptr;
 
 // math
 using std::abs;
