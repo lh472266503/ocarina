@@ -124,6 +124,7 @@ using std::tan;
 using std::asin;
 using std::acos;
 using std::atan;
+using std::floor;
 
 inline void oc_memcpy(void *dst, const void *src, size_t size) {
 #ifdef _MSC_VER

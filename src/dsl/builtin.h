@@ -203,13 +203,23 @@ OC_MAKE_FLOATING_BUILTIN_FUNC(saturate, SATURATE)
 
 #define OC_MAKE_BINARY_BUILTIN_FUNC(func, tag)                                                             \
     template<typename A, typename B>                                                                       \
-    requires(is_basic_v<expr_value_t<A>> &&                                                                \
+    requires(any_dsl_v<A, B> &&                                                                            \
+             is_basic_v<expr_value_t<A>> &&                                                                \
              is_basic_v<expr_value_t<B>> &&                                                                \
              is_same_expr_v<A, B>)                                                                         \
         OC_NODISCARD auto                                                                                  \
         func(const A &a, const B &b) noexcept {                                                            \
         using ret_type = decltype(func(std::declval<expr_value_t<A>>(), std::declval<expr_value_t<B>>())); \
         auto expr = Function::current()->call_builtin(Type::of<expr_value_t<A>>(),                         \
+                                                      CallOp::tag, {OC_EXPR(a), OC_EXPR(b)});              \
+        return make_expr<expr_value_t<ret_type>>(expr);                                                    \
+    }                                                                                                      \
+    template<typename T>                                                                                   \
+    requires(is_dsl_v<T>)                                                                                  \
+        OC_NODISCARD auto                                                                                  \
+        func(const T &a, const T &b) noexcept {                                                            \
+        using ret_type = decltype(func(std::declval<expr_value_t<T>>(), std::declval<expr_value_t<T>>())); \
+        auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),                         \
                                                       CallOp::tag, {OC_EXPR(a), OC_EXPR(b)});              \
         return make_expr<expr_value_t<ret_type>>(expr);                                                    \
     }
