@@ -280,16 +280,29 @@ template<typename T, typename F2>
 
 template<typename T>
 [[nodiscard]] T srgb_to_linear(T S) {
-    return select((S < T(0.04045f)),
-                  (S / T(12.92f)),
+    using raw_ty = expr_value_t<T>;
+    return select((S < raw_ty(0.04045f)),
+                  (S / raw_ty(12.92f)),
                   (pow((S + 0.055f) * 1.f / 1.055f, 2.4f)));
 }
 
 template<typename T>
 [[nodiscard]] T linear_to_srgb(T L) {
-    return select((L < T(0.0031308f)),
-                  (L * T(12.92f)),
-                  (T(1.055f) * pow(L, T(1.0f / 2.4f)) - T(0.055f)));
+    using raw_ty = expr_value_t<T>;
+    return select((L < raw_ty(0.0031308f)),
+                  (L * raw_ty(12.92f)),
+                  (raw_ty(1.055f) * pow(L, raw_ty(1.0f / 2.4f)) - raw_ty(0.055f)));
+}
+
+
+template<typename T>
+OC_NODISCARD auto is_zero(const T &v) noexcept {
+    return all(v == expr_value_t<T>(0));
+}
+
+template<typename T>
+OC_NODISCARD auto nonzero(const T &v) noexcept {
+    return any(v != expr_value_t<T>(0));
 }
 
 [[nodiscard]] inline uint32_t make_8bit(const float f) {

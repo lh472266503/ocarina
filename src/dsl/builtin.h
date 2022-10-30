@@ -396,14 +396,4 @@ noexcept {
 
 #undef OC_MAKE_MATRIX
 
-template<typename T>
-OC_NODISCARD auto is_zero(const T &v) noexcept {
-    return all(v == expr_value_t<T>(0));
-}
-
-template<typename T>
-OC_NODISCARD auto nonzero(const T &v) noexcept {
-    return any(v != expr_value_t<T>(0));
-}
-
 }// namespace ocarina
