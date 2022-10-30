@@ -42,8 +42,8 @@ OC_MAKE_LOGIC_FUNC(none, NONE)
 #undef OC_MAKE_LOGIC_FUNC
 
 template<typename U, typename T, typename F>
-requires(any_dsl_v<U, T, F> &&
-             vector_dimension_v<expr_value_t<T>> == vector_dimension_v<expr_value_t<T>>)
+requires(any_dsl_v<U, T, F> && std::is_same_v<expr_value_t<T>, expr_value_t<F>> &&
+             vector_dimension_v<expr_value_t<T>> == vector_dimension_v<expr_value_t<F>>)
     OC_NODISCARD auto select(U &&pred, T &&t, F &&f) noexcept {
     auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
                                                   CallOp::SELECT,

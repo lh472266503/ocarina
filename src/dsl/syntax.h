@@ -126,6 +126,7 @@ public:
         : _case_stmt(stmt) {}
 
     template<typename CaseExpr>
+    requires concepts::integral<CaseExpr>
     [[nodiscard]] static CaseStmtBuilder create(CaseExpr &&case_expr) noexcept {
         CaseStmtBuilder builder(Function::current()->switch_case(extract_expression(std::forward<CaseExpr>(case_expr))));
         return builder;
