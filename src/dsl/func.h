@@ -224,6 +224,7 @@ public:
     using signature = typename detail::canonical_signature_t<Ret(Args...)>;
 
 public:
+    Callable() = default;
     template<typename Func>
     Callable(Func &&func) noexcept
         : FuncWrapper(std::move(Function::define_callable([&] {
