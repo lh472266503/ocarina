@@ -305,6 +305,17 @@ OC_NODISCARD auto nonzero(const T &v) noexcept {
     return any(v != expr_value_t<T>(0));
 }
 
+template<typename T>
+OC_NODISCARD auto max_comp(const T &v) noexcept {
+    static constexpr uint dim = vector_expr_dimension_v<T>;
+    using ret_ty = decltype(v[0]);
+    ret_ty ret;
+    for (int i = 0; i < dim - 1; ++i) {
+        ret = max(v[i], v[i + 1]);
+    }
+    return ret;
+}
+
 [[nodiscard]] inline uint32_t make_8bit(const float f) {
     return fmin(255, fmax(0, int(f * 256.f)));
 }
