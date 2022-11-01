@@ -316,6 +316,11 @@ OC_NODISCARD auto max_comp(const T &v) noexcept {
     return ret;
 }
 
+template<typename T>
+OC_NODISCARD auto safe_sqrt(const T &t) noexcept {
+    return sqrt(max(0.f, 1.f - t));
+}
+
 [[nodiscard]] inline uint32_t make_8bit(const float f) {
     return fmin(255, fmax(0, int(f * 256.f)));
 }

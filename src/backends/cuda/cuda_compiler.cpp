@@ -30,9 +30,12 @@ ocarina::string CUDACompiler::compile(const string &cu, const string &fn, int sm
         "-std=c++17",
         "-arch",
         compute_sm.c_str(),
-        "-use_fast_math",
-        "-restrict",
         "-default-device",
+        "--use_fast_math",
+        "-restrict",
+        "-extra-device-vectorization",
+        "-dw",
+        "-w"
     };
     ocarina::vector<string> includes;
     if (_function.is_raytracing()) {
@@ -82,7 +85,7 @@ ocarina::string CUDACompiler::obtain_ptx() const noexcept {
             const ocarina::string &cu = codegen.scratch().c_str();
             cout << cu << endl;
             context->write_cache(cu_fn, cu);
-            ptx = compile(cu, cu_fn);
+            ptx = compile(cu, cu_fn, 75);
             context->write_cache(ptx_fn, ptx);
         } else {
             const ocarina::string &cu = context->read_cache(cu_fn);
