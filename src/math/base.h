@@ -309,9 +309,9 @@ template<typename T>
 OC_NODISCARD auto max_comp(const T &v) noexcept {
     static constexpr uint dim = vector_expr_dimension_v<T>;
     using ret_ty = decltype(v[0]);
-    ret_ty ret;
-    for (int i = 0; i < dim - 1; ++i) {
-        ret = max(v[i], v[i + 1]);
+    ret_ty ret = v[0];
+    for (int i = 1; i < dim; ++i) {
+        ret = max(v[i], ret);
     }
     return ret;
 }
