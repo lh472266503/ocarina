@@ -42,4 +42,13 @@ public:
     Expr &operator=(Expr &&) = delete;
 };
 
+template<typename T>
+Expr(Expr<T>) -> Expr<T>;
+
+template<typename T>
+Expr(const Var<T> &) -> Expr<T>;
+
+template<typename T>
+Expr(const Buffer<T> &) -> Expr<Buffer<T>>;
+
 }// namespace ocarina

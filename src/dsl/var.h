@@ -7,6 +7,7 @@
 #include "core/stl.h"
 #include "computable.h"
 #include "ast/function.h"
+#include "expr.h"
 #include "core/basic_types.h"
 
 namespace ocarina {
@@ -67,6 +68,10 @@ struct Var : public Computable<T> {
         : ocarina::detail::Computable<this_type>(expression) {}
     Var() noexcept : Var(ocarina::Function::current()->local(ocarina::Type::of<this_type>())) {}
 
+    Var(const Var &another) noexcept : Var(){
+        ocarina::detail::assign(*this, OC_EXPR(another));
+    }
+
     template<typename Arg>
     requires ocarina::concepts::non_pointer<std::remove_cvref_t<Arg>> &&
              OC_ASSIGN_CHECK(ocarina::expr_value_t<this_type>, ocarina::expr_value_t<Arg>)
@@ -123,5 +128,8 @@ using Float4x4 = Var<float4x4>;
 
 template<typename T>
 Var(T &&) -> Var<expr_value_t<T>>;
+
+template<typename T>
+Var(const Buffer<T> &) -> Var<Buffer<T>>;
 
 }// namespace ocarina
