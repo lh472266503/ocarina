@@ -72,8 +72,12 @@ struct Var : public Computable<T> {
         ocarina::detail::assign(*this, OC_EXPR(another));
     }
 
+    Var(Var &&another) noexcept:Var(OC_EXPR(another)) {
+
+    }
+
     template<typename Arg>
-    requires ocarina::concepts::non_pointer<std::remove_cvref_t<Arg>> &&
+    requires ocarina::concepts::non_pointer<std::remove_cvref_t<Arg>> && concepts::different<std::remove_cvref_t<Arg>, Var<T>> &&
              OC_ASSIGN_CHECK(ocarina::expr_value_t<this_type>, ocarina::expr_value_t<Arg>)
     Var(Arg &&arg)
         : Var() {

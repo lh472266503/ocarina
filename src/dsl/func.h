@@ -145,15 +145,15 @@ struct is_callable<Callable<T>> : std::true_type {};
 namespace detail {
 
 template<typename T, typename... A>
-[[nodiscard]] auto tuple_insert(const ocarina::tuple<A...> &lst, const T &t) {
+[[nodiscard]] auto tuple_insert(ocarina::tuple<A...> &&lst, T &&t) {
     using ret_type = ocarina::tuple<T, A...>;
-    auto func = []<typename TT, typename... AA, size_t... i>(const TT &t,
-                                                             const ocarina::tuple<AA...> &lst,
+    auto func = []<typename TT, typename... AA, size_t... i>( TT &&t,
+                                                             ocarina::tuple<AA...> &&lst,
                                                              std::index_sequence<i...>)
         -> ret_type {
-        return ret_type(t, ocarina::get<i>(lst)...);
+        return ret_type(OC_FORWARD(t), std::move(ocarina::get<i>(OC_FORWARD(lst)))...);
     };
-    return func(t, lst, std::index_sequence_for<A...>());
+    return func(OC_FORWARD(t), OC_FORWARD(lst), std::index_sequence_for<A...>());
 }
 
 [[nodiscard]] inline ocarina::tuple<> create_argument_definition_impl(ocarina::tuple<> *var_tuple,
