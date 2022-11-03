@@ -22,7 +22,7 @@ public:
     BindlessArray(Device::Impl *device, size_t size) noexcept;
 
     template<typename T>
-    requires is_buffer_or_view<T>
+    requires is_buffer_or_view_v<T>
     void emplace(uint index, T &&t) noexcept {
 
     }
