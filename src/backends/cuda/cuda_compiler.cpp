@@ -25,11 +25,13 @@ ocarina::string CUDACompiler::compile(const string &cu, const string &fn, int sm
     nvrtcProgram program{};
     std::vector header_names{"cuda_device_builtin.h", "cuda_device_math.h", "cuda_device_resource.h"};
     std::vector header_sources{cuda_device_builtin, cuda_device_math, cuda_device_resource};
-    auto compute_sm = ocarina::format("compute_{}", sm);
+    auto compute_sm = ocarina::format("-arch=compute_{}", sm);
     ocarina::vector<const char *> compile_option = {
         "-std=c++17",
-        "-arch",
         compute_sm.c_str(),
+        "-Dlc_constant=const",
+        "-DLC_OPTIX_VERSION=0",
+        "-DLC_NVRTC_VERSION=0",
         "-default-device",
         "--use_fast_math",
         "-restrict",
