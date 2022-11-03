@@ -367,6 +367,8 @@ OC_MAKE_MATRIX(2)
 OC_MAKE_MATRIX(3)
 OC_MAKE_MATRIX(4)
 
+#undef OC_MAKE_MATRIX
+
 template<typename Org, typename Dir>
 requires(is_all_float_vector3_v<expr_value_t<Org>, expr_value_t<Dir>> &&any_dsl_v<Org, Dir>)
     OC_NODISCARD Var<Ray> make_ray(const Org &org, const Dir &dir)
@@ -394,6 +396,8 @@ noexcept {
     return make_expr<float3>(expr);
 }
 
-#undef OC_MAKE_MATRIX
+inline void unreachable() noexcept {
+    Function::current()->expr_statement(Function::current()->call_builtin(nullptr, CallOp::UNREACHABLE, {}));
+}
 
 }// namespace ocarina

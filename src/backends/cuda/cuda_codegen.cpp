@@ -60,7 +60,7 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         case CallOp::DEGREES: OC_GEN_FUNC_NAME(degrees); break;
         case CallOp::RADIANS: OC_GEN_FUNC_NAME(radians); break;
         case CallOp::SATURATE: OC_GEN_FUNC_NAME(saturate); break;
-        case CallOp::SYNCHRONIZE_BLOCK: break;
+        case CallOp::SYNCHRONIZE_BLOCK: OC_ASSERT(0); break;
         case CallOp::MAKE_BOOL2: OC_GEN_FUNC_NAME(make_bool2); break;
         case CallOp::MAKE_BOOL3: OC_GEN_FUNC_NAME(make_bool3); break;
         case CallOp::MAKE_BOOL4: OC_GEN_FUNC_NAME(make_bool4); break;
@@ -79,6 +79,7 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         case CallOp::MAKE_FLOAT2X2: OC_GEN_FUNC_NAME(make_float2x2); break;
         case CallOp::MAKE_FLOAT3X3: OC_GEN_FUNC_NAME(make_float3x3); break;
         case CallOp::MAKE_FLOAT4X4: OC_GEN_FUNC_NAME(make_float4x4); break;
+        case CallOp::UNREACHABLE: current_scratch() << "__builtin_unreachable"; break;
         case CallOp::MAKE_RAY: OC_GEN_FUNC_NAME(make_ray); break;
         case CallOp::TRACE_ANY: OC_GEN_FUNC_NAME(trace_any); break;
         case CallOp::RAY_OFFSET_ORIGIN: OC_GEN_FUNC_NAME(offset_ray_origin); break;
@@ -316,8 +317,9 @@ void CUDACodegen::_emit_type_name(const Type *type) noexcept {
                 _emit_struct_name(type);
                 break;
             case Type::Tag::BUFFER:
+                current_scratch() << "const ";
                 _emit_type_name(type->element());
-                current_scratch() << "*";
+                current_scratch() << "*__restrict__ ";
                 break;
             case Type::Tag::IMAGE:
                 current_scratch() << "ImageData";
