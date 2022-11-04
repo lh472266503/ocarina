@@ -102,26 +102,26 @@ public:
         OptixModuleCompileOptions module_compile_options = {};
         // TODO: REVIEW THIS
         module_compile_options.maxRegisterCount = OPTIX_COMPILE_DEFAULT_MAX_REGISTER_COUNT;
-#ifndef NDEBUG
-        module_compile_options.optLevel = OPTIX_COMPILE_OPTIMIZATION_DEFAULT;
+//#ifndef NDEBUG
+//        module_compile_options.optLevel = OPTIX_COMPILE_OPTIMIZATION_LEVEL_0;
 //        module_compile_options.debugLevel = OPTIX_COMPILE_DEBUG_LEVEL_LINEINFO;
-#else
-        module_compile_options.optLevel = OPTIX_COMPILE_OPTIMIZATION_DEFAULT;
+//#else
+        module_compile_options.optLevel = OPTIX_COMPILE_OPTIMIZATION_LEVEL_3;
         module_compile_options.debugLevel = OPTIX_COMPILE_DEBUG_LEVEL_NONE;
-#endif
+//#endif
         _pipeline_compile_options.traversableGraphFlags = OPTIX_TRAVERSABLE_GRAPH_FLAG_ALLOW_SINGLE_LEVEL_INSTANCING;
         _pipeline_compile_options.usesMotionBlur = false;
-        _pipeline_compile_options.numPayloadValues = 2u;
+        _pipeline_compile_options.numPayloadValues = 4;
         _pipeline_compile_options.usesPrimitiveTypeFlags = OPTIX_PRIMITIVE_TYPE_FLAGS_TRIANGLE;
-        _pipeline_compile_options.numAttributeValues = 2;
+//        _pipeline_compile_options.numAttributeValues = 2;
 
-#ifndef NDEBUG
-        _pipeline_compile_options.exceptionFlags = (OPTIX_EXCEPTION_FLAG_STACK_OVERFLOW |
-                                                    OPTIX_EXCEPTION_FLAG_TRACE_DEPTH |
-                                                    OPTIX_EXCEPTION_FLAG_DEBUG);
-#else
+//#ifndef NDEBUG
+//        _pipeline_compile_options.exceptionFlags = (OPTIX_EXCEPTION_FLAG_STACK_OVERFLOW |
+//                                                    OPTIX_EXCEPTION_FLAG_TRACE_DEPTH |
+//                                                    OPTIX_EXCEPTION_FLAG_DEBUG);
+//#else
         _pipeline_compile_options.exceptionFlags = OPTIX_EXCEPTION_FLAG_NONE;
-#endif
+//#endif
         _pipeline_compile_options.pipelineLaunchParamsVariableName = "params";
         char log[2048];
         size_t log_size = sizeof(log);
@@ -136,15 +136,11 @@ public:
 
     void build_pipeline(OptixDeviceContext optix_device_context) noexcept {
 
-        constexpr int max_trace_depth = 2;
+        constexpr int max_trace_depth = 1;
 
         OptixPipelineLinkOptions pipeline_link_options = {};
         pipeline_link_options.maxTraceDepth = max_trace_depth;
-#ifndef NDEBUG
-        pipeline_link_options.debugLevel = OPTIX_COMPILE_DEBUG_LEVEL_FULL;
-#else
         pipeline_link_options.debugLevel = OPTIX_COMPILE_DEBUG_LEVEL_NONE;
-#endif
         char log[2048];
         size_t sizeof_log = sizeof(log);
 
