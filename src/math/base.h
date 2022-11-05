@@ -271,7 +271,7 @@ template<typename T, size_t N>
 }
 
 template<typename T, typename F2>
-[[nodiscard]] T triangle_lerp(F2 barycentric, T v0, T v1, T v2) noexcept {
+[[nodiscard]] T triangle_lerp(const F2 &barycentric, const T &v0, const T &v1, const T &v2) noexcept {
     auto u = barycentric.x;
     auto v = barycentric.y;
     auto w = 1 - barycentric.x - barycentric.y;
@@ -307,6 +307,16 @@ OC_NODISCARD auto is_zero(const T &v) noexcept {
 template<typename T>
 OC_NODISCARD auto nonzero(const T &v) noexcept {
     return any(v != expr_value_t<T>(0));
+}
+
+template<typename T>
+OC_NODISCARD auto has_nan(const T &v) noexcept {
+    return any(isnan(v));
+}
+
+template<typename T>
+OC_NODISCARD auto has_inf(const T &v) noexcept {
+    return any(isinf(v));
 }
 
 template<typename T>
