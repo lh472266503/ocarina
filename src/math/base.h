@@ -294,6 +294,10 @@ template<typename T>
                   (raw_ty(1.055f) * pow(L, raw_ty(1.0f / 2.4f)) - raw_ty(0.055f)));
 }
 
+template<typename T>
+[[nodiscard]] scalar_t<T> luminance(const T &v) {
+    return dot(make_float3(0.212671f, 0.715160f, 0.072169f), v);
+}
 
 template<typename T>
 OC_NODISCARD auto is_zero(const T &v) noexcept {
