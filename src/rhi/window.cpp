@@ -48,4 +48,22 @@ void Window::run(Window::UpdateCallback &&draw) noexcept {
     }
 }
 
+Window &Window::set_begin_frame_callback(Window::BeginFrame cb) noexcept {
+    _begin_frame_callback = std::move(cb);
+    return *this;
+}
+
+Window &Window::set_end_frame_callback(Window::EndFrame cb) noexcept {
+    _end_frame_callback = std::move(cb);
+    return *this;
+}
+
+void Window::_begin_frame() noexcept {
+    if (auto &&cb = _begin_frame_callback) { cb(); }
+}
+
+void Window::_end_frame() noexcept {
+    if (auto &&cb = _end_frame_callback) { cb(); }
+}
+
 }// namespace ocarina
