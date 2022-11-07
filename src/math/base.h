@@ -225,6 +225,16 @@ template<typename T>
     return sqrt(max(0.f, t));
 }
 
+template<typename T>
+[[nodiscard]] constexpr T safe_acos(const T& t) noexcept {
+    return acos(max(0.f, t));
+}
+
+template<typename T>
+[[nodiscard]] constexpr T safe_asin(const T& t) noexcept {
+    return asin(max(0.f, t));
+}
+
 template<typename T, size_t N>
 [[nodiscard]] constexpr auto length(Vector<T, N> u) noexcept {
     return sqrt(dot(u, u));
