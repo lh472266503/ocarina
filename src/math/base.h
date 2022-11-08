@@ -174,6 +174,7 @@ OC_NODISCARD constexpr T Pow(T v) {
 }
 
 template<typename T, typename U, typename V>
+requires none_dsl_v<T, U, V>
 [[nodiscard]] constexpr T clamp(T val, U low, V high) noexcept {
     if (val < low) {
         return low;
@@ -352,7 +353,7 @@ OC_NODISCARD auto max_comp(const T &v) noexcept {
 }
 
 template<typename T>
-OC_NODISCARD auto safe_sqrt(const T &t) noexcept {
+OC_NODISCARD T safe_sqrt(T t) noexcept {
     return sqrt(max(0.f, 1.f - t));
 }
 

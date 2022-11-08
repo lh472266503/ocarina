@@ -43,6 +43,8 @@ int main(int argc, char *argv[]) {
     Buffer<float> f_buffer = device.create_buffer<float>(count);
     Kernel kn = [&](Var<float> a, Var<float> b, BufferVar<float> c, ImageVar tex) {
 
+        Float ll = log(a);
+
         Var<float3> v1 = make_float3(a), v2,v3;
 //        v1 = normalize(v1);
         coordinate_system(v1,v2,v3);
