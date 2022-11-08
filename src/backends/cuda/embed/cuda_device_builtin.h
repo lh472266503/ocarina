@@ -1577,7 +1577,7 @@ __device__ oc_float2 oc_radians(oc_float2 v) { return oc_float2(oc_radians(v.x),
 __device__ oc_float3 oc_radians(oc_float3 v) { return oc_float3(oc_radians(v.x), oc_radians(v.y), oc_radians(v.z)); }
 __device__ oc_float4 oc_radians(oc_float4 v) { return oc_float4(oc_radians(v.x), oc_radians(v.y), oc_radians(v.z), oc_radians(v.w)); }
 
-__device__ oc_float oc_saturate(oc_float v) { return min(1.f, max(0.f, v)); }
+__device__ oc_float oc_saturate(oc_float v) { return fminf(1.f, fmaxf(0.f, v)); }
 __device__ oc_float2 oc_saturate(oc_float2 v) { return oc_float2(oc_saturate(v.x), oc_saturate(v.y)); }
 __device__ oc_float3 oc_saturate(oc_float3 v) { return oc_float3(oc_saturate(v.x), oc_saturate(v.y), oc_saturate(v.z)); }
 __device__ oc_float4 oc_saturate(oc_float4 v) { return oc_float4(oc_saturate(v.x), oc_saturate(v.y), oc_saturate(v.z), oc_saturate(v.w)); }
@@ -1623,15 +1623,15 @@ __device__ oc_float2 oc_lerp(oc_float2 v0, oc_float2 v1, oc_float2 v2) { return 
 __device__ oc_float3 oc_lerp(oc_float3 v0, oc_float3 v1, oc_float3 v2) { return oc_float3(oc_lerp(v0.x, v1.x, v2.x), oc_lerp(v0.y, v1.y, v2.y), oc_lerp(v0.z, v1.z, v2.z)); }
 __device__ oc_float4 oc_lerp(oc_float4 v0, oc_float4 v1, oc_float4 v2) { return oc_float4(oc_lerp(v0.x, v1.x, v2.x), oc_lerp(v0.y, v1.y, v2.y), oc_lerp(v0.z, v1.z, v2.z), oc_lerp(v0.w, v1.w, v2.w)); }
 
-__device__ oc_float oc_clamp(oc_float v0, oc_float v1, oc_float v2) { if (v0 < v1) { return v1; } else if (v0 > v2) { return v2; } else { return v0; } }
+__device__ oc_float oc_clamp(oc_float v0, oc_float v1, oc_float v2) { return oc_min(v2, oc_max(v1, v0)); }
 __device__ oc_float2 oc_clamp(oc_float2 v0, oc_float2 v1, oc_float2 v2) { return oc_float2(oc_clamp(v0.x, v1.x, v2.x), oc_clamp(v0.y, v1.y, v2.y)); }
 __device__ oc_float3 oc_clamp(oc_float3 v0, oc_float3 v1, oc_float3 v2) { return oc_float3(oc_clamp(v0.x, v1.x, v2.x), oc_clamp(v0.y, v1.y, v2.y), oc_clamp(v0.z, v1.z, v2.z)); }
 __device__ oc_float4 oc_clamp(oc_float4 v0, oc_float4 v1, oc_float4 v2) { return oc_float4(oc_clamp(v0.x, v1.x, v2.x), oc_clamp(v0.y, v1.y, v2.y), oc_clamp(v0.z, v1.z, v2.z), oc_clamp(v0.w, v1.w, v2.w)); }
-__device__ oc_uint oc_clamp(oc_uint v0, oc_uint v1, oc_uint v2) { if (v0 < v1) { return v1; } else if (v0 > v2) { return v2; } else { return v0; } }
+__device__ oc_uint oc_clamp(oc_uint v0, oc_uint v1, oc_uint v2) { return oc_min(v2, oc_max(v1, v0)); }
 __device__ oc_uint2 oc_clamp(oc_uint2 v0, oc_uint2 v1, oc_uint2 v2) { return oc_uint2(oc_clamp(v0.x, v1.x, v2.x), oc_clamp(v0.y, v1.y, v2.y)); }
 __device__ oc_uint3 oc_clamp(oc_uint3 v0, oc_uint3 v1, oc_uint3 v2) { return oc_uint3(oc_clamp(v0.x, v1.x, v2.x), oc_clamp(v0.y, v1.y, v2.y), oc_clamp(v0.z, v1.z, v2.z)); }
 __device__ oc_uint4 oc_clamp(oc_uint4 v0, oc_uint4 v1, oc_uint4 v2) { return oc_uint4(oc_clamp(v0.x, v1.x, v2.x), oc_clamp(v0.y, v1.y, v2.y), oc_clamp(v0.z, v1.z, v2.z), oc_clamp(v0.w, v1.w, v2.w)); }
-__device__ oc_int oc_clamp(oc_int v0, oc_int v1, oc_int v2) { if (v0 < v1) { return v1; } else if (v0 > v2) { return v2; } else { return v0; } }
+__device__ oc_int oc_clamp(oc_int v0, oc_int v1, oc_int v2) { return oc_min(v2, oc_max(v1, v0)); }
 __device__ oc_int2 oc_clamp(oc_int2 v0, oc_int2 v1, oc_int2 v2) { return oc_int2(oc_clamp(v0.x, v1.x, v2.x), oc_clamp(v0.y, v1.y, v2.y)); }
 __device__ oc_int3 oc_clamp(oc_int3 v0, oc_int3 v1, oc_int3 v2) { return oc_int3(oc_clamp(v0.x, v1.x, v2.x), oc_clamp(v0.y, v1.y, v2.y), oc_clamp(v0.z, v1.z, v2.z)); }
 __device__ oc_int4 oc_clamp(oc_int4 v0, oc_int4 v1, oc_int4 v2) { return oc_int4(oc_clamp(v0.x, v1.x, v2.x), oc_clamp(v0.y, v1.y, v2.y), oc_clamp(v0.z, v1.z, v2.z), oc_clamp(v0.w, v1.w, v2.w)); }

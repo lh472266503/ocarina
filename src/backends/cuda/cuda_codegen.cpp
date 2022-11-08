@@ -317,7 +317,6 @@ void CUDACodegen::_emit_type_name(const Type *type) noexcept {
                 _emit_struct_name(type);
                 break;
             case Type::Tag::BUFFER:
-                current_scratch() << "const ";
                 _emit_type_name(type->element());
                 current_scratch() << "*__restrict__ ";
                 break;

@@ -331,7 +331,7 @@ def define_unary_funcs():
         ["rsqrt" , ["return rsqrtf(v);",["float"]]],
         ["degrees" , ["return v * (180.f / 3.1415926535f);",["float"]]],
         ["radians" , ["return v * (3.1415926535f / 180.f);",["float"]]],
-        ["saturate" , ["return min(1.f, max(0.f, v));",["float"]]],
+        ["saturate" , ["return fminf(1.f, fmaxf(0.f, v));",["float"]]],
     ]
     for k, v in tab:
         define_unary_func(k, v)
@@ -395,7 +395,7 @@ def define_triple_funcs():
         },
         {
             "name" : "clamp",
-            "body" : "if (v0 < v1) { return v1; } else if (v0 > v2) { return v2; } else { return v0; }",
+            "body" : "return oc_min(v2, oc_max(v1, v0));",
             "types" : ["float", "uint", "int"]
         },
         {
