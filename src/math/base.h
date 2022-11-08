@@ -330,6 +330,17 @@ OC_NODISCARD auto has_inf(const T &v) noexcept {
 }
 
 template<typename T>
+[[nodiscard]] constexpr auto invalid(const T &t) noexcept {
+    return isinf(t) || isnan(t);
+}
+
+template<typename T>
+[[nodiscard]] constexpr auto has_invalid(const T &t) noexcept {
+    return has_nan(t) || has_inf(t);
+}
+
+
+template<typename T>
 OC_NODISCARD auto max_comp(const T &v) noexcept {
     static constexpr uint dim = vector_expr_dimension_v<T>;
     using ret_ty = decltype(v[0]);
