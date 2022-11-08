@@ -222,12 +222,12 @@ template<typename U, typename V>
 }
 
 template<typename T>
-[[nodiscard]] constexpr T safe_sqrt(const T& t) noexcept {
+[[nodiscard]] constexpr auto safe_sqrt(const T& t) noexcept {
     return sqrt(max(0.f, t));
 }
 
 template<typename T>
-[[nodiscard]] constexpr T safe_acos(const T& t) noexcept {
+[[nodiscard]] constexpr auto safe_acos(const T& t) noexcept {
     return acos(max(0.f, t));
 }
 
@@ -350,11 +350,6 @@ OC_NODISCARD auto max_comp(const T &v) noexcept {
         ret = max(v[i], ret);
     }
     return ret;
-}
-
-template<typename T>
-OC_NODISCARD T safe_sqrt(T t) noexcept {
-    return sqrt(max(0.f, 1.f - t));
 }
 
 [[nodiscard]] inline uint32_t make_8bit(const float f) {
