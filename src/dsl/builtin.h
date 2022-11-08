@@ -149,14 +149,15 @@ OC_MAKE_BINARY_VECTOR_FUNC(distance_squared, DISTANCE_SQUARED)
 
 #undef OC_MAKE_BINARY_VECTOR_FUNC
 
-template<typename A, typename B, typename C>
-requires(any_dsl_v<A, B, C> &&
-             is_all_float_element_expr_v<A, B, C> &&
-                 is_vector_same_dimension_v<expr_value_t<A>, expr_value_t<B>, expr_value_t<C>>)
-    OC_NODISCARD auto face_forward(const A &a, const B &b, const C &c) noexcept {
-    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<A>>(),
-                                                  CallOp::FACE_FORWARD, {OC_EXPR(a), OC_EXPR(b), OC_EXPR(c)});
-    return eval<expr_value_t<A>>(expr);
+template<typename... Args>
+requires(any_dsl_v<Args...> &&
+             is_all_float_element_expr_v<Args...> &&
+                 is_vector_same_dimension_v<expr_value_t<Args>...>)
+    OC_NODISCARD auto face_forward(Args &&...args) noexcept {
+    using ret_ty = decltype(face_forward(std::declval<expr_value_t<Args>>()...));
+    auto expr = Function::current()->call_builtin(Type::of<ret_ty>(),
+                                                  CallOp::FACE_FORWARD, {OC_EXPR(args)...});
+    return eval<ret_ty>(expr);
 }
 
 template<typename A>

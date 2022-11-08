@@ -3,6 +3,8 @@
 
 [[nodiscard]]  inline auto face_forward(float3 n, float3 i, float3 n_ref) noexcept { return dot(n_ref, i) < 0.0f ? n : -n; }
 
+[[nodiscard]]  inline auto face_forward(float3 v1, float3 v2) noexcept { return dot(v1, v2) > 0 ? v1 : -v1; }
+
 [[nodiscard]]  inline auto transpose(const float2x2 m) noexcept {
     return make_float2x2(m[0].x, m[1].x, m[0].y, m[1].y);
 }
