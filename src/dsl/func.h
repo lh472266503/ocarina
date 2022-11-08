@@ -101,9 +101,12 @@ OC_MAKE_MEMBER_FUNC_SIGNATURE(const volatile noexcept)
 
 #undef OC_MAKE_MEMBER_FUNC_SIGNATURE
 
-template<typename T>
-using canonical_signature_t = typename canonical_signature<T>::type;
+}// namespace detail
 
+template<typename T>
+using canonical_signature_t = typename detail::canonical_signature<T>::type;
+
+namespace detail {
 template<typename T>
 struct dsl_function {
     using type = typename dsl_function<
@@ -212,7 +215,7 @@ struct dsl_function<Callable<T>> {
 };
 
 template<typename T>
-using dsl_function_t = typename dsl_function<T>::type;
+using dsl_function_t = typename dsl_function<std::remove_cvref_t<T>>::type;
 
 }// namespace detail
 
@@ -221,7 +224,7 @@ class Callable<Ret(Args...)> : public FuncWrapper {
     static_assert(std::negation_v<std::disjunction<std::is_pointer<Args>...>>);
 
 public:
-    using signature = typename detail::canonical_signature_t<Ret(Args...)>;
+    using signature = typename canonical_signature_t<Ret(Args...)>;
 
 public:
     Callable() = default;
@@ -248,7 +251,7 @@ public:
 };
 
 template<typename T>
-Callable(T &&) -> Callable<detail::dsl_function_t<std::remove_cvref_t<T>>>;
+Callable(T &&) -> Callable<detail::dsl_function_t<T>>;
 
 template<typename T>
 class Kernel {
@@ -264,7 +267,7 @@ struct is_kernel<Kernel<T>> : std::true_type {};
 template<typename... Args>
 class Kernel<void(Args...)> : public FuncWrapper {
 private:
-    using signature = typename detail::canonical_signature_t<void(Args...)>;
+    using signature = typename canonical_signature_t<void(Args...)>;
 
 public:
     Kernel() = default;
