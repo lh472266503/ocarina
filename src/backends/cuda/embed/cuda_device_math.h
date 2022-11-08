@@ -3,7 +3,7 @@
 
 [[nodiscard]] __device__ inline auto oc_face_forward(oc_float3 n, oc_float3 i, oc_float3 n_ref) noexcept { return oc_dot(n_ref, i) < 0.0f ? n : -n; }
 
-[[nodiscard]] __device__ inline auto oc_face_forward(oc_float3 v1, oc_float3 v2) noexcept { return dot(v1, v2) > 0 ? v1 : -v1; }
+[[nodiscard]] __device__ inline auto oc_face_forward(oc_float3 v1, oc_float3 v2) noexcept { return oc_dot(v1, v2) > 0 ? v1 : -v1; }
 
 [[nodiscard]] __device__ inline auto oc_transpose(const oc_float2x2 m) noexcept {
     return oc_make_float2x2(m[0].x, m[1].x, m[0].y, m[1].y);
@@ -146,4 +146,5 @@ __device__ inline void oc_coordinate_system(oc_float3 v1, oc_float3 &v2, oc_floa
                 oc_make_float3(0.f, v1.z, -v1.y) / oc_sqrt(v1.y * v1.y + v1.z * v1.z));
     v3 = oc_cross(v1, v2);
 }
+
 

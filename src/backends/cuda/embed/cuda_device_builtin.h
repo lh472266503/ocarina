@@ -1486,33 +1486,33 @@ __device__ oc_float2 oc_atan(oc_float2 v) { return oc_float2(oc_atan(v.x), oc_at
 __device__ oc_float3 oc_atan(oc_float3 v) { return oc_float3(oc_atan(v.x), oc_atan(v.y), oc_atan(v.z)); }
 __device__ oc_float4 oc_atan(oc_float4 v) { return oc_float4(oc_atan(v.x), oc_atan(v.y), oc_atan(v.z), oc_atan(v.w)); }
 
-__device__ oc_float oc_is_inf(oc_float v) { return isinf(v); }
-__device__ oc_float2 oc_is_inf(oc_float2 v) { return oc_float2(oc_is_inf(v.x), oc_is_inf(v.y)); }
-__device__ oc_float3 oc_is_inf(oc_float3 v) { return oc_float3(oc_is_inf(v.x), oc_is_inf(v.y), oc_is_inf(v.z)); }
-__device__ oc_float4 oc_is_inf(oc_float4 v) { return oc_float4(oc_is_inf(v.x), oc_is_inf(v.y), oc_is_inf(v.z), oc_is_inf(v.w)); }
+__device__ oc_bool oc_is_inf(oc_float v) { return isinf(v); }
+__device__ oc_bool2 oc_is_inf(oc_float2 v) { return oc_bool2(oc_is_inf(v.x), oc_is_inf(v.y)); }
+__device__ oc_bool3 oc_is_inf(oc_float3 v) { return oc_bool3(oc_is_inf(v.x), oc_is_inf(v.y), oc_is_inf(v.z)); }
+__device__ oc_bool4 oc_is_inf(oc_float4 v) { return oc_bool4(oc_is_inf(v.x), oc_is_inf(v.y), oc_is_inf(v.z), oc_is_inf(v.w)); }
 
-__device__ oc_float oc_is_nan(oc_float v) { return isnan(v); }
-__device__ oc_float2 oc_is_nan(oc_float2 v) { return oc_float2(oc_is_nan(v.x), oc_is_nan(v.y)); }
-__device__ oc_float3 oc_is_nan(oc_float3 v) { return oc_float3(oc_is_nan(v.x), oc_is_nan(v.y), oc_is_nan(v.z)); }
-__device__ oc_float4 oc_is_nan(oc_float4 v) { return oc_float4(oc_is_nan(v.x), oc_is_nan(v.y), oc_is_nan(v.z), oc_is_nan(v.w)); }
+__device__ oc_bool oc_is_nan(oc_float v) { return isnan(v); }
+__device__ oc_bool2 oc_is_nan(oc_float2 v) { return oc_bool2(oc_is_nan(v.x), oc_is_nan(v.y)); }
+__device__ oc_bool3 oc_is_nan(oc_float3 v) { return oc_bool3(oc_is_nan(v.x), oc_is_nan(v.y), oc_is_nan(v.z)); }
+__device__ oc_bool4 oc_is_nan(oc_float4 v) { return oc_bool4(oc_is_nan(v.x), oc_is_nan(v.y), oc_is_nan(v.z), oc_is_nan(v.w)); }
 
-__device__ oc_int oc_is_inf(oc_int v) { return false; }
-__device__ oc_int2 oc_is_inf(oc_int2 v) { return oc_int2(oc_is_inf(v.x), oc_is_inf(v.y)); }
-__device__ oc_int3 oc_is_inf(oc_int3 v) { return oc_int3(oc_is_inf(v.x), oc_is_inf(v.y), oc_is_inf(v.z)); }
-__device__ oc_int4 oc_is_inf(oc_int4 v) { return oc_int4(oc_is_inf(v.x), oc_is_inf(v.y), oc_is_inf(v.z), oc_is_inf(v.w)); }
-__device__ oc_uint oc_is_inf(oc_uint v) { return false; }
-__device__ oc_uint2 oc_is_inf(oc_uint2 v) { return oc_uint2(oc_is_inf(v.x), oc_is_inf(v.y)); }
-__device__ oc_uint3 oc_is_inf(oc_uint3 v) { return oc_uint3(oc_is_inf(v.x), oc_is_inf(v.y), oc_is_inf(v.z)); }
-__device__ oc_uint4 oc_is_inf(oc_uint4 v) { return oc_uint4(oc_is_inf(v.x), oc_is_inf(v.y), oc_is_inf(v.z), oc_is_inf(v.w)); }
+__device__ oc_bool oc_is_inf(oc_int v) { return false; }
+__device__ oc_bool2 oc_is_inf(oc_int2 v) { return oc_bool2(oc_is_inf(v.x), oc_is_inf(v.y)); }
+__device__ oc_bool3 oc_is_inf(oc_int3 v) { return oc_bool3(oc_is_inf(v.x), oc_is_inf(v.y), oc_is_inf(v.z)); }
+__device__ oc_bool4 oc_is_inf(oc_int4 v) { return oc_bool4(oc_is_inf(v.x), oc_is_inf(v.y), oc_is_inf(v.z), oc_is_inf(v.w)); }
+__device__ oc_bool oc_is_inf(oc_uint v) { return false; }
+__device__ oc_bool2 oc_is_inf(oc_uint2 v) { return oc_bool2(oc_is_inf(v.x), oc_is_inf(v.y)); }
+__device__ oc_bool3 oc_is_inf(oc_uint3 v) { return oc_bool3(oc_is_inf(v.x), oc_is_inf(v.y), oc_is_inf(v.z)); }
+__device__ oc_bool4 oc_is_inf(oc_uint4 v) { return oc_bool4(oc_is_inf(v.x), oc_is_inf(v.y), oc_is_inf(v.z), oc_is_inf(v.w)); }
 
-__device__ oc_int oc_is_nan(oc_int v) { return false; }
-__device__ oc_int2 oc_is_nan(oc_int2 v) { return oc_int2(oc_is_nan(v.x), oc_is_nan(v.y)); }
-__device__ oc_int3 oc_is_nan(oc_int3 v) { return oc_int3(oc_is_nan(v.x), oc_is_nan(v.y), oc_is_nan(v.z)); }
-__device__ oc_int4 oc_is_nan(oc_int4 v) { return oc_int4(oc_is_nan(v.x), oc_is_nan(v.y), oc_is_nan(v.z), oc_is_nan(v.w)); }
-__device__ oc_uint oc_is_nan(oc_uint v) { return false; }
-__device__ oc_uint2 oc_is_nan(oc_uint2 v) { return oc_uint2(oc_is_nan(v.x), oc_is_nan(v.y)); }
-__device__ oc_uint3 oc_is_nan(oc_uint3 v) { return oc_uint3(oc_is_nan(v.x), oc_is_nan(v.y), oc_is_nan(v.z)); }
-__device__ oc_uint4 oc_is_nan(oc_uint4 v) { return oc_uint4(oc_is_nan(v.x), oc_is_nan(v.y), oc_is_nan(v.z), oc_is_nan(v.w)); }
+__device__ oc_bool oc_is_nan(oc_int v) { return false; }
+__device__ oc_bool2 oc_is_nan(oc_int2 v) { return oc_bool2(oc_is_nan(v.x), oc_is_nan(v.y)); }
+__device__ oc_bool3 oc_is_nan(oc_int3 v) { return oc_bool3(oc_is_nan(v.x), oc_is_nan(v.y), oc_is_nan(v.z)); }
+__device__ oc_bool4 oc_is_nan(oc_int4 v) { return oc_bool4(oc_is_nan(v.x), oc_is_nan(v.y), oc_is_nan(v.z), oc_is_nan(v.w)); }
+__device__ oc_bool oc_is_nan(oc_uint v) { return false; }
+__device__ oc_bool2 oc_is_nan(oc_uint2 v) { return oc_bool2(oc_is_nan(v.x), oc_is_nan(v.y)); }
+__device__ oc_bool3 oc_is_nan(oc_uint3 v) { return oc_bool3(oc_is_nan(v.x), oc_is_nan(v.y), oc_is_nan(v.z)); }
+__device__ oc_bool4 oc_is_nan(oc_uint4 v) { return oc_bool4(oc_is_nan(v.x), oc_is_nan(v.y), oc_is_nan(v.z), oc_is_nan(v.w)); }
 
 __device__ oc_float oc_exp(oc_float v) { return expf(v); }
 __device__ oc_float2 oc_exp(oc_float2 v) { return oc_float2(oc_exp(v.x), oc_exp(v.y)); }

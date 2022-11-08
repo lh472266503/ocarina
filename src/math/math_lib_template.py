@@ -9,7 +9,7 @@ def get_content(prefix = "", device_flag = ""):
 
 [[nodiscard]] {device_flag} inline auto {prefix}face_forward({prefix}float3 n, {prefix}float3 i, {prefix}float3 n_ref) noexcept {{ return {prefix}dot(n_ref, i) < 0.0f ? n : -n; }}
 
-[[nodiscard]] {device_flag} inline auto {prefix}face_forward({prefix}float3 v1, {prefix}float3 v2) noexcept {{ return dot(v1, v2) > 0 ? v1 : -v1; }}
+[[nodiscard]] {device_flag} inline auto {prefix}face_forward({prefix}float3 v1, {prefix}float3 v2) noexcept {{ return {prefix}dot(v1, v2) > 0 ? v1 : -v1; }}
 
 [[nodiscard]] {device_flag} inline auto {prefix}transpose(const {prefix}float2x2 m) noexcept {{
     return {prefix}make_float2x2(m[0].x, m[1].x, m[0].y, m[1].y);
