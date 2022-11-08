@@ -81,20 +81,21 @@ OC_NODISCARD constexpr auto sqr(const T &v) {
     return v * v;
 }
 
-#define MAKE_VECTOR_UNARY_FUNC(func)                              \
-    template<typename T>                                          \
-    requires is_vector_v<T>                                       \
-    OC_NODISCARD auto                                             \
-    func(const T &v) noexcept {                                   \
-        static constexpr auto N = vector_dimension_v<T>;          \
-        static_assert(N == 2 || N == 3 || N == 4);                \
-        if constexpr (N == 2) {                                   \
-            return T{func(v.x), func(v.y)};                       \
-        } else if constexpr (N == 3) {                            \
-            return T(func(v.x), func(v.y), func(v.z));            \
-        } else {                                                  \
-            return T(func(v.x), func(v.y), func(v.z), func(v.w)); \
-        }                                                         \
+#define MAKE_VECTOR_UNARY_FUNC(func)                                     \
+    template<typename T>                                                 \
+    requires is_vector_v<T>                                              \
+        OC_NODISCARD auto                                                \
+        func(const T &v) noexcept {                                      \
+        static constexpr auto N = vector_dimension_v<T>;                 \
+        using ret_type = Vector<decltype(func(v.x)), N>;                 \
+        static_assert(N == 2 || N == 3 || N == 4);                       \
+        if constexpr (N == 2) {                                          \
+            return ret_type{func(v.x), func(v.y)};                       \
+        } else if constexpr (N == 3) {                                   \
+            return ret_type(func(v.x), func(v.y), func(v.z));            \
+        } else {                                                         \
+            return ret_type(func(v.x), func(v.y), func(v.z), func(v.w)); \
+        }                                                                \
     }
 
 MAKE_VECTOR_UNARY_FUNC(rcp)
@@ -106,14 +107,16 @@ MAKE_VECTOR_UNARY_FUNC(cos)
 MAKE_VECTOR_UNARY_FUNC(sin)
 MAKE_VECTOR_UNARY_FUNC(degrees)
 MAKE_VECTOR_UNARY_FUNC(radians)
+MAKE_VECTOR_UNARY_FUNC(isnan)
+MAKE_VECTOR_UNARY_FUNC(isinf)
 
 #undef MAKE_VECTOR_UNARY_FUNC
 
 #define MAKE_VECTOR_BINARY_FUNC(func)                                                 \
     template<typename T>                                                              \
     requires is_vector_v<expr_value_t<T>>                                             \
-    OC_NODISCARD auto                                                                 \
-    func(const T &v, const T &u) noexcept {                                           \
+        OC_NODISCARD auto                                                             \
+        func(const T &v, const T &u) noexcept {                                       \
         static constexpr auto N = vector_dimension_v<T>;                              \
         static_assert(N == 2 || N == 3 || N == 4);                                    \
         if constexpr (N == 2) {                                                       \
@@ -321,11 +324,13 @@ OC_NODISCARD auto nonzero(const T &v) noexcept {
 }
 
 template<typename T>
+requires is_vector_expr_v<T>
 OC_NODISCARD auto has_nan(const T &v) noexcept {
     return any(isnan(v));
 }
 
 template<typename T>
+requires is_vector_expr_v<T>
 OC_NODISCARD auto has_inf(const T &v) noexcept {
     return any(isinf(v));
 }
