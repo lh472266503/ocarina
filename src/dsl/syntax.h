@@ -302,6 +302,13 @@ void print(ocarina::string_view f, Args &&...args) {
     Function::current()->print(f, vector<const Expression *>{OC_EXPR(args)...});
 }
 
+template<typename... Args>
+void oc_assert(const Bool &cond, string_view f, Args &&...args) {
+    if_(!cond, [&] {
+        print(f, OC_FORWARD(args)...);
+    });
+}
+
 template<typename Count>
 requires concepts::integral<expr_value_t<Count>>
 auto range(Count &&count) noexcept {

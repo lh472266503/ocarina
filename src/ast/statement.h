@@ -305,16 +305,4 @@ public:
     OC_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 
-class OC_AST_API WarningStmt : public Statement {
-private:
-    const Expression *_condition{};
-    const PrintStmt *_print{};
-
-public:
-    WarningStmt(const Expression *cond, const PrintStmt *print_stmt)
-        : Statement(Tag::WARNING), _condition(cond), _print(print_stmt) {}
-
-//    OC_MAKE_STATEMENT_ACCEPT_VISITOR
-};
-
 }// namespace ocarina
