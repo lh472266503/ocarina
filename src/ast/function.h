@@ -261,7 +261,7 @@ public:
     [[nodiscard]] ForStmt *for_(const Expression *init, const Expression *cond, const Expression *step) noexcept;
     void continue_() noexcept;
     void comment(ocarina::string_view string) noexcept;
-    void print(string_view fmt, const vector<const Expression *> &args) noexcept;
+    void print(string fmt, const vector<const Expression *> &args) noexcept;
     [[nodiscard]] const ScopeStmt *body() const noexcept;
     [[nodiscard]] ScopeStmt *body() noexcept;
     [[nodiscard]] ocarina::span<const Variable> arguments() const noexcept;

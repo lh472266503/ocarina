@@ -205,7 +205,7 @@ void Function::comment(ocarina::string_view string) noexcept {
     _create_statement<CommentStmt>(string);
 }
 
-void Function::print(string_view fmt, const vector<const Expression *> &args) noexcept {
+void Function::print(string fmt, const vector<const Expression *> &args) noexcept {
     _create_statement<PrintStmt>(fmt, args);
 }
 

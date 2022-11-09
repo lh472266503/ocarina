@@ -303,7 +303,7 @@ void print(ocarina::string f, Args &&...args) {
         Function::current()->print(f, vector<const Expression *>{OC_EXPR(args)...});
     } else {
         f += "\n";
-        cout << format(f, OC_FORWARD(args)...);
+        cout << format(f.c_str(), OC_FORWARD(args)...);
     }
 }
 
