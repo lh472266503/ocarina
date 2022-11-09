@@ -295,15 +295,25 @@ public:
 };
 }// namespace detail
 
-template<typename... Args>
-void print(ocarina::string_view f, Args &&...args) {
-    size_t num = sizeof...(Args);
-    OC_ASSERT(num == substr_count(f, "{}"));
-    Function::current()->print(f, vector<const Expression *>{OC_EXPR(args)...});
+template<typename... Args, EPort p = port_v<Args...>>
+void print(ocarina::string f, Args &&...args) {
+    if constexpr (p == D) {
+        size_t num = sizeof...(Args);
+        OC_ASSERT(num == substr_count(f, "{}"));
+        Function::current()->print(f, vector<const Expression *>{OC_EXPR(args)...});
+    } else {
+        f += "\n";
+        cout << format(f, OC_FORWARD(args)...);
+    }
 }
 
 template<typename... Args>
-void oc_assert(const Bool &cond, string_view f, Args &&...args) {
+inline void oc_assert(bool cond, string f, Args &&...args) noexcept {
+    OC_ASSERT(cond);
+}
+
+template<typename... Args>
+void oc_assert(const Bool &cond, string f, Args &&...args) {
     if_(!cond, [&] {
         print(f, OC_FORWARD(args)...);
     });

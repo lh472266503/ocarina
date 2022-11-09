@@ -11,10 +11,6 @@
 
 namespace ocarina {
 
-template<typename... Args>
-inline void oc_assert(bool cond, eastl::string_view &f, Args &&...args) noexcept {
-    OC_ASSERT(cond);
-}
 
 template<typename T, typename U>
 requires is_integral_v<T> && is_integral_v<U>
