@@ -69,7 +69,7 @@ struct Var : public Computable<T> {
     Var() noexcept : Var(ocarina::Function::current()->local(ocarina::Type::of<this_type>())) {}
 
     Var(const Var &another) noexcept : Var(){
-        ocarina::detail::assign(*this, OC_EXPR(another));
+        ocarina::detail::assign(*this, another);
     }
 
     Var(Var &&another) noexcept:Var(OC_EXPR(another)) {
