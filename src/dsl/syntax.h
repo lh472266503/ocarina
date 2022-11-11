@@ -312,6 +312,7 @@ inline void oc_assert(bool cond, string f, Args &&...args) noexcept {
     OC_ASSERT(cond);
 }
 
+// todo add lineinfo
 template<typename... Args>
 void oc_assert(const Bool &cond, string f, Args &&...args) {
     if_(!cond, [&] {
