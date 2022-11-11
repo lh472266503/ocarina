@@ -70,9 +70,24 @@ public:
     }
 };
 
+namespace detail {
+
 template<typename T>
 [[nodiscard]] inline uint64_t hash64(T &&v, uint64_t seed = Hash64::default_seed) noexcept {
     return Hash64{seed}(std::forward<T>(v));
+}
+
+}// namespace detail
+
+template<typename... Args>
+[[nodiscard]] uint64_t hash64(Args &&...args) noexcept {
+    static constexpr auto size = sizeof...(args);
+    array<uint64_t, size> arr = {detail::hash64(args)...};
+    uint64_t ret = 0;
+    for (int i = 0; i < size; ++i) {
+        ret = detail::hash64(arr[i], ret);
+    }
+    return ret;
 }
 
 class Hashable {
