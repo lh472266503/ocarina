@@ -60,24 +60,34 @@ requires is_scalar_v<T>
 
 template<typename T>
 requires is_scalar_v<T>
-OC_NODISCARD constexpr auto
-degrees(T rad) noexcept {
+    OC_NODISCARD constexpr auto
+    degrees(T rad) noexcept {
     return rad * (constants::InvPi * 180.0f);
 }
 
 template<typename T>
 requires is_scalar_v<T>
-OC_NODISCARD constexpr auto
-rcp(const T &v) {
+    OC_NODISCARD constexpr auto
+    rcp(const T &v) {
     return 1.f / v;
 }
+
+template<typename T, typename U>
+requires is_all_floating_point_expr_v<T, U>
+[[nodiscard]] condition_t<bool, T, U> is_close(T t, U u, float epsilon = 0.00001f) {
+    return abs(t - u) < epsilon;
+}
+
+#define CHECK_UNIT_VEC(vec) oc_assert(is_close(length(vec), 1),                           \
+                                      "vec({},{},{}) is not a unit vector, length is {}", \
+                                      (vec).x, (vec).y, (vec).z, length(vec));
 
 template<typename T>
 [[nodiscard]] auto saturate(const T &f) { return min(1.f, max(0.f, f)); }
 
 template<typename T>
 requires is_scalar_v<T>
-OC_NODISCARD constexpr auto sqr(const T &v) {
+    OC_NODISCARD constexpr auto sqr(const T &v) {
     return v * v;
 }
 
