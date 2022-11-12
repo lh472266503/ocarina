@@ -85,13 +85,13 @@ ocarina::string CUDACompiler::obtain_ptx() const noexcept {
             CUDACodegen codegen;
             codegen.emit(_function);
             const ocarina::string &cu = codegen.scratch().c_str();
-            cout << cu << endl;
+//            cout << cu << endl;
             context->write_cache(cu_fn, cu);
             ptx = compile(cu, cu_fn, 75);
             context->write_cache(ptx_fn, ptx);
         } else {
             const ocarina::string &cu = context->read_cache(cu_fn);
-            cout << cu << endl;
+//            cout << cu << endl;
             ptx = compile(cu, cu_fn);
             context->write_cache(ptx_fn, ptx);
         }
