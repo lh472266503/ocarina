@@ -46,7 +46,7 @@ const RefExpr *Function::_builtin(Variable::Tag tag, const Type *type) noexcept 
 }
 
 void Function::add_used_function(const Function *func) noexcept {
-    _used_custom_func.emplace(func);
+    _used_custom_func.insert(make_pair(func->hash(), func));
 }
 
 const RefExpr *Function::block_idx() noexcept {

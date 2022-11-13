@@ -68,8 +68,8 @@ private:
     ocarina::vector<ocarina::pair<std::byte *, size_t>> _temp_memory;
     ScopeStmt _body{true};
     Tag _tag{Tag::CALLABLE};
-    ocarina::set<const Function *> _used_custom_func;
-    ocarina::set<const Type *> _used_struct;
+    ocarina::map<uint64_t, const Function *> _used_custom_func;
+    ocarina::map<uint64_t, const Type *> _used_struct;
     mutable bool _raytracing{false};
     mutable uint3 _block_dim{make_uint3(0)};
     mutable uint3 _grid_dim{make_uint3(0)};
@@ -142,18 +142,20 @@ public:
     [[nodiscard]] auto used_custom_func() const noexcept { return _used_custom_func; }
     template<typename Visitor>
     void for_each_custom_func(Visitor &&visitor) const noexcept {
-        for (const Function *f : _used_custom_func) {
+        for (const auto &[_, f] : _used_custom_func) {
             visitor(f);
         }
     }
     [[nodiscard]] auto used_structure() const noexcept { return _used_struct; }
     template<typename Visitor>
     void for_each_structure(Visitor &&visitor) const noexcept {
-        for (const Type *type : _used_struct) {
+        for (const auto &[_, type] : _used_struct) {
             visitor(type);
         }
     }
-    void add_used_structure(const Type *type) noexcept { _used_struct.emplace(type); }
+    void add_used_structure(const Type *type) noexcept {
+        _used_struct.insert(make_pair(type->hash(), type));
+    }
     const ArgumentBinding &get_uniform_var(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept;
     [[nodiscard]] auto &uniform_vars() const noexcept { return _uniform_vars; }
     template<typename Visitor>
