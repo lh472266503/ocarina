@@ -43,10 +43,10 @@ public:
         return make_expr<Image>(uniform.expression()).sample<Output>(u, v);
     }
 
-    template<typename UV>
+    template<typename Output, typename UV>
     requires(is_float_vector2_v<expr_value_t<UV>>)
-    OC_NODISCARD auto sample(const UV &uv) const noexcept {
-        return sample(uv.x, uv.y);
+        OC_NODISCARD auto sample(const UV &uv) const noexcept {
+        return sample<Output>(uv.x, uv.y);
     }
 
     template<typename Target, typename X, typename Y>

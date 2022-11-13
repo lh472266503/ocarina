@@ -143,10 +143,10 @@ struct EnableTextureSample {
         return make_expr<Output>(expr);
     }
 
-    template<typename UV>
+    template<typename Output, typename UV>
     requires(is_float_vector2_v<expr_value_t<UV>>)
     OC_NODISCARD auto sample(const UV &uv) const noexcept {
-        return sample(uv.x, uv.y);
+        return sample<Output>(uv.x, uv.y);
     }
 };
 
