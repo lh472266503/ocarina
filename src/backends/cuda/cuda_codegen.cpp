@@ -27,6 +27,7 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         case CallOp::ASIN: OC_GEN_FUNC_NAME(asin); break;
         case CallOp::ATAN: OC_GEN_FUNC_NAME(atan); break;
         case CallOp::ATAN2: OC_GEN_FUNC_NAME(atan2); break;
+        case CallOp::COPYSIGN: OC_GEN_FUNC_NAME(copysign); break;
         case CallOp::COS: OC_GEN_FUNC_NAME(cos); break;
         case CallOp::SIN: OC_GEN_FUNC_NAME(sin); break;
         case CallOp::TAN: OC_GEN_FUNC_NAME(tan); break;

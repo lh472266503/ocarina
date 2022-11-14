@@ -369,6 +369,7 @@ def define_binary_funcs():
         "min" : ["return fminf(lhs, rhs);", ["int", "uint", "float"]],
         "max" : ["return fmaxf(lhs, rhs);", ["int", "uint", "float"]],
         "atan2" : ["return atan2f(lhs, rhs);", ["float"]],
+        "copysign" : ["return ::copysignf(lhs, rhs);", ["float"]],
     }
     for k, v in tab.items():
         define_binary_func(k, v)

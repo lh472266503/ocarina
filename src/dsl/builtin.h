@@ -182,13 +182,7 @@ requires(is_all_float_element_expr_v<A> &&
 OC_MAKE_FLOATING_BUILTIN_FUNC(exp, EXP)
 OC_MAKE_FLOATING_BUILTIN_FUNC(exp2, EXP2)
 OC_MAKE_FLOATING_BUILTIN_FUNC(exp10, EXP10)
-//OC_MAKE_FLOATING_BUILTIN_FUNC(log, LOG)
-template<typename T>
-requires(is_dsl_v<T> &&is_float_element_expr_v<T>) [[nodiscard]] auto log(const T &t) noexcept {
-    using ret_type = decltype(log(std::declval<expr_value_t<T>>()));
-    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(), CallOp::LOG, {ocarina::detail::extract_expression(std::forward<decltype(t)>(t))});
-    return eval<expr_value_t<ret_type>>(expr);
-}
+OC_MAKE_FLOATING_BUILTIN_FUNC(log, LOG)
 OC_MAKE_FLOATING_BUILTIN_FUNC(log2, LOG2)
 OC_MAKE_FLOATING_BUILTIN_FUNC(log10, LOG10)
 OC_MAKE_FLOATING_BUILTIN_FUNC(cos, COS)
@@ -221,7 +215,7 @@ OC_MAKE_FLOATING_BUILTIN_FUNC(saturate, SATURATE)
         using ret_type = decltype(func(std::declval<expr_value_t<A>>(), std::declval<expr_value_t<B>>())); \
         auto expr = Function::current()->call_builtin(Type::of<expr_value_t<A>>(),                         \
                                                       CallOp::tag, {OC_EXPR(a), OC_EXPR(b)});              \
-        return eval<expr_value_t<ret_type>>(expr);                                                    \
+        return eval<expr_value_t<ret_type>>(expr);                                                         \
     }                                                                                                      \
     template<typename T>                                                                                   \
     requires(is_dsl_v<T>)                                                                                  \
@@ -230,12 +224,13 @@ OC_MAKE_FLOATING_BUILTIN_FUNC(saturate, SATURATE)
         using ret_type = decltype(func(std::declval<expr_value_t<T>>(), std::declval<expr_value_t<T>>())); \
         auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),                         \
                                                       CallOp::tag, {OC_EXPR(a), OC_EXPR(b)});              \
-        return eval<expr_value_t<ret_type>>(expr);                                                    \
+        return eval<expr_value_t<ret_type>>(expr);                                                         \
     }
 
 OC_MAKE_BINARY_BUILTIN_FUNC(max, MAX)
 OC_MAKE_BINARY_BUILTIN_FUNC(min, MIN)
 OC_MAKE_BINARY_BUILTIN_FUNC(pow, POW)
+OC_MAKE_BINARY_BUILTIN_FUNC(copysign, COPYSIGN)
 OC_MAKE_BINARY_BUILTIN_FUNC(atan2, ATAN2)
 
 #undef OC_MAKE_BINARY_BUILTIN_FUNC

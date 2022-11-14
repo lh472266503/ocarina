@@ -1618,6 +1618,11 @@ __device__ oc_float2 oc_atan2(oc_float2 lhs, oc_float2 rhs) { return oc_float2(o
 __device__ oc_float3 oc_atan2(oc_float3 lhs, oc_float3 rhs) { return oc_float3(oc_atan2(lhs.x, rhs.x), oc_atan2(lhs.y, rhs.y), oc_atan2(lhs.z, rhs.z)); }
 __device__ oc_float4 oc_atan2(oc_float4 lhs, oc_float4 rhs) { return oc_float4(oc_atan2(lhs.x, rhs.x), oc_atan2(lhs.y, rhs.y), oc_atan2(lhs.z, rhs.z), oc_atan2(lhs.w, rhs.w)); }
 
+__device__ oc_float oc_copysign(oc_float lhs, oc_float rhs) { return ::copysignf(lhs, rhs); }
+__device__ oc_float2 oc_copysign(oc_float2 lhs, oc_float2 rhs) { return oc_float2(oc_copysign(lhs.x, rhs.x), oc_copysign(lhs.y, rhs.y)); }
+__device__ oc_float3 oc_copysign(oc_float3 lhs, oc_float3 rhs) { return oc_float3(oc_copysign(lhs.x, rhs.x), oc_copysign(lhs.y, rhs.y), oc_copysign(lhs.z, rhs.z)); }
+__device__ oc_float4 oc_copysign(oc_float4 lhs, oc_float4 rhs) { return oc_float4(oc_copysign(lhs.x, rhs.x), oc_copysign(lhs.y, rhs.y), oc_copysign(lhs.z, rhs.z), oc_copysign(lhs.w, rhs.w)); }
+
 __device__ oc_float oc_lerp(oc_float v0, oc_float v1, oc_float v2) { return v1 + v0 * (v2 - v1); }
 __device__ oc_float2 oc_lerp(oc_float2 v0, oc_float2 v1, oc_float2 v2) { return oc_float2(oc_lerp(v0.x, v1.x, v2.x), oc_lerp(v0.y, v1.y, v2.y)); }
 __device__ oc_float3 oc_lerp(oc_float3 v0, oc_float3 v1, oc_float3 v2) { return oc_float3(oc_lerp(v0.x, v1.x, v2.x), oc_lerp(v0.y, v1.y, v2.y), oc_lerp(v0.z, v1.z, v2.z)); }
