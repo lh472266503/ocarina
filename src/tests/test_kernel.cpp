@@ -28,9 +28,17 @@ int main(int argc, char *argv[]) {
     Callable add = [&](Var<float> a, Var<float> b) {
         return a + b;
     };
+
+    Callable comp = [&](Var<float> a, Var<float> b) {
+        Var<tuple<float, float>> ret {};
+        ret.set<0>(a);
+        ret.set<1>(b);
+        return ret;
+    };
+
     fs::path path(argv[0]);
     Context context(path.parent_path());
-    context.clear_cache();
+//    context.clear_cache();
     Device device = context.create_device("cuda");
     Stream stream = device.create_stream();
 
@@ -46,10 +54,12 @@ int main(int argc, char *argv[]) {
         Float ll = log(a);
 
         Var<float3> v1 = make_float3(a), v2,v3;
+        auto ret = comp(1,5);
 //        v1 = normalize(v1);
         coordinate_system(v1,v2,v3);
-        print("{},{},{}",v2.x,v2.y,v2.z);
-//                configure_block(1,2,1);
+        print("{},{},{}",ret.get<0>(),ret.get<1>(),v2.z);
+        return;
+        //                configure_block(1,2,1);
         Array<uint> ua(10);
         ua[5] = 1u;
         Var uuu = ua[5];
@@ -83,10 +93,11 @@ int main(int argc, char *argv[]) {
     //    shader.compute_fit_size();
 //    return 0;
     stream << f_buffer.upload_sync(v.data());
-    stream << shader(0.1f, 0.9f, f_buffer, texture).dispatch(10);
+    stream << shader(0.1f, 0.9f, f_buffer, texture).dispatch(1);
     stream << synchronize();
     stream << f_buffer.download_sync(v.data());
     stream << commit();
+    exit(0);
 //    for (int i = 0; i < count; ++i) {
 //        cout << v[i] << endl;
 //    }

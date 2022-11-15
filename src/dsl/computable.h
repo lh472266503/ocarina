@@ -314,6 +314,11 @@ public:
         using Elm = ocarina::tuple_element_t<i, Tuple>;
         return eval<Elm>(Function::current()->member(Type::of<Elm>(), expression(), i));
     }
+    template<size_t i, typename elm_ty = ocarina::tuple_element_t<i, Tuple>>
+    void set(elm_ty val) noexcept {
+        auto expr = Function::current()->member(Type::of<expr_value_t<elm_ty>>(), expression(), i);
+        assign(expr, val);
+    }
 };
 
 #define OC_MAKE_STRUCT_MEMBER(m)                                                                                        \
