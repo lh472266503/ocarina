@@ -173,9 +173,9 @@ MAKE_VECTOR_BINARY_FUNC(atan2)
 
 #undef MAKE_VECTOR_BINARY_FUNC
 
-template<int n, typename T>
+template<int n, typename T, typename ret_type = condition_t<expr_value_t<T>, T>>
 requires OC_MULTIPLY_CHECK(T, T)
-OC_NODISCARD constexpr T Pow(T v) {
+OC_NODISCARD constexpr ret_type Pow(const T &v) {
     if constexpr (n < 0) {
         return 1.f / Pow<-n>(v);
     } else if constexpr (n == 1) {
