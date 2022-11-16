@@ -55,9 +55,10 @@ int main(int argc, char *argv[]) {
 
         Var<float3> v1 = make_float3(a), v2,v3;
         auto ret = comp(1,5);
+        Float3 ff3{6.6f};
 //        v1 = normalize(v1);
         coordinate_system(v1,v2,v3);
-        print("{},{},{}",ret.get<0>(),ret.get<1>(),v2.z);
+        print("{},{},{}",ret.get<0>(),ret.get<1>(),ff3.z);
         return;
         //                configure_block(1,2,1);
         Array<uint> ua(10);
