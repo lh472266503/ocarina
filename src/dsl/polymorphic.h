@@ -21,6 +21,10 @@ public:
     void dispatch(Index &&index, const std::function<void(const T &)> &func) const noexcept {
         if (Super::empty()) [[unlikely]] { OC_ERROR_FORMAT("{} lst is empty", typeid(*this).name()); }
         comment(typeid(*this).name());
+        if (Super::size() == 1) {
+            comment(typeid(*Super::at(0u)).name());
+            func(Super::at(0u));
+        }
         switch_(OC_FORWARD(index), [&] {
             for (int i = 0; i < Super::size(); ++i) {
                 comment(typeid(*Super::at(i)).name());
