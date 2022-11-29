@@ -51,20 +51,20 @@ public:
     void for_each_pixel(Func func) const {
         auto p = _pixel.get();
         int stride = pixel_size(_pixel_storage);
-        parallel_for(pixel_num(), [&](uint i, uint tid) {
+        for (int i = 0; i < pixel_num(); ++i) {
             const std::byte *pixel = p + stride * i;
             func(pixel, i);
-        });
+        }
     }
 
     template<typename Func>
     void for_each_pixel(Func func) {
         auto p = _pixel.get();
         int stride = pixel_size(_pixel_storage);
-        parallel_for(pixel_num(), [&](uint i, uint tid) {
+        for (int i = 0; i < pixel_num(); ++i) {
             std::byte *pixel = const_cast<std::byte *>(p + stride * i);
             func(pixel, i);
-        });
+        }
     }
 
     void save(const fs::path &fn);
