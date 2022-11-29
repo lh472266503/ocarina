@@ -34,6 +34,7 @@ ImageIO::ImageIO(PixelStorage pixel_storage, const std::byte *pixel, uint2 res)
 ImageIO::ImageIO(ImageIO &&other) noexcept
     : ImageBase(other._pixel_storage, other._resolution) {
     _pixel = move(other._pixel);
+    _path = move(other._path);
 }
 
 ImageIO &ImageIO::operator=(ImageIO &&rhs) noexcept {
