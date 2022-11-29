@@ -13,6 +13,9 @@ private:
     std::unique_ptr<const std::byte[]> _pixel;
 
 public:
+    using foreach_signature = void(const std::byte *, int, PixelStorage);
+
+public:
     ImageIO() = default;
     ImageIO(PixelStorage pixel_format, const std::byte *pixel, uint2 res, const fs::path &path);
     ImageIO(PixelStorage pixel_format, const std::byte *pixel, uint2 res);
@@ -53,7 +56,7 @@ public:
         int stride = pixel_size(_pixel_storage);
         for (int i = 0; i < pixel_num(); ++i) {
             const std::byte *pixel = p + stride * i;
-            func(pixel, i);
+            func(pixel, i, _pixel_storage);
         }
     }
 
@@ -63,7 +66,7 @@ public:
         int stride = pixel_size(_pixel_storage);
         for (int i = 0; i < pixel_num(); ++i) {
             std::byte *pixel = const_cast<std::byte *>(p + stride * i);
-            func(pixel, i);
+            func(pixel, i, _pixel_storage);
         }
     }
 
