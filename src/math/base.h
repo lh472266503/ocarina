@@ -242,12 +242,12 @@ template<typename T>
 
 template<typename T>
 [[nodiscard]] constexpr auto safe_acos(const T& t) noexcept {
-    return acos(max(0.f, t));
+    return acos(clamp(t, -1.f, 1.f));
 }
 
 template<typename T>
 [[nodiscard]] constexpr T safe_asin(const T& t) noexcept {
-    return asin(max(0.f, t));
+    return asin(clamp(t, -1.f, 1.f));
 }
 
 template<typename T, size_t N>
