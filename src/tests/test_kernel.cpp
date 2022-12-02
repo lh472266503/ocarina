@@ -59,9 +59,9 @@ int main(int argc, char *argv[]) {
 
         auto pp = Pow<5>(1 - ff3.z);
 
-//        v1 = normalize(v1);
+        v1 = normalize(v1);
         coordinate_system(v1,v2,v3);
-        print("{},{},{}",ret.get<0>(),ret.get<1>(),pp);
+        prints("{},{},{}",v2);
         return;
         //                configure_block(1,2,1);
         Array<uint> ua(10);

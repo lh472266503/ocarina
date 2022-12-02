@@ -307,6 +307,34 @@ void print(ocarina::string f, Args &&...args) {
     }
 }
 
+namespace detail {
+template<typename T>
+[[nodiscard]] auto to_tuple(const T &t) {
+    if constexpr (is_vector_expr_v<T>) {
+        using elm_ty = decltype(T::x);
+        static constexpr auto dim = vector_expr_dimension_v<T>;
+        if constexpr (dim == 2) {
+            return std::tuple<elm_ty, elm_ty>(t.x, t.y);
+        } else if constexpr (dim == 3) {
+            return std::tuple<elm_ty, elm_ty, elm_ty>(t.x, t.y, t.z);
+        } else {
+            return std::tuple<elm_ty, elm_ty, elm_ty, elm_ty>(t.x, t.y, t.z, t.w);
+        }
+    } else if constexpr (is_scalar_expr_v<T>) {
+        return std::tuple<T>(t);
+    }
+}
+}// namespace detail
+
+template<typename... Args>
+void prints(ocarina::string f, Args &&...args) {
+    auto all_tuple = std::tuple_cat(detail::to_tuple(args)...);
+    auto func = [&]<typename... A, size_t... i>(std::tuple<A...> && tp, std::index_sequence<i...>) {
+        print(f, std::get<i>(OC_FORWARD(tp))...);
+    };
+    func(move(all_tuple), std::make_index_sequence<std::tuple_size_v<decltype(all_tuple)>>());
+}
+
 template<typename... Args>
 inline void oc_assert(bool cond, string f, Args &&...args) noexcept {
     OC_ASSERT(cond);
