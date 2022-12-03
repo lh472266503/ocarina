@@ -38,5 +38,7 @@ constexpr float ShadowEpsilon = 0.0001f;
 constexpr uint32_t InvalidUI32 = uint32_t(-1);
 
 constexpr uint64_t InvalidUI64 = uint64_t(-1);
+
+constexpr uchar InvalidUI8 = uchar(-1);
 }
 }// namespace ocarina::constants
