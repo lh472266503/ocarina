@@ -14,7 +14,7 @@ Codegen::Scratch &Codegen::Scratch::operator<<(float v) noexcept {
     *this << s;
     if (s.find('.') == std::string::npos && s.find('e') == std::string::npos) {
         *this << ".f";
-    } else if (s.find('.') != std::string::npos) {
+    } else if (s.find('.') != std::string::npos || s.find('e') != std::string::npos) {
         *this << "f";
     }
     return *this;
