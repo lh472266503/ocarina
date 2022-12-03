@@ -130,6 +130,7 @@ using std::asin;
 using std::acos;
 using std::atan;
 using std::floor;
+using std::ceil;
 using std::isinf;
 using std::isnan;
 using std::copysign;

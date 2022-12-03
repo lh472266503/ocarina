@@ -176,7 +176,7 @@ requires(is_all_float_element_expr_v<A> &&
         using ret_type = decltype(func(std::declval<expr_value_t<T>>()));          \
         auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(), \
                                                       CallOp::tag, {OC_EXPR(t)});  \
-        return eval<expr_value_t<ret_type>>(expr);                            \
+        return eval<expr_value_t<ret_type>>(expr);                                 \
     }
 
 OC_MAKE_FLOATING_BUILTIN_FUNC(exp, EXP)
