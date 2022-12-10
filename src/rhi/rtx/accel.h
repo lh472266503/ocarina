@@ -11,6 +11,10 @@
 
 namespace ocarina {
 class Accel : public RHIResource {
+private:
+    uint _triangle_num{};
+    uint _vertex_num{};
+
 public:
     class Impl {
     public:
@@ -26,18 +30,21 @@ public:
 
     explicit Accel(Device::Impl *device)
         : RHIResource(device, Tag::ACCEL, device->create_accel()) {}
-
+    [[nodiscard]] uint triangle_num() const noexcept { return _triangle_num; }
+    [[nodiscard]] uint vertex_num() const noexcept { return _vertex_num; }
     [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
     [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(_handle); }
     void add_mesh(const Mesh &mesh, float4x4 transform) noexcept {
+        _vertex_num += mesh.vertex_num();
+        _triangle_num += mesh.triangle_num();
         impl()->add_mesh(mesh.impl(), transform);
     }
 
     template<typename TRay>
     [[nodiscard]] Var<bool> trace_any(const TRay &ray) const noexcept {
         const ArgumentBinding &uniform = Function::current()->get_uniform_var(Type::of<Accel>(),
-                                                                             Variable::Tag::ACCEL,
-                                                                             memory_block());
+                                                                              Variable::Tag::ACCEL,
+                                                                              memory_block());
         return make_expr<Accel>(uniform.expression()).trace_any(ray);
     }
 

@@ -16,6 +16,8 @@ public:
     class Impl {
     public:
         [[nodiscard]] virtual handle_ty blas_handle() const noexcept = 0;
+        [[nodiscard]] virtual uint vertex_num() const noexcept = 0;
+        [[nodiscard]] virtual uint triangle_num() const noexcept = 0;
     };
 
 public:
@@ -26,9 +28,9 @@ public:
 
     [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(_handle); }
     [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
-    [[nodiscard]] MeshBuildCommand *build_bvh() noexcept {
-        return MeshBuildCommand::create(_handle);
-    }
+    [[nodiscard]] uint vertex_num() const noexcept { return impl()->vertex_num(); }
+    [[nodiscard]] uint triangle_num() const noexcept { return impl()->triangle_num(); }
+    [[nodiscard]] MeshBuildCommand *build_bvh() noexcept { return MeshBuildCommand::create(_handle); }
 };
 
 template<typename VBuffer, typename TBuffer>
