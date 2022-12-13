@@ -92,6 +92,8 @@ void delete_array(T *ptr) noexcept {
 // io
 using std::cout;
 using std::endl;
+using std::cerr;
+
 
 // ptr
 using std::const_pointer_cast;
