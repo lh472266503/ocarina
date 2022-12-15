@@ -35,6 +35,7 @@ ocarina::string CUDACompiler::compile(const string &cu, const string &fn, int sm
         "-default-device",
         "--use_fast_math",
         "-restrict",
+        "-lineinfo",
         "-extra-device-vectorization",
         "-dw",
         "-w"

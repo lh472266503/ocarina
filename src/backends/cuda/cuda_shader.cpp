@@ -104,10 +104,10 @@ public:
         module_compile_options.maxRegisterCount = OPTIX_COMPILE_DEFAULT_MAX_REGISTER_COUNT;
 //#ifndef NDEBUG
 //        module_compile_options.optLevel = OPTIX_COMPILE_OPTIMIZATION_LEVEL_0;
-//        module_compile_options.debugLevel = OPTIX_COMPILE_DEBUG_LEVEL_LINEINFO;
+        module_compile_options.debugLevel = OPTIX_COMPILE_DEBUG_LEVEL_LINEINFO;
 //#else
         module_compile_options.optLevel = OPTIX_COMPILE_OPTIMIZATION_LEVEL_3;
-        module_compile_options.debugLevel = OPTIX_COMPILE_DEBUG_LEVEL_NONE;
+//        module_compile_options.debugLevel = OPTIX_COMPILE_DEBUG_LEVEL_NONE;
 //#endif
         _pipeline_compile_options.traversableGraphFlags = OPTIX_TRAVERSABLE_GRAPH_FLAG_ALLOW_SINGLE_LEVEL_INSTANCING;
         _pipeline_compile_options.usesMotionBlur = false;
