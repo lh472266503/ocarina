@@ -47,29 +47,36 @@ requires std::is_unsigned_v<T> &&(sizeof(T) == 4u || sizeof(T) == 8u)
 
 template<typename T>
 requires is_scalar_v<T>
-    OC_NODISCARD constexpr T sign(T val) {
+[[nodiscard]] constexpr T sign(T val) {
     return select(val >= 0, T(1), T(-1));
 }
 
 template<typename T>
 requires is_scalar_v<T>
-    OC_NODISCARD constexpr auto
-    radians(const T &deg) noexcept {
+[[nodiscard]] constexpr auto
+radians(const T &deg) noexcept {
     return deg * (constants::Pi / 180.0f);
 }
 
 template<typename T>
 requires is_scalar_v<T>
-    OC_NODISCARD constexpr auto
-    degrees(T rad) noexcept {
+[[nodiscard]] constexpr auto
+degrees(T rad) noexcept {
     return rad * (constants::InvPi * 180.0f);
 }
 
 template<typename T>
 requires is_scalar_v<T>
-    OC_NODISCARD constexpr auto
-    rcp(const T &v) {
+[[nodiscard]] constexpr auto
+rcp(const T &v) {
     return 1.f / v;
+}
+
+template<typename T>
+requires is_scalar_v<T>
+[[nodiscard]] constexpr auto
+rsqrt(const T &v) {
+    return 1.f / sqrt(v);
 }
 
 template<typename T, typename U>
