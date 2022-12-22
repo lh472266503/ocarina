@@ -174,11 +174,11 @@ template<typename T>
 struct EnableStaticCast {
     template<class Dest>
     requires concepts::static_convertible<Dest, expr_value_t<T>>
-    OC_NODISCARD Expr<Dest>
+    OC_NODISCARD Var<Dest>
     cast() const noexcept {
         const CastExpr *expr = Function::current()->cast(Type::of<Dest>(), CastOp::STATIC,
                                                          static_cast<const T *>(this)->expression());
-        return make_expr<Dest>(expr);
+        return eval<Dest>(expr);
     }
 };
 
@@ -186,11 +186,11 @@ template<typename T>
 struct EnableBitwiseCast {
     template<class Dest>
     requires concepts::bitwise_convertible<Dest, expr_value_t<T>>
-    OC_NODISCARD Expr<Dest>
+    OC_NODISCARD Var<Dest>
     as() const noexcept {
         const CastExpr *expr = Function::current()->cast(Type::of<Dest>(), CastOp::BITWISE,
                                                          static_cast<const T *>(this)->expression());
-        return make_expr<Dest>(expr);
+        return eval<Dest>(expr);
     }
 };
 
