@@ -136,6 +136,9 @@ using std::ceil;
 using std::isinf;
 using std::isnan;
 using std::copysign;
+using std::cosh;
+using std::sinh;
+using std::tanh;
 
 inline void oc_memcpy(void *dst, const void *src, size_t size) {
 #ifdef _MSC_VER

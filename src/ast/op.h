@@ -66,6 +66,9 @@ enum struct CallOp : uint32_t {
     COS,
     SIN,
     TAN,
+    COSH,
+    SINH,
+    TANH,
 
     EXP,
     EXP2,
