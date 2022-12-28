@@ -317,6 +317,7 @@ def define_unary_funcs():
         ["abs" , ["return abs(v);", [["int"]]]],
         ["ceil" , ["return ceilf(v);", [["float"]]]],
         ["floor" , ["return floorf(v);", [["float"]]]],
+        ["fract" , ["return v - oc_floor(v);", [["float"]]]],
         ["round" , ["return roundf(v);", [["float"]]]],
         ["sin" , ["return sinf(v);",[["float"]]]],
         ["cos" , ["return cosf(v);", [["float"]]]],

@@ -1451,6 +1451,11 @@ __device__ oc_float2 oc_floor(oc_float2 v) { return oc_float2(oc_floor(v.x), oc_
 __device__ oc_float3 oc_floor(oc_float3 v) { return oc_float3(oc_floor(v.x), oc_floor(v.y), oc_floor(v.z)); }
 __device__ oc_float4 oc_floor(oc_float4 v) { return oc_float4(oc_floor(v.x), oc_floor(v.y), oc_floor(v.z), oc_floor(v.w)); }
 
+__device__ oc_float oc_fract(oc_float v) { return v - oc_floor(v); }
+__device__ oc_float2 oc_fract(oc_float2 v) { return oc_float2(oc_fract(v.x), oc_fract(v.y)); }
+__device__ oc_float3 oc_fract(oc_float3 v) { return oc_float3(oc_fract(v.x), oc_fract(v.y), oc_fract(v.z)); }
+__device__ oc_float4 oc_fract(oc_float4 v) { return oc_float4(oc_fract(v.x), oc_fract(v.y), oc_fract(v.z), oc_fract(v.w)); }
+
 __device__ oc_float oc_round(oc_float v) { return roundf(v); }
 __device__ oc_float2 oc_round(oc_float2 v) { return oc_float2(oc_round(v.x), oc_round(v.y)); }
 __device__ oc_float3 oc_round(oc_float3 v) { return oc_float3(oc_round(v.x), oc_round(v.y), oc_round(v.z)); }

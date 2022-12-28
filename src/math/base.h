@@ -79,6 +79,13 @@ rsqrt(const T &v) {
     return 1.f / sqrt(v);
 }
 
+template<typename T>
+requires is_scalar_v<T>
+[[nodiscard]] constexpr auto
+fract(const T &v) {
+    return v - floorf(v);
+}
+
 template<typename T, typename U>
 requires is_all_floating_point_expr_v<T, U>
 [[nodiscard]] condition_t<bool, T, U> is_close(T t, U u, float epsilon = 0.00001f) {
