@@ -1607,6 +1607,11 @@ __device__ oc_float2 oc_pow(oc_float2 lhs, oc_float2 rhs) { return oc_float2(oc_
 __device__ oc_float3 oc_pow(oc_float3 lhs, oc_float3 rhs) { return oc_float3(oc_pow(lhs.x, rhs.x), oc_pow(lhs.y, rhs.y), oc_pow(lhs.z, rhs.z)); }
 __device__ oc_float4 oc_pow(oc_float4 lhs, oc_float4 rhs) { return oc_float4(oc_pow(lhs.x, rhs.x), oc_pow(lhs.y, rhs.y), oc_pow(lhs.z, rhs.z), oc_pow(lhs.w, rhs.w)); }
 
+__device__ oc_float oc_fmod(oc_float lhs, oc_float rhs) { return fmodf(lhs, rhs); }
+__device__ oc_float2 oc_fmod(oc_float2 lhs, oc_float2 rhs) { return oc_float2(oc_fmod(lhs.x, rhs.x), oc_fmod(lhs.y, rhs.y)); }
+__device__ oc_float3 oc_fmod(oc_float3 lhs, oc_float3 rhs) { return oc_float3(oc_fmod(lhs.x, rhs.x), oc_fmod(lhs.y, rhs.y), oc_fmod(lhs.z, rhs.z)); }
+__device__ oc_float4 oc_fmod(oc_float4 lhs, oc_float4 rhs) { return oc_float4(oc_fmod(lhs.x, rhs.x), oc_fmod(lhs.y, rhs.y), oc_fmod(lhs.z, rhs.z), oc_fmod(lhs.w, rhs.w)); }
+
 __device__ oc_int oc_min(oc_int lhs, oc_int rhs) { return fminf(lhs, rhs); }
 __device__ oc_int2 oc_min(oc_int2 lhs, oc_int2 rhs) { return oc_int2(oc_min(lhs.x, rhs.x), oc_min(lhs.y, rhs.y)); }
 __device__ oc_int3 oc_min(oc_int3 lhs, oc_int3 rhs) { return oc_int3(oc_min(lhs.x, rhs.x), oc_min(lhs.y, rhs.y), oc_min(lhs.z, rhs.z)); }

@@ -139,6 +139,7 @@ using std::copysign;
 using std::cosh;
 using std::sinh;
 using std::tanh;
+using std::fmod;
 
 inline void oc_memcpy(void *dst, const void *src, size_t size) {
 #ifdef _MSC_VER

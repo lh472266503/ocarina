@@ -77,6 +77,7 @@ enum struct CallOp : uint32_t {
     LOG2,
     LOG10,
     POW,
+    FMOD,
     FRACT,
 
     SQRT,

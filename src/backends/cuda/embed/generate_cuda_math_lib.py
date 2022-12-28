@@ -370,6 +370,7 @@ def define_binary_func(func_name, param):
 def define_binary_funcs():
     tab = {
         "pow" : ["return powf(lhs, rhs);", ["float"]],
+        "fmod" : ["return fmodf(lhs, rhs);", ["float"]],
         "min" : ["return fminf(lhs, rhs);", ["int", "uint", "float"]],
         "max" : ["return fmaxf(lhs, rhs);", ["int", "uint", "float"]],
         "atan2" : ["return atan2f(lhs, rhs);", ["float"]],
