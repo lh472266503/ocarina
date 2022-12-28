@@ -80,10 +80,14 @@ rsqrt(const T &v) {
 }
 
 template<typename T>
-requires is_scalar_v<T>
+requires is_floating_point_v<T>
 [[nodiscard]] constexpr auto
 fract(const T &v) {
     return v - floorf(v);
+}
+
+[[nodiscard]] inline float mod(float x, float y) {
+    return x - y * floor(x / y);
 }
 
 template<typename T, typename U>
