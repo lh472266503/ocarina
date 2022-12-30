@@ -11,10 +11,10 @@
 #include "core/string_util.h"
 
 namespace ocarina {
-template<typename T>
+template<typename T,int... dims>
 class Buffer;
 
-template<typename T>
+template<typename T,int... dims>
 class BufferView;
 
 class Image;
@@ -128,8 +128,8 @@ struct TypeDesc<std::array<T, N>> {
     }
 };
 
-template<typename T>
-struct TypeDesc<Buffer<T>> {
+template<typename T, int ...Dims>
+struct TypeDesc<Buffer<T, Dims...>> {
     static_assert(alignof(T) >= 4u);
     static ocarina::string_view description() noexcept {
         static thread_local auto s = ocarina::format(

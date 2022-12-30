@@ -248,10 +248,10 @@ constexpr auto is_signed_element_v = is_signed_element<T>::value;
 
 #undef EXPR_VECTOR_TYPE_TRAITS
 
-template<typename T>
+template<typename T,int ...dims>
 class Buffer;
 
-template<typename T>
+template<typename T,int... dims>
 class BufferView;
 
 class Image;

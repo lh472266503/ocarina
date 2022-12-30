@@ -15,7 +15,7 @@
 namespace ocarina {
 class Context;
 
-template<typename T>
+template<typename T, int... Dims>
 class Buffer;
 
 template<typename T>
@@ -75,9 +75,9 @@ public:
     explicit Device(Handle impl) : _impl(std::move(impl)) {}
     [[nodiscard]] Context *context() const noexcept { return _impl->_context; }
 
-    template<typename T = std::byte>
-    [[nodiscard]] Buffer<T> create_buffer(size_t size) noexcept {
-        return Buffer<T>(_impl.get(), size);
+    template<typename T = std::byte, int... Dims>
+    [[nodiscard]] Buffer<T, Dims...> create_buffer(size_t size) noexcept {
+        return Buffer<T, Dims...>(_impl.get(), size);
     }
 
     template<typename T = std::byte>

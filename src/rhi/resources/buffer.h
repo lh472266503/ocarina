@@ -9,10 +9,10 @@
 
 namespace ocarina {
 
-template<typename T>
+template<typename T, int... Dims>
 class Buffer;
 
-template<typename T>
+template<typename T, int... Dims>
 class BufferView {
 public:
     static constexpr size_t element_size = sizeof(T);
@@ -24,7 +24,7 @@ private:
     size_t _total_size{};
 
 public:
-    BufferView(const Buffer<T> &buffer);
+    BufferView(const Buffer<T, Dims...> &buffer);
     [[nodiscard]] handle_ty handle() const { return _handle; }
     [[nodiscard]] size_t size() const { return _size; }
     BufferView(handle_ty handle, size_t offset, size_t size, size_t total_size)
@@ -56,15 +56,16 @@ public:
     }
 };
 
-template<typename T = std::byte>
+template<typename T = std::byte, int... Dims>
 class Buffer : public RHIResource {
 public:
     static constexpr size_t element_size = sizeof(T);
     using element_type = T;
+    static constexpr std::array<int, sizeof...(Dims)> dims = {Dims...};
+    static constexpr bool has_multi_dim() noexcept { return !dims.empty(); }
 
 private:
     size_t _size{};
-    vector<int> _dims;
 
 public:
     Buffer() = default;
@@ -73,7 +74,7 @@ public:
         : RHIResource(device, Tag::BUFFER, device->create_buffer(size * sizeof(T))),
           _size(size) {}
 
-    Buffer(BufferView<T> buffer_view)
+    Buffer(BufferView<T, Dims...> buffer_view)
         : RHIResource(nullptr, Tag::BUFFER, buffer_view.head()),
           _size(buffer_view.size()) {}
 
@@ -93,15 +94,6 @@ public:
         RHIResource::operator=(std::move(other));
         this->_size = other._size;
         return *this;
-    }
-
-    void set_dims(vector<int> dims) noexcept { _dims = move(dims); }
-
-    template<typename... Args>
-    requires concepts::all_integral<Args...>
-    void set_dims(Args ...args) {
-        vector<int> dims = {OC_FORWARD(args)...};
-        set_dims(move(dims));
     }
 
     template<typename U>
@@ -128,18 +120,18 @@ public:
     requires ocarina::is_integral_v<expr_value_t<Index>>
         OC_NODISCARD auto
         read(Index &&index) const {
-        const ArgumentBinding &uniform = Function::current()->get_uniform_var(Type::of<Buffer<T>>(),
-                                                                             Variable::Tag::BUFFER,
-                                                                             memory_block());
+        const ArgumentBinding &uniform = Function::current()->get_uniform_var(Type::of<decltype(*this)>(),
+                                                                              Variable::Tag::BUFFER,
+                                                                              memory_block());
         return make_expr<Buffer<T>>(uniform.expression()).read(OC_FORWARD(index));
     }
 
     template<typename Index, typename Val>
     requires concepts::integral<expr_value_t<Index>> && concepts::is_same_v<element_type, expr_value_t<Val>>
     void write(Index &&index, Val &&elm) {
-        const ArgumentBinding &uniform = Function::current()->get_uniform_var(Type::of<Buffer<T>>(),
-                                                                             Variable::Tag::BUFFER,
-                                                                             memory_block());
+        const ArgumentBinding &uniform = Function::current()->get_uniform_var(Type::of<decltype(*this)>(),
+                                                                              Variable::Tag::BUFFER,
+                                                                              memory_block());
         const AccessExpr *expr = Function::current()->access(Type::of<element_type>(),
                                                              uniform.expression(),
                                                              OC_EXPR(index));
@@ -181,8 +173,8 @@ public:
     }
 };
 
-template<typename T>
-BufferView<T>::BufferView(const Buffer<T> &buffer)
+template<typename T, int... dims>
+BufferView<T, dims...>::BufferView(const Buffer<T, dims...> &buffer)
     : BufferView(buffer.handle(), buffer.size()) {}
 
 }// namespace ocarina
