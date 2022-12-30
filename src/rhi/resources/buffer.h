@@ -95,7 +95,7 @@ public:
         return *this;
     }
 
-    void set_dims(vector<uint> dims) noexcept { _dims = move(dims); }
+    void set_dims(vector<int> dims) noexcept { _dims = move(dims); }
 
     template<typename... Args>
     requires concepts::all_integral<Args...>
