@@ -64,6 +64,7 @@ public:
 
 private:
     size_t _size{};
+    vector<int> _dims;
 
 public:
     Buffer() = default;
@@ -92,6 +93,15 @@ public:
         RHIResource::operator=(std::move(other));
         this->_size = other._size;
         return *this;
+    }
+
+    void set_dims(vector<uint> dims) noexcept { _dims = move(dims); }
+
+    template<typename... Args>
+    requires concepts::all_integral<Args...>
+    void set_dims(Args ...args) {
+        vector<int> dims = {OC_FORWARD(args)...};
+        set_dims(move(dims));
     }
 
     template<typename U>
