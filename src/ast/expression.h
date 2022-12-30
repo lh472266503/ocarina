@@ -124,21 +124,42 @@ public:
 
 class OC_AST_API AccessExpr : public Expression {
 private:
+    using IndexVector = vector<const Expression *>;
+
+private:
     const Expression *_range;
-    const Expression *_index;
+    IndexVector _indexes;
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
     AccessExpr(const Type *type, const Expression *range, const Expression *index)
-        : Expression(Tag::ACCESS, type), _range(range), _index(index) {
+        : Expression(Tag::ACCESS, type), _range(range) {
         _range->mark(Usage::READ);
-        _index->mark(Usage::READ);
+        _indexes.push_back(index);
+        for_each_index([](const Expression *index) {
+            index->mark(Usage::READ);
+        });
+    }
+
+    AccessExpr(const Type *type, const Expression *range, IndexVector indexes)
+        : Expression(Tag::ACCESS, type), _range(range), _indexes(move(indexes)) {
+        _range->mark(Usage::READ);
+        for_each_index([](const Expression *index) {
+            index->mark(Usage::READ);
+        });
+    }
+
+    template<typename Func>
+    void for_each_index(Func &&func) const noexcept {
+        for (const Expression *index : _indexes) {
+            func(index);
+        }
     }
 
     [[nodiscard]] const Expression *range() const noexcept { return _range; }
-    [[nodiscard]] const Expression *index() const noexcept { return _index; }
+    [[nodiscard]] const Expression *index(int i) const noexcept { return _indexes.at(i); }
     OC_MAKE_EXPRESSION_ACCEPT_VISITOR
 };
 

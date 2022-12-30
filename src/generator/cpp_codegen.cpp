@@ -233,9 +233,11 @@ void CppCodegen::visit(const MemberExpr *expr) noexcept {
 }
 void CppCodegen::visit(const AccessExpr *expr) noexcept {
     expr->range()->accept(*this);
-    current_scratch() << "[";
-    expr->index()->accept(*this);
-    current_scratch() << "]";
+    expr->for_each_index([&](const Expression *index) {
+        current_scratch() << "[";
+        index->accept(*this);
+        current_scratch() << "]";
+    });
 }
 void CppCodegen::visit(const LiteralExpr *expr) noexcept {
     ocarina::visit(

@@ -16,7 +16,11 @@ uint64_t LiteralExpr::_compute_hash() const noexcept {
     return ocarina::visit([&](auto &&arg) { return hash64(std::forward<decltype(arg)>(arg)); }, _value);
 }
 uint64_t AccessExpr::_compute_hash() const noexcept {
-    return hash64(_index->hash(), _range->hash());
+    uint64_t ret = _range->hash();
+    for_each_index([&](const Expression *index) {
+        ret = hash64(index->hash(), ret);
+    });
+    return ret;
 }
 uint64_t UnaryExpr::_compute_hash() const noexcept {
     return hash64(_op, _operand->hash());
