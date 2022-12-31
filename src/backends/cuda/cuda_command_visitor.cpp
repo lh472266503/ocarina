@@ -51,8 +51,8 @@ void CUDACommandVisitor::visit(const ShaderDispatchCommand *cmd) noexcept {
 
 namespace detail {
 
-[[nodiscard]] CUDA_MEMCPY2D memcpy_desc(const ImageOpCommand *cmd) noexcept {
-    CUDA_MEMCPY2D memcpy_desc{};
+[[nodiscard]] CUDA_MEMCPY3D memcpy_desc(const TextureOpCommand *cmd) noexcept {
+    CUDA_MEMCPY3D memcpy_desc{};
     memcpy_desc.srcXInBytes = 0;
     memcpy_desc.srcY = 0;
     memcpy_desc.srcPitch = cmd->width_in_bytes();
@@ -61,37 +61,38 @@ namespace detail {
     memcpy_desc.dstY = 0;
     memcpy_desc.WidthInBytes = cmd->width_in_bytes();
     memcpy_desc.Height = cmd->height();
+    memcpy_desc.Depth = cmd->depth();
     return memcpy_desc;
 }
 
 }// namespace detail
 
-void CUDACommandVisitor::visit(const ImageUploadCommand *cmd) noexcept {
+void CUDACommandVisitor::visit(const TextureUploadCommand *cmd) noexcept {
     _device->use_context([&] {
-        CUDA_MEMCPY2D desc = detail::memcpy_desc(cmd);
+        CUDA_MEMCPY3D desc = detail::memcpy_desc(cmd);
         desc.srcMemoryType = CU_MEMORYTYPE_HOST;
         desc.srcHost = cmd->host_ptr<const void *>();
         desc.dstMemoryType = CU_MEMORYTYPE_ARRAY;
         desc.dstArray = cmd->device_ptr<CUarray>();
         if (cmd->async() && _stream) {
-            OC_CU_CHECK(cuMemcpy2DAsync(&desc, _stream));
+            OC_CU_CHECK(cuMemcpy3DAsync(&desc, _stream));
         } else {
-            OC_CU_CHECK(cuMemcpy2D(&desc));
+            OC_CU_CHECK(cuMemcpy3D(&desc));
         }
     });
 }
 
-void CUDACommandVisitor::visit(const ImageDownloadCommand *cmd) noexcept {
+void CUDACommandVisitor::visit(const TextureDownloadCommand *cmd) noexcept {
     _device->use_context([&] {
-        CUDA_MEMCPY2D desc = detail::memcpy_desc(cmd);
+        CUDA_MEMCPY3D desc = detail::memcpy_desc(cmd);
         desc.srcMemoryType = CU_MEMORYTYPE_ARRAY;
         desc.dstMemoryType = CU_MEMORYTYPE_HOST;
         desc.srcArray = cmd->device_ptr<CUarray>();
         desc.dstHost = reinterpret_cast<void *>(cmd->host_ptr());
         if (cmd->async() && _stream) {
-            OC_CU_CHECK(cuMemcpy2DAsync(&desc, _stream));
+            OC_CU_CHECK(cuMemcpy3DAsync(&desc, _stream));
         } else {
-            OC_CU_CHECK(cuMemcpy2D(&desc));
+            OC_CU_CHECK(cuMemcpy3D(&desc));
         }
     });
 }

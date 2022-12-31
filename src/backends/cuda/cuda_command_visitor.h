@@ -20,8 +20,8 @@ public:
           _stream(stream) {}
     void visit(const BufferUploadCommand *cmd) noexcept override;
     void visit(const BufferDownloadCommand *cmd) noexcept override;
-    void visit(const ImageUploadCommand *cmd) noexcept override;
-    void visit(const ImageDownloadCommand *cmd) noexcept override;
+    void visit(const TextureUploadCommand *cmd) noexcept override;
+    void visit(const TextureDownloadCommand *cmd) noexcept override;
     void visit(const MeshBuildCommand *cmd) noexcept override;
     void visit(const AccelBuildCommand *cmd) noexcept override;
     void visit(const SynchronizeCommand *cmd) noexcept override;

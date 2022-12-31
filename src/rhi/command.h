@@ -11,14 +11,14 @@
 
 namespace ocarina {
 
-#define OC_RUNTIME_CMD         \
-    BufferUploadCommand,       \
-        BufferDownloadCommand, \
-        ImageUploadCommand,    \
-        ImageDownloadCommand,  \
-        SynchronizeCommand,    \
-        MeshBuildCommand,      \
-        AccelBuildCommand,     \
+#define OC_RUNTIME_CMD          \
+    BufferUploadCommand,        \
+        BufferDownloadCommand,  \
+        TextureUploadCommand,   \
+        TextureDownloadCommand, \
+        SynchronizeCommand,     \
+        MeshBuildCommand,       \
+        AccelBuildCommand,      \
         ShaderDispatchCommand
 
 /// forward declare
@@ -139,34 +139,37 @@ public:
     OC_MAKE_CMD_COMMON_FUNC(BufferDownloadCommand)
 };
 
-class ImageOpCommand : public DataOpCommand {
+class TextureOpCommand : public DataOpCommand {
 private:
     PixelStorage _pixel_storage{};
-    uint2 _resolution{};
+    uint3 _resolution{};
 
 public:
-    ImageOpCommand(handle_ty data, handle_ty device_ptr, uint2 resolution, PixelStorage storage, bool async)
+    TextureOpCommand(handle_ty data, handle_ty device_ptr, uint2 resolution, PixelStorage storage, bool async)
+        : DataOpCommand(data, device_ptr, async), _pixel_storage(storage), _resolution(resolution.x, resolution.y, 1) {}
+    TextureOpCommand(handle_ty data, handle_ty device_ptr, uint3 resolution, PixelStorage storage, bool async)
         : DataOpCommand(data, device_ptr, async), _pixel_storage(storage), _resolution(resolution) {}
     [[nodiscard]] PixelStorage pixel_storage() const noexcept { return _pixel_storage; }
     [[nodiscard]] size_t width() const noexcept { return _resolution.x; }
     [[nodiscard]] size_t height() const noexcept { return _resolution.y; }
+    [[nodiscard]] size_t depth() const noexcept { return _resolution.z; }
     [[nodiscard]] size_t width_in_bytes() const noexcept { return pixel_size(_pixel_storage) * width(); }
     [[nodiscard]] size_t size_in_bytes() const noexcept { return height() * width_in_bytes(); }
-    [[nodiscard]] uint2 resolution() const noexcept { return _resolution; }
+    [[nodiscard]] uint3 resolution() const noexcept { return _resolution; }
 };
 
-class ImageUploadCommand final : public ImageOpCommand {
+class TextureUploadCommand final : public TextureOpCommand {
 public:
-    ImageUploadCommand(const void *data, handle_ty device_ptr, uint2 resolution, PixelStorage storage, bool async)
-        : ImageOpCommand(reinterpret_cast<handle_ty>(data), device_ptr, resolution, storage, async) {}
-    OC_MAKE_CMD_COMMON_FUNC(ImageUploadCommand)
+    TextureUploadCommand(const void *data, handle_ty device_ptr, uint2 resolution, PixelStorage storage, bool async)
+        : TextureOpCommand(reinterpret_cast<handle_ty>(data), device_ptr, resolution, storage, async) {}
+    OC_MAKE_CMD_COMMON_FUNC(TextureUploadCommand)
 };
 
-class ImageDownloadCommand final : public ImageOpCommand {
+class TextureDownloadCommand final : public TextureOpCommand {
 public:
-    ImageDownloadCommand(void *data, handle_ty device_ptr, uint2 resolution, PixelStorage storage, bool async)
-        : ImageOpCommand(reinterpret_cast<handle_ty>(data), device_ptr, resolution, storage, async) {}
-    OC_MAKE_CMD_COMMON_FUNC(ImageDownloadCommand)
+    TextureDownloadCommand(void *data, handle_ty device_ptr, uint2 resolution, PixelStorage storage, bool async)
+        : TextureOpCommand(reinterpret_cast<handle_ty>(data), device_ptr, resolution, storage, async) {}
+    OC_MAKE_CMD_COMMON_FUNC(TextureDownloadCommand)
 };
 
 class SynchronizeCommand final : public Command {
