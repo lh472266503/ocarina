@@ -328,6 +328,8 @@ public:
     [[nodiscard]] constexpr size_t index() const noexcept { return _index; }
     [[nodiscard]] constexpr size_t size() const noexcept { return _size; }
     [[nodiscard]] constexpr size_t alignment() const noexcept { return _alignment; }
+    [[nodiscard]] const vector<int> &dims() const noexcept { return _dims; }
+    [[nodiscard]] bool has_multi_dims() const noexcept { return !_dims.empty(); }
     [[nodiscard]] constexpr Tag tag() const noexcept { return _tag; }
     [[nodiscard]] auto description() const noexcept { return ocarina::string_view{_description}; }
     [[nodiscard]] ocarina::string name() const noexcept { return _name; }
