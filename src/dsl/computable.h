@@ -70,12 +70,12 @@ struct EnableSubscriptAccess {
 template<typename T>
 struct EnableReadAndWrite {
     using element_type = std::remove_cvref_t<decltype(std::declval<expr_value_t<T>>()[0])>;
-    template<typename Index>
-    requires concepts::integral<expr_value_t<Index>>
-    auto read(Index &&index) const noexcept {
+    template<typename ...Index>
+    requires concepts::all_integral<expr_value_t<Index>...>
+    auto read(Index &&...index) const noexcept {
         const AccessExpr *expr = Function::current()->access(Type::of<element_type>(),
                                                              static_cast<const T *>(this)->expression(),
-                                                             OC_EXPR(index));
+                                                             {OC_EXPR(index)...});
         return eval<element_type>(expr);
     }
 

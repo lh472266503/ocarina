@@ -248,6 +248,8 @@ public:
     [[nodiscard]] const UnaryExpr *unary(const Type *type, UnaryOp op, const Expression *expression) noexcept;
     [[nodiscard]] const CastExpr *cast(const Type *type, CastOp op, const Expression *expression) noexcept;
     [[nodiscard]] const AccessExpr *access(const Type *type, const Expression *range, const Expression *index) noexcept;
+    [[nodiscard]] const AccessExpr *access(const Type *type, const Expression *range,
+                                           vector<const Expression *> indexes) noexcept;
     [[nodiscard]] const MemberExpr *swizzle(const Type *type, const Expression *obj, uint16_t mask, uint16_t swizzle_size) noexcept;
     [[nodiscard]] const MemberExpr *member(const Type *type, const Expression *obj, int index) noexcept;
     const CallExpr *call(const Type *type, const Function *func, ocarina::vector<const Expression *> args) noexcept;

@@ -116,14 +116,14 @@ public:
     /// for dsl trait
     auto operator[](int i) { return T{}; }
 
-    template<typename Index>
-    requires ocarina::is_integral_v<expr_value_t<Index>>
+    template<typename ...Index>
+    requires concepts::all_integral<expr_value_t<Index>...>
         OC_NODISCARD auto
-        read(Index &&index) const {
+        read(Index &&...index) const {
         const ArgumentBinding &uniform = Function::current()->get_uniform_var(Type::of<decltype(*this)>(),
                                                                               Variable::Tag::BUFFER,
                                                                               memory_block());
-        return make_expr<Buffer<T>>(uniform.expression()).read(OC_FORWARD(index));
+        return make_expr<Buffer<T>>(uniform.expression()).read(OC_FORWARD(index)...);
     }
 
     template<typename Index, typename Val>

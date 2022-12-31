@@ -127,6 +127,11 @@ const AccessExpr *Function::access(const Type *type, const Expression *range, co
     return _create_expression<AccessExpr>(type, range, index);
 }
 
+const AccessExpr *Function::access(const Type *type, const Expression *range,
+                                   vector<const Expression *> indexes) noexcept {
+    return _create_expression<AccessExpr>(type, range, indexes);
+}
+
 const MemberExpr *Function::swizzle(const Type *type, const Expression *obj, uint16_t mask, uint16_t swizzle_size) noexcept {
     return _create_expression<MemberExpr>(type, obj, mask, swizzle_size);
 }
