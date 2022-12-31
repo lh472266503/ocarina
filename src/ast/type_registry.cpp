@@ -242,6 +242,9 @@ void TypeRegistry::parse_buffer(Type *type, ocarina::string_view desc) noexcept 
     auto type_str = lst[0];
     const Type *element_type = parse_type(type_str);
     type->_members.push_back(element_type);
+    for (int i = 1; i < lst.size(); ++i) {
+        type->_dims.push_back(std::stoi(lst[i].data()));
+    }
     auto alignment = element_type->alignment();
     type->_alignment = alignment;
 }

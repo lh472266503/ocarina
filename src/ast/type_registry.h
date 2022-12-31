@@ -132,10 +132,13 @@ template<typename T, int ...Dims>
 struct TypeDesc<Buffer<T, Dims...>> {
     static_assert(alignof(T) >= 4u);
     static ocarina::string_view description() noexcept {
-        static thread_local auto s = ocarina::format(
-            "buffer<{}>",
-            TypeDesc<T>::description());
-        return s;
+        static thread_local string str = []() -> string {
+            auto ret = ocarina::format("buffer<{}", TypeDesc<T>::description());
+            (ret.append(",").append(to_string(Dims)), ...);
+            ret.append(">");
+            return ret;
+        }();
+        return string_view(str);
     }
     static ocarina::string_view name() noexcept {
         return description();
