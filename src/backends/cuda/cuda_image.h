@@ -5,12 +5,12 @@
 #pragma once
 
 #include "core/stl.h"
-#include "rhi/resources/image.h"
+#include "rhi/resources/texture.h"
 #include <cuda.h>
 
 namespace ocarina {
 class CUDADevice;
-class CUDAImage : public Image::Impl {
+class CUDAImage : public RHITexture::Impl {
 private:
     ImageData _image_data;
     CUDADevice *_device{};

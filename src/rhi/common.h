@@ -10,7 +10,7 @@
 #include "resources/stream.h"
 #include "resources/shader.h"
 #include "resources/buffer.h"
-#include "resources/image.h"
+#include "resources/texture.h"
 #include "resources/bindless_array.h"
 #include "managed.h"
 #include "rtx/mesh.h"

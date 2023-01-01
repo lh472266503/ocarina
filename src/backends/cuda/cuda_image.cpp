@@ -15,9 +15,10 @@ CUDAImage::CUDAImage(CUDADevice *device, uint2 res, PixelStorage pixel_storage)
 }
 
 void CUDAImage::init() {
-    CUDA_ARRAY_DESCRIPTOR array_desc{};
+    CUDA_ARRAY3D_DESCRIPTOR array_desc{};
     array_desc.Width = _res.x;
     array_desc.Height = _res.y;
+    array_desc.Depth = 1;
     switch (_image_data.pixel_storage) {
         case PixelStorage::BYTE1:
             array_desc.Format = CU_AD_FORMAT_UNSIGNED_INT8;
@@ -46,7 +47,7 @@ void CUDAImage::init() {
         default: OC_ASSERT(0); break;
     }
 
-    OC_CU_CHECK(cuArrayCreate(&_array_handle, &array_desc));
+    OC_CU_CHECK(cuArray3DCreate(&_array_handle, &array_desc));
 
     CUDA_RESOURCE_DESC res_desc{};
     res_desc.resType = CU_RESOURCE_TYPE_ARRAY;

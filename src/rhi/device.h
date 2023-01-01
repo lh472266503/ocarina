@@ -26,7 +26,7 @@ class Shader;
 
 class Stream;
 
-class Image;
+class RHITexture;
 
 class Mesh;
 
@@ -93,7 +93,7 @@ public:
     [[nodiscard]] Stream create_stream() noexcept;
     [[nodiscard]] Accel create_accel() noexcept;
     void init_rtx() noexcept { _impl->init_rtx(); }
-    [[nodiscard]] Image create_image(uint2 res, PixelStorage storage) noexcept;
+    [[nodiscard]] RHITexture create_image(uint2 res, PixelStorage storage) noexcept;
     template<typename T>
     [[nodiscard]] auto compile(const Kernel<T> &kernel, ShaderTag tag = CS) noexcept {
         return _create<Shader<T>>(kernel.function(), tag);

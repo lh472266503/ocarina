@@ -87,7 +87,7 @@ struct Var<Vector<T, 4>> : public Computable<Vector<T, 4>> {
 template<typename T>
 using BufferVar = Var<Buffer<T>>;
 
-using ImageVar = Var<Image>;
+using ImageVar = Var<RHITexture>;
 
 #define OC_MAKE_DSL_TYPE_IMPL(dsl_type, type, dim) \
     using dsl_type##dim = Var<type##dim>;

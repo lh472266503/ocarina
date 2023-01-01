@@ -26,8 +26,8 @@ struct prototype_to_shader_invocation<Buffer<T>> {
 };
 
 template<>
-struct prototype_to_shader_invocation<Image> {
-    using type = const Image &;
+struct prototype_to_shader_invocation<RHITexture> {
+    using type = const RHITexture &;
 };
 }// namespace detail
 
@@ -60,7 +60,7 @@ private:
         push_memory_block(buffer.memory_block());
     }
 
-    void _encode_image(const Image &image) noexcept;
+    void _encode_image(const RHITexture &image) noexcept;
 
     void _encode_accel(const Accel &accel) noexcept {
         push_memory_block(accel.memory_block());
