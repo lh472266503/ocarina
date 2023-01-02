@@ -10,7 +10,7 @@
 
 namespace ocarina {
 class CUDADevice;
-class CUDAImage : public RHITexture::Impl {
+class CUDATexture : public RHITexture::Impl {
 private:
     ImageData _image_data;
     CUDADevice *_device{};
@@ -18,8 +18,8 @@ private:
     CUarray _array_handle{};
 
 public:
-    CUDAImage(CUDADevice *device, uint2 res, PixelStorage pixel_storage);
-    ~CUDAImage();
+    CUDATexture(CUDADevice *device, uint2 res, PixelStorage pixel_storage);
+    ~CUDATexture();
     void init();
     [[nodiscard]] uint2 resolution() const noexcept override { return _res; }
     [[nodiscard]] handle_ty array_handle() const noexcept override { return reinterpret_cast<handle_ty>(_array_handle); }
