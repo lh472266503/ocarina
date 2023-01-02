@@ -165,8 +165,8 @@ const Type *TypeRegistry::parse_type(ocarina::string_view desc) noexcept {
         parse_struct(type.get(), desc);
     } else if (desc.starts_with("buffer")) {
         parse_buffer(type.get(), desc);
-    } else if (desc.starts_with("image")) {
-        parse_image(type.get(), desc);
+    } else if (desc.starts_with("texture")) {
+        parse_texture(type.get(), desc);
     } else if (desc.starts_with("accel")) {
         parse_accel(type.get(), desc);
     } else {
@@ -249,9 +249,9 @@ void TypeRegistry::parse_buffer(Type *type, ocarina::string_view desc) noexcept 
     type->_alignment = alignment;
 }
 
-void TypeRegistry::parse_image(Type *type, ocarina::string_view desc) noexcept {
-    type->_tag = Type::Tag::IMAGE;
-    type->_alignment = alignof(ImageData);
+void TypeRegistry::parse_texture(Type *type, ocarina::string_view desc) noexcept {
+    type->_tag = Type::Tag::TEXTURE;
+    type->_alignment = alignof(OCTexture);
 }
 
 void TypeRegistry::parse_accel(Type *type, ocarina::string_view desc) noexcept {

@@ -19,7 +19,7 @@ public:
         switch (tag) {
             case Tag::BUFFER: return sizeof(handle_ty);
             case Tag::ACCEL: return sizeof(handle_ty);
-            case Tag::IMAGE: return sizeof(ImageData);
+            case Tag::TEXTURE: return sizeof(OCTexture);
             default:
                 return 0;
         }
@@ -34,7 +34,7 @@ public:
         switch (tag) {
             case Tag::BUFFER: return alignof(handle_ty);
             case Tag::ACCEL: return alignof(handle_ty);
-            case Tag::IMAGE: return alignof(ImageData);
+            case Tag::TEXTURE: return alignof(OCTexture);
             default:
                 return 0;
         }

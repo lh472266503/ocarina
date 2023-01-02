@@ -103,7 +103,7 @@ OC_NDSC_INLINE size_t channel_num(PixelStorage pixel_storage) {
     return 4u;
 }
 
-struct ImageData {
+struct OCTexture {
     handle_ty texture{};
     handle_ty surface{};
     PixelStorage pixel_storage{};

@@ -321,8 +321,8 @@ void CUDACodegen::_emit_type_name(const Type *type) noexcept {
                 _emit_type_name(type->element());
                 current_scratch() << "*__restrict__ ";
                 break;
-            case Type::Tag::IMAGE:
-                current_scratch() << "ImageData";
+            case Type::Tag::TEXTURE:
+                current_scratch() << "OCTexture";
                 break;
             case Type::Tag::BINDLESS_ARRAY: break;
             case Type::Tag::ACCEL:

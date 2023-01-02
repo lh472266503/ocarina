@@ -148,7 +148,7 @@ struct TypeDesc<Buffer<T, Dims...>> {
 template<>
 struct TypeDesc<RHITexture> {
     static ocarina::string_view description() noexcept {
-        return "image";
+        return "texture";
     }
     static ocarina::string_view name() noexcept {
         return description();
@@ -282,7 +282,7 @@ private:
     void parse_matrix(Type *type, ocarina::string_view desc) noexcept;
     void parse_array(Type *type, ocarina::string_view desc) noexcept;
     void parse_buffer(Type *type, ocarina::string_view desc) noexcept;
-    void parse_image(Type *type, ocarina::string_view desc) noexcept;
+    void parse_texture(Type *type, ocarina::string_view desc) noexcept;
     void parse_accel(Type *type, ocarina::string_view desc) noexcept;
     void parse_struct(Type *type, ocarina::string_view desc) noexcept;
 

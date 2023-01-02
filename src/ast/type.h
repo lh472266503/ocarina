@@ -286,7 +286,7 @@ public:
         STRUCTURE,
 
         BUFFER,
-        IMAGE,
+        TEXTURE,
         BINDLESS_ARRAY,
         ACCEL,
 
@@ -347,7 +347,7 @@ public:
     [[nodiscard]] constexpr bool is_matrix() const noexcept { return _tag == Tag::MATRIX; }
     [[nodiscard]] constexpr bool is_structure() const noexcept { return _tag == Tag::STRUCTURE; }
     [[nodiscard]] constexpr bool is_buffer() const noexcept { return _tag == Tag::BUFFER; }
-    [[nodiscard]] constexpr bool is_image() const noexcept { return _tag == Tag::IMAGE; }
+    [[nodiscard]] constexpr bool is_image() const noexcept { return _tag == Tag::TEXTURE; }
     [[nodiscard]] constexpr bool is_bindless_array() const noexcept { return _tag == Tag::BINDLESS_ARRAY; }
     [[nodiscard]] constexpr bool is_accel() const noexcept { return _tag == Tag::ACCEL; }
 };

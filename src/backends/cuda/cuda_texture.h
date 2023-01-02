@@ -12,7 +12,7 @@ namespace ocarina {
 class CUDADevice;
 class CUDATexture : public RHITexture::Impl {
 private:
-    ImageData _image_data;
+    OCTexture _image_data;
     CUDADevice *_device{};
     uint2 _res{};
     CUarray _array_handle{};

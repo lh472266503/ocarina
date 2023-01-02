@@ -69,8 +69,8 @@ CUDATexture::~CUDATexture() {
     OC_CU_CHECK(cuTexObjectDestroy(_image_data.texture));
     OC_CU_CHECK(cuSurfObjectDestroy(_image_data.surface));
 }
-size_t CUDATexture::data_size() const noexcept { return CUDADevice::size(Type::Tag::IMAGE); }
-size_t CUDATexture::data_alignment() const noexcept { return CUDADevice::alignment(Type::Tag::IMAGE); }
+size_t CUDATexture::data_size() const noexcept { return CUDADevice::size(Type::Tag::TEXTURE); }
+size_t CUDATexture::data_alignment() const noexcept { return CUDADevice::alignment(Type::Tag::TEXTURE); }
 size_t CUDATexture::max_member_size() const noexcept { return sizeof(handle_ty); }
 
 }// namespace ocarina

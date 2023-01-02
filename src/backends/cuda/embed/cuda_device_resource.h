@@ -15,7 +15,7 @@ enum struct OCPixelStorage : oc_uint {
     UNKNOWN
 };
 
-struct ImageData {
+struct OCTexture {
     cudaTextureObject_t texture;
     cudaSurfaceObject_t surface;
     OCPixelStorage pixel_storage;
@@ -50,15 +50,15 @@ template<class To, class From>
 
 using uchar = unsigned char;
 
-__device__ auto oc_tex_sample_float1(ImageData obj, oc_float u, oc_float v) noexcept {
+__device__ auto oc_tex_sample_float1(OCTexture obj, oc_float u, oc_float v) noexcept {
     auto ret = tex3D<float>(obj.texture, u, v, 0);
     return ret;
 }
-__device__ auto oc_tex_sample_float2(ImageData obj, oc_float u, oc_float v) noexcept {
+__device__ auto oc_tex_sample_float2(OCTexture obj, oc_float u, oc_float v) noexcept {
     auto ret = tex3D<float2>(obj.texture, u, v, 0);
     return oc_make_float2(ret.x, ret.y);
 }
-__device__ auto oc_tex_sample_float4(ImageData obj, oc_float u, oc_float v) noexcept {
+__device__ auto oc_tex_sample_float4(OCTexture obj, oc_float u, oc_float v) noexcept {
     auto ret = tex3D<float4>(obj.texture, u, v, 0);
     return oc_make_float4(ret.x, ret.y, ret.z, ret.w);
 }
@@ -178,7 +178,7 @@ __device__ auto oc_fit(const Src &src) noexcept {
 }
 
 template<typename T>
-__device__ T oc_image_read(ImageData obj, oc_uint x, oc_uint y) noexcept {
+__device__ T oc_image_read(OCTexture obj, oc_uint x, oc_uint y) noexcept {
     if constexpr (oc_is_same_v<T, uchar> || oc_is_same_v<T, float>) {
         switch (obj.pixel_storage) {
             case OCPixelStorage::BYTE1: {
@@ -227,7 +227,7 @@ __device__ T oc_image_read(ImageData obj, oc_uint x, oc_uint y) noexcept {
 }
 
 template<typename T>
-__device__ void oc_image_write(ImageData obj, oc_uint x, oc_uint y, T val) noexcept {
+__device__ void oc_image_write(OCTexture obj, oc_uint x, oc_uint y, T val) noexcept {
     if constexpr (oc_is_same_v<T, uchar> || oc_is_same_v<T, float>) {
         switch (obj.pixel_storage) {
             case OCPixelStorage::BYTE1: {
