@@ -166,7 +166,7 @@ struct EnableTextureSample {
 
     template<typename Output, typename U, typename V>
     requires(is_all_floating_point_expr_v<U, V>)
-    OC_NODISCARD auto sample(const U &u, const V &v) const noexcept {
+        OC_NODISCARD auto sample(const U &u, const V &v) const noexcept {
         const T *texture = static_cast<const T *>(this);
         const CallExpr *expr = Function::current()->call_builtin(Type::of<Output>(),
                                                                  CallOp::TEX_SAMPLE,
@@ -176,9 +176,26 @@ struct EnableTextureSample {
         return make_expr<Output>(expr);
     }
 
+    template<typename Output, typename U, typename V, typename W>
+    requires(is_all_floating_point_expr_v<U, V, W>)
+        OC_NODISCARD auto sample(const U &u, const V &v, const W &w) const noexcept {
+        const T *texture = static_cast<const T *>(this);
+        const CallExpr *expr = Function::current()->call_builtin(Type::of<Output>(),
+                                                                 CallOp::TEX_SAMPLE,
+                                                                 {texture->expression(),
+                                                                  OC_EXPR(u), OC_EXPR(v), OC_EXPR(w)});
+        return make_expr<Output>(expr);
+    }
+
+    template<typename Output, typename UVW>
+    requires(is_float_vector3_v<expr_value_t<UVW>>)
+        OC_NODISCARD auto sample(const UVW &uvw) const noexcept {
+        return sample<Output>(uvw.x, uvw.y, uvw.z);
+    }
+
     template<typename Output, typename UV>
     requires(is_float_vector2_v<expr_value_t<UV>>)
-    OC_NODISCARD auto sample(const UV &uv) const noexcept {
+        OC_NODISCARD auto sample(const UV &uv) const noexcept {
         return sample<Output>(uv.x, uv.y);
     }
 };

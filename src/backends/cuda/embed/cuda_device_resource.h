@@ -50,16 +50,16 @@ template<class To, class From>
 
 using uchar = unsigned char;
 
-__device__ auto oc_tex_sample_float1(OCTexture obj, oc_float u, oc_float v) noexcept {
-    auto ret = tex3D<float>(obj.texture, u, v, 0);
+__device__ auto oc_tex_sample_float1(OCTexture obj, oc_float u, oc_float v, oc_float w = 0.f) noexcept {
+    auto ret = tex3D<float>(obj.texture, u, v, w);
     return ret;
 }
-__device__ auto oc_tex_sample_float2(OCTexture obj, oc_float u, oc_float v) noexcept {
-    auto ret = tex3D<float2>(obj.texture, u, v, 0);
+__device__ auto oc_tex_sample_float2(OCTexture obj, oc_float u, oc_float v, oc_float w = 0.f) noexcept {
+    auto ret = tex3D<float2>(obj.texture, u, v, w);
     return oc_make_float2(ret.x, ret.y);
 }
-__device__ auto oc_tex_sample_float4(OCTexture obj, oc_float u, oc_float v) noexcept {
-    auto ret = tex3D<float4>(obj.texture, u, v, 0);
+__device__ auto oc_tex_sample_float4(OCTexture obj, oc_float u, oc_float v, oc_float w = 0.f) noexcept {
+    auto ret = tex3D<float4>(obj.texture, u, v, w);
     return oc_make_float4(ret.x, ret.y, ret.z, ret.w);
 }
 
