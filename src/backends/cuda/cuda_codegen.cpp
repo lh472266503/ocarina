@@ -88,15 +88,15 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         case CallOp::TEX_SAMPLE:
             current_scratch() << "oc_tex_sample_float" << expr->type()->dimension();
             break;
-        case CallOp::IMAGE_READ: {
+        case CallOp::TEX_READ: {
             auto t_args = expr->template_args();
             auto output_type = t_args[0];
-            current_scratch() << ocarina::format("oc_image_read<oc_{}>",
+            current_scratch() << ocarina::format("oc_texture_read<oc_{}>",
                                                  output_type->name());
             break;
         }
-        case CallOp::IMAGE_WRITE: {
-            current_scratch() << "oc_image_write";
+        case CallOp::TEX_WRITE: {
+            current_scratch() << "oc_texture_write";
             break;
         }
         case CallOp::COUNT: break;

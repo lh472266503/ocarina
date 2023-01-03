@@ -90,14 +90,24 @@ struct EnableReadAndWrite {
 };
 
 template<typename T>
-struct EnableImageReadAndWrite {
+struct EnableTextureReadAndWrite {
 
     template<typename Output, typename X, typename Y>
     requires(is_all_integral_expr_v<X, Y>)
-    OC_NODISCARD auto read(const X &x, const Y &y) const noexcept {
+        OC_NODISCARD auto read(const X &x, const Y &y) const noexcept {
         const T *texture = static_cast<const T *>(this);
-        const CallExpr *expr = Function::current()->call_builtin(Type::of<Output>(), CallOp::IMAGE_READ,
+        const CallExpr *expr = Function::current()->call_builtin(Type::of<Output>(), CallOp::TEX_READ,
                                                                  {texture->expression(), OC_EXPR(x), OC_EXPR(y)},
+                                                                 {Type::of<Output>()});
+        return eval<Output>(expr);
+    }
+
+    template<typename Output, typename X, typename Y, typename Z>
+    requires(is_all_integral_expr_v<X, Y, Z>)
+        OC_NODISCARD auto read(const X &x, const Y &y, const Z &z) const noexcept {
+        const T *texture = static_cast<const T *>(this);
+        const CallExpr *expr = Function::current()->call_builtin(Type::of<Output>(), CallOp::TEX_READ,
+                                                                 {texture->expression(), OC_EXPR(x), OC_EXPR(y), OC_EXPR(z)},
                                                                  {Type::of<Output>()});
         return eval<Output>(expr);
     }
@@ -106,24 +116,47 @@ struct EnableImageReadAndWrite {
     requires(is_int_vector2_v<expr_value_t<XY>> ||
              is_uint_vector2_v<expr_value_t<XY>> &&
                  (is_uchar_element_expr_v<Target> || is_float_element_expr_v<Target>))
-    OC_NODISCARD auto read(const XY &xy) const noexcept {
+        OC_NODISCARD auto read(const XY &xy) const noexcept {
         return read<Target>(xy.x, xy.y);
+    }
+
+    template<typename Target, typename XYZ>
+    requires(is_int_vector3_v<expr_value_t<XYZ>> ||
+             is_uint_vector3_v<expr_value_t<XYZ>> &&
+                 (is_uchar_element_expr_v<Target> || is_float_element_expr_v<Target>))
+        OC_NODISCARD auto read(const XYZ &xyz) const noexcept {
+        return read<Target>(xyz.x, xyz.y, xyz.z);
     }
 
     template<typename X, typename Y, typename Val>
     requires(is_all_integral_expr_v<X, Y> &&
-             (is_uchar_element_expr_v<Val> || is_float_element_expr_v<Val>))
-    void write(const X &x, const Y &y, const Val &elm) noexcept {
+             (is_uchar_element_expr_v<Val> ||
+              is_float_element_expr_v<Val>)) void write(const X &x, const Y &y, const Val &elm) noexcept {
         const T *texture = static_cast<const T *>(this);
-        const CallExpr *expr = Function::current()->call_builtin(Type::of<uchar4>(), CallOp::IMAGE_WRITE,
+        const CallExpr *expr = Function::current()->call_builtin(Type::of<uchar4>(), CallOp::TEX_WRITE,
                                                                  {texture->expression(),
-                                                                  OC_EXPR(x), OC_EXPR(y), OC_EXPR(elm)});
+                                                                  OC_EXPR(elm), OC_EXPR(x), OC_EXPR(y)});
         Function::current()->expr_statement(expr);
     }
 
+    template<typename X, typename Y, typename Z, typename Val>
+    requires(is_all_integral_expr_v<X, Y, Z> &&
+             (is_uchar_element_expr_v<Val> ||
+              is_float_element_expr_v<Val>)) void write(const X &x, const Y &y, const Z &z, const Val &elm) noexcept {
+        const T *texture = static_cast<const T *>(this);
+        const CallExpr *expr = Function::current()->call_builtin(Type::of<uchar4>(), CallOp::TEX_WRITE,
+                                                                 {texture->expression(),
+                                                                  OC_EXPR(elm), OC_EXPR(x), OC_EXPR(y), OC_EXPR(z)});
+        Function::current()->expr_statement(expr);
+    }
+
+    template<typename XYZ, typename Val>
+    requires(is_uint_vector3_v<expr_value_t<XYZ>>) void write(const XYZ &xyz, const Val &elm) noexcept {
+        write(xyz.x, xyz.y, xyz.z, elm);
+    }
+
     template<typename XY, typename Val>
-    requires(is_uint_vector2_v<expr_value_t<XY>>)
-    void write(const XY &xy, const Val &elm) noexcept {
+    requires(is_uint_vector2_v<expr_value_t<XY>>) void write(const XY &xy, const Val &elm) noexcept {
         write(xy.x, xy.y, elm);
     }
 };
@@ -280,7 +313,7 @@ struct Computable<Buffer<T>>
 template<>
 struct Computable<RHITexture>
     : detail::EnableTextureSample<Computable<RHITexture>>,
-      detail::EnableImageReadAndWrite<Computable<RHITexture>> {
+      detail::EnableTextureReadAndWrite<Computable<RHITexture>> {
     OC_COMPUTABLE_COMMON(Computable<RHITexture>)
 };
 

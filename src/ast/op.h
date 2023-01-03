@@ -111,8 +111,8 @@ enum struct CallOp : uint32_t {
     INVERSE,
 
     TEX_SAMPLE,
-    IMAGE_READ,
-    IMAGE_WRITE,
+    TEX_READ,
+    TEX_WRITE,
 
     SYNCHRONIZE_BLOCK,
 
