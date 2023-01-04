@@ -13,6 +13,7 @@
 #include "resources/texture.h"
 #include "resources/bindless_array.h"
 #include "managed.h"
+#include "dynamic_module.h"
 #include "rtx/mesh.h"
 #include "rtx/accel.h"
 #include "context.h"

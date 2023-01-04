@@ -16,7 +16,7 @@ Stream Device::create_stream() noexcept {
 Accel Device::create_accel() noexcept {
     return _create<Accel>();
 }
-RHITexture Device::create_image(uint2 res, PixelStorage storage) noexcept {
+RHITexture Device::create_texture(uint2 res, PixelStorage storage) noexcept {
     return _create<RHITexture>(res, storage);
 }
 

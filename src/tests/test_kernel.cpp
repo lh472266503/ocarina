@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
     auto path2 = R"(E:/work/compile/ocarina/res/test.png)";
     auto image = ImageIO::load(path2, LINEAR);
 
-    auto texture = device.create_image(image.resolution(), image.pixel_storage());
+    auto texture = device.create_texture(image.resolution(), image.pixel_storage());
     stream << texture.upload_sync(image.pixel_ptr());
 
     Buffer<float> f_buffer = device.create_buffer<float>(count);
