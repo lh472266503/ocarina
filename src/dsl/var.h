@@ -102,6 +102,9 @@ OC_MAKE_DSL_TYPE(Int, int)
 OC_MAKE_DSL_TYPE(Uint, uint)
 OC_MAKE_DSL_TYPE(Float, float)
 OC_MAKE_DSL_TYPE(Uchar, uchar)
+OC_MAKE_DSL_TYPE(Char, char)
+OC_MAKE_DSL_TYPE(Short, short)
+OC_MAKE_DSL_TYPE(Ushort, ushort)
 OC_MAKE_DSL_TYPE(Bool, bool)
 
 using Float2x2 = Var<float2x2>;

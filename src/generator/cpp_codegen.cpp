@@ -146,6 +146,7 @@ void CppCodegen::visit(const PrintStmt *stmt) noexcept {
 
     for (const Expression *expr : args) {
         switch (expr->type()->tag()) {
+            case Type::Tag::USHORT:
             case Type::Tag::UINT: {
                 format_scratch.replace("{}", "%u");
                 break;
@@ -158,6 +159,7 @@ void CppCodegen::visit(const PrintStmt *stmt) noexcept {
                 format_scratch.replace("{}", "%f");
                 break;
             }
+            case Type::Tag::SHORT:
             case Type::Tag::INT: {
                 format_scratch.replace("{}", "%d");
                 break;

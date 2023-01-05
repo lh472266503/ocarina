@@ -305,12 +305,14 @@ void CUDACodegen::_emit_type_name(const Type *type) noexcept {
             case Type::Tag::UINT:
             case Type::Tag::UCHAR:
             case Type::Tag::CHAR:
+            case Type::Tag::USHORT:
+            case Type::Tag::SHORT:
             case Type::Tag::VECTOR:
             case Type::Tag::MATRIX:
                 current_scratch() << TYPE_PREFIX << type->name();
                 break;
             case Type::Tag::ARRAY:
-                current_scratch() << TYPE_PREFIX"array<";
+                current_scratch() << TYPE_PREFIX "array<";
                 _emit_type_name(type->element());
                 current_scratch() << "," << type->dimension() << ">";
                 break;

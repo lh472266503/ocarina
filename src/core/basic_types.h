@@ -51,6 +51,8 @@ struct Vector : public detail::VectorStorage<T, N> {
                       std::is_same<T, float>,
                       std::is_same<T, int>,
                       std::is_same<T, char>,
+                      std::is_same<T, short>,
+                      std::is_same<T, ushort>,
                       std::is_same<T, uchar>,
                       std::is_same<T, uint>>,
                   "Invalid vector type");
@@ -69,6 +71,8 @@ OC_MAKE_VECTOR_TYPES(bool)
 OC_MAKE_VECTOR_TYPES(float)
 OC_MAKE_VECTOR_TYPES(int)
 OC_MAKE_VECTOR_TYPES(char)
+OC_MAKE_VECTOR_TYPES(short)
+OC_MAKE_VECTOR_TYPES(ushort)
 OC_MAKE_VECTOR_TYPES(uchar)
 OC_MAKE_VECTOR_TYPES(uint)
 

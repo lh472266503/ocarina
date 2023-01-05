@@ -278,6 +278,8 @@ public:
         UINT,
         UCHAR,
         CHAR,
+        SHORT,
+        USHORT,
 
         VECTOR,
         MATRIX,
@@ -338,7 +340,8 @@ public:
     [[nodiscard]] const Type *element() const noexcept;
     [[nodiscard]] constexpr bool is_scalar() const noexcept {
         return _tag == Tag::BOOL || _tag == Tag::FLOAT || _tag == Tag::INT ||
-               _tag == Tag::UINT || _tag == Tag::UCHAR || _tag == Tag::CHAR;
+               _tag == Tag::UINT || _tag == Tag::UCHAR || _tag == Tag::CHAR ||
+               _tag == Tag::USHORT || _tag == Tag::SHORT;
     }
     [[nodiscard]] size_t max_member_size() const noexcept;
     [[nodiscard]] constexpr bool is_basic() const noexcept { return is_scalar() || is_vector() || is_matrix(); }

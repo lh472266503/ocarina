@@ -46,6 +46,7 @@ to_underlying(T e) noexcept {
 
 using uint = uint32_t;
 using uchar = unsigned char;
+using ushort = unsigned short;
 
 template<typename T>
 using is_integral = std::disjunction<
@@ -53,6 +54,8 @@ using is_integral = std::disjunction<
     std::is_same<std::remove_cvref_t<T>, uint>,
     std::is_same<std::remove_cvref_t<T>, uchar>,
     std::is_same<std::remove_cvref_t<T>, char>,
+    std::is_same<std::remove_cvref_t<T>, short>,
+    std::is_same<std::remove_cvref_t<T>, ushort>,
     std::is_same<std::remove_cvref_t<T>, size_t>>;
 
 template<typename T>
