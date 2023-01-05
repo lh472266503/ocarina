@@ -60,7 +60,7 @@ private:
         push_memory_block(buffer.memory_block());
     }
 
-    void _encode_image(const RHITexture &image) noexcept;
+    void _encode_texture(const RHITexture &texture) noexcept;
 
     void _encode_accel(const Accel &accel) noexcept {
         push_memory_block(accel.memory_block());
@@ -95,7 +95,7 @@ public:
         if constexpr (is_buffer_v<T>) {
             _encode_buffer(OC_FORWARD(arg));
         } else if constexpr (is_image_v<T>) {
-            _encode_image(OC_FORWARD(arg));
+            _encode_texture(OC_FORWARD(arg));
         } else if constexpr (is_accel_v<T>) {
             _encode_accel(OC_FORWARD(arg));
         } else {

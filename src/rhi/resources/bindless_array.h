@@ -17,8 +17,8 @@ private:
 private:
     friend class Device;
     void _emplace_buffer(size_t index, uint64_t handle, size_t offset_bytes) noexcept;
+
 public:
-    friend class Device;
     BindlessArray(Device::Impl *device, size_t size) noexcept;
 
     template<typename T>

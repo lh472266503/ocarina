@@ -7,7 +7,7 @@
 
 namespace ocarina {
 
-void ArgumentList::_encode_image(const RHITexture &image) noexcept {
-    push_memory_block(image.memory_block());
+void ArgumentList::_encode_texture(const RHITexture &texture) noexcept {
+    push_memory_block(texture.memory_block());
 }
 }// namespace ocarina
