@@ -7,25 +7,23 @@
 #include "resource.h"
 #include "dsl/type_trait.h"
 #include "rhi/command.h"
+#include "rhi/device.h"
 
 namespace ocarina {
 
 class BindlessArray : public RHIResource {
+public:
+    class Impl {
+    public:
+        [[nodiscard]] virtual size_t size() const noexcept = 0;
+        [[nodiscard]] virtual size_t alignment() const noexcept = 0;
+    };
+
 private:
     size_t _slot_num{65536};
 
-private:
-    friend class Device;
-    void _emplace_buffer(size_t index, uint64_t handle, size_t offset_bytes) noexcept;
-
 public:
-    BindlessArray(Device::Impl *device, size_t size) noexcept;
-
-    template<typename T>
-    requires is_buffer_or_view_v<T>
-    void emplace(uint index, T &&t) noexcept {
-
-    }
+    explicit BindlessArray(Device::Impl *device);
 };
 
 }

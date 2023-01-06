@@ -102,6 +102,14 @@ void CUDADevice::destroy_mesh(handle_ty handle) noexcept {
     ocarina::delete_with_allocator(reinterpret_cast<CUDAMesh *>(handle));
 }
 
+handle_ty CUDADevice::create_bindless_array() noexcept {
+    return 0;
+}
+
+void CUDADevice::destroy_bindless_array(handle_ty handle) noexcept {
+
+}
+
 void CUDADevice::destroy_buffer(handle_ty handle) noexcept {
     OC_CU_CHECK(cuMemFree(handle));
 }

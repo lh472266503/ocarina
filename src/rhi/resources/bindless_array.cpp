@@ -4,6 +4,10 @@
 
 #include "bindless_array.h"
 
-namespace vision {
+namespace ocarina {
 
-}
+BindlessArray::BindlessArray(Device::Impl *device)
+    : RHIResource(device, Tag::BINDLESS_ARRAY,
+                  device->create_bindless_array()) {}
+
+}// namespace ocarina
