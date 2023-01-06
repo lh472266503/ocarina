@@ -93,7 +93,7 @@ public:
 };
 
 class DataOpCommand : public Command {
-private:
+protected:
     handle_ty _host_ptr{};
     handle_ty _device_ptr{};
 
@@ -112,8 +112,6 @@ public:
 
 class BufferOpCommand : public DataOpCommand {
 private:
-    handle_ty _host_ptr{};
-    handle_ty _device_ptr{};
     size_t _size_in_bytes{};
     bool _async{};
 
