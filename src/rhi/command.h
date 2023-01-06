@@ -14,6 +14,7 @@ namespace ocarina {
 #define OC_RUNTIME_CMD          \
     BufferUploadCommand,        \
         BufferDownloadCommand,  \
+        BufferByteSetCommand,   \
         TextureUploadCommand,   \
         TextureDownloadCommand, \
         SynchronizeCommand,     \
@@ -63,7 +64,7 @@ public:
 #define OC_MAKE_COMMAND_VISIT(CMD) virtual void visit(const CMD *cmd) noexcept = 0;
     MAP(OC_MAKE_COMMAND_VISIT, OC_RUNTIME_CMD)
 
-    virtual ~CommandVisitor() {}
+    virtual ~CommandVisitor() = default;
 };
 
 class Command {
@@ -71,11 +72,23 @@ private:
     bool _async{};
 
 public:
-    Command(bool async = true) : _async(async) {}
+    explicit Command(bool async = true) : _async(async) {}
     virtual ~Command() noexcept = default;
     virtual void accept(CommandVisitor &visitor) const noexcept = 0;
     virtual void recycle() noexcept = 0;
     [[nodiscard]] bool async() const noexcept { return _async; }
+};
+
+class BufferCommand : public Command {
+protected:
+    handle_ty _device_ptr{};
+    size_t _size_in_bytes{};
+
+public:
+    BufferCommand(handle_ty dp, size_t size, bool async = true)
+        : Command(async), _device_ptr(dp), _size_in_bytes(size) {}
+    [[nodiscard]] size_t size_in_bytes() const noexcept { return _size_in_bytes; }
+    [[nodiscard]] handle_ty device_ptr() const noexcept { return _device_ptr; }
 };
 
 class DataCopyCommand : public Command {
@@ -121,6 +134,17 @@ protected:
 
 public:
     [[nodiscard]] size_t size_in_bytes() const noexcept { return _size_in_bytes; }
+};
+
+class BufferByteSetCommand : public BufferCommand {
+public:
+    uchar _val{};
+
+public:
+    BufferByteSetCommand(handle_ty dp, size_t size, uchar val = 0, bool async = true)
+        : BufferCommand(dp, size, async), _val(val) {}
+    [[nodiscard]] uchar value() const noexcept { return _val; }
+    OC_MAKE_CMD_COMMON_FUNC(BufferByteSetCommand)
 };
 
 class BufferUploadCommand final : public BufferOpCommand {

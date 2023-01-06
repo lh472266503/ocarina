@@ -25,6 +25,18 @@ void CUDACommandVisitor::visit(const BufferUploadCommand *cmd) noexcept {
     });
 }
 
+void CUDACommandVisitor::visit(const BufferByteSetCommand *cmd) noexcept {
+    _device->use_context([&] {
+        if (cmd->async() && _stream) {
+            OC_CU_CHECK(cuMemsetD8Async(cmd->device_ptr(), cmd->value(),
+                                        cmd->size_in_bytes(), _stream));
+        } else {
+            OC_CU_CHECK(cuMemsetD8(cmd->device_ptr(), cmd->value(),
+                                   cmd->size_in_bytes()));
+        }
+    });
+}
+
 void CUDACommandVisitor::visit(const BufferDownloadCommand *cmd) noexcept {
     _device->use_context([&] {
         if (cmd->async() && _stream) {

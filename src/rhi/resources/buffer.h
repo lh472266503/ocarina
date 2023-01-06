@@ -54,6 +54,22 @@ public:
     [[nodiscard]] BufferDownloadCommand *download_sync(void *data) const noexcept {
         return BufferDownloadCommand::create(data, head(), _size * element_size, false);
     }
+
+    [[nodiscard]] BufferByteSetCommand *byte_set(uchar value) const noexcept {
+        return BufferByteSetCommand::create(head(), size(), value, true);
+    }
+
+    [[nodiscard]] BufferByteSetCommand *byte_set_sync(uchar value) const noexcept {
+        return BufferByteSetCommand::create(head(), size(), value, false);
+    }
+
+    [[nodiscard]] BufferByteSetCommand *clear() const noexcept {
+        return byte_set(0);
+    }
+
+    [[nodiscard]] BufferByteSetCommand *clear_sync() const noexcept {
+        return byte_set_sync(0);
+    }
 };
 
 template<typename T = std::byte, int... Dims>
@@ -150,6 +166,32 @@ public:
         return view(0, _size).download(OC_FORWARD(args)...);
     }
 
+    [[nodiscard]] BufferByteSetCommand *byte_set(uchar value) const noexcept {
+        return view(0, _size).byte_set(value);
+    }
+
+    [[nodiscard]] BufferByteSetCommand *byte_set_sync(uchar value) const noexcept {
+        return view(0, _size).byte_set_sync(value);
+    }
+
+    [[nodiscard]] BufferByteSetCommand *clear() const noexcept {
+        return byte_set(0);
+    }
+
+    [[nodiscard]] BufferByteSetCommand *clear_sync() const noexcept {
+        return byte_set_sync(0);
+    }
+
+    template<typename... Args>
+    [[nodiscard]] BufferUploadCommand *upload_sync(Args &&...args) const noexcept {
+        return view(0, _size).upload_sync(OC_FORWARD(args)...);
+    }
+
+    template<typename... Args>
+    [[nodiscard]] BufferDownloadCommand *download_sync(Args &&...args) const noexcept {
+        return view(0, _size).download_sync(OC_FORWARD(args)...);
+    }
+
     void upload_immediately(const void *data) const noexcept {
         upload_sync(data)->accept(*_device->command_visitor());
     }
@@ -162,14 +204,8 @@ public:
         download_sync(data)->accept(*_device->command_visitor());
     }
 
-    template<typename... Args>
-    [[nodiscard]] BufferUploadCommand *upload_sync(Args &&...args) const noexcept {
-        return view(0, _size).upload_sync(OC_FORWARD(args)...);
-    }
-
-    template<typename... Args>
-    [[nodiscard]] BufferDownloadCommand *download_sync(Args &&...args) const noexcept {
-        return view(0, _size).download_sync(OC_FORWARD(args)...);
+    void clear_immediately() const noexcept {
+        clear_sync()->accept(*_device->command_visitor());
     }
 };
 
