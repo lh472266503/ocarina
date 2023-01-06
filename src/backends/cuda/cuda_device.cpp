@@ -34,6 +34,7 @@ handle_ty CUDADevice::create_buffer(size_t size) noexcept {
     return use_context([&] {
         handle_ty handle{};
         OC_CU_CHECK(cuMemAlloc(&handle, size));
+        OC_CU_CHECK(cuMemsetD8(handle, 0, size));
         return handle;
     });
 }

@@ -13,6 +13,8 @@ namespace ocarina {
 
 class BindlessArray : public RHIResource {
 public:
+
+
     class Impl {
     public:
         [[nodiscard]] virtual size_t size() const noexcept = 0;
@@ -26,4 +28,4 @@ public:
     explicit BindlessArray(Device::Impl *device);
 };
 
-}
+}// namespace ocarina
