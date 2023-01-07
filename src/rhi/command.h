@@ -136,7 +136,7 @@ public:
     [[nodiscard]] size_t size_in_bytes() const noexcept { return _size_in_bytes; }
 };
 
-class BufferByteSetCommand : public BufferCommand {
+class BufferByteSetCommand final : public BufferCommand {
 public:
     uchar _val{};
 
