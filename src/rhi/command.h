@@ -126,7 +126,6 @@ public:
 class BufferOpCommand : public DataOpCommand {
 private:
     size_t _size_in_bytes{};
-    bool _async{};
 
 protected:
     BufferOpCommand(handle_ty hp, handle_ty dp, size_t size, bool async)
