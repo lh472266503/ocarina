@@ -53,7 +53,7 @@ auto get_cube(float x = 1, float y = 1, float z = 1) {
 int main(int argc, char *argv[]) {
     fs::path path(argv[0]);
     Context context(path.parent_path());
-    context.clear_cache();
+//    context.clear_cache();
     Device device = context.create_device("cuda");
     device.init_rtx();
     Stream stream = device.create_stream();
@@ -70,6 +70,12 @@ int main(int argc, char *argv[]) {
     Buffer t_buffer = device.create_buffer<Triangle>(triangle.size());
 
     Mesh cube = device.create_mesh(vert.device(), t_buffer);
+
+    BindlessArray bindless_array = device.create_bindless_array();
+
+    auto r1 = bindless_array.emplace(v_buffer.view());
+
+    auto r2 = bindless_array.emplace(v_buffer);
 
     stream << vert.upload_sync();
     stream << v_buffer.upload_sync(vert.host().data());
@@ -99,9 +105,7 @@ int main(int argc, char *argv[]) {
                         Var<Triangle> tri) {
         Var<Ray> r = make_ray(Var(float3(0,0.1, -5)), float3(0,0,1));
         Var hit= accel.trace_closest(r);
-        //        Float3 org = r->origin();
         Float3 pos = r->direction();
-//        Var<Triangle> tri = t_buffer.read(3);
         Float4 pix = img.read<float4>(200,150);
         Float4 pix2 = img.read<float4>(200,150);
         Float3 p = vert.read(1);
@@ -112,8 +116,6 @@ int main(int argc, char *argv[]) {
     auto shader = device.compile(kernel);
     stream << shader(t_buffer, accel, image,triangle[0]).dispatch(1);
     stream << synchronize() << commit();
-
-    cout << vert[0].x << endl;
 
     return 0;
 }

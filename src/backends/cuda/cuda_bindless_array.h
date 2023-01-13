@@ -19,7 +19,7 @@ public:
     };
 
 private:
-    SlotSOA _slot_soa;
+    SlotSOA _slot_soa{};
     CUDADevice *_device{};
     Managed<CUdeviceptr> _buffers;
     Managed<CUtexObject> _textures;
@@ -29,7 +29,11 @@ public:
     [[nodiscard]] size_t size() const noexcept override { return sizeof(SlotSOA); }
     [[nodiscard]] size_t alignment() const noexcept override { return alignof(SlotSOA); }
     [[nodiscard]] size_t emplace_buffer(handle_ty handle) noexcept override;
+    void remove_buffer(handle_ty index) noexcept override;
     [[nodiscard]] size_t emplace_texture(handle_ty handle) noexcept override;
+    void remove_texture(handle_ty index) noexcept override;
+    [[nodiscard]] BufferUploadCommand *upload_buffer_handles() const noexcept override;
+    [[nodiscard]] BufferUploadCommand *upload_texture_handles() const noexcept override;
 };
 
-}
+}// namespace ocarina

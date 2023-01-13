@@ -22,4 +22,20 @@ size_t CUDABindlessArray::emplace_texture(handle_ty handle) noexcept {
     return ret;
 }
 
+void CUDABindlessArray::remove_buffer(handle_ty index) noexcept {
+
+}
+
+void CUDABindlessArray::remove_texture(handle_ty index) noexcept {
+
+}
+
+BufferUploadCommand *CUDABindlessArray::upload_texture_handles() const noexcept {
+    return _textures.upload();
+}
+
+BufferUploadCommand *CUDABindlessArray::upload_buffer_handles() const noexcept {
+    return _buffers.upload();
+}
+
 }// namespace ocarina
