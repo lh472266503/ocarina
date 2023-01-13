@@ -22,12 +22,27 @@ size_t CUDABindlessArray::emplace_texture(handle_ty handle) noexcept {
     return ret;
 }
 
-void CUDABindlessArray::remove_buffer(handle_ty index) noexcept {
+namespace detail {
 
+template<typename T>
+void remove_by_index(vector<T> &v, handle_ty index) noexcept {
+    auto iter = v.begin();
+    for (int i = 0; i < v.size(); ++i, ++iter) {
+        if (i == index) {
+            v.erase(iter);
+            return;
+        }
+    }
+}
+
+}// namespace detail
+
+void CUDABindlessArray::remove_buffer(handle_ty index) noexcept {
+    detail::remove_by_index(_buffers.host(), index);
 }
 
 void CUDABindlessArray::remove_texture(handle_ty index) noexcept {
-
+    detail::remove_by_index(_textures.host(), index);
 }
 
 BufferUploadCommand *CUDABindlessArray::upload_texture_handles() const noexcept {
