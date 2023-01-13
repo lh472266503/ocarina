@@ -32,6 +32,7 @@ public:
     [[nodiscard]] size_t max_member_size() const noexcept override { return sizeof(CUdeviceptr); }
     [[nodiscard]] size_t data_size() const noexcept override { return sizeof(SlotSOA); }
     [[nodiscard]] size_t data_alignment() const noexcept override { return alignof(SlotSOA); }
+    void prepare_slotSOA() noexcept override;
 
     [[nodiscard]] size_t emplace_buffer(handle_ty handle) noexcept override;
     void remove_buffer(handle_ty index) noexcept override;

@@ -22,6 +22,11 @@ size_t CUDABindlessArray::emplace_texture(handle_ty handle) noexcept {
     return ret;
 }
 
+void CUDABindlessArray::prepare_slotSOA() noexcept {
+    _slot_soa.buffer_slot = _buffers.head();
+    _slot_soa.tex_slot = _textures.head();
+}
+
 namespace detail {
 
 template<typename T>
