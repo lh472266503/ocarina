@@ -110,9 +110,10 @@ int main(int argc, char *argv[]) {
         Float4 pix2 = img.read<float4>(200,150);
         Float3 p = vert.read(1);
         Var f2 = make_float2(Var(7.f));
-        auto t = ba.buffer<float3>(0);
+        Float3 t = ba.buffer<float3>(0).read(0);
         print("{},{}----------{} {}", hit.prim_id, hit.inst_id, hit->bary.x, hit.bary.y);
         print("{}  {}  {}  {} {}", tri.i, f2.x, f2.y, p.x, p.y);
+        prints("{} {} {}", t);
     };
     auto shader = device.compile(kernel);
     stream << shader(t_buffer, accel, image,triangle[0],bindless_array).dispatch(1);

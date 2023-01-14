@@ -265,6 +265,17 @@ class Type;
 
 class TypeRegistry;
 
+struct SlotSOA {
+    handle_ty buffer_slot;
+    handle_ty tex_slot;
+};
+
+struct OCTexture {
+    handle_ty texture{};
+    handle_ty surface{};
+    PixelStorage pixel_storage{};
+};
+
 struct TypeVisitor {
     virtual void visit(const Type *) noexcept = 0;
 };

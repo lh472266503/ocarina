@@ -12,11 +12,6 @@
 namespace ocarina {
 class CUDADevice;
 class CUDABindlessArray : public BindlessArray::Impl {
-public:
-    struct SlotSOA {
-        CUdeviceptr buffer_slot;
-        CUdeviceptr tex_slot;
-    };
 
 private:
     SlotSOA _slot_soa{};
