@@ -374,6 +374,29 @@ public:
 };
 
 class BindlessArrayTexture {
+private:
+    const Expression *_array{nullptr};
+    const Expression *_index{nullptr};
+
+public:
+    BindlessArrayTexture(const Expression *array, const Expression *index) noexcept
+        : _array{array}, _index{index} {}
+
+    template<typename Output, typename UVW>
+    requires(is_float_vector3_v<expr_value_t<UVW>>)
+    [[nodiscard]] Var<Output> sample(const UVW &uvw) const noexcept {
+        const CallExpr *expr = Function::current()->call_builtin(Type::of<Output>(), CallOp::BINDLESS_ARRAY_TEX_SAMPLE,
+                                                                 {_array, _index, OC_EXPR(uvw)});
+        return eval<Output>(expr);
+    }
+
+    template<typename Output, typename UV>
+    requires(is_float_vector2_v<expr_value_t<UV>>)
+    [[nodiscard]] Var<Output> sample(const UV &uv) const noexcept {
+        const CallExpr *expr = Function::current()->call_builtin(Type::of<Output>(), CallOp::BINDLESS_ARRAY_TEX_SAMPLE,
+                                                                 {_array, _index, OC_EXPR(uv)});
+        return eval<Output>(expr);
+    }
 };
 
 template<>
@@ -382,13 +405,13 @@ public:
     template<typename T, typename Index>
     requires concepts::integral<expr_value_t<Index>>
     [[nodiscard]] BindlessArrayBuffer<T> buffer(Index &&index) const noexcept {
-        return BindlessArrayBuffer<T>(nullptr, OC_EXPR(index));
+        return BindlessArrayBuffer<T>(expression(), OC_EXPR(index));
     }
 
     template<typename Index>
     requires concepts::integral<expr_value_t<Index>>
     [[nodiscard]] BindlessArrayTexture tex(Index &&index) const noexcept {
-        return {};
+        return BindlessArrayTexture(expression(), OC_EXPR(index));
     }
 
     OC_COMPUTABLE_COMMON(Computable<BindlessArray>)
