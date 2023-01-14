@@ -255,8 +255,8 @@ template<typename T,int... dims>
 class BufferView;
 
 class RHITexture;
-
 class Accel;
+class BindlessArray;
 
 namespace detail {
 

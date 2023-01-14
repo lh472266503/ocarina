@@ -30,8 +30,6 @@ template<typename T>
 template<typename T>
 [[nodiscard]] inline Expr<expr_value_t<T>> make_expr(const Expression *expr) noexcept;// implement in syntax.h
 
-
-class Accel;
 class Hit;
 class Ray;
 
@@ -352,6 +350,18 @@ public:
     requires std::is_same_v<expr_value_t<TRay>, Ray>
     [[nodiscard]] Var<bool> trace_any(const TRay &ray) const noexcept;// implement in rtx_type.h
     OC_COMPUTABLE_COMMON(Computable<Accel>)
+};
+
+template<>
+struct Computable<BindlessArray> {
+public:
+    template<typename Elm, typename Index>
+    requires concepts::integral<expr_value_t<Index>>
+    [[nodiscard]] Var<Buffer<Elm>> buffer(Index &&index) const noexcept;
+
+    template<typename Index>
+    requires concepts::integral<expr_value_t<Index>>
+    [[nodiscard]] Var<RHITexture> tex(Index &&index) const noexcept;
 };
 
 template<typename... T>
