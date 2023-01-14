@@ -74,6 +74,7 @@ public:
 
 template<typename T = std::byte, int... Dims>
 class Buffer : public RHIResource {
+    static_assert(is_valid_buffer_element_v<T>);
 public:
     static constexpr size_t element_size = sizeof(T);
     using element_type = T;

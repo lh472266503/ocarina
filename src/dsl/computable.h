@@ -344,19 +344,36 @@ struct Computable<Accel> {
 public:
     template<typename TRay>
     requires std::is_same_v<expr_value_t<TRay>, Ray>
-    [[nodiscard]] Var<Hit> trace_closest(const TRay &ray) const noexcept;// implement in rtx_type.h
+    [[nodiscard]] Var<Hit> trace_closest(const TRay &ray) const noexcept;// implement in computable.inl
 
     template<typename TRay>
     requires std::is_same_v<expr_value_t<TRay>, Ray>
-    [[nodiscard]] Var<bool> trace_any(const TRay &ray) const noexcept;// implement in rtx_type.h
+    [[nodiscard]] Var<bool> trace_any(const TRay &ray) const noexcept;// implement in computable.inl
     OC_COMPUTABLE_COMMON(Computable<Accel>)
 };
 
 template<typename T>
-struct BindlessArrayBuffer {
+class BindlessArrayBuffer {
+    static_assert(is_valid_buffer_element_v<T>);
+
+private:
+    const Expression *_array{nullptr};
+    const Expression *_index{nullptr};
+
+public:
+    BindlessArrayBuffer(const Expression *array, const Expression *index) noexcept
+        : _array{array}, _index{index} {}
+
+    template<typename Index>
+    requires concepts::integral<expr_value_t<Index>>
+    [[nodiscard]] Var<T> read(Index &&index) const noexcept {
+        const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::BINDLESS_ARRAY_BUFFER_READ,
+                                                                 {_array, _index, OC_EXPR(index)});
+        return eval<T>(expr);
+    }
 };
 
-struct BindlessArrayTexture {
+class BindlessArrayTexture {
 };
 
 template<>
@@ -365,7 +382,7 @@ public:
     template<typename T, typename Index>
     requires concepts::integral<expr_value_t<Index>>
     [[nodiscard]] BindlessArrayBuffer<T> buffer(Index &&index) const noexcept {
-        return {};
+        return BindlessArrayBuffer<T>(nullptr, OC_EXPR(index));
     }
 
     template<typename Index>

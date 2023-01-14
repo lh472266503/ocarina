@@ -317,4 +317,13 @@ using is_basic = std::disjunction<is_scalar<T>, is_vector<T>, is_matrix<T>>;
 template<typename T>
 constexpr auto is_basic_v = is_basic<T>::value;
 
+template<typename T>
+using is_valid_buffer_element = std::conjunction<
+    std::is_same<T, std::remove_cvref_t<T>>,
+    std::is_trivially_copyable<T>,
+    std::is_trivially_destructible<T>>;
+
+template<typename T>
+constexpr auto is_valid_buffer_element_v = is_valid_buffer_element<T>::value;
+
 }// namespace ocarina

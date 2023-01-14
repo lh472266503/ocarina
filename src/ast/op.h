@@ -114,6 +114,9 @@ enum struct CallOp : uint32_t {
     TEX_READ,
     TEX_WRITE,
 
+    BINDLESS_ARRAY_BUFFER_READ,
+    BINDLESS_ARRAY_TEX_SAMPLE,
+
     SYNCHRONIZE_BLOCK,
 
     MAKE_BOOL2,
