@@ -352,16 +352,29 @@ public:
     OC_COMPUTABLE_COMMON(Computable<Accel>)
 };
 
+template<typename T>
+struct BindlessArrayBuffer {
+};
+
+struct BindlessArrayTexture {
+};
+
 template<>
 struct Computable<BindlessArray> {
 public:
-    template<typename Elm, typename Index>
+    template<typename T, typename Index>
     requires concepts::integral<expr_value_t<Index>>
-    [[nodiscard]] Var<Buffer<Elm>> buffer(Index &&index) const noexcept;
+    [[nodiscard]] BindlessArrayBuffer<T> buffer(Index &&index) const noexcept {
+        return {};
+    }
 
     template<typename Index>
     requires concepts::integral<expr_value_t<Index>>
-    [[nodiscard]] Var<RHITexture> tex(Index &&index) const noexcept;
+    [[nodiscard]] BindlessArrayTexture tex(Index &&index) const noexcept {
+        return {};
+    }
+
+    OC_COMPUTABLE_COMMON(Computable<BindlessArray>)
 };
 
 template<typename... T>

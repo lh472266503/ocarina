@@ -186,6 +186,16 @@ struct TypeDesc<ocarina::tuple<T...>> {
     }
 };
 
+template<>
+struct TypeDesc<BindlessArray> {
+    static ocarina::string_view description() noexcept {
+        return "bindlessArray";
+    }
+    static ocarina::string_view name() noexcept {
+        return description();
+    }
+};
+
 };// namespace detail
 
 template<typename T>
