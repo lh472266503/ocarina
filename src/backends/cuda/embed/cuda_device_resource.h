@@ -21,6 +21,11 @@ struct OCTexture {
     OCPixelStorage pixel_storage;
 };
 
+struct OCBindlessArray {
+    cudaTextureObject_t *textures;
+    void **buffers;
+};
+
 template<typename T, size_t N>
 class oc_array {
 private:
@@ -61,6 +66,12 @@ __device__ auto oc_tex_sample_float2(OCTexture obj, oc_float u, oc_float v, oc_f
 __device__ auto oc_tex_sample_float4(OCTexture obj, oc_float u, oc_float v, oc_float w = 0.f) noexcept {
     auto ret = tex3D<float4>(obj.texture, u, v, w);
     return oc_make_float4(ret.x, ret.y, ret.z, ret.w);
+}
+
+template<typename T>
+__device__ T bindlessArrayBufferRead(OCBindlessArray bindless_array, oc_uint buffer_index, oc_uint index) noexcept {
+    const T *buffer = reinterpret_cast<T *>(bindless_array.buffers[buffer_index]);
+    return buffer[index];
 }
 
 template<typename A, typename B>
@@ -280,6 +291,3 @@ __device__ void oc_texture_write(OCTexture obj, T val, oc_uint x, oc_uint y, oc_
     assert(0);
     __builtin_unreachable();
 }
-
-
- 
