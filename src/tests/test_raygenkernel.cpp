@@ -119,7 +119,7 @@ int main(int argc, char *argv[]) {
         print("{}  {}  {}  {} {}", tri.i, f2.x, f2.y, p.x, p.y);
         prints("{} {} {}", t);
         prints("{} {} {} {}", pix2);
-//        prints("{} {} {} {}", ba.tex(0).sample<float4>(uv));
+        prints("{} {} {} {}", ba.tex(0).sample<float4>(uv));
     };
     auto shader = device.compile(kernel);
     stream << shader(t_buffer, accel, image,triangle[0], bindless_array).dispatch(1);

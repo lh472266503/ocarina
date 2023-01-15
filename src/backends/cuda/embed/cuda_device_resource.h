@@ -87,23 +87,22 @@ __device__ T oc_bindless_array_buffer_read(OCBindlessArray bindless_array, oc_ui
     return buffer[index];
 }
 
-// template<typename T>
-// __device__ T oc_bindless_tex_sample(OCBindlessArray bindless_array, oc_uint tex_index,
-//                                     oc_float u, oc_float v, oc_float w = 0.f) noexcept {
-//     cudaTextureObject_t texture = bindless_array.tex_slot[tex_index];
-//     if constexpr(oc_is_same_v<T, oc_float>) {
-//         float ret = tex3D<float>(texture, u, v, w);
-//         return ret;
-//     } else if constexpr(oc_is_same_v<T, oc_float2>) {
-//         float2 ret = tex3D<float2>(texture, u, v, w);
-//         return oc_make_float2(ret.x, ret.y);
-//     } else if constexpr(oc_is_same_v<T, oc_float4>) {
-//         float4 ret = tex3D<float4>(texture, u, v, w);
-//         return oc_make_float4(ret.x, ret.y, ret.z, ret.w);
-//     }
-//     assert(0);
-//     return {};
-// }
+template<typename T>
+__device__ T oc_bindless_tex_sample(OCBindlessArray bindless_array, oc_uint tex_index,
+                                    oc_float u, oc_float v, oc_float w = 0.f) noexcept {
+    cudaTextureObject_t texture = bindless_array.tex_slot[tex_index];
+    if constexpr(oc_is_same_v<T, oc_float>) {
+        float ret = tex3D<float>(texture, u, v, w);
+        return ret;
+    } else if constexpr(oc_is_same_v<T, oc_float2>) {
+        float2 ret = tex3D<float2>(texture, u, v, w);
+        return oc_make_float2(ret.x, ret.y);
+    } else if constexpr(oc_is_same_v<T, oc_float4>) {
+        float4 ret = tex3D<float4>(texture, u, v, w);
+        return oc_make_float4(ret.x, ret.y, ret.z, ret.w);
+    }
+    return T{};
+}
 
 template<typename T>
 struct oc_type {
