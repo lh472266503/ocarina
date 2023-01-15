@@ -31,4 +31,12 @@ BufferUploadCommand *BindlessArray::upload_texture_handles() noexcept {
     return impl()->upload_texture_handles();
 }
 
+BufferUploadCommand *BindlessArray::upload_buffer_handles_sync() noexcept {
+    return impl()->upload_buffer_handles_sync();
+}
+
+BufferUploadCommand *BindlessArray::upload_texture_handles_sync() noexcept {
+    return impl()->upload_texture_handles_sync();
+}
+
 }// namespace ocarina

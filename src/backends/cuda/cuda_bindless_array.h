@@ -37,6 +37,8 @@ public:
     void remove_texture(handle_ty index) noexcept override;
     [[nodiscard]] BufferUploadCommand *upload_buffer_handles() const noexcept override;
     [[nodiscard]] BufferUploadCommand *upload_texture_handles() const noexcept override;
+    [[nodiscard]] BufferUploadCommand *upload_buffer_handles_sync() const noexcept override;
+    [[nodiscard]] BufferUploadCommand *upload_texture_handles_sync() const noexcept override;
 };
 
 }// namespace ocarina

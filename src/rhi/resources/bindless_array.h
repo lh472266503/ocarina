@@ -6,6 +6,7 @@
 
 #include "resource.h"
 #include "dsl/type_trait.h"
+#include "dsl/var.h"
 #include "rhi/command.h"
 #include "rhi/device.h"
 
@@ -21,6 +22,8 @@ public:
         virtual void remove_texture(handle_ty index) noexcept = 0;
         [[nodiscard]] virtual BufferUploadCommand *upload_buffer_handles() const noexcept = 0;
         [[nodiscard]] virtual BufferUploadCommand *upload_texture_handles() const noexcept = 0;
+        [[nodiscard]] virtual BufferUploadCommand *upload_buffer_handles_sync() const noexcept = 0;
+        [[nodiscard]] virtual BufferUploadCommand *upload_texture_handles_sync() const noexcept = 0;
         virtual void prepare_slotSOA(Device &device) noexcept = 0;
 
         /// for device side structure
@@ -52,6 +55,27 @@ public:
     void remove_texture(handle_ty index) noexcept;
     [[nodiscard]] BufferUploadCommand *upload_buffer_handles() noexcept;
     [[nodiscard]] BufferUploadCommand *upload_texture_handles() noexcept;
+    [[nodiscard]] BufferUploadCommand *upload_buffer_handles_sync() noexcept;
+    [[nodiscard]] BufferUploadCommand *upload_texture_handles_sync() noexcept;
+
+    ///for dsl
+    template<typename Index>
+    requires is_integral_expr_v<Index>
+    [[nodiscard]] BindlessArrayTexture tex(Index &&index) const noexcept {
+        const ArgumentBinding &argument = Function::current()->get_uniform_var(Type::of<BindlessArray>(),
+                                                                               Variable::Tag::BINDLESS_ARRAY,
+                                                                               memory_block());
+        return make_expr<BindlessArray>(argument.expression()).tex(OC_FORWARD(index));
+    }
+
+    template<typename T, typename Index>
+    requires is_integral_expr_v<Index>
+    [[nodiscard]] BindlessArrayBuffer<T> buffer(Index &&index) const noexcept {
+        const ArgumentBinding &argument = Function::current()->get_uniform_var(Type::of<BindlessArray>(),
+                                                                               Variable::Tag::BINDLESS_ARRAY,
+                                                                               memory_block());
+        return make_expr<BindlessArray>(argument.expression()).buffer<T>(OC_FORWARD(index));
+    }
 };
 
 }// namespace ocarina

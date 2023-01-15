@@ -60,4 +60,12 @@ BufferUploadCommand *CUDABindlessArray::upload_buffer_handles() const noexcept {
     return _buffers.upload();
 }
 
+BufferUploadCommand *CUDABindlessArray::upload_buffer_handles_sync() const noexcept {
+    return _buffers.upload_sync();
+}
+
+BufferUploadCommand *CUDABindlessArray::upload_texture_handles_sync() const noexcept {
+    return _textures.upload_sync();
+}
+
 }// namespace ocarina

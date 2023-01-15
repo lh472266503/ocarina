@@ -114,12 +114,13 @@ int main(int argc, char *argv[]) {
         Float4 pix2 = img.sample<float4>(uv);
         Float3 p = vert.read(1);
         Var f2 = make_float2(Var(7.f));
-        Float3 t = ba.buffer<float3>(0).read(0);
+        Float3 t = bindless_array.buffer<float3>(0).read(0);
         print("{},{}----------{} {}", hit.prim_id, hit.inst_id, hit->bary.x, hit.bary.y);
         print("{}  {}  {}  {} {}", tri.i, f2.x, f2.y, p.x, p.y);
         prints("{} {} {}", t);
         prints("{} {} {} {}", pix2);
         prints("{} {} {} {}", ba.tex(0).sample<float4>(uv));
+        prints("{} {} {} {}", bindless_array.tex(0).sample<float4>(uv));
     };
     auto shader = device.compile(kernel);
     stream << shader(t_buffer, accel, image,triangle[0], bindless_array).dispatch(1);

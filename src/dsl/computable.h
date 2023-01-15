@@ -68,7 +68,7 @@ struct EnableSubscriptAccess {
 template<typename T>
 struct EnableReadAndWrite {
     using element_type = std::remove_cvref_t<decltype(std::declval<expr_value_t<T>>()[0])>;
-    template<typename ...Index>
+    template<typename... Index>
     requires concepts::all_integral<expr_value_t<Index>...>
     auto read(Index &&...index) const noexcept {
         const AccessExpr *expr = Function::current()->access(Type::of<element_type>(),
@@ -222,8 +222,9 @@ template<typename T>
 struct EnableStaticCast {
     template<class Dest>
     requires concepts::static_convertible<Dest, expr_value_t<T>>
-    OC_NODISCARD Var<Dest>
-    cast() const noexcept {
+        OC_NODISCARD Var<Dest>
+        cast()
+    const noexcept {
         const CastExpr *expr = Function::current()->cast(Type::of<Dest>(), CastOp::STATIC,
                                                          static_cast<const T *>(this)->expression());
         return eval<Dest>(expr);
@@ -234,8 +235,9 @@ template<typename T>
 struct EnableBitwiseCast {
     template<class Dest>
     requires concepts::bitwise_convertible<Dest, expr_value_t<T>>
-    OC_NODISCARD Var<Dest>
-    as() const noexcept {
+        OC_NODISCARD Var<Dest>
+        as()
+    const noexcept {
         const CastExpr *expr = Function::current()->cast(Type::of<Dest>(), CastOp::BITWISE,
                                                          static_cast<const T *>(this)->expression());
         return eval<Dest>(expr);
@@ -352,6 +354,25 @@ public:
     OC_COMPUTABLE_COMMON(Computable<Accel>)
 };
 
+template<typename... T>
+struct Computable<ocarina::tuple<T...>> {
+    using Tuple = ocarina::tuple<T...>;
+    OC_COMPUTABLE_COMMON(Computable<ocarina::tuple<T...>>)
+public:
+    template<size_t i>
+    [[nodiscard]] auto get() const noexcept {
+        using Elm = ocarina::tuple_element_t<i, Tuple>;
+        return eval<Elm>(Function::current()->member(Type::of<Elm>(), expression(), i));
+    }
+    template<size_t i, typename elm_ty = ocarina::tuple_element_t<i, Tuple>>
+    void set(elm_ty val) noexcept {
+        auto expr = Function::current()->member(Type::of<expr_value_t<elm_ty>>(), expression(), i);
+        assign(expr, val);
+    }
+};
+
+}// namespace detail
+
 template<typename T>
 class BindlessArrayBuffer {
     static_assert(is_valid_buffer_element_v<T>);
@@ -413,6 +434,7 @@ public:
     }
 };
 
+namespace detail {
 template<>
 struct Computable<BindlessArray> {
 public:
@@ -429,23 +451,6 @@ public:
     }
 
     OC_COMPUTABLE_COMMON(Computable<BindlessArray>)
-};
-
-template<typename... T>
-struct Computable<ocarina::tuple<T...>> {
-    using Tuple = ocarina::tuple<T...>;
-    OC_COMPUTABLE_COMMON(Computable<ocarina::tuple<T...>>)
-public:
-    template<size_t i>
-    [[nodiscard]] auto get() const noexcept {
-        using Elm = ocarina::tuple_element_t<i, Tuple>;
-        return eval<Elm>(Function::current()->member(Type::of<Elm>(), expression(), i));
-    }
-    template<size_t i, typename elm_ty = ocarina::tuple_element_t<i, Tuple>>
-    void set(elm_ty val) noexcept {
-        auto expr = Function::current()->member(Type::of<expr_value_t<elm_ty>>(), expression(), i);
-        assign(expr, val);
-    }
 };
 
 #define OC_MAKE_STRUCT_MEMBER(m)                                                                                        \
