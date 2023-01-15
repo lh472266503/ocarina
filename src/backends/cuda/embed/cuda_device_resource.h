@@ -69,7 +69,7 @@ __device__ auto oc_tex_sample_float4(OCTexture obj, oc_float u, oc_float v, oc_f
 }
 
 template<typename T>
-__device__ T bindlessArrayBufferRead(OCBindlessArray bindless_array, oc_uint buffer_index, oc_uint index) noexcept {
+__device__ T oc_bindless_array_buffer_read(OCBindlessArray bindless_array, oc_uint buffer_index, oc_uint index) noexcept {
     const T *buffer = reinterpret_cast<T *>(bindless_array.buffer_slot[buffer_index]);
     return buffer[index];
 }
@@ -291,3 +291,4 @@ __device__ void oc_texture_write(OCTexture obj, T val, oc_uint x, oc_uint y, oc_
     assert(0);
     __builtin_unreachable();
 }
+

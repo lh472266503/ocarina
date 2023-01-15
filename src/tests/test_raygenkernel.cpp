@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
 
     BindlessArray bindless_array = device.create_bindless_array();
 
-    auto r1 = bindless_array.emplace(v_buffer.view());
+    auto r1 = bindless_array.emplace(v_buffer.view(1));
 
     auto r2 = bindless_array.emplace(v_buffer);
 
