@@ -22,8 +22,8 @@ struct OCTexture {
 };
 
 struct OCBindlessArray {
-    cudaTextureObject_t *textures{};
-    void **buffers{};
+    void **buffer_slot{};
+    cudaTextureObject_t *text_slot{};
 };
 
 template<typename T, size_t N>
@@ -70,7 +70,7 @@ __device__ auto oc_tex_sample_float4(OCTexture obj, oc_float u, oc_float v, oc_f
 
 template<typename T>
 __device__ T bindlessArrayBufferRead(OCBindlessArray bindless_array, oc_uint buffer_index, oc_uint index) noexcept {
-    const T *buffer = reinterpret_cast<T *>(bindless_array.buffers[buffer_index]);
+    const T *buffer = reinterpret_cast<T *>(bindless_array.buffer_slot[buffer_index]);
     return buffer[index];
 }
 

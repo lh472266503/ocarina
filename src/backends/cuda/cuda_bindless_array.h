@@ -23,11 +23,13 @@ public:
     explicit CUDABindlessArray(CUDADevice *device);
 
     /// for device side structure
-    [[nodiscard]] const void *handle_ptr() const noexcept override { return &_slot_soa; }
+    [[nodiscard]] const void *handle_ptr() const noexcept override {
+        return &_slot_soa;
+    }
     [[nodiscard]] size_t max_member_size() const noexcept override { return sizeof(CUdeviceptr); }
     [[nodiscard]] size_t data_size() const noexcept override { return sizeof(SlotSOA); }
     [[nodiscard]] size_t data_alignment() const noexcept override { return alignof(SlotSOA); }
-    void prepare_slotSOA() noexcept override;
+    void prepare_slotSOA(Device &device) noexcept override;
 
     [[nodiscard]] size_t emplace_buffer(handle_ty handle) noexcept override;
     void remove_buffer(handle_ty index) noexcept override;

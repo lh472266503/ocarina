@@ -58,7 +58,9 @@ public:
 
     void reset_device_buffer(Device &d, size_t num = 0) {
         num = num == 0 ? host_ty ::size() : num;
-        OC_ASSERT(num != 0 && num == host_ty ::size());
+        if (num == 0) {
+            return;
+        }
         device() = d.create_buffer<T>(num);
     }
 

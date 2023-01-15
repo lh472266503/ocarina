@@ -16,11 +16,11 @@ size_t BindlessArray::emplace(const RHITexture &texture) noexcept {
 }
 
 void BindlessArray::remove_buffer(handle_ty index) noexcept {
-
+    impl()->remove_buffer(index);
 }
 
 void BindlessArray::remove_texture(handle_ty index) noexcept {
-
+    impl()->remove_texture(index);
 }
 
 BufferUploadCommand *BindlessArray::upload_buffer_handles() noexcept {

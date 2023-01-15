@@ -80,7 +80,7 @@ int main(int argc, char *argv[]) {
     stream << vert.upload_sync();
     stream << v_buffer.upload_sync(vert.host().data());
     stream << t_buffer.upload_sync(triangle.data());
-    bindless_array.impl()->prepare_slotSOA();
+    bindless_array.prepare_slotSOA(device);
     stream << bindless_array.upload_buffer_handles() << synchronize();
 
     auto path1 = R"(E:/work/compile/ocarina/res/test.png)";
@@ -116,7 +116,7 @@ int main(int argc, char *argv[]) {
         Float3 t = ba.buffer<float3>(0).read(0);
         print("{},{}----------{} {}", hit.prim_id, hit.inst_id, hit->bary.x, hit.bary.y);
         print("{}  {}  {}  {} {}", tri.i, f2.x, f2.y, p.x, p.y);
-//        prints("{} {} {}", t);
+        prints("{} {} {}", t);
     };
     auto shader = device.compile(kernel);
     stream << shader(t_buffer, accel, image,triangle[0], bindless_array).dispatch(1);
