@@ -34,6 +34,7 @@ public:
     };
 
 public:
+    BindlessArray() = default;
     explicit BindlessArray(Device::Impl *device);
     [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(_handle); }
     [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
@@ -58,7 +59,7 @@ public:
     [[nodiscard]] BufferUploadCommand *upload_buffer_handles_sync() noexcept;
     [[nodiscard]] BufferUploadCommand *upload_texture_handles_sync() noexcept;
 
-    ///for dsl
+    /// for dsl
     template<typename Index>
     requires is_integral_expr_v<Index>
     [[nodiscard]] BindlessArrayTexture tex(Index &&index) const noexcept {
