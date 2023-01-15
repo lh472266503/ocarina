@@ -10,4 +10,9 @@ namespace ocarina {
 void ArgumentList::_encode_texture(const RHITexture &texture) noexcept {
     push_memory_block(texture.memory_block());
 }
+
+void ArgumentList::_encode_bindless_array(const BindlessArray &bindless_array) noexcept {
+    push_memory_block(bindless_array.memory_block());
+}
+
 }// namespace ocarina

@@ -7,6 +7,7 @@
 #include "rhi/device.h"
 #include "buffer.h"
 #include "rhi/rtx/accel.h"
+#include "rhi/resources/bindless_array.h"
 #include "stream.h"
 #include "rhi/command.h"
 #include "core/concepts.h"
@@ -61,7 +62,7 @@ private:
     }
 
     void _encode_texture(const RHITexture &texture) noexcept;
-
+    void _encode_bindless_array(const BindlessArray &bindless_array) noexcept;
     void _encode_accel(const Accel &accel) noexcept {
         push_memory_block(accel.memory_block());
     }
@@ -98,6 +99,8 @@ public:
             _encode_texture(OC_FORWARD(arg));
         } else if constexpr (is_accel_v<T>) {
             _encode_accel(OC_FORWARD(arg));
+        } else if constexpr (is_bindless_array_v<T>) {
+            _encode_bindless_array(OC_FORWARD(arg));
         } else {
             _encode_pod_type(OC_FORWARD(arg));
         }

@@ -328,7 +328,9 @@ void CUDACodegen::_emit_type_name(const Type *type) noexcept {
             case Type::Tag::TEXTURE:
                 current_scratch() << "OCTexture";
                 break;
-            case Type::Tag::BINDLESS_ARRAY: break;
+            case Type::Tag::BINDLESS_ARRAY:
+                current_scratch() << "OCBindlessArray";
+                break;
             case Type::Tag::ACCEL:
                 current_scratch() << "OptixTraversableHandle";
                 break;

@@ -16,14 +16,14 @@ enum struct OCPixelStorage : oc_uint {
 };
 
 struct OCTexture {
-    cudaTextureObject_t texture;
-    cudaSurfaceObject_t surface;
-    OCPixelStorage pixel_storage;
+    cudaTextureObject_t texture{};
+    cudaSurfaceObject_t surface{};
+    OCPixelStorage pixel_storage{};
 };
 
 struct OCBindlessArray {
-    cudaTextureObject_t *textures;
-    void **buffers;
+    cudaTextureObject_t *textures{};
+    void **buffers{};
 };
 
 template<typename T, size_t N>
