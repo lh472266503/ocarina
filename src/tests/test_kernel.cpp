@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
     stream << texture.upload_sync(image.pixel_ptr());
 
     Buffer<float> f_buffer = device.create_buffer<float>(count);
-    Kernel kn = [&](Var<float> a, Var<float> b, BufferVar<float> c, ImageVar tex) {
+    Kernel kn = [&](Var<float> a, Var<float> b, BufferVar<float> c, TextureVar tex) {
 
         Float ll = log(a);
 

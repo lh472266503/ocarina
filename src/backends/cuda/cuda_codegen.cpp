@@ -86,7 +86,12 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
             current_scratch() << ">";
             break;
         }
-        case CallOp::BINDLESS_ARRAY_TEX_SAMPLE: break;
+        case CallOp::BINDLESS_ARRAY_TEX_SAMPLE: {
+            current_scratch() << "oc_bindless_tex_sample<";
+            _emit_type_name(expr->type());
+            current_scratch() << ">";
+            break;
+        }
         case CallOp::UNREACHABLE: current_scratch() << "__builtin_unreachable"; break;
         case CallOp::MAKE_RAY: OC_GEN_FUNC_NAME(make_ray); break;
         case CallOp::TRACE_ANY: OC_GEN_FUNC_NAME(trace_any); break;

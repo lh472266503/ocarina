@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
     auto image_out = device.create_texture(image_io.resolution(), image_io.pixel_storage());
     stream << image.upload_sync(image_io.pixel_ptr());
 
-    Kernel kernel = [&](ImageVar img) {
+    Kernel kernel = [&](TextureVar img) {
         uint2 res = image_io.resolution();
         int r = 5;
         Var p = img.sample<float4>(0.6f,0.6f);

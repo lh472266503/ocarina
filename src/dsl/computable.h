@@ -382,20 +382,34 @@ public:
     BindlessArrayTexture(const Expression *array, const Expression *index) noexcept
         : _array{array}, _index{index} {}
 
+    template<typename Output, typename U, typename V, typename W>
+    requires(is_all_floating_point_expr_v<U, V, W>)
+        OC_NODISCARD auto sample(const U &u, const V &v, const W &w) const noexcept {
+        const CallExpr *expr = Function::current()->call_builtin(Type::of<Output>(),
+                                                                 CallOp::BINDLESS_ARRAY_TEX_SAMPLE,
+                                                                 {_array, _index, OC_EXPR(u), OC_EXPR(v), OC_EXPR(w)});
+        return make_expr<Output>(expr);
+    }
+
     template<typename Output, typename UVW>
     requires(is_float_vector3_v<expr_value_t<UVW>>)
-    [[nodiscard]] Var<Output> sample(const UVW &uvw) const noexcept {
-        const CallExpr *expr = Function::current()->call_builtin(Type::of<Output>(), CallOp::BINDLESS_ARRAY_TEX_SAMPLE,
-                                                                 {_array, _index, OC_EXPR(uvw)});
-        return eval<Output>(expr);
+        [[nodiscard]] Var<Output> sample(const UVW &uvw) const noexcept {
+        return sample<Output>(uvw.x, uvw.y, uvw.z);
+    }
+
+    template<typename Output, typename U, typename V>
+    requires(is_all_floating_point_expr_v<U, V>)
+        OC_NODISCARD auto sample(const U &u, const V &v) const noexcept {
+        const CallExpr *expr = Function::current()->call_builtin(Type::of<Output>(),
+                                                                 CallOp::BINDLESS_ARRAY_TEX_SAMPLE,
+                                                                 {_array, _index, OC_EXPR(u), OC_EXPR(v)});
+        return make_expr<Output>(expr);
     }
 
     template<typename Output, typename UV>
     requires(is_float_vector2_v<expr_value_t<UV>>)
-    [[nodiscard]] Var<Output> sample(const UV &uv) const noexcept {
-        const CallExpr *expr = Function::current()->call_builtin(Type::of<Output>(), CallOp::BINDLESS_ARRAY_TEX_SAMPLE,
-                                                                 {_array, _index, OC_EXPR(uv)});
-        return eval<Output>(expr);
+        [[nodiscard]] Var<Output> sample(const UV &uv) const noexcept {
+        return sample<Output>(uv.x, uv.y);
     }
 };
 

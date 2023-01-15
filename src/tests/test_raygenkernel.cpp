@@ -55,8 +55,14 @@ int main(int argc, char *argv[]) {
     Context context(path.parent_path());
 //    context.clear_cache();
     Device device = context.create_device("cuda");
-    device.init_rtx();
     Stream stream = device.create_stream();
+    auto path1 = R"(E:/work/compile/ocarina/res/test.png)";
+    auto path2 = R"(E:/work/compile/ocarina/res/test.jpg)";
+    auto image_io = ImageIO::load(path1, LINEAR);
+    auto image = device.create_texture(image_io.resolution(), image_io.pixel_storage());
+    stream << image.upload_sync(image_io.pixel_ptr());
+    device.init_rtx();
+
     tinyobj::ObjReaderConfig obj_reader_config;
     obj_reader_config.triangulate = true;
     obj_reader_config.vertex_color = false;
@@ -74,7 +80,7 @@ int main(int argc, char *argv[]) {
     BindlessArray bindless_array = device.create_bindless_array();
 
     auto r1 = bindless_array.emplace(v_buffer.view(1));
-
+    bindless_array.emplace(image);
     auto r2 = bindless_array.emplace(v_buffer);
 
     stream << vert.upload_sync();
@@ -82,13 +88,7 @@ int main(int argc, char *argv[]) {
     stream << t_buffer.upload_sync(triangle.data());
     bindless_array.prepare_slotSOA(device);
     stream << bindless_array.upload_buffer_handles() << synchronize();
-
-    auto path1 = R"(E:/work/compile/ocarina/res/test.png)";
-    auto path2 = R"(E:/work/compile/ocarina/res/test.jpg)";
-    auto image_io = ImageIO::load(path1, LINEAR);
-
-    auto image = device.create_texture(image_io.resolution(), image_io.pixel_storage());
-    stream << image.upload_sync(image_io.pixel_ptr());
+    stream << bindless_array.upload_texture_handles() << synchronize();
 
     stream << cube.build_bvh();
 
@@ -103,20 +103,23 @@ int main(int argc, char *argv[]) {
 
     Kernel kernel = [&](const BufferVar<Triangle> t_buffer,
                         const Var<Accel> acc,
-                        const ImageVar img,
+                        const TextureVar img,
                         Var<Triangle> tri,
-                        Var<BindlessArray> ba) {
+                        BindlessArrayVar ba) {
         Var<Ray> r = make_ray(Var(float3(0,0.1, -5)), float3(0,0,1));
         Var hit= accel.trace_closest(r);
         Float3 pos = r->direction();
         Float4 pix = img.read<float4>(200,150);
-        Float4 pix2 = img.read<float4>(200,150);
+        Float2 uv = make_float2(0.7f);
+        Float4 pix2 = img.sample<float4>(uv);
         Float3 p = vert.read(1);
         Var f2 = make_float2(Var(7.f));
         Float3 t = ba.buffer<float3>(0).read(0);
         print("{},{}----------{} {}", hit.prim_id, hit.inst_id, hit->bary.x, hit.bary.y);
         print("{}  {}  {}  {} {}", tri.i, f2.x, f2.y, p.x, p.y);
         prints("{} {} {}", t);
+        prints("{} {} {} {}", pix2);
+//        prints("{} {} {} {}", ba.tex(0).sample<float4>(uv));
     };
     auto shader = device.compile(kernel);
     stream << shader(t_buffer, accel, image,triangle[0], bindless_array).dispatch(1);
