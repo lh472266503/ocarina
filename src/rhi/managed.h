@@ -87,7 +87,28 @@ public:
     [[nodiscard]] BufferDownloadCommand *download_sync() noexcept {
         return device_ty::download_sync(host_ty::data());
     }
+};
 
+template<typename T>
+class ManagedWrapper : public Managed<T> {
+public:
+    using Super = Managed<T>;
+
+private:
+    uint _id;
+    BindlessArray &_bindless_array;
+
+public:
+    explicit ManagedWrapper(BindlessArray &bindless_array) : _bindless_array(bindless_array) {}
+    void register_self() noexcept {
+        _id = _bindless_array.emplace(Super::device());
+    }
+
+    template<typename Index>
+    requires concepts::all_integral<expr_value_t<Index>>
+    OC_NODISCARD auto read(Index &&index) const {
+        return _bindless_array.buffer<T>(_id).read(OC_FORWARD(index));
+    }
 };
 
 }// namespace ocarina
