@@ -392,6 +392,14 @@ public:
                                                                  {_array, _index, OC_EXPR(index)});
         return eval<T>(expr);
     }
+
+    template<typename Index, typename Val>
+    requires concepts::integral<expr_value_t<Index>> && concepts::is_same_v<T, expr_value_t<Val>>
+    void write(Index &&index, Val &&elm) {
+        const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::BINDLESS_ARRAY_BUFFER_WRITE,
+                                                                 {_array, _index, OC_EXPR(index), OC_EXPR(elm)});
+        Function::current()->expr_statement(expr);
+    }
 };
 
 class BindlessArrayTexture {

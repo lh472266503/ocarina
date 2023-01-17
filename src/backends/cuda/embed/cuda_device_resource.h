@@ -88,6 +88,13 @@ __device__ T oc_bindless_array_buffer_read(OCBindlessArray bindless_array, oc_ui
 }
 
 template<typename T>
+__device__ void oc_bindless_array_buffer_write(OCBindlessArray bindless_array, oc_uint buffer_index, 
+                                                oc_uint index, const T& val) noexcept {
+    T *buffer = reinterpret_cast<T *>(bindless_array.buffer_slot[buffer_index]);
+    buffer[index] = val;
+}
+
+template<typename T>
 __device__ T oc_bindless_tex_sample(OCBindlessArray bindless_array, oc_uint tex_index,
                                     oc_float u, oc_float v, oc_float w = 0.f) noexcept {
     cudaTextureObject_t texture = bindless_array.tex_slot[tex_index];
