@@ -229,8 +229,10 @@ public:
         : _bindless_array(bindless_array) {}
 
     void register_self() noexcept {
-        _id = _bindless_array.emplace(*this);
+        _id = _bindless_array.emplace(super());
     }
+
+    [[nodiscard]] Super &super() noexcept { return *this; }
 
     template<typename Index>
     requires concepts::integral<expr_value_t<Index>>
