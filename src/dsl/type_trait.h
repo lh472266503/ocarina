@@ -348,6 +348,11 @@ template<typename T>
 using is_bindless_array = detail::is_bindless_array_impl<std::remove_cvref_t<T>>;
 OC_DEFINE_TEMPLATE_VALUE(is_bindless_array)
 
+template<typename T>
+using is_array_expr = ocarina::is_array<expr_value_t<T>>;
+
+OC_DEFINE_TEMPLATE_VALUE(is_array_expr)
+
 }// namespace ocarina
 
 

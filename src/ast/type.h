@@ -28,8 +28,7 @@ struct array_dimension<ocarina::array<T, N>> {
     static constexpr auto value = N;
 };
 
-template<typename T>
-constexpr auto array_dimension_v = array_dimension<T>::value;
+OC_DEFINE_TEMPLATE_VALUE(array_dimension)
 
 template<typename T>
 struct array_element {

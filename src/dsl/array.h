@@ -12,8 +12,7 @@
 namespace ocarina {
 
 template<typename T>
-class Array : public detail::EnableSubscriptAccess<Array<T>, T>,
-              public concepts::Noncopyable {
+class Array : public detail::EnableSubscriptAccess<Array<T>, T> {
 public:
     using element_type = T;
 
@@ -29,6 +28,32 @@ public:
                                                       num));
         _expression = Function::current()->local(type);
     }
+
+    template<typename U>
+    requires is_array_expr_v<U> Array(U &&array)
+    noexcept
+        : _expression{OC_EXPR(array)},
+          _size{array_expr_dimension_v<U>} {}
+
+    Array(Array &&) noexcept = default;
+
+    Array(const Array &other) noexcept
+        : _expression{other._expression}, _size{other._size} {
+        Function::current()->assign(_expression, other._expression);
+    }
+
+    Array &operator=(const Array &rhs) noexcept {
+        if (&rhs != this) [[likely]] {
+            OC_ASSERT(_size == rhs._size);
+            Function::current()->assign(_expression, rhs._expression);
+        }
+        return *this;
+    }
+    Array &operator=(Array &&rhs) noexcept {
+        *this = static_cast<const Array &>(rhs);
+        return *this;
+    }
+
     [[nodiscard]] const RefExpr *expression() const noexcept { return _expression; }
     [[nodiscard]] size_t size() const noexcept { return _size; }
 };
