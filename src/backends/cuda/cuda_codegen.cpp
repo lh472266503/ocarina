@@ -58,6 +58,7 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         case CallOp::INVERSE: OC_GEN_FUNC_NAME(inverse); break;
         case CallOp::SQR: OC_GEN_FUNC_NAME(sqr); break;
         case CallOp::RCP: OC_GEN_FUNC_NAME(rcp); break;
+        case CallOp::FRACT: OC_GEN_FUNC_NAME(fract); break;
         case CallOp::DEGREES: OC_GEN_FUNC_NAME(degrees); break;
         case CallOp::RADIANS: OC_GEN_FUNC_NAME(radians); break;
         case CallOp::SATURATE: OC_GEN_FUNC_NAME(saturate); break;
