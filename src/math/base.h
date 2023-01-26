@@ -216,7 +216,7 @@ OC_NODISCARD constexpr ret_type Pow(const T &v) {
 }
 
 template<typename T, typename U, typename V>
-requires none_dsl_v<T, U, V>
+requires none_dsl_v<T, U, V> && is_all_basic_v<T, U, V>
 [[nodiscard]] constexpr T clamp(T val, U low, V high) noexcept {
     if (val < low) {
         return low;
