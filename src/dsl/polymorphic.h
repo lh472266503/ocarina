@@ -34,6 +34,20 @@ public:
             default_([&] {unreachable();break_(); });
         });
     }
+
+    template<typename Func>
+    void for_each(Func &&func) const noexcept {
+        for (int i = 0; i < Super::size(); ++i) {
+            func(Super::at(i));
+        }
+    }
+
+    template<typename Func>
+    void for_each(Func &&func) noexcept {
+        for (int i = 0; i < Super::size(); ++i) {
+            func(Super::at(i));
+        }
+    }
 };
 
 }// namespace ocarina
