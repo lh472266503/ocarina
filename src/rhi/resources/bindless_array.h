@@ -51,7 +51,7 @@ public:
     [[nodiscard]] size_t emplace(const T &buffer) noexcept {
         return impl()->emplace_buffer(buffer.head());
     }
-    [[nodiscard]] size_t emplace(const RHITexture &texture) noexcept;
+    size_t emplace(const RHITexture &texture) noexcept;
     void remove_buffer(handle_ty index) noexcept;
     void remove_texture(handle_ty index) noexcept;
     [[nodiscard]] BufferUploadCommand *upload_buffer_handles() noexcept;
