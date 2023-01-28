@@ -34,13 +34,17 @@ public:
                       device->create_texture(res, pixel_storage)) {}
 
     /// for dsl
+    [[nodiscard]] const Expression *expression() const noexcept override {
+        const ArgumentBinding &uniform = Function::current()->get_uniform_var(Type::of<decltype(*this)>(),
+                                                                              Variable::Tag::TEXTURE,
+                                                                              memory_block());
+        return uniform.expression();
+    }
+
     template<typename Output, typename U, typename V>
     requires(is_all_floating_point_expr_v<U, V>)
     [[nodiscard]] auto sample(const U &u, const V &v) const noexcept {
-        const ArgumentBinding &uniform = Function::current()->get_uniform_var(Type::of<RHITexture>(),
-                                                                             Variable::Tag::TEXTURE,
-                                                                             memory_block());
-        return make_expr<RHITexture>(uniform.expression()).sample<Output>(u, v);
+        return make_expr<RHITexture>(expression()).sample<Output>(u, v);
     }
 
     template<typename Output, typename UV>
@@ -52,10 +56,7 @@ public:
     template<typename Target, typename X, typename Y>
     requires(is_all_integral_expr_v<X, Y>)
     OC_NODISCARD auto read(const X &x, const Y &y) const noexcept {
-        const ArgumentBinding &uniform = Function::current()->get_uniform_var(Type::of<RHITexture>(),
-                                                                             Variable::Tag::TEXTURE,
-                                                                             memory_block());
-        return make_expr<RHITexture>(uniform.expression()).read<Target>(x, y);
+        return make_expr<RHITexture>(expression()).read<Target>(x, y);
     }
 
     template<typename Target, typename XY>
@@ -70,10 +71,7 @@ public:
     requires(is_all_integral_expr_v<X, Y> &&
              (is_uchar_element_expr_v<Val> || is_float_element_expr_v<Val>))
     void write(const X &x, const Y &y, const Val &elm) noexcept {
-        const ArgumentBinding &uniform = Function::current()->get_uniform_var(Type::of<RHITexture>(),
-                                                                             Variable::Tag::TEXTURE,
-                                                                             memory_block());
-        make_expr<RHITexture>(uniform.expression()).write(x, y, elm);
+        make_expr<RHITexture>(expression()).write(x, y, elm);
     }
 
     template<typename XY, typename Val>

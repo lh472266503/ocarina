@@ -252,10 +252,32 @@ constexpr auto is_signed_element_v = is_signed_element<T>::value;
 
 #undef EXPR_VECTOR_TYPE_TRAITS
 
-template<typename T,int ...dims>
+template<typename T>
+using is_dsl_integral = std::disjunction<
+    std::is_same<std::remove_cvref_t<T>, int>,
+    std::is_same<std::remove_cvref_t<T>, uint>,
+    std::is_same<std::remove_cvref_t<T>, uchar>,
+    std::is_same<std::remove_cvref_t<T>, char>,
+    std::is_same<std::remove_cvref_t<T>, short>,
+    std::is_same<std::remove_cvref_t<T>, ushort>>;
+OC_DEFINE_TEMPLATE_VALUE(is_dsl_integral)
+
+template<typename T>
+using is_dsl_scalar = std::disjunction<is_dsl_integral<T>,
+                                       is_boolean<T>,
+                                       is_char<T>,
+                                       is_uchar<T>,
+                                       ocarina::is_floating_point<T>>;
+OC_DEFINE_TEMPLATE_VALUE(is_dsl_scalar)
+
+template<typename T>
+using is_dsl_basic = std::disjunction<is_dsl_scalar<T>, is_vector<T>, is_matrix<T>>;
+OC_DEFINE_TEMPLATE_VALUE(is_dsl_basic)
+
+template<typename T, int... dims>
 class Buffer;
 
-template<typename T,int... dims>
+template<typename T, int... dims>
 class BufferView;
 
 class RHITexture;

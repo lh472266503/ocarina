@@ -60,22 +60,23 @@ public:
     [[nodiscard]] BufferUploadCommand *upload_texture_handles_sync() noexcept;
 
     /// for dsl
+    [[nodiscard]] const Expression *expression() const noexcept override {
+        const ArgumentBinding &uniform = Function::current()->get_uniform_var(Type::of<decltype(*this)>(),
+                                                                              Variable::Tag::BINDLESS_ARRAY,
+                                                                              memory_block());
+        return uniform.expression();
+    }
+
     template<typename Index>
     requires is_integral_expr_v<Index>
     [[nodiscard]] BindlessArrayTexture tex(Index &&index) const noexcept {
-        const ArgumentBinding &argument = Function::current()->get_uniform_var(Type::of<BindlessArray>(),
-                                                                               Variable::Tag::BINDLESS_ARRAY,
-                                                                               memory_block());
-        return make_expr<BindlessArray>(argument.expression()).tex(OC_FORWARD(index));
+        return make_expr<BindlessArray>(expression()).tex(OC_FORWARD(index));
     }
 
     template<typename T, typename Index>
     requires is_integral_expr_v<Index>
     [[nodiscard]] BindlessArrayBuffer<T> buffer(Index &&index) const noexcept {
-        const ArgumentBinding &argument = Function::current()->get_uniform_var(Type::of<BindlessArray>(),
-                                                                               Variable::Tag::BINDLESS_ARRAY,
-                                                                               memory_block());
-        return make_expr<BindlessArray>(argument.expression()).buffer<T>(OC_FORWARD(index));
+        return make_expr<BindlessArray>(expression()).buffer<T>(OC_FORWARD(index));
     }
 };
 

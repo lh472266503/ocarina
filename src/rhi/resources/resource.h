@@ -53,7 +53,10 @@ public:
         other._device = nullptr;
         return *this;
     }
-
+    [[nodiscard]] virtual const Expression *expression() const noexcept {
+        OC_ASSERT(0);
+        return nullptr;
+    }
     [[nodiscard]] Tag tag() const noexcept { return _tag; }
     [[nodiscard]] virtual handle_ty handle() const noexcept { return _handle; }
     [[nodiscard]] virtual const void *handle_ptr() const noexcept { return &_handle; }

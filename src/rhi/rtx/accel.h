@@ -40,20 +40,21 @@ public:
         impl()->add_mesh(mesh.impl(), transform);
     }
 
-    template<typename TRay>
-    [[nodiscard]] Var<bool> trace_any(const TRay &ray) const noexcept {
-        const ArgumentBinding &uniform = Function::current()->get_uniform_var(Type::of<Accel>(),
+    [[nodiscard]] const Expression *expression() const noexcept override {
+        const ArgumentBinding &uniform = Function::current()->get_uniform_var(Type::of<decltype(*this)>(),
                                                                               Variable::Tag::ACCEL,
                                                                               memory_block());
-        return make_expr<Accel>(uniform.expression()).trace_any(ray);
+        return uniform.expression();
+    }
+
+    template<typename TRay>
+    [[nodiscard]] Var<bool> trace_any(const TRay &ray) const noexcept {
+        return make_expr<Accel>(expression()).trace_any(ray);
     }
 
     template<typename TRay>
     [[nodiscard]] Var<Hit> trace_closest(const TRay &ray) const noexcept {
-        const ArgumentBinding &uniform = Function::current()->get_uniform_var(Type::of<Accel>(),
-                                                                             Variable::Tag::ACCEL,
-                                                                             memory_block());
-        return make_expr<Accel>(uniform.expression()).trace_closest(ray);
+        return make_expr<Accel>(expression()).trace_closest(ray);
     }
 
     [[nodiscard]] handle_ty handle() const noexcept override { return impl()->handle(); }
