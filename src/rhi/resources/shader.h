@@ -30,6 +30,12 @@ template<>
 struct prototype_to_shader_invocation<RHITexture> {
     using type = const RHITexture &;
 };
+
+template<>
+struct prototype_to_shader_invocation<BindlessArray> {
+    using type = const BindlessArray &;
+};
+
 }// namespace detail
 
 template<typename T>

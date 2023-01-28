@@ -30,7 +30,6 @@ using detail::Computable;
         concepts::different<std::remove_cvref_t<Arg>, Var<this_type>> &&                           \
         OC_ASSIGN_CHECK(ocarina::expr_value_t<this_type>, ocarina::expr_value_t<Arg>)              \
     Var(Arg &&arg) : Var() { ocarina::detail::assign(*this, std::forward<Arg>(arg)); }             \
-    OC_MAKE_GET_PROXY                                                                              \
     explicit Var(ocarina::detail::ArgumentCreation) noexcept                                       \
         : Var(ocarina::Function::current()->argument(ocarina::Type::of<this_type>())) {}           \
     explicit Var(ocarina::detail::ReferenceArgumentCreation) noexcept                              \
@@ -48,12 +47,14 @@ template<typename T>
 struct Var : public Computable<T> {
     using this_type = T;
     OC_MAKE_VAR_COMMON
+    OC_MAKE_GET_PROXY
 };
 
 template<typename T>
 struct Var<Vector<T, 2>> : public Computable<Vector<T, 2>> {
     using this_type = Vector<T, 2>;
     OC_MAKE_VAR_COMMON
+    OC_MAKE_GET_PROXY
 
     explicit Var(Var<T> val) : Var() {
         detail::assign(this->x, val);
@@ -65,6 +66,7 @@ template<typename T>
 struct Var<Vector<T, 3>> : public Computable<Vector<T, 3>> {
     using this_type = Vector<T, 3>;
     OC_MAKE_VAR_COMMON
+    OC_MAKE_GET_PROXY
     explicit Var(Var<T> val) : Var() {
         detail::assign(this->x, val);
         detail::assign(this->y, val);
@@ -76,6 +78,7 @@ template<typename T>
 struct Var<Vector<T, 4>> : public Computable<Vector<T, 4>> {
     using this_type = Vector<T, 4>;
     OC_MAKE_VAR_COMMON
+    OC_MAKE_GET_PROXY
     explicit Var(Var<T> val) : Var() {
         detail::assign(this->x, val);
         detail::assign(this->y, val);
