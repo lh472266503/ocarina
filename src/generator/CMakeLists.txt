@@ -8,4 +8,4 @@ set_target_properties(ocarina-generator PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
         WINDOWS_EXPORT_ALL_SYMBOLS ON)
 target_compile_definitions(ocarina-generator PRIVATE OC_GENERATOR_EXPORT_DLL=1)
-target_link_libraries(ocarina-generator PUBLIC ocarina-dsl)
+target_link_libraries(ocarina-generator PUBLIC ocarina-ast)

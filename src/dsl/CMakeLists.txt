@@ -10,4 +10,5 @@ set_target_properties(ocarina-dsl PROPERTIES
 target_compile_definitions(ocarina-dsl PRIVATE OC_DSL_EXPORT_DLL=1)
 target_link_libraries(ocarina-dsl
         PUBLIC
+        ocarina-rhi
         ocarina-ast)
