@@ -63,9 +63,11 @@ requires(any_dsl_v<U, T, F> &&std::is_same_v<expr_value_t<T>, expr_value_t<F>> &
         return eval<expr_value_t<T>>(expr);                                                  \
     }
 
-OC_MAKE_TRIPLE_FUNC(fma, FMA)
-OC_MAKE_TRIPLE_FUNC(lerp, LERP)
+inline namespace dsl {
 OC_MAKE_TRIPLE_FUNC(clamp, CLAMP)
+OC_MAKE_TRIPLE_FUNC(lerp, LERP)
+OC_MAKE_TRIPLE_FUNC(fma, FMA)
+}// namespace dsl
 
 #undef OC_MAKE_TRIPLE_FUNC
 

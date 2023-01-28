@@ -78,6 +78,10 @@ public:
     [[nodiscard]] BindlessArrayBuffer<T> buffer(Index &&index) const noexcept {
         return make_expr<BindlessArray>(expression()).buffer<T>(OC_FORWARD(index));
     }
+
+    [[nodiscard]] Var<BindlessArray> var() const noexcept {
+        return Var<BindlessArray>(expression());
+    }
 };
 
 }// namespace ocarina
