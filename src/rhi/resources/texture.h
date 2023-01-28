@@ -14,7 +14,7 @@ class RHITexture : public RHIResource {
 public:
     class Impl {
     public:
-        [[nodiscard]] virtual uint2 resolution() const noexcept = 0;
+        [[nodiscard]] virtual uint3 resolution() const noexcept = 0;
         [[nodiscard]] virtual PixelStorage pixel_storage() const noexcept = 0;
         [[nodiscard]] virtual handle_ty array_handle() const noexcept = 0;
         [[nodiscard]] virtual handle_ty tex_handle() const noexcept = 0;
@@ -28,7 +28,7 @@ public:
 
 public:
     RHITexture() = default;
-    explicit RHITexture(Device::Impl *device, uint2 res,
+    explicit RHITexture(Device::Impl *device, uint3 res,
                         PixelStorage pixel_storage)
         : RHIResource(device, Tag::TEXTURE,
                       device->create_texture(res, pixel_storage)) {}
@@ -84,7 +84,7 @@ public:
 
     [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
     [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(_handle); }
-    [[nodiscard]] uint2 resolution() const noexcept { return impl()->resolution(); }
+    [[nodiscard]] uint3 resolution() const noexcept { return impl()->resolution(); }
     [[nodiscard]] handle_ty array_handle() const noexcept { return impl()->array_handle(); }
     [[nodiscard]] handle_ty tex_handle() const noexcept { return impl()->tex_handle(); }
     [[nodiscard]] const void *handle_ptr() const noexcept override { return impl()->handle_ptr(); }

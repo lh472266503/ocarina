@@ -14,14 +14,14 @@ class CUDATexture : public RHITexture::Impl {
 private:
     OCTexture _data;
     CUDADevice *_device{};
-    uint2 _res{};
+    uint3 _res{};
     CUarray _array_handle{};
 
 public:
-    CUDATexture(CUDADevice *device, uint2 res, PixelStorage pixel_storage);
+    CUDATexture(CUDADevice *device, uint3 res, PixelStorage pixel_storage);
     ~CUDATexture();
     void init();
-    [[nodiscard]] uint2 resolution() const noexcept override { return _res; }
+    [[nodiscard]] uint3 resolution() const noexcept override { return _res; }
     [[nodiscard]] handle_ty array_handle() const noexcept override { return reinterpret_cast<handle_ty>(_array_handle); }
     [[nodiscard]] handle_ty tex_handle() const noexcept override {
         return _data.texture;

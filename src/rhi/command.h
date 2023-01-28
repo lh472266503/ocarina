@@ -181,14 +181,14 @@ public:
 
 class TextureUploadCommand final : public TextureOpCommand {
 public:
-    TextureUploadCommand(const void *data, handle_ty device_ptr, uint2 resolution, PixelStorage storage, bool async)
+    TextureUploadCommand(const void *data, handle_ty device_ptr, uint3 resolution, PixelStorage storage, bool async)
         : TextureOpCommand(reinterpret_cast<handle_ty>(data), device_ptr, resolution, storage, async) {}
     OC_MAKE_CMD_COMMON_FUNC(TextureUploadCommand)
 };
 
 class TextureDownloadCommand final : public TextureOpCommand {
 public:
-    TextureDownloadCommand(void *data, handle_ty device_ptr, uint2 resolution, PixelStorage storage, bool async)
+    TextureDownloadCommand(void *data, handle_ty device_ptr, uint3 resolution, PixelStorage storage, bool async)
         : TextureOpCommand(reinterpret_cast<handle_ty>(data), device_ptr, resolution, storage, async) {}
     OC_MAKE_CMD_COMMON_FUNC(TextureDownloadCommand)
 };

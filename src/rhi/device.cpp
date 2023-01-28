@@ -22,8 +22,12 @@ BindlessArray Device::create_bindless_array() noexcept {
     return _create<BindlessArray>();
 }
 
-RHITexture Device::create_texture(uint2 res, PixelStorage storage) noexcept {
+RHITexture Device::create_texture(uint3 res, PixelStorage storage) noexcept {
     return _create<RHITexture>(res, storage);
+}
+
+RHITexture Device::create_texture(uint2 res, PixelStorage storage) noexcept{
+    return create_texture(make_uint3(res, 1u), storage);
 }
 
 }// namespace ocarina

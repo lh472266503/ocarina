@@ -8,7 +8,7 @@
 
 namespace ocarina {
 
-CUDATexture::CUDATexture(CUDADevice *device, uint2 res, PixelStorage pixel_storage)
+CUDATexture::CUDATexture(CUDADevice *device, uint3 res, PixelStorage pixel_storage)
     : _device(device), _res(res) {
     _data.pixel_storage = pixel_storage;
     init();
@@ -18,7 +18,7 @@ void CUDATexture::init() {
     CUDA_ARRAY3D_DESCRIPTOR array_desc{};
     array_desc.Width = _res.x;
     array_desc.Height = _res.y;
-    array_desc.Depth = 1;
+    array_desc.Depth = _res.z;
     switch (_data.pixel_storage) {
         case PixelStorage::BYTE1:
             array_desc.Format = CU_AD_FORMAT_UNSIGNED_INT8;
