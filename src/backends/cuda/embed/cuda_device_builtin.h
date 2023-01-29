@@ -2211,6 +2211,21 @@ __device__ oc_float2 oc_atan(oc_float2 v) { return oc_float2(oc_atan(v.x), oc_at
 __device__ oc_float3 oc_atan(oc_float3 v) { return oc_float3(oc_atan(v.x), oc_atan(v.y), oc_atan(v.z)); }
 __device__ oc_float4 oc_atan(oc_float4 v) { return oc_float4(oc_atan(v.x), oc_atan(v.y), oc_atan(v.z), oc_atan(v.w)); }
 
+__device__ oc_float oc_asinh(oc_float v) { return asinhf(v); }
+__device__ oc_float2 oc_asinh(oc_float2 v) { return oc_float2(oc_asinh(v.x), oc_asinh(v.y)); }
+__device__ oc_float3 oc_asinh(oc_float3 v) { return oc_float3(oc_asinh(v.x), oc_asinh(v.y), oc_asinh(v.z)); }
+__device__ oc_float4 oc_asinh(oc_float4 v) { return oc_float4(oc_asinh(v.x), oc_asinh(v.y), oc_asinh(v.z), oc_asinh(v.w)); }
+
+__device__ oc_float oc_acosh(oc_float v) { return acoshf(v); }
+__device__ oc_float2 oc_acosh(oc_float2 v) { return oc_float2(oc_acosh(v.x), oc_acosh(v.y)); }
+__device__ oc_float3 oc_acosh(oc_float3 v) { return oc_float3(oc_acosh(v.x), oc_acosh(v.y), oc_acosh(v.z)); }
+__device__ oc_float4 oc_acosh(oc_float4 v) { return oc_float4(oc_acosh(v.x), oc_acosh(v.y), oc_acosh(v.z), oc_acosh(v.w)); }
+
+__device__ oc_float oc_atanh(oc_float v) { return atanhf(v); }
+__device__ oc_float2 oc_atanh(oc_float2 v) { return oc_float2(oc_atanh(v.x), oc_atanh(v.y)); }
+__device__ oc_float3 oc_atanh(oc_float3 v) { return oc_float3(oc_atanh(v.x), oc_atanh(v.y), oc_atanh(v.z)); }
+__device__ oc_float4 oc_atanh(oc_float4 v) { return oc_float4(oc_atanh(v.x), oc_atanh(v.y), oc_atanh(v.z), oc_atanh(v.w)); }
+
 __device__ oc_bool oc_is_inf(oc_float v) { return isinf(v); }
 __device__ oc_bool2 oc_is_inf(oc_float2 v) { return oc_bool2(oc_is_inf(v.x), oc_is_inf(v.y)); }
 __device__ oc_bool3 oc_is_inf(oc_float3 v) { return oc_bool3(oc_is_inf(v.x), oc_is_inf(v.y), oc_is_inf(v.z)); }

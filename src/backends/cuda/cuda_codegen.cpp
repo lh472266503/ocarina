@@ -26,11 +26,17 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         case CallOp::ACOS: OC_GEN_FUNC_NAME(acos); break;
         case CallOp::ASIN: OC_GEN_FUNC_NAME(asin); break;
         case CallOp::ATAN: OC_GEN_FUNC_NAME(atan); break;
+        case CallOp::ACOSH: OC_GEN_FUNC_NAME(acosh); break;
+        case CallOp::ASINH: OC_GEN_FUNC_NAME(asinh); break;
+        case CallOp::ATANH: OC_GEN_FUNC_NAME(atanh); break;
         case CallOp::ATAN2: OC_GEN_FUNC_NAME(atan2); break;
         case CallOp::COPYSIGN: OC_GEN_FUNC_NAME(copysign); break;
         case CallOp::COS: OC_GEN_FUNC_NAME(cos); break;
         case CallOp::SIN: OC_GEN_FUNC_NAME(sin); break;
         case CallOp::TAN: OC_GEN_FUNC_NAME(tan); break;
+        case CallOp::SINH : OC_GEN_FUNC_NAME(sinh) ;break;
+        case CallOp::COSH: OC_GEN_FUNC_NAME(cosh); break;
+        case CallOp::TANH: OC_GEN_FUNC_NAME(tanh); break;
         case CallOp::EXP: OC_GEN_FUNC_NAME(exp); break;
         case CallOp::EXP2: OC_GEN_FUNC_NAME(exp2); break;
         case CallOp::EXP10: OC_GEN_FUNC_NAME(exp10); break;

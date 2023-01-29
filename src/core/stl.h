@@ -136,9 +136,12 @@ using std::ceil;
 using std::isinf;
 using std::isnan;
 using std::copysign;
-using std::cosh;
 using std::sinh;
+using std::cosh;
 using std::tanh;
+using std::asinh;
+using std::acosh;
+using std::atanh;
 using std::fmod;
 
 inline void oc_memcpy(void *dst, const void *src, size_t size) {

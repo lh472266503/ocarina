@@ -60,6 +60,9 @@ enum struct CallOp : uint32_t {
     ACOS,
     ASIN,
     ATAN,
+    ACOSH,
+    ASINH,
+    ATANH,
     ATAN2,
     COPYSIGN,
 
