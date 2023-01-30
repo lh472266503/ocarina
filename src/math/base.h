@@ -425,6 +425,6 @@ requires ocarina::is_vector4_v<expr_value_t<V>>
            (make_8bit(color.w) << 24);
 }
 
-#include "common_lib.h"
+#include "common_lib.inl.h"
 
 }// namespace ocarina

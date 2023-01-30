@@ -153,6 +153,7 @@ def get_content(prefix = "", device_flag = ""):
     v3 = {prefix}cross(v1, v2);
 }}
 
+
 """
     return content
 
@@ -161,7 +162,7 @@ def main():
 
 
     print(curr_dir)
-    fn = os.path.join(curr_dir, "common_lib.h")
+    fn = os.path.join(curr_dir, "common_lib.inl.h")
     string = get_content()
     with open(fn, "w") as f:
         f.write(string)
