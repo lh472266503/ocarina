@@ -38,7 +38,11 @@ public:
     Array(Array &&) noexcept = default;
 
     Array(const Array &other) noexcept
-        : _expression{other._expression}, _size{other._size} {
+        : _size{other._size} {
+        const Type *type = Type::from(ocarina::format("array<{},{}>",
+                                                      detail::TypeDesc<T>::description(),
+                                                      _size));
+        _expression = Function::current()->local(type);
         Function::current()->assign(_expression, other._expression);
     }
 
