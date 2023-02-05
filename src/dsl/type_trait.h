@@ -282,7 +282,7 @@ class BufferView;
 
 class RHITexture;
 class Accel;
-class BindlessArray;
+class ResourceArray;
 
 namespace detail {
 
@@ -364,15 +364,15 @@ OC_DEFINE_TEMPLATE_VALUE(is_accel)
 
 namespace detail {
 template<typename T>
-struct is_bindless_array_impl : std::false_type {};
+struct is_resource_array_impl : std::false_type {};
 
 template<>
-struct is_bindless_array_impl<BindlessArray> : std::true_type {};
+struct is_resource_array_impl<ResourceArray> : std::true_type {};
 }// namespace detail
 
 template<typename T>
-using is_bindless_array = detail::is_bindless_array_impl<std::remove_cvref_t<T>>;
-OC_DEFINE_TEMPLATE_VALUE(is_bindless_array)
+using is_resource_array = detail::is_resource_array_impl<std::remove_cvref_t<T>>;
+OC_DEFINE_TEMPLATE_VALUE(is_resource_array)
 
 template<typename T>
 using is_array_expr = ocarina::is_array<expr_value_t<T>>;

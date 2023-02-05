@@ -87,14 +87,14 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         case CallOp::MAKE_FLOAT2X2: OC_GEN_FUNC_NAME(make_float2x2); break;
         case CallOp::MAKE_FLOAT3X3: OC_GEN_FUNC_NAME(make_float3x3); break;
         case CallOp::MAKE_FLOAT4X4: OC_GEN_FUNC_NAME(make_float4x4); break;
-        case CallOp::BINDLESS_ARRAY_BUFFER_WRITE: OC_GEN_FUNC_NAME(bindless_array_buffer_write); break;
-        case CallOp::BINDLESS_ARRAY_BUFFER_READ: {
+        case CallOp::RESOURCE_ARRAY_BUFFER_WRITE: OC_GEN_FUNC_NAME(bindless_array_buffer_write); break;
+        case CallOp::RESOURCE_ARRAY_BUFFER_READ: {
             current_scratch() << "oc_bindless_array_buffer_read<";
             _emit_type_name(expr->type());
             current_scratch() << ">";
             break;
         }
-        case CallOp::BINDLESS_ARRAY_TEX_SAMPLE: {
+        case CallOp::RESOURCE_ARRAY_TEX_SAMPLE: {
             current_scratch() << "oc_bindless_tex_sample<";
             _emit_type_name(expr->type());
             current_scratch() << ">";
@@ -346,7 +346,7 @@ void CUDACodegen::_emit_type_name(const Type *type) noexcept {
             case Type::Tag::TEXTURE:
                 current_scratch() << "OCTexture";
                 break;
-            case Type::Tag::BINDLESS_ARRAY:
+            case Type::Tag::RESOURCE_ARRAY:
                 current_scratch() << "OCBindlessArray";
                 break;
             case Type::Tag::ACCEL:

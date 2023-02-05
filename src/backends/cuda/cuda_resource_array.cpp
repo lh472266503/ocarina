@@ -2,27 +2,27 @@
 // Created by Zero on 12/01/2023.
 //
 
-#include "cuda_bindless_array.h"
+#include "cuda_resource_array.h"
 #include "cuda_device.h"
 
 namespace ocarina {
 
-CUDABindlessArray::CUDABindlessArray(CUDADevice *device)
+CUDAResourceArray::CUDAResourceArray(CUDADevice *device)
     : _device(device) {}
 
-size_t CUDABindlessArray::emplace_buffer(handle_ty handle) noexcept {
+size_t CUDAResourceArray::emplace_buffer(handle_ty handle) noexcept {
     auto ret = _buffers.host().size();
     _buffers.push_back(handle);
     return ret;
 }
 
-size_t CUDABindlessArray::emplace_texture(handle_ty handle) noexcept {
+size_t CUDAResourceArray::emplace_texture(handle_ty handle) noexcept {
     auto ret = _textures.host().size();
     _textures.push_back(handle);
     return ret;
 }
 
-void CUDABindlessArray::prepare_slotSOA(Device &device) noexcept {
+void CUDAResourceArray::prepare_slotSOA(Device &device) noexcept {
     _buffers.reset_device_buffer(device);
     _textures.reset_device_buffer(device);
     _slot_soa.buffer_slot = _buffers.head();
@@ -44,27 +44,27 @@ void remove_by_index(vector<T> &v, handle_ty index) noexcept {
 
 }// namespace detail
 
-void CUDABindlessArray::remove_buffer(handle_ty index) noexcept {
+void CUDAResourceArray::remove_buffer(handle_ty index) noexcept {
     detail::remove_by_index(_buffers.host(), index);
 }
 
-void CUDABindlessArray::remove_texture(handle_ty index) noexcept {
+void CUDAResourceArray::remove_texture(handle_ty index) noexcept {
     detail::remove_by_index(_textures.host(), index);
 }
 
-BufferUploadCommand *CUDABindlessArray::upload_texture_handles() const noexcept {
+BufferUploadCommand *CUDAResourceArray::upload_texture_handles() const noexcept {
     return _textures.upload();
 }
 
-BufferUploadCommand *CUDABindlessArray::upload_buffer_handles() const noexcept {
+BufferUploadCommand *CUDAResourceArray::upload_buffer_handles() const noexcept {
     return _buffers.upload();
 }
 
-BufferUploadCommand *CUDABindlessArray::upload_buffer_handles_sync() const noexcept {
+BufferUploadCommand *CUDAResourceArray::upload_buffer_handles_sync() const noexcept {
     return _buffers.upload_sync();
 }
 
-BufferUploadCommand *CUDABindlessArray::upload_texture_handles_sync() const noexcept {
+BufferUploadCommand *CUDAResourceArray::upload_texture_handles_sync() const noexcept {
     return _textures.upload_sync();
 }
 

@@ -299,7 +299,7 @@ public:
 
         BUFFER,
         TEXTURE,
-        BINDLESS_ARRAY,
+        RESOURCE_ARRAY,
         ACCEL,
 
         NONE
@@ -361,7 +361,7 @@ public:
     [[nodiscard]] constexpr bool is_structure() const noexcept { return _tag == Tag::STRUCTURE; }
     [[nodiscard]] constexpr bool is_buffer() const noexcept { return _tag == Tag::BUFFER; }
     [[nodiscard]] constexpr bool is_image() const noexcept { return _tag == Tag::TEXTURE; }
-    [[nodiscard]] constexpr bool is_bindless_array() const noexcept { return _tag == Tag::BINDLESS_ARRAY; }
+    [[nodiscard]] constexpr bool is_resource_array() const noexcept { return _tag == Tag::RESOURCE_ARRAY; }
     [[nodiscard]] constexpr bool is_accel() const noexcept { return _tag == Tag::ACCEL; }
 };
 

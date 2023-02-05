@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
 
     Mesh cube = device.create_mesh(vert.device(), t_buffer);
 
-    BindlessArray bindless_array = device.create_bindless_array();
+    ResourceArray bindless_array = device.create_resource_array();
 
     auto r1 = bindless_array.emplace(v_buffer.view(1));
     bindless_array.emplace(image);

@@ -374,7 +374,7 @@ public:
 }// namespace detail
 
 template<typename T>
-class BindlessArrayBuffer {
+class ResourceArrayBuffer {
     static_assert(is_valid_buffer_element_v<T>);
 
 private:
@@ -382,13 +382,13 @@ private:
     const Expression *_index{nullptr};
 
 public:
-    BindlessArrayBuffer(const Expression *array, const Expression *index) noexcept
+    ResourceArrayBuffer(const Expression *array, const Expression *index) noexcept
         : _array{array}, _index{index} {}
 
     template<typename Index>
     requires concepts::integral<expr_value_t<Index>>
     [[nodiscard]] Var<T> read(Index &&index) const noexcept {
-        const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::BINDLESS_ARRAY_BUFFER_READ,
+        const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::RESOURCE_ARRAY_BUFFER_READ,
                                                                  {_array, _index, OC_EXPR(index)});
         return eval<T>(expr);
     }
@@ -396,26 +396,26 @@ public:
     template<typename Index, typename Val>
     requires concepts::integral<expr_value_t<Index>> && concepts::is_same_v<T, expr_value_t<Val>>
     void write(Index &&index, Val &&elm) {
-        const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::BINDLESS_ARRAY_BUFFER_WRITE,
+        const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::RESOURCE_ARRAY_BUFFER_WRITE,
                                                                  {_array, _index, OC_EXPR(index), OC_EXPR(elm)});
         Function::current()->expr_statement(expr);
     }
 };
 
-class BindlessArrayTexture {
+class ResourceArrayTexture {
 private:
     const Expression *_array{nullptr};
     const Expression *_index{nullptr};
 
 public:
-    BindlessArrayTexture(const Expression *array, const Expression *index) noexcept
+    ResourceArrayTexture(const Expression *array, const Expression *index) noexcept
         : _array{array}, _index{index} {}
 
     template<typename Output, typename U, typename V, typename W>
     requires(is_all_floating_point_expr_v<U, V, W>)
         OC_NODISCARD auto sample(const U &u, const V &v, const W &w) const noexcept {
         const CallExpr *expr = Function::current()->call_builtin(Type::of<Output>(),
-                                                                 CallOp::BINDLESS_ARRAY_TEX_SAMPLE,
+                                                                 CallOp::RESOURCE_ARRAY_TEX_SAMPLE,
                                                                  {_array, _index, OC_EXPR(u), OC_EXPR(v), OC_EXPR(w)});
         return make_expr<Output>(expr);
     }
@@ -430,7 +430,7 @@ public:
     requires(is_all_floating_point_expr_v<U, V>)
         OC_NODISCARD auto sample(const U &u, const V &v) const noexcept {
         const CallExpr *expr = Function::current()->call_builtin(Type::of<Output>(),
-                                                                 CallOp::BINDLESS_ARRAY_TEX_SAMPLE,
+                                                                 CallOp::RESOURCE_ARRAY_TEX_SAMPLE,
                                                                  {_array, _index, OC_EXPR(u), OC_EXPR(v)});
         return make_expr<Output>(expr);
     }
@@ -444,21 +444,21 @@ public:
 
 namespace detail {
 template<>
-struct Computable<BindlessArray> {
+struct Computable<ResourceArray> {
 public:
     template<typename T, typename Index>
     requires concepts::integral<expr_value_t<Index>>
-    [[nodiscard]] BindlessArrayBuffer<T> buffer(Index &&index) const noexcept {
-        return BindlessArrayBuffer<T>(expression(), OC_EXPR(index));
+    [[nodiscard]] ResourceArrayBuffer<T> buffer(Index &&index) const noexcept {
+        return ResourceArrayBuffer<T>(expression(), OC_EXPR(index));
     }
 
     template<typename Index>
     requires concepts::integral<expr_value_t<Index>>
-    [[nodiscard]] BindlessArrayTexture tex(Index &&index) const noexcept {
-        return BindlessArrayTexture(expression(), OC_EXPR(index));
+    [[nodiscard]] ResourceArrayTexture tex(Index &&index) const noexcept {
+        return ResourceArrayTexture(expression(), OC_EXPR(index));
     }
 
-    OC_COMPUTABLE_COMMON(Computable<BindlessArray>)
+    OC_COMPUTABLE_COMMON(Computable<ResourceArray>)
 };
 
 #define OC_MAKE_STRUCT_MEMBER(m)                                                                                        \

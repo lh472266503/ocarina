@@ -20,7 +20,7 @@ public:
             case Tag::BUFFER: return sizeof(handle_ty);
             case Tag::ACCEL: return sizeof(handle_ty);
             case Tag::TEXTURE: return sizeof(OCTexture);
-            case Tag::BINDLESS_ARRAY: return sizeof(SlotSOA);
+            case Tag::RESOURCE_ARRAY: return sizeof(SlotSOA);
             default:
                 return 0;
         }
@@ -36,7 +36,7 @@ public:
             case Tag::BUFFER: return alignof(handle_ty);
             case Tag::ACCEL: return alignof(handle_ty);
             case Tag::TEXTURE: return alignof(OCTexture);
-            case Tag::BINDLESS_ARRAY: return alignof(SlotSOA);
+            case Tag::RESOURCE_ARRAY: return alignof(SlotSOA);
             default:
                 return 0;
         }
@@ -120,8 +120,8 @@ public:
     void destroy_stream(handle_ty handle) noexcept override;
     [[nodiscard]] handle_ty create_mesh(const MeshParams &params) noexcept override;
     void destroy_mesh(handle_ty handle) noexcept override;
-    [[nodiscard]] handle_ty create_bindless_array() noexcept override;
-    void destroy_bindless_array(handle_ty handle) noexcept override;
+    [[nodiscard]] handle_ty create_resource_array() noexcept override;
+    void destroy_resource_array(handle_ty handle) noexcept override;
     void init_rtx() noexcept override { init_optix_context(); }
     [[nodiscard]] CommandVisitor *command_visitor() noexcept override;
 };

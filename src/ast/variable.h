@@ -24,7 +24,7 @@ public:
         // resources
         BUFFER,
         TEXTURE,
-        BINDLESS_ARRAY,
+        RESOURCE_ARRAY,
         ACCEL,
 
         // builtins

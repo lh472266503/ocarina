@@ -61,8 +61,8 @@ template<typename T>
             return "t";
         case Tag::ACCEL:
             return "acc";
-        case Tag::BINDLESS_ARRAY:
-            return "ba";
+        case Tag::RESOURCE_ARRAY:
+            return "ra";
         default:
             break;
     }

@@ -96,24 +96,24 @@ public:
 
 private:
     uint _id;
-    BindlessArray &_bindless_array;
+    ResourceArray &_resource_array;
 
 public:
-    explicit ManagedWrapper(BindlessArray &bindless_array) : _bindless_array(bindless_array) {}
+    explicit ManagedWrapper(ResourceArray &bindless_array) : _resource_array(bindless_array) {}
     void register_self() noexcept {
-        _id = _bindless_array.emplace(Super::device());
+        _id = _resource_array.emplace(Super::device());
     }
 
     template<typename Index>
     requires concepts::all_integral<expr_value_t<Index>>
     OC_NODISCARD auto read(Index &&index) const noexcept {
-        return _bindless_array.buffer<T>(_id).read(OC_FORWARD(index));
+        return _resource_array.buffer<T>(_id).read(OC_FORWARD(index));
     }
 
     template<typename Index, typename Val>
     requires concepts::integral<expr_value_t<Index>> && concepts::is_same_v<T, expr_value_t<Val>>
     void write(Index &&index, Val &&elm) {
-        _bindless_array.buffer<T>(_id).write(OC_FORWARD(index), OC_FORWARD(elm));
+        _resource_array.buffer<T>(_id).write(OC_FORWARD(index), OC_FORWARD(elm));
     }
 };
 

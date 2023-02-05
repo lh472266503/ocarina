@@ -6,12 +6,12 @@
 
 #include "core/stl.h"
 #include "rhi/managed.h"
-#include "rhi/resources/bindless_array.h"
+#include "rhi/resources/resource_array.h"
 #include <cuda.h>
 
 namespace ocarina {
 class CUDADevice;
-class CUDABindlessArray : public BindlessArray::Impl {
+class CUDAResourceArray : public ResourceArray::Impl {
 
 private:
     SlotSOA _slot_soa{};
@@ -20,7 +20,7 @@ private:
     Managed<CUtexObject> _textures;
 
 public:
-    explicit CUDABindlessArray(CUDADevice *device);
+    explicit CUDAResourceArray(CUDADevice *device);
 
     /// for device side structure
     [[nodiscard]] const void *handle_ptr() const noexcept override {

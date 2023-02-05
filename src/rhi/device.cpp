@@ -6,7 +6,7 @@
 #include "resources/texture.h"
 #include "resources/stream.h"
 #include "rtx/accel.h"
-#include "resources/bindless_array.h"
+#include "resources/resource_array.h"
 
 namespace ocarina {
 
@@ -18,8 +18,8 @@ Accel Device::create_accel() noexcept {
     return _create<Accel>();
 }
 
-BindlessArray Device::create_bindless_array() noexcept {
-    return _create<BindlessArray>();
+ResourceArray Device::create_resource_array() noexcept {
+    return _create<ResourceArray>();
 }
 
 RHITexture Device::create_texture(uint3 res, PixelStorage storage) noexcept {

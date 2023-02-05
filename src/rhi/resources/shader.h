@@ -7,7 +7,7 @@
 #include "rhi/device.h"
 #include "buffer.h"
 #include "rhi/rtx/accel.h"
-#include "rhi/resources/bindless_array.h"
+#include "rhi/resources/resource_array.h"
 #include "stream.h"
 #include "rhi/command.h"
 #include "core/concepts.h"
@@ -32,8 +32,8 @@ struct prototype_to_shader_invocation<RHITexture> {
 };
 
 template<>
-struct prototype_to_shader_invocation<BindlessArray> {
-    using type = const BindlessArray &;
+struct prototype_to_shader_invocation<ResourceArray> {
+    using type = const ResourceArray &;
 };
 
 }// namespace detail
@@ -68,7 +68,7 @@ private:
     }
 
     void _encode_texture(const RHITexture &texture) noexcept;
-    void _encode_bindless_array(const BindlessArray &bindless_array) noexcept;
+    void _encode_resource_array(const ResourceArray &bindless_array) noexcept;
     void _encode_accel(const Accel &accel) noexcept {
         push_memory_block(accel.memory_block());
     }
@@ -105,8 +105,8 @@ public:
             _encode_texture(OC_FORWARD(arg));
         } else if constexpr (is_accel_v<T>) {
             _encode_accel(OC_FORWARD(arg));
-        } else if constexpr (is_bindless_array_v<T>) {
-            _encode_bindless_array(OC_FORWARD(arg));
+        } else if constexpr (is_resource_array_v<T>) {
+            _encode_resource_array(OC_FORWARD(arg));
         } else {
             _encode_pod_type(OC_FORWARD(arg));
         }

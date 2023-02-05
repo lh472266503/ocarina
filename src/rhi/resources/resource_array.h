@@ -12,7 +12,7 @@
 
 namespace ocarina {
 
-class BindlessArray : public RHIResource {
+class ResourceArray : public RHIResource {
 public:
     class Impl {
     public:
@@ -34,8 +34,8 @@ public:
     };
 
 public:
-    BindlessArray() = default;
-    explicit BindlessArray(Device::Impl *device);
+    ResourceArray() = default;
+    explicit ResourceArray(Device::Impl *device);
     [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(_handle); }
     [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
     void prepare_slotSOA(Device &device) noexcept { impl()->prepare_slotSOA(device); }
@@ -62,25 +62,25 @@ public:
     /// for dsl
     [[nodiscard]] const Expression *expression() const noexcept override {
         const ArgumentBinding &uniform = Function::current()->get_uniform_var(Type::of<decltype(*this)>(),
-                                                                              Variable::Tag::BINDLESS_ARRAY,
+                                                                              Variable::Tag::RESOURCE_ARRAY,
                                                                               memory_block());
         return uniform.expression();
     }
 
     template<typename Index>
     requires is_integral_expr_v<Index>
-    [[nodiscard]] BindlessArrayTexture tex(Index &&index) const noexcept {
-        return make_expr<BindlessArray>(expression()).tex(OC_FORWARD(index));
+    [[nodiscard]] ResourceArrayTexture tex(Index &&index) const noexcept {
+        return make_expr<ResourceArray>(expression()).tex(OC_FORWARD(index));
     }
 
     template<typename T, typename Index>
     requires is_integral_expr_v<Index>
-    [[nodiscard]] BindlessArrayBuffer<T> buffer(Index &&index) const noexcept {
-        return make_expr<BindlessArray>(expression()).buffer<T>(OC_FORWARD(index));
+    [[nodiscard]] ResourceArrayBuffer<T> buffer(Index &&index) const noexcept {
+        return make_expr<ResourceArray>(expression()).buffer<T>(OC_FORWARD(index));
     }
 
-    [[nodiscard]] Var<BindlessArray> var() const noexcept {
-        return Var<BindlessArray>(expression());
+    [[nodiscard]] Var<ResourceArray> var() const noexcept {
+        return Var<ResourceArray>(expression());
     }
 };
 
