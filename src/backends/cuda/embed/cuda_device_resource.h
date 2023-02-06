@@ -21,7 +21,7 @@ struct OCTexture {
     OCPixelStorage pixel_storage{};
 };
 
-struct OCBindlessArray {
+struct OCResourceArray {
     void **buffer_slot{};
     cudaTextureObject_t *tex_slot{};
 };
@@ -82,22 +82,22 @@ __device__ auto oc_tex_sample_float4(OCTexture obj, oc_float u, oc_float v, oc_f
 }
 
 template<typename T>
-__device__ T oc_bindless_array_buffer_read(OCBindlessArray bindless_array, oc_uint buffer_index, oc_uint index) noexcept {
-    const T *buffer = reinterpret_cast<T *>(bindless_array.buffer_slot[buffer_index]);
+__device__ T oc_resource_array_buffer_read(OCResourceArray resource_array, oc_uint buffer_index, oc_uint index) noexcept {
+    const T *buffer = reinterpret_cast<T *>(resource_array.buffer_slot[buffer_index]);
     return buffer[index];
 }
 
 template<typename T>
-__device__ void oc_bindless_array_buffer_write(OCBindlessArray bindless_array, oc_uint buffer_index, 
+__device__ void oc_resource_array_buffer_write(OCResourceArray resource_array, oc_uint buffer_index, 
                                                 oc_uint index, const T& val) noexcept {
-    T *buffer = reinterpret_cast<T *>(bindless_array.buffer_slot[buffer_index]);
+    T *buffer = reinterpret_cast<T *>(resource_array.buffer_slot[buffer_index]);
     buffer[index] = val;
 }
 
 template<typename T>
-__device__ T oc_bindless_tex_sample(OCBindlessArray bindless_array, oc_uint tex_index,
+__device__ T oc_bindless_tex_sample(OCResourceArray resource_array, oc_uint tex_index,
                                     oc_float u, oc_float v, oc_float w = 0.f) noexcept {
-    cudaTextureObject_t texture = bindless_array.tex_slot[tex_index];
+    cudaTextureObject_t texture = resource_array.tex_slot[tex_index];
     if constexpr(oc_is_same_v<T, oc_float>) {
         float ret = tex3D<float>(texture, u, v, w);
         return ret;
