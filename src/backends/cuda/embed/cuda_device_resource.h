@@ -95,7 +95,7 @@ __device__ void oc_resource_array_buffer_write(OCResourceArray resource_array, o
 }
 
 template<typename T>
-__device__ T oc_bindless_tex_sample(OCResourceArray resource_array, oc_uint tex_index,
+__device__ T oc_resource_array_tex_sample(OCResourceArray resource_array, oc_uint tex_index,
                                     oc_float u, oc_float v, oc_float w = 0.f) noexcept {
     cudaTextureObject_t texture = resource_array.tex_slot[tex_index];
     if constexpr(oc_is_same_v<T, oc_float>) {
@@ -315,4 +315,3 @@ __device__ void oc_texture_write(OCTexture obj, T val, oc_uint x, oc_uint y, oc_
     assert(0);
     __builtin_unreachable();
 }
-

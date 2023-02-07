@@ -237,8 +237,8 @@ private:
     ResourceArray &_resource_array;
 
 public:
-    explicit BufferWrapper(ResourceArray &bindless_array)
-        : _resource_array(bindless_array) {}
+    explicit BufferWrapper(ResourceArray &resource_array)
+        : _resource_array(resource_array) {}
 
     void register_self() noexcept {
         _id = _resource_array.emplace(super());

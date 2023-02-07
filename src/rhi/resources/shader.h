@@ -68,7 +68,7 @@ private:
     }
 
     void _encode_texture(const RHITexture &texture) noexcept;
-    void _encode_resource_array(const ResourceArray &bindless_array) noexcept;
+    void _encode_resource_array(const ResourceArray &resource_array) noexcept;
     void _encode_accel(const Accel &accel) noexcept {
         push_memory_block(accel.memory_block());
     }

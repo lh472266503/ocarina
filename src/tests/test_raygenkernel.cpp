@@ -105,7 +105,7 @@ int main(int argc, char *argv[]) {
                         const Var<Accel> acc,
                         const TextureVar img,
                         Var<Triangle> tri,
-                        BindlessArrayVar ba) {
+                        ResourceArrayVar ba) {
         Var<Ray> r = make_ray(Var(float3(0,0.1, -5)), float3(0,0,1));
         Var hit= accel.trace_closest(r);
         Float3 pos = r->direction();

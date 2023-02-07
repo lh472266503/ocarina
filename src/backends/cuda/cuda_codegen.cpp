@@ -95,7 +95,7 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
             break;
         }
         case CallOp::RESOURCE_ARRAY_TEX_SAMPLE: {
-            current_scratch() << "oc_resource_tex_sample<";
+            current_scratch() << "oc_resource_array_tex_sample<";
             _emit_type_name(expr->type());
             current_scratch() << ">";
             break;

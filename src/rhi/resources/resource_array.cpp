@@ -8,7 +8,7 @@
 namespace ocarina {
 
 ResourceArray::ResourceArray(Device::Impl *device)
-    : RHIResource(device, Tag::BINDLESS_ARRAY,
+    : RHIResource(device, Tag::RESOURCE_ARRAY,
                   device->create_resource_array()) {}
 
 size_t ResourceArray::emplace(const RHITexture &texture) noexcept {

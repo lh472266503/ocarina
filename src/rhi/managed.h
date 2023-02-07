@@ -99,7 +99,7 @@ private:
     ResourceArray &_resource_array;
 
 public:
-    explicit ManagedWrapper(ResourceArray &bindless_array) : _resource_array(bindless_array) {}
+    explicit ManagedWrapper(ResourceArray &resource_array) : _resource_array(resource_array) {}
     void register_self() noexcept {
         _id = _resource_array.emplace(Super::device());
     }
