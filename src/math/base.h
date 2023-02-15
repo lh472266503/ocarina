@@ -222,16 +222,13 @@ OC_NODISCARD constexpr ret_type Pow(const T &v) {
     return n2 * n2 * Pow<n & 1>(v);
 }
 
-template<typename T, typename U, typename V>
-requires none_dsl_v<T, U, V> && is_all_basic_v<T, U, V>
-[[nodiscard]] constexpr T clamp(T val, U low, V high) noexcept {
-    if (val < low) {
-        return low;
-    } else if (val > high) {
-        return high;
-    } else {
-        return val;
-    }
+template<typename X, typename A, typename B>
+requires std::conjunction_v<
+    std::disjunction<is_scalar<X>, is_vector<X>>,
+    std::disjunction<is_scalar<A>, is_vector<A>>,
+    std::disjunction<is_scalar<B>, is_vector<B>>>
+[[nodiscard]] constexpr auto clamp(X x, A a, B b) noexcept {
+    return min(max(x, a), b);
 }
 
 template<typename F, typename A, typename B>
