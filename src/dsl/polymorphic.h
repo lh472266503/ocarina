@@ -15,7 +15,22 @@ class Polymorphic : public vector<T> {
 public:
     using Super = vector<T>;
 
+protected:
+    struct {
+        map<string, uint> _type_to_index;
+
+//        [[nodiscard]] uint obtain_index(T t) const noexcept {
+//            auto cname = typeid(*t).name();
+//        }
+    } _type_mgr;
+
 public:
+    template<typename Arg>
+    void push_back(Arg &&arg) {
+        OC_FORWARD(arg)->set_type_index(1u);
+        Super::push_back(OC_FORWARD(arg));
+    }
+
     template<typename Index>
     requires is_integral_expr_v<Index>
     void dispatch(Index &&index, const std::function<void(const T &)> &func) const noexcept {
