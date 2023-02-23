@@ -17,18 +17,39 @@ public:
 
 protected:
     struct {
-        map<string, uint> _type_to_index;
+        map<string, uint> type_to_index;
+        vector<T> lst;
+        uint type_num{0u};
 
-//        [[nodiscard]] uint obtain_index(T t) const noexcept {
-//            auto cname = typeid(*t).name();
-//        }
+        void set_type_index(T t) noexcept {
+            t->set_type_index(obtain_index(t));
+        }
+
+        void clear() noexcept {
+            type_num = 0u;
+            type_to_index.clear();
+            lst.clear();
+        }
+
+        [[nodiscard]] uint obtain_index(T t) noexcept {
+            auto cname = typeid(*t).name();
+            if (auto iter = type_to_index.find(cname); iter == type_to_index.cend()) {
+                type_to_index[cname] = type_num++;
+                lst.push_back(t);
+            }
+            return type_to_index.at(cname);
+        }
     } _type_mgr;
 
 public:
-    template<typename Arg>
-    void push_back(Arg &&arg) {
-        OC_FORWARD(arg)->set_type_index(1u);
-        Super::push_back(OC_FORWARD(arg));
+    void push_back(T arg) noexcept {
+        _type_mgr.set_type_index(arg);
+        Super::push_back(arg);
+    }
+
+    void clear() {
+        Super ::clear();
+        _type_mgr.clear();
     }
 
     template<typename Index>
