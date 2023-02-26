@@ -12,8 +12,7 @@
 
 #define OC_MAKE_DSL_UNARY_OPERATOR(op, tag)                                                     \
     template<typename T>                                                                        \
-    requires ocarina::is_dsl_v<T> [                                                             \
-        [nodiscard]] inline auto                                                                \
+    requires ocarina::is_dsl_v<T> OC_NODISCARD inline auto                                      \
     operator op(T &&expr) noexcept {                                                            \
         using Ret = std::remove_cvref_t<decltype(op std::declval<ocarina::expr_value_t<T>>())>; \
         return ocarina::make_expr<Ret>(                                                         \

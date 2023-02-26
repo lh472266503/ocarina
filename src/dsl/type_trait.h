@@ -18,6 +18,9 @@ struct Var;
 template<typename T>
 struct Expr;
 
+template<typename T>
+class Array;
+
 namespace detail {
 
 template<typename T>
@@ -137,6 +140,9 @@ struct is_dsl_impl<Computable<T>> : std::true_type {};
 
 template<typename T>
 struct is_dsl_impl<Var<T>> : std::true_type {};
+
+template<typename T>
+struct is_dsl_impl<Array<T>> : std::true_type {};
 
 }// namespace detail
 
