@@ -83,7 +83,7 @@ public:
     static constexpr std::array<int, sizeof...(Dims)> dims = {Dims...};
     static constexpr bool has_multi_dim() noexcept { return !dims.empty(); }
 
-private:
+protected:
     size_t _size{};
 
 public:
