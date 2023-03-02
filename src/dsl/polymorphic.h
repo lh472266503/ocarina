@@ -39,6 +39,15 @@ protected:
             }
             return type_to_index.at(cname);
         }
+
+        [[nodiscard]] bool empty() const noexcept {
+            return lst.empty();
+        }
+
+        [[nodiscard]] auto size() const noexcept {
+            return lst.size();
+        }
+
     } _type_mgr;
 
 public:
@@ -56,6 +65,7 @@ public:
     requires is_integral_expr_v<Index>
     void dispatch_instance(Index &&index, const std::function<void(const T &)> &func) const noexcept {
         if (Super::empty()) [[unlikely]] { OC_ERROR_FORMAT("{} lst is empty", typeid(*this).name()); }
+        comment("dispatch_instance");
         comment(typeid(*this).name());
         if (Super::size() == 1) {
             comment(typeid(*Super::at(0u)).name());
@@ -66,6 +76,27 @@ public:
             for (int i = 0; i < Super::size(); ++i) {
                 comment(typeid(*Super::at(i)).name());
                 case_(i, [&] {func(Super::at(i));break_(); });
+            }
+            default_([&] {unreachable();break_(); });
+        });
+    }
+
+    template<typename Index>
+    requires is_integral_expr_v<Index>
+    void dispatch_type(Index &&index, const std::function<void(const T &)> &func) const noexcept {
+        auto lst = _type_mgr.lst;
+        if (lst.empty()) [[unlikely]] { OC_ERROR_FORMAT("{} type lst is empty", typeid(*this).name()); }
+        comment("dispatch_type");
+        comment(typeid(*this).name());
+        if (_type_mgr.size() == 1) {
+            comment(typeid(*lst.at(0u)).name());
+            func(lst.at(0u));
+            return;
+        }
+        switch_(OC_FORWARD(index), [&] {
+            for (int i = 0; i < lst.size(); ++i) {
+                comment(typeid(*lst.at(i)).name());
+                case_(i, [&] {func(*lst.at(i));break_(); });
             }
             default_([&] {unreachable();break_(); });
         });
