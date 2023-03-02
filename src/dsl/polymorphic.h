@@ -54,7 +54,7 @@ public:
 
     template<typename Index>
     requires is_integral_expr_v<Index>
-    void dispatch(Index &&index, const std::function<void(const T &)> &func) const noexcept {
+    void dispatch_instance(Index &&index, const std::function<void(const T &)> &func) const noexcept {
         if (Super::empty()) [[unlikely]] { OC_ERROR_FORMAT("{} lst is empty", typeid(*this).name()); }
         comment(typeid(*this).name());
         if (Super::size() == 1) {
