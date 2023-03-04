@@ -23,19 +23,28 @@ CUDACompiler::CUDACompiler(CUDADevice *device, const Function &f)
 ocarina::string CUDACompiler::compile(const string &cu, const string &fn, int sm) const noexcept {
     TIMER_TAG(compile, "compile " + fn);
     nvrtcProgram program{};
+    int ver_major = 0;
+    int ver_minor = 0;
+    OC_NVRTC_CHECK(nvrtcVersion(&ver_major, &ver_minor));
+    int nvrtc_version = ver_major * 10000 + ver_minor * 100;
+    auto nvrtc_option = fmt::format("-DLC_NVRTC_VERSION={}", nvrtc_version);
     std::vector header_names{"cuda_device_builtin.h", "cuda_device_math.h", "cuda_device_resource.h"};
     std::vector header_sources{cuda_device_builtin, cuda_device_math, cuda_device_resource};
     auto compute_sm = ocarina::format("-arch=compute_{}", sm);
+    auto rt_option = fmt::format("-DLC_OPTIX_VERSION={}", 70300);
+    auto const_option = fmt::format("-Dlc_constant={}", nvrtc_version <= 110200 ? "const" : "constexpr");
     ocarina::vector<const char *> compile_option = {
-        "-std=c++17",
+        "--std=c++17",
         compute_sm.c_str(),
-        "-Dlc_constant=const",
-        "-DLC_OPTIX_VERSION=0",
+        const_option.c_str(),
+        rt_option.c_str(),
         "-DLC_NVRTC_VERSION=0",
         "-default-device",
         "--use_fast_math",
         "-restrict",
+#ifndef NDEBUG
         "-lineinfo",
+#endif
         "-extra-device-vectorization",
         "-dw",
         "-w"
