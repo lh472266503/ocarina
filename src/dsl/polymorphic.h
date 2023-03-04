@@ -17,7 +17,7 @@ public:
 
 protected:
     struct {
-        map<string, uint> type_to_index;
+        map<uint64_t, uint> type_to_index;
         vector<T> lst;
         uint type_num{0u};
 
@@ -32,12 +32,12 @@ protected:
         }
 
         [[nodiscard]] uint obtain_index(T t) noexcept {
-            auto cname = typeid(*t).name();
-            if (auto iter = type_to_index.find(cname); iter == type_to_index.cend()) {
-                type_to_index[cname] = type_num++;
+            uint64_t hash_code = t->hash();
+            if (auto iter = type_to_index.find(hash_code); iter == type_to_index.cend()) {
+                type_to_index[hash_code] = type_num++;
                 lst.push_back(t);
             }
-            return type_to_index.at(cname);
+            return type_to_index.at(hash_code);
         }
 
         [[nodiscard]] bool empty() const noexcept {
