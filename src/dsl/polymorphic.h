@@ -40,14 +40,8 @@ protected:
             return type_to_index.at(hash_code);
         }
 
-        [[nodiscard]] bool empty() const noexcept {
-            return lst.empty();
-        }
-
-        [[nodiscard]] auto size() const noexcept {
-            return lst.size();
-        }
-
+        [[nodiscard]] bool empty() const noexcept { return lst.empty(); }
+        [[nodiscard]] auto size() const noexcept { return lst.size(); }
     } _type_mgr;
 
 public:
