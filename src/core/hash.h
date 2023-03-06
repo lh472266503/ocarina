@@ -94,9 +94,14 @@ class Hashable {
 private:
     mutable uint64_t _hash{0u};
     mutable bool _hash_computed{false};
+    mutable uint64_t _type_hash{0u};
+    mutable bool _type_hash_computed{false};
 
 protected:
     [[nodiscard]] virtual uint64_t _compute_hash() const noexcept = 0;
+    [[nodiscard]] virtual uint64_t _compute_type_hash() const noexcept {
+        return hash64(class_name());
+    }
 
 public:
     [[nodiscard]] const char *class_name() const noexcept { return typeid(*this).name(); }
@@ -107,6 +112,14 @@ public:
             _hash_computed = true;
         }
         return _hash;
+    }
+
+    [[nodiscard]] uint64_t type_hash() const noexcept {
+        if (!_type_hash_computed) {
+            _type_hash = _compute_type_hash();
+            _type_hash_computed = true;
+        }
+        return _type_hash;
     }
 
     template<typename T>

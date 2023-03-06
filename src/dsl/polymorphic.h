@@ -32,7 +32,7 @@ protected:
         }
 
         [[nodiscard]] uint obtain_index(T t) noexcept {
-            uint64_t hash_code = t->hash();
+            uint64_t hash_code = t->type_hash();
             if (auto iter = type_to_index.find(hash_code); iter == type_to_index.cend()) {
                 type_to_index[hash_code] = type_num++;
                 lst.push_back(t);
