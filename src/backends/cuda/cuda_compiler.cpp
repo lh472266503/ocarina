@@ -38,7 +38,7 @@ ocarina::string CUDACompiler::compile(const string &cu, const string &fn, int sm
         compute_sm.c_str(),
         const_option.c_str(),
         rt_option.c_str(),
-        "-DLC_NVRTC_VERSION=0",
+        nvrtc_option.c_str(),
         "-default-device",
         "--use_fast_math",
         "-restrict",
