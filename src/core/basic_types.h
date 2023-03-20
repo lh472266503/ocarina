@@ -136,10 +136,10 @@ using float3x3 = Matrix<3>;
 using float4x4 = Matrix<4>;
 
 using basic_types = ocarina::tuple<
-    bool, float, int, uint, uchar,
-    bool2, float2, int2, uint2, uchar2,
-    bool3, float3, int3, uint3, uchar3,
-    bool4, float4, int4, uint4, uchar4,
+    bool, float, int, uint,
+    bool2, float2, int2, uint2,
+    bool3, float3, int3, uint3,
+    bool4, float4, int4, uint4,
     float2x2, float3x3, float4x4>;
 
 namespace detail {

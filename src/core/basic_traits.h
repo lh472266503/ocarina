@@ -52,10 +52,6 @@ template<typename T>
 using is_integral = std::disjunction<
     std::is_same<std::remove_cvref_t<T>, int>,
     std::is_same<std::remove_cvref_t<T>, uint>,
-    std::is_same<std::remove_cvref_t<T>, uchar>,
-    std::is_same<std::remove_cvref_t<T>, char>,
-    std::is_same<std::remove_cvref_t<T>, short>,
-    std::is_same<std::remove_cvref_t<T>, ushort>,
     std::is_same<std::remove_cvref_t<T>, size_t>>;
 
 template<typename T>
@@ -96,8 +92,8 @@ constexpr auto is_unsigned_v = is_unsigned<T>::value;
 template<typename T>
 using is_scalar = std::disjunction<is_integral<T>,
                                    is_boolean<T>,
-                                   is_char<T>,
-                                   is_uchar<T>,
+//                                   is_char<T>,
+//                                   is_uchar<T>,
                                    ocarina::is_floating_point<T>>;
 
 template<typename T>
