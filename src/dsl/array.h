@@ -29,6 +29,15 @@ public:
         _expression = Function::current()->local(type);
     }
 
+    template<typename U>
+    requires is_vector_v<U> && concepts::different<std::remove_cvref_t<U>, Array<T>>
+    explicit Array(U &&vec) noexcept
+        : Array(vector_expr_dimension_v<U>) {
+        for (int i = 0; i < size(); ++i) {
+            (*this)[i] = vec[i];
+        }
+    }
+
     Array(const Array &other) noexcept
         : _size{other._size} {
         const Type *type = Type::from(ocarina::format("array<{},{}>",
@@ -100,6 +109,32 @@ public:
 
     [[nodiscard]] const RefExpr *expression() const noexcept { return _expression; }
     [[nodiscard]] size_t size() const noexcept { return _size; }
+
+    template<typename F>
+    [[nodiscard]] Array<T> map(F &&f) const noexcept {
+        Array<T> s{size()};
+        for (auto i = 0u; i < size(); i++) {
+            if constexpr (std::invocable<F, Var<T>>) {
+                s[i] = f((*this)[i]);
+            } else {
+                s[i] = f(i, (*this)[i]);
+            }
+        }
+        return s;
+    }
+
+    template<typename T, typename F>
+    [[nodiscard]] auto reduce(T &&initial, F &&f) const noexcept {
+        auto r = eval(OC_FORWARD(initial));
+        for (auto i = 0u; i < size(); i++) {
+            if constexpr (std::invocable<F, Var<expr_value_t<decltype(r)>>, Float>) {
+                r = f(r, (*this)[i]);
+            } else {
+                r = f(r, i, (*this)[i]);
+            }
+        }
+        return r;
+    }
 };
 
 }// namespace ocarina
