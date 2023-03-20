@@ -95,6 +95,11 @@ struct expr_value_impl<Var<T>> {
     using type = T;
 };
 
+template<typename T>
+struct expr_value_impl<Array<T>> {
+    using type = std::array<T, InvalidUI32>;
+};
+
 }// namespace detail
 
 template<typename T>
