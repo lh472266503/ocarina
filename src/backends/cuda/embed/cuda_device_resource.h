@@ -1,4 +1,8 @@
 
+void oc_unreachable() {
+    __assume(false);
+}
+
 enum struct OCPixelStorage : oc_uint {
     BYTE1,
     BYTE2,
@@ -183,7 +187,7 @@ __device__ auto oc_convert_scalar(const Src &src) noexcept {
         // Src is float
         return static_cast<uchar>(src * 255);
     }
-    __builtin_unreachable();
+    oc_unreachable();
 }
 
 template<typename Dst, typename Src>
@@ -258,7 +262,7 @@ __device__ T oc_texture_read(OCTexture obj, oc_uint x, oc_uint y, oc_uint z = 0)
         return oc_make_uint4(v.x, v.y, v.z, v.w);
     }
     assert(0);
-    __builtin_unreachable();
+    oc_unreachable();
 }
 
 template<typename T>
@@ -313,5 +317,5 @@ __device__ void oc_texture_write(OCTexture obj, T val, oc_uint x, oc_uint y, oc_
         return;
     }
     assert(0);
-    __builtin_unreachable();
+    oc_unreachable();
 }
