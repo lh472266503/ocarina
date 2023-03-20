@@ -100,7 +100,7 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
             current_scratch() << ">";
             break;
         }
-        case CallOp::UNREACHABLE: current_scratch() << "oc_unreachable"; break;
+        case CallOp::UNREACHABLE: current_scratch() << "__builtin_unreachable"; break;
         case CallOp::MAKE_RAY: OC_GEN_FUNC_NAME(make_ray); break;
         case CallOp::TRACE_ANY: OC_GEN_FUNC_NAME(trace_any); break;
         case CallOp::RAY_OFFSET_ORIGIN: OC_GEN_FUNC_NAME(offset_ray_origin); break;
