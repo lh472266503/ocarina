@@ -69,7 +69,7 @@ public:
 
     [[nodiscard]] Var<Vector<T, 3>> to_vec3() const noexcept {
         OC_ASSERT(3 <= _size);
-        Var<Vector<T, 2>> ret;
+        Var<Vector<T, 3>> ret;
         ret.x = (*this)[0];
         ret.y = (*this)[1];
         ret.z = (*this)[2];
@@ -78,7 +78,7 @@ public:
 
     [[nodiscard]] Var<Vector<T, 4>> to_vec4() const noexcept {
         OC_ASSERT(4 <= _size);
-        Var<Vector<T, 2>> ret;
+        Var<Vector<T, 4>> ret;
         ret.x = (*this)[0];
         ret.y = (*this)[1];
         ret.z = (*this)[2];
