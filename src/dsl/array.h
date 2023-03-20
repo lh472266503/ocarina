@@ -40,6 +40,37 @@ public:
         Function::current()->assign(_expression, other._expression);
     }
 
+    [[nodiscard]] Var<T> to_scalar() const noexcept {
+        return (*this)[0];
+    }
+
+    [[nodiscard]] Var<Vector<T, 2>> to_vec2() const noexcept {
+        OC_ASSERT(2 <= _size);
+        Var<Vector<T, 2>> ret;
+        ret.x = (*this)[0];
+        ret.y = (*this)[1];
+        return ret;
+    }
+
+    [[nodiscard]] Var<Vector<T, 3>> to_vec3() const noexcept {
+        OC_ASSERT(3 <= _size);
+        Var<Vector<T, 2>> ret;
+        ret.x = (*this)[0];
+        ret.y = (*this)[1];
+        ret.z = (*this)[2];
+        return ret;
+    }
+
+    [[nodiscard]] Var<Vector<T, 4>> to_vec4() const noexcept {
+        OC_ASSERT(4 <= _size);
+        Var<Vector<T, 2>> ret;
+        ret.x = (*this)[0];
+        ret.y = (*this)[1];
+        ret.z = (*this)[2];
+        ret.w = (*this)[3];
+        return ret;
+    }
+
     template<typename U>
     requires is_array_expr_v<U>
     static Array<T> create(U &&array) noexcept {
