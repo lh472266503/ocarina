@@ -29,12 +29,6 @@ public:
         _expression = Function::current()->local(type);
     }
 
-    template<typename U>
-    requires is_array_expr_v<U> Array(U &&array)
-    noexcept
-        : _expression{OC_EXPR(array)},
-          _size{array_expr_dimension_v<U>} {}
-
     Array(Array &&) noexcept = default;
 
     Array(const Array &other) noexcept
@@ -44,6 +38,16 @@ public:
                                                       _size));
         _expression = Function::current()->local(type);
         Function::current()->assign(_expression, other._expression);
+    }
+
+    template<typename U>
+    requires is_array_expr_v<U>
+    static Array<T> create(U &&array) noexcept {
+        Array<T> ret{array.size()};
+        for (uint i = 0; i < ret.size(); ++i) {
+            ret[i] = array[i];
+        }
+        return ret;
     }
 
     Array &operator=(const Array &rhs) noexcept {
