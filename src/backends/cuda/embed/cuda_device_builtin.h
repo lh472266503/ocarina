@@ -371,6 +371,23 @@ struct alignas(16) oc_short4{
 	__device__ inline oc_short &operator[](oc_uint i) noexcept { return (&x)[i]; }
 };
 
+
+
+template<typename T, size_t N>
+class oc_array {
+private:
+    T _data[N];
+
+public:
+    template<typename... Elem>
+    __device__ constexpr oc_array(Elem... elem) noexcept : _data{elem...} {}
+    __device__ constexpr oc_array(oc_array &&) noexcept = default;
+    __device__ constexpr oc_array(const oc_array &) noexcept = default;
+    __device__ constexpr oc_array &operator=(oc_array &&) noexcept = default;
+    __device__ constexpr oc_array &operator=(const oc_array &) noexcept = default;
+    [[nodiscard]] __device__ T &operator[](size_t i) noexcept { return _data[i]; }
+    [[nodiscard]] __device__ T operator[](size_t i) const noexcept { return _data[i]; }
+};
 __device__ oc_int2 operator+(oc_int2 vec) { return oc_int2(+vec.x, +vec.y); }
 __device__ oc_int2 operator-(oc_int2 vec) { return oc_int2(-vec.x, -vec.y); }
 __device__ oc_int2 operator!(oc_int2 vec) { return oc_int2(!vec.x, !vec.y); }

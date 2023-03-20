@@ -27,22 +27,6 @@ struct OCResourceArray {
     cudaTextureObject_t *tex_slot{};
 };
 
-template<typename T, size_t N>
-class oc_array {
-private:
-    T _data[N];
-
-public:
-    template<typename... Elem>
-    __device__ constexpr oc_array(Elem... elem) noexcept : _data{elem...} {}
-    __device__ constexpr oc_array(oc_array &&) noexcept = default;
-    __device__ constexpr oc_array(const oc_array &) noexcept = default;
-    __device__ constexpr oc_array &operator=(oc_array &&) noexcept = default;
-    __device__ constexpr oc_array &operator=(const oc_array &) noexcept = default;
-    [[nodiscard]] __device__ T &operator[](size_t i) noexcept { return _data[i]; }
-    [[nodiscard]] __device__ T operator[](size_t i) const noexcept { return _data[i]; }
-};
-
 template<typename A, typename B>
 struct oc_is_same {
     static constexpr bool value = false;
@@ -316,4 +300,3 @@ __device__ void oc_texture_write(OCTexture obj, T val, oc_uint x, oc_uint y, oc_
     assert(0);
     __builtin_unreachable();
 }
-
