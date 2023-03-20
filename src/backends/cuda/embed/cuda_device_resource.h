@@ -316,3 +316,4 @@ __device__ void oc_texture_write(OCTexture obj, T val, oc_uint x, oc_uint y, oc_
     assert(0);
     __builtin_unreachable();
 }
+
