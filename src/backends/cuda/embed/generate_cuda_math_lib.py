@@ -208,6 +208,49 @@ template<typename T, typename U, oc_uint N>
 """
         content += func
 
+    for op in cmp_binary:
+        func = f"""
+template<typename T, typename U, oc_uint N>
+{device_flag} auto operator{op}(oc_array<T, N> lhs, oc_array<U, N> rhs) {{
+    oc_array<decltype(T{{}} {op} U{{}}), N> ret;
+    for(oc_uint i = 0u; i < N; ++i) {{
+        ret[i] = lhs[i] {op} rhs[i];
+    }}
+    return ret;
+}}
+
+template<typename T, typename U, oc_uint N>
+{device_flag} auto operator{op}(oc_array<T, N> lhs, U rhs) {{
+    oc_array<decltype(T{{}} {op} U{{}}), N> ret;
+    for(oc_uint i = 0u; i < N; ++i) {{
+        ret[i] = lhs[i] {op} rhs;
+    }}
+    return ret;
+}}
+
+template<typename T, typename U, oc_uint N>
+{device_flag} auto operator{op}(oc_array<T, N> lhs, oc_array<U, 1> rhs) {{
+    return lhs {op} rhs[0];
+}}
+
+template<typename T, typename U, oc_uint N>
+{device_flag} auto operator{op}(T lhs, oc_array<U, N> rhs) {{
+    oc_array<decltype(T{{}} {op} U{{}}), N> ret;
+    for(oc_uint i = 0u; i < N; ++i) {{
+        ret[i] = lhs {op} rhs[i];
+    }}
+    return ret;
+}}
+
+template<typename T, typename U, oc_uint N>
+{device_flag} auto operator{op}(oc_array<T, 1> lhs, oc_array<U, N> rhs) {{
+    return lhs[0] {op} rhs;
+}}
+
+        """
+        content += func
+
+
 def define_operator():
     global content
     unary = ["+", "-", "!", "~"]
