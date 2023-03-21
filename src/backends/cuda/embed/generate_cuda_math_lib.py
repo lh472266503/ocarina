@@ -168,14 +168,43 @@ template<typename T,typename U, oc_uint N>
         
     for op in cmp_binary:
         func = f"""
-template<typename T, oc_uint N>
-{device_flag} oc_array<oc_bool, N> operator{op}(oc_array<T, N> lhs, oc_array<T, N> rhs) {{
+template<typename T, typename U, oc_uint N>
+{device_flag} oc_array<oc_bool, N> operator{op}(oc_array<T, N> lhs, oc_array<U, N> rhs) {{
     oc_array<oc_bool, N> ret;
     for(oc_uint i = 0u; i < N; ++i) {{
         ret[i] = lhs[i] {op} rhs[i];
     }}
     return ret;
 }}
+
+template<typename T,typename U, oc_uint N>
+{device_flag} oc_array<oc_bool, N> operator{op}(oc_array<T, N> lhs, U rhs) {{
+    oc_array<oc_bool, N> ret;
+    for(oc_uint i = 0u; i < N; ++i) {{
+        ret[i] = lhs[i] {op} rhs;
+    }}
+    return ret;
+}}
+
+template<typename T, typename U, oc_uint N>
+{device_flag} oc_array<oc_bool, N> operator{op}(oc_array<T, N> lhs, oc_array<U, 1> rhs) {{
+    return lhs {op} rhs[0];
+}}
+
+template<typename T, typename U, oc_uint N>
+{device_flag} oc_array<oc_bool, N> operator{op}(T lhs, oc_array<U, N> rhs) {{
+    oc_array<oc_bool, N> ret;
+    for(oc_uint i = 0u; i < N; ++i) {{
+        ret[i] = lhs {op} rhs[i];
+    }}
+    return ret;
+}}
+
+template<typename T, typename U, oc_uint N>
+{device_flag} oc_array<oc_bool, N> operator{op}(oc_array<T, 1> lhs, oc_array<U, N> rhs) {{
+    return lhs[0] {op} rhs;
+}}
+
 """
         content += func
 
