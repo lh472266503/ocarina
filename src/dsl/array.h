@@ -22,12 +22,7 @@ private:
 
 public:
     explicit Array(size_t num)
-        : _size(num) {
-        const Type *type = Type::from(ocarina::format("array<{},{}>",
-                                                      detail::TypeDesc<T>::description(),
-                                                      num));
-        _expression = Function::current()->local(type);
-    }
+        : _size(num), _expression(Function::current()->local(type())) {}
 
     template<typename U>
     requires is_vector_v<U> && concepts::different<std::remove_cvref_t<U>, Array<T>>
@@ -39,8 +34,7 @@ public:
     }
 
     Array(const Array &other) noexcept
-        : _size{other._size} {
-        _expression = Function::current()->local(type());
+        : _size{other._size}, _expression(Function::current()->local(type())) {
         Function::current()->assign(_expression, other._expression);
     }
 
