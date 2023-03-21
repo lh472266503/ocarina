@@ -298,7 +298,7 @@ public:
 };
 
 template<typename T, oc_uint N>
-oc_array<T, N> operator+(oc_array<T, N> arg) {
+__device__ oc_array<T, N> operator+(oc_array<T, N> arg) {
     oc_array<T, N> ret;
     for(oc_uint i = 0u; i < N; ++i) {
         ret[i] = +arg[i];
@@ -307,7 +307,7 @@ oc_array<T, N> operator+(oc_array<T, N> arg) {
 }
 
 template<typename T, oc_uint N>
-oc_array<T, N> operator-(oc_array<T, N> arg) {
+__device__ oc_array<T, N> operator-(oc_array<T, N> arg) {
     oc_array<T, N> ret;
     for(oc_uint i = 0u; i < N; ++i) {
         ret[i] = -arg[i];
@@ -316,7 +316,7 @@ oc_array<T, N> operator-(oc_array<T, N> arg) {
 }
 
 template<typename T, oc_uint N>
-oc_array<T, N> operator!(oc_array<T, N> arg) {
+__device__ oc_array<T, N> operator!(oc_array<T, N> arg) {
     oc_array<T, N> ret;
     for(oc_uint i = 0u; i < N; ++i) {
         ret[i] = !arg[i];
@@ -325,7 +325,7 @@ oc_array<T, N> operator!(oc_array<T, N> arg) {
 }
 
 template<typename T, oc_uint N>
-oc_array<T, N> operator~(oc_array<T, N> arg) {
+__device__ oc_array<T, N> operator~(oc_array<T, N> arg) {
     oc_array<T, N> ret;
     for(oc_uint i = 0u; i < N; ++i) {
         ret[i] = ~arg[i];

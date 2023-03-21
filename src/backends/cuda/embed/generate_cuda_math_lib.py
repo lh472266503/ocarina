@@ -107,15 +107,12 @@ public:
 
     content +=string
 
-def define_operator():
+def define_array_unary(unary):
     global content
-    unary = ["+", "-", "!", "~"]
-    
-        
     for op in unary:            
         func = f"""
 template<typename T, oc_uint N>
-oc_array<T, N> operator{op}(oc_array<T, N> arg) {{
+{device_flag} oc_array<T, N> operator{op}(oc_array<T, N> arg) {{
     oc_array<T, N> ret;
     for(oc_uint i = 0u; i < N; ++i) {{
         ret[i] = {op}arg[i];
@@ -123,8 +120,17 @@ oc_array<T, N> operator{op}(oc_array<T, N> arg) {{
     return ret;
 }}\n"""
         content += func
-    
-    
+        
+def define_array_binary(cal_binary, cmp_binary, bit_binary):
+    global content
+    binary = cal_binary + cmp_binary + bit_binary
+    for op in binary:
+        pass
+
+def define_operator():
+    global content
+    unary = ["+", "-", "!", "~"]
+    define_array_unary(unary)    
     for i, scalar in enumerate(scalar_types):
         for dim in range(2, 5):
             for op in unary:
@@ -142,6 +148,9 @@ oc_array<T, N> operator{op}(oc_array<T, N> arg) {{
     cal_binary = ["+", "-", "*", "/", "%"]
     cmp_binary = ["==", "!=", ">" , "<", ">=", "<=","&&", "||"]
     bit_binary = ["&", "|", "^", "<<", ">>"]
+    
+    define_array_binary(cal_binary, cmp_binary, bit_binary)
+    
     binary = cal_binary + cmp_binary + bit_binary
     for i, scalar in enumerate(scalar_types):
         for dim in range(2, 5):
