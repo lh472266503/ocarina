@@ -644,6 +644,7 @@ __device__ oc_array<oc_bool, N> operator==(oc_array<T, 1> lhs, oc_array<U, N> rh
 }
 
 
+
 template<typename T, typename U, oc_uint N>
 __device__ oc_array<oc_bool, N> operator!=(oc_array<T, N> lhs, oc_array<U, N> rhs) {
     oc_array<oc_bool, N> ret;
@@ -680,6 +681,7 @@ template<typename T, typename U, oc_uint N>
 __device__ oc_array<oc_bool, N> operator!=(oc_array<T, 1> lhs, oc_array<U, N> rhs) {
     return lhs[0] != rhs;
 }
+
 
 
 template<typename T, typename U, oc_uint N>
@@ -720,6 +722,7 @@ __device__ oc_array<oc_bool, N> operator>(oc_array<T, 1> lhs, oc_array<U, N> rhs
 }
 
 
+
 template<typename T, typename U, oc_uint N>
 __device__ oc_array<oc_bool, N> operator<(oc_array<T, N> lhs, oc_array<U, N> rhs) {
     oc_array<oc_bool, N> ret;
@@ -756,6 +759,7 @@ template<typename T, typename U, oc_uint N>
 __device__ oc_array<oc_bool, N> operator<(oc_array<T, 1> lhs, oc_array<U, N> rhs) {
     return lhs[0] < rhs;
 }
+
 
 
 template<typename T, typename U, oc_uint N>
@@ -796,6 +800,7 @@ __device__ oc_array<oc_bool, N> operator>=(oc_array<T, 1> lhs, oc_array<U, N> rh
 }
 
 
+
 template<typename T, typename U, oc_uint N>
 __device__ oc_array<oc_bool, N> operator<=(oc_array<T, N> lhs, oc_array<U, N> rhs) {
     oc_array<oc_bool, N> ret;
@@ -832,6 +837,7 @@ template<typename T, typename U, oc_uint N>
 __device__ oc_array<oc_bool, N> operator<=(oc_array<T, 1> lhs, oc_array<U, N> rhs) {
     return lhs[0] <= rhs;
 }
+
 
 
 template<typename T, typename U, oc_uint N>
@@ -872,6 +878,7 @@ __device__ oc_array<oc_bool, N> operator&&(oc_array<T, 1> lhs, oc_array<U, N> rh
 }
 
 
+
 template<typename T, typename U, oc_uint N>
 __device__ oc_array<oc_bool, N> operator||(oc_array<T, N> lhs, oc_array<U, N> rhs) {
     oc_array<oc_bool, N> ret;
@@ -908,6 +915,7 @@ template<typename T, typename U, oc_uint N>
 __device__ oc_array<oc_bool, N> operator||(oc_array<T, 1> lhs, oc_array<U, N> rhs) {
     return lhs[0] || rhs;
 }
+
 
 
 template<typename T, typename U, oc_uint N>
@@ -947,7 +955,6 @@ __device__ auto operator==(oc_array<T, 1> lhs, oc_array<U, N> rhs) {
     return lhs[0] == rhs;
 }
 
-        
 template<typename T, typename U, oc_uint N>
 __device__ auto operator!=(oc_array<T, N> lhs, oc_array<U, N> rhs) {
     oc_array<decltype(T{} != U{}), N> ret;
@@ -985,7 +992,6 @@ __device__ auto operator!=(oc_array<T, 1> lhs, oc_array<U, N> rhs) {
     return lhs[0] != rhs;
 }
 
-        
 template<typename T, typename U, oc_uint N>
 __device__ auto operator>(oc_array<T, N> lhs, oc_array<U, N> rhs) {
     oc_array<decltype(T{} > U{}), N> ret;
@@ -1023,7 +1029,6 @@ __device__ auto operator>(oc_array<T, 1> lhs, oc_array<U, N> rhs) {
     return lhs[0] > rhs;
 }
 
-        
 template<typename T, typename U, oc_uint N>
 __device__ auto operator<(oc_array<T, N> lhs, oc_array<U, N> rhs) {
     oc_array<decltype(T{} < U{}), N> ret;
@@ -1061,7 +1066,6 @@ __device__ auto operator<(oc_array<T, 1> lhs, oc_array<U, N> rhs) {
     return lhs[0] < rhs;
 }
 
-        
 template<typename T, typename U, oc_uint N>
 __device__ auto operator>=(oc_array<T, N> lhs, oc_array<U, N> rhs) {
     oc_array<decltype(T{} >= U{}), N> ret;
@@ -1099,7 +1103,6 @@ __device__ auto operator>=(oc_array<T, 1> lhs, oc_array<U, N> rhs) {
     return lhs[0] >= rhs;
 }
 
-        
 template<typename T, typename U, oc_uint N>
 __device__ auto operator<=(oc_array<T, N> lhs, oc_array<U, N> rhs) {
     oc_array<decltype(T{} <= U{}), N> ret;
@@ -1137,7 +1140,6 @@ __device__ auto operator<=(oc_array<T, 1> lhs, oc_array<U, N> rhs) {
     return lhs[0] <= rhs;
 }
 
-        
 template<typename T, typename U, oc_uint N>
 __device__ auto operator&&(oc_array<T, N> lhs, oc_array<U, N> rhs) {
     oc_array<decltype(T{} && U{}), N> ret;
@@ -1175,7 +1177,6 @@ __device__ auto operator&&(oc_array<T, 1> lhs, oc_array<U, N> rhs) {
     return lhs[0] && rhs;
 }
 
-        
 template<typename T, typename U, oc_uint N>
 __device__ auto operator||(oc_array<T, N> lhs, oc_array<U, N> rhs) {
     oc_array<decltype(T{} || U{}), N> ret;
@@ -1212,8 +1213,7 @@ template<typename T, typename U, oc_uint N>
 __device__ auto operator||(oc_array<T, 1> lhs, oc_array<U, N> rhs) {
     return lhs[0] || rhs;
 }
-
-        __device__ oc_int2 operator+(oc_int2 lhs, oc_int2 rhs) { return oc_int2(lhs.x + rhs.x, lhs.y + rhs.y); }
+__device__ oc_int2 operator+(oc_int2 lhs, oc_int2 rhs) { return oc_int2(lhs.x + rhs.x, lhs.y + rhs.y); }
 __device__ oc_int2 operator+(oc_int2 lhs, oc_int rhs) { return oc_int2(lhs.x + rhs, lhs.y + rhs); }
 __device__ oc_int2 operator+(oc_int lhs, oc_int2 rhs) { return oc_int2(lhs + rhs.x, lhs + rhs.y); }
 __device__ oc_int2 operator-(oc_int2 lhs, oc_int2 rhs) { return oc_int2(lhs.x - rhs.x, lhs.y - rhs.y); }

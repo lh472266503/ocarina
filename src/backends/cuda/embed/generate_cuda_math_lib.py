@@ -205,6 +205,7 @@ template<typename T, typename U, oc_uint N>
     return lhs[0] {op} rhs;
 }}
 
+
 """
         content += func
 
@@ -246,8 +247,7 @@ template<typename T, typename U, oc_uint N>
 {device_flag} auto operator{op}(oc_array<T, 1> lhs, oc_array<U, N> rhs) {{
     return lhs[0] {op} rhs;
 }}
-
-        """
+"""
         content += func
 
 
