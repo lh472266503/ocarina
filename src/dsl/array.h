@@ -40,14 +40,17 @@ public:
 
     Array(const Array &other) noexcept
         : _size{other._size} {
-        const Type *type = Type::from(ocarina::format("array<{},{}>",
-                                                      detail::TypeDesc<T>::description(),
-                                                      _size));
-        _expression = Function::current()->local(type);
+        _expression = Function::current()->local(type());
         Function::current()->assign(_expression, other._expression);
     }
 
     Array(Array &&) noexcept = default;
+
+    [[nodiscard]] const Type *type() const noexcept {
+        return Type::from(ocarina::format("array<{},{}>",
+                                          detail::TypeDesc<T>::description(),
+                                          _size));
+    }
 
     template<typename U>
     requires is_array_expr_v<U>
