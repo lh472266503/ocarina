@@ -296,6 +296,42 @@ public:
     [[nodiscard]] __device__ T &operator[](size_t i) noexcept { return _data[i]; }
     [[nodiscard]] __device__ T operator[](size_t i) const noexcept { return _data[i]; }
 };
+
+template<typename T, oc_uint N>
+oc_array<T, N> operator+(oc_array<T, N> arg) {
+    oc_array<T, N> ret;
+    for(oc_uint i = 0u; i < N; ++i) {
+        ret[i] = +arg[i];
+    }
+    return ret;
+}
+
+template<typename T, oc_uint N>
+oc_array<T, N> operator-(oc_array<T, N> arg) {
+    oc_array<T, N> ret;
+    for(oc_uint i = 0u; i < N; ++i) {
+        ret[i] = -arg[i];
+    }
+    return ret;
+}
+
+template<typename T, oc_uint N>
+oc_array<T, N> operator!(oc_array<T, N> arg) {
+    oc_array<T, N> ret;
+    for(oc_uint i = 0u; i < N; ++i) {
+        ret[i] = !arg[i];
+    }
+    return ret;
+}
+
+template<typename T, oc_uint N>
+oc_array<T, N> operator~(oc_array<T, N> arg) {
+    oc_array<T, N> ret;
+    for(oc_uint i = 0u; i < N; ++i) {
+        ret[i] = ~arg[i];
+    }
+    return ret;
+}
 __device__ oc_int2 operator+(oc_int2 vec) { return oc_int2(+vec.x, +vec.y); }
 __device__ oc_int2 operator-(oc_int2 vec) { return oc_int2(-vec.x, -vec.y); }
 __device__ oc_int2 operator!(oc_int2 vec) { return oc_int2(!vec.x, !vec.y); }

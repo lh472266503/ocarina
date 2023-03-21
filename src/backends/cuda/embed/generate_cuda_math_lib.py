@@ -110,6 +110,21 @@ public:
 def define_operator():
     global content
     unary = ["+", "-", "!", "~"]
+    
+        
+    for op in unary:            
+        func = f"""
+template<typename T, oc_uint N>
+oc_array<T, N> operator{op}(oc_array<T, N> arg) {{
+    oc_array<T, N> ret;
+    for(oc_uint i = 0u; i < N; ++i) {{
+        ret[i] = {op}arg[i];
+    }}
+    return ret;
+}}\n"""
+        content += func
+    
+    
     for i, scalar in enumerate(scalar_types):
         for dim in range(2, 5):
             for op in unary:
