@@ -153,28 +153,21 @@ struct is_dsl_impl<Array<T>> : std::true_type {};
 
 template<typename T>
 struct is_var : std::false_type {};
-
 template<typename T>
 struct is_var<Var<T>> : std::true_type {};
-
-template<typename T>
-using is_var_v = typename is_var<T>::value;
+OC_DEFINE_TEMPLATE_VALUE(is_var)
 
 template<typename T>
 struct is_expr : std::false_type {};
-
 template<typename T>
 struct is_expr<Expr<T>> : std::true_type {};
+OC_DEFINE_TEMPLATE_VALUE(is_expr)
 
 template<typename T>
 struct is_dynamic_array : std::false_type {};
-
 template<typename T>
 struct is_dynamic_array<Array<T>> : std::true_type {};
 OC_DEFINE_TEMPLATE_VALUE(is_dynamic_array)
-
-template<typename T>
-constexpr auto is_expr_v = is_expr<T>::value;
 
 template<typename T>
 using is_dsl = typename detail::is_dsl_impl<std::remove_cvref_t<T>>::type;
