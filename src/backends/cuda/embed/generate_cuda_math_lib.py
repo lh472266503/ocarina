@@ -316,10 +316,10 @@ def define_operator():
 
     func_lst = ["oc_any", "oc_all", "oc_none"]
     for func in func_lst:
+        op = " || " if func == "oc_any" else " && "
         for dim in range(2, 5):
             ret_type = f"{prefix}_bool"
             arg_type = f"{prefix}_bool{dim}"
-            op = " || " if func == "oc_any" else " && "
             ret = ""
             if func != "oc_none":
                 for d in range(0, dim):
@@ -331,6 +331,33 @@ def define_operator():
                 
             string = f"{device_flag} {ret_type} {func}({arg_type} vec) {{ return {ret}; }}" 
             content += string + "\n"
+            
+    fun = f"""
+template<oc_uint N>
+[[nodiscard]] oc_bool oc_any(oc_array<oc_bool, N> arg) {{
+    oc_bool ret = arg[0];
+    for(oc_uint i = 1u; i < N; ++i) {{
+        ret = ret || arg[i];
+    }}
+    return ret;
+}}
+
+template<oc_uint N>
+[[nodiscard]] oc_bool oc_all(oc_array<oc_bool, N> arg) {{
+    oc_bool ret = arg[0];
+    for(oc_uint i = 1u; i < N; ++i) {{
+        ret = ret && arg[i];
+    }}
+    return ret;
+}}
+
+template<oc_uint N>
+[[nodiscard]] oc_bool oc_none(oc_array<oc_bool, N> arg) {{
+    return !oc_any(arg);
+}}
+
+"""
+    content += fun
     content += "\n"
     
 def define_matrix():

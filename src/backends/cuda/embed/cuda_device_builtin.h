@@ -2147,6 +2147,30 @@ __device__ oc_bool oc_none(oc_bool2 vec) { return !oc_any(vec); }
 __device__ oc_bool oc_none(oc_bool3 vec) { return !oc_any(vec); }
 __device__ oc_bool oc_none(oc_bool4 vec) { return !oc_any(vec); }
 
+template<oc_uint N>
+[[nodiscard]] oc_bool oc_any(oc_array<oc_bool, N> arg) {
+    oc_bool ret = arg[0];
+    for(oc_uint i = 1u; i < N; ++i) {
+        ret = ret || arg[i];
+    }
+    return ret;
+}
+
+template<oc_uint N>
+[[nodiscard]] oc_bool oc_all(oc_array<oc_bool, N> arg) {
+    oc_bool ret = arg[0];
+    for(oc_uint i = 1u; i < N; ++i) {
+        ret = ret && arg[i];
+    }
+    return ret;
+}
+
+template<oc_uint N>
+[[nodiscard]] oc_bool oc_none(oc_array<oc_bool, N> arg) {
+    return !oc_any(arg);
+}
+
+
 struct oc_float2x2 {
 	oc_float2 cols[2];
 	__device__ explicit inline oc_float2x2(oc_float s = 1.f)
