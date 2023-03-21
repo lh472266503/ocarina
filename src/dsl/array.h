@@ -56,7 +56,7 @@ public:
         return ret;
     }
 
-    template<typename...Args>
+    template<typename... Args>
     static Array<T> create(Args &&...args) noexcept {
         return create(std::array<Var<T>, sizeof...(args)>{OC_FORWARD(args)...});
     }
@@ -65,32 +65,19 @@ public:
         return (*this)[0];
     }
 
-    [[nodiscard]] Var<Vector<T, 2>> to_vec2() const noexcept {
-        OC_ASSERT(2 <= _size);
-        Var<Vector<T, 2>> ret;
-        ret.x = (*this)[0];
-        ret.y = (*this)[1];
+    template<size_t N>
+    [[nodiscard]] Var<Vector<T, N>> to_vec() const noexcept {
+        OC_ASSERT(N <= _size);
+        Var<Vector<T, N>> ret;
+        for (int i = 0; i < N; ++i) {
+            ret[i] = (*this)[i];
+        }
         return ret;
     }
 
-    [[nodiscard]] Var<Vector<T, 3>> to_vec3() const noexcept {
-        OC_ASSERT(3 <= _size);
-        Var<Vector<T, 3>> ret;
-        ret.x = (*this)[0];
-        ret.y = (*this)[1];
-        ret.z = (*this)[2];
-        return ret;
-    }
-
-    [[nodiscard]] Var<Vector<T, 4>> to_vec4() const noexcept {
-        OC_ASSERT(4 <= _size);
-        Var<Vector<T, 4>> ret;
-        ret.x = (*this)[0];
-        ret.y = (*this)[1];
-        ret.z = (*this)[2];
-        ret.w = (*this)[3];
-        return ret;
-    }
+    [[nodiscard]] Var<Vector<T, 2>> to_vec2() const noexcept { return to_vec<2>(); }
+    [[nodiscard]] Var<Vector<T, 3>> to_vec3() const noexcept { return to_vec<3>(); }
+    [[nodiscard]] Var<Vector<T, 4>> to_vec4() const noexcept { return to_vec<4>(); }
 
     Array &operator=(const Array &rhs) noexcept {
         if (&rhs != this) [[likely]] {
