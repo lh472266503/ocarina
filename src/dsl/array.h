@@ -17,12 +17,13 @@ public:
     using element_type = T;
 
 private:
-    size_t _size{};
-    const RefExpr *_expression{};
+    uint _size{};
+    const Expression *_expression{};
 
 public:
-    explicit Array(size_t num)
-        : _size(num), _expression(Function::current()->local(type())) {}
+    explicit Array(size_t num, const Expression *expression = nullptr)
+        : _size(num),
+          _expression(expression == nullptr ? Function::current()->local(type()) : expression) {}
 
     template<typename U>
     requires is_vector_v<U> && concepts::different<std::remove_cvref_t<U>, Array<T>>
@@ -91,8 +92,8 @@ public:
         return *this;
     }
 
-    [[nodiscard]] const RefExpr *expression() const noexcept { return _expression; }
-    [[nodiscard]] size_t size() const noexcept { return _size; }
+    [[nodiscard]] const Expression *expression() const noexcept { return _expression; }
+    [[nodiscard]] uint size() const noexcept { return _size; }
 
     template<typename F>
     [[nodiscard]] Array<T> map(F &&f) const noexcept {
