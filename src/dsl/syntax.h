@@ -39,7 +39,7 @@ template<typename T>
 
 template<typename T>
 [[nodiscard]] inline Expr<expr_value_t<T>> make_expr(T &&x) noexcept {
-    if constexpr (is_expr_v<std::remove_cvref_t<T>>) {
+    if constexpr (is_expr_v<T>) {
         return make_expr<T>(x.expression());
     } else {
         return Expr<expr_value_t<T>>(std::forward<T>(x));
