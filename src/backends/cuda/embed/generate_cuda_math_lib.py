@@ -89,7 +89,7 @@ def define_array():
     global content
     content += "\n"
     string = """
-template<typename T, size_t N>
+template<typename T, oc_uint N>
 class oc_array {
 private:
     T _data[N];

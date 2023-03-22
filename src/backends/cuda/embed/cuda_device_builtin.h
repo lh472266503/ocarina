@@ -281,7 +281,7 @@ struct alignas(16) oc_ushort4{
 
 
 
-template<typename T, size_t N>
+template<typename T, oc_uint N>
 class oc_array {
 private:
     T _data[N];
