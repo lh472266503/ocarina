@@ -152,6 +152,27 @@ struct is_dsl_impl<Array<T>> : std::true_type {};
 }// namespace detail
 
 template<typename T>
+using is_dsl = typename detail::is_dsl_impl<std::remove_cvref_t<T>>::type;
+
+template<typename T>
+constexpr auto is_dsl_v = is_dsl<T>::value;
+
+template<typename... T>
+using any_dsl = std::disjunction<is_dsl<T>...>;
+
+template<typename... T>
+constexpr auto any_dsl_v = any_dsl<T...>::value;
+
+template<typename... T>
+constexpr auto none_dsl_v = !any_dsl_v<T...>;
+
+template<typename... T>
+using all_dsl = std::conjunction<is_dsl<T>...>;
+
+template<typename... T>
+constexpr auto all_dsl_v = all_dsl<T...>::value;
+
+template<typename T>
 struct is_var : std::false_type {};
 template<typename T>
 struct is_var<Var<T>> : std::true_type {};
@@ -180,26 +201,7 @@ struct dynamic_array_element<Array<T>> {
 };
 OC_DEFINE_TEMPLATE_TYPE(dynamic_array_element)
 
-template<typename T>
-using is_dsl = typename detail::is_dsl_impl<std::remove_cvref_t<T>>::type;
 
-template<typename T>
-constexpr auto is_dsl_v = is_dsl<T>::value;
-
-template<typename... T>
-using any_dsl = std::disjunction<is_dsl<T>...>;
-
-template<typename... T>
-constexpr auto any_dsl_v = any_dsl<T...>::value;
-
-template<typename... T>
-constexpr auto none_dsl_v = !any_dsl_v<T...>;
-
-template<typename... T>
-using all_dsl = std::conjunction<is_dsl<T>...>;
-
-template<typename... T>
-constexpr auto all_dsl_v = all_dsl<T...>::value;
 
 template<typename... T>
 using is_same_expr = concepts::is_same<expr_value_t<T>...>;

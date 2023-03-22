@@ -10,16 +10,24 @@
 #include "ast/function.h"
 #include "ast/op.h"
 
-#define OC_MAKE_DSL_UNARY_OPERATOR(op, tag)                                                     \
-    template<typename T>                                                                        \
-    requires ocarina::is_dsl_v<T> OC_NODISCARD inline auto                                      \
-    operator op(T &&expr) noexcept {                                                            \
-        using Ret = std::remove_cvref_t<decltype(op std::declval<ocarina::expr_value_t<T>>())>; \
-        return ocarina::make_expr<Ret>(                                                         \
-            ocarina::Function::current()->unary(                                                \
-                ocarina::Type::of<Ret>(),                                                       \
-                ocarina::UnaryOp::tag,                                                          \
-                ocarina::detail::extract_expression(std::forward<T>(expr))));                   \
+#define OC_MAKE_DSL_UNARY_OPERATOR(op, tag)                                                                          \
+    template<typename T>                                                                                             \
+    requires ocarina::is_dsl_v<T> OC_NODISCARD inline auto                                                           \
+    operator op(T &&expr) noexcept {                                                                                 \
+        if constexpr (ocarina::is_dynamic_array_v<T>) {                                                              \
+            using element_t = std::remove_cvref_t<decltype(op std::declval<ocarina::dynamic_array_element_t<T>>())>; \
+            auto expression = ocarina::Function::current()->unary(expr.type(),                                       \
+                                                                  ocarina::UnaryOp::tag,                             \
+                                                                  expr.expression());                                \
+            return Array<element_t>(expr.size(), expression);                                                        \
+        } else {                                                                                                     \
+            using Ret = std::remove_cvref_t<decltype(op std::declval<ocarina::expr_value_t<T>>())>;                  \
+            return ocarina::make_expr<Ret>(                                                                          \
+                ocarina::Function::current()->unary(                                                                 \
+                    ocarina::Type::of<Ret>(),                                                                        \
+                    ocarina::UnaryOp::tag,                                                                           \
+                    ocarina::detail::extract_expression(std::forward<T>(expr))));                                    \
+        }                                                                                                            \
     }
 
 OC_MAKE_DSL_UNARY_OPERATOR(+, POSITIVE)
