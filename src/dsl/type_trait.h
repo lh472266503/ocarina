@@ -170,6 +170,17 @@ struct is_dynamic_array<Array<T>> : std::true_type {};
 OC_DEFINE_TEMPLATE_VALUE(is_dynamic_array)
 
 template<typename T>
+struct dynamic_array_element {
+    using type = T;
+};
+
+template<typename T>
+struct dynamic_array_element<Array<T>> {
+    using type = T;
+};
+OC_DEFINE_TEMPLATE_TYPE(dynamic_array_element)
+
+template<typename T>
 using is_dsl = typename detail::is_dsl_impl<std::remove_cvref_t<T>>::type;
 
 template<typename T>
