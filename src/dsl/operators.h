@@ -37,58 +37,60 @@ OC_MAKE_DSL_UNARY_OPERATOR(~, BIT_NOT)
 
 #undef OC_MAKE_DSL_UNARY_OPERATOR
 
-#define OC_MAKE_DSL_BINARY_OPERATOR(op, tag, trait)                                                           \
-    template<typename Lhs, typename Rhs>                                                                      \
-    requires ocarina::any_dsl_v<Lhs, Rhs> &&                                                                  \
-        ocarina::is_basic_v<ocarina::expr_value_t<Lhs>> &&                                                    \
-        ocarina::is_basic_v<ocarina::expr_value_t<Rhs>>                                                       \
-    [[nodiscard]] inline auto                                                                                 \
-    operator op(Lhs &&lhs, Rhs &&rhs) noexcept {                                                              \
-        using namespace std::string_view_literals;                                                            \
-        static constexpr bool is_logic_op = #op == "||"sv || #op == "&&"sv;                                   \
-        static constexpr bool is_bit_op = #op == "|"sv || #op == "&"sv || #op == "^"sv;                       \
-        static constexpr bool is_bool_lhs = ocarina::is_boolean_expr_v<Lhs>;                                  \
-        static constexpr bool is_bool_rhs = ocarina::is_boolean_expr_v<Rhs>;                                  \
-        using NormalRet = std::remove_cvref_t<                                                                \
-            decltype(std::declval<ocarina::expr_value_t<Lhs>>() op                                            \
-                         std::declval<ocarina::expr_value_t<Rhs>>())>;                                        \
-        using Ret = std::conditional_t<is_bool_lhs && is_logic_op, bool, NormalRet>;                          \
-        return ocarina::make_expr<Ret>(ocarina::Function::current()->binary(                                  \
-            ocarina::Type::of<Ret>(),                                                                         \
-            ocarina::BinaryOp::tag,                                                                           \
-            ocarina::detail::extract_expression(std::forward<Lhs>(lhs)),                                      \
-            ocarina::detail::extract_expression(std::forward<Rhs>(rhs))));                                    \
-    }                                                                                                         \
-    namespace ocarina {                                                                                       \
-    namespace detail {                                                                                        \
-    template<typename Lhs, typename Rhs>                                                                      \
-    requires none_dsl_v<Lhs, Rhs>                                                                             \
-    decltype(std::declval<Lhs>() op std::declval<Rhs>()) trait##_func();                                      \
-    template<typename Lhs, typename Rhs>                                                                      \
-    requires any_dsl_v<Lhs, Rhs>                                                                              \
-        Var<decltype(std::declval<expr_value_t<Lhs>>() op std::declval<expr_value_t<Rhs>>())> trait##_func(); \
-    template<typename Lhs, typename Rhs>                                                                      \
-    struct trait {                                                                                            \
-        using type = decltype(detail::trait##_func<Lhs, Rhs>());                                              \
-    };                                                                                                        \
-    }                                                                                                         \
-    template<typename... T>                                                                                   \
-    using trait##_t = typename detail::trait<T...>::type;                                                     \
+#define OC_MAKE_DSL_BINARY_OPERATOR(op, tag, trait)                                                              \
+    template<typename Lhs, typename Rhs>                                                                         \
+    requires ocarina::any_dsl_v<Lhs, Rhs> &&                                                                     \
+        ocarina::is_basic_v<ocarina::expr_value_t<Lhs>> &&                                                       \
+        ocarina::is_basic_v<ocarina::expr_value_t<Rhs>>                                                          \
+    [[nodiscard]] inline auto                                                                                    \
+    operator op(Lhs &&lhs, Rhs &&rhs) noexcept {                                                                 \
+        using namespace std::string_view_literals;                                                               \
+        static constexpr bool is_logic_op = #op == "||"sv || #op == "&&"sv;                                      \
+        static constexpr bool is_bit_op = #op == "|"sv || #op == "&"sv || #op == "^"sv;                          \
+        static constexpr bool is_bool_lhs = ocarina::is_boolean_expr_v<Lhs>;                                     \
+        static constexpr bool is_bool_rhs = ocarina::is_boolean_expr_v<Rhs>;                                     \
+        using NormalRet = std::remove_cvref_t<                                                                   \
+            decltype(std::declval<ocarina::expr_value_t<Lhs>>() op                                               \
+                         std::declval<ocarina::expr_value_t<Rhs>>())>;                                           \
+        using Ret = std::conditional_t<is_bool_lhs && is_logic_op, bool, NormalRet>;                             \
+        return ocarina::make_expr<Ret>(ocarina::Function::current()->binary(                                     \
+            ocarina::Type::of<Ret>(),                                                                            \
+            ocarina::BinaryOp::tag,                                                                              \
+            ocarina::detail::extract_expression(std::forward<Lhs>(lhs)),                                         \
+            ocarina::detail::extract_expression(std::forward<Rhs>(rhs))));                                       \
+    }                                                                                                            \
+                                                                                                                 \
+    template<typename T, typename U,                                                                             \
+             typename NormalRet = std::remove_cvref_t<decltype(std::declval<T>() op std::declval<U>())>>         \
+    [[nodiscard]] inline auto operator op(const ocarina::Array<T> &lhs, const ocarina::Array<U> &rhs) noexcept { \
+        using namespace std::string_view_literals;                                                               \
+        static constexpr bool is_logic_op = #op == "||"sv || #op == "&&"sv;                                      \
+        static constexpr bool is_bit_op = #op == "|"sv || #op == "&"sv || #op == "^"sv;                          \
+        static constexpr bool is_bool_lhs = ocarina::is_boolean_expr_v<T>;                                       \
+        static constexpr bool is_bool_rhs = ocarina::is_boolean_expr_v<U>;                                       \
+        OC_ASSERT(lhs.size() == rhs.size());                                                                     \
+        using Ret = std::conditional_t<is_bool_lhs && is_logic_op, bool, NormalRet>;                             \
+        auto expression = ocarina::Function::current()->binary(ocarina::Array<Ret>::type(lhs.size()),            \
+                                                               ocarina::BinaryOp::tag, lhs.expression(),         \
+                                                               rhs.expression());                                \
+        return ocarina::Array<Ret>(lhs.size(), expression);                                                      \
+    }                                                                                                            \
+    namespace ocarina {                                                                                          \
+    namespace detail {                                                                                           \
+    template<typename Lhs, typename Rhs>                                                                         \
+    requires none_dsl_v<Lhs, Rhs>                                                                                \
+    decltype(std::declval<Lhs>() op std::declval<Rhs>()) trait##_func();                                         \
+    template<typename Lhs, typename Rhs>                                                                         \
+    requires any_dsl_v<Lhs, Rhs>                                                                                 \
+        Var<decltype(std::declval<expr_value_t<Lhs>>() op std::declval<expr_value_t<Rhs>>())> trait##_func();    \
+    template<typename Lhs, typename Rhs>                                                                         \
+    struct trait {                                                                                               \
+        using type = decltype(detail::trait##_func<Lhs, Rhs>());                                                 \
+    };                                                                                                           \
+    }                                                                                                            \
+    template<typename... T>                                                                                      \
+    using trait##_t = typename detail::trait<T...>::type;                                                        \
     };// namespace ocarina
-
-template<typename T, typename U,
-         typename NormalRet = std::remove_cvref_t<decltype(std::declval<T>() + std::declval<U>())>>
-[[nodiscard]] inline auto operator+(const ocarina::Array<T> &lhs, const ocarina::Array<U> &rhs) noexcept {
-    using namespace std::string_view_literals;
-    static constexpr bool is_logic_op = "+" == "||"sv || "+" == "&&"sv;
-    static constexpr bool is_bit_op = "+" == "|"sv || "+" == "&"sv || "+" == "^"sv;
-    static constexpr bool is_bool_lhs = ocarina::is_boolean_expr_v<T>;
-    static constexpr bool is_bool_rhs = ocarina::is_boolean_expr_v<U>;
-    OC_ASSERT(lhs.size() == rhs.size());
-    using Ret = std::conditional_t<is_bool_lhs && is_logic_op, bool, NormalRet>;
-    auto expression = ocarina::Function::current()->binary(ocarina::Array<Ret>::type(lhs.size()), ocarina::BinaryOp::ADD, lhs.expression(), rhs.expression());
-    return ocarina::Array<Ret>(lhs.size(), expression);
-}
 
 OC_MAKE_DSL_BINARY_OPERATOR(+, ADD, add)
 OC_MAKE_DSL_BINARY_OPERATOR(-, SUB, sub)
