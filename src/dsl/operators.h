@@ -76,6 +76,20 @@ OC_MAKE_DSL_UNARY_OPERATOR(~, BIT_NOT)
     using trait##_t = typename detail::trait<T...>::type;                                                     \
     };// namespace ocarina
 
+template<typename T, typename U,
+         typename NormalRet = std::remove_cvref_t<decltype(std::declval<T>() + std::declval<U>())>>
+[[nodiscard]] inline auto operator+(const ocarina::Array<T> &lhs, const ocarina::Array<U> &rhs) noexcept {
+    using namespace std::string_view_literals;
+    static constexpr bool is_logic_op = "+" == "||"sv || "+" == "&&"sv;
+    static constexpr bool is_bit_op = "+" == "|"sv || "+" == "&"sv || "+" == "^"sv;
+    static constexpr bool is_bool_lhs = ocarina::is_boolean_expr_v<T>;
+    static constexpr bool is_bool_rhs = ocarina::is_boolean_expr_v<U>;
+    OC_ASSERT(lhs.size() == rhs.size());
+    using Ret = std::conditional_t<is_bool_lhs && is_logic_op, bool, NormalRet>;
+    auto expression = ocarina::Function::current()->binary(ocarina::Array<Ret>::type(lhs.size()), ocarina::BinaryOp::ADD, lhs.expression(), rhs.expression());
+    return ocarina::Array<Ret>(lhs.size(), expression);
+}
+
 OC_MAKE_DSL_BINARY_OPERATOR(+, ADD, add)
 OC_MAKE_DSL_BINARY_OPERATOR(-, SUB, sub)
 OC_MAKE_DSL_BINARY_OPERATOR(*, MUL, mul)

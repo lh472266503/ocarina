@@ -41,10 +41,14 @@ public:
 
     Array(Array &&) noexcept = default;
 
-    [[nodiscard]] const Type *type() const noexcept {
+    [[nodiscard]] static const Type *type(uint size) noexcept {
         return Type::from(ocarina::format("array<{},{}>",
                                           detail::TypeDesc<T>::description(),
-                                          _size));
+                                          size));
+    }
+
+    [[nodiscard]] const Type *type() const noexcept {
+        return type(_size);
     }
 
     template<typename U>
