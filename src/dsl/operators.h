@@ -68,12 +68,13 @@ OC_MAKE_DSL_UNARY_OPERATOR(~, BIT_NOT)
         static constexpr bool is_bit_op = #op == "|"sv || #op == "&"sv || #op == "^"sv;                          \
         static constexpr bool is_bool_lhs = ocarina::is_boolean_expr_v<T>;                                       \
         static constexpr bool is_bool_rhs = ocarina::is_boolean_expr_v<U>;                                       \
-        OC_ASSERT(lhs.size() == rhs.size());                                                                     \
+        OC_ASSERT(lhs.size() == rhs.size() || std::min(lhs.size(), rhs.size()) == 1);                            \
+        auto size = std::max(lhs.size(), rhs.size());                                                            \
         using Ret = std::conditional_t<is_bool_lhs && is_logic_op, bool, NormalRet>;                             \
-        auto expression = ocarina::Function::current()->binary(ocarina::Array<Ret>::type(lhs.size()),            \
+        auto expression = ocarina::Function::current()->binary(ocarina::Array<Ret>::type(size),                  \
                                                                ocarina::BinaryOp::tag, lhs.expression(),         \
                                                                rhs.expression());                                \
-        return ocarina::Array<Ret>(lhs.size(), expression);                                                      \
+        return ocarina::Array<Ret>(size, expression);                                                            \
     }                                                                                                            \
     namespace ocarina {                                                                                          \
     namespace detail {                                                                                           \

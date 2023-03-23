@@ -114,7 +114,7 @@ int main(int argc, char *argv[]) {
         Var<Ray> r = make_ray(Var(float3(0,0.1, -5)), float3(0,0,1));
         Var hit= accel.trace_closest(r);
         Array<float> arr = Array<float>::create(1.f, 2.f);
-        arr = arr / arr;
+        arr = Array<float>::create(3.f) * arr;
         prints("{} {}", arr.to_vec2());
 //        Float3 pos = r->direction();
 //        Float4 pix = img.read<float4>(200,150);
