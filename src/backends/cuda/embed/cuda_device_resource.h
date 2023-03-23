@@ -66,6 +66,26 @@ __device__ auto oc_tex_sample_float4(OCTexture obj, oc_float u, oc_float v, oc_f
     return oc_make_float4(ret.x, ret.y, ret.z, ret.w);
 }
 
+template<oc_uint N>
+__device__ oc_array<float, N> _oc_tex_sample_float(cudaTextureObject_t texture, oc_float u, oc_float v, oc_float w = 0.f) noexcept {
+    if constexpr (N == 1) {
+        auto ret = tex3D<float>(texture, u, v, w);
+        return {ret};
+    } else if constexpr(N == 2) {
+        auto ret = tex3D<float2>(texture, u, v, w);
+        return {ret.x, ret.y};
+    }else if constexpr(N == 4) {
+        auto ret = tex3D<float4>(texture, u, v, w);
+        return {ret.x, ret.y, ret.z, ret.w};
+    }
+    return T{};
+}
+
+template<oc_uint N>
+__device__ oc_array<float, N> oc_tex_sample_float(OCTexture obj, oc_float u, oc_float v, oc_float w = 0.f) noexcept {
+    return _oc_tex_sample_float<N>(obj.texture, u, v, w);
+}
+
 template<typename T>
 __device__ T oc_resource_array_buffer_read(OCResourceArray resource_array, oc_uint buffer_index, oc_uint index) noexcept {
     const T *buffer = reinterpret_cast<T *>(resource_array.buffer_slot[buffer_index]);
@@ -94,6 +114,13 @@ __device__ T oc_resource_array_tex_sample(OCResourceArray resource_array, oc_uin
         return oc_make_float4(ret.x, ret.y, ret.z, ret.w);
     }
     return T{};
+}
+
+template<oc_uint N>
+__device__ oc_array<float, N> oc_resource_array_tex_sample(OCResourceArray resource_array, oc_uint tex_index,
+                                    oc_float u, oc_float v, oc_float w = 0.f) noexcept {
+    cudaTextureObject_t texture = resource_array.tex_slot[tex_index];
+    return _oc_tex_sample_float<N>(texture, u, v, w);
 }
 
 template<typename T>
