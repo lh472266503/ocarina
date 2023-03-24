@@ -13,7 +13,7 @@ void RefExpr::_mark(Usage usage) const noexcept {
 }
 
 uint64_t LiteralExpr::_compute_hash() const noexcept {
-    return ocarina::visit([&](auto &&arg) { return hash64(std::forward<decltype(arg)>(arg)); }, _value);
+    return ocarina::visit([&](auto &&arg) { return hash64(OC_FORWARD(arg)); }, _value);
 }
 uint64_t AccessExpr::_compute_hash() const noexcept {
     uint64_t ret = _range->hash();
@@ -48,8 +48,9 @@ uint64_t MemberExpr::_compute_hash() const noexcept {
 uint64_t CallExpr::_compute_hash() const noexcept {
     uint64_t ret = _function ? _function->hash() : Hash64::default_seed;
     ret = hash64(_call_op, ret);
-    for (int i = 0; i < _template_args.size(); ++i) {
-        ret = hash64(ret, _template_args[i]);
+    for (auto _template_arg : _template_args) {
+        ret = ocarina::visit([&](auto &&arg) { return hash64(OC_FORWARD(arg)); },
+                             _template_arg);
     }
     for (const auto &arg : _arguments) {
         ret = hash64(ret, arg->hash());

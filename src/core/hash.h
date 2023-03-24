@@ -65,8 +65,8 @@ public:
             auto x = s;
             return detail::xxh3_hash64(&x, sizeof(x), _seed);
         } else {
-            auto data = OC_FORWARD(s);
-            return detail::xxh3_hash64(&data, sizeof(s), _seed);
+            always_false_v<T>;
+            return {};
         }
     }
 };
