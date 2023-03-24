@@ -34,6 +34,13 @@ public:
         }
     }
 
+    explicit Array(const vector<T> &vec) noexcept
+        : Array(vec.size()) {
+        for (int i = 0; i < size(); ++i) {
+            (*this)[i] = vec[i];
+        }
+    }
+
     Array(const Array &other) noexcept
         : _size{other._size}, _expression(Function::current()->local(type())) {
         Function::current()->assign(_expression, other._expression);
