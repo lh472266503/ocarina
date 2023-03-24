@@ -41,18 +41,6 @@ public:
         return uniform.expression();
     }
 
-    template<typename Output, typename U, typename V>
-    requires(is_all_floating_point_expr_v<U, V>)
-        [[nodiscard]] auto sample(const U &u, const V &v) const noexcept {
-        return make_expr<RHITexture>(expression()).sample<Output>(u, v);
-    }
-
-    template<typename Output, typename UV>
-    requires(is_float_vector2_v<expr_value_t<UV>>)
-        OC_NODISCARD auto sample(const UV &uv) const noexcept {
-        return sample<Output>(uv.x, uv.y);
-    }
-
     template<typename U, typename V>
     requires(is_all_floating_point_expr_v<U, V>)
         [[nodiscard]] auto sample(uint channel_num, const U &u, const V &v) const noexcept {
@@ -63,6 +51,18 @@ public:
     requires(is_float_vector2_v<expr_value_t<UV>>)
         OC_NODISCARD auto sample(uint channel_num, const UV &uv) const noexcept {
         return sample(channel_num, uv.x, uv.y);
+    }
+
+    template<typename U, typename V, typename W>
+    requires(is_all_floating_point_expr_v<U, V>)
+        [[nodiscard]] auto sample(uint channel_num, const U &u, const V &v, const W &w) const noexcept {
+        return make_expr<RHITexture>(expression()).sample(channel_num, u, v, w);
+    }
+
+    template<typename UVW>
+    requires(is_float_vector3_v<expr_value_t<UVW>>)
+        OC_NODISCARD auto sample(uint channel_num, const UVW &uvw) const noexcept {
+        return sample(channel_num, uvw.x, uvw.y, uvw.z);
     }
 
     template<typename Target, typename X, typename Y>

@@ -131,7 +131,7 @@ namespace detail {
 template<typename T>
 template<typename U, typename V>
 requires(is_all_floating_point_expr_v<U, V>)
-    OC_NODISCARD Array<float> EnableTextureSample<T>::sample(uint channel_num, const U &u, const V &v)
+    Array<float> EnableTextureSample<T>::sample(uint channel_num, const U &u, const V &v)
 const noexcept {
     const T *texture = static_cast<const T *>(this);
     const CallExpr *expr = Function::current()->call_builtin(Array<float>::type(channel_num),
@@ -146,7 +146,7 @@ const noexcept {
 template<typename T>
 template<typename U, typename V, typename W>
 requires(is_all_floating_point_expr_v<U, V, W>)
-    OC_NODISCARD Array<float> EnableTextureSample<T>::sample(uint channel_num, const U &u, const V &v, const W &w)
+    Array<float> EnableTextureSample<T>::sample(uint channel_num, const U &u, const V &v, const W &w)
 const noexcept {
     const T *texture = static_cast<const T *>(this);
     const CallExpr *expr = Function::current()->call_builtin(Array<float>::type(channel_num),
@@ -157,6 +157,22 @@ const noexcept {
                                                               OC_EXPR(w)},
                                                              {channel_num});
     return Array<float>(channel_num, expr);
+}
+
+template<typename T>
+template<typename UVW>
+requires(is_float_vector3_v<expr_value_t<UVW>>)
+    Array<float> EnableTextureSample<T>::sample(uint channel_num, const UVW &uvw)
+const noexcept {
+    return sample(channel_num, uvw.x, uvw.y, uvw.z);
+}
+
+template<typename T>
+template<typename UV>
+requires(is_float_vector2_v<expr_value_t<UV>>)
+    Array<float> EnableTextureSample<T>::sample(uint channel_num, const UV &uv)
+const noexcept {
+    return sample(channel_num, uv.x, uv.y);
 }
 
 }// namespace detail
