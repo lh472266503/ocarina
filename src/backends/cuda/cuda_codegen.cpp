@@ -112,7 +112,7 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
             auto t_args = expr->template_args();
             auto output_type = t_args[0];
             current_scratch() << ocarina::format("oc_texture_read<oc_{}>",
-                                                 output_type->name());
+                                                 std::get<const Type *>(output_type)->name());
             break;
         }
         case CallOp::TEX_WRITE: {
