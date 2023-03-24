@@ -22,23 +22,27 @@ def generate(file, dim):
                     print(str, file=file)
 
 def array_swizzle(file, dim):
-    entries = ["x", "y", "z", "w"][:dim]
+    entries = ["x", "y", "z", "w"]
+    for i,x in enumerate(entries):
+        str = f"[[nodiscard]] Array<T> {x}() const {{ OC_ASSERT(_size > {i}); return Array<T>::create(at({i})); }}"
+        print(str, file=file)
+    print("", file=file)
     for i,x in enumerate(entries):
         for j,y in enumerate(entries):
-            str = f"[[nodiscard]] Array<T> {x}{y}() const {{ OC_ASSERT(_size >= 2); return Array<T>::create(at({i}), at({j})); }}"
+            str = f"[[nodiscard]] Array<T> {x}{y}() const {{ OC_ASSERT(_size > {max(i,j)}); return Array<T>::create(at({i}), at({j})); }}"
             print(str, file=file)
     print("", file=file)
     for i,x in enumerate(entries):
         for j,y in enumerate(entries):
             for k,z in enumerate(entries):
-                str = f"[[nodiscard]] Array<T> {x}{y}{z}() const {{ OC_ASSERT(_size >= 3); return Array<T>::create(at({i}), at({j}), at({k})); }}"
+                str = f"[[nodiscard]] Array<T> {x}{y}{z}() const {{ OC_ASSERT(_size > {max(i,j,k)}); return Array<T>::create(at({i}), at({j}), at({k})); }}"
                 print(str, file=file)
     print("", file=file)
     for i,x in enumerate(entries):
         for j,y in enumerate(entries):
             for k,z in enumerate(entries):
                 for l,w in enumerate(entries):
-                    str = f"[[nodiscard]] Array<T> {x}{y}{z}{w}() const {{  OC_ASSERT(_size >= 4); return Array<T>::create(at({i}), at({j}), at({k}), at({l})); }}"
+                    str = f"[[nodiscard]] Array<T> {x}{y}{z}{w}() const {{ OC_ASSERT(_size > {max(i,j,k,l)}); return Array<T>::create(at({i}), at({j}), at({k}), at({l})); }}"
                     print(str, file=file)
 
 if __name__ == "__main__":

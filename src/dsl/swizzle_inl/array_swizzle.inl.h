@@ -1,338 +1,343 @@
-[[nodiscard]] Array<T> xx() const { OC_ASSERT(_size >= 2); return Array<T>::create(at(0), at(0)); }
-[[nodiscard]] Array<T> xy() const { OC_ASSERT(_size >= 2); return Array<T>::create(at(0), at(1)); }
-[[nodiscard]] Array<T> xz() const { OC_ASSERT(_size >= 2); return Array<T>::create(at(0), at(2)); }
-[[nodiscard]] Array<T> xw() const { OC_ASSERT(_size >= 2); return Array<T>::create(at(0), at(3)); }
-[[nodiscard]] Array<T> yx() const { OC_ASSERT(_size >= 2); return Array<T>::create(at(1), at(0)); }
-[[nodiscard]] Array<T> yy() const { OC_ASSERT(_size >= 2); return Array<T>::create(at(1), at(1)); }
-[[nodiscard]] Array<T> yz() const { OC_ASSERT(_size >= 2); return Array<T>::create(at(1), at(2)); }
-[[nodiscard]] Array<T> yw() const { OC_ASSERT(_size >= 2); return Array<T>::create(at(1), at(3)); }
-[[nodiscard]] Array<T> zx() const { OC_ASSERT(_size >= 2); return Array<T>::create(at(2), at(0)); }
-[[nodiscard]] Array<T> zy() const { OC_ASSERT(_size >= 2); return Array<T>::create(at(2), at(1)); }
-[[nodiscard]] Array<T> zz() const { OC_ASSERT(_size >= 2); return Array<T>::create(at(2), at(2)); }
-[[nodiscard]] Array<T> zw() const { OC_ASSERT(_size >= 2); return Array<T>::create(at(2), at(3)); }
-[[nodiscard]] Array<T> wx() const { OC_ASSERT(_size >= 2); return Array<T>::create(at(3), at(0)); }
-[[nodiscard]] Array<T> wy() const { OC_ASSERT(_size >= 2); return Array<T>::create(at(3), at(1)); }
-[[nodiscard]] Array<T> wz() const { OC_ASSERT(_size >= 2); return Array<T>::create(at(3), at(2)); }
-[[nodiscard]] Array<T> ww() const { OC_ASSERT(_size >= 2); return Array<T>::create(at(3), at(3)); }
+[[nodiscard]] Array<T> x() const { OC_ASSERT(_size > 0); return Array<T>::create(at(0)); }
+[[nodiscard]] Array<T> y() const { OC_ASSERT(_size > 1); return Array<T>::create(at(1)); }
+[[nodiscard]] Array<T> z() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2)); }
+[[nodiscard]] Array<T> w() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3)); }
 
-[[nodiscard]] Array<T> xxx() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(0), at(0), at(0)); }
-[[nodiscard]] Array<T> xxy() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(0), at(0), at(1)); }
-[[nodiscard]] Array<T> xxz() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(0), at(0), at(2)); }
-[[nodiscard]] Array<T> xxw() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(0), at(0), at(3)); }
-[[nodiscard]] Array<T> xyx() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(0), at(1), at(0)); }
-[[nodiscard]] Array<T> xyy() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(0), at(1), at(1)); }
-[[nodiscard]] Array<T> xyz() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(0), at(1), at(2)); }
-[[nodiscard]] Array<T> xyw() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(0), at(1), at(3)); }
-[[nodiscard]] Array<T> xzx() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(0), at(2), at(0)); }
-[[nodiscard]] Array<T> xzy() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(0), at(2), at(1)); }
-[[nodiscard]] Array<T> xzz() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(0), at(2), at(2)); }
-[[nodiscard]] Array<T> xzw() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(0), at(2), at(3)); }
-[[nodiscard]] Array<T> xwx() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(0), at(3), at(0)); }
-[[nodiscard]] Array<T> xwy() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(0), at(3), at(1)); }
-[[nodiscard]] Array<T> xwz() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(0), at(3), at(2)); }
-[[nodiscard]] Array<T> xww() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(0), at(3), at(3)); }
-[[nodiscard]] Array<T> yxx() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(1), at(0), at(0)); }
-[[nodiscard]] Array<T> yxy() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(1), at(0), at(1)); }
-[[nodiscard]] Array<T> yxz() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(1), at(0), at(2)); }
-[[nodiscard]] Array<T> yxw() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(1), at(0), at(3)); }
-[[nodiscard]] Array<T> yyx() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(1), at(1), at(0)); }
-[[nodiscard]] Array<T> yyy() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(1), at(1), at(1)); }
-[[nodiscard]] Array<T> yyz() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(1), at(1), at(2)); }
-[[nodiscard]] Array<T> yyw() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(1), at(1), at(3)); }
-[[nodiscard]] Array<T> yzx() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(1), at(2), at(0)); }
-[[nodiscard]] Array<T> yzy() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(1), at(2), at(1)); }
-[[nodiscard]] Array<T> yzz() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(1), at(2), at(2)); }
-[[nodiscard]] Array<T> yzw() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(1), at(2), at(3)); }
-[[nodiscard]] Array<T> ywx() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(1), at(3), at(0)); }
-[[nodiscard]] Array<T> ywy() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(1), at(3), at(1)); }
-[[nodiscard]] Array<T> ywz() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(1), at(3), at(2)); }
-[[nodiscard]] Array<T> yww() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(1), at(3), at(3)); }
-[[nodiscard]] Array<T> zxx() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(2), at(0), at(0)); }
-[[nodiscard]] Array<T> zxy() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(2), at(0), at(1)); }
-[[nodiscard]] Array<T> zxz() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(2), at(0), at(2)); }
-[[nodiscard]] Array<T> zxw() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(2), at(0), at(3)); }
-[[nodiscard]] Array<T> zyx() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(2), at(1), at(0)); }
-[[nodiscard]] Array<T> zyy() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(2), at(1), at(1)); }
-[[nodiscard]] Array<T> zyz() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(2), at(1), at(2)); }
-[[nodiscard]] Array<T> zyw() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(2), at(1), at(3)); }
-[[nodiscard]] Array<T> zzx() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(2), at(2), at(0)); }
-[[nodiscard]] Array<T> zzy() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(2), at(2), at(1)); }
-[[nodiscard]] Array<T> zzz() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(2), at(2), at(2)); }
-[[nodiscard]] Array<T> zzw() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(2), at(2), at(3)); }
-[[nodiscard]] Array<T> zwx() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(2), at(3), at(0)); }
-[[nodiscard]] Array<T> zwy() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(2), at(3), at(1)); }
-[[nodiscard]] Array<T> zwz() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(2), at(3), at(2)); }
-[[nodiscard]] Array<T> zww() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(2), at(3), at(3)); }
-[[nodiscard]] Array<T> wxx() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(3), at(0), at(0)); }
-[[nodiscard]] Array<T> wxy() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(3), at(0), at(1)); }
-[[nodiscard]] Array<T> wxz() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(3), at(0), at(2)); }
-[[nodiscard]] Array<T> wxw() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(3), at(0), at(3)); }
-[[nodiscard]] Array<T> wyx() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(3), at(1), at(0)); }
-[[nodiscard]] Array<T> wyy() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(3), at(1), at(1)); }
-[[nodiscard]] Array<T> wyz() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(3), at(1), at(2)); }
-[[nodiscard]] Array<T> wyw() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(3), at(1), at(3)); }
-[[nodiscard]] Array<T> wzx() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(3), at(2), at(0)); }
-[[nodiscard]] Array<T> wzy() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(3), at(2), at(1)); }
-[[nodiscard]] Array<T> wzz() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(3), at(2), at(2)); }
-[[nodiscard]] Array<T> wzw() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(3), at(2), at(3)); }
-[[nodiscard]] Array<T> wwx() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(3), at(3), at(0)); }
-[[nodiscard]] Array<T> wwy() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(3), at(3), at(1)); }
-[[nodiscard]] Array<T> wwz() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(3), at(3), at(2)); }
-[[nodiscard]] Array<T> www() const { OC_ASSERT(_size >= 3); return Array<T>::create(at(3), at(3), at(3)); }
+[[nodiscard]] Array<T> xx() const { OC_ASSERT(_size > 0); return Array<T>::create(at(0), at(0)); }
+[[nodiscard]] Array<T> xy() const { OC_ASSERT(_size > 1); return Array<T>::create(at(0), at(1)); }
+[[nodiscard]] Array<T> xz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(0), at(2)); }
+[[nodiscard]] Array<T> xw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(3)); }
+[[nodiscard]] Array<T> yx() const { OC_ASSERT(_size > 1); return Array<T>::create(at(1), at(0)); }
+[[nodiscard]] Array<T> yy() const { OC_ASSERT(_size > 1); return Array<T>::create(at(1), at(1)); }
+[[nodiscard]] Array<T> yz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(1), at(2)); }
+[[nodiscard]] Array<T> yw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(3)); }
+[[nodiscard]] Array<T> zx() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(0)); }
+[[nodiscard]] Array<T> zy() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(1)); }
+[[nodiscard]] Array<T> zz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(2)); }
+[[nodiscard]] Array<T> zw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(3)); }
+[[nodiscard]] Array<T> wx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(0)); }
+[[nodiscard]] Array<T> wy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(1)); }
+[[nodiscard]] Array<T> wz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(2)); }
+[[nodiscard]] Array<T> ww() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(3)); }
 
-[[nodiscard]] Array<T> xxxx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(0), at(0), at(0)); }
-[[nodiscard]] Array<T> xxxy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(0), at(0), at(1)); }
-[[nodiscard]] Array<T> xxxz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(0), at(0), at(2)); }
-[[nodiscard]] Array<T> xxxw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(0), at(0), at(3)); }
-[[nodiscard]] Array<T> xxyx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(0), at(1), at(0)); }
-[[nodiscard]] Array<T> xxyy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(0), at(1), at(1)); }
-[[nodiscard]] Array<T> xxyz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(0), at(1), at(2)); }
-[[nodiscard]] Array<T> xxyw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(0), at(1), at(3)); }
-[[nodiscard]] Array<T> xxzx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(0), at(2), at(0)); }
-[[nodiscard]] Array<T> xxzy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(0), at(2), at(1)); }
-[[nodiscard]] Array<T> xxzz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(0), at(2), at(2)); }
-[[nodiscard]] Array<T> xxzw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(0), at(2), at(3)); }
-[[nodiscard]] Array<T> xxwx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(0), at(3), at(0)); }
-[[nodiscard]] Array<T> xxwy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(0), at(3), at(1)); }
-[[nodiscard]] Array<T> xxwz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(0), at(3), at(2)); }
-[[nodiscard]] Array<T> xxww() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(0), at(3), at(3)); }
-[[nodiscard]] Array<T> xyxx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(1), at(0), at(0)); }
-[[nodiscard]] Array<T> xyxy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(1), at(0), at(1)); }
-[[nodiscard]] Array<T> xyxz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(1), at(0), at(2)); }
-[[nodiscard]] Array<T> xyxw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(1), at(0), at(3)); }
-[[nodiscard]] Array<T> xyyx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(1), at(1), at(0)); }
-[[nodiscard]] Array<T> xyyy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(1), at(1), at(1)); }
-[[nodiscard]] Array<T> xyyz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(1), at(1), at(2)); }
-[[nodiscard]] Array<T> xyyw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(1), at(1), at(3)); }
-[[nodiscard]] Array<T> xyzx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(1), at(2), at(0)); }
-[[nodiscard]] Array<T> xyzy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(1), at(2), at(1)); }
-[[nodiscard]] Array<T> xyzz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(1), at(2), at(2)); }
-[[nodiscard]] Array<T> xyzw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(1), at(2), at(3)); }
-[[nodiscard]] Array<T> xywx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(1), at(3), at(0)); }
-[[nodiscard]] Array<T> xywy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(1), at(3), at(1)); }
-[[nodiscard]] Array<T> xywz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(1), at(3), at(2)); }
-[[nodiscard]] Array<T> xyww() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(1), at(3), at(3)); }
-[[nodiscard]] Array<T> xzxx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(2), at(0), at(0)); }
-[[nodiscard]] Array<T> xzxy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(2), at(0), at(1)); }
-[[nodiscard]] Array<T> xzxz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(2), at(0), at(2)); }
-[[nodiscard]] Array<T> xzxw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(2), at(0), at(3)); }
-[[nodiscard]] Array<T> xzyx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(2), at(1), at(0)); }
-[[nodiscard]] Array<T> xzyy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(2), at(1), at(1)); }
-[[nodiscard]] Array<T> xzyz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(2), at(1), at(2)); }
-[[nodiscard]] Array<T> xzyw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(2), at(1), at(3)); }
-[[nodiscard]] Array<T> xzzx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(2), at(2), at(0)); }
-[[nodiscard]] Array<T> xzzy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(2), at(2), at(1)); }
-[[nodiscard]] Array<T> xzzz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(2), at(2), at(2)); }
-[[nodiscard]] Array<T> xzzw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(2), at(2), at(3)); }
-[[nodiscard]] Array<T> xzwx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(2), at(3), at(0)); }
-[[nodiscard]] Array<T> xzwy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(2), at(3), at(1)); }
-[[nodiscard]] Array<T> xzwz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(2), at(3), at(2)); }
-[[nodiscard]] Array<T> xzww() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(2), at(3), at(3)); }
-[[nodiscard]] Array<T> xwxx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(3), at(0), at(0)); }
-[[nodiscard]] Array<T> xwxy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(3), at(0), at(1)); }
-[[nodiscard]] Array<T> xwxz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(3), at(0), at(2)); }
-[[nodiscard]] Array<T> xwxw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(3), at(0), at(3)); }
-[[nodiscard]] Array<T> xwyx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(3), at(1), at(0)); }
-[[nodiscard]] Array<T> xwyy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(3), at(1), at(1)); }
-[[nodiscard]] Array<T> xwyz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(3), at(1), at(2)); }
-[[nodiscard]] Array<T> xwyw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(3), at(1), at(3)); }
-[[nodiscard]] Array<T> xwzx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(3), at(2), at(0)); }
-[[nodiscard]] Array<T> xwzy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(3), at(2), at(1)); }
-[[nodiscard]] Array<T> xwzz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(3), at(2), at(2)); }
-[[nodiscard]] Array<T> xwzw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(3), at(2), at(3)); }
-[[nodiscard]] Array<T> xwwx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(3), at(3), at(0)); }
-[[nodiscard]] Array<T> xwwy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(3), at(3), at(1)); }
-[[nodiscard]] Array<T> xwwz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(3), at(3), at(2)); }
-[[nodiscard]] Array<T> xwww() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(0), at(3), at(3), at(3)); }
-[[nodiscard]] Array<T> yxxx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(0), at(0), at(0)); }
-[[nodiscard]] Array<T> yxxy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(0), at(0), at(1)); }
-[[nodiscard]] Array<T> yxxz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(0), at(0), at(2)); }
-[[nodiscard]] Array<T> yxxw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(0), at(0), at(3)); }
-[[nodiscard]] Array<T> yxyx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(0), at(1), at(0)); }
-[[nodiscard]] Array<T> yxyy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(0), at(1), at(1)); }
-[[nodiscard]] Array<T> yxyz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(0), at(1), at(2)); }
-[[nodiscard]] Array<T> yxyw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(0), at(1), at(3)); }
-[[nodiscard]] Array<T> yxzx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(0), at(2), at(0)); }
-[[nodiscard]] Array<T> yxzy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(0), at(2), at(1)); }
-[[nodiscard]] Array<T> yxzz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(0), at(2), at(2)); }
-[[nodiscard]] Array<T> yxzw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(0), at(2), at(3)); }
-[[nodiscard]] Array<T> yxwx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(0), at(3), at(0)); }
-[[nodiscard]] Array<T> yxwy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(0), at(3), at(1)); }
-[[nodiscard]] Array<T> yxwz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(0), at(3), at(2)); }
-[[nodiscard]] Array<T> yxww() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(0), at(3), at(3)); }
-[[nodiscard]] Array<T> yyxx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(1), at(0), at(0)); }
-[[nodiscard]] Array<T> yyxy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(1), at(0), at(1)); }
-[[nodiscard]] Array<T> yyxz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(1), at(0), at(2)); }
-[[nodiscard]] Array<T> yyxw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(1), at(0), at(3)); }
-[[nodiscard]] Array<T> yyyx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(1), at(1), at(0)); }
-[[nodiscard]] Array<T> yyyy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(1), at(1), at(1)); }
-[[nodiscard]] Array<T> yyyz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(1), at(1), at(2)); }
-[[nodiscard]] Array<T> yyyw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(1), at(1), at(3)); }
-[[nodiscard]] Array<T> yyzx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(1), at(2), at(0)); }
-[[nodiscard]] Array<T> yyzy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(1), at(2), at(1)); }
-[[nodiscard]] Array<T> yyzz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(1), at(2), at(2)); }
-[[nodiscard]] Array<T> yyzw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(1), at(2), at(3)); }
-[[nodiscard]] Array<T> yywx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(1), at(3), at(0)); }
-[[nodiscard]] Array<T> yywy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(1), at(3), at(1)); }
-[[nodiscard]] Array<T> yywz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(1), at(3), at(2)); }
-[[nodiscard]] Array<T> yyww() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(1), at(3), at(3)); }
-[[nodiscard]] Array<T> yzxx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(2), at(0), at(0)); }
-[[nodiscard]] Array<T> yzxy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(2), at(0), at(1)); }
-[[nodiscard]] Array<T> yzxz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(2), at(0), at(2)); }
-[[nodiscard]] Array<T> yzxw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(2), at(0), at(3)); }
-[[nodiscard]] Array<T> yzyx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(2), at(1), at(0)); }
-[[nodiscard]] Array<T> yzyy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(2), at(1), at(1)); }
-[[nodiscard]] Array<T> yzyz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(2), at(1), at(2)); }
-[[nodiscard]] Array<T> yzyw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(2), at(1), at(3)); }
-[[nodiscard]] Array<T> yzzx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(2), at(2), at(0)); }
-[[nodiscard]] Array<T> yzzy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(2), at(2), at(1)); }
-[[nodiscard]] Array<T> yzzz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(2), at(2), at(2)); }
-[[nodiscard]] Array<T> yzzw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(2), at(2), at(3)); }
-[[nodiscard]] Array<T> yzwx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(2), at(3), at(0)); }
-[[nodiscard]] Array<T> yzwy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(2), at(3), at(1)); }
-[[nodiscard]] Array<T> yzwz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(2), at(3), at(2)); }
-[[nodiscard]] Array<T> yzww() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(2), at(3), at(3)); }
-[[nodiscard]] Array<T> ywxx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(3), at(0), at(0)); }
-[[nodiscard]] Array<T> ywxy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(3), at(0), at(1)); }
-[[nodiscard]] Array<T> ywxz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(3), at(0), at(2)); }
-[[nodiscard]] Array<T> ywxw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(3), at(0), at(3)); }
-[[nodiscard]] Array<T> ywyx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(3), at(1), at(0)); }
-[[nodiscard]] Array<T> ywyy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(3), at(1), at(1)); }
-[[nodiscard]] Array<T> ywyz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(3), at(1), at(2)); }
-[[nodiscard]] Array<T> ywyw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(3), at(1), at(3)); }
-[[nodiscard]] Array<T> ywzx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(3), at(2), at(0)); }
-[[nodiscard]] Array<T> ywzy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(3), at(2), at(1)); }
-[[nodiscard]] Array<T> ywzz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(3), at(2), at(2)); }
-[[nodiscard]] Array<T> ywzw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(3), at(2), at(3)); }
-[[nodiscard]] Array<T> ywwx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(3), at(3), at(0)); }
-[[nodiscard]] Array<T> ywwy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(3), at(3), at(1)); }
-[[nodiscard]] Array<T> ywwz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(3), at(3), at(2)); }
-[[nodiscard]] Array<T> ywww() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(1), at(3), at(3), at(3)); }
-[[nodiscard]] Array<T> zxxx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(0), at(0), at(0)); }
-[[nodiscard]] Array<T> zxxy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(0), at(0), at(1)); }
-[[nodiscard]] Array<T> zxxz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(0), at(0), at(2)); }
-[[nodiscard]] Array<T> zxxw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(0), at(0), at(3)); }
-[[nodiscard]] Array<T> zxyx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(0), at(1), at(0)); }
-[[nodiscard]] Array<T> zxyy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(0), at(1), at(1)); }
-[[nodiscard]] Array<T> zxyz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(0), at(1), at(2)); }
-[[nodiscard]] Array<T> zxyw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(0), at(1), at(3)); }
-[[nodiscard]] Array<T> zxzx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(0), at(2), at(0)); }
-[[nodiscard]] Array<T> zxzy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(0), at(2), at(1)); }
-[[nodiscard]] Array<T> zxzz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(0), at(2), at(2)); }
-[[nodiscard]] Array<T> zxzw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(0), at(2), at(3)); }
-[[nodiscard]] Array<T> zxwx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(0), at(3), at(0)); }
-[[nodiscard]] Array<T> zxwy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(0), at(3), at(1)); }
-[[nodiscard]] Array<T> zxwz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(0), at(3), at(2)); }
-[[nodiscard]] Array<T> zxww() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(0), at(3), at(3)); }
-[[nodiscard]] Array<T> zyxx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(1), at(0), at(0)); }
-[[nodiscard]] Array<T> zyxy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(1), at(0), at(1)); }
-[[nodiscard]] Array<T> zyxz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(1), at(0), at(2)); }
-[[nodiscard]] Array<T> zyxw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(1), at(0), at(3)); }
-[[nodiscard]] Array<T> zyyx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(1), at(1), at(0)); }
-[[nodiscard]] Array<T> zyyy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(1), at(1), at(1)); }
-[[nodiscard]] Array<T> zyyz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(1), at(1), at(2)); }
-[[nodiscard]] Array<T> zyyw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(1), at(1), at(3)); }
-[[nodiscard]] Array<T> zyzx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(1), at(2), at(0)); }
-[[nodiscard]] Array<T> zyzy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(1), at(2), at(1)); }
-[[nodiscard]] Array<T> zyzz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(1), at(2), at(2)); }
-[[nodiscard]] Array<T> zyzw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(1), at(2), at(3)); }
-[[nodiscard]] Array<T> zywx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(1), at(3), at(0)); }
-[[nodiscard]] Array<T> zywy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(1), at(3), at(1)); }
-[[nodiscard]] Array<T> zywz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(1), at(3), at(2)); }
-[[nodiscard]] Array<T> zyww() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(1), at(3), at(3)); }
-[[nodiscard]] Array<T> zzxx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(2), at(0), at(0)); }
-[[nodiscard]] Array<T> zzxy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(2), at(0), at(1)); }
-[[nodiscard]] Array<T> zzxz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(2), at(0), at(2)); }
-[[nodiscard]] Array<T> zzxw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(2), at(0), at(3)); }
-[[nodiscard]] Array<T> zzyx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(2), at(1), at(0)); }
-[[nodiscard]] Array<T> zzyy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(2), at(1), at(1)); }
-[[nodiscard]] Array<T> zzyz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(2), at(1), at(2)); }
-[[nodiscard]] Array<T> zzyw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(2), at(1), at(3)); }
-[[nodiscard]] Array<T> zzzx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(2), at(2), at(0)); }
-[[nodiscard]] Array<T> zzzy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(2), at(2), at(1)); }
-[[nodiscard]] Array<T> zzzz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(2), at(2), at(2)); }
-[[nodiscard]] Array<T> zzzw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(2), at(2), at(3)); }
-[[nodiscard]] Array<T> zzwx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(2), at(3), at(0)); }
-[[nodiscard]] Array<T> zzwy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(2), at(3), at(1)); }
-[[nodiscard]] Array<T> zzwz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(2), at(3), at(2)); }
-[[nodiscard]] Array<T> zzww() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(2), at(3), at(3)); }
-[[nodiscard]] Array<T> zwxx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(3), at(0), at(0)); }
-[[nodiscard]] Array<T> zwxy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(3), at(0), at(1)); }
-[[nodiscard]] Array<T> zwxz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(3), at(0), at(2)); }
-[[nodiscard]] Array<T> zwxw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(3), at(0), at(3)); }
-[[nodiscard]] Array<T> zwyx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(3), at(1), at(0)); }
-[[nodiscard]] Array<T> zwyy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(3), at(1), at(1)); }
-[[nodiscard]] Array<T> zwyz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(3), at(1), at(2)); }
-[[nodiscard]] Array<T> zwyw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(3), at(1), at(3)); }
-[[nodiscard]] Array<T> zwzx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(3), at(2), at(0)); }
-[[nodiscard]] Array<T> zwzy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(3), at(2), at(1)); }
-[[nodiscard]] Array<T> zwzz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(3), at(2), at(2)); }
-[[nodiscard]] Array<T> zwzw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(3), at(2), at(3)); }
-[[nodiscard]] Array<T> zwwx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(3), at(3), at(0)); }
-[[nodiscard]] Array<T> zwwy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(3), at(3), at(1)); }
-[[nodiscard]] Array<T> zwwz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(3), at(3), at(2)); }
-[[nodiscard]] Array<T> zwww() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(2), at(3), at(3), at(3)); }
-[[nodiscard]] Array<T> wxxx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(0), at(0), at(0)); }
-[[nodiscard]] Array<T> wxxy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(0), at(0), at(1)); }
-[[nodiscard]] Array<T> wxxz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(0), at(0), at(2)); }
-[[nodiscard]] Array<T> wxxw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(0), at(0), at(3)); }
-[[nodiscard]] Array<T> wxyx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(0), at(1), at(0)); }
-[[nodiscard]] Array<T> wxyy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(0), at(1), at(1)); }
-[[nodiscard]] Array<T> wxyz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(0), at(1), at(2)); }
-[[nodiscard]] Array<T> wxyw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(0), at(1), at(3)); }
-[[nodiscard]] Array<T> wxzx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(0), at(2), at(0)); }
-[[nodiscard]] Array<T> wxzy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(0), at(2), at(1)); }
-[[nodiscard]] Array<T> wxzz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(0), at(2), at(2)); }
-[[nodiscard]] Array<T> wxzw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(0), at(2), at(3)); }
-[[nodiscard]] Array<T> wxwx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(0), at(3), at(0)); }
-[[nodiscard]] Array<T> wxwy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(0), at(3), at(1)); }
-[[nodiscard]] Array<T> wxwz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(0), at(3), at(2)); }
-[[nodiscard]] Array<T> wxww() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(0), at(3), at(3)); }
-[[nodiscard]] Array<T> wyxx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(1), at(0), at(0)); }
-[[nodiscard]] Array<T> wyxy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(1), at(0), at(1)); }
-[[nodiscard]] Array<T> wyxz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(1), at(0), at(2)); }
-[[nodiscard]] Array<T> wyxw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(1), at(0), at(3)); }
-[[nodiscard]] Array<T> wyyx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(1), at(1), at(0)); }
-[[nodiscard]] Array<T> wyyy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(1), at(1), at(1)); }
-[[nodiscard]] Array<T> wyyz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(1), at(1), at(2)); }
-[[nodiscard]] Array<T> wyyw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(1), at(1), at(3)); }
-[[nodiscard]] Array<T> wyzx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(1), at(2), at(0)); }
-[[nodiscard]] Array<T> wyzy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(1), at(2), at(1)); }
-[[nodiscard]] Array<T> wyzz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(1), at(2), at(2)); }
-[[nodiscard]] Array<T> wyzw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(1), at(2), at(3)); }
-[[nodiscard]] Array<T> wywx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(1), at(3), at(0)); }
-[[nodiscard]] Array<T> wywy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(1), at(3), at(1)); }
-[[nodiscard]] Array<T> wywz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(1), at(3), at(2)); }
-[[nodiscard]] Array<T> wyww() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(1), at(3), at(3)); }
-[[nodiscard]] Array<T> wzxx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(2), at(0), at(0)); }
-[[nodiscard]] Array<T> wzxy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(2), at(0), at(1)); }
-[[nodiscard]] Array<T> wzxz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(2), at(0), at(2)); }
-[[nodiscard]] Array<T> wzxw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(2), at(0), at(3)); }
-[[nodiscard]] Array<T> wzyx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(2), at(1), at(0)); }
-[[nodiscard]] Array<T> wzyy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(2), at(1), at(1)); }
-[[nodiscard]] Array<T> wzyz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(2), at(1), at(2)); }
-[[nodiscard]] Array<T> wzyw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(2), at(1), at(3)); }
-[[nodiscard]] Array<T> wzzx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(2), at(2), at(0)); }
-[[nodiscard]] Array<T> wzzy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(2), at(2), at(1)); }
-[[nodiscard]] Array<T> wzzz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(2), at(2), at(2)); }
-[[nodiscard]] Array<T> wzzw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(2), at(2), at(3)); }
-[[nodiscard]] Array<T> wzwx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(2), at(3), at(0)); }
-[[nodiscard]] Array<T> wzwy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(2), at(3), at(1)); }
-[[nodiscard]] Array<T> wzwz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(2), at(3), at(2)); }
-[[nodiscard]] Array<T> wzww() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(2), at(3), at(3)); }
-[[nodiscard]] Array<T> wwxx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(3), at(0), at(0)); }
-[[nodiscard]] Array<T> wwxy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(3), at(0), at(1)); }
-[[nodiscard]] Array<T> wwxz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(3), at(0), at(2)); }
-[[nodiscard]] Array<T> wwxw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(3), at(0), at(3)); }
-[[nodiscard]] Array<T> wwyx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(3), at(1), at(0)); }
-[[nodiscard]] Array<T> wwyy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(3), at(1), at(1)); }
-[[nodiscard]] Array<T> wwyz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(3), at(1), at(2)); }
-[[nodiscard]] Array<T> wwyw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(3), at(1), at(3)); }
-[[nodiscard]] Array<T> wwzx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(3), at(2), at(0)); }
-[[nodiscard]] Array<T> wwzy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(3), at(2), at(1)); }
-[[nodiscard]] Array<T> wwzz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(3), at(2), at(2)); }
-[[nodiscard]] Array<T> wwzw() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(3), at(2), at(3)); }
-[[nodiscard]] Array<T> wwwx() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(3), at(3), at(0)); }
-[[nodiscard]] Array<T> wwwy() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(3), at(3), at(1)); }
-[[nodiscard]] Array<T> wwwz() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(3), at(3), at(2)); }
-[[nodiscard]] Array<T> wwww() const {  OC_ASSERT(_size >= 4); return Array<T>::create(at(3), at(3), at(3), at(3)); }
+[[nodiscard]] Array<T> xxx() const { OC_ASSERT(_size > 0); return Array<T>::create(at(0), at(0), at(0)); }
+[[nodiscard]] Array<T> xxy() const { OC_ASSERT(_size > 1); return Array<T>::create(at(0), at(0), at(1)); }
+[[nodiscard]] Array<T> xxz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(0), at(0), at(2)); }
+[[nodiscard]] Array<T> xxw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(0), at(3)); }
+[[nodiscard]] Array<T> xyx() const { OC_ASSERT(_size > 1); return Array<T>::create(at(0), at(1), at(0)); }
+[[nodiscard]] Array<T> xyy() const { OC_ASSERT(_size > 1); return Array<T>::create(at(0), at(1), at(1)); }
+[[nodiscard]] Array<T> xyz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(0), at(1), at(2)); }
+[[nodiscard]] Array<T> xyw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(1), at(3)); }
+[[nodiscard]] Array<T> xzx() const { OC_ASSERT(_size > 2); return Array<T>::create(at(0), at(2), at(0)); }
+[[nodiscard]] Array<T> xzy() const { OC_ASSERT(_size > 2); return Array<T>::create(at(0), at(2), at(1)); }
+[[nodiscard]] Array<T> xzz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(0), at(2), at(2)); }
+[[nodiscard]] Array<T> xzw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(2), at(3)); }
+[[nodiscard]] Array<T> xwx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(3), at(0)); }
+[[nodiscard]] Array<T> xwy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(3), at(1)); }
+[[nodiscard]] Array<T> xwz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(3), at(2)); }
+[[nodiscard]] Array<T> xww() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(3), at(3)); }
+[[nodiscard]] Array<T> yxx() const { OC_ASSERT(_size > 1); return Array<T>::create(at(1), at(0), at(0)); }
+[[nodiscard]] Array<T> yxy() const { OC_ASSERT(_size > 1); return Array<T>::create(at(1), at(0), at(1)); }
+[[nodiscard]] Array<T> yxz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(1), at(0), at(2)); }
+[[nodiscard]] Array<T> yxw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(0), at(3)); }
+[[nodiscard]] Array<T> yyx() const { OC_ASSERT(_size > 1); return Array<T>::create(at(1), at(1), at(0)); }
+[[nodiscard]] Array<T> yyy() const { OC_ASSERT(_size > 1); return Array<T>::create(at(1), at(1), at(1)); }
+[[nodiscard]] Array<T> yyz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(1), at(1), at(2)); }
+[[nodiscard]] Array<T> yyw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(1), at(3)); }
+[[nodiscard]] Array<T> yzx() const { OC_ASSERT(_size > 2); return Array<T>::create(at(1), at(2), at(0)); }
+[[nodiscard]] Array<T> yzy() const { OC_ASSERT(_size > 2); return Array<T>::create(at(1), at(2), at(1)); }
+[[nodiscard]] Array<T> yzz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(1), at(2), at(2)); }
+[[nodiscard]] Array<T> yzw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(2), at(3)); }
+[[nodiscard]] Array<T> ywx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(3), at(0)); }
+[[nodiscard]] Array<T> ywy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(3), at(1)); }
+[[nodiscard]] Array<T> ywz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(3), at(2)); }
+[[nodiscard]] Array<T> yww() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(3), at(3)); }
+[[nodiscard]] Array<T> zxx() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(0), at(0)); }
+[[nodiscard]] Array<T> zxy() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(0), at(1)); }
+[[nodiscard]] Array<T> zxz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(0), at(2)); }
+[[nodiscard]] Array<T> zxw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(0), at(3)); }
+[[nodiscard]] Array<T> zyx() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(1), at(0)); }
+[[nodiscard]] Array<T> zyy() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(1), at(1)); }
+[[nodiscard]] Array<T> zyz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(1), at(2)); }
+[[nodiscard]] Array<T> zyw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(1), at(3)); }
+[[nodiscard]] Array<T> zzx() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(2), at(0)); }
+[[nodiscard]] Array<T> zzy() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(2), at(1)); }
+[[nodiscard]] Array<T> zzz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(2), at(2)); }
+[[nodiscard]] Array<T> zzw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(2), at(3)); }
+[[nodiscard]] Array<T> zwx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(3), at(0)); }
+[[nodiscard]] Array<T> zwy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(3), at(1)); }
+[[nodiscard]] Array<T> zwz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(3), at(2)); }
+[[nodiscard]] Array<T> zww() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(3), at(3)); }
+[[nodiscard]] Array<T> wxx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(0), at(0)); }
+[[nodiscard]] Array<T> wxy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(0), at(1)); }
+[[nodiscard]] Array<T> wxz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(0), at(2)); }
+[[nodiscard]] Array<T> wxw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(0), at(3)); }
+[[nodiscard]] Array<T> wyx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(1), at(0)); }
+[[nodiscard]] Array<T> wyy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(1), at(1)); }
+[[nodiscard]] Array<T> wyz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(1), at(2)); }
+[[nodiscard]] Array<T> wyw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(1), at(3)); }
+[[nodiscard]] Array<T> wzx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(2), at(0)); }
+[[nodiscard]] Array<T> wzy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(2), at(1)); }
+[[nodiscard]] Array<T> wzz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(2), at(2)); }
+[[nodiscard]] Array<T> wzw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(2), at(3)); }
+[[nodiscard]] Array<T> wwx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(3), at(0)); }
+[[nodiscard]] Array<T> wwy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(3), at(1)); }
+[[nodiscard]] Array<T> wwz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(3), at(2)); }
+[[nodiscard]] Array<T> www() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(3), at(3)); }
+
+[[nodiscard]] Array<T> xxxx() const { OC_ASSERT(_size > 0); return Array<T>::create(at(0), at(0), at(0), at(0)); }
+[[nodiscard]] Array<T> xxxy() const { OC_ASSERT(_size > 1); return Array<T>::create(at(0), at(0), at(0), at(1)); }
+[[nodiscard]] Array<T> xxxz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(0), at(0), at(0), at(2)); }
+[[nodiscard]] Array<T> xxxw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(0), at(0), at(3)); }
+[[nodiscard]] Array<T> xxyx() const { OC_ASSERT(_size > 1); return Array<T>::create(at(0), at(0), at(1), at(0)); }
+[[nodiscard]] Array<T> xxyy() const { OC_ASSERT(_size > 1); return Array<T>::create(at(0), at(0), at(1), at(1)); }
+[[nodiscard]] Array<T> xxyz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(0), at(0), at(1), at(2)); }
+[[nodiscard]] Array<T> xxyw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(0), at(1), at(3)); }
+[[nodiscard]] Array<T> xxzx() const { OC_ASSERT(_size > 2); return Array<T>::create(at(0), at(0), at(2), at(0)); }
+[[nodiscard]] Array<T> xxzy() const { OC_ASSERT(_size > 2); return Array<T>::create(at(0), at(0), at(2), at(1)); }
+[[nodiscard]] Array<T> xxzz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(0), at(0), at(2), at(2)); }
+[[nodiscard]] Array<T> xxzw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(0), at(2), at(3)); }
+[[nodiscard]] Array<T> xxwx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(0), at(3), at(0)); }
+[[nodiscard]] Array<T> xxwy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(0), at(3), at(1)); }
+[[nodiscard]] Array<T> xxwz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(0), at(3), at(2)); }
+[[nodiscard]] Array<T> xxww() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(0), at(3), at(3)); }
+[[nodiscard]] Array<T> xyxx() const { OC_ASSERT(_size > 1); return Array<T>::create(at(0), at(1), at(0), at(0)); }
+[[nodiscard]] Array<T> xyxy() const { OC_ASSERT(_size > 1); return Array<T>::create(at(0), at(1), at(0), at(1)); }
+[[nodiscard]] Array<T> xyxz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(0), at(1), at(0), at(2)); }
+[[nodiscard]] Array<T> xyxw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(1), at(0), at(3)); }
+[[nodiscard]] Array<T> xyyx() const { OC_ASSERT(_size > 1); return Array<T>::create(at(0), at(1), at(1), at(0)); }
+[[nodiscard]] Array<T> xyyy() const { OC_ASSERT(_size > 1); return Array<T>::create(at(0), at(1), at(1), at(1)); }
+[[nodiscard]] Array<T> xyyz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(0), at(1), at(1), at(2)); }
+[[nodiscard]] Array<T> xyyw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(1), at(1), at(3)); }
+[[nodiscard]] Array<T> xyzx() const { OC_ASSERT(_size > 2); return Array<T>::create(at(0), at(1), at(2), at(0)); }
+[[nodiscard]] Array<T> xyzy() const { OC_ASSERT(_size > 2); return Array<T>::create(at(0), at(1), at(2), at(1)); }
+[[nodiscard]] Array<T> xyzz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(0), at(1), at(2), at(2)); }
+[[nodiscard]] Array<T> xyzw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(1), at(2), at(3)); }
+[[nodiscard]] Array<T> xywx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(1), at(3), at(0)); }
+[[nodiscard]] Array<T> xywy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(1), at(3), at(1)); }
+[[nodiscard]] Array<T> xywz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(1), at(3), at(2)); }
+[[nodiscard]] Array<T> xyww() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(1), at(3), at(3)); }
+[[nodiscard]] Array<T> xzxx() const { OC_ASSERT(_size > 2); return Array<T>::create(at(0), at(2), at(0), at(0)); }
+[[nodiscard]] Array<T> xzxy() const { OC_ASSERT(_size > 2); return Array<T>::create(at(0), at(2), at(0), at(1)); }
+[[nodiscard]] Array<T> xzxz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(0), at(2), at(0), at(2)); }
+[[nodiscard]] Array<T> xzxw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(2), at(0), at(3)); }
+[[nodiscard]] Array<T> xzyx() const { OC_ASSERT(_size > 2); return Array<T>::create(at(0), at(2), at(1), at(0)); }
+[[nodiscard]] Array<T> xzyy() const { OC_ASSERT(_size > 2); return Array<T>::create(at(0), at(2), at(1), at(1)); }
+[[nodiscard]] Array<T> xzyz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(0), at(2), at(1), at(2)); }
+[[nodiscard]] Array<T> xzyw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(2), at(1), at(3)); }
+[[nodiscard]] Array<T> xzzx() const { OC_ASSERT(_size > 2); return Array<T>::create(at(0), at(2), at(2), at(0)); }
+[[nodiscard]] Array<T> xzzy() const { OC_ASSERT(_size > 2); return Array<T>::create(at(0), at(2), at(2), at(1)); }
+[[nodiscard]] Array<T> xzzz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(0), at(2), at(2), at(2)); }
+[[nodiscard]] Array<T> xzzw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(2), at(2), at(3)); }
+[[nodiscard]] Array<T> xzwx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(2), at(3), at(0)); }
+[[nodiscard]] Array<T> xzwy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(2), at(3), at(1)); }
+[[nodiscard]] Array<T> xzwz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(2), at(3), at(2)); }
+[[nodiscard]] Array<T> xzww() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(2), at(3), at(3)); }
+[[nodiscard]] Array<T> xwxx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(3), at(0), at(0)); }
+[[nodiscard]] Array<T> xwxy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(3), at(0), at(1)); }
+[[nodiscard]] Array<T> xwxz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(3), at(0), at(2)); }
+[[nodiscard]] Array<T> xwxw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(3), at(0), at(3)); }
+[[nodiscard]] Array<T> xwyx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(3), at(1), at(0)); }
+[[nodiscard]] Array<T> xwyy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(3), at(1), at(1)); }
+[[nodiscard]] Array<T> xwyz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(3), at(1), at(2)); }
+[[nodiscard]] Array<T> xwyw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(3), at(1), at(3)); }
+[[nodiscard]] Array<T> xwzx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(3), at(2), at(0)); }
+[[nodiscard]] Array<T> xwzy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(3), at(2), at(1)); }
+[[nodiscard]] Array<T> xwzz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(3), at(2), at(2)); }
+[[nodiscard]] Array<T> xwzw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(3), at(2), at(3)); }
+[[nodiscard]] Array<T> xwwx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(3), at(3), at(0)); }
+[[nodiscard]] Array<T> xwwy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(3), at(3), at(1)); }
+[[nodiscard]] Array<T> xwwz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(3), at(3), at(2)); }
+[[nodiscard]] Array<T> xwww() const { OC_ASSERT(_size > 3); return Array<T>::create(at(0), at(3), at(3), at(3)); }
+[[nodiscard]] Array<T> yxxx() const { OC_ASSERT(_size > 1); return Array<T>::create(at(1), at(0), at(0), at(0)); }
+[[nodiscard]] Array<T> yxxy() const { OC_ASSERT(_size > 1); return Array<T>::create(at(1), at(0), at(0), at(1)); }
+[[nodiscard]] Array<T> yxxz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(1), at(0), at(0), at(2)); }
+[[nodiscard]] Array<T> yxxw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(0), at(0), at(3)); }
+[[nodiscard]] Array<T> yxyx() const { OC_ASSERT(_size > 1); return Array<T>::create(at(1), at(0), at(1), at(0)); }
+[[nodiscard]] Array<T> yxyy() const { OC_ASSERT(_size > 1); return Array<T>::create(at(1), at(0), at(1), at(1)); }
+[[nodiscard]] Array<T> yxyz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(1), at(0), at(1), at(2)); }
+[[nodiscard]] Array<T> yxyw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(0), at(1), at(3)); }
+[[nodiscard]] Array<T> yxzx() const { OC_ASSERT(_size > 2); return Array<T>::create(at(1), at(0), at(2), at(0)); }
+[[nodiscard]] Array<T> yxzy() const { OC_ASSERT(_size > 2); return Array<T>::create(at(1), at(0), at(2), at(1)); }
+[[nodiscard]] Array<T> yxzz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(1), at(0), at(2), at(2)); }
+[[nodiscard]] Array<T> yxzw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(0), at(2), at(3)); }
+[[nodiscard]] Array<T> yxwx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(0), at(3), at(0)); }
+[[nodiscard]] Array<T> yxwy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(0), at(3), at(1)); }
+[[nodiscard]] Array<T> yxwz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(0), at(3), at(2)); }
+[[nodiscard]] Array<T> yxww() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(0), at(3), at(3)); }
+[[nodiscard]] Array<T> yyxx() const { OC_ASSERT(_size > 1); return Array<T>::create(at(1), at(1), at(0), at(0)); }
+[[nodiscard]] Array<T> yyxy() const { OC_ASSERT(_size > 1); return Array<T>::create(at(1), at(1), at(0), at(1)); }
+[[nodiscard]] Array<T> yyxz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(1), at(1), at(0), at(2)); }
+[[nodiscard]] Array<T> yyxw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(1), at(0), at(3)); }
+[[nodiscard]] Array<T> yyyx() const { OC_ASSERT(_size > 1); return Array<T>::create(at(1), at(1), at(1), at(0)); }
+[[nodiscard]] Array<T> yyyy() const { OC_ASSERT(_size > 1); return Array<T>::create(at(1), at(1), at(1), at(1)); }
+[[nodiscard]] Array<T> yyyz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(1), at(1), at(1), at(2)); }
+[[nodiscard]] Array<T> yyyw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(1), at(1), at(3)); }
+[[nodiscard]] Array<T> yyzx() const { OC_ASSERT(_size > 2); return Array<T>::create(at(1), at(1), at(2), at(0)); }
+[[nodiscard]] Array<T> yyzy() const { OC_ASSERT(_size > 2); return Array<T>::create(at(1), at(1), at(2), at(1)); }
+[[nodiscard]] Array<T> yyzz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(1), at(1), at(2), at(2)); }
+[[nodiscard]] Array<T> yyzw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(1), at(2), at(3)); }
+[[nodiscard]] Array<T> yywx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(1), at(3), at(0)); }
+[[nodiscard]] Array<T> yywy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(1), at(3), at(1)); }
+[[nodiscard]] Array<T> yywz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(1), at(3), at(2)); }
+[[nodiscard]] Array<T> yyww() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(1), at(3), at(3)); }
+[[nodiscard]] Array<T> yzxx() const { OC_ASSERT(_size > 2); return Array<T>::create(at(1), at(2), at(0), at(0)); }
+[[nodiscard]] Array<T> yzxy() const { OC_ASSERT(_size > 2); return Array<T>::create(at(1), at(2), at(0), at(1)); }
+[[nodiscard]] Array<T> yzxz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(1), at(2), at(0), at(2)); }
+[[nodiscard]] Array<T> yzxw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(2), at(0), at(3)); }
+[[nodiscard]] Array<T> yzyx() const { OC_ASSERT(_size > 2); return Array<T>::create(at(1), at(2), at(1), at(0)); }
+[[nodiscard]] Array<T> yzyy() const { OC_ASSERT(_size > 2); return Array<T>::create(at(1), at(2), at(1), at(1)); }
+[[nodiscard]] Array<T> yzyz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(1), at(2), at(1), at(2)); }
+[[nodiscard]] Array<T> yzyw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(2), at(1), at(3)); }
+[[nodiscard]] Array<T> yzzx() const { OC_ASSERT(_size > 2); return Array<T>::create(at(1), at(2), at(2), at(0)); }
+[[nodiscard]] Array<T> yzzy() const { OC_ASSERT(_size > 2); return Array<T>::create(at(1), at(2), at(2), at(1)); }
+[[nodiscard]] Array<T> yzzz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(1), at(2), at(2), at(2)); }
+[[nodiscard]] Array<T> yzzw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(2), at(2), at(3)); }
+[[nodiscard]] Array<T> yzwx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(2), at(3), at(0)); }
+[[nodiscard]] Array<T> yzwy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(2), at(3), at(1)); }
+[[nodiscard]] Array<T> yzwz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(2), at(3), at(2)); }
+[[nodiscard]] Array<T> yzww() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(2), at(3), at(3)); }
+[[nodiscard]] Array<T> ywxx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(3), at(0), at(0)); }
+[[nodiscard]] Array<T> ywxy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(3), at(0), at(1)); }
+[[nodiscard]] Array<T> ywxz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(3), at(0), at(2)); }
+[[nodiscard]] Array<T> ywxw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(3), at(0), at(3)); }
+[[nodiscard]] Array<T> ywyx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(3), at(1), at(0)); }
+[[nodiscard]] Array<T> ywyy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(3), at(1), at(1)); }
+[[nodiscard]] Array<T> ywyz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(3), at(1), at(2)); }
+[[nodiscard]] Array<T> ywyw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(3), at(1), at(3)); }
+[[nodiscard]] Array<T> ywzx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(3), at(2), at(0)); }
+[[nodiscard]] Array<T> ywzy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(3), at(2), at(1)); }
+[[nodiscard]] Array<T> ywzz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(3), at(2), at(2)); }
+[[nodiscard]] Array<T> ywzw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(3), at(2), at(3)); }
+[[nodiscard]] Array<T> ywwx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(3), at(3), at(0)); }
+[[nodiscard]] Array<T> ywwy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(3), at(3), at(1)); }
+[[nodiscard]] Array<T> ywwz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(3), at(3), at(2)); }
+[[nodiscard]] Array<T> ywww() const { OC_ASSERT(_size > 3); return Array<T>::create(at(1), at(3), at(3), at(3)); }
+[[nodiscard]] Array<T> zxxx() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(0), at(0), at(0)); }
+[[nodiscard]] Array<T> zxxy() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(0), at(0), at(1)); }
+[[nodiscard]] Array<T> zxxz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(0), at(0), at(2)); }
+[[nodiscard]] Array<T> zxxw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(0), at(0), at(3)); }
+[[nodiscard]] Array<T> zxyx() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(0), at(1), at(0)); }
+[[nodiscard]] Array<T> zxyy() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(0), at(1), at(1)); }
+[[nodiscard]] Array<T> zxyz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(0), at(1), at(2)); }
+[[nodiscard]] Array<T> zxyw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(0), at(1), at(3)); }
+[[nodiscard]] Array<T> zxzx() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(0), at(2), at(0)); }
+[[nodiscard]] Array<T> zxzy() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(0), at(2), at(1)); }
+[[nodiscard]] Array<T> zxzz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(0), at(2), at(2)); }
+[[nodiscard]] Array<T> zxzw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(0), at(2), at(3)); }
+[[nodiscard]] Array<T> zxwx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(0), at(3), at(0)); }
+[[nodiscard]] Array<T> zxwy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(0), at(3), at(1)); }
+[[nodiscard]] Array<T> zxwz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(0), at(3), at(2)); }
+[[nodiscard]] Array<T> zxww() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(0), at(3), at(3)); }
+[[nodiscard]] Array<T> zyxx() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(1), at(0), at(0)); }
+[[nodiscard]] Array<T> zyxy() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(1), at(0), at(1)); }
+[[nodiscard]] Array<T> zyxz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(1), at(0), at(2)); }
+[[nodiscard]] Array<T> zyxw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(1), at(0), at(3)); }
+[[nodiscard]] Array<T> zyyx() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(1), at(1), at(0)); }
+[[nodiscard]] Array<T> zyyy() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(1), at(1), at(1)); }
+[[nodiscard]] Array<T> zyyz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(1), at(1), at(2)); }
+[[nodiscard]] Array<T> zyyw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(1), at(1), at(3)); }
+[[nodiscard]] Array<T> zyzx() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(1), at(2), at(0)); }
+[[nodiscard]] Array<T> zyzy() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(1), at(2), at(1)); }
+[[nodiscard]] Array<T> zyzz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(1), at(2), at(2)); }
+[[nodiscard]] Array<T> zyzw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(1), at(2), at(3)); }
+[[nodiscard]] Array<T> zywx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(1), at(3), at(0)); }
+[[nodiscard]] Array<T> zywy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(1), at(3), at(1)); }
+[[nodiscard]] Array<T> zywz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(1), at(3), at(2)); }
+[[nodiscard]] Array<T> zyww() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(1), at(3), at(3)); }
+[[nodiscard]] Array<T> zzxx() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(2), at(0), at(0)); }
+[[nodiscard]] Array<T> zzxy() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(2), at(0), at(1)); }
+[[nodiscard]] Array<T> zzxz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(2), at(0), at(2)); }
+[[nodiscard]] Array<T> zzxw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(2), at(0), at(3)); }
+[[nodiscard]] Array<T> zzyx() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(2), at(1), at(0)); }
+[[nodiscard]] Array<T> zzyy() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(2), at(1), at(1)); }
+[[nodiscard]] Array<T> zzyz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(2), at(1), at(2)); }
+[[nodiscard]] Array<T> zzyw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(2), at(1), at(3)); }
+[[nodiscard]] Array<T> zzzx() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(2), at(2), at(0)); }
+[[nodiscard]] Array<T> zzzy() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(2), at(2), at(1)); }
+[[nodiscard]] Array<T> zzzz() const { OC_ASSERT(_size > 2); return Array<T>::create(at(2), at(2), at(2), at(2)); }
+[[nodiscard]] Array<T> zzzw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(2), at(2), at(3)); }
+[[nodiscard]] Array<T> zzwx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(2), at(3), at(0)); }
+[[nodiscard]] Array<T> zzwy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(2), at(3), at(1)); }
+[[nodiscard]] Array<T> zzwz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(2), at(3), at(2)); }
+[[nodiscard]] Array<T> zzww() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(2), at(3), at(3)); }
+[[nodiscard]] Array<T> zwxx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(3), at(0), at(0)); }
+[[nodiscard]] Array<T> zwxy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(3), at(0), at(1)); }
+[[nodiscard]] Array<T> zwxz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(3), at(0), at(2)); }
+[[nodiscard]] Array<T> zwxw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(3), at(0), at(3)); }
+[[nodiscard]] Array<T> zwyx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(3), at(1), at(0)); }
+[[nodiscard]] Array<T> zwyy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(3), at(1), at(1)); }
+[[nodiscard]] Array<T> zwyz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(3), at(1), at(2)); }
+[[nodiscard]] Array<T> zwyw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(3), at(1), at(3)); }
+[[nodiscard]] Array<T> zwzx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(3), at(2), at(0)); }
+[[nodiscard]] Array<T> zwzy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(3), at(2), at(1)); }
+[[nodiscard]] Array<T> zwzz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(3), at(2), at(2)); }
+[[nodiscard]] Array<T> zwzw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(3), at(2), at(3)); }
+[[nodiscard]] Array<T> zwwx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(3), at(3), at(0)); }
+[[nodiscard]] Array<T> zwwy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(3), at(3), at(1)); }
+[[nodiscard]] Array<T> zwwz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(3), at(3), at(2)); }
+[[nodiscard]] Array<T> zwww() const { OC_ASSERT(_size > 3); return Array<T>::create(at(2), at(3), at(3), at(3)); }
+[[nodiscard]] Array<T> wxxx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(0), at(0), at(0)); }
+[[nodiscard]] Array<T> wxxy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(0), at(0), at(1)); }
+[[nodiscard]] Array<T> wxxz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(0), at(0), at(2)); }
+[[nodiscard]] Array<T> wxxw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(0), at(0), at(3)); }
+[[nodiscard]] Array<T> wxyx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(0), at(1), at(0)); }
+[[nodiscard]] Array<T> wxyy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(0), at(1), at(1)); }
+[[nodiscard]] Array<T> wxyz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(0), at(1), at(2)); }
+[[nodiscard]] Array<T> wxyw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(0), at(1), at(3)); }
+[[nodiscard]] Array<T> wxzx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(0), at(2), at(0)); }
+[[nodiscard]] Array<T> wxzy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(0), at(2), at(1)); }
+[[nodiscard]] Array<T> wxzz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(0), at(2), at(2)); }
+[[nodiscard]] Array<T> wxzw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(0), at(2), at(3)); }
+[[nodiscard]] Array<T> wxwx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(0), at(3), at(0)); }
+[[nodiscard]] Array<T> wxwy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(0), at(3), at(1)); }
+[[nodiscard]] Array<T> wxwz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(0), at(3), at(2)); }
+[[nodiscard]] Array<T> wxww() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(0), at(3), at(3)); }
+[[nodiscard]] Array<T> wyxx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(1), at(0), at(0)); }
+[[nodiscard]] Array<T> wyxy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(1), at(0), at(1)); }
+[[nodiscard]] Array<T> wyxz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(1), at(0), at(2)); }
+[[nodiscard]] Array<T> wyxw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(1), at(0), at(3)); }
+[[nodiscard]] Array<T> wyyx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(1), at(1), at(0)); }
+[[nodiscard]] Array<T> wyyy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(1), at(1), at(1)); }
+[[nodiscard]] Array<T> wyyz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(1), at(1), at(2)); }
+[[nodiscard]] Array<T> wyyw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(1), at(1), at(3)); }
+[[nodiscard]] Array<T> wyzx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(1), at(2), at(0)); }
+[[nodiscard]] Array<T> wyzy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(1), at(2), at(1)); }
+[[nodiscard]] Array<T> wyzz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(1), at(2), at(2)); }
+[[nodiscard]] Array<T> wyzw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(1), at(2), at(3)); }
+[[nodiscard]] Array<T> wywx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(1), at(3), at(0)); }
+[[nodiscard]] Array<T> wywy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(1), at(3), at(1)); }
+[[nodiscard]] Array<T> wywz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(1), at(3), at(2)); }
+[[nodiscard]] Array<T> wyww() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(1), at(3), at(3)); }
+[[nodiscard]] Array<T> wzxx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(2), at(0), at(0)); }
+[[nodiscard]] Array<T> wzxy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(2), at(0), at(1)); }
+[[nodiscard]] Array<T> wzxz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(2), at(0), at(2)); }
+[[nodiscard]] Array<T> wzxw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(2), at(0), at(3)); }
+[[nodiscard]] Array<T> wzyx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(2), at(1), at(0)); }
+[[nodiscard]] Array<T> wzyy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(2), at(1), at(1)); }
+[[nodiscard]] Array<T> wzyz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(2), at(1), at(2)); }
+[[nodiscard]] Array<T> wzyw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(2), at(1), at(3)); }
+[[nodiscard]] Array<T> wzzx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(2), at(2), at(0)); }
+[[nodiscard]] Array<T> wzzy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(2), at(2), at(1)); }
+[[nodiscard]] Array<T> wzzz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(2), at(2), at(2)); }
+[[nodiscard]] Array<T> wzzw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(2), at(2), at(3)); }
+[[nodiscard]] Array<T> wzwx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(2), at(3), at(0)); }
+[[nodiscard]] Array<T> wzwy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(2), at(3), at(1)); }
+[[nodiscard]] Array<T> wzwz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(2), at(3), at(2)); }
+[[nodiscard]] Array<T> wzww() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(2), at(3), at(3)); }
+[[nodiscard]] Array<T> wwxx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(3), at(0), at(0)); }
+[[nodiscard]] Array<T> wwxy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(3), at(0), at(1)); }
+[[nodiscard]] Array<T> wwxz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(3), at(0), at(2)); }
+[[nodiscard]] Array<T> wwxw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(3), at(0), at(3)); }
+[[nodiscard]] Array<T> wwyx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(3), at(1), at(0)); }
+[[nodiscard]] Array<T> wwyy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(3), at(1), at(1)); }
+[[nodiscard]] Array<T> wwyz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(3), at(1), at(2)); }
+[[nodiscard]] Array<T> wwyw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(3), at(1), at(3)); }
+[[nodiscard]] Array<T> wwzx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(3), at(2), at(0)); }
+[[nodiscard]] Array<T> wwzy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(3), at(2), at(1)); }
+[[nodiscard]] Array<T> wwzz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(3), at(2), at(2)); }
+[[nodiscard]] Array<T> wwzw() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(3), at(2), at(3)); }
+[[nodiscard]] Array<T> wwwx() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(3), at(3), at(0)); }
+[[nodiscard]] Array<T> wwwy() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(3), at(3), at(1)); }
+[[nodiscard]] Array<T> wwwz() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(3), at(3), at(2)); }
+[[nodiscard]] Array<T> wwww() const { OC_ASSERT(_size > 3); return Array<T>::create(at(3), at(3), at(3), at(3)); }
