@@ -113,9 +113,9 @@ int main(int argc, char *argv[]) {
                         ResourceArrayVar ba) {
         Var<Ray> r = make_ray(Var(float3(0,0.1, -5)), float3(0,0,1));
         Var hit= accel.trace_closest(r);
-        Array<float> arr = Array<float>::create(1.f, 2.f);
+        Array<float> arr = Array<float>::create(1.f, 2.f, 3.f, 4.f);
         arr *= arr;
-        prints("{} {}", arr.to_vec2());
+        prints("{} {} {} {}", arr.wzyx().to_vec4());
 //        Float3 pos = r->direction();
 //        Float4 pix = img.read<float4>(200,150);
 //        Float2 uv = make_float2(0.7f);

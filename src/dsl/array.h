@@ -91,6 +91,14 @@ public:
     [[nodiscard]] Var<Vector<T, 3>> to_vec3() const noexcept { return to_vec<3>(); }
     [[nodiscard]] Var<Vector<T, 4>> to_vec4() const noexcept { return to_vec<4>(); }
 
+    template<typename Index>
+    requires concepts::integral<expr_value_t<Index>>
+    [[nodiscard]] decltype(auto) at(Index &&index) const noexcept {
+        return (*this)[OC_FORWARD(index)];
+    }
+
+#include "swizzle_inl/array_swizzle.inl.h"
+
     Array &operator=(const Array &rhs) noexcept {
         if (&rhs != this) [[likely]] {
             OC_ASSERT(_size == rhs._size);
