@@ -43,7 +43,7 @@ public:
 
     template<typename Output, typename U, typename V>
     requires(is_all_floating_point_expr_v<U, V>)
-    [[nodiscard]] auto sample(const U &u, const V &v) const noexcept {
+        [[nodiscard]] auto sample(const U &u, const V &v) const noexcept {
         return make_expr<RHITexture>(expression()).sample<Output>(u, v);
     }
 
@@ -53,9 +53,21 @@ public:
         return sample<Output>(uv.x, uv.y);
     }
 
+    template<typename U, typename V>
+    requires(is_all_floating_point_expr_v<U, V>)
+        [[nodiscard]] auto sample(uint channel_num, const U &u, const V &v) const noexcept {
+        return make_expr<RHITexture>(expression()).sample(channel_num, u, v);
+    }
+
+    template<typename UV>
+    requires(is_float_vector2_v<expr_value_t<UV>>)
+        OC_NODISCARD auto sample(uint channel_num, const UV &uv) const noexcept {
+        return sample(channel_num, uv.x, uv.y);
+    }
+
     template<typename Target, typename X, typename Y>
     requires(is_all_integral_expr_v<X, Y>)
-    OC_NODISCARD auto read(const X &x, const Y &y) const noexcept {
+        OC_NODISCARD auto read(const X &x, const Y &y) const noexcept {
         return make_expr<RHITexture>(expression()).read<Target>(x, y);
     }
 

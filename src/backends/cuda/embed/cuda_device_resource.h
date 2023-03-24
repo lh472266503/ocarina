@@ -78,7 +78,7 @@ __device__ oc_array<float, N> _oc_tex_sample_float(cudaTextureObject_t texture, 
         auto ret = tex3D<float4>(texture, u, v, w);
         return {ret.x, ret.y, ret.z, ret.w};
     }
-    return T{};
+    return {};
 }
 
 template<oc_uint N>
