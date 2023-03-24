@@ -48,6 +48,9 @@ uint64_t MemberExpr::_compute_hash() const noexcept {
 uint64_t CallExpr::_compute_hash() const noexcept {
     uint64_t ret = _function ? _function->hash() : Hash64::default_seed;
     ret = hash64(_call_op, ret);
+    for (int i = 0; i < _template_args.size(); ++i) {
+        ret = hash64(ret, _template_args[i]);
+    }
     for (const auto &arg : _arguments) {
         ret = hash64(ret, arg->hash());
     }

@@ -65,7 +65,8 @@ public:
             auto x = s;
             return detail::xxh3_hash64(&x, sizeof(x), _seed);
         } else {
-            static_assert(always_false_v<T>);
+            auto data = OC_FORWARD(s);
+            return detail::xxh3_hash64(&data, sizeof(s), _seed);
         }
     }
 };
