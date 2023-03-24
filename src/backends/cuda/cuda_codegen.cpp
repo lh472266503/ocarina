@@ -95,9 +95,9 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
             break;
         }
         case CallOp::RESOURCE_ARRAY_TEX_SAMPLE: {
-            current_scratch() << "oc_resource_array_tex_sample<";
-            _emit_type_name(expr->type());
-            current_scratch() << ">";
+            auto t_args = expr->template_args();
+            uint N = std::get<uint>(t_args[0]);
+            current_scratch() << "oc_resource_array_tex_sample<" << N << ">";
             break;
         }
         case CallOp::UNREACHABLE: current_scratch() << "__builtin_unreachable"; break;

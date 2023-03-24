@@ -177,4 +177,40 @@ const noexcept {
 
 }// namespace detail
 
+template<typename U, typename V>
+requires(is_all_floating_point_expr_v<U, V>)
+    Array<float> ResourceArrayTexture::sample(uint channel_num, const U &u, const V &v)
+const noexcept {
+    const CallExpr *expr = Function::current()->call_builtin(Array<float>::type(channel_num),
+                                                             CallOp::RESOURCE_ARRAY_TEX_SAMPLE,
+                                                             {_array, _index, OC_EXPR(u), OC_EXPR(v)},
+                                                             {channel_num});
+    return Array<float>(channel_num, expr);
+}
+
+template<typename U, typename V, typename W>
+requires(is_all_floating_point_expr_v<U, V, W>)
+    Array<float> ResourceArrayTexture::sample(uint channel_num, const U &u, const V &v, const W &w)
+const noexcept {
+    const CallExpr *expr = Function::current()->call_builtin(Array<float>::type(channel_num),
+                                                             CallOp::RESOURCE_ARRAY_TEX_SAMPLE,
+                                                             {_array, _index, OC_EXPR(u), OC_EXPR(v), OC_EXPR(w)},
+                                                             {channel_num});
+    return Array<float>(channel_num, expr);
+}
+
+template<typename UVW>
+requires(is_float_vector3_v<expr_value_t<UVW>>)
+    Array<float> ResourceArrayTexture::sample(uint channel_num, const UVW &uvw)
+const noexcept {
+    return sample(channel_num, uvw.x, uvw.y, uvw.z);
+}
+
+template<typename UV>
+requires(is_float_vector2_v<expr_value_t<UV>>)
+    Array<float> ResourceArrayTexture::sample(uint channel_num, const UV &uv)
+const noexcept {
+    return sample(channel_num, uv.x, uv.y);
+}
+
 }// namespace ocarina
