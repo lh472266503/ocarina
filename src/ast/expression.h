@@ -245,7 +245,7 @@ public:
 
 class OC_AST_API CallExpr : public Expression {
 public:
-    using Template = std::variant<const Type *>;
+    using Template = std::variant<const Type *, uint>;
 
 private:
     ocarina::vector<const Expression *> _arguments;

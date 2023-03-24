@@ -13,6 +13,9 @@
 
 namespace ocarina {
 
+template<typename T>
+class Array;
+
 namespace detail {
 template<typename Lhs, typename Rhs>
 inline void assign(Lhs &&lhs, Rhs &&rhs) noexcept;// implement in syntax.h
@@ -36,7 +39,7 @@ class Ray;
 namespace detail {
 
 template<typename T>
-[[nodiscard]] decltype(auto) extract_expression(T &&v) noexcept;
+[[nodiscard]] decltype(auto) extract_expression(T &&v) noexcept;// implement in dsl/expr.h
 
 #define OC_EXPR(arg) ocarina::detail::extract_expression(OC_FORWARD(arg))
 
@@ -161,6 +164,30 @@ struct EnableTextureReadAndWrite {
 
 template<typename T>
 struct EnableTextureSample {
+
+    template<typename U, typename V>
+    requires(is_all_floating_point_expr_v<U, V>)
+        OC_NODISCARD Array<float> sample(uint channel_num, const U &u, const V &v)
+    const noexcept;// implement in dsl/array.h
+
+    template<typename U, typename V, typename W>
+    requires(is_all_floating_point_expr_v<U, V, W>)
+        OC_NODISCARD Array<float> sample(uint channel_num, const U &u, const V &v, const W &w)
+    const noexcept;// implement in dsl/array.h
+
+    template<typename UVW>
+    requires(is_float_vector3_v<expr_value_t<UVW>>)
+        OC_NODISCARD Array<float> sample(uint channel_num, const UVW &uvw)
+    const noexcept {
+        return sample(channel_num, uvw.x, uvw.y, uvw.z);
+    }
+
+    template<typename UV>
+    requires(is_float_vector2_v<expr_value_t<UV>>)
+        OC_NODISCARD Array<float> sample(uint channel_num, const UV &uv)
+    const noexcept {
+        return sample(channel_num, uv.x, uv.y);
+    }
 
     template<typename Output, typename U, typename V>
     requires(is_all_floating_point_expr_v<U, V>)
