@@ -390,6 +390,28 @@ public:
     }
 };
 
+class ResourceArrayMixBuffer {
+private:
+    const Expression *_array{nullptr};
+    /// offset in byte
+    const Expression *_index{nullptr};
+
+public:
+    ResourceArrayMixBuffer(const Expression *array, const Expression *index) noexcept
+        : _array{array}, _index{index} {}
+
+    template<typename T, typename Offset>
+    requires concepts::integral<expr_value_t<Offset>>
+    [[nodiscard]] Var<T> read(Offset &&offset) const noexcept {
+        const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::RESOURCE_ARRAY_MIX_BUFFER_READ,
+                                                                 {_array, _index, OC_EXPR(offset)});
+        return eval<T>(expr);
+    }
+
+    template<typename T, typename Offset>
+    [[nodiscard]] Array<T> read_dynamic_array(uint size, Offset &&offset) const noexcept;// implement in dsl/array.h
+};
+
 class ResourceArrayTexture {
 private:
     const Expression *_array{nullptr};
@@ -434,6 +456,12 @@ public:
     requires concepts::integral<expr_value_t<Index>>
     [[nodiscard]] ResourceArrayTexture tex(Index &&index) const noexcept {
         return ResourceArrayTexture(expression(), OC_EXPR(index));
+    }
+
+    template<typename Index>
+    requires concepts::integral<expr_value_t<Index>>
+    [[nodiscard]] ResourceArrayMixBuffer mix(Index &&index) const noexcept {
+        return ResourceArrayMixBuffer(expression(), OC_EXPR(index));
     }
 
     OC_COMPUTABLE_COMMON(Computable<ResourceArray>)

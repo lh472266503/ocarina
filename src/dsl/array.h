@@ -192,6 +192,14 @@ const noexcept {
 
 }// namespace detail
 
+template<typename T, typename Offset>
+[[nodiscard]] Array<T> ResourceArrayMixBuffer::read_dynamic_array(uint size, Offset &&offset) const noexcept {
+    const CallExpr *expr = Function::current()->call_builtin(Array<T>::type(size),
+                                                             CallOp::RESOURCE_ARRAY_MIX_BUFFER_READ,
+                                                             {_array, _index, OC_EXPR(offset)});
+    return eval<T>(expr);
+}
+
 template<typename U, typename V>
 requires(is_all_floating_point_expr_v<U, V>)
     Array<float> ResourceArrayTexture::sample(uint channel_num, const U &u, const V &v)

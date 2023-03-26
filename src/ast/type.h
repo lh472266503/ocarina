@@ -158,7 +158,7 @@ struct struct_member_tuple<Matrix<N>> {
         using offset = std::index_sequence<MAP_LIST(OC_TYPE_OFFSET_OF, ##__VA_ARGS__)>;           \
         static_assert(is_valid_reflection_v<this_type, type, offset>,                             \
                       "may be order of members is wrong!");                                       \
-                                                                                                  \
+        static_assert(sizeof(this_type) >= 4);                                                    \
         static constexpr auto member_index(ocarina::string_view name) {                           \
             constexpr string_view members[] = {MAP_LIST(OC_STRINGIFY, __VA_ARGS__)};              \
             return std::find(std::begin(members), std::end(members), name) - std::begin(members); \
