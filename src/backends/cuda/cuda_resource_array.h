@@ -18,6 +18,7 @@ private:
     CUDADevice *_device{};
     Managed<CUdeviceptr> _buffers;
     Managed<CUtexObject> _textures;
+    Managed<CUdeviceptr> _mix_buffers;
 
 public:
     explicit CUDAResourceArray(CUDADevice *device);
@@ -37,8 +38,10 @@ public:
     void remove_texture(handle_ty index) noexcept override;
     [[nodiscard]] BufferUploadCommand *upload_buffer_handles() const noexcept override;
     [[nodiscard]] BufferUploadCommand *upload_texture_handles() const noexcept override;
+    [[nodiscard]] BufferUploadCommand *upload_mix_buffer_handles() const noexcept override;
     [[nodiscard]] BufferUploadCommand *upload_buffer_handles_sync() const noexcept override;
     [[nodiscard]] BufferUploadCommand *upload_texture_handles_sync() const noexcept override;
+    [[nodiscard]] BufferUploadCommand *upload_mix_buffer_handles_sync() const noexcept override;
 };
 
 }// namespace ocarina

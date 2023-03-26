@@ -267,6 +267,7 @@ class TypeRegistry;
 struct SlotSOA {
     handle_ty buffer_slot;
     handle_ty tex_slot;
+    handle_ty mix_buffer_slot;
 };
 
 struct OCTexture {

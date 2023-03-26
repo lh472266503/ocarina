@@ -25,8 +25,10 @@ size_t CUDAResourceArray::emplace_texture(handle_ty handle) noexcept {
 void CUDAResourceArray::prepare_slotSOA(Device &device) noexcept {
     _buffers.reset_device_buffer(device);
     _textures.reset_device_buffer(device);
+    _mix_buffers.reset_device_buffer(device);
     _slot_soa.buffer_slot = _buffers.head();
     _slot_soa.tex_slot = _textures.head();
+    _slot_soa.mix_buffer_slot = _mix_buffers.head();
 }
 
 namespace detail {
@@ -60,12 +62,20 @@ BufferUploadCommand *CUDAResourceArray::upload_buffer_handles() const noexcept {
     return _buffers.upload();
 }
 
+BufferUploadCommand *CUDAResourceArray::upload_mix_buffer_handles() const noexcept {
+    return _mix_buffers.upload();
+}
+
 BufferUploadCommand *CUDAResourceArray::upload_buffer_handles_sync() const noexcept {
     return _buffers.upload_sync();
 }
 
 BufferUploadCommand *CUDAResourceArray::upload_texture_handles_sync() const noexcept {
     return _textures.upload_sync();
+}
+
+BufferUploadCommand *CUDAResourceArray::upload_mix_buffer_handles_sync() const noexcept {
+    return _mix_buffers.upload_sync();
 }
 
 }// namespace ocarina

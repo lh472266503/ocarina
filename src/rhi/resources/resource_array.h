@@ -22,8 +22,10 @@ public:
         virtual void remove_texture(handle_ty index) noexcept = 0;
         [[nodiscard]] virtual BufferUploadCommand *upload_buffer_handles() const noexcept = 0;
         [[nodiscard]] virtual BufferUploadCommand *upload_texture_handles() const noexcept = 0;
+        [[nodiscard]] virtual BufferUploadCommand *upload_mix_buffer_handles() const noexcept = 0;
         [[nodiscard]] virtual BufferUploadCommand *upload_buffer_handles_sync() const noexcept = 0;
         [[nodiscard]] virtual BufferUploadCommand *upload_texture_handles_sync() const noexcept = 0;
+        [[nodiscard]] virtual BufferUploadCommand *upload_mix_buffer_handles_sync() const noexcept = 0;
         virtual void prepare_slotSOA(Device &device) noexcept = 0;
 
         /// for device side structure
@@ -56,8 +58,10 @@ public:
     void remove_texture(handle_ty index) noexcept;
     [[nodiscard]] BufferUploadCommand *upload_buffer_handles() noexcept;
     [[nodiscard]] BufferUploadCommand *upload_texture_handles() noexcept;
+    [[nodiscard]] BufferUploadCommand *upload_mix_buffer_handles() noexcept;
     [[nodiscard]] BufferUploadCommand *upload_buffer_handles_sync() noexcept;
     [[nodiscard]] BufferUploadCommand *upload_texture_handles_sync() noexcept;
+    [[nodiscard]] BufferUploadCommand *upload_mix_buffer_handles_sync() noexcept;
 
     /// for dsl
     [[nodiscard]] const Expression *expression() const noexcept override {

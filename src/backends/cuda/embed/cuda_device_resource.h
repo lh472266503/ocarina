@@ -25,6 +25,7 @@ struct OCTexture {
 struct OCResourceArray {
     void **buffer_slot{};
     cudaTextureObject_t *tex_slot{};
+    void **mix_buffer_slot{};
 };
 
 template<typename A, typename B>
@@ -92,6 +93,13 @@ __device__ T oc_resource_array_buffer_read(OCResourceArray resource_array, oc_ui
     return buffer[index];
 }
 
+
+template<typename T>
+__device__ T oc_resource_array_mix_buffer_read(OCResourceArray resource_array, oc_uint mix_buffer_index, oc_uint offset) noexcept {
+    const char *buffer = reinterpret_cast<char *>(resource_array.mix_buffer_slot[mix_buffer_index]);
+    return *reinterpret_cast<T *>(&buffer[offset]);
+}
+
 template<typename T>
 __device__ void oc_resource_array_buffer_write(OCResourceArray resource_array, oc_uint buffer_index, 
                                                 oc_uint index, const T& val) noexcept {
@@ -122,6 +130,7 @@ __device__ oc_array<float, N> oc_resource_array_tex_sample(OCResourceArray resou
     cudaTextureObject_t texture = resource_array.tex_slot[tex_index];
     return _oc_tex_sample_float<N>(texture, u, v, w);
 }
+
 
 template<typename T>
 struct oc_type {

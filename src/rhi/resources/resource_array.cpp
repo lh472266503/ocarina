@@ -31,12 +31,20 @@ BufferUploadCommand *ResourceArray::upload_texture_handles() noexcept {
     return impl()->upload_texture_handles();
 }
 
+BufferUploadCommand *ResourceArray::upload_mix_buffer_handles() noexcept {
+    return impl()->upload_mix_buffer_handles();
+}
+
 BufferUploadCommand *ResourceArray::upload_buffer_handles_sync() noexcept {
     return impl()->upload_buffer_handles_sync();
 }
 
 BufferUploadCommand *ResourceArray::upload_texture_handles_sync() noexcept {
     return impl()->upload_texture_handles_sync();
+}
+
+BufferUploadCommand *ResourceArray::upload_mix_buffer_handles_sync() noexcept {
+    return impl()->upload_mix_buffer_handles_sync();
 }
 
 }// namespace ocarina
