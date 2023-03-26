@@ -22,6 +22,12 @@ size_t CUDAResourceArray::emplace_texture(handle_ty handle) noexcept {
     return ret;
 }
 
+size_t CUDAResourceArray::emplace_mix_buffer(handle_ty handle) noexcept {
+    auto ret = _mix_buffers.host().size();
+    _mix_buffers.push_back(handle);
+    return ret;
+}
+
 void CUDAResourceArray::prepare_slotSOA(Device &device) noexcept {
     _buffers.reset_device_buffer(device);
     _textures.reset_device_buffer(device);
@@ -52,6 +58,10 @@ void CUDAResourceArray::remove_buffer(handle_ty index) noexcept {
 
 void CUDAResourceArray::remove_texture(handle_ty index) noexcept {
     detail::remove_by_index(_textures.host(), index);
+}
+
+void CUDAResourceArray::remove_mix_buffer(handle_ty index) noexcept {
+    detail::remove_by_index(_mix_buffers.host(), index);
 }
 
 BufferUploadCommand *CUDAResourceArray::upload_texture_handles() const noexcept {

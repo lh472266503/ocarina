@@ -36,6 +36,8 @@ public:
     void remove_buffer(handle_ty index) noexcept override;
     [[nodiscard]] size_t emplace_texture(handle_ty handle) noexcept override;
     void remove_texture(handle_ty index) noexcept override;
+    [[nodiscard]] size_t emplace_mix_buffer(handle_ty handle) noexcept override;
+    void remove_mix_buffer(handle_ty index) noexcept override;
     [[nodiscard]] BufferUploadCommand *upload_buffer_handles() const noexcept override;
     [[nodiscard]] BufferUploadCommand *upload_texture_handles() const noexcept override;
     [[nodiscard]] BufferUploadCommand *upload_mix_buffer_handles() const noexcept override;

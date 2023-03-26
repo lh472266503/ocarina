@@ -4,6 +4,7 @@
 
 #include "resource_array.h"
 #include "texture.h"
+#include "buffer.h"
 
 namespace ocarina {
 
@@ -15,12 +16,20 @@ size_t ResourceArray::emplace(const RHITexture &texture) noexcept {
     return impl()->emplace_texture(texture.tex_handle());
 }
 
+size_t ResourceArray::emplace(const Buffer<std::byte> &buffer) noexcept {
+    return impl()->emplace_mix_buffer(buffer.head());
+}
+
 void ResourceArray::remove_buffer(handle_ty index) noexcept {
     impl()->remove_buffer(index);
 }
 
 void ResourceArray::remove_texture(handle_ty index) noexcept {
     impl()->remove_texture(index);
+}
+
+void ResourceArray::remove_mix_buffer(handle_ty index) noexcept {
+    impl()->remove_mix_buffer(index);
 }
 
 BufferUploadCommand *ResourceArray::upload_buffer_handles() noexcept {

@@ -20,6 +20,8 @@ public:
         virtual void remove_buffer(handle_ty index) noexcept = 0;
         [[nodiscard]] virtual size_t emplace_texture(handle_ty handle) noexcept = 0;
         virtual void remove_texture(handle_ty index) noexcept = 0;
+        [[nodiscard]] virtual size_t emplace_mix_buffer(handle_ty handle) noexcept = 0;
+        virtual void remove_mix_buffer(handle_ty handle) noexcept = 0;
         [[nodiscard]] virtual BufferUploadCommand *upload_buffer_handles() const noexcept = 0;
         [[nodiscard]] virtual BufferUploadCommand *upload_texture_handles() const noexcept = 0;
         [[nodiscard]] virtual BufferUploadCommand *upload_mix_buffer_handles() const noexcept = 0;
@@ -54,8 +56,10 @@ public:
         return impl()->emplace_buffer(buffer.head());
     }
     size_t emplace(const RHITexture &texture) noexcept;
+    [[nodiscard]] size_t emplace(const Buffer<std::byte> &buffer) noexcept;
     void remove_buffer(handle_ty index) noexcept;
     void remove_texture(handle_ty index) noexcept;
+    void remove_mix_buffer(handle_ty index) noexcept;
     [[nodiscard]] BufferUploadCommand *upload_buffer_handles() noexcept;
     [[nodiscard]] BufferUploadCommand *upload_texture_handles() noexcept;
     [[nodiscard]] BufferUploadCommand *upload_mix_buffer_handles() noexcept;
