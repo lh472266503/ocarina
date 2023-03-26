@@ -87,32 +87,35 @@ public:
     }
 
     template<typename XY, typename Val>
-    requires(is_uint_vector2_v<expr_value_t<XY>>)
-    void write(const XY &xy, const Val &elm) noexcept {
+    requires(is_uint_vector2_v<expr_value_t<XY>>) void write(const XY &xy, const Val &elm) noexcept {
         write(xy.x, xy.y, elm);
     }
 
     [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
     [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(_handle); }
-    [[nodiscard]] uint3 resolution() const noexcept { return impl()->resolution(); }
+    [[nodiscard]] Impl *operator->() noexcept { return impl(); }
+    [[nodiscard]] const Impl *operator->() const noexcept { return impl(); }
     [[nodiscard]] handle_ty array_handle() const noexcept { return impl()->array_handle(); }
     [[nodiscard]] handle_ty tex_handle() const noexcept { return impl()->tex_handle(); }
     [[nodiscard]] const void *handle_ptr() const noexcept override { return impl()->handle_ptr(); }
-    [[nodiscard]] PixelStorage pixel_storage() const noexcept { return impl()->pixel_storage(); }
     [[nodiscard]] size_t data_size() const noexcept override { return impl()->data_size(); }
     [[nodiscard]] size_t data_alignment() const noexcept override { return impl()->data_alignment(); }
     [[nodiscard]] size_t max_member_size() const noexcept override { return impl()->max_member_size(); }
     [[nodiscard]] TextureUploadCommand *upload(const void *data) const noexcept {
-        return TextureUploadCommand::create(data, array_handle(), resolution(), pixel_storage(), true);
+        return TextureUploadCommand::create(data, array_handle(), impl()->resolution(),
+                                            impl()->pixel_storage(), true);
     }
     [[nodiscard]] TextureUploadCommand *upload_sync(const void *data) const noexcept {
-        return TextureUploadCommand::create(data, array_handle(), resolution(), pixel_storage(), false);
+        return TextureUploadCommand::create(data, array_handle(), impl()->resolution(),
+                                            impl()->pixel_storage(), false);
     }
     [[nodiscard]] TextureDownloadCommand *download(void *data) const noexcept {
-        return TextureDownloadCommand::create(data, array_handle(), resolution(), pixel_storage(), true);
+        return TextureDownloadCommand::create(data, array_handle(), impl()->resolution(),
+                                              impl()->pixel_storage(), true);
     }
     [[nodiscard]] TextureDownloadCommand *download_sync(void *data) const noexcept {
-        return TextureDownloadCommand::create(data, array_handle(), resolution(), pixel_storage(), false);
+        return TextureDownloadCommand::create(data, array_handle(), impl()->resolution(),
+                                              impl()->pixel_storage(), false);
     }
 
     void upload_immediately(const void *data) const noexcept {

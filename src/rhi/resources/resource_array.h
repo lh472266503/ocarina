@@ -42,6 +42,8 @@ public:
     explicit ResourceArray(Device::Impl *device);
     [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(_handle); }
     [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
+    [[nodiscard]] const Impl *operator->() const noexcept { return impl(); }
+    [[nodiscard]] Impl *operator->() noexcept { return impl(); }
     void prepare_slotSOA(Device &device) noexcept { impl()->prepare_slotSOA(device); }
 
     /// for device side structure
@@ -56,16 +58,12 @@ public:
         return impl()->emplace_buffer(buffer.head());
     }
     size_t emplace(const RHITexture &texture) noexcept;
-    [[nodiscard]] size_t emplace(const Buffer<std::byte> &buffer) noexcept;
-    void remove_buffer(handle_ty index) noexcept;
-    void remove_texture(handle_ty index) noexcept;
-    void remove_mix_buffer(handle_ty index) noexcept;
-    [[nodiscard]] BufferUploadCommand *upload_buffer_handles() noexcept;
-    [[nodiscard]] BufferUploadCommand *upload_texture_handles() noexcept;
-    [[nodiscard]] BufferUploadCommand *upload_mix_buffer_handles() noexcept;
-    [[nodiscard]] BufferUploadCommand *upload_buffer_handles_sync() noexcept;
-    [[nodiscard]] BufferUploadCommand *upload_texture_handles_sync() noexcept;
-    [[nodiscard]] BufferUploadCommand *upload_mix_buffer_handles_sync() noexcept;
+
+    template<typename T>
+    requires is_buffer_or_view_v<T>
+    [[nodiscard]] size_t emplace_mix(const T &buffer) noexcept{
+        return impl()->emplace_mix_buffer(buffer.head());
+    }
 
     /// for dsl
     [[nodiscard]] const Expression *expression() const noexcept override {

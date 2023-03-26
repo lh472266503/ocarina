@@ -135,17 +135,6 @@ public:
     /// for dsl trait
     auto operator[](int i) { return T{}; }
 
-    [[nodiscard]] const Expression *expression() const noexcept override {
-//        if constexpr (use_for_dsl) {
-//            const ArgumentBinding &uniform = Function::current()->get_uniform_var(Type::of<decltype(*this)>(),
-//                                                                                  Variable::Tag::BUFFER,
-//                                                                                  memory_block());
-//            return uniform.expression();
-//        } else {
-            return nullptr;
-//        }
-    }
-
     template<typename... Index>
     requires concepts::all_integral<expr_value_t<Index>...>
         OC_NODISCARD auto
