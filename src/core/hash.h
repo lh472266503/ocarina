@@ -84,9 +84,19 @@ template<typename... Args>
 [[nodiscard]] uint64_t hash64(Args &&...args) noexcept {
     static constexpr auto size = sizeof...(args);
     array<uint64_t, size> arr = {detail::hash64(args)...};
-    uint64_t ret = 0;
+    uint64_t ret = Hash64::default_seed;
     for (int i = 0; i < size; ++i) {
         ret = detail::hash64(arr[i], ret);
+    }
+    return ret;
+}
+
+template<typename T>
+[[nodiscard]] uint64_t hash64(const std::initializer_list<T> &lst) noexcept {
+    size_t size = lst.size();
+    uint64_t ret = Hash64::default_seed;
+    for (const T &elm : lst) {
+        ret = detail::hash64(elm, ret);
     }
     return ret;
 }
