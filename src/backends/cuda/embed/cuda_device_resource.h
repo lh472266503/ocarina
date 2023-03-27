@@ -72,10 +72,13 @@ __device__ oc_array<float, N> _oc_tex_sample_float(cudaTextureObject_t texture, 
     if constexpr (N == 1) {
         auto ret = tex3D<float>(texture, u, v, w);
         return {ret};
-    } else if constexpr(N == 2) {
+    } else if constexpr (N == 2) {
         auto ret = tex3D<float2>(texture, u, v, w);
         return {ret.x, ret.y};
-    }else if constexpr(N == 4) {
+    } else if constexpr (N == 3) {
+        auto ret = tex3D<float4>(texture, u, v, w);
+        return {ret.x, ret.y, ret.z};
+    } else if constexpr (N == 4) {
         auto ret = tex3D<float4>(texture, u, v, w);
         return {ret.x, ret.y, ret.z, ret.w};
     }
@@ -93,7 +96,6 @@ __device__ T oc_resource_array_buffer_read(OCResourceArray resource_array, oc_ui
     return buffer[index];
 }
 
-
 template<typename T>
 __device__ T oc_resource_array_mix_buffer_read(OCResourceArray resource_array, oc_uint mix_buffer_index, oc_uint offset) noexcept {
     const char *buffer = reinterpret_cast<char *>(resource_array.mix_buffer_slot[mix_buffer_index]);
@@ -101,23 +103,23 @@ __device__ T oc_resource_array_mix_buffer_read(OCResourceArray resource_array, o
 }
 
 template<typename T>
-__device__ void oc_resource_array_buffer_write(OCResourceArray resource_array, oc_uint buffer_index, 
-                                                oc_uint index, const T& val) noexcept {
+__device__ void oc_resource_array_buffer_write(OCResourceArray resource_array, oc_uint buffer_index,
+                                               oc_uint index, const T &val) noexcept {
     T *buffer = reinterpret_cast<T *>(resource_array.buffer_slot[buffer_index]);
     buffer[index] = val;
 }
 
 template<typename T>
 __device__ T oc_resource_array_tex_sample(OCResourceArray resource_array, oc_uint tex_index,
-                                    oc_float u, oc_float v, oc_float w = 0.f) noexcept {
+                                          oc_float u, oc_float v, oc_float w = 0.f) noexcept {
     cudaTextureObject_t texture = resource_array.tex_slot[tex_index];
-    if constexpr(oc_is_same_v<T, oc_float>) {
+    if constexpr (oc_is_same_v<T, oc_float>) {
         float ret = tex3D<float>(texture, u, v, w);
         return ret;
-    } else if constexpr(oc_is_same_v<T, oc_float2>) {
+    } else if constexpr (oc_is_same_v<T, oc_float2>) {
         float2 ret = tex3D<float2>(texture, u, v, w);
         return oc_make_float2(ret.x, ret.y);
-    } else if constexpr(oc_is_same_v<T, oc_float4>) {
+    } else if constexpr (oc_is_same_v<T, oc_float4>) {
         float4 ret = tex3D<float4>(texture, u, v, w);
         return oc_make_float4(ret.x, ret.y, ret.z, ret.w);
     }
@@ -126,11 +128,10 @@ __device__ T oc_resource_array_tex_sample(OCResourceArray resource_array, oc_uin
 
 template<oc_uint N>
 __device__ oc_array<float, N> oc_resource_array_tex_sample(OCResourceArray resource_array, oc_uint tex_index,
-                                    oc_float u, oc_float v, oc_float w = 0.f) noexcept {
+                                                           oc_float u, oc_float v, oc_float w = 0.f) noexcept {
     cudaTextureObject_t texture = resource_array.tex_slot[tex_index];
     return _oc_tex_sample_float<N>(texture, u, v, w);
 }
-
 
 template<typename T>
 struct oc_type {
