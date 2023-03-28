@@ -177,7 +177,7 @@ public:
 
     [[nodiscard]] Var<T> exchange(Var<T> value) noexcept {
         const Expression *expr = Function::current()->call_builtin(Type::of<T>(),
-                                                                   CallOp::ATOMIC_EXC,
+                                                                   CallOp::ATOMIC_EXCH,
                                                                    {_expression, OC_EXPR(value)});
         return eval<T>(expr);
     }

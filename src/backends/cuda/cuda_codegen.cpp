@@ -87,6 +87,7 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         case CallOp::MAKE_FLOAT2X2: OC_GEN_FUNC_NAME(make_float2x2); break;
         case CallOp::MAKE_FLOAT3X3: OC_GEN_FUNC_NAME(make_float3x3); break;
         case CallOp::MAKE_FLOAT4X4: OC_GEN_FUNC_NAME(make_float4x4); break;
+        case CallOp::ATOMIC_EXCH: OC_GEN_FUNC_NAME(atomicExch);break;
         case CallOp::RESOURCE_ARRAY_BUFFER_WRITE: OC_GEN_FUNC_NAME(resource_array_buffer_write); break;
         case CallOp::RESOURCE_ARRAY_MIX_BUFFER_READ: {
             current_scratch() << "oc_resource_array_mix_buffer_read<";

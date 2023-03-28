@@ -146,7 +146,7 @@ enum struct CallOp : uint32_t {
 
     UNREACHABLE,
 
-    ATOMIC_EXC,
+    ATOMIC_EXCH,
     ATOMIC_ADD,
     ATOMIC_SUB,
 
