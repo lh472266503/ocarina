@@ -146,6 +146,10 @@ enum struct CallOp : uint32_t {
 
     UNREACHABLE,
 
+    ATOMIC_EXC,
+    ATOMIC_ADD,
+    ATOMIC_SUB,
+
     // ray tracing
     TRACE_CLOSEST,
     TRACE_ANY,

@@ -16,6 +16,21 @@ enum struct OCPixelStorage : oc_uint {
     UNKNOWN
 };
 
+template<typename T>
+inline T oc_atomicExch(T *a, T v) noexcept {
+    return atomicExch(a, v);
+}
+
+template<typename T>
+inline T oc_atomicAdd(T *a, T v) noexcept {
+    return atomicAdd(a, v);
+}
+
+template<typename T>
+inline T oc_atomicSub(T *a, T v) noexcept {
+    return atomicAdd(a, -v);
+}
+
 struct OCTexture {
     cudaTextureObject_t texture{};
     cudaSurfaceObject_t surface{};

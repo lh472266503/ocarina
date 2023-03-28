@@ -163,6 +163,41 @@ struct EnableTextureReadAndWrite {
 };
 
 template<typename T>
+struct AtomicRef {
+private:
+    const AccessExpr *_expression{};
+
+public:
+    explicit AtomicRef(const AccessExpr *expression)
+        : _expression(expression) {}
+    AtomicRef(AtomicRef &&) noexcept = delete;
+    AtomicRef(const AtomicRef &) noexcept = delete;
+    AtomicRef &operator=(AtomicRef &&) noexcept = delete;
+    AtomicRef &operator=(const AtomicRef &) noexcept = delete;
+
+    [[nodiscard]] Var<T> exchange(Var<T> value) noexcept {
+        const Expression *expr = Function::current()->call_builtin(Type::of<T>(),
+                                                                   CallOp::ATOMIC_EXC,
+                                                                   {_expression, OC_EXPR(value)});
+        return eval<T>(expr);
+    }
+
+    [[nodiscard]] Var<T> fetch_add(Var<T> value) noexcept {
+        const Expression *expr = Function::current()->call_builtin(Type::of<T>(),
+                                                                   CallOp::ATOMIC_ADD,
+                                                                   {_expression, OC_EXPR(value)});
+        return eval<T>(expr);
+    }
+
+    [[nodiscard]] Var<T> fetch_sub(Var<T> value) noexcept {
+        const Expression *expr = Function::current()->call_builtin(Type::of<T>(),
+                                                                   CallOp::ATOMIC_SUB,
+                                                                   {_expression, OC_EXPR(value)});
+        return eval<T>(expr);
+    }
+};
+
+template<typename T>
 struct EnableTextureSample {
 
     template<typename U, typename V>
