@@ -6,4 +6,6 @@
 
 namespace ocarina {
 
+void Printer::retrieve_immediately() noexcept {
+}
 }

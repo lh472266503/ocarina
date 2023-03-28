@@ -94,6 +94,8 @@ public:
     void log_error(const string &fmt, const Args &...args) noexcept {
         _log(spdlog::level::level_enum::err, fmt, OC_FORWARD(args)...);
     }
+
+    void retrieve_immediately() noexcept;
 };
 
 }// namespace ocarina
