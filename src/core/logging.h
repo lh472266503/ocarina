@@ -16,14 +16,10 @@ namespace ocarina {
 inline namespace core {
 OC_CORE_API spdlog::logger &logger() noexcept;
 
-OC_CORE_API void log_level_verbose() noexcept;
+OC_CORE_API void log_level_debug() noexcept;
 OC_CORE_API void log_level_info() noexcept;
 OC_CORE_API void log_level_warning() noexcept;
 OC_CORE_API void log_level_error() noexcept;
-
-inline void set_log_level(spdlog::level::level_enum lvl) noexcept {
-    logger().set_level(lvl);
-}
 
 template<typename... Args>
 inline void debug(Args &&...args) noexcept {
@@ -84,9 +80,6 @@ inline void error_if_not(bool predicate, Args &&...args) {
 }// namespace ocarina::core
 
 #define OC_SOURCE_LOCATION "\n", __FILE__, ":", __LINE__
-
-#define SET_LOG_LEVEL(lv) \
-    ::ocarina::core::set_log_level(spdlog::level::level_enum::lv);
 
 #define OC_DEBUG(...) \
     ::ocarina::core::debug(__VA_ARGS__);

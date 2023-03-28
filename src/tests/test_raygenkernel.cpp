@@ -57,7 +57,7 @@ auto operator-(Array<float> arr) {
 
 int main(int argc, char *argv[]) {
 
-    log_level_verbose();
+    log_level_debug();
 
 
     fs::path path(argv[0]);

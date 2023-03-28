@@ -21,7 +21,7 @@ spdlog::logger &logger() noexcept {
     return logger;
 }
 
-void log_level_verbose() noexcept { logger().set_level(spdlog::level::debug); }
+void log_level_debug() noexcept { logger().set_level(spdlog::level::debug); }
 void log_level_info() noexcept { logger().set_level(spdlog::level::info); }
 void log_level_warning() noexcept { logger().set_level(spdlog::level::warn); }
 void log_level_error() noexcept { logger().set_level(spdlog::level::err); }
