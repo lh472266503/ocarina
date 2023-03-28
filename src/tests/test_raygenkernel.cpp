@@ -65,6 +65,7 @@ int main(int argc, char *argv[]) {
 //    context.clear_cache();
     Device device = context.create_device("cuda");
     Stream stream = device.create_stream();
+    Printer printer(device);
     auto path1 = R"(E:/work/compile/ocarina/res/test.png)";
     auto path2 = R"(E:/work/compile/ocarina/res/test.jpg)";
     auto image_io = ImageIO::load(path1, LINEAR);
@@ -124,28 +125,30 @@ int main(int argc, char *argv[]) {
         managed.device().atomic(1).fetch_sub(2);
         Var<Ray> r = make_ray(Var(float3(0, 0.1, -5)), float3(0, 0, 1));
         Var hit = accel.trace_closest(r);
-        Array<float> arr = Array<float>::create(1.f, 2.f, 3.f, 4.f);
-        arr *= arr;
-        prints("{} {} {} {}", arr.wzyx().to_vec4());
-        Float3 pos = r->direction();
-        Float4 pix = img.read<float4>(200, 150);
-        Float2 uv = make_float2(0.7f);
-        Float4 pix2 = img.sample(4, uv).to_vec4();
-        Float3 p = vert.read(1);
-        Var f2 = make_float2(Var(7.f));
-        auto t = bindless_array.buffer<array<float3, 1>>(0).read(0);
-        print("{},{}----------{} {}", hit.prim_id, hit.inst_id, hit->bary.x, hit.bary.y);
-        print("{}  {}  {}  {} {}", tri.i, f2.x, f2.y, p.x, p.y);
-        //        prints("{} {} {}", t);
-        prints("{} {} {} {}", pix2);
-        prints("{} {} {} {}", ba.tex(0).sample(4, uv).to_vec4());
-        prints("{} {} {} {}", bindless_array.tex(0).sample(4, uv).to_vec4());
+        printer.log_debug("{},  {}, {}", 1,2,3.f);
+//        Array<float> arr = Array<float>::create(1.f, 2.f, 3.f, 4.f);
+//        arr *= arr;
+//        prints("{} {} {} {}", arr.wzyx().to_vec4());
+//        Float3 pos = r->direction();
+//        Float4 pix = img.read<float4>(200, 150);
+//        Float2 uv = make_float2(0.7f);
+//        Float4 pix2 = img.sample(4, uv).to_vec4();
+//        Float3 p = vert.read(1);
+//        Var f2 = make_float2(Var(7.f));
+//        auto t = bindless_array.buffer<array<float3, 1>>(0).read(0);
+//        print("{},{}----------{} {}", hit.prim_id, hit.inst_id, hit->bary.x, hit.bary.y);
+//        print("{}  {}  {}  {} {}", tri.i, f2.x, f2.y, p.x, p.y);
+//        //        prints("{} {} {}", t);
+//        prints("{} {} {} {}", pix2);
+//        prints("{} {} {} {}", ba.tex(0).sample(4, uv).to_vec4());
+//        prints("{} {} {} {}", bindless_array.tex(0).sample(4, uv).to_vec4());
     };
     auto shader = device.compile(kernel);
     stream << shader(t_buffer, accel, image, triangle[0], bindless_array).dispatch(1);
     stream << synchronize() << commit();
 
-    managed.download_immediately();
+    printer._buffer.download_immediately();
+
 
     cout << "final " << managed.host().at(1) << endl;
 

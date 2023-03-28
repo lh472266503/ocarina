@@ -154,7 +154,7 @@ public:
         const AccessExpr *expr = Function::current()->access(Type::of<element_type>(),
                                                              uniform.expression(),
                                                              OC_EXPR(index));
-        assign(expr, OC_FORWARD(elm));
+        detail::assign(expr, OC_FORWARD(elm));
     }
 
     template<typename Index>

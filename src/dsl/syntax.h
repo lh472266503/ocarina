@@ -54,7 +54,20 @@ template<typename T>
 
 template<typename T, typename Arg>
 [[nodiscard]] inline auto cast(Arg &&arg) {
-    return arg.cast<T>();
+    if constexpr (is_dsl_v<Arg>) {
+        return arg.cast<T>();
+    } else {
+        return static_cast<T>(OC_FORWARD(arg));
+    }
+}
+
+template<typename T, typename Arg>
+[[nodiscard]] inline auto as(Arg &&arg) {
+    if constexpr (is_dsl_v<Arg>) {
+        return arg.as<T>();
+    } else {
+        return bit_cast<T>(OC_FORWARD(arg));
+    }
 }
 
 namespace detail {

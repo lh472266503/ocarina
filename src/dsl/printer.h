@@ -24,7 +24,7 @@ public:
         uint size;
     };
 
-private:
+    //private:
     bool _has_reset{};
     Managed<uint> _buffer;
     spdlog::logger _logger;
@@ -32,9 +32,19 @@ private:
     vector<Item> _items;
 
 private:
-    template<typename... Args>
-    void _log_buffer(Uint offset,const Args &...args) noexcept {
+    void _log_to_buffer(Uint offset, uint index) noexcept {}
 
+    template<typename Current, typename... Args>
+    void _log_to_buffer(Uint offset, uint index, const Current &cur, const Args &...args) noexcept {
+        using type = expr_value_t<Current>;
+        if constexpr (is_integral_v<type> || is_boolean_v<type>) {
+            _buffer.write(offset + index, cast<uint>(cur));
+        } else if constexpr (is_floating_point_v<type>) {
+            _buffer.write(offset + index, as<uint>(cur));
+        } else {
+            static_assert(always_false_v<type>, "unsupported type for printing in kernel.");
+        }
+        _log_to_buffer(offset, index + 1, args...);
     }
 
     template<typename... Args>
@@ -47,7 +57,7 @@ private:
             _buffer.write(offset, item_index);
         });
         if_(offset + count < last, [&]{
-            _log_buffer(offset + 1, OC_FORWARD(args)...);
+            _log_to_buffer(offset + 1, 0, OC_FORWARD(args)...);
         });
     }
 
@@ -56,7 +66,13 @@ public:
         : _device(device),
           _logger{logger()} {
         _buffer.device() = device.create_buffer<uint>(capacity / sizeof(uint));
-        _buffer.host().resize(capacity);
+        _buffer.host().reserve(capacity);
+        reset();
+    }
+
+    void reset() {
+        _buffer.device().clear_immediately();
+        _buffer.host().resize(_buffer.capacity(), 0);
     }
 
     template<typename... Args>
