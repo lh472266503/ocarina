@@ -175,21 +175,21 @@ public:
     AtomicRef &operator=(AtomicRef &&) noexcept = delete;
     AtomicRef &operator=(const AtomicRef &) noexcept = delete;
 
-    [[nodiscard]] Var<T> exchange(Var<T> value) noexcept {
+    Var<T> exchange(Var<T> value) noexcept {
         const Expression *expr = Function::current()->call_builtin(Type::of<T>(),
                                                                    CallOp::ATOMIC_EXCH,
                                                                    {_expression, OC_EXPR(value)});
         return eval<T>(expr);
     }
 
-    [[nodiscard]] Var<T> fetch_add(Var<T> value) noexcept {
+    Var<T> fetch_add(Var<T> value) noexcept {
         const Expression *expr = Function::current()->call_builtin(Type::of<T>(),
                                                                    CallOp::ATOMIC_ADD,
                                                                    {_expression, OC_EXPR(value)});
         return eval<T>(expr);
     }
 
-    [[nodiscard]] Var<T> fetch_sub(Var<T> value) noexcept {
+    Var<T> fetch_sub(Var<T> value) noexcept {
         const Expression *expr = Function::current()->call_builtin(Type::of<T>(),
                                                                    CallOp::ATOMIC_SUB,
                                                                    {_expression, OC_EXPR(value)});
@@ -201,8 +201,9 @@ template<typename T>
 struct BufferAsAtomicAddress {
     template<typename Index>
     requires is_integral_expr_v<Index>
-    [[nodiscard]] AtomicRef<T> atomic(Index &&index) const noexcept {
-        return AtomicRef<T>(Function::current()->access(Type::of<T>(), this->expression(), OC_FORWARD(index)));
+    [[nodiscard]] AtomicRef<T> atomic(Index &&index) noexcept {
+        static_assert(is_scalar_expr_v<T>);
+        return AtomicRef<T>(Function::current()->access(Type::of<T>(), static_cast<Computable<Buffer<T>> *>(this)->expression(), OC_EXPR(index)));
     }
 };
 

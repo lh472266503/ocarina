@@ -157,6 +157,15 @@ public:
         assign(expr, OC_FORWARD(elm));
     }
 
+    template<typename Index>
+    requires concepts::integral<expr_value_t<Index>>
+    [[nodiscard]] detail::AtomicRef<T> atomic(Index &&index) const noexcept {
+        const ArgumentBinding &uniform = Function::current()->get_uniform_var(Type::of<decltype(*this)>(),
+                                                                              Variable::Tag::BUFFER,
+                                                                              memory_block());
+        return make_expr<Buffer<T>>(uniform.expression()).atomic(OC_FORWARD(index));
+    }
+
     [[nodiscard]] size_t size() const noexcept { return _size; }
 
     template<typename... Args>
