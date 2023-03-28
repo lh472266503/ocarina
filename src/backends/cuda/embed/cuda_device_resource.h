@@ -17,18 +17,18 @@ enum struct OCPixelStorage : oc_uint {
 };
 
 template<typename T>
-inline T oc_atomicExch(T *a, T v) noexcept {
-    return atomicExch(a, v);
+inline T oc_atomicExch(T &a, T v) noexcept {
+    return atomicExch(&a, v);
 }
 
 template<typename T>
-inline T oc_atomicAdd(T *a, T v) noexcept {
-    return atomicAdd(a, v);
+inline T oc_atomicAdd(T &a, T v) noexcept {
+    return atomicAdd(&a, v);
 }
 
 template<typename T>
-inline T oc_atomicSub(T *a, T v) noexcept {
-    return atomicAdd(a, -v);
+inline T oc_atomicSub(T &a, T v) noexcept {
+    return atomicAdd(&a, -v);
 }
 
 struct OCTexture {

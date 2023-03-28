@@ -198,6 +198,15 @@ public:
 };
 
 template<typename T>
+struct BufferAsAtomicAddress {
+    template<typename Index>
+    requires is_integral_expr_v<Index>
+    [[nodiscard]] AtomicRef<T> atomic(Index &&index) const noexcept {
+        return AtomicRef<T>(Function::current()->access(Type::of<T>(), this->expression(), OC_FORWARD(index)));
+    }
+};
+
+template<typename T>
 struct EnableTextureSample {
 
     template<typename U, typename V>
@@ -346,7 +355,8 @@ struct Computable<T[N]>
 template<typename T>
 struct Computable<Buffer<T>>
     : detail::EnableReadAndWrite<Computable<Buffer<T>>>,
-      detail::EnableSubscriptAccess<Computable<Buffer<T>>> {
+      detail::EnableSubscriptAccess<Computable<Buffer<T>>>,
+      detail::BufferAsAtomicAddress<T> {
     OC_COMPUTABLE_COMMON(Computable<Buffer<T>>)
 };
 
