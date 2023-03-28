@@ -84,7 +84,7 @@ int main(int argc, char *argv[]) {
     Buffer v_buffer = device.create_buffer<float3>(vert.host().size());
     Buffer t_buffer = device.create_buffer<Triangle>(triangle.size());
 
-    Managed managed = device.create_managed<float>(100);
+    Managed managed = device.create_managed<int>(100);
     for (int i = 0; i < 100; ++i) {
         managed.push_back(i);
     }
@@ -121,7 +121,7 @@ int main(int argc, char *argv[]) {
                         Var<Triangle> tri,
                         ResourceArrayVar ba) {
         //        t_buffer.atomic()
-        Float f = managed.device().atomic(0).fetch_add(2);
+        managed.device().atomic(1).fetch_sub(2);
         Var<Ray> r = make_ray(Var(float3(0, 0.1, -5)), float3(0, 0, 1));
         Var hit = accel.trace_closest(r);
         Array<float> arr = Array<float>::create(1.f, 2.f, 3.f, 4.f);
@@ -147,7 +147,7 @@ int main(int argc, char *argv[]) {
 
     managed.download_immediately();
 
-    int aa = 0;
+    cout << "final " << managed.host().at(1) << endl;
 
     return 0;
 }
