@@ -56,6 +56,12 @@ auto operator-(Array<float> arr) {
 }
 
 int main(int argc, char *argv[]) {
+
+    log_level_verbose();
+
+    logger().error("1235  {} {}", 2, 6);
+
+    return 0;
     fs::path path(argv[0]);
     Context context(path.parent_path());
 //    context.clear_cache();

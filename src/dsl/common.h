@@ -17,3 +17,4 @@
 #include "rtx_type.h"
 #include "computable.inl"
 #include "polymorphic.h"
+#include "printer.h"

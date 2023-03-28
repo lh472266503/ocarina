@@ -16,6 +16,11 @@ namespace ocarina {
 inline namespace core {
 OC_CORE_API spdlog::logger &logger() noexcept;
 
+OC_CORE_API void log_level_verbose() noexcept;
+OC_CORE_API void log_level_info() noexcept;
+OC_CORE_API void log_level_warning() noexcept;
+OC_CORE_API void log_level_error() noexcept;
+
 inline void set_log_level(spdlog::level::level_enum lvl) noexcept {
     logger().set_level(lvl);
 }
