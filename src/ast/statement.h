@@ -194,15 +194,15 @@ public:
 
 class OC_AST_API CommentStmt : public Statement {
 private:
-    std::string_view _string;
+    std::string _string;
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
-    explicit CommentStmt(std::string_view str)
+    explicit CommentStmt(const std::string &str)
         : Statement(Tag::COMMENT), _string(str) {}
-    [[nodiscard]] std::string_view string() const noexcept { return _string; }
+    [[nodiscard]] std::string string() const noexcept { return _string; }
     OC_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 

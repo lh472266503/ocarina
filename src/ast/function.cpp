@@ -206,7 +206,7 @@ void Function::break_() noexcept {
     _create_statement<BreakStmt>();
 }
 
-void Function::comment(ocarina::string_view string) noexcept {
+void Function::comment(const ocarina::string& string) noexcept {
     _create_statement<CommentStmt>(string);
 }
 

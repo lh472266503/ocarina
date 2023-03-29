@@ -124,7 +124,7 @@ detail::IfStmtBuilder if_(Condition &&condition,
     return detail::IfStmtBuilder::create(std::forward<Condition>(condition)) / std::forward<TrueBranch>(true_branch);
 }
 
-inline void comment(ocarina::string_view str) noexcept {
+inline void comment(const ocarina::string &str) noexcept {
     Function::current()->comment(str);
 }
 

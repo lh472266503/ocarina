@@ -80,6 +80,7 @@ private:
 
     template<typename... Args>
     void _log(spdlog::level::level_enum level, const string &fmt, const Args &...args) noexcept {
+        comment("start log " + fmt);
         constexpr auto count = (0u + ... + static_cast<uint>(is_dsl_v<Args>));
         uint last = static_cast<uint>(_buffer.device().size() - 1);
         Uint offset = _buffer.atomic(last).fetch_add(count + 1);
@@ -90,6 +91,7 @@ private:
         if_(offset + count < last, [&] {
             _log_to_buffer(offset + 1, 0, OC_FORWARD(args)...);
         });
+        comment("end log " + fmt);
 
         uint dsl_counter = 0;
         // todo change to index_sequence
