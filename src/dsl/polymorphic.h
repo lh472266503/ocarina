@@ -19,14 +19,12 @@ protected:
     struct {
         map<uint64_t, uint> type_to_index;
         vector<T> lst;
-        uint type_num{0u};
 
         void set_type_index(T t) noexcept {
             t->set_type_index(obtain_index(t));
         }
 
         void clear() noexcept {
-            type_num = 0u;
             type_to_index.clear();
             lst.clear();
         }
@@ -34,7 +32,7 @@ protected:
         [[nodiscard]] uint obtain_index(T t) noexcept {
             uint64_t hash_code = t->type_hash();
             if (auto iter = type_to_index.find(hash_code); iter == type_to_index.cend()) {
-                type_to_index[hash_code] = type_num++;
+                type_to_index[hash_code] = lst.size();
                 lst.push_back(t);
             }
             return type_to_index.at(hash_code);
@@ -54,6 +52,9 @@ public:
         Super ::clear();
         _type_mgr.clear();
     }
+
+    [[nodiscard]] size_t instance_num() const noexcept { return Super::size(); }
+    [[nodiscard]] size_t type_num() const noexcept { return _type_mgr.size(); }
 
     template<typename Index>
     requires is_integral_expr_v<Index>
