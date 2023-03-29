@@ -28,6 +28,7 @@ public:
     BufferView(const Buffer<T, Dims...> &buffer);
     [[nodiscard]] handle_ty handle() const { return _handle; }
     [[nodiscard]] size_t size() const { return _size; }
+    [[nodiscard]] size_t size_in_byte() const noexcept { return _size * element_size; }
     BufferView(handle_ty handle, size_t offset, size_t size, size_t total_size)
         : _handle(handle), _offset(offset), _size(size), _total_size(total_size) {}
 
@@ -49,19 +50,19 @@ public:
     }
 
     [[nodiscard]] BufferDownloadCommand *download(void *data) const noexcept {
-        return BufferDownloadCommand::create(data, head(), _size * element_size, true);
+        return BufferDownloadCommand::create(data, head(), size_in_byte(), true);
     }
 
     [[nodiscard]] BufferDownloadCommand *download_sync(void *data) const noexcept {
-        return BufferDownloadCommand::create(data, head(), _size * element_size, false);
+        return BufferDownloadCommand::create(data, head(), size_in_byte(), false);
     }
 
     [[nodiscard]] BufferByteSetCommand *byte_set(uchar value) const noexcept {
-        return BufferByteSetCommand::create(head(), size(), value, true);
+        return BufferByteSetCommand::create(head(), size_in_byte(), value, true);
     }
 
     [[nodiscard]] BufferByteSetCommand *byte_set_sync(uchar value) const noexcept {
-        return BufferByteSetCommand::create(head(), size(), value, false);
+        return BufferByteSetCommand::create(head(), size_in_byte(), value, false);
     }
 
     [[nodiscard]] BufferByteSetCommand *clear() const noexcept {

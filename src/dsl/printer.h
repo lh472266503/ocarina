@@ -146,17 +146,17 @@ public:
 
     template<typename... Args>
     void log_info(const string &fmt, const Args &...args) noexcept {
-        _log(spdlog::level::level_enum::info, fmt, OC_FORWARD(args)...);
+        _logs(spdlog::level::level_enum::info, fmt, OC_FORWARD(args)...);
     }
 
     template<typename... Args>
     void log_warning(const string &fmt, const Args &...args) noexcept {
-        _log(spdlog::level::level_enum::warn, fmt, OC_FORWARD(args)...);
+        _logs(spdlog::level::level_enum::warn, fmt, OC_FORWARD(args)...);
     }
 
     template<typename... Args>
     void log_error(const string &fmt, const Args &...args) noexcept {
-        _log(spdlog::level::level_enum::err, fmt, OC_FORWARD(args)...);
+        _logs(spdlog::level::level_enum::err, fmt, OC_FORWARD(args)...);
     }
 
     void retrieve_immediately() noexcept;

@@ -28,4 +28,4 @@ void Printer::retrieve_immediately() noexcept {
     }
     reset();
 }
-}
+}// namespace ocarina
