@@ -46,10 +46,8 @@ public:
     };
 
 private:
-    bool _has_reset{};
     Managed<uint> _buffer;
-    spdlog::logger _logger;
-    Device &_device;
+    spdlog::logger _logger{logger()};
     vector<Item> _items;
 
 private:
@@ -125,10 +123,19 @@ private:
         _items.push_back({decode, count});
     }
 
+private:
+    Printer() = default;
+    Printer(const Printer &) = delete;
+    Printer(Printer &&) = delete;
+    Printer operator=(const Printer &) = delete;
+    Printer operator=(Printer &&) = delete;
+    static Printer * s_printer;
+
 public:
-    explicit Printer(Device &device, size_t capacity = 16_mb)
-        : _device(device),
-          _logger{logger()} {
+    [[nodiscard]] static Printer &instance() noexcept;
+    [[nodiscard]] static void destroy_instance() noexcept;
+
+    void init(Device &device, size_t capacity = 16_mb) {
         capacity /= sizeof(uint);
         _buffer.device() = device.create_buffer<uint>(capacity);
         _buffer.host().reserve(capacity);
@@ -137,7 +144,7 @@ public:
 
     void reset() {
         _buffer.device().clear_immediately();
-        _buffer.host().resize(_buffer.capacity(), 0);
+        _buffer.resize(_buffer.capacity());
     }
 
     template<typename... Args>

@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
     //    context.clear_cache();
     Device device = context.create_device("cuda");
     Stream stream = device.create_stream();
-    Printer printer(device, 64);
+    Printer::instance().init(device);
     auto path1 = R"(E:/work/compile/ocarina/res/test.png)";
     auto path2 = R"(E:/work/compile/ocarina/res/test.jpg)";
     auto image_io = ImageIO::load(path1, LINEAR);
@@ -135,7 +135,7 @@ int main(int argc, char *argv[]) {
         //        Var<Ray> r = make_ray(Var(float3(0, 0.1, -5)), float3(1.6f, 0, 1));
         //        Var hit = accel.trace_closest(r);
         Int3 f = make_int3(1, 6, 9);
-        printer.log_debug("{} {} {}", f);
+        Printer::instance().log_debug("{} {} {}", f);
 //      Int a = 1, b = 2, c = 3;
 //      printer.log_debug("--{} {} {}", a, b, c);
         //        prints("++{} {} {}", f);
@@ -163,9 +163,9 @@ int main(int argc, char *argv[]) {
     stream << shader(t_buffer, image, triangle[0], bindless_array).dispatch(3);
     stream << synchronize() << commit();
 
-    printer.retrieve_immediately();
+    Printer::instance().retrieve_immediately();
 //    cout << "sdafasdf" << endl;
-    printer.retrieve_immediately();
-
+    Printer::instance().retrieve_immediately();
+    Printer::destroy_instance();
     return 0;
 }

@@ -6,6 +6,22 @@
 
 namespace ocarina {
 
+Printer *Printer::s_printer = nullptr;
+
+Printer &Printer::instance() noexcept {
+    if (s_printer == nullptr) {
+        s_printer = new Printer();
+    }
+    return *s_printer;
+}
+
+void Printer::destroy_instance() noexcept {
+    if (s_printer) {
+        delete s_printer;
+        s_printer = nullptr;
+    }
+}
+
 void Printer::retrieve_immediately() noexcept {
     _buffer.download_immediately();
     uint length = std::min(
