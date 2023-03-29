@@ -16,6 +16,28 @@
 
 namespace ocarina {
 
+namespace detail {
+template<typename Current>
+auto args_to_tuple(const Current &cur) {
+    if constexpr (is_scalar_expr_v<Current>) {
+        return std::tuple{cur};
+    } else if constexpr (is_vector2_expr_v<Current>) {
+        return std::tuple{cur[0], cur[1]};
+    } else if constexpr (is_vector3_expr_v<Current>) {
+        return std::tuple{cur[0], cur[1], cur[2]};
+    } else if constexpr (is_vector4_expr_v<Current>) {
+        return std::tuple{cur[0], cur[1], cur[2], cur[3]};
+    } else {
+        static_assert(always_false_v<Current>);
+    }
+}
+
+template<typename Current, typename... Args>
+auto args_to_tuple(const Current &cur, const Args &...args) {
+    return std::tuple_cat(args_to_tuple(cur), args_to_tuple(args...));
+}
+}// namespace detail
+
 class Printer {
 public:
     struct Item {
@@ -49,6 +71,15 @@ private:
         _log_to_buffer(offset, index, args...);
     }
 
+    template<typename ...Args>
+    void _logs(spdlog::level::level_enum level, const string &fmt, const Args &...args) noexcept {
+        auto args_tuple = detail::args_to_tuple(args...);
+        auto func = [&]<size_t ...i>(std::index_sequence<i...> a) {
+            return _log(level, fmt, std::get<i>(args_tuple)...);
+        };
+        func(std::make_index_sequence<std::tuple_size_v<decltype(args_tuple)>>());
+    }
+
     template<typename... Args>
     void _log(spdlog::level::level_enum level, const string &fmt, const Args &...args) noexcept {
         constexpr auto count = (0u /* desc_id */ + ... + static_cast<uint>(is_dsl_v<Args>));
@@ -63,7 +94,7 @@ private:
         });
 
         uint dsl_counter = 0;
-        auto convert = [&](auto arg) noexcept {
+        auto convert = [&](const auto &arg) noexcept {
             using T = std::remove_cvref_t<decltype(arg)>;
             if constexpr (is_dsl_v<T>) {
                 return dsl_counter++;
@@ -110,7 +141,7 @@ public:
 
     template<typename... Args>
     void log_debug(const string &fmt, const Args &...args) noexcept {
-        _log(spdlog::level::level_enum::debug, fmt, OC_FORWARD(args)...);
+        _logs(spdlog::level::level_enum::debug, fmt, OC_FORWARD(args)...);
     }
 
     template<typename... Args>

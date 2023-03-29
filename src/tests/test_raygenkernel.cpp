@@ -45,7 +45,7 @@ auto get_cube(float x = 1, float y = 1, float z = 1) {
         Triangle(17, 16, 19),
         Triangle(21, 22, 23),
         Triangle(20, 21, 23),
-        };
+    };
 
     return ocarina::make_pair(vertices, triangles);
 }
@@ -55,14 +55,23 @@ auto operator-(Array<float> arr) {
     return Array<float>(arr.size(), expr);
 }
 
+//template<typename... Args>
+//void func(Args... args) {
+//    auto tp = args_to_tuple(args...);
+//
+//    int i = 0;
+//}
+
 int main(int argc, char *argv[]) {
 
+//    func(1, 2, 3, 4, 5, 6, 7, 8, 18);
+//
+//    return 0;
     log_level_debug();
-
 
     fs::path path(argv[0]);
     Context context(path.parent_path());
-//    context.clear_cache();
+    //    context.clear_cache();
     Device device = context.create_device("cuda");
     Stream stream = device.create_stream();
     Printer printer(device);
@@ -122,33 +131,36 @@ int main(int argc, char *argv[]) {
                         Var<Triangle> tri,
                         ResourceArrayVar ba) {
         //        t_buffer.atomic()
-//        managed.device().atomic(1).fetch_sub(2);
-//        Var<Ray> r = make_ray(Var(float3(0, 0.1, -5)), float3(1.6f, 0, 1));
-//        Var hit = accel.trace_closest(r);
-        Float3 f = make_float3(1,6,9);
-        printer.log_debug("{} {} {}", 1.5f,f.x,1.9f);
-        printer.log_debug("--------{} {} {}", 1.5f,f.x,1.11f);
-//        print("sdfasdasdfasdsdafsdafasdfsda{} {} {}", 1.5f,f.x,1.9f);
-//        print("------adfasdfsdafasdasasfasdfasdfasdf--{} {} {}", 1.5f,f.x,1.11f);
-//        Array<float> arr = Array<float>::create(1.f, 2.f, 3.f, 4.f);
-//        arr *= arr;
-//        prints("{} {} {} {}", arr.wzyx().to_vec4());
-//        Float3 pos = r->direction();
-//        Float4 pix = img.read<float4>(200, 150);
-//        Float2 uv = make_float2(0.7f);
-//        Float4 pix2 = img.sample(4, uv).to_vec4();
-//        Float3 p = vert.read(1);
-//        Var f2 = make_float2(Var(7.f));
-//        auto t = bindless_array.buffer<array<float3, 1>>(0).read(0);
-//        print("{},{}----------{} {}", hit.prim_id, hit.inst_id, hit->bary.x, hit.bary.y);
-//        print("{}  {}  {}  {} {}", tri.i, f2.x, f2.y, p.x, p.y);
-//        //        prints("{} {} {}", t);
-//        prints("{} {} {} {}", pix2);
-//        prints("{} {} {} {}", ba.tex(0).sample(4, uv).to_vec4());
-//        prints("{} {} {} {}", bindless_array.tex(0).sample(4, uv).to_vec4());
+        //        managed.device().atomic(1).fetch_sub(2);
+        //        Var<Ray> r = make_ray(Var(float3(0, 0.1, -5)), float3(1.6f, 0, 1));
+        //        Var hit = accel.trace_closest(r);
+        float3 f = make_float3(1, 6, 9);
+        printer.log_debug("{} {} {}", f);
+//      Int a = 1, b = 2, c = 3;
+//      printer.log_debug("--{} {} {}", a, b, c);
+        //        prints("++{} {} {}", f);
+        //        printer.log_debug("--------{} {} {}", 1.5f,f.x,1.11f);
+        //        print("sdfasdasdfasdsdafsdafasdfsda{} {} {}", 1.5f,f.x,1.9f);
+        //        print("------adfasdfsdafasdasasfasdfasdfasdf--{} {} {}", 1.5f,f.x,1.11f);
+        //        Array<float> arr = Array<float>::create(1.f, 2.f, 3.f, 4.f);
+        //        arr *= arr;
+        //        prints("{} {} {} {}", arr.wzyx().to_vec4());
+        //        Float3 pos = r->direction();
+        //        Float4 pix = img.read<float4>(200, 150);
+        //        Float2 uv = make_float2(0.7f);
+        //        Float4 pix2 = img.sample(4, uv).to_vec4();
+        //        Float3 p = vert.read(1);
+        //        Var f2 = make_float2(Var(7.f));
+        //        auto t = bindless_array.buffer<array<float3, 1>>(0).read(0);
+        //        print("{},{}----------{} {}", hit.prim_id, hit.inst_id, hit->bary.x, hit.bary.y);
+        //        print("{}  {}  {}  {} {}", tri.i, f2.x, f2.y, p.x, p.y);
+        //        //        prints("{} {} {}", t);
+        //        prints("{} {} {} {}", pix2);
+        //        prints("{} {} {} {}", ba.tex(0).sample(4, uv).to_vec4());
+        //        prints("{} {} {} {}", bindless_array.tex(0).sample(4, uv).to_vec4());
     };
     auto shader = device.compile(kernel);
-    stream << shader(t_buffer, image, triangle[0], bindless_array).dispatch(20000);
+    stream << shader(t_buffer, image, triangle[0], bindless_array).dispatch(200);
     stream << synchronize() << commit();
 
     printer.retrieve_immediately();
