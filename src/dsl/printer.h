@@ -82,7 +82,7 @@ private:
 
     template<typename... Args>
     void _log(spdlog::level::level_enum level, const string &fmt, const Args &...args) noexcept {
-        constexpr auto count = (0u /* desc_id */ + ... + static_cast<uint>(is_dsl_v<Args>));
+        constexpr auto count = (0u + ... + static_cast<uint>(is_dsl_v<Args>));
         uint last = static_cast<uint>(_buffer.device().size() - 1);
         Uint offset = _buffer.atomic(last).fetch_add(count + 1);
         uint item_index = _items.size();
@@ -94,6 +94,7 @@ private:
         });
 
         uint dsl_counter = 0;
+        // todo change to index_sequence
         auto convert = [&](const auto &arg) noexcept {
             using T = std::remove_cvref_t<decltype(arg)>;
             if constexpr (is_dsl_v<T>) {
