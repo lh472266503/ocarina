@@ -19,8 +19,9 @@ namespace ocarina {
 class Printer {
 public:
     struct Item {
-        spdlog::level::level_enum level;
-        string fmt;
+        std::function<void(const uint *)> func;
+//        spdlog::level::level_enum level;
+//        string fmt;
         uint size;
     };
 
@@ -51,21 +52,37 @@ private:
     void _log(spdlog::level::level_enum level, const string &fmt, const Args &...args) noexcept {
         static constexpr uint count = sizeof...(Args);
         uint last = static_cast<uint>(_buffer.device().size() - 1);
-        Uint offset = _buffer.atomic(last).fetch_add(count);
+        Uint offset = _buffer.atomic(last).fetch_add(count + 1);
         uint item_index = _items.size();
         if_(offset < last, [&] {
             _buffer.write(offset, item_index);
         });
-        if_(offset + count < last, [&]{
+        if_(offset + count < last, [&] {
             _log_to_buffer(offset + 1, 0, OC_FORWARD(args)...);
         });
+        auto decode = [this, level, fmt, tuple_args = std::tuple<expr_value_t<Args>...>()](const uint *data) -> void {
+            auto decode_arg = [tuple_args, data]<size_t i>() noexcept {
+                using Arg = expr_value_t<std::tuple_element_t<i, std::tuple<Args...>>>;
+                if constexpr (is_integral_v<Arg> || is_boolean_v<Arg>) {
+                    return static_cast<Arg>(data[i]);
+                } else {
+                    return bit_cast<Arg>(data[i]);
+                }
+            };
+            auto host_print = [&]<size_t ...i>(std::index_sequence<i...>) {
+                _logger.log(level, fmt, decode_arg.template operator()<i>()...);
+            };
+            host_print(std::index_sequence_for<Args...>());
+        };
+        _items.push_back({decode, count});
     }
 
 public:
     explicit Printer(Device &device, size_t capacity = 16_mb)
         : _device(device),
           _logger{logger()} {
-        _buffer.device() = device.create_buffer<uint>(capacity / sizeof(uint));
+        capacity /= sizeof(uint);
+        _buffer.device() = device.create_buffer<uint>(capacity);
         _buffer.host().reserve(capacity);
         reset();
     }
