@@ -19,13 +19,18 @@ namespace detail {
 
 template<typename T>
 concept hashable_with_hash_method = requires(T x) {
-                                        x.hash();
-                                    };
+    x.hash();
+};
+
+template<typename T>
+concept hashable_ptr_with_hash_method = requires(T x) {
+    x->hash();
+};
 
 template<typename T>
 concept hashable_with_hash_code_method = requires(T x) {
-                                             x.hash_code();
-                                         };
+    x.hash_code();
+};
 
 }// namespace detail
 
@@ -47,8 +52,8 @@ public:
     [[nodiscard]] uint64_t operator()(T &&s) const noexcept {
         if constexpr (ocarina::detail::hashable_with_hash_method<T>) {
             return (*this)(std::forward<T>(s).hash());
-        } else if constexpr (detail::hashable_with_hash_code_method<T>) {
-            return (*this)(std::forward<T>(s).hash_code());
+        } else if constexpr (detail::hashable_ptr_with_hash_method<T>) {
+            return (*this)(std::forward<T>(s)->hash());
         } else if constexpr (concepts::string_viewable<T>) {
             std::string_view sv{std::forward<T>(s)};
             return detail::xxh3_hash64(sv.data(), sv.size(), _seed);
@@ -65,7 +70,7 @@ public:
             auto x = s;
             return detail::xxh3_hash64(&x, sizeof(x), _seed);
         } else {
-            always_false_v<T>;
+            static_assert(always_false_v<T>);
             return {};
         }
     }
@@ -92,10 +97,11 @@ template<typename... Args>
 }
 
 template<typename T>
-[[nodiscard]] uint64_t hash64(const std::initializer_list<T> &lst) noexcept {
+requires concepts::iterable<T>
+[[nodiscard]] uint64_t hash64_list(T &&lst) noexcept {
     size_t size = lst.size();
     uint64_t ret = Hash64::default_seed;
-    for (const T &elm : lst) {
+    for (const auto &elm : OC_FORWARD(lst)) {
         ret = detail::hash64(elm, ret);
     }
     return ret;
