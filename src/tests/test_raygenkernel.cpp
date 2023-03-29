@@ -117,15 +117,19 @@ int main(int argc, char *argv[]) {
     };
 
     Kernel kernel = [&](const BufferVar<Triangle> t_buffer,
-                        const Var<Accel> acc,
+//                        const Var<Accel> acc,
                         const TextureVar img,
                         Var<Triangle> tri,
                         ResourceArrayVar ba) {
         //        t_buffer.atomic()
-        managed.device().atomic(1).fetch_sub(2);
-        Var<Ray> r = make_ray(Var(float3(0, 0.1, -5)), float3(1.6f, 0, 1));
-        Var hit = accel.trace_closest(r);
-        printer.log_debug("{},  {}, {}", 1,2,r->direction().x);
+//        managed.device().atomic(1).fetch_sub(2);
+//        Var<Ray> r = make_ray(Var(float3(0, 0.1, -5)), float3(1.6f, 0, 1));
+//        Var hit = accel.trace_closest(r);
+        Float3 f = make_float3(1,6,9);
+        printer.log_debug("{} {} {}", 1.5f,f.x,1.9f);
+        printer.log_debug("--------{} {} {}", 1.5f,f.x,1.11f);
+//        print("sdfasdasdfasdsdafsdafasdfsda{} {} {}", 1.5f,f.x,1.9f);
+//        print("------adfasdfsdafasdasasfasdfasdfasdf--{} {} {}", 1.5f,f.x,1.11f);
 //        Array<float> arr = Array<float>::create(1.f, 2.f, 3.f, 4.f);
 //        arr *= arr;
 //        prints("{} {} {} {}", arr.wzyx().to_vec4());
@@ -144,7 +148,7 @@ int main(int argc, char *argv[]) {
 //        prints("{} {} {} {}", bindless_array.tex(0).sample(4, uv).to_vec4());
     };
     auto shader = device.compile(kernel);
-    stream << shader(t_buffer, accel, image, triangle[0], bindless_array).dispatch(1000);
+    stream << shader(t_buffer, image, triangle[0], bindless_array).dispatch(20000);
     stream << synchronize() << commit();
 
     printer.retrieve_immediately();
