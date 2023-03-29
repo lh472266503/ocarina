@@ -144,13 +144,8 @@ int main(int argc, char *argv[]) {
 //        prints("{} {} {} {}", bindless_array.tex(0).sample(4, uv).to_vec4());
     };
     auto shader = device.compile(kernel);
-    stream << shader(t_buffer, accel, image, triangle[0], bindless_array).dispatch(10);
+    stream << shader(t_buffer, accel, image, triangle[0], bindless_array).dispatch(1000);
     stream << synchronize() << commit();
-
-    printer._buffer.download_immediately();
-
-
-    cout << "final " << managed.host().at(1) << endl;
 
     printer.retrieve_immediately();
 

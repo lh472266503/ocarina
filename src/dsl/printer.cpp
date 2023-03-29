@@ -7,6 +7,7 @@
 namespace ocarina {
 
 void Printer::retrieve_immediately() noexcept {
+    _buffer.download_immediately();
     uint length = std::min(
         static_cast<uint>(_buffer.host().size() - 1u),
         _buffer.back());
@@ -25,5 +26,6 @@ void Printer::retrieve_immediately() noexcept {
     if (truncated) [[unlikely]] {
         OC_WARNING("Kernel log truncated.");
     }
+    reset();
 }
 }

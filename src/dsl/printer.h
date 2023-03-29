@@ -20,12 +20,10 @@ class Printer {
 public:
     struct Item {
         std::function<void(const uint *)> func;
-//        spdlog::level::level_enum level;
-//        string fmt;
         uint size;
     };
 
-    //private:
+private:
     bool _has_reset{};
     Managed<uint> _buffer;
     spdlog::logger _logger;
