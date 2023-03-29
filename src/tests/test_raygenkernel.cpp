@@ -135,7 +135,7 @@ int main(int argc, char *argv[]) {
         //        Var<Ray> r = make_ray(Var(float3(0, 0.1, -5)), float3(1.6f, 0, 1));
         //        Var hit = accel.trace_closest(r);
         Int3 f = make_int3(1, 6, 9);
-        Printer::instance().log_debug("{} {} {}", f);
+        Printer::instance().warn_with_location("{} {} {}", f);
 //      Int a = 1, b = 2, c = 3;
 //      printer.log_debug("--{} {} {}", a, b, c);
         //        prints("++{} {} {}", f);
