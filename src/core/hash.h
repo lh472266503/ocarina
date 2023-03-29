@@ -127,7 +127,7 @@ public:
 
     [[nodiscard]] uint64_t type_hash() const noexcept {
         if (!_type_hash_computed) {
-            _type_hash = _compute_type_hash();
+            _type_hash = hash64(class_name(), _compute_type_hash());
             _type_hash_computed = true;
         }
         return _type_hash;
