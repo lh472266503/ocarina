@@ -94,7 +94,7 @@ int main(int argc, char *argv[]) {
     Buffer v_buffer = device.create_buffer<float3>(vert.host().size());
     Buffer t_buffer = device.create_buffer<Triangle>(triangle.size());
 
-    Managed managed = device.create_managed<int>(100);
+    Managed managed = device.create_managed<float>(100);
     for (int i = 0; i < 100; ++i) {
         managed.push_back(i);
     }
@@ -107,12 +107,16 @@ int main(int argc, char *argv[]) {
     bindless_array.emplace(image);
     auto r2 = bindless_array.emplace(v_buffer);
 
+    bindless_array.emplace_mix(managed.device());
+
     stream << vert.upload_sync();
     stream << v_buffer.upload_sync(vert.host().data());
     stream << t_buffer.upload_sync(triangle.data());
+
     bindless_array.prepare_slotSOA(device);
     stream << bindless_array->upload_buffer_handles() << synchronize();
     stream << bindless_array->upload_texture_handles() << synchronize();
+    stream << bindless_array->upload_mix_buffer_handles() << synchronize();
 
     stream << cube.build_bvh();
 
@@ -134,8 +138,8 @@ int main(int argc, char *argv[]) {
         //        managed.device().atomic(1).fetch_sub(2);
         //        Var<Ray> r = make_ray(Var(float3(0, 0.1, -5)), float3(1.6f, 0, 1));
         //        Var hit = accel.trace_closest(r);
-        Int3 f = make_int3(1, 6, 9);
-        Printer::instance().warn_with_location("{} {} {}", f);
+        Int3 f = make_int3(ba.mix(0).read<int>(19 * 4), 6, 9);
+        Printer::instance().warn_with_location("{} {} {} {} {}", f,ba.mix(0).read_dynamic_array<float>(2, 19 * 4).to_vec2());
 //      Int a = 1, b = 2, c = 3;
 //      printer.log_debug("--{} {} {}", a, b, c);
         //        prints("++{} {} {}", f);
@@ -163,6 +167,8 @@ int main(int argc, char *argv[]) {
     stream << shader(t_buffer, image, triangle[0], bindless_array).dispatch(3);
     stream << synchronize() << commit();
 
+    float tf = bit_cast<float>(19);
+    OC_WARNING_FORMAT("{}", tf);
     Printer::instance().retrieve_immediately();
 //    cout << "sdafasdf" << endl;
     Printer::instance().retrieve_immediately();

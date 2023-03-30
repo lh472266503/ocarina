@@ -197,7 +197,7 @@ template<typename T, typename Offset>
     const CallExpr *expr = Function::current()->call_builtin(Array<T>::type(size),
                                                              CallOp::RESOURCE_ARRAY_MIX_BUFFER_READ,
                                                              {_array, _index, OC_EXPR(offset)});
-    return eval<T>(expr);
+    return Array<T>(size, expr);
 }
 
 template<typename U, typename V>

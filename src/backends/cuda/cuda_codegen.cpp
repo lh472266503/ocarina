@@ -95,6 +95,7 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
             current_scratch() << "oc_resource_array_mix_buffer_read<";
             _emit_type_name(expr->type());
             current_scratch() << ">";
+            break;
         }
         case CallOp::RESOURCE_ARRAY_BUFFER_READ: {
             current_scratch() << "oc_resource_array_buffer_read<";

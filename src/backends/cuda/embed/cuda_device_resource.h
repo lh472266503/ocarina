@@ -114,7 +114,7 @@ __device__ T oc_resource_array_buffer_read(OCResourceArray resource_array, oc_ui
 template<typename T>
 __device__ T oc_resource_array_mix_buffer_read(OCResourceArray resource_array, oc_uint mix_buffer_index, oc_uint offset) noexcept {
     const char *buffer = reinterpret_cast<char *>(resource_array.mix_buffer_slot[mix_buffer_index]);
-    return *reinterpret_cast<T *>(&buffer[offset]);
+    return *reinterpret_cast<const T *>(&buffer[offset]);
 }
 
 template<typename T>
