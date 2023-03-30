@@ -12,21 +12,25 @@
 namespace ocarina {
 
 template<typename T, typename U = float>
+requires std::is_pointer_v<std::remove_cvref_t<T>>
 class Polymorphic : public vector<T> {
 public:
     using Super = vector<T>;
     using data_type = ManagedWrapper<U>;
 
 protected:
-    struct Index {
+    struct Object {
         // index of type
-        uint type_index;
+        uint type_index{};
         // Index in a list of the same type
-        uint index;
+        uint index{};
+#ifndef NDEBUG
+        string class_name;
+#endif
     };
 
     struct {
-        map<uint64_t, Index> inst_to_index;
+        map<uint64_t, Object> hash_to_object;
 
         map<uint64_t, uint> type_to_index;
         // Used to store a representative of each type
@@ -34,9 +38,12 @@ protected:
         // Each type has a managed used to store data
         vector<ManagedWrapper<U>> datas;
 
-        void set_type_index(T t) noexcept {
-            t->set_type_index(obtain_index(t));
-            
+        void add_object(T t) noexcept {
+#ifndef NDEBUG
+            hash_to_object.insert(make_pair(t->hash(), Object{obtain_index(t), 0, typeid(*t).name()}));
+#else
+            hash_to_object.insert(make_pair(t->hash(), Object{obtain_index(t), 0}));
+#endif
         }
 
         void clear() noexcept {
@@ -59,7 +66,7 @@ protected:
 
 public:
     void push_back(T arg) noexcept {
-        _type_mgr.set_type_index(arg);
+        _type_mgr.add_object(arg);
         Super::push_back(arg);
     }
 
@@ -73,6 +80,9 @@ public:
     [[nodiscard]] const data_type &type_datas() const noexcept { return _type_mgr.datas; }
     [[nodiscard]] size_t instance_num() const noexcept { return Super::size(); }
     [[nodiscard]] size_t type_num() const noexcept { return _type_mgr.size(); }
+    [[nodiscard]] uint type_index(const std::remove_pointer_t<T> *object) const noexcept {
+        return _type_mgr.hash_to_object.at(object->hash()).type_index;
+    }
 
     template<typename Index>
     requires is_integral_expr_v<Index>
