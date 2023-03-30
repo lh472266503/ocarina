@@ -98,16 +98,30 @@ public:
     }
 
     template<typename Func>
-    void for_each(Func &&func) const noexcept {
+    void for_each_instance(Func &&func) const noexcept {
         for (int i = 0; i < Super::size(); ++i) {
             func(Super::at(i));
         }
     }
 
     template<typename Func>
-    void for_each(Func &&func) noexcept {
+    void for_each_instance(Func &&func) noexcept {
         for (int i = 0; i < Super::size(); ++i) {
             func(Super::at(i));
+        }
+    }
+
+    template<typename Func>
+    void for_each_type(Func &&func) const noexcept {
+        for (const auto &elm : _type_mgr.lst) {
+            func(elm);
+        }
+    }
+
+    template<typename Func>
+    void for_each_type(Func &&func) noexcept {
+        for (auto &elm : _type_mgr.lst) {
+            func(elm);
         }
     }
 };
