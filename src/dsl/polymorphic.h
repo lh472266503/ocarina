@@ -7,18 +7,21 @@
 #include "type_trait.h"
 #include "syntax.h"
 #include "core/stl.h"
+#include "rhi/managed.h"
 
 namespace ocarina {
 
-template<typename T>
+template<typename T, typename U = float>
 class Polymorphic : public vector<T> {
 public:
     using Super = vector<T>;
+    using data_type = ManagedWrapper<U>;
 
 protected:
     struct {
         map<uint64_t, uint> type_to_index;
         vector<T> lst;
+        vector<ManagedWrapper<U>> datas;
 
         void set_type_index(T t) noexcept {
             t->set_type_index(obtain_index(t));
@@ -53,6 +56,9 @@ public:
         _type_mgr.clear();
     }
 
+    void add_type_data(data_type data) noexcept { _type_mgr.datas.push_back(move(data)); }
+    [[nodiscard]] data_type &type_datas() noexcept { return _type_mgr.datas; }
+    [[nodiscard]] const data_type &type_datas() const noexcept { return _type_mgr.datas; }
     [[nodiscard]] size_t instance_num() const noexcept { return Super::size(); }
     [[nodiscard]] size_t type_num() const noexcept { return _type_mgr.size(); }
 
