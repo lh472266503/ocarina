@@ -18,31 +18,43 @@ public:
     using data_type = ManagedWrapper<U>;
 
 protected:
+    struct Index {
+        // index of type
+        uint type_index;
+        // Index in a list of the same type
+        uint index;
+    };
+
     struct {
+        map<uint64_t, Index> inst_to_index;
+
         map<uint64_t, uint> type_to_index;
-        vector<T> lst;
+        // Used to store a representative of each type
+        vector<T> representatives;
+        // Each type has a managed used to store data
         vector<ManagedWrapper<U>> datas;
 
         void set_type_index(T t) noexcept {
             t->set_type_index(obtain_index(t));
+            
         }
 
         void clear() noexcept {
             type_to_index.clear();
-            lst.clear();
+            representatives.clear();
         }
 
         [[nodiscard]] uint obtain_index(T t) noexcept {
             uint64_t hash_code = t->type_hash();
             if (auto iter = type_to_index.find(hash_code); iter == type_to_index.cend()) {
-                type_to_index[hash_code] = lst.size();
-                lst.push_back(t);
+                type_to_index[hash_code] = representatives.size();
+                representatives.push_back(t);
             }
             return type_to_index.at(hash_code);
         }
 
-        [[nodiscard]] bool empty() const noexcept { return lst.empty(); }
-        [[nodiscard]] auto size() const noexcept { return lst.size(); }
+        [[nodiscard]] bool empty() const noexcept { return representatives.empty(); }
+        [[nodiscard]] auto size() const noexcept { return representatives.size(); }
     } _type_mgr;
 
 public:
@@ -118,15 +130,15 @@ public:
     }
 
     template<typename Func>
-    void for_each_type(Func &&func) const noexcept {
-        for (const auto &elm : _type_mgr.lst) {
+    void for_each_representative(Func &&func) const noexcept {
+        for (const auto &elm : _type_mgr.representatives) {
             func(elm);
         }
     }
 
     template<typename Func>
-    void for_each_type(Func &&func) noexcept {
-        for (auto &elm : _type_mgr.lst) {
+    void for_each_representative(Func &&func) noexcept {
+        for (auto &elm : _type_mgr.representatives) {
             func(elm);
         }
     }
