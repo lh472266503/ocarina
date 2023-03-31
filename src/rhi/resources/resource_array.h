@@ -85,6 +85,12 @@ public:
         return make_expr<ResourceArray>(expression()).buffer<T>(OC_FORWARD(index));
     }
 
+    template<typename Index>
+    requires is_integral_expr_v<Index>
+    [[nodiscard]] ResourceArrayMixBuffer mix(Index &&index) const noexcept {
+        return make_expr<ResourceArray>(expression()).mix(OC_FORWARD(index));
+    }
+
     [[nodiscard]] Var<ResourceArray> var() const noexcept {
         return Var<ResourceArray>(expression());
     }
