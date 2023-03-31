@@ -46,20 +46,6 @@ protected:
         vector<T> representatives;
 
         void add_object(T t) noexcept {
-            auto [type_index, data_index] = obtain_index(t);
-#ifndef NDEBUG
-            all_object.insert(make_pair(reinterpret_cast<uint64_t>(t), Object{data_index, typeid(*t).name()}));
-#else
-            all_object.insert(make_pair(reinterpret_cast<uint64_t>(t), Object{data_index}));
-#endif
-        }
-
-        void clear() noexcept {
-            all_type.clear();
-            representatives.clear();
-        }
-
-        [[nodiscard]] pair<uint, uint> obtain_index(T t) noexcept {
             uint64_t hash_code = t->type_hash();
             if (auto iter = all_type.find(hash_code); iter == all_type.cend()) {
                 all_type[hash_code] = TypeData();
@@ -67,7 +53,19 @@ protected:
                 representatives.push_back(t);
                 type_counter[hash_code] = 0;
             }
-            return {all_type.at(hash_code).type_index, type_counter[hash_code]++};
+#ifndef NDEBUG
+            all_object.insert(make_pair(reinterpret_cast<uint64_t>(t), Object{type_counter[hash_code]++, typeid(*t).name()}));
+            all_type[hash_code].class_name = typeid(*t).name();
+#else
+            all_object.insert(make_pair(reinterpret_cast<uint64_t>(t), Object{data_index}));
+#endif
+        }
+
+        void clear() noexcept {
+            all_type.clear();
+            all_object.clear();
+            type_counter.clear();
+            representatives.clear();
         }
 
         [[nodiscard]] bool empty() const noexcept { return representatives.empty(); }
@@ -89,6 +87,12 @@ public:
     [[nodiscard]] size_t type_num() const noexcept { return _type_mgr.size(); }
     [[nodiscard]] uint type_index(const std::remove_pointer_t<T> *object) const noexcept {
         return _type_mgr.all_type.at(object->type_hash()).type_index;
+    }
+
+    void prepare(ResourceArray &resource_array) noexcept {
+        for (TypeData &type_data : _type_mgr.all_type) {
+            type_data.datas.init(resource_array);
+        }
     }
 
     template<typename Index>
