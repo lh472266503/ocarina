@@ -20,44 +20,50 @@ public:
 
 protected:
     struct Object {
+    public:
         // index of type
         uint type_index{};
         // Index in a list of the same type
-        uint index{};
+        uint data_index{};
 #ifndef NDEBUG
         string class_name;
 #endif
     };
 
-    struct {
-        map<uint64_t, Object> hash_to_object;
+    struct TypeData {
+        // index of type
+        uint type_index{};
+        // used to store current type data
+//        data_type datas;
+    };
 
-        map<uint64_t, uint> type_to_index;
+    struct {
+        map<uint64_t, Object> all_object;
+
+        map<uint64_t, TypeData> all_type;
         // Used to store a representative of each type
         vector<T> representatives;
-        // Each type has a managed used to store data
-        vector<ManagedWrapper<U>> datas;
 
         void add_object(T t) noexcept {
 #ifndef NDEBUG
-            hash_to_object.insert(make_pair(t->hash(), Object{obtain_index(t), 0, typeid(*t).name()}));
+            all_object.insert(make_pair(t->hash(), Object{obtain_index(t), 0, typeid(*t).name()}));
 #else
-            hash_to_object.insert(make_pair(t->hash(), Object{obtain_index(t), 0}));
+            all_object.insert(make_pair(t->hash(), Object{obtain_index(t), 0}));
 #endif
         }
 
         void clear() noexcept {
-            type_to_index.clear();
+            all_type.clear();
             representatives.clear();
         }
 
         [[nodiscard]] uint obtain_index(T t) noexcept {
             uint64_t hash_code = t->type_hash();
-            if (auto iter = type_to_index.find(hash_code); iter == type_to_index.cend()) {
-                type_to_index[hash_code] = representatives.size();
+            if (auto iter = all_type.find(hash_code); iter == all_type.cend()) {
+                all_type[hash_code].type_index = representatives.size();
                 representatives.push_back(t);
             }
-            return type_to_index.at(hash_code);
+            return all_type.at(hash_code).type_index;
         }
 
         [[nodiscard]] bool empty() const noexcept { return representatives.empty(); }
@@ -75,13 +81,10 @@ public:
         _type_mgr.clear();
     }
 
-    void add_type_data(data_type data) noexcept { _type_mgr.datas.push_back(move(data)); }
-    [[nodiscard]] data_type &type_datas() noexcept { return _type_mgr.datas; }
-    [[nodiscard]] const data_type &type_datas() const noexcept { return _type_mgr.datas; }
     [[nodiscard]] size_t instance_num() const noexcept { return Super::size(); }
     [[nodiscard]] size_t type_num() const noexcept { return _type_mgr.size(); }
     [[nodiscard]] uint type_index(const std::remove_pointer_t<T> *object) const noexcept {
-        return _type_mgr.hash_to_object.at(object->hash()).type_index;
+        return _type_mgr.all_object.at(object->hash()).type_index;
     }
 
     template<typename Index>
