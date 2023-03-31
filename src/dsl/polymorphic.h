@@ -57,7 +57,7 @@ protected:
             all_object.insert(make_pair(reinterpret_cast<uint64_t>(t), Object{type_counter[hash_code]++, typeid(*t).name()}));
             all_type[hash_code].class_name = typeid(*t).name();
 #else
-            all_object.insert(make_pair(reinterpret_cast<uint64_t>(t), Object{data_index}));
+            all_object.insert(make_pair(reinterpret_cast<uint64_t>(t), Object{type_counter[hash_code]++}));
 #endif
         }
 
