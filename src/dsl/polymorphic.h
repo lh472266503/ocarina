@@ -21,8 +21,6 @@ public:
 protected:
     struct Object {
     public:
-        // index of type
-        uint type_index{};
         // Index in a list of the same type
         uint data_index{};
 #ifndef NDEBUG
@@ -34,21 +32,25 @@ protected:
         // index of type
         uint type_index{};
         // used to store current type data
-//        data_type datas;
+        data_type datas;
+#ifndef NDEBUG
+        string class_name;
+#endif
     };
 
     struct {
+        map<uint64_t, uint> type_counter;
         map<uint64_t, Object> all_object;
-
         map<uint64_t, TypeData> all_type;
         // Used to store a representative of each type
         vector<T> representatives;
 
         void add_object(T t) noexcept {
+            auto [type_index, data_index] = obtain_index(t);
 #ifndef NDEBUG
-            all_object.insert(make_pair(t->hash(), Object{obtain_index(t), 0, typeid(*t).name()}));
+            all_object.insert(make_pair(reinterpret_cast<uint64_t>(t), Object{data_index, typeid(*t).name()}));
 #else
-            all_object.insert(make_pair(t->hash(), Object{obtain_index(t), 0}));
+            all_object.insert(make_pair(reinterpret_cast<uint64_t>(t), Object{data_index}));
 #endif
         }
 
@@ -57,13 +59,15 @@ protected:
             representatives.clear();
         }
 
-        [[nodiscard]] uint obtain_index(T t) noexcept {
+        [[nodiscard]] pair<uint, uint> obtain_index(T t) noexcept {
             uint64_t hash_code = t->type_hash();
             if (auto iter = all_type.find(hash_code); iter == all_type.cend()) {
+                all_type[hash_code] = TypeData();
                 all_type[hash_code].type_index = representatives.size();
                 representatives.push_back(t);
+                type_counter[hash_code] = 0;
             }
-            return all_type.at(hash_code).type_index;
+            return {all_type.at(hash_code).type_index, type_counter[hash_code]++};
         }
 
         [[nodiscard]] bool empty() const noexcept { return representatives.empty(); }
@@ -84,7 +88,7 @@ public:
     [[nodiscard]] size_t instance_num() const noexcept { return Super::size(); }
     [[nodiscard]] size_t type_num() const noexcept { return _type_mgr.size(); }
     [[nodiscard]] uint type_index(const std::remove_pointer_t<T> *object) const noexcept {
-        return _type_mgr.all_object.at(object->hash()).type_index;
+        return _type_mgr.all_type.at(object->type_hash()).type_index;
     }
 
     template<typename Index>
