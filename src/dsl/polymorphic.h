@@ -83,16 +83,22 @@ public:
         _type_mgr.clear();
     }
 
-    [[nodiscard]] size_t instance_num() const noexcept { return Super::size(); }
+    [[nodiscard]] size_t all_instance_num() const noexcept { return Super::size(); }
+    [[nodiscard]] uint instance_num(const std::remove_pointer_t<T> *object) const noexcept {
+        return _type_mgr.type_counter.at(object->type_hash());
+    }
     [[nodiscard]] size_t type_num() const noexcept { return _type_mgr.size(); }
     [[nodiscard]] uint type_index(const std::remove_pointer_t<T> *object) const noexcept {
         return _type_mgr.all_type.at(object->type_hash()).type_index;
     }
-
-    void prepare(ResourceArray &resource_array) noexcept {
-        for (TypeData &type_data : _type_mgr.all_type) {
-            type_data.datas.init(resource_array);
-        }
+    [[nodiscard]] uint data_index(const std::remove_pointer_t<T> *object) noexcept {
+        return _type_mgr.all_object.at(reinterpret_cast<uint64_t>(object)).data_index;
+    }
+    [[nodiscard]] data_type &datas(const std::remove_pointer_t<T> *object) noexcept {
+        return _type_mgr.all_type.at(object->type_hash()).datas;
+    }
+    void set_datas(const std::remove_pointer_t<T> *object, data_type &&datas) noexcept {
+        _type_mgr.all_type.at(object->type_hash()).datas = move(datas);
     }
 
     template<typename Index>

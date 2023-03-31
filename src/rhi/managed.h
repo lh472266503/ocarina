@@ -96,7 +96,7 @@ public:
 
 private:
     uint _id;
-    ResourceArray *_resource_array;
+    ResourceArray *_resource_array{};
 
 public:
     ManagedWrapper() = default;
