@@ -16,7 +16,8 @@ requires std::is_pointer_v<std::remove_cvref_t<T>>
 class Polymorphic : public vector<T> {
 public:
     using Super = vector<T>;
-    using data_type = ManagedWrapper<U>;
+    using data_type = U;
+    using data_set_type = ManagedWrapper<U>;
 
 protected:
     struct Object {
@@ -32,7 +33,7 @@ protected:
         // index of type
         uint type_index{};
         // used to store current type data
-        data_type datas;
+        data_set_type datas;
 #ifndef NDEBUG
         string class_name;
 #endif
@@ -94,10 +95,10 @@ public:
     [[nodiscard]] uint data_index(const std::remove_pointer_t<T> *object) noexcept {
         return _type_mgr.all_object.at(reinterpret_cast<uint64_t>(object)).data_index;
     }
-    [[nodiscard]] data_type &datas(const std::remove_pointer_t<T> *object) noexcept {
+    [[nodiscard]] data_set_type &datas(const std::remove_pointer_t<T> *object) noexcept {
         return _type_mgr.all_type.at(object->type_hash()).datas;
     }
-    void set_datas(const std::remove_pointer_t<T> *object, data_type &&datas) noexcept {
+    void set_datas(const std::remove_pointer_t<T> *object, data_set_type &&datas) noexcept {
         _type_mgr.all_type.at(object->type_hash()).datas = move(datas);
     }
 
