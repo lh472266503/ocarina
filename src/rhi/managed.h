@@ -95,7 +95,7 @@ public:
     using Super = Managed<T>;
 
 private:
-    uint _id;
+    uint _id{InvalidUI32};
     ResourceArray *_resource_array{};
 
 public:
