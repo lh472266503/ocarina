@@ -10,6 +10,9 @@
 namespace ocarina {
 
 template<typename T>
+class Array;
+
+template<typename T>
 class Managed : public Buffer<T>, public ocarina::vector<T> {
 public:
     using host_ty = ocarina::vector<T>;
@@ -110,6 +113,18 @@ public:
     requires concepts::all_integral<expr_value_t<Index>>
         OC_NODISCARD auto read(Index &&index) const noexcept {
         return _resource_array->buffer<T>(_id).read(OC_FORWARD(index));
+    }
+
+    template<typename Target, typename Offset>
+    requires is_integral_expr_v<Offset>
+        OC_NODISCARD auto byte_read(Offset &&offset) const noexcept {
+        return _resource_array->byte_buffer(_id).read<Target>(OC_FORWARD(offset));
+    }
+
+    template<typename T, typename Offset>
+    requires is_integral_expr_v<Offset>
+    [[nodiscard]] Array<T> read_dynamic_array(uint size, Offset &&offset) const noexcept {
+        return _resource_array->byte_buffer(_id).read_dynamic_array<T>(size, OC_FORWARD(offset));
     }
 
     template<typename Index, typename Val>
