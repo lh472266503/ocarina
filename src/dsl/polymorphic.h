@@ -124,8 +124,8 @@ public:
 
     template<typename Index>
     requires is_integral_expr_v<Index>
-    void dispatch_type(Index &&index, const std::function<void(const T &)> &func) const noexcept {
-        auto lst = _type_mgr.lst;
+    void dispatch_representative(Index &&index, const std::function<void(const T &)> &func) const noexcept {
+        auto lst = _type_mgr.representatives;
         if (lst.empty()) [[unlikely]] { OC_ERROR_FORMAT("{} type lst is empty", typeid(*this).name()); }
         comment("dispatch_type");
         comment(typeid(*this).name());
@@ -137,7 +137,7 @@ public:
         switch_(OC_FORWARD(index), [&] {
             for (int i = 0; i < lst.size(); ++i) {
                 comment(typeid(*lst.at(i)).name());
-                case_(i, [&] {func(*lst.at(i));break_(); });
+                case_(i, [&] {func(lst.at(i));break_(); });
             }
             default_([&] {unreachable();break_(); });
         });
