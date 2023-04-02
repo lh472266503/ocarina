@@ -40,7 +40,6 @@ struct OCTexture {
 struct OCResourceArray {
     void **buffer_slot{};
     cudaTextureObject_t *tex_slot{};
-    void **mix_buffer_slot{};
 };
 
 template<typename A, typename B>
@@ -112,8 +111,8 @@ __device__ T oc_resource_array_buffer_read(OCResourceArray resource_array, oc_ui
 }
 
 template<typename T>
-__device__ T oc_resource_array_mix_buffer_read(OCResourceArray resource_array, oc_uint mix_buffer_index, oc_uint offset) noexcept {
-    const char *buffer = reinterpret_cast<char *>(resource_array.mix_buffer_slot[mix_buffer_index]);
+__device__ T oc_resource_array_byte_buffer_read(OCResourceArray resource_array, oc_uint buffer_index, oc_uint offset) noexcept {
+    const char *buffer = reinterpret_cast<char *>(resource_array.buffer_slot[buffer_index]);
     return *reinterpret_cast<const T *>(&buffer[offset]);
 }
 

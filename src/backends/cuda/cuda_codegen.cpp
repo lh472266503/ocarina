@@ -92,7 +92,7 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         case CallOp::ATOMIC_SUB: OC_GEN_FUNC_NAME(atomicSub); break;
         case CallOp::RESOURCE_ARRAY_BUFFER_WRITE: OC_GEN_FUNC_NAME(resource_array_buffer_write); break;
         case CallOp::RESOURCE_ARRAY_MIX_BUFFER_READ: {
-            current_scratch() << "oc_resource_array_mix_buffer_read<";
+            current_scratch() << "oc_resource_array_byte_buffer_read<";
             _emit_type_name(expr->type());
             current_scratch() << ">";
             break;

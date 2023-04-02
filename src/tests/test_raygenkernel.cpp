@@ -107,7 +107,7 @@ int main(int argc, char *argv[]) {
     bindless_array.emplace(image);
     auto r2 = bindless_array.emplace(v_buffer);
 
-    bindless_array.emplace_mix(managed.device());
+    uint index = bindless_array.emplace(managed.device());
 
     stream << vert.upload_sync();
     stream << v_buffer.upload_sync(vert.host().data());
@@ -116,7 +116,6 @@ int main(int argc, char *argv[]) {
     bindless_array.prepare_slotSOA(device);
     stream << bindless_array->upload_buffer_handles() << synchronize();
     stream << bindless_array->upload_texture_handles() << synchronize();
-    stream << bindless_array->upload_mix_buffer_handles() << synchronize();
 
     stream << cube.build_bvh();
 
@@ -130,16 +129,16 @@ int main(int argc, char *argv[]) {
     };
 
     Kernel kernel = [&](const BufferVar<Triangle> t_buffer,
-//                        const Var<Accel> acc,
+                        const Var<Accel> acc,
                         const TextureVar img,
                         Var<Triangle> tri,
                         ResourceArrayVar ba) {
         //        t_buffer.atomic()
         //        managed.device().atomic(1).fetch_sub(2);
-        //        Var<Ray> r = make_ray(Var(float3(0, 0.1, -5)), float3(1.6f, 0, 1));
-        //        Var hit = accel.trace_closest(r);
-        Int3 f = make_int3(ba.mix(0).read<float>(19 * 4).cast<int>(), 6, 9);
-        Printer::instance().warn_with_location("{} {} {} {} {}", f,bindless_array.mix(0).read_dynamic_array<float>(2, 19 * 4).to_vec2());
+                Var<Ray> r = make_ray(Var(float3(0, 0.1, -5)), float3(1.6f, 0, 1));
+                Var hit = accel.trace_closest(r);
+        Int3 f = make_int3(ba.byte_buffer(index).read<float>(19 * 4).cast<int>(), 6, 9);
+        Printer::instance().warn_with_location("{} {} {} {} {}", f, bindless_array.byte_buffer(index).read_dynamic_array<float>(2, 19 * 4).to_vec2());
 //      Int a = 1, b = 2, c = 3;
 //      printer.log_debug("--{} {} {}", a, b, c);
         //        prints("++{} {} {}", f);
@@ -164,7 +163,7 @@ int main(int argc, char *argv[]) {
         //        prints("{} {} {} {}", bindless_array.tex(0).sample(4, uv).to_vec4());
     };
     auto shader = device.compile(kernel);
-    stream << shader(t_buffer, image, triangle[0], bindless_array).dispatch(3);
+    stream << shader(t_buffer, accel, image, triangle[0], bindless_array).dispatch(3);
     stream << synchronize() << commit();
 
     float tf = bit_cast<float>(19);

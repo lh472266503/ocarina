@@ -436,14 +436,14 @@ public:
     }
 };
 
-class ResourceArrayMixBuffer {
+class ResourceArrayByteBuffer {
 private:
     const Expression *_array{nullptr};
     /// offset in byte
     const Expression *_index{nullptr};
 
 public:
-    ResourceArrayMixBuffer(const Expression *array, const Expression *index) noexcept
+    ResourceArrayByteBuffer(const Expression *array, const Expression *index) noexcept
         : _array{array}, _index{index} {}
 
     template<typename T, typename Offset>
@@ -506,8 +506,8 @@ public:
 
     template<typename Index>
     requires concepts::integral<expr_value_t<Index>>
-    [[nodiscard]] ResourceArrayMixBuffer mix(Index &&index) const noexcept {
-        return ResourceArrayMixBuffer(expression(), OC_EXPR(index));
+    [[nodiscard]] ResourceArrayByteBuffer byte_buffer(Index &&index) const noexcept {
+        return ResourceArrayByteBuffer(expression(), OC_EXPR(index));
     }
 
     OC_COMPUTABLE_COMMON(Computable<ResourceArray>)

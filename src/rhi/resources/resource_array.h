@@ -20,14 +20,10 @@ public:
         virtual void remove_buffer(handle_ty index) noexcept = 0;
         [[nodiscard]] virtual size_t emplace_texture(handle_ty handle) noexcept = 0;
         virtual void remove_texture(handle_ty index) noexcept = 0;
-        [[nodiscard]] virtual size_t emplace_mix_buffer(handle_ty handle) noexcept = 0;
-        virtual void remove_mix_buffer(handle_ty handle) noexcept = 0;
         [[nodiscard]] virtual BufferUploadCommand *upload_buffer_handles() const noexcept = 0;
         [[nodiscard]] virtual BufferUploadCommand *upload_texture_handles() const noexcept = 0;
-        [[nodiscard]] virtual BufferUploadCommand *upload_mix_buffer_handles() const noexcept = 0;
         [[nodiscard]] virtual BufferUploadCommand *upload_buffer_handles_sync() const noexcept = 0;
         [[nodiscard]] virtual BufferUploadCommand *upload_texture_handles_sync() const noexcept = 0;
-        [[nodiscard]] virtual BufferUploadCommand *upload_mix_buffer_handles_sync() const noexcept = 0;
         virtual void prepare_slotSOA(Device &device) noexcept = 0;
 
         /// for device side structure
@@ -59,12 +55,6 @@ public:
     }
     size_t emplace(const RHITexture &texture) noexcept;
 
-    template<typename T>
-    requires is_buffer_or_view_v<T>
-    [[nodiscard]] size_t emplace_mix(const T &buffer) noexcept{
-        return impl()->emplace_mix_buffer(buffer.head());
-    }
-
     /// for dsl
     [[nodiscard]] const Expression *expression() const noexcept override {
         const ArgumentBinding &uniform = Function::current()->get_uniform_var(Type::of<decltype(*this)>(),
@@ -87,8 +77,8 @@ public:
 
     template<typename Index>
     requires is_integral_expr_v<Index>
-    [[nodiscard]] ResourceArrayMixBuffer mix(Index &&index) const noexcept {
-        return make_expr<ResourceArray>(expression()).mix(OC_FORWARD(index));
+    [[nodiscard]] ResourceArrayByteBuffer byte_buffer(Index &&index) const noexcept {
+        return make_expr<ResourceArray>(expression()).byte_buffer(OC_FORWARD(index));
     }
 
     [[nodiscard]] Var<ResourceArray> var() const noexcept {

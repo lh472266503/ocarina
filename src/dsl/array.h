@@ -193,7 +193,7 @@ const noexcept {
 }// namespace detail
 
 template<typename T, typename Offset>
-[[nodiscard]] Array<T> ResourceArrayMixBuffer::read_dynamic_array(uint size, Offset &&offset) const noexcept {
+[[nodiscard]] Array<T> ResourceArrayByteBuffer::read_dynamic_array(uint size, Offset &&offset) const noexcept {
     const CallExpr *expr = Function::current()->call_builtin(Array<T>::type(size),
                                                              CallOp::RESOURCE_ARRAY_MIX_BUFFER_READ,
                                                              {_array, _index, OC_EXPR(offset)});
