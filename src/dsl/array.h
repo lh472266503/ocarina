@@ -47,8 +47,14 @@ public:
         : _size{other._size}, _expression(Function::current()->local(type())) {
         Function::current()->assign(_expression, other._expression);
     }
-
     Array(Array &&) noexcept = default;
+
+    void reset(const Array<T> &array) noexcept {
+        _size = array.size();
+        _expression = array.expression();
+    }
+
+    [[nodiscard]] bool valid() const noexcept { return _size > 0; }
 
     [[nodiscard]] static const Type *type(uint size) noexcept {
         return Type::from(ocarina::format("array<{},{}>",
