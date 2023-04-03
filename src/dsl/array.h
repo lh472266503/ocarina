@@ -144,6 +144,13 @@ public:
 namespace detail {
 
 template<typename T>
+[[nodiscard]] inline Array<T> eval_array(const Array<T> &array) noexcept {
+    Array<T> ret{array.size()};
+    ret = array;
+    return ret;
+}
+
+template<typename T>
 template<typename U, typename V>
 requires(is_all_floating_point_expr_v<U, V>)
     Array<float> EnableTextureSample<T>::sample(uint channel_num, const U &u, const V &v)
@@ -155,7 +162,7 @@ const noexcept {
                                                               OC_EXPR(u),
                                                               OC_EXPR(v)},
                                                              {channel_num});
-    return Array<float>(channel_num, expr);
+    return eval_array(Array<float>(channel_num, expr));
 }
 
 template<typename T>
@@ -171,7 +178,7 @@ const noexcept {
                                                               OC_EXPR(v),
                                                               OC_EXPR(w)},
                                                              {channel_num});
-    return Array<float>(channel_num, expr);
+    return eval_array(Array<float>(channel_num, expr));
 }
 
 template<typename T>
@@ -197,7 +204,7 @@ template<typename T, typename Offset>
     const CallExpr *expr = Function::current()->call_builtin(Array<T>::type(size),
                                                              CallOp::RESOURCE_ARRAY_MIX_BUFFER_READ,
                                                              {_array, _index, OC_EXPR(offset)});
-    return Array<T>(size, expr);
+    return detail::eval_array(Array<T>(size, expr));
 }
 
 template<typename U, typename V>
@@ -208,7 +215,7 @@ const noexcept {
                                                              CallOp::RESOURCE_ARRAY_TEX_SAMPLE,
                                                              {_array, _index, OC_EXPR(u), OC_EXPR(v)},
                                                              {channel_num});
-    return Array<float>(channel_num, expr);
+    return detail::eval_array(Array<float>(channel_num, expr));
 }
 
 template<typename U, typename V, typename W>
@@ -219,7 +226,7 @@ const noexcept {
                                                              CallOp::RESOURCE_ARRAY_TEX_SAMPLE,
                                                              {_array, _index, OC_EXPR(u), OC_EXPR(v), OC_EXPR(w)},
                                                              {channel_num});
-    return Array<float>(channel_num, expr);
+    return detail::eval_array(Array<float>(channel_num, expr));
 }
 
 template<typename UVW>
