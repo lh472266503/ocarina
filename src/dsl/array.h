@@ -21,6 +21,8 @@ private:
     const Expression *_expression{};
 
 public:
+    Array() = default;
+
     explicit Array(size_t num, const Expression *expression = nullptr)
         : _size(num),
           _expression(expression == nullptr ? Function::current()->local(type()) : expression) {}
