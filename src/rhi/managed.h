@@ -109,6 +109,8 @@ public:
         _id = _resource_array->emplace(Super::device());
     }
 
+    [[nodiscard]] uint index() const noexcept { return _id; }
+
     template<typename Index>
     requires concepts::all_integral<expr_value_t<Index>>
         OC_NODISCARD auto read(Index &&index) const noexcept {
