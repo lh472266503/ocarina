@@ -106,6 +106,7 @@ ocarina::string CUDACompiler::obtain_ptx() const noexcept {
             context->write_cache(ptx_fn, ptx);
         }
     } else {
+        OC_INFO_FORMAT("find ptx file {}", ptx_fn);
         ptx = context->read_cache(ptx_fn);
     }
     return ptx;
