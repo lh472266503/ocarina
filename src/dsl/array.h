@@ -53,6 +53,10 @@ public:
         _size = array.size();
         _expression = array.expression();
     }
+    void invalidate() noexcept {
+        _size = 0;
+        _expression = nullptr;
+    }
 
     [[nodiscard]] bool valid() const noexcept { return _size > 0; }
 
