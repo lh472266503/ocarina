@@ -72,8 +72,8 @@ int main(int argc, char *argv[]) {
         Var<int2> v22 = make_int2(ii, ii);
         Var<bool2> bv;
 
-        Var tex_v = tex.sample(4, a, b).to_vec4();
-        Var tv2 = texture.sample(4, a, b).to_vec4();
+        Var tex_v = tex.sample(4, a, b).as_vec4();
+        Var tv2 = texture.sample(4, a, b).as_vec4();
 
         Var vv = all(bv);
         Var f = 0.5f;

@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
     Kernel kernel = [&](TextureVar img) {
         uint2 res = image_io.resolution();
         int r = 5;
-        Var p = img.sample(4, 0.6f,0.6f).to_vec4();
+        Var p = img.sample(4, 0.6f,0.6f).as_vec4();
 //        print("{}  {}", p.x, p.y);
         Var<uint> min_x = max(0u, dispatch_idx().x - r);
         Var<uint> max_x = min(res.x - 1, dispatch_idx().x + r);

@@ -85,12 +85,12 @@ public:
         return create(std::array<Var<T>, sizeof...(args)>{OC_FORWARD(args)...});
     }
 
-    [[nodiscard]] Var<T> to_scalar() const noexcept {
+    [[nodiscard]] Var<T> as_scalar() const noexcept {
         return (*this)[0];
     }
 
     template<size_t N>
-    [[nodiscard]] Var<Vector<T, N>> to_vec() const noexcept {
+    [[nodiscard]] Var<Vector<T, N>> as_vec() const noexcept {
         OC_ASSERT(N <= _size);
         Var<Vector<T, N>> ret;
         for (int i = 0; i < N; ++i) {
@@ -99,9 +99,9 @@ public:
         return ret;
     }
 
-    [[nodiscard]] Var<Vector<T, 2>> to_vec2() const noexcept { return to_vec<2>(); }
-    [[nodiscard]] Var<Vector<T, 3>> to_vec3() const noexcept { return to_vec<3>(); }
-    [[nodiscard]] Var<Vector<T, 4>> to_vec4() const noexcept { return to_vec<4>(); }
+    [[nodiscard]] Var<Vector<T, 2>> as_vec2() const noexcept { return as_vec<2>(); }
+    [[nodiscard]] Var<Vector<T, 3>> as_vec3() const noexcept { return as_vec<3>(); }
+    [[nodiscard]] Var<Vector<T, 4>> as_vec4() const noexcept { return as_vec<4>(); }
 
     template<typename Index>
     requires concepts::integral<expr_value_t<Index>>
