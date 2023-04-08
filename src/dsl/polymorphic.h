@@ -11,6 +11,13 @@
 
 namespace ocarina {
 
+template<typename T>
+class PolymorphicElement {
+public:
+    [[nodiscard]] virtual uint data_size() const noexcept = 0;
+    virtual void fill_data(ManagedWrapper<T> &datas) const noexcept = 0;
+};
+
 template<typename T, typename U = float>
 requires std::is_pointer_v<std::remove_cvref_t<T>>
 class Polymorphic : public vector<T> {
