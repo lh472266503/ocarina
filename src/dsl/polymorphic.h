@@ -11,6 +11,24 @@
 
 namespace ocarina {
 
+enum PolymorphicMode {
+    EInstance = 0,
+    EType = 1
+};
+
+template<EPort p>
+[[nodiscard]] inline oc_uint<p> encode_id(oc_uint<p> inst_id, oc_uint<p> type_id) noexcept {
+    inst_id = inst_id << 8;
+    return inst_id | type_id;
+}
+
+template<EPort p>
+[[nodiscard]] inline pair<oc_uint<p>, oc_uint<p>> decode_id(oc_uint<p> id) noexcept {
+    oc_uint<p> inst_id = (0xffffff00 & id) >> 8;
+    oc_uint<p> type_id = 0x000000ff & id;
+    return std::make_pair(inst_id, type_id);
+}
+
 template<typename T>
 class PolymorphicElement {
 public:
@@ -98,6 +116,7 @@ protected:
         [[nodiscard]] bool empty() const noexcept { return representatives.empty(); }
         [[nodiscard]] auto size() const noexcept { return representatives.size(); }
     } _type_mgr;
+    PolymorphicMode _mode{EInstance};
 
 public:
     void push_back(T arg) noexcept {
