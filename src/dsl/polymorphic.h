@@ -36,9 +36,10 @@ public:
     virtual void fill_data(ManagedWrapper<T> &datas) const noexcept = 0;
 };
 
+template<typename U = float>
 struct DataAccessor {
     mutable Uint offset;
-    ManagedWrapper<float> &datas;
+    ManagedWrapper<U> &datas;
 
     template<typename T>
     [[nodiscard]] Array<T> read_dynamic_array(uint size) const noexcept {
@@ -140,7 +141,7 @@ public:
     [[nodiscard]] uint data_index(const std::remove_pointer_t<T> *object) noexcept {
         return _type_mgr.all_object.at(reinterpret_cast<uint64_t>(object)).data_index;
     }
-    [[nodiscard]] DataAccessor data_accessor(const std::remove_pointer_t<T> *object, const Uint &data_index) noexcept {
+    [[nodiscard]] DataAccessor<U> data_accessor(const std::remove_pointer_t<T> *object, const Uint &data_index) noexcept {
         return {data_index * object->data_size(), datas(object)};
     }
     [[nodiscard]] datas_type &datas(const std::remove_pointer_t<T> *object) noexcept {
