@@ -139,7 +139,7 @@ public:
     [[nodiscard]] uint type_index(const std::remove_pointer_t<T> *object) const noexcept {
         return _type_mgr.all_type.at(object->type_hash()).type_index;
     }
-    [[nodiscard]] uint data_index(const std::remove_pointer_t<T> *object) noexcept {
+    [[nodiscard]] uint data_index(const std::remove_pointer_t<T> *object) const noexcept {
         return _type_mgr.all_object.at(reinterpret_cast<uint64_t>(object)).data_index;
     }
     [[nodiscard]] DataAccessor<U> data_accessor(const std::remove_pointer_t<T> *object, const Uint &data_index) noexcept {
@@ -156,9 +156,9 @@ public:
     [[nodiscard]] uint encode_id(uint id, const std::remove_pointer_t<T> *object) const noexcept {
         switch (_mode) {
             case EInstance:
-                return encode_id<H>(id, type_index(object));
+                return ocarina::encode_id<H>(id, type_index(object));
             case EType:
-                return encode_id<H>(data_index(object), type_index(object));
+                return ocarina::encode_id<H>(data_index(object), type_index(object));
         }
         OC_ASSERT(false);
         return InvalidUI32;
