@@ -120,6 +120,7 @@ protected:
     PolymorphicMode _mode{EInstance};
 
 public:
+    explicit Polymorphic(PolymorphicMode mode = EInstance) : _mode(mode) {}
     void push_back(T arg) noexcept {
         _type_mgr.add_object(arg);
         Super::push_back(arg);
@@ -149,6 +150,18 @@ public:
     }
     void set_datas(const std::remove_pointer_t<T> *object, datas_type &&datas) noexcept {
         _type_mgr.all_type.at(object->type_hash()).datas = move(datas);
+    }
+    void set_mode(PolymorphicMode mode) noexcept { _mode = mode; }
+    [[nodiscard]] PolymorphicMode mode() const noexcept { return _mode; }
+    [[nodiscard]] uint encode_id(uint id, const std::remove_pointer_t<T> *object) const noexcept {
+        switch (_mode) {
+            case EInstance:
+                return encode_id<H>(id, type_index(object));
+            case EType:
+                return encode_id<H>(data_index(object), type_index(object));
+        }
+        OC_ASSERT(false);
+        return InvalidUI32;
     }
 
     template<typename Index>
