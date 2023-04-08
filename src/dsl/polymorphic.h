@@ -122,8 +122,7 @@ public:
         return _type_mgr.all_object.at(reinterpret_cast<uint64_t>(object)).data_index;
     }
     [[nodiscard]] DataAccessor data_accessor(const std::remove_pointer_t<T> *object, const Uint &data_index) noexcept {
-        DataAccessor da{data_index * object, datas(object)};
-        return da;
+        return {data_index * object->data_size(), datas(object)};
     }
     [[nodiscard]] datas_type &datas(const std::remove_pointer_t<T> *object) noexcept {
         return _type_mgr.all_type.at(object->type_hash()).datas;
