@@ -18,6 +18,25 @@ public:
     virtual void fill_data(ManagedWrapper<T> &datas) const noexcept = 0;
 };
 
+struct DataAccessor {
+    mutable Uint offset;
+    ManagedWrapper<float> &datas;
+
+    template<typename T>
+    [[nodiscard]] Array<T> read_dynamic_array(uint size) const noexcept {
+        auto ret = datas.read_dynamic_array<T>(size, offset);
+        offset += size * static_cast<uint>(sizeof(T));
+        return ret;
+    }
+
+    template<typename Target>
+    OC_NODISCARD auto byte_read() const noexcept {
+        auto ret = datas.byte_read<Target>(offset);
+        offset += static_cast<uint>(sizeof(Target));
+        return ret;
+    }
+};
+
 template<typename T, typename U = float>
 requires std::is_pointer_v<std::remove_cvref_t<T>> && std::is_base_of_v<PolymorphicElement<U>, std::remove_pointer_t<T>>
 class Polymorphic : public vector<T> {
@@ -101,6 +120,10 @@ public:
     }
     [[nodiscard]] uint data_index(const std::remove_pointer_t<T> *object) noexcept {
         return _type_mgr.all_object.at(reinterpret_cast<uint64_t>(object)).data_index;
+    }
+    [[nodiscard]] DataAccessor data_accessor(const std::remove_pointer_t<T> *object, const Uint &data_index) noexcept {
+        DataAccessor da{data_index * object, datas(object)};
+        return da;
     }
     [[nodiscard]] datas_type &datas(const std::remove_pointer_t<T> *object) noexcept {
         return _type_mgr.all_type.at(object->type_hash()).datas;
