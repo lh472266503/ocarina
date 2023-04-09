@@ -164,6 +164,28 @@ public:
         return InvalidUI32;
     }
 
+    void prepare(ResourceArray &resource_array, Device &device) noexcept {
+        switch (_mode) {
+            case EInstance: break;
+            case EType: {
+                for_each_representative([&](auto object) {
+                    ManagedWrapper<U> data_set{resource_array};
+                    set_datas(object, move(data_set));
+                });
+                for_each_instance([&](auto object) {
+                    object->fill_data(datas(object));
+                });
+                for_each_representative([&](auto object) {
+                    datas_type &data_set = datas(object);
+                    data_set.reset_device_buffer(device);
+                    data_set.register_self();
+                    data_set.upload_immediately();
+                });
+            }
+            default: OC_ASSERT(false);
+        }
+    }
+
     template<typename Index>
     requires is_integral_expr_v<Index>
     void dispatch_instance(Index &&index, const std::function<void(const T &)> &func) const noexcept {
