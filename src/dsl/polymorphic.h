@@ -143,9 +143,9 @@ public:
         return _type_mgr.all_object.at(reinterpret_cast<uint64_t>(object)).data_index;
     }
     [[nodiscard]] DataAccessor<U> data_accessor(const std::remove_pointer_t<T> *object, const Uint &data_index) noexcept {
-        return {data_index * object->data_size(), datas(object)};
+        return {data_index * object->data_size(), get_datas(object)};
     }
-    [[nodiscard]] datas_type &datas(const std::remove_pointer_t<T> *object) noexcept {
+    [[nodiscard]] datas_type &get_datas(const std::remove_pointer_t<T> *object) noexcept {
         return _type_mgr.all_type.at(object->type_hash()).datas;
     }
     void set_datas(const std::remove_pointer_t<T> *object, datas_type &&datas) noexcept {
@@ -173,16 +173,32 @@ public:
                     set_datas(object, move(data_set));
                 });
                 for_each_instance([&](auto object) {
-                    object->fill_data(datas(object));
+                    object->fill_data(get_datas(object));
                 });
                 for_each_representative([&](auto object) {
-                    datas_type &data_set = datas(object);
+                    datas_type &data_set = get_datas(object);
                     data_set.reset_device_buffer(device);
                     data_set.register_self();
                     data_set.upload_immediately();
                 });
+                break;
             }
             default: OC_ASSERT(false);
+        }
+    }
+
+    template<typename Index>
+    requires is_integral_expr_v<Index>
+    void dispatch(Index &&index, const std::function<void(const T &)> &func)const noexcept{
+        switch(_mode) {
+            case EInstance: {
+                dispatch_instance(OC_FORWARD(index), func);
+                break;
+            }
+            case EType: {
+                dispatch_representative(OC_FORWARD(index), func);
+                break;
+            }
         }
     }
 
