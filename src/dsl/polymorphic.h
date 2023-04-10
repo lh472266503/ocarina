@@ -188,19 +188,19 @@ public:
         }
     }
 
-    template<typename Index, typename Func>
-    requires is_integral_expr_v<Index>
-    void dispatch(Index &&index, const Func &func) noexcept {
+    template<typename TypeID, typename InstanceID, typename Func>
+    requires is_all_integral_expr_v<TypeID, InstanceID>
+    void dispatch(TypeID &&type_id,InstanceID &&inst_id, const Func &func) noexcept {
         switch (_mode) {
             case EInstance: {
-                dispatch_instance(OC_FORWARD(index), [&](auto object) {
+                dispatch_instance(OC_FORWARD(inst_id), [&](auto object) {
                     func(object, nullptr);
                 });
                 break;
             }
             case EType: {
-                dispatch_representative(OC_FORWARD(index), [&](auto object) {
-                    DataAccessor<U> da = data_accessor(object, OC_FORWARD(index));
+                dispatch_representative(OC_FORWARD(type_id), [&](auto object) {
+                    DataAccessor<U> da = data_accessor(object, OC_FORWARD(inst_id));
                     func(object, &da);
                 });
                 break;
