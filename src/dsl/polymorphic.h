@@ -29,13 +29,6 @@ template<EPort p>
     return std::make_pair(inst_id, type_id);
 }
 
-template<typename T>
-class PolymorphicElement {
-public:
-    [[nodiscard]] virtual uint data_size() const noexcept = 0;
-    virtual void fill_data(ManagedWrapper<T> &datas) const noexcept = 0;
-};
-
 template<typename U = float>
 struct DataAccessor {
     mutable Uint offset;
@@ -53,6 +46,16 @@ struct DataAccessor {
         auto ret = datas.byte_read<Target>(offset);
         offset += static_cast<uint>(sizeof(Target));
         return ret;
+    }
+};
+
+template<typename T>
+class PolymorphicElement {
+public:
+    [[nodiscard]] virtual uint data_size() const noexcept = 0;
+    virtual void fill_data(ManagedWrapper<T> &datas) const noexcept = 0;
+    virtual void cache_values(Array<T> *values, const DataAccessor<T> *da) const noexcept {
+        OC_ASSERT(false);
     }
 };
 
@@ -190,7 +193,7 @@ public:
 
     template<typename TypeID, typename InstanceID, typename Func>
     requires is_all_integral_expr_v<TypeID, InstanceID>
-    void dispatch(TypeID &&type_id,InstanceID &&inst_id, const Func &func) noexcept {
+    void dispatch(TypeID &&type_id, InstanceID &&inst_id, const Func &func) noexcept {
         switch (_mode) {
             case EInstance: {
                 dispatch_instance(OC_FORWARD(inst_id), [&](auto object) {
