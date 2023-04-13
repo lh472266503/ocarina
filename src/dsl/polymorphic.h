@@ -52,8 +52,8 @@ struct DataAccessor {
 template<typename T>
 class PolymorphicElement {
 public:
-    [[nodiscard]] virtual uint data_size() const noexcept = 0;
-    virtual void fill_data(ManagedWrapper<T> &datas) const noexcept = 0;
+    [[nodiscard]] virtual uint datas_size() const noexcept = 0;
+    virtual void fill_datas(ManagedWrapper<T> &datas) const noexcept = 0;
     virtual void cache_values(Array<T> *values, const DataAccessor<T> *da) const noexcept {
         OC_ASSERT(false);
     }
@@ -147,7 +147,7 @@ public:
     }
     [[nodiscard]] DataAccessor<U> data_accessor(const std::remove_pointer_t<T> *object,
                                                 const Uint &data_index) noexcept {
-        return {data_index * object->data_size(), get_datas(object)};
+        return {data_index * object->datas_size(), get_datas(object)};
     }
     [[nodiscard]] datas_type &get_datas(const std::remove_pointer_t<T> *object) noexcept {
         return _type_mgr.all_type.at(object->type_hash()).datas;
@@ -177,7 +177,7 @@ public:
                     set_datas(object, move(data_set));
                 });
                 for_each_instance([&](auto object) {
-                    object->fill_data(get_datas(object));
+                    object->fill_datas(get_datas(object));
                 });
                 for_each_representative([&](auto object) {
                     datas_type &data_set = get_datas(object);

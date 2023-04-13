@@ -93,7 +93,10 @@ public:
 };
 
 template<typename T>
-class ManagedWrapper : public Managed<T> {
+class PolymorphicElement;
+
+template<typename T, typename U = float>
+class ManagedWrapper : public Managed<T>, public PolymorphicElement<U> {
 public:
     using Super = Managed<T>;
 
@@ -104,6 +107,14 @@ private:
 public:
     ManagedWrapper() = default;
     void init(ResourceArray &resource_array) noexcept { _resource_array = &resource_array; }
+
+    [[nodiscard]] uint datas_size() const noexcept override {
+        return sizeof(_id);
+    }
+    void fill_datas(ManagedWrapper<U> &datas) const noexcept override {
+        datas.push_back(bit_cast<U>(_id));
+    }
+
     explicit ManagedWrapper(ResourceArray &resource_array) : _resource_array(&resource_array) {}
     void register_self() noexcept {
         _id = _resource_array->emplace(Super::device());
@@ -113,13 +124,13 @@ public:
 
     template<typename Index>
     requires concepts::all_integral<expr_value_t<Index>>
-        OC_NODISCARD auto read(Index &&index) const noexcept {
+    OC_NODISCARD auto read(Index &&index) const noexcept {
         return _resource_array->buffer<T>(_id).read(OC_FORWARD(index));
     }
 
     template<typename Target, typename Offset>
     requires is_integral_expr_v<Offset>
-        OC_NODISCARD auto byte_read(Offset &&offset) const noexcept {
+    OC_NODISCARD auto byte_read(Offset &&offset) const noexcept {
         return _resource_array->byte_buffer(_id).read<Target>(OC_FORWARD(offset));
     }
 
