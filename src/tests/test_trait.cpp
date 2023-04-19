@@ -46,11 +46,12 @@ template<typename T>
 template<typename Ret, typename T>
 [[nodiscard]] Ret decode(const vector<T> &array, uint offset) noexcept {
     if constexpr (is_scalar_v<Ret>) {
-        return array[offset];
+        return bit_cast<Ret>(array[offset]);
     } else if constexpr (is_vector_v<Ret>) {
         Ret ret;
+        using element_ty = vector_element_t<Ret>;
         for (int i = 0; i < vector_dimension_v<Ret>; ++i) {
-            ret[i] = array[offset + i];
+            ret[i] = bit_cast<element_ty>(array[offset + i]);
         }
         return ret;
     } else if constexpr (is_matrix_v<Ret>) {
@@ -58,7 +59,7 @@ template<typename Ret, typename T>
         uint cursor = 0u;
         for (int i = 0; i < matrix_dimension_v<Ret>; ++i) {
             for (int j = 0; j < matrix_dimension_v<Ret>; ++j) {
-                ret[i][j] = array[cursor + offset];
+                ret[i][j] = bit_cast<float>(array[cursor + offset]);
                 ++cursor;
             }
         }
@@ -97,10 +98,10 @@ struct Test {
 int main() {
 
     //    Test t;
-    vector<float> v;
-    float4x4 mat = make_float4x4(1.f);
+    vector<uint> v;
+    auto mat = make_float3x3(5.6f);
     detail::encode(v, mat);
-    float4x4 f = detail::decode<float4x4>(v, 0);
+    auto f = detail::decode<float3x3>(v, 0);
 
 
     //    cout << is_vector_v<float2>;
