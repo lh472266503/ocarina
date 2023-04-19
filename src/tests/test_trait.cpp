@@ -44,22 +44,22 @@ template<typename T>
 }
 
 template<typename Ret, typename T>
-[[nodiscard]] Ret decode(const vector<T> &array, uint offset) noexcept {
+[[nodiscard]] Var<Ret> decode(const Array<T> &array, uint offset) noexcept {
     if constexpr (is_scalar_v<Ret>) {
-        return bit_cast<Ret>(array[offset]);
+        return as<Ret>(array[offset]);
     } else if constexpr (is_vector_v<Ret>) {
-        Ret ret;
+        Var<Ret> ret;
         using element_ty = vector_element_t<Ret>;
         for (int i = 0; i < vector_dimension_v<Ret>; ++i) {
-            ret[i] = bit_cast<element_ty>(array[offset + i]);
+            ret[i] = as<element_ty>(array[offset + i]);
         }
         return ret;
     } else if constexpr (is_matrix_v<Ret>) {
-        Ret ret;
+        Var<Ret> ret;
         uint cursor = 0u;
         for (int i = 0; i < matrix_dimension_v<Ret>; ++i) {
             for (int j = 0; j < matrix_dimension_v<Ret>; ++j) {
-                ret[i][j] = bit_cast<float>(array[cursor + offset]);
+                ret[i][j] = as<float>(array[cursor + offset]);
                 ++cursor;
             }
         }
@@ -90,18 +90,15 @@ struct Test {
 
     void decode(const DataAccessor<float> *da) noexcept {
         Array<float> values = da->read_dynamic_array<float>(2);
-//        _device_a = detail::decode<decltype(a)>(values, _offset_a);
-//        _device_b = detail::decode<decltype(b)>(values, _offset_b);
+        _device_a = detail::decode<decltype(a)>(values, _offset_a);
+        _device_b = detail::decode<decltype(b)>(values, _offset_b);
     }
 };
 
 int main() {
 
-    //    Test t;
-    vector<uint> v;
-    auto mat = make_float3x3(5.6f);
-    detail::encode(v, mat);
-    auto f = detail::decode<float3x3>(v, 0);
+        Test t;
+
 
 
     //    cout << is_vector_v<float2>;
