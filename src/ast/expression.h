@@ -144,7 +144,7 @@ public:
     }
 
     AccessExpr(const Type *type, const Expression *range, IndexVector indexes)
-        : Expression(Tag::ACCESS, type), _range(range), _indexes(move(indexes)) {
+        : Expression(Tag::ACCESS, type), _range(range), _indexes(ocarina::move(indexes)) {
         _range->mark(Usage::READ);
         for_each_index([](const Expression *index) {
             index->mark(Usage::READ);

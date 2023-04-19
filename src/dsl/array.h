@@ -139,8 +139,8 @@ public:
         return s;
     }
 
-    template<typename T, typename F>
-    [[nodiscard]] auto reduce(T &&initial, F &&f) const noexcept {
+    template<typename I, typename F>
+    [[nodiscard]] auto reduce(I &&initial, F &&f) const noexcept {
         auto r = eval(OC_FORWARD(initial));
         for (auto i = 0u; i < size(); i++) {
             if constexpr (std::invocable<F, Var<expr_value_t<decltype(r)>>, Float>) {

@@ -83,6 +83,9 @@ OC_NDSC_INLINE size_t pixel_size(PixelStorage pixel_storage) noexcept {
         case PixelStorage::FLOAT1: return sizeof(float);
         case PixelStorage::FLOAT2: return sizeof(float2);
         case PixelStorage::FLOAT4: return sizeof(float4);
+        case PixelStorage::UINT1: break;
+        case PixelStorage::UINT2: break;
+        case PixelStorage::UINT4: break;
         case PixelStorage::UNKNOWN: break;
     }
     OC_ASSERT(0);

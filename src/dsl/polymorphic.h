@@ -36,14 +36,14 @@ struct DataAccessor {
 
     template<typename T>
     [[nodiscard]] Array<T> read_dynamic_array(uint size) const noexcept {
-        auto ret = datas.read_dynamic_array<T>(size, offset);
+        auto ret = datas.template read_dynamic_array<T>(size, offset);
         offset += size * static_cast<uint>(sizeof(T));
         return ret;
     }
 
     template<typename Target>
     OC_NODISCARD auto byte_read() const noexcept {
-        auto ret = datas.byte_read<Target>(offset);
+        auto ret = datas.template byte_read<Target>(offset);
         offset += static_cast<uint>(sizeof(Target));
         return ret;
     }
@@ -153,7 +153,7 @@ public:
         return _type_mgr.all_type.at(object->type_hash()).datas;
     }
     void set_datas(const std::remove_pointer_t<T> *object, datas_type &&datas) noexcept {
-        _type_mgr.all_type.at(object->type_hash()).datas = move(datas);
+        _type_mgr.all_type.at(object->type_hash()).datas = ocarina::move(datas);
     }
     void set_mode(PolymorphicMode mode) noexcept { _mode = mode; }
     [[nodiscard]] PolymorphicMode mode() const noexcept { return _mode; }
@@ -174,7 +174,7 @@ public:
             case EType: {
                 for_each_representative([&](auto object) {
                     ManagedWrapper<U> data_set{resource_array};
-                    set_datas(object, move(data_set));
+                    set_datas(object, ocarina::move(data_set));
                 });
                 for_each_instance([&](auto object) {
                     object->fill_datas(get_datas(object));

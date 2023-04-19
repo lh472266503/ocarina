@@ -55,7 +55,7 @@ template<typename T>
 template<typename T, typename Arg>
 [[nodiscard]] inline auto cast(Arg &&arg) {
     if constexpr (is_dsl_v<Arg>) {
-        return arg.cast<T>();
+        return arg.template cast<T>();
     } else {
         return static_cast<T>(OC_FORWARD(arg));
     }
@@ -64,7 +64,7 @@ template<typename T, typename Arg>
 template<typename T, typename Arg>
 [[nodiscard]] inline auto as(Arg &&arg) {
     if constexpr (is_dsl_v<Arg>) {
-        return arg.as<T>();
+        return arg.template as<T>();
     } else {
         return bit_cast<T>(OC_FORWARD(arg));
     }
@@ -345,7 +345,7 @@ void prints(ocarina::string f, Args &&...args) {
     auto func = [&]<typename... A, size_t... i>(std::tuple<A...> && tp, std::index_sequence<i...>) {
         print(f, std::get<i>(OC_FORWARD(tp))...);
     };
-    func(move(all_tuple), std::make_index_sequence<std::tuple_size_v<decltype(all_tuple)>>());
+    func(ocarina::move(all_tuple), std::make_index_sequence<std::tuple_size_v<decltype(all_tuple)>>());
 }
 
 template<typename... Args>

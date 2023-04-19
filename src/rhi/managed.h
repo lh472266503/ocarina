@@ -135,10 +135,10 @@ public:
         return _resource_array->byte_buffer(_id).read<Target>(OC_FORWARD(offset));
     }
 
-    template<typename T, typename Offset>
+    template<typename Elm, typename Offset>
     requires is_integral_expr_v<Offset>
-    [[nodiscard]] Array<T> read_dynamic_array(uint size, Offset &&offset) const noexcept {
-        return _resource_array->byte_buffer(_id).read_dynamic_array<T>(size, OC_FORWARD(offset));
+    [[nodiscard]] Array<Elm> read_dynamic_array(uint size, Offset &&offset) const noexcept {
+        return _resource_array->byte_buffer(_id).read_dynamic_array<Elm>(size, OC_FORWARD(offset));
     }
 
     template<typename Index, typename Val>

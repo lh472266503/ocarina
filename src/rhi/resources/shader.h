@@ -129,7 +129,7 @@ template<typename T = int>
 template<typename... Args>
 class Shader<void(Args...)> final : public RHIResource {
 public:
-    using signature = typename canonical_signature_t<void(Args...)>;
+    using signature = canonical_signature_t<void(Args...)>;
     using Impl = typename Shader<>::Impl;
 
 private:

@@ -224,7 +224,7 @@ class Callable<Ret(Args...)> : public FuncWrapper {
     static_assert(std::negation_v<std::disjunction<std::is_pointer<Args>...>>);
 
 public:
-    using signature = typename canonical_signature_t<Ret(Args...)>;
+    using signature = canonical_signature_t<Ret(Args...)>;
 
 public:
     Callable() = default;
@@ -267,7 +267,7 @@ struct is_kernel<Kernel<T>> : std::true_type {};
 template<typename... Args>
 class Kernel<void(Args...)> : public FuncWrapper {
 private:
-    using signature = typename canonical_signature_t<void(Args...)>;
+    using signature = canonical_signature_t<void(Args...)>;
 
 public:
     Kernel() = default;
