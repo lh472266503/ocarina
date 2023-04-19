@@ -4,6 +4,7 @@
 
 #include "optix_accel.h"
 #include "cuda_device.h"
+#include <optix_stubs.h>
 #include "cuda_command_visitor.h"
 
 namespace ocarina {
