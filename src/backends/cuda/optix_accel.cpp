@@ -29,9 +29,10 @@ void mat4x4_to_array12(float4x4 mat, float *output) {
 }
 }// namespace detail
 
-void OptixAccel::build_bvh(CUDACommandVisitor*visitor) noexcept {
+void OptixAccel::build_bvh(CUDACommandVisitor *visitor) noexcept {
     _device->use_context([&] {
         vector<OptixTraversableHandle> traversable_handles;
+        traversable_handles.reserve(_meshes.size());
         for (const Mesh::Impl *mesh : _meshes) {
             traversable_handles.push_back(mesh->blas_handle());
         }
@@ -79,13 +80,13 @@ void OptixAccel::build_bvh(CUDACommandVisitor*visitor) noexcept {
 
         _instances.upload_immediately(optix_instances.data());
         OC_OPTIX_CHECK(optixAccelBuild(_device->optix_device_context(),
-                                    nullptr, &accel_options,
-                                    &instance_input, 1,
-                                    temp_buffer.ptr<CUdeviceptr>(),
-                                    ias_buffer_sizes.tempSizeInBytes,
-                                    ias_buffer.ptr<CUdeviceptr>(),
-                                    ias_buffer_sizes.outputSizeInBytes,
-                                    &_tlas_handle, &emit_desc, 1));
+                                       nullptr, &accel_options,
+                                       &instance_input, 1,
+                                       temp_buffer.ptr<CUdeviceptr>(),
+                                       ias_buffer_sizes.tempSizeInBytes,
+                                       ias_buffer.ptr<CUdeviceptr>(),
+                                       ias_buffer_sizes.outputSizeInBytes,
+                                       &_tlas_handle, &emit_desc, 1));
 
         auto compacted_gas_size = _device->download<size_t>(emit_desc.result);
         OC_INFO_FORMAT("tlas : compacted_gas_size is {} byte", compacted_gas_size);
