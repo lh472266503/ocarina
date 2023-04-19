@@ -47,7 +47,7 @@ template<typename T>
 }
 
 template<typename Ret, typename T>
-[[nodiscard]] Var<Ret> decode(const Array<T> &array, uint offset) noexcept {
+[[nodiscard]] auto decode(const Array<T> &array, uint offset) noexcept {
     if constexpr (is_scalar_v<Ret>) {
         return as<Ret>(array[offset]);
     } else if constexpr (is_vector_v<Ret>) {

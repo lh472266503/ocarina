@@ -108,6 +108,21 @@ using expr_value = detail::expr_value_impl<std::remove_cvref_t<T>>;
 template<typename T>
 using expr_value_t = typename expr_value<T>::type;
 
+namespace detail {
+template<typename T>
+struct dsl_impl {
+    using type = Var<T>;
+};
+
+template<typename T>
+struct dsl_impl<vector<T>> {
+    using type = Array<T>;
+};
+}// namespace detail
+
+template<typename T>
+using dsl_t = typename detail::dsl_impl<std::remove_cvref_t<T>>::type;
+
 template<typename T>
 using vector_expr_element = vector_element<expr_value_t<T>>;
 
@@ -228,17 +243,17 @@ using is_same_expr = concepts::is_same<expr_value_t<T>...>;
 template<typename... T>
 constexpr auto is_same_expr_v = is_same_expr<T...>::value;
 
-template<typename ...Ts>
+template<typename... Ts>
 using is_all_basic_expr = is_all_basic<expr_value_t<Ts>...>;
 OC_DEFINE_TEMPLATE_VALUE_MULTI(is_all_basic_expr)
 
 #define EXPR_TYPE_TRAITS(type)                                                    \
-template<typename T>                                                          \
-using is_##type##_expr = is_##type<expr_value_t<T>>;                          \
-OC_DEFINE_TEMPLATE_VALUE(is_##type##_expr)                                    \
-template<typename... T>                                                       \
-using is_all_##type##_expr = std::disjunction<is_##type<expr_value_t<T>>...>; \
-OC_DEFINE_TEMPLATE_VALUE_MULTI(is_all_##type##_expr)
+    template<typename T>                                                          \
+    using is_##type##_expr = is_##type<expr_value_t<T>>;                          \
+    OC_DEFINE_TEMPLATE_VALUE(is_##type##_expr)                                    \
+    template<typename... T>                                                       \
+    using is_all_##type##_expr = std::disjunction<is_##type<expr_value_t<T>>...>; \
+    OC_DEFINE_TEMPLATE_VALUE_MULTI(is_all_##type##_expr)
 
 EXPR_TYPE_TRAITS(integral)
 EXPR_TYPE_TRAITS(boolean)
@@ -248,9 +263,9 @@ EXPR_TYPE_TRAITS(scalar)
 #undef EXPR_TYPE_TRAITS
 
 #define EXPR_DIMENSION_TRAITS(cls, dim)                          \
-template<typename T>                                         \
-using is_##cls##dim##_expr = is_##cls##dim<expr_value_t<T>>; \
-OC_DEFINE_TEMPLATE_VALUE(is_##cls##dim##_expr)
+    template<typename T>                                         \
+    using is_##cls##dim##_expr = is_##cls##dim<expr_value_t<T>>; \
+    OC_DEFINE_TEMPLATE_VALUE(is_##cls##dim##_expr)
 
 EXPR_DIMENSION_TRAITS(vector, )
 EXPR_DIMENSION_TRAITS(vector, 2)
@@ -265,21 +280,21 @@ EXPR_DIMENSION_TRAITS(matrix, 4)
 #undef EXPR_DIMENSION_TRAITS
 
 #define EXPR_VECTOR_TYPE_TRAITS(type)                                                 \
-template<typename T>                                                              \
-using is_##type##_vector_expr = is_##type##_vector<expr_value_t<T>>;              \
-OC_DEFINE_TEMPLATE_VALUE(is_##type##_vector_expr)                                 \
-template<typename T>                                                              \
-using is_##type##_element = std::is_same<type, vector_element_t<T>>;              \
-OC_DEFINE_TEMPLATE_VALUE(is_##type##_element)                                     \
-template<typename T>                                                              \
-using is_##type##_element_expr = is_##type##_element<expr_value_t<T>>;            \
-OC_DEFINE_TEMPLATE_VALUE(is_##type##_element_expr)                                \
-template<typename... T>                                                           \
-using is_all_##type##_element = std::conjunction<is_##type##_element<T>...>;      \
-OC_DEFINE_TEMPLATE_VALUE_MULTI(is_all_##type##_element)                           \
-template<typename... T>                                                           \
-using is_all_##type##_element_expr = is_all_##type##_element<expr_value_t<T>...>; \
-OC_DEFINE_TEMPLATE_VALUE_MULTI(is_all_##type##_element_expr)
+    template<typename T>                                                              \
+    using is_##type##_vector_expr = is_##type##_vector<expr_value_t<T>>;              \
+    OC_DEFINE_TEMPLATE_VALUE(is_##type##_vector_expr)                                 \
+    template<typename T>                                                              \
+    using is_##type##_element = std::is_same<type, vector_element_t<T>>;              \
+    OC_DEFINE_TEMPLATE_VALUE(is_##type##_element)                                     \
+    template<typename T>                                                              \
+    using is_##type##_element_expr = is_##type##_element<expr_value_t<T>>;            \
+    OC_DEFINE_TEMPLATE_VALUE(is_##type##_element_expr)                                \
+    template<typename... T>                                                           \
+    using is_all_##type##_element = std::conjunction<is_##type##_element<T>...>;      \
+    OC_DEFINE_TEMPLATE_VALUE_MULTI(is_all_##type##_element)                           \
+    template<typename... T>                                                           \
+    using is_all_##type##_element_expr = is_all_##type##_element<expr_value_t<T>...>; \
+    OC_DEFINE_TEMPLATE_VALUE_MULTI(is_all_##type##_element_expr)
 
 EXPR_VECTOR_TYPE_TRAITS(bool)
 EXPR_VECTOR_TYPE_TRAITS(float)
@@ -307,10 +322,10 @@ OC_DEFINE_TEMPLATE_VALUE(is_dsl_integral)
 
 template<typename T>
 using is_dsl_scalar = std::disjunction<is_dsl_integral<T>,
-is_boolean<T>,
-is_char<T>,
-is_uchar<T>,
-ocarina::is_floating_point<T>>;
+                                       is_boolean<T>,
+                                       is_char<T>,
+                                       is_uchar<T>,
+                                       ocarina::is_floating_point<T>>;
 OC_DEFINE_TEMPLATE_VALUE(is_dsl_scalar)
 
 template<typename T>
@@ -424,7 +439,6 @@ OC_DEFINE_TEMPLATE_VALUE(is_array_expr)
 
 }// namespace ocarina
 
-
 namespace ocarina {
 
 class Ray;
@@ -432,10 +446,12 @@ class Ray;
 namespace detail {
 
 template<typename T>
-requires is_dsl_v<T> Var<Ray> ray_deduce();
+requires is_dsl_v<T>
+Var<Ray> ray_deduce();
 
 template<typename T>
-requires(!is_dsl_v<T>) Ray ray_deduce();
+requires(!is_dsl_v<T>)
+Ray ray_deduce();
 
 template<typename T>
 struct ray {
@@ -450,10 +466,12 @@ using ray_t = typename detail::ray<std::remove_cvref_t<T>>::type;
 namespace detail {
 
 template<typename T>
-requires is_dsl_v<T> Var<bool> boolean_deduce();
+requires is_dsl_v<T>
+Var<bool> boolean_deduce();
 
 template<typename T>
-requires(!is_dsl_v<T>) bool boolean_deduce();
+requires(!is_dsl_v<T>)
+bool boolean_deduce();
 
 template<typename T>
 struct boolean {
@@ -468,7 +486,8 @@ using boolean_t = typename detail::boolean<std::remove_cvref_t<T>>::type;
 namespace detail {
 
 template<typename T>
-requires is_scalar_v<expr_value_t<T>> T scalar_deduce();
+requires is_scalar_v<expr_value_t<T>>
+T scalar_deduce();
 
 template<typename T>
 requires is_vector_v<expr_value_t<T>>
@@ -491,12 +510,15 @@ using scalar_t = typename detail::scalar<T>::type;
 namespace detail {
 
 template<typename T, size_t N>
-requires(!is_dsl_v<T>) && is_scalar_v<expr_value_t<T>> Vector<expr_value_t<T>, N> vector_deduce();
+requires(!is_dsl_v<T>) && is_scalar_v<expr_value_t<T>>
+Vector<expr_value_t<T>, N> vector_deduce();
 template<typename T, size_t N>
-requires is_dsl_v<T> && is_scalar_v<expr_value_t<T>> Var<Vector<expr_value_t<T>, N>> vector_deduce();
+requires is_dsl_v<T> && is_scalar_v<expr_value_t<T>>
+Var<Vector<expr_value_t<T>, N>> vector_deduce();
 
 template<typename T, size_t N>
-requires(!is_dsl_v<T>) && is_vector_v<T> auto vector_deduce() {
+requires(!is_dsl_v<T>) && is_vector_v<T>
+auto vector_deduce() {
     return Vector<vector_expr_element_t<T>, N>();
 }
 template<typename T, size_t N>
@@ -506,9 +528,11 @@ auto vector_deduce() {
 }
 
 template<typename T, size_t N>
-requires(!is_dsl_v<T>) && is_matrix_v<T> Vector<float, N> vector_deduce();
+requires(!is_dsl_v<T>) && is_matrix_v<T>
+Vector<float, N> vector_deduce();
 template<typename T, size_t N>
-requires is_dsl_v<T> && is_matrix_expr_v<T> Var<Vector<float, N>> vector_deduce();
+requires is_dsl_v<T> && is_matrix_expr_v<T>
+Var<Vector<float, N>> vector_deduce();
 
 template<typename T, size_t N>
 struct vec {
@@ -529,10 +553,12 @@ using vec4_t = vec_t<T, 4>;
 namespace detail {
 
 template<typename T, size_t N>
-requires(!is_dsl_v<T>) Matrix<N> matrix_deduce();
+requires(!is_dsl_v<T>)
+Matrix<N> matrix_deduce();
 
 template<typename T, size_t N>
-requires is_dsl_v<T> Var<Matrix<N>> matrix_deduce();
+requires is_dsl_v<T>
+Var<Matrix<N>> matrix_deduce();
 
 template<typename T, size_t N>
 struct matrix {
@@ -586,7 +612,7 @@ struct port_impl {
 };
 }// namespace detail
 
-template<typename ...Ts>
+template<typename... Ts>
 static constexpr auto port_v = detail::port_impl<Ts...>::value;
 
 namespace detail {
@@ -600,14 +626,14 @@ template<typename T, typename... Args>
 using condition_t = typename detail::condition_impl<T, Args...>::type;
 
 #define OC_MAKE_VAR_TYPE_IMPL(type, dim) \
-template<EPort port>                 \
-using oc_##type##dim = var_t<type##dim, port>;
+    template<EPort port>                 \
+    using oc_##type##dim = var_t<type##dim, port>;
 
 #define OC_MAKE_VAR_TYPE(type)     \
-OC_MAKE_VAR_TYPE_IMPL(type, )  \
-OC_MAKE_VAR_TYPE_IMPL(type, 2) \
-OC_MAKE_VAR_TYPE_IMPL(type, 3) \
-OC_MAKE_VAR_TYPE_IMPL(type, 4)
+    OC_MAKE_VAR_TYPE_IMPL(type, )  \
+    OC_MAKE_VAR_TYPE_IMPL(type, 2) \
+    OC_MAKE_VAR_TYPE_IMPL(type, 3) \
+    OC_MAKE_VAR_TYPE_IMPL(type, 4)
 
 struct Hit;
 
@@ -621,8 +647,8 @@ OC_MAKE_VAR_TYPE_IMPL(Ray, )
 OC_MAKE_VAR_TYPE_IMPL(Hit, )
 
 #define OC_MAKE_VAR_MAT(dim) \
-template<EPort port>     \
-using oc_float##dim##x##dim = var_t<float##dim##x##dim, port>;
+    template<EPort port>     \
+    using oc_float##dim##x##dim = var_t<float##dim##x##dim, port>;
 
 OC_MAKE_VAR_MAT(2)
 OC_MAKE_VAR_MAT(3)
