@@ -133,8 +133,6 @@ using std::acos;
 using std::atan;
 using std::floor;
 using std::ceil;
-using std::isinf;
-using std::isnan;
 using std::copysign;
 using std::sinh;
 using std::cosh;
@@ -143,6 +141,19 @@ using std::asinh;
 using std::acosh;
 using std::atanh;
 using std::fmod;
+
+[[nodiscard]] inline bool isnan(float x) noexcept {
+    auto u = 0u;
+    ::memcpy(&u, &x, sizeof(float));
+    return (u & 0x7f800000u) == 0x7f800000u && (u & 0x007fffffu) != 0u;
+}
+
+[[nodiscard]] inline bool isinf(float x) noexcept {
+    auto u = 0u;
+    ::memcpy(&u, &x, sizeof(float));
+    return (u & 0x7f800000u) == 0x7f800000u && (u & 0x007fffffu) == 0u;
+}
+
 
 inline void oc_memcpy(void *dst, const void *src, size_t size) {
 #ifdef _MSC_VER

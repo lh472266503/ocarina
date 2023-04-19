@@ -90,7 +90,7 @@ int main(int argc, char *argv[]) {
 //        c.write(thread_id(), c.read(thread_id()) * 2);
         c[thread_id()] *= 2;
         a = add(a, b);
-        Bool bbbb = isinf(f);
+        Bool bbbb = ocarina::isinf(f);
     };
 
     auto shader = device.compile(kn);
