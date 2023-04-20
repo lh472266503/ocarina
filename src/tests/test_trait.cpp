@@ -8,7 +8,21 @@
 
 using namespace ocarina;
 
+namespace ocarina {
+namespace detail {
 
+template<typename T>
+struct SharedData {
+    using element_ty = T;
+    element_ty host;
+    dsl_t<T> device;
+    uint offset;
+
+
+};
+
+}
+}
 
 #define OC_SERIALIZE_MEMBER(type, name) \
     type name{};                        \
@@ -45,6 +59,8 @@ struct Test {
 int main() {
 
     Test t;
+
+    Float a;
 
     //    cout << is_vector_v<float2>;
     //    cout << (!is_dsl_v<Float3>) && is_vector_v<Float3> ;

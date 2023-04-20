@@ -101,9 +101,19 @@ public:
     __device__ constexpr oc_array(const oc_array &) noexcept = default;
     __device__ constexpr oc_array &operator=(oc_array &&) noexcept = default;
     __device__ constexpr oc_array &operator=(const oc_array &) noexcept = default;
+    template<oc_uint offset, oc_uint count>
+    __device__ oc_array<T, count - offset> sub() noexcept {
+        oc_array<T, count - offset> ret;
+        for (oc_uint i = 0; i < count - offset; i++) {
+            ret[i] = (*this)[i + offset];
+        }
+        return ret;
+    }
     [[nodiscard]] __device__ T &operator[](size_t i) noexcept { return _data[i]; }
     [[nodiscard]] __device__ T operator[](size_t i) const noexcept { return _data[i]; }
-};\n"""
+};
+
+"""
 
     content +=string
 
