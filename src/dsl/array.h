@@ -173,8 +173,8 @@ template<typename T>
 template<typename T>
 template<typename U, typename V>
 requires(is_all_floating_point_expr_v<U, V>)
-    Array<float> EnableTextureSample<T>::sample(uint channel_num, const U &u, const V &v)
-const noexcept {
+Array<float> EnableTextureSample<T>::sample(uint channel_num, const U &u, const V &v)
+    const noexcept {
     const T *texture = static_cast<const T *>(this);
     const CallExpr *expr = Function::current()->call_builtin(Array<float>::type(channel_num),
                                                              CallOp::TEX_SAMPLE,
@@ -188,8 +188,8 @@ const noexcept {
 template<typename T>
 template<typename U, typename V, typename W>
 requires(is_all_floating_point_expr_v<U, V, W>)
-    Array<float> EnableTextureSample<T>::sample(uint channel_num, const U &u, const V &v, const W &w)
-const noexcept {
+Array<float> EnableTextureSample<T>::sample(uint channel_num, const U &u, const V &v, const W &w)
+    const noexcept {
     const T *texture = static_cast<const T *>(this);
     const CallExpr *expr = Function::current()->call_builtin(Array<float>::type(channel_num),
                                                              CallOp::TEX_SAMPLE,
@@ -204,16 +204,16 @@ const noexcept {
 template<typename T>
 template<typename UVW>
 requires(is_float_vector3_v<expr_value_t<UVW>>)
-    Array<float> EnableTextureSample<T>::sample(uint channel_num, const UVW &uvw)
-const noexcept {
+Array<float> EnableTextureSample<T>::sample(uint channel_num, const UVW &uvw)
+    const noexcept {
     return sample(channel_num, uvw.x, uvw.y, uvw.z);
 }
 
 template<typename T>
 template<typename UV>
 requires(is_float_vector2_v<expr_value_t<UV>>)
-    Array<float> EnableTextureSample<T>::sample(uint channel_num, const UV &uv)
-const noexcept {
+Array<float> EnableTextureSample<T>::sample(uint channel_num, const UV &uv)
+    const noexcept {
     return sample(channel_num, uv.x, uv.y);
 }
 
@@ -229,8 +229,8 @@ template<typename T, typename Offset>
 
 template<typename U, typename V>
 requires(is_all_floating_point_expr_v<U, V>)
-    Array<float> ResourceArrayTexture::sample(uint channel_num, const U &u, const V &v)
-const noexcept {
+Array<float> ResourceArrayTexture::sample(uint channel_num, const U &u, const V &v)
+    const noexcept {
     const CallExpr *expr = Function::current()->call_builtin(Array<float>::type(channel_num),
                                                              CallOp::RESOURCE_ARRAY_TEX_SAMPLE,
                                                              {_array, _index, OC_EXPR(u), OC_EXPR(v)},
@@ -240,8 +240,8 @@ const noexcept {
 
 template<typename U, typename V, typename W>
 requires(is_all_floating_point_expr_v<U, V, W>)
-    Array<float> ResourceArrayTexture::sample(uint channel_num, const U &u, const V &v, const W &w)
-const noexcept {
+Array<float> ResourceArrayTexture::sample(uint channel_num, const U &u, const V &v, const W &w)
+    const noexcept {
     const CallExpr *expr = Function::current()->call_builtin(Array<float>::type(channel_num),
                                                              CallOp::RESOURCE_ARRAY_TEX_SAMPLE,
                                                              {_array, _index, OC_EXPR(u), OC_EXPR(v), OC_EXPR(w)},
@@ -251,15 +251,15 @@ const noexcept {
 
 template<typename UVW>
 requires(is_float_vector3_v<expr_value_t<UVW>>)
-    Array<float> ResourceArrayTexture::sample(uint channel_num, const UVW &uvw)
-const noexcept {
+Array<float> ResourceArrayTexture::sample(uint channel_num, const UVW &uvw)
+    const noexcept {
     return sample(channel_num, uvw.x, uvw.y, uvw.z);
 }
 
 template<typename UV>
 requires(is_float_vector2_v<expr_value_t<UV>>)
-    Array<float> ResourceArrayTexture::sample(uint channel_num, const UV &uv)
-const noexcept {
+Array<float> ResourceArrayTexture::sample(uint channel_num, const UV &uv)
+    const noexcept {
     return sample(channel_num, uv.x, uv.y);
 }
 
