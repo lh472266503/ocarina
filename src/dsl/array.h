@@ -99,6 +99,14 @@ public:
         return ret;
     }
 
+    [[nodiscard]] Array<T> sub(uint offset, uint num) const noexcept {
+        Array<T> ret{num};
+        for (int i = 0; i < num; ++i) {
+            ret[i] = at(i + offset);
+        }
+        return ret;
+    }
+
     [[nodiscard]] Var<Vector<T, 2>> as_vec2() const noexcept { return as_vec<2>(); }
     [[nodiscard]] Var<Vector<T, 3>> as_vec3() const noexcept { return as_vec<3>(); }
     [[nodiscard]] Var<Vector<T, 4>> as_vec4() const noexcept { return as_vec<4>(); }
