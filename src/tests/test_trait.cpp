@@ -12,7 +12,7 @@ namespace ocarina {
 namespace detail {
 
 template<typename value_ty>
-requires (is_std_vector_v<value_ty> && is_scalar_v<typename value_ty::value_type>) || is_basic_v<value_ty>
+requires(is_std_vector_v<value_ty> && is_scalar_v<typename value_ty::value_type>) || is_basic_v<value_ty>
 struct SharedData {
 public:
     value_ty _host_value{};
@@ -54,6 +54,39 @@ public:
             return sqr(matrix_dimension_v<value_ty>);
         } else if constexpr (is_std_vector_v<value_ty>) {
             return _host_value.size();
+        } else {
+            static_assert(always_false_v<value_ty>);
+        }
+    }
+
+    template<typename T>
+    [[nodiscard]] auto decode(const Array<T> &array, uint offset) noexcept {
+        if constexpr (is_scalar_v<value_ty>) {
+            return as<value_ty>(array[offset]);
+        } else if constexpr (is_vector_v<value_ty>) {
+            Var<value_ty> ret;
+            using element_ty = vector_element_t<value_ty>;
+            for (int i = 0; i < vector_dimension_v<value_ty>; ++i) {
+                ret[i] = as<element_ty>(array[offset + i]);
+            }
+            return ret;
+        } else if constexpr (is_matrix_v<value_ty>) {
+            Var<value_ty> ret;
+            uint cursor = 0u;
+            for (int i = 0; i < matrix_dimension_v<value_ty>; ++i) {
+                for (int j = 0; j < matrix_dimension_v<value_ty>; ++j) {
+                    ret[i][j] = as<float>(array[cursor + offset]);
+                    ++cursor;
+                }
+            }
+            return ret;
+        } else if constexpr (is_std_vector_v<value_ty>) {
+            using element_ty = value_ty::value_type;
+            Array<element_ty> ret;
+            for (int i = 0; i < _host_value.size(); ++i) {
+                ret[i] = array[i + offset];
+            }
+            return ret;
         } else {
             static_assert(always_false_v<value_ty>);
         }
