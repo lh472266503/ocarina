@@ -38,8 +38,8 @@ template<typename... T>
 constexpr auto always_true_v = always_true<T...>::value;
 
 template<typename T>
-requires std::is_enum_v<T> [
-    [nodiscard]] constexpr auto
+requires std::is_enum_v<T>
+[[nodiscard]] constexpr auto
 to_underlying(T e) noexcept {
     return static_cast<std::underlying_type_t<T>>(e);
 }
@@ -92,8 +92,8 @@ constexpr auto is_unsigned_v = is_unsigned<T>::value;
 template<typename T>
 using is_scalar = std::disjunction<is_integral<T>,
                                    is_boolean<T>,
-//                                   is_char<T>,
-//                                   is_uchar<T>,
+                                   //                                   is_char<T>,
+                                   //                                   is_uchar<T>,
                                    ocarina::is_floating_point<T>>;
 
 template<typename T>
@@ -314,7 +314,7 @@ using is_basic = std::disjunction<is_scalar<T>, is_vector<T>, is_matrix<T>>;
 template<typename T>
 constexpr auto is_basic_v = is_basic<T>::value;
 
-template<typename ...Ts>
+template<typename... Ts>
 using is_all_basic = std::conjunction<is_basic<Ts>...>;
 
 OC_DEFINE_TEMPLATE_VALUE_MULTI(is_all_basic)
@@ -327,5 +327,16 @@ using is_valid_buffer_element = std::conjunction<
 
 template<typename T>
 constexpr auto is_valid_buffer_element_v = is_valid_buffer_element<T>::value;
+
+namespace detail {
+template<typename T>
+struct is_std_vector_impl : std::false_type {};
+
+template<typename T>
+struct is_std_vector_impl<ocarina::vector<T>> : std::true_type {};
+}// namespace detail
+
+template<typename T>
+static constexpr bool is_std_vector_v = detail::is_std_vector_impl<std::remove_cvref_t<T>>::value;
 
 }// namespace ocarina

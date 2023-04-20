@@ -12,17 +12,19 @@ namespace ocarina {
 namespace detail {
 
 template<typename T>
+requires is_std_vector_v<T> || is_basic_v<T>
 struct SharedData {
     using element_ty = T;
-    element_ty host;
-    dsl_t<T> device;
+    T _host_value;
+    dsl_t<T> _device_value;
     uint offset;
 
-
+    [[nodiscard]] T hv() const noexcept { return _host_value; }
+    [[nodiscard]] dsl_t<T> dv() const noexcept { return _device_value; }
 };
 
 }
-}
+}// namespace ocarina::detail
 
 #define OC_SERIALIZE_MEMBER(type, name) \
     type name{};                        \
