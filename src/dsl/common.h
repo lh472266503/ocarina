@@ -16,5 +16,6 @@
 #include "struct.h"
 #include "rtx_type.h"
 #include "computable.inl"
+#include "shared_data.h"
 #include "polymorphic.h"
 #include "printer.h"

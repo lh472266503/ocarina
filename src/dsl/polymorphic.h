@@ -11,69 +11,6 @@
 
 namespace ocarina {
 
-namespace detail {
-template<typename T, typename Elm>
-requires(sizeof(T) == sizeof(float))
-void encode(vector<T> &data, Elm elm) noexcept {
-    if constexpr (is_scalar_v<Elm>) {
-        data.push_back(bit_cast<T>(elm));
-    } else if constexpr (is_vector_v<Elm>) {
-        for (int i = 0; i < vector_dimension_v<Elm>; ++i) {
-            data.push_back(bit_cast<T>(elm[i]));
-        }
-    } else if constexpr (is_matrix_v<Elm>) {
-        for (int i = 0; i < matrix_dimension_v<Elm>; ++i) {
-            for (int j = 0; j < matrix_dimension_v<Elm>; ++j) {
-                data.push_back(bit_cast<T>(elm[i][j]));
-            }
-        }
-    } else {
-        static_assert(always_false_v<Elm>);
-    }
-}
-
-template<typename T>
-[[nodiscard]] uint size_of(T t) noexcept {
-    if constexpr (is_scalar_v<T>) {
-        static_assert(sizeof(T) <= sizeof(float));
-        return 1;
-    } else if constexpr (is_vector_v<T>) {
-        return vector_dimension_v<T>;
-    } else if constexpr (is_matrix_v<T>) {
-        return sqr(matrix_dimension_v<T>);
-    } else {
-        static_assert(always_false_v<T>);
-    }
-}
-
-template<typename Ret, typename T>
-[[nodiscard]] auto decode(const Array<T> &array, uint offset) noexcept {
-    if constexpr (is_scalar_v<Ret>) {
-        return as<Ret>(array[offset]);
-    } else if constexpr (is_vector_v<Ret>) {
-        Var<Ret> ret;
-        using element_ty = vector_element_t<Ret>;
-        for (int i = 0; i < vector_dimension_v<Ret>; ++i) {
-            ret[i] = as<element_ty>(array[offset + i]);
-        }
-        return ret;
-    } else if constexpr (is_matrix_v<Ret>) {
-        Var<Ret> ret;
-        uint cursor = 0u;
-        for (int i = 0; i < matrix_dimension_v<Ret>; ++i) {
-            for (int j = 0; j < matrix_dimension_v<Ret>; ++j) {
-                ret[i][j] = as<float>(array[cursor + offset]);
-                ++cursor;
-            }
-        }
-        return ret;
-    } else {
-        static_assert(always_false_v<Ret>);
-    }
-}
-
-}// namespace ocarina::detail
-
 enum PolymorphicMode {
     EInstance = 0,
     EType = 1
