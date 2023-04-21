@@ -54,11 +54,16 @@ int main(int argc, char *argv[]) {
 
 
     Kernel kernel = [&](Float a) {
-//        DataAccessor<float> da{0u, vv};
-        Printer::instance().info("a = {}", as<int>(vv.read(2)));
+        DataAccessor<float> da{0u, vv};
+        t.decode(&da);
+        Printer::instance().info("a = {} {}", t.a.dv());
+        Printer::instance().info("b = {} {} {}", t.b.dv());
+        Printer::instance().info("c = {}", t.c.dv());
+        Printer::instance().info("d = {}", t.d.dv());
+        Printer::instance().info("e = {} {} {}", t.e.dv().as_vec3());
     };
     auto shader = device.compile(kernel);
-    stream << shader(1.5f).dispatch(3);
+    stream << shader(1.5f).dispatch(1);
     stream << synchronize() << commit();
     Printer::instance().retrieve_immediately();
     //    Float a{nullptr};

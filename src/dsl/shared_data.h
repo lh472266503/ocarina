@@ -24,7 +24,7 @@ public:
     }
     [[nodiscard]] auto &hv() const noexcept { return _host_value; }
     [[nodiscard]] auto &hv() noexcept { return _host_value; }
-    [[nodiscard]] dsl_t<value_ty> &dv() const noexcept { return *_device_value; }
+    [[nodiscard]] const dsl_t<value_ty> &dv() const noexcept { return *_device_value; }
 
     template<typename T>
     void encode(vector<T> &data) noexcept {
@@ -87,7 +87,7 @@ public:
             return ret;
         } else if constexpr (is_std_vector_v<value_ty>) {
             using element_ty = value_ty::value_type;
-            Array<element_ty> ret;
+            Array<element_ty> ret{_host_value.size()};
             for (int i = 0; i < _host_value.size(); ++i) {
                 ret[i] = array[i + _offset];
             }
