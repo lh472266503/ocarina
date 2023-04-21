@@ -9,7 +9,6 @@
 using namespace ocarina;
 
 namespace ocarina {
-namespace detail {
 
 template<typename value_ty>
 requires(is_std_vector_v<value_ty> && is_scalar_v<typename value_ty::value_type>) || is_basic_v<value_ty>
@@ -17,10 +16,10 @@ struct SharedData {
 public:
     value_ty _host_value{};
     optional<dsl_t<value_ty>> _device_value{};
-    uint offset{};
+    uint _offset{};
 
 public:
-    SharedData(value_ty val) : _host_value(val) {}
+    SharedData(value_ty val = {}) : _host_value(val) {}
 
     [[nodiscard]] value_ty &hv() const noexcept { return _host_value; }
     [[nodiscard]] dsl_t<value_ty> &dv() const noexcept { return *_device_value; }
@@ -38,6 +37,10 @@ public:
                 for (int j = 0; j < matrix_dimension_v<value_ty>; ++j) {
                     data.push_back(bit_cast<T>(_host_value[i][j]));
                 }
+            }
+        } else if constexpr (is_std_vector_v<value_ty>) {
+            for (int i = 0; i < _host_value.size(); ++i) {
+                data.push_back(bit_cast<T>(_host_value[i]));
             }
         } else {
             static_assert(always_false_v<value_ty>);
@@ -60,14 +63,14 @@ public:
     }
 
     template<typename T>
-    [[nodiscard]] auto decode(const Array<T> &array, uint offset) noexcept {
+    [[nodiscard]] auto decode(const Array<T> &array) noexcept {
         if constexpr (is_scalar_v<value_ty>) {
-            return as<value_ty>(array[offset]);
+            return as<value_ty>(array[_offset]);
         } else if constexpr (is_vector_v<value_ty>) {
             Var<value_ty> ret;
             using element_ty = vector_element_t<value_ty>;
             for (int i = 0; i < vector_dimension_v<value_ty>; ++i) {
-                ret[i] = as<element_ty>(array[offset + i]);
+                ret[i] = as<element_ty>(array[_offset + i]);
             }
             return ret;
         } else if constexpr (is_matrix_v<value_ty>) {
@@ -75,7 +78,7 @@ public:
             uint cursor = 0u;
             for (int i = 0; i < matrix_dimension_v<value_ty>; ++i) {
                 for (int j = 0; j < matrix_dimension_v<value_ty>; ++j) {
-                    ret[i][j] = as<float>(array[cursor + offset]);
+                    ret[i][j] = as<float>(array[cursor + _offset]);
                     ++cursor;
                 }
             }
@@ -84,7 +87,7 @@ public:
             using element_ty = value_ty::value_type;
             Array<element_ty> ret;
             for (int i = 0; i < _host_value.size(); ++i) {
-                ret[i] = array[i + offset];
+                ret[i] = array[i + _offset];
             }
             return ret;
         } else {
@@ -93,19 +96,13 @@ public:
     }
 };
 
-}
-}// namespace ocarina::detail
+}// namespace ocarina
 
-#define OC_SERIALIZE_MEMBER(type, name) \
-    type name{};                        \
-    optional<Var<type>> _device_##name; \
-    uchar _offset_##name;
+#define OC_ENCODE_ELEMENT(name)           \
+    name._offset = datas.size() - offset; \
+    name.encode(datas);
 
-#define OC_ENCODE_ELEMENT(name)             \
-    _offset_##name = datas.size() - offset; \
-    detail::encode(datas, name);
-
-#define OC_DECODE_ELEMENT(name) _device_##name = detail::decode<decltype(name)>(values, _offset_##name);
+#define OC_DECODE_ELEMENT(name) name._device_value = name.decode(values);
 
 #define OC_ENCODE_DECODE(...)                                            \
     uint _data_size{0u};                                                 \
@@ -122,15 +119,17 @@ public:                                                                  \
     }
 
 struct Test {
-    OC_SERIALIZE_MEMBER(float, a);
-    OC_SERIALIZE_MEMBER(float, b);
-
-    OC_ENCODE_DECODE(a, b)
+    SharedData<float2> a;
+    SharedData<int3> b;
+    SharedData<float> c;
+    SharedData<int> d;
+    SharedData<vector<int>> e;
+    OC_ENCODE_DECODE(a, b, c, d, e)
 };
 
 int main() {
 
-    //    Test t;
+    Test t;
 
     //    Float a{nullptr};
     //    Float a{};
