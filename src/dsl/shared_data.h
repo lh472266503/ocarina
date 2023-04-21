@@ -18,8 +18,12 @@ public:
 
 public:
     explicit SharedData(value_ty val = {}) : _host_value(std::move(val)) {}
-
-    [[nodiscard]] value_ty &hv() const noexcept { return _host_value; }
+    SharedData &operator=(const value_ty &val) {
+        _host_value = val;
+        return *this;
+    }
+    [[nodiscard]] auto &hv() const noexcept { return _host_value; }
+    [[nodiscard]] auto &hv() noexcept { return _host_value; }
     [[nodiscard]] dsl_t<value_ty> &dv() const noexcept { return *_device_value; }
 
     template<typename T>
