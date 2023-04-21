@@ -18,7 +18,8 @@ struct Test {
     SharedData<float> c;
     SharedData<int> d;
     SharedData<vector<float>> e;
-    OC_ENCODE_DECODE(a, b, c, d, e)
+    SharedData<float3x3> f;
+    OC_ENCODE_DECODE(a, b, c, d, e, f)
 };
 
 int main(int argc, char *argv[]) {
@@ -40,6 +41,7 @@ int main(int argc, char *argv[]) {
     for (int i = 0; i < 3; ++i) {
         t.e.hv().push_back(i);
     }
+    t.f = make_float3x3(56.1f);
     ResourceArray ra = device.create_resource_array();
 
     ManagedWrapper<float> vv(ra);
@@ -61,6 +63,9 @@ int main(int argc, char *argv[]) {
         Printer::instance().info("c = {}", t.c.dv());
         Printer::instance().info("d = {}", t.d.dv());
         Printer::instance().info("e = {} {} {}", t.e.dv().as_vec3());
+        Printer::instance().info("f0 = {} {} {}", t.f.dv()[0]);
+        Printer::instance().info("f1 = {} {} {}", t.f.dv()[1]);
+        Printer::instance().info("f2 = {} {} {}", t.f.dv()[2]);
     };
     auto shader = device.compile(kernel);
     stream << shader(1.5f).dispatch(1);
