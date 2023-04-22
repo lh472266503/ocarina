@@ -121,7 +121,7 @@ public:
     template<typename T>
     void decode(const DataAccessor<T> *da) const noexcept {
         const Array<T> array = da->template read_dynamic_array<T>(size());
-        *(const_cast<decltype(_device_value)*>(&_device_value)) = _decode(array);
+        *(const_cast<decltype(_device_value) *>(&_device_value)) = _decode(array);
     }
 };
 
@@ -130,19 +130,19 @@ public:
 
 #define OC_DECODE_ELEMENT(name) name.decode(da);
 
-#define OC_ENCODE_DECODE(...)                              \
-    mutable uint _data_size{0u};                           \
-                                                           \
-public:                                                    \
-    template<typename T>                                   \
-    void encode(ManagedWrapper<T> &datas) const noexcept { \
-        uint offset = datas.host().size();                 \
-        MAP(OC_ENCODE_ELEMENT, __VA_ARGS__)                \
-        _data_size = datas.host().size() - offset;         \
-    }                                                      \
-    template<typename T>                                   \
-    void decode(const DataAccessor<T> *da) noexcept {      \
-        MAP(OC_DECODE_ELEMENT, __VA_ARGS__)                \
+#define OC_ENCODE_DECODE(...)                               \
+    mutable uint _data_size{0u};                            \
+                                                            \
+public:                                                     \
+    template<typename T>                                    \
+    void encode(ManagedWrapper<T> &datas) const noexcept {  \
+        uint offset = datas.host().size();                  \
+        MAP(OC_ENCODE_ELEMENT, __VA_ARGS__)                 \
+        _data_size = datas.host().size() - offset;          \
+    }                                                       \
+    template<typename T>                                    \
+    void decode(const DataAccessor<T> *da) const noexcept { \
+        MAP(OC_DECODE_ELEMENT, __VA_ARGS__)                 \
     }
 
 }// namespace ocarina
