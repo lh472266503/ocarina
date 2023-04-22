@@ -46,7 +46,7 @@ public:
     [[nodiscard]] auto &hv() const noexcept { return _host_value; }
     [[nodiscard]] auto &hv() noexcept { return _host_value; }
     [[nodiscard]] const dsl_t<value_ty> &dv() const noexcept { return *_device_value; }
-
+    [[nodiscard]] const dsl_t<value_ty> &operator*() const noexcept { return *_device_value; }
     template<typename T>
     void encode(vector<T> &data) noexcept {
         if constexpr (is_scalar_v<value_ty>) {

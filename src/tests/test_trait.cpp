@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
         Printer::instance().info("f1 = {} {} {}", t.f.dv()[1]);
         Printer::instance().info("f2 = {} {} {}", t.f.dv()[2]);
         Printer::instance().info("data.f = {}", t.data.f.dv());
-        Printer::instance().info("data.f4 = {} {} {} {}", t.data.f4.dv());
+        Printer::instance().info("data.f4 = {} {} {} {}", *t.data.f4);
     };
     auto shader = device.compile(kernel);
     stream << shader(1.5f).dispatch(1);
