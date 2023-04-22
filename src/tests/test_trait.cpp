@@ -11,6 +11,12 @@
 
 using namespace ocarina;
 
+struct Data {
+    SharedData<float> f;
+    SharedData<float4> f4;
+
+    OC_ENCODE_DECODE(f, f4)
+};
 
 struct Test {
     SharedData<float2> a;
@@ -19,7 +25,8 @@ struct Test {
     SharedData<int> d;
     SharedData<vector<float>> e;
     SharedData<float3x3> f;
-    OC_ENCODE_DECODE(a, b, c, d, e, f)
+    Data data;
+    OC_ENCODE_DECODE(a, b, c, d, e, f, data)
 };
 
 int main(int argc, char *argv[]) {
@@ -42,6 +49,8 @@ int main(int argc, char *argv[]) {
         t.e.hv().push_back(i);
     }
     t.f = make_float3x3(56.1f);
+    t.data.f = 106;
+    t.data.f4 = make_float4(199.f);
     ResourceArray ra = device.create_resource_array();
 
     ManagedWrapper<int> vv(ra);
@@ -66,6 +75,8 @@ int main(int argc, char *argv[]) {
         Printer::instance().info("f0 = {} {} {}", t.f.dv()[0]);
         Printer::instance().info("f1 = {} {} {}", t.f.dv()[1]);
         Printer::instance().info("f2 = {} {} {}", t.f.dv()[2]);
+        Printer::instance().info("data.f = {}", t.data.f.dv());
+        Printer::instance().info("data.f4 = {} {} {} {}", t.data.f4.dv());
     };
     auto shader = device.compile(kernel);
     stream << shader(1.5f).dispatch(1);
