@@ -7,6 +7,7 @@
 #include "type_trait.h"
 #include "syntax.h"
 #include "core/stl.h"
+#include "shared_data.h"
 #include "rhi/managed.h"
 
 namespace ocarina {
@@ -28,26 +29,6 @@ template<EPort p>
     oc_uint<p> type_id = 0x000000ff & id;
     return std::make_pair(inst_id, type_id);
 }
-
-template<typename U = float>
-struct DataAccessor {
-    mutable Uint offset;
-    ManagedWrapper<U> &datas;
-
-    template<typename T>
-    [[nodiscard]] Array<T> read_dynamic_array(uint size) const noexcept {
-        auto ret = datas.template read_dynamic_array<T>(size, offset);
-        offset += size * static_cast<uint>(sizeof(T));
-        return ret;
-    }
-
-    template<typename Target>
-    OC_NODISCARD auto byte_read() const noexcept {
-        auto ret = datas.template byte_read<Target>(offset);
-        offset += static_cast<uint>(sizeof(Target));
-        return ret;
-    }
-};
 
 template<typename T>
 class PolymorphicElement {

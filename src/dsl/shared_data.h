@@ -5,8 +5,29 @@
 #pragma once
 
 #include "type_trait.h"
+#include "rhi/common.h"
 
 namespace ocarina {
+
+template<typename U = float>
+struct DataAccessor {
+    mutable Uint offset;
+    ManagedWrapper<U> &datas;
+
+    template<typename T>
+    [[nodiscard]] Array<T> read_dynamic_array(uint size) const noexcept {
+        auto ret = datas.template read_dynamic_array<T>(size, offset);
+        offset += size * static_cast<uint>(sizeof(T));
+        return ret;
+    }
+
+    template<typename Target>
+    OC_NODISCARD auto byte_read() const noexcept {
+        auto ret = datas.template byte_read<Target>(offset);
+        offset += static_cast<uint>(sizeof(Target));
+        return ret;
+    }
+};
 
 template<typename value_ty>
 requires(is_std_vector_v<value_ty> && is_scalar_v<typename value_ty::value_type>) || is_basic_v<value_ty>
@@ -66,6 +87,7 @@ public:
 
     template<typename T>
     [[nodiscard]] auto _decode(const Array<T> &array) noexcept {
+        _offset = 0;
         if constexpr (is_scalar_v<value_ty>) {
             return as<value_ty>(array[_offset]);
         } else if constexpr (is_vector_v<value_ty>) {
@@ -101,13 +123,19 @@ public:
     void decode(const Array<T> &array) noexcept {
         _device_value = _decode(array);
     }
+
+    template<typename T>
+    void decode(const DataAccessor<T> *da) noexcept {
+        const Array<T> array = da->read_dynamic_array<T>(size());
+        _device_value = _decode(array);
+    }
 };
 
 #define OC_ENCODE_ELEMENT(name)           \
     name._offset = datas.size() - offset; \
     name.encode(datas);
 
-#define OC_DECODE_ELEMENT(name) name.decode(values);
+#define OC_DECODE_ELEMENT(name) name.decode(da);
 
 #define OC_ENCODE_DECODE(...)                                            \
     uint _data_size{0u};                                                 \
@@ -119,7 +147,6 @@ public:                                                                  \
         _data_size = datas.size() - offset;                              \
     }                                                                    \
     void decode(const DataAccessor<float> *da) noexcept {                \
-        Array<float> values = da->read_dynamic_array<float>(_data_size); \
         MAP(OC_DECODE_ELEMENT, __VA_ARGS__)                              \
     }
 
