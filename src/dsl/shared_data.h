@@ -48,7 +48,7 @@ public:
     [[nodiscard]] const dsl_t<value_ty> &dv() const noexcept { return *_device_value; }
     [[nodiscard]] const dsl_t<value_ty> &operator*() const noexcept { return *_device_value; }
     template<typename T>
-    void encode(vector<T> &data) noexcept {
+    void encode(ManagedWrapper<T> &data) noexcept {
         if constexpr (is_scalar_v<value_ty>) {
             data.push_back(bit_cast<T>(_host_value));
         } else if constexpr (is_vector_v<value_ty>) {
@@ -135,10 +135,10 @@ public:
                                                       \
 public:                                               \
     template<typename T>                              \
-    void encode(vector<T> &datas) noexcept {          \
-        uint offset = datas.size();                   \
+    void encode(ManagedWrapper<T> &datas) noexcept {  \
+        uint offset = datas.host().size();            \
         MAP(OC_ENCODE_ELEMENT, __VA_ARGS__)           \
-        _data_size = datas.size() - offset;           \
+        _data_size = datas.host().size() - offset;    \
     }                                                 \
     template<typename T>                              \
     void decode(const DataAccessor<T> *da) noexcept { \
