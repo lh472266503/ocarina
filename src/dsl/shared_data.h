@@ -48,7 +48,7 @@ public:
     [[nodiscard]] const dsl_t<value_ty> &dv() const noexcept { return *_device_value; }
     [[nodiscard]] const dsl_t<value_ty> &operator*() const noexcept { return *_device_value; }
     template<typename T>
-    void encode(ManagedWrapper<T> &data) noexcept {
+    void encode(ManagedWrapper<T> &data) const noexcept {
         if constexpr (is_scalar_v<value_ty>) {
             data.push_back(bit_cast<T>(_host_value));
         } else if constexpr (is_vector_v<value_ty>) {
@@ -70,7 +70,7 @@ public:
         }
     }
 
-    [[nodiscard]] uint size() noexcept {
+    [[nodiscard]] uint size() const noexcept {
         if constexpr (is_scalar_v<value_ty>) {
             static_assert(sizeof(value_ty) <= sizeof(float));
             return 1;
@@ -86,7 +86,7 @@ public:
     }
 
     template<typename T>
-    [[nodiscard]] auto _decode(const Array<T> &array) noexcept {
+    [[nodiscard]] auto _decode(const Array<T> &array) const noexcept {
         if constexpr (is_scalar_v<value_ty>) {
             return as<value_ty>(array[0]);
         } else if constexpr (is_vector_v<value_ty>) {
@@ -119,9 +119,9 @@ public:
     }
 
     template<typename T>
-    void decode(const DataAccessor<T> *da) noexcept {
+    void decode(const DataAccessor<T> *da) const noexcept {
         const Array<T> array = da->template read_dynamic_array<T>(size());
-        _device_value = _decode(array);
+        *(const_cast<decltype(_device_value)*>(&_device_value)) = _decode(array);
     }
 };
 
@@ -130,19 +130,19 @@ public:
 
 #define OC_DECODE_ELEMENT(name) name.decode(da);
 
-#define OC_ENCODE_DECODE(...)                         \
-    uint _data_size{0u};                              \
-                                                      \
-public:                                               \
-    template<typename T>                              \
-    void encode(ManagedWrapper<T> &datas) noexcept {  \
-        uint offset = datas.host().size();            \
-        MAP(OC_ENCODE_ELEMENT, __VA_ARGS__)           \
-        _data_size = datas.host().size() - offset;    \
-    }                                                 \
-    template<typename T>                              \
-    void decode(const DataAccessor<T> *da) noexcept { \
-        MAP(OC_DECODE_ELEMENT, __VA_ARGS__)           \
+#define OC_ENCODE_DECODE(...)                              \
+    mutable uint _data_size{0u};                           \
+                                                           \
+public:                                                    \
+    template<typename T>                                   \
+    void encode(ManagedWrapper<T> &datas) const noexcept { \
+        uint offset = datas.host().size();                 \
+        MAP(OC_ENCODE_ELEMENT, __VA_ARGS__)                \
+        _data_size = datas.host().size() - offset;         \
+    }                                                      \
+    template<typename T>                                   \
+    void decode(const DataAccessor<T> *da) noexcept {      \
+        MAP(OC_DECODE_ELEMENT, __VA_ARGS__)                \
     }
 
 }// namespace ocarina
