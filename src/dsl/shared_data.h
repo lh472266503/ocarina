@@ -10,6 +10,7 @@
 namespace ocarina {
 
 template<typename U = float>
+requires(sizeof(U) == sizeof(float))
 struct DataAccessor {
     mutable Uint offset;
     ManagedWrapper<U> &datas;
@@ -35,7 +36,6 @@ struct SharedData {
 public:
     value_ty _host_value{};
     optional<dsl_t<value_ty>> _device_value{};
-    uint _offset{};
 
 public:
     explicit SharedData(value_ty val = {}) : _host_value(std::move(val)) {}
@@ -87,14 +87,13 @@ public:
 
     template<typename T>
     [[nodiscard]] auto _decode(const Array<T> &array) noexcept {
-        _offset = 0;
         if constexpr (is_scalar_v<value_ty>) {
-            return as<value_ty>(array[_offset]);
+            return as<value_ty>(array[0]);
         } else if constexpr (is_vector_v<value_ty>) {
             Var<value_ty> ret;
             using element_ty = vector_element_t<value_ty>;
             for (int i = 0; i < vector_dimension_v<value_ty>; ++i) {
-                ret[i] = as<element_ty>(array[_offset + i]);
+                ret[i] = as<element_ty>(array[i]);
             }
             return ret;
         } else if constexpr (is_matrix_v<value_ty>) {
@@ -102,7 +101,7 @@ public:
             uint cursor = 0u;
             for (int i = 0; i < matrix_dimension_v<value_ty>; ++i) {
                 for (int j = 0; j < matrix_dimension_v<value_ty>; ++j) {
-                    ret[i][j] = as<float>(array[cursor + _offset]);
+                    ret[i][j] = as<float>(array[cursor]);
                     ++cursor;
                 }
             }
@@ -111,7 +110,7 @@ public:
             using element_ty = value_ty::value_type;
             Array<element_ty> ret{_host_value.size()};
             for (int i = 0; i < _host_value.size(); ++i) {
-                ret[i] = array[i + _offset];
+                ret[i] = as<element_ty>(array[i]);
             }
             return ret;
         } else {
@@ -126,28 +125,29 @@ public:
 
     template<typename T>
     void decode(const DataAccessor<T> *da) noexcept {
-        const Array<T> array = da->read_dynamic_array<T>(size());
+        const Array<T> array = da->template read_dynamic_array<T>(size());
         _device_value = _decode(array);
     }
 };
 
-#define OC_ENCODE_ELEMENT(name)           \
-    name._offset = datas.size() - offset; \
+#define OC_ENCODE_ELEMENT(name) \
     name.encode(datas);
 
 #define OC_DECODE_ELEMENT(name) name.decode(da);
 
-#define OC_ENCODE_DECODE(...)                                            \
-    uint _data_size{0u};                                                 \
-                                                                         \
-public:                                                                  \
-    void encode(vector<float> &datas) noexcept {                         \
-        uint offset = datas.size();                                      \
-        MAP(OC_ENCODE_ELEMENT, __VA_ARGS__)                              \
-        _data_size = datas.size() - offset;                              \
-    }                                                                    \
-    void decode(const DataAccessor<float> *da) noexcept {                \
-        MAP(OC_DECODE_ELEMENT, __VA_ARGS__)                              \
+#define OC_ENCODE_DECODE(...)                         \
+    uint _data_size{0u};                              \
+                                                      \
+public:                                               \
+    template<typename T>                              \
+    void encode(vector<T> &datas) noexcept {          \
+        uint offset = datas.size();                   \
+        MAP(OC_ENCODE_ELEMENT, __VA_ARGS__)           \
+        _data_size = datas.size() - offset;           \
+    }                                                 \
+    template<typename T>                              \
+    void decode(const DataAccessor<T> *da) noexcept { \
+        MAP(OC_DECODE_ELEMENT, __VA_ARGS__)           \
     }
 
 }// namespace ocarina
