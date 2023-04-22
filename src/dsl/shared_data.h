@@ -119,11 +119,6 @@ public:
     }
 
     template<typename T>
-    void decode(const Array<T> &array) noexcept {
-        _device_value = _decode(array);
-    }
-
-    template<typename T>
     void decode(const DataAccessor<T> *da) noexcept {
         const Array<T> array = da->template read_dynamic_array<T>(size());
         _device_value = _decode(array);
