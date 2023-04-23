@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
     t.data.f4 = make_float4(199.f);
     ResourceArray ra = device.create_resource_array();
 
-    ManagedWrapper<int> vv(ra);
+    ManagedWrapper<float> vv(ra);
 
     t.encode(vv);
     vv.reset_device_buffer(device);
@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
 
 
     Kernel kernel = [&](Float a) {
-        DataAccessor<int> da{0u, vv};
+        DataAccessor<float> da{0u, vv};
         t.decode(&da);
         Printer::instance().info("a = {} {}", t.a.dv());
         Printer::instance().info("b = {} {} {}", t.b.dv());

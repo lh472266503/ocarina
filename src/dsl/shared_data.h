@@ -30,9 +30,18 @@ struct DataAccessor {
     }
 };
 
-template<typename value_ty>
+template<typename T = float>
+class Serializable {
+public:
+    /// for host
+    virtual void encode(ManagedWrapper<T> &data) const noexcept = 0;
+    /// for device
+    virtual void decode(const DataAccessor<T> *da) const noexcept = 0;
+};
+
+template<typename value_ty, typename T = float>
 requires(is_std_vector_v<value_ty> && is_scalar_v<typename value_ty::value_type>) || is_basic_v<value_ty>
-struct SharedData {
+struct SharedData : public Serializable<T> {
 public:
     value_ty _host_value{};
     optional<dsl_t<value_ty>> _device_value{};
@@ -47,8 +56,7 @@ public:
     [[nodiscard]] auto &hv() noexcept { return _host_value; }
     [[nodiscard]] const dsl_t<value_ty> &dv() const noexcept { return *_device_value; }
     [[nodiscard]] const dsl_t<value_ty> &operator*() const noexcept { return *_device_value; }
-    template<typename T>
-    void encode(ManagedWrapper<T> &data) const noexcept {
+    void encode(ManagedWrapper<T> &data) const noexcept override {
         if constexpr (is_scalar_v<value_ty>) {
             data.push_back(bit_cast<T>(hv()));
         } else if constexpr (is_vector_v<value_ty>) {
@@ -85,7 +93,6 @@ public:
         }
     }
 
-    template<typename T>
     [[nodiscard]] auto _decode(const Array<T> &array) const noexcept {
         if constexpr (is_scalar_v<value_ty>) {
             return as<value_ty>(array[0]);
@@ -118,8 +125,7 @@ public:
         }
     }
 
-    template<typename T>
-    void decode(const DataAccessor<T> *da) const noexcept {
+    void decode(const DataAccessor<T> *da) const noexcept override {
         const Array<T> array = da->template read_dynamic_array<T>(size());
         *(const_cast<decltype(_device_value) *>(&_device_value)) = _decode(array);
     }
