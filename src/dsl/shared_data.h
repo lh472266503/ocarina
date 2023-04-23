@@ -50,20 +50,20 @@ public:
     template<typename T>
     void encode(ManagedWrapper<T> &data) const noexcept {
         if constexpr (is_scalar_v<value_ty>) {
-            data.push_back(bit_cast<T>(_host_value));
+            data.push_back(bit_cast<T>(hv()));
         } else if constexpr (is_vector_v<value_ty>) {
             for (int i = 0; i < vector_dimension_v<value_ty>; ++i) {
-                data.push_back(bit_cast<T>(_host_value[i]));
+                data.push_back(bit_cast<T>(hv()[i]));
             }
         } else if constexpr (is_matrix_v<value_ty>) {
             for (int i = 0; i < matrix_dimension_v<value_ty>; ++i) {
                 for (int j = 0; j < matrix_dimension_v<value_ty>; ++j) {
-                    data.push_back(bit_cast<T>(_host_value[i][j]));
+                    data.push_back(bit_cast<T>(hv()[i][j]));
                 }
             }
         } else if constexpr (is_std_vector_v<value_ty>) {
-            for (int i = 0; i < _host_value.size(); ++i) {
-                data.push_back(bit_cast<T>(_host_value[i]));
+            for (int i = 0; i < hv().size(); ++i) {
+                data.push_back(bit_cast<T>(hv()[i]));
             }
         } else {
             static_assert(always_false_v<value_ty>);
@@ -79,7 +79,7 @@ public:
         } else if constexpr (is_matrix_v<value_ty>) {
             return sqr(matrix_dimension_v<value_ty>);
         } else if constexpr (is_std_vector_v<value_ty>) {
-            return _host_value.size();
+            return hv().size();
         } else {
             static_assert(always_false_v<value_ty>);
         }
@@ -108,8 +108,8 @@ public:
             return ret;
         } else if constexpr (is_std_vector_v<value_ty>) {
             using element_ty = value_ty::value_type;
-            Array<element_ty> ret{_host_value.size()};
-            for (int i = 0; i < _host_value.size(); ++i) {
+            Array<element_ty> ret{hv().size()};
+            for (int i = 0; i < hv().size(); ++i) {
                 ret[i] = as<element_ty>(array[i]);
             }
             return ret;
