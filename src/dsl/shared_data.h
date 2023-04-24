@@ -31,17 +31,18 @@ struct DataAccessor {
 };
 
 template<typename T = float>
-class Serializable {
+class ISerializable {
 public:
     /// for host
     virtual void encode(ManagedWrapper<T> &data) const noexcept = 0;
     /// for device
     virtual void decode(const DataAccessor<T> *da) const noexcept = 0;
+    [[nodiscard]] virtual uint size() const noexcept = 0;
 };
 
 template<typename value_ty, typename T = float>
 requires(is_std_vector_v<value_ty> && is_scalar_v<typename value_ty::value_type>) || is_basic_v<value_ty>
-struct SharedData : public Serializable<T> {
+struct SharedData : public ISerializable<T> {
 public:
     value_ty _host_value{};
     optional<dsl_t<value_ty>> _device_value{};
@@ -78,7 +79,7 @@ public:
         }
     }
 
-    [[nodiscard]] uint size() const noexcept {
+    [[nodiscard]] uint size() const noexcept override {
         if constexpr (is_scalar_v<value_ty>) {
             static_assert(sizeof(value_ty) <= sizeof(float));
             return 1;
@@ -136,19 +137,18 @@ public:
 
 #define OC_DECODE_ELEMENT(name) name.decode(da);
 
-#define OC_ENCODE_DECODE(...)                               \
-    mutable uint _data_size{0u};                            \
-                                                            \
-public:                                                     \
-    template<typename T>                                    \
-    void encode(ManagedWrapper<T> &datas) const noexcept {  \
-        uint offset = datas.host().size();                  \
-        MAP(OC_ENCODE_ELEMENT, __VA_ARGS__)                 \
-        _data_size = datas.host().size() - offset;          \
-    }                                                       \
-    template<typename T>                                    \
-    void decode(const DataAccessor<T> *da) const noexcept { \
-        MAP(OC_DECODE_ELEMENT, __VA_ARGS__)                 \
+#define OC_ENCODE_DECODE(type, ...)                                     \
+    mutable uint _size{0u};                                             \
+                                                                        \
+public:                                                                 \
+    [[nodiscard]] uint size() const noexcept override { return _size; } \
+    void encode(ManagedWrapper<type> &datas) const noexcept override {  \
+        uint offset = datas.host().size();                              \
+        MAP(OC_ENCODE_ELEMENT, __VA_ARGS__)                             \
+        _size = datas.host().size() - offset;                           \
+    }                                                                   \
+    void decode(const DataAccessor<type> *da) const noexcept override { \
+        MAP(OC_DECODE_ELEMENT, __VA_ARGS__)                             \
     }
 
 }// namespace ocarina

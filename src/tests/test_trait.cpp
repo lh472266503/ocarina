@@ -11,14 +11,14 @@
 
 using namespace ocarina;
 
-struct Data {
+struct Data : public ISerializable<float>{
     SharedData<float> f;
     SharedData<float4> f4;
 
-    OC_ENCODE_DECODE(f, f4)
+    OC_ENCODE_DECODE(float,f, f4)
 };
 
-struct Test {
+struct Test : public ISerializable<float>{
     SharedData<float2> a;
     SharedData<int3> b;
     SharedData<float> c;
@@ -26,7 +26,7 @@ struct Test {
     SharedData<vector<float>> e;
     SharedData<float3x3> f;
     Data data;
-    OC_ENCODE_DECODE(a, b, c, d, e, f, data)
+    OC_ENCODE_DECODE(float,a, b, c, d, e, f, data)
 };
 
 int main(int argc, char *argv[]) {
