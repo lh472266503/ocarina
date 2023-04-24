@@ -12,19 +12,19 @@
 using namespace ocarina;
 
 struct Data : public ISerializable<float>{
-    SharedData<float> f;
-    SharedData<float4> f4;
+    Serialize<float> f;
+    Serialize<float4> f4;
 
     OC_ENCODE_DECODE(float,f, f4)
 };
 
 struct Test : public ISerializable<float>{
-    SharedData<float2> a;
-    SharedData<int3> b;
-    SharedData<float> c;
-    SharedData<int> d;
-    SharedData<vector<float>> e;
-    SharedData<float3x3> f;
+    Serialize<float2> a;
+    Serialize<int3> b;
+    Serialize<float> c;
+    Serialize<int> d;
+    Serialize<vector<float>> e;
+    Serialize<float3x3> f;
     Data data;
     OC_ENCODE_DECODE(float,a, b, c, d, e, f, data)
 };

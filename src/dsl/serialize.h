@@ -42,14 +42,14 @@ public:
 
 template<typename value_ty, typename T = float>
 requires(is_std_vector_v<value_ty> && is_scalar_v<typename value_ty::value_type>) || is_basic_v<value_ty>
-struct SharedData : public ISerializable<T> {
+struct Serialize : public ISerializable<T> {
 public:
     value_ty _host_value{};
     optional<dsl_t<value_ty>> _device_value{};
 
 public:
-    explicit SharedData(value_ty val = {}) : _host_value(std::move(val)) {}
-    SharedData &operator=(const value_ty &val) {
+    explicit Serialize(value_ty val = {}) : _host_value(std::move(val)) {}
+    Serialize &operator=(const value_ty &val) {
         _host_value = val;
         return *this;
     }
