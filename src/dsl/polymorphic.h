@@ -7,7 +7,7 @@
 #include "type_trait.h"
 #include "syntax.h"
 #include "core/stl.h"
-#include "serialize.h"
+#include "rhi/resources/serialize.h"
 #include "rhi/managed.h"
 
 namespace ocarina {

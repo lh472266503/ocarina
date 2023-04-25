@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "type_trait.h"
+#include "dsl/type_trait.h"
 #include "rhi/common.h"
 
 namespace ocarina {
