@@ -45,7 +45,7 @@ public:
 template<typename value_ty, typename T = float>
 requires(is_std_vector_v<value_ty> && is_scalar_v<typename value_ty::value_type>) || is_basic_v<value_ty>
 struct Serialize : public ISerializable<T> {
-public:
+private:
     value_ty _host_value{};
     optional<dsl_t<value_ty>> _device_value{};
 
@@ -143,8 +143,6 @@ public:
 #define OC_SIZE_ELEMENT(name) name.size() +
 
 #define OC_SERIALIZABLE_FUNC(type, ...)                                 \
-                                                                        \
-public:                                                                 \
     [[nodiscard]] uint size() const noexcept override {                 \
         return MAP(OC_SIZE_ELEMENT, __VA_ARGS__) 0;                     \
     }                                                                   \
