@@ -48,12 +48,18 @@ template<typename value_ty, typename T = float>
 requires(is_std_vector_v<value_ty> && is_scalar_v<typename value_ty::value_type>) || is_basic_v<value_ty>
 struct Serialize : public ISerializable<T> {
 private:
-    std::variant<value_ty, std::function<value_ty()>> _host_value{};
+    using host_ty = std::variant<value_ty, std::function<value_ty()>>;
+    host_ty _host_value{};
     optional<dsl_t<value_ty>> _device_value{};
 
 public:
     explicit Serialize(value_ty val = {}) : _host_value(std::move(val)) {}
     Serialize &operator=(const value_ty &val) {
+        _host_value = val;
+        return *this;
+    }
+
+    Serialize &operator=(const std::function<value_ty()> &val) {
         _host_value = val;
         return *this;
     }
