@@ -15,7 +15,7 @@ template<typename U = float>
 requires(sizeof(U) == sizeof(float))
 struct DataAccessor {
     mutable Uint offset;
-    ManagedWrapper<U,float> &datas;
+    ManagedWrapper<U, float> &datas;
 
     template<typename T>
     [[nodiscard]] Array<T> read_dynamic_array(uint size) const noexcept {
@@ -48,7 +48,7 @@ template<typename value_ty, typename T = float>
 requires(is_std_vector_v<value_ty> && is_scalar_v<typename value_ty::value_type>) || is_basic_v<value_ty>
 struct Serialize : public ISerializable<T> {
 private:
-    value_ty _host_value{};
+    std::variant<value_ty, std::function<value_ty()>> _host_value{};
     optional<dsl_t<value_ty>> _device_value{};
 
 public:
@@ -57,10 +57,20 @@ public:
         _host_value = val;
         return *this;
     }
+
     [[nodiscard]] bool valid() const noexcept override { return _device_value.has_value(); }
     void invalidate() noexcept override { _device_value.reset(); }
-    [[nodiscard]] auto &hv() const noexcept { return _host_value; }
-    [[nodiscard]] auto &hv() noexcept { return _host_value; }
+    [[nodiscard]] value_ty hv() const noexcept {
+        if (_host_value.index() == 0) {
+            return std::get<0>(_host_value);
+        } else {
+            return std::get<1>(_host_value)();
+        }
+    }
+    [[nodiscard]] value_ty &hv() noexcept {
+        OC_ASSERT(_host_value.index() == 0);
+        return std::get<0>(_host_value);
+    }
     [[nodiscard]] const dsl_t<value_ty> &dv() const noexcept { return *_device_value; }
     [[nodiscard]] const dsl_t<value_ty> &operator*() const noexcept { return *_device_value; }
     void encode(ManagedWrapper<T, float> &data) const noexcept override {
