@@ -38,6 +38,8 @@ public:
     /// for device
     virtual void decode(const DataAccessor<T> *da) const noexcept = 0;
     [[nodiscard]] virtual uint size() const noexcept = 0;
+    [[nodiscard]] virtual bool valid() const noexcept { return false; }
+    virtual void invalidate() noexcept {}
 };
 
 template<typename value_ty, typename T = float>
@@ -53,6 +55,8 @@ public:
         _host_value = val;
         return *this;
     }
+    [[nodiscard]] bool valid() const noexcept override { return _device_value.has_value(); }
+    void invalidate() noexcept override { _device_value.reset(); }
     [[nodiscard]] auto &hv() const noexcept { return _host_value; }
     [[nodiscard]] auto &hv() noexcept { return _host_value; }
     [[nodiscard]] const dsl_t<value_ty> &dv() const noexcept { return *_device_value; }
@@ -132,23 +136,29 @@ public:
     }
 };
 
-#define OC_ENCODE_ELEMENT(name) \
-    name.encode(datas);
-
+#define OC_ENCODE_ELEMENT(name) name.encode(datas);
 #define OC_DECODE_ELEMENT(name) name.decode(da);
+#define OC_INVALIDATE_ELEMENT(name) name.invalidate();
+#define OC_VALID_ELEMENT(name) name.valid() &&
+#define OC_SIZE_ELEMENT(name) name.size() +
 
-#define OC_ENCODE_DECODE(type, ...)                                     \
-    mutable uint _size{0u};                                             \
+#define OC_SERIALIZABLE_FUNC(type, ...)                                 \
                                                                         \
 public:                                                                 \
-    [[nodiscard]] uint size() const noexcept override { return _size; } \
+    [[nodiscard]] uint size() const noexcept override {                 \
+        return MAP(OC_SIZE_ELEMENT, __VA_ARGS__) 0;                     \
+    }                                                                   \
     void encode(ManagedWrapper<type> &datas) const noexcept override {  \
-        uint offset = datas.host().size();                              \
         MAP(OC_ENCODE_ELEMENT, __VA_ARGS__)                             \
-        _size = datas.host().size() - offset;                           \
     }                                                                   \
     void decode(const DataAccessor<type> *da) const noexcept override { \
         MAP(OC_DECODE_ELEMENT, __VA_ARGS__)                             \
+    }                                                                   \
+    void invalidate() noexcept override {                               \
+        MAP(OC_INVALIDATE_ELEMENT, __VA_ARGS__)                         \
+    }                                                                   \
+    [[nodiscard]] bool valid() const noexcept override {                \
+        return MAP(OC_VALID_ELEMENT, __VA_ARGS__) true;                 \
     }
 
 }// namespace ocarina

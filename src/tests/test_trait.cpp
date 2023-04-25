@@ -15,7 +15,7 @@ struct Data : public ISerializable<float>{
     Serialize<float> f;
     Serialize<float4> f4;
 
-    OC_ENCODE_DECODE(float,f, f4)
+    OC_SERIALIZABLE_FUNC(float,f, f4)
 };
 
 struct Test : public ISerializable<float>{
@@ -26,7 +26,7 @@ struct Test : public ISerializable<float>{
     Serialize<vector<float>> e;
     Serialize<float3x3> f;
     Data data;
-    OC_ENCODE_DECODE(float,a, b, c, d, e, f, data)
+    OC_SERIALIZABLE_FUNC(float,a, b, c, d, e, f, data)
 };
 
 int main(int argc, char *argv[]) {
