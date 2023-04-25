@@ -8,7 +8,7 @@
 #include "syntax.h"
 #include "core/stl.h"
 #include "rhi/resources/serialize.h"
-#include "rhi/managed.h"
+#include "rhi/resources/managed.h"
 
 namespace ocarina {
 

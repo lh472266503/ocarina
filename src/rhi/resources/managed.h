@@ -5,8 +5,8 @@
 #pragma once
 
 #include "core/stl.h"
-#include "resources/buffer.h"
-#include "resources/serialize.h"
+#include "buffer.h"
+#include "serialize.h"
 
 namespace ocarina {
 

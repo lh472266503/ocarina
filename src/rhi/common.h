@@ -12,7 +12,7 @@
 #include "resources/buffer.h"
 #include "resources/texture.h"
 #include "resources/resource_array.h"
-#include "managed.h"
+#include "rhi/resources/managed.h"
 #include "dynamic_module.h"
 #include "rtx/mesh.h"
 #include "rtx/accel.h"

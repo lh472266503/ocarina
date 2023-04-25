@@ -5,7 +5,7 @@
 #pragma once
 
 #include "core/stl.h"
-#include "rhi/managed.h"
+#include "rhi/resources/managed.h"
 #include "rhi/resources/resource_array.h"
 #include <cuda.h>
 
