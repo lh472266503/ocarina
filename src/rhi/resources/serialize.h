@@ -5,15 +5,17 @@
 #pragma once
 
 #include "dsl/type_trait.h"
-#include "rhi/common.h"
 
 namespace ocarina {
+
+template<typename T, typename U>
+class ManagedWrapper;
 
 template<typename U = float>
 requires(sizeof(U) == sizeof(float))
 struct DataAccessor {
     mutable Uint offset;
-    ManagedWrapper<U> &datas;
+    ManagedWrapper<U,float> &datas;
 
     template<typename T>
     [[nodiscard]] Array<T> read_dynamic_array(uint size) const noexcept {
@@ -34,10 +36,10 @@ template<typename T = float>
 class ISerializable {
 public:
     /// for host
-    virtual void encode(ManagedWrapper<T> &data) const noexcept = 0;
+    virtual void encode(ManagedWrapper<T, float> &data) const noexcept {}
     /// for device
-    virtual void decode(const DataAccessor<T> *da) const noexcept = 0;
-    [[nodiscard]] virtual uint size() const noexcept = 0;
+    virtual void decode(const DataAccessor<T> *da) const noexcept {}
+    [[nodiscard]] virtual uint size() const noexcept { return 0; }
     [[nodiscard]] virtual bool valid() const noexcept { return false; }
     virtual void invalidate() noexcept {}
 };
@@ -61,7 +63,7 @@ public:
     [[nodiscard]] auto &hv() noexcept { return _host_value; }
     [[nodiscard]] const dsl_t<value_ty> &dv() const noexcept { return *_device_value; }
     [[nodiscard]] const dsl_t<value_ty> &operator*() const noexcept { return *_device_value; }
-    void encode(ManagedWrapper<T> &data) const noexcept override {
+    void encode(ManagedWrapper<T, float> &data) const noexcept override {
         if constexpr (is_scalar_v<value_ty>) {
             data.push_back(bit_cast<T>(hv()));
         } else if constexpr (is_vector_v<value_ty>) {

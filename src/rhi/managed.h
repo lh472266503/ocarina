@@ -6,6 +6,7 @@
 
 #include "core/stl.h"
 #include "resources/buffer.h"
+#include "resources/serialize.h"
 
 namespace ocarina {
 
@@ -95,8 +96,17 @@ public:
 template<typename T>
 class PolymorphicElement;
 
+template<typename T>
+class ISerializable;
+
+template<typename T>
+requires(sizeof(T) == sizeof(float))
+struct DataAccessor;
+
 template<typename T, typename U = float>
-class ManagedWrapper : public Managed<T>, public PolymorphicElement<U> {
+class ManagedWrapper : public Managed<T>,
+                       public PolymorphicElement<U>,
+                       public ISerializable<U> {
 public:
     using Super = Managed<T>;
 
