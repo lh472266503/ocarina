@@ -66,7 +66,7 @@ public:
         if (num == 0) {
             return;
         }
-        device() = d.create_buffer<T>(num);
+        device() = d.template create_buffer<T>(num);
     }
 
     [[nodiscard]] BufferUploadCommand *upload() const noexcept {
