@@ -104,13 +104,13 @@ public:
     using Super = Managed<T>;
 
 private:
+    ResourceArray *_resource_array{};
     Serialize<uint> _index{InvalidUI32};
     Serialize<uint> _size{InvalidUI32};
-    ResourceArray *_resource_array{};
 
 public:
     ManagedWrapper() = default;
-    OC_SERIALIZABLE_FUNC(U, _index,_size)
+    OC_SERIALIZABLE_FUNC(U, _index, _size)
     void init(ResourceArray &resource_array) noexcept { _resource_array = &resource_array; }
 
     [[nodiscard]] uint datas_size() const noexcept override {
@@ -124,6 +124,9 @@ public:
     explicit ManagedWrapper(ResourceArray &resource_array) : _resource_array(&resource_array) {}
     void register_self() noexcept {
         _index = _resource_array->emplace(Super::device());
+        _size = [&]() {
+            return Super::host().size();
+        };
     }
 
     [[nodiscard]] uint index() const noexcept { return _index.hv(); }

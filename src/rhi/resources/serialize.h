@@ -39,7 +39,7 @@ public:
     virtual void encode(ManagedWrapper<T, float> &data) const noexcept {}
     /// for device
     virtual void decode(const DataAccessor<T> *da) const noexcept {}
-    [[nodiscard]] virtual uint size() const noexcept { return 0; }
+    [[nodiscard]] virtual uint element_num() const noexcept { return 0; }
     [[nodiscard]] virtual bool valid() const noexcept { return false; }
     virtual void invalidate() noexcept {}
 };
@@ -101,7 +101,7 @@ public:
         }
     }
 
-    [[nodiscard]] uint size() const noexcept override {
+    [[nodiscard]] uint element_num() const noexcept override {
         if constexpr (is_scalar_v<value_ty>) {
             static_assert(sizeof(value_ty) <= sizeof(float));
             return 1;
@@ -149,7 +149,7 @@ public:
     }
 
     void decode(const DataAccessor<T> *da) const noexcept override {
-        const Array<T> array = da->template read_dynamic_array<T>(size());
+        const Array<T> array = da->template read_dynamic_array<T>(element_num());
         *(const_cast<decltype(_device_value) *>(&_device_value)) = _decode(array);
     }
 };
@@ -158,10 +158,10 @@ public:
 #define OC_DECODE_ELEMENT(name) name.decode(da);
 #define OC_INVALIDATE_ELEMENT(name) name.invalidate();
 #define OC_VALID_ELEMENT(name) name.valid() &&
-#define OC_SIZE_ELEMENT(name) name.size() +
+#define OC_SIZE_ELEMENT(name) name.element_num() +
 
 #define OC_SERIALIZABLE_FUNC(type, ...)                                 \
-    [[nodiscard]] uint size() const noexcept override {                 \
+    [[nodiscard]] uint element_num() const noexcept override {          \
         return MAP(OC_SIZE_ELEMENT, __VA_ARGS__) 0;                     \
     }                                                                   \
     void encode(ManagedWrapper<type> &datas) const noexcept override {  \

@@ -25,8 +25,9 @@ struct Test : public ISerializable<float>{
     Serialize<int> d;
     Serialize<vector<float>> e;
     Serialize<float3x3> f;
+    ManagedWrapper<float> mw;
     Data data;
-    OC_SERIALIZABLE_FUNC(float,a, b, c, d, e, f, data)
+    OC_SERIALIZABLE_FUNC(float,a, b, c, d, e, f,mw, data)
 };
 
 int main(int argc, char *argv[]) {
@@ -42,6 +43,9 @@ int main(int argc, char *argv[]) {
 
     Test t;
     t.a = make_float2(1,2);
+    t.a = [&]() {
+        return make_float2(1.1,2.2);
+    };
     t.b = make_int3(3,4,5);
     t.c = 6.8f;
     t.d = 100;
@@ -52,8 +56,12 @@ int main(int argc, char *argv[]) {
     t.data.f = 106;
     t.data.f4 = make_float4(199.f);
     ResourceArray ra = device.create_resource_array();
-
+    t.mw.init(ra);
+    t.mw.register_self();
+    t.mw.push_back(9.98);
+    t.mw.push_back(9.98);
     ManagedWrapper<float> vv(ra);
+
 
     t.encode(vv);
     vv.reset_device_buffer(device);
