@@ -50,6 +50,7 @@ public:
     void set_host(host_ty val) noexcept { host() = std::move(val); }
     [[nodiscard]] const T *operator->() const { return host_ty::data(); }
     [[nodiscard]] T *operator->() { return host_ty::data(); }
+
     template<typename Index>
     requires concepts::integral<Index>
     [[nodiscard]] auto operator[](Index &&i) { return host_ty::operator[](OC_FORWARD(i)); }
