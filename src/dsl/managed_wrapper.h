@@ -41,7 +41,7 @@ public:
     void register_self() noexcept {
         _index = _resource_array->emplace(Super::device());
         _size = [&]() {
-            return Super::host().size();
+            return static_cast<uint>(Super::host().size());
         };
     }
 
