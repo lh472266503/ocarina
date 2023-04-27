@@ -9,7 +9,6 @@
 
 namespace ocarina {
 
-
 template<typename T, typename U = float>
 class ManagedWrapper : public Managed<T>,
                        public ISerializable<U> {
@@ -19,22 +18,23 @@ public:
 private:
     ResourceArray *_resource_array{};
     Serialize<uint> _index{InvalidUI32};
-    Serialize<uint> _size{InvalidUI32};
+    Serialize<uint> _length{InvalidUI32};
 
 public:
     ManagedWrapper() = default;
-    OC_SERIALIZABLE_FUNC(U, _index, _size)
+    OC_SERIALIZABLE_FUNC(U, _index, _length)
     void init(ResourceArray &resource_array) noexcept { _resource_array = &resource_array; }
 
     explicit ManagedWrapper(ResourceArray &resource_array) : _resource_array(&resource_array) {}
     void register_self() noexcept {
         _index = _resource_array->emplace(Super::device());
-        _size = [&]() {
+        _length = [&]() {
             return static_cast<uint>(Super::host().size());
         };
     }
 
-    [[nodiscard]] uint index() const noexcept { return _index.hv(); }
+    [[nodiscard]] const Serialize<uint> &index() const noexcept { return _index; }
+    [[nodiscard]] const Serialize<uint> &length() const noexcept { return _length; }
 
     template<typename Index>
     requires concepts::all_integral<expr_value_t<Index>>
