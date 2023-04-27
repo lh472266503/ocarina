@@ -157,7 +157,7 @@ public:
                     set_datas(object, ocarina::move(data_set));
                 });
                 for_each_instance([&](auto object) {
-                    object->fill_datas(get_datas(object));
+                    object->encode(get_datas(object));
                 });
                 for_each_representative([&](auto object) {
                     datas_type &data_set = get_datas(object);
