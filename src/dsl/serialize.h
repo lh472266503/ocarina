@@ -49,8 +49,8 @@ public:
     /// for device
     virtual void decode(const DataAccessor<T> *da) const noexcept {}
     [[nodiscard]] virtual uint element_num() const noexcept { return 0; }
-    [[nodiscard]] virtual bool valid() const noexcept { return true; }
-    virtual void invalidate() const noexcept {}
+    [[nodiscard]] virtual bool has_device_value() const noexcept { return true; }
+    virtual void reset_device_value() const noexcept {}
 };
 
 template<typename value_ty, typename T = ScalarUnion>
@@ -73,8 +73,8 @@ public:
         return *this;
     }
 
-    [[nodiscard]] bool valid() const noexcept override { return _device_value.has_value(); }
-    void invalidate() const noexcept override {
+    [[nodiscard]] bool has_device_value() const noexcept override { return _device_value.has_value(); }
+    void reset_device_value() const noexcept override {
         (const_cast<decltype(_device_value) &>(_device_value)).reset();
     }
     [[nodiscard]] value_ty hv() const noexcept {
@@ -89,11 +89,11 @@ public:
         return std::get<0>(_host_value);
     }
     [[nodiscard]] const dsl_t<value_ty> &dv() const noexcept {
-        OC_ASSERT(valid());
+        OC_ASSERT(has_device_value());
         return *_device_value;
     }
     [[nodiscard]] const dsl_t<value_ty> &operator*() const noexcept {
-        OC_ASSERT(valid());
+        OC_ASSERT(has_device_value());
         return *_device_value;
     }
     void encode(ManagedWrapper<T> &data) const noexcept override {
@@ -173,8 +173,8 @@ public:
 
 #define OC_ENCODE_ELEMENT(name) name.encode(datas);
 #define OC_DECODE_ELEMENT(name) name.decode(da);
-#define OC_INVALIDATE_ELEMENT(name) name.invalidate();
-#define OC_VALID_ELEMENT(name) name.valid() &&
+#define OC_INVALIDATE_ELEMENT(name) name.reset_device_value();
+#define OC_VALID_ELEMENT(name) name.has_device_value() &&
 #define OC_SIZE_ELEMENT(name) name.element_num() +
 
 #define OC_SERIALIZABLE_FUNC(...)                                              \
@@ -187,10 +187,10 @@ public:
     void decode(const DataAccessor<ScalarUnion> *da) const noexcept override { \
         MAP(OC_DECODE_ELEMENT, __VA_ARGS__)                                    \
     }                                                                          \
-    void invalidate() const noexcept override {                                \
+    void reset_device_value() const noexcept override {                        \
         MAP(OC_INVALIDATE_ELEMENT, __VA_ARGS__)                                \
     }                                                                          \
-    [[nodiscard]] bool valid() const noexcept override {                       \
+    [[nodiscard]] bool has_device_value() const noexcept override {            \
         return MAP(OC_VALID_ELEMENT, __VA_ARGS__) true;                        \
     }
 
