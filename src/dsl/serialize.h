@@ -67,7 +67,7 @@ public:
 
     [[nodiscard]] bool valid() const noexcept override { return _device_value.has_value(); }
     void invalidate() const noexcept override {
-        //        _device_value.reset();
+        (const_cast<decltype(_device_value)&>(_device_value)).reset();
     }
     [[nodiscard]] value_ty hv() const noexcept {
         if (_host_value.index() == 0) {
