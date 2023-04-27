@@ -80,8 +80,14 @@ public:
         OC_ASSERT(_host_value.index() == 0);
         return std::get<0>(_host_value);
     }
-    [[nodiscard]] const dsl_t<value_ty> &dv() const noexcept { return *_device_value; }
-    [[nodiscard]] const dsl_t<value_ty> &operator*() const noexcept { return *_device_value; }
+    [[nodiscard]] const dsl_t<value_ty> &dv() const noexcept {
+        OC_ASSERT(valid());
+        return *_device_value;
+    }
+    [[nodiscard]] const dsl_t<value_ty> &operator*() const noexcept {
+        OC_ASSERT(valid());
+        return *_device_value;
+    }
     void encode(ManagedWrapper<T, float> &data) const noexcept override {
         if constexpr (is_scalar_v<value_ty>) {
             data.push_back(bit_cast<T>(hv()));
