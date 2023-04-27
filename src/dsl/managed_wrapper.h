@@ -9,9 +9,9 @@
 
 namespace ocarina {
 
-template<typename T, typename U = float>
+template<typename T>
 class ManagedWrapper : public Managed<T>,
-                       public ISerializable<U> {
+                       public ISerializable<ScalarUnion> {
 public:
     using Super = Managed<T>;
 
@@ -22,7 +22,7 @@ private:
 
 public:
     ManagedWrapper() = default;
-    OC_SERIALIZABLE_FUNC(U, _index, _length)
+    OC_SERIALIZABLE_FUNC(ScalarUnion, _index, _length)
     void init(ResourceArray &resource_array) noexcept { _resource_array = &resource_array; }
 
     explicit ManagedWrapper(ResourceArray &resource_array) : _resource_array(&resource_array) {}

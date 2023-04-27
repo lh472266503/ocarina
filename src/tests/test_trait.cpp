@@ -30,6 +30,12 @@ struct Test : public ISerializable<float>{
     OC_SERIALIZABLE_FUNC(float,a, b, c, d, e, f,mw, data)
 };
 
+union oc_scalar{
+    int i;
+    uint u;
+    float f;
+};
+
 int main(int argc, char *argv[]) {
     log_level_debug();
 
@@ -61,6 +67,9 @@ int main(int argc, char *argv[]) {
     t.mw.push_back(9.98);
     t.mw.push_back(9.98);
     ManagedWrapper<float> vv(ra);
+
+    oc_scalar os{.f = 2.3f};
+    os.f = 2.f;
 
 
     t.encode(vv);

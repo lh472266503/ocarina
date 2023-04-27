@@ -9,14 +9,22 @@
 
 namespace ocarina {
 
-template<typename T, typename U>
+template<typename T>
 class ManagedWrapper;
+
+//union ScalarUnion {
+//    uint u;
+//    int i;
+//    float f;
+//};
+
+using ScalarUnion = float;
 
 template<typename U = float>
 requires(sizeof(U) == sizeof(float))
 struct DataAccessor {
     mutable Uint offset;
-    ManagedWrapper<U, float> &datas;
+    ManagedWrapper<U> &datas;
 
     template<typename T>
     [[nodiscard]] Array<T> read_dynamic_array(uint size) const noexcept {
@@ -33,11 +41,11 @@ struct DataAccessor {
     }
 };
 
-template<typename T = float>
+template<typename T = ScalarUnion>
 class ISerializable {
 public:
     /// for host
-    virtual void encode(ManagedWrapper<T, float> &data) const noexcept {}
+    virtual void encode(ManagedWrapper<T> &data) const noexcept {}
     /// for device
     virtual void decode(const DataAccessor<T> *da) const noexcept {}
     [[nodiscard]] virtual uint element_num() const noexcept { return 0; }
@@ -45,7 +53,7 @@ public:
     virtual void invalidate() const noexcept {}
 };
 
-template<typename value_ty, typename T = float>
+template<typename value_ty, typename T = ScalarUnion>
 requires(is_std_vector_v<value_ty> && is_scalar_v<typename value_ty::value_type>) || is_basic_v<value_ty>
 struct Serialize : public ISerializable<T> {
 private:
@@ -88,7 +96,7 @@ public:
         OC_ASSERT(valid());
         return *_device_value;
     }
-    void encode(ManagedWrapper<T, float> &data) const noexcept override {
+    void encode(ManagedWrapper<T> &data) const noexcept override {
         if constexpr (is_scalar_v<value_ty>) {
             data.push_back(bit_cast<T>(hv()));
         } else if constexpr (is_vector_v<value_ty>) {
