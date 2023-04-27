@@ -12,14 +12,9 @@ namespace ocarina {
 template<typename T>
 class ManagedWrapper;
 
-//union ScalarUnion {
-//    uint u;
-//    int i;
-//    float f;
-//};
-using ScalarUnion = float;
+using serialize_element_ty = float;
 
-template<typename U = float>
+template<typename U = serialize_element_ty>
 requires(sizeof(U) == sizeof(float))
 struct DataAccessor {
     mutable Uint offset;
@@ -40,7 +35,7 @@ struct DataAccessor {
     }
 };
 
-template<typename T = ScalarUnion>
+template<typename T = serialize_element_ty>
 class ISerializable {
 public:
     /// for host
@@ -52,7 +47,7 @@ public:
     virtual void reset_device_value() const noexcept {}
 };
 
-template<typename value_ty, typename T = ScalarUnion>
+template<typename value_ty, typename T = serialize_element_ty>
 requires(is_std_vector_v<value_ty> && is_scalar_v<typename value_ty::value_type>) || is_basic_v<value_ty>
 struct Serialize : public ISerializable<T> {
 private:
@@ -180,10 +175,10 @@ public:
     [[nodiscard]] uint element_num() const noexcept override {                 \
         return MAP(OC_SIZE_ELEMENT, __VA_ARGS__) 0;                            \
     }                                                                          \
-    void encode(ManagedWrapper<ScalarUnion> &datas) const noexcept override {  \
+    void encode(ManagedWrapper<serialize_element_ty> &datas) const noexcept override {  \
         MAP(OC_ENCODE_ELEMENT, __VA_ARGS__)                                    \
     }                                                                          \
-    void decode(const DataAccessor<ScalarUnion> *da) const noexcept override { \
+    void decode(const DataAccessor<serialize_element_ty> *da) const noexcept override { \
         MAP(OC_DECODE_ELEMENT, __VA_ARGS__)                                    \
     }                                                                          \
     void reset_device_value() const noexcept override {                        \

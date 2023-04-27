@@ -14,24 +14,8 @@ using namespace ocarina;
 struct Data : public ISerializable<float>{
     Serialize<float> f;
     Serialize<float4> f4;
-
-
-    [[nodiscard]] uint element_num() const noexcept override { return f.element_num() + f4.element_num() + 0; }
-    void encode(ManagedWrapper<ScalarUnion> &datas) const noexcept override {
-        f.encode(datas);
-        f4.encode(datas);
-    }
-    void decode(const DataAccessor<ScalarUnion> *da) const noexcept override {
-        f.decode(da);
-        f4.decode(da);
-    }
-    void reset_device_value() const noexcept override {
-        f.reset_device_value();
-        f4.reset_device_value();
-    }
-    [[nodiscard]] bool has_device_value() const noexcept override { return f.has_device_value() && f4.has_device_value() && true; }
     
-//    OC_SERIALIZABLE_FUNC(f, f4)
+    OC_SERIALIZABLE_FUNC(f, f4)
 };
 
 struct Test : public ISerializable<float>{

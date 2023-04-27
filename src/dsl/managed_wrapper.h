@@ -11,7 +11,7 @@ namespace ocarina {
 
 template<typename T>
 class ManagedWrapper : public Managed<T>,
-                       public ISerializable<ScalarUnion> {
+                       public ISerializable<serialize_element_ty> {
 public:
     using Super = Managed<T>;
 
