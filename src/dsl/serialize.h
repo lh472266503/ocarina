@@ -41,7 +41,7 @@ public:
     /// for device
     virtual void decode(const DataAccessor<T> *da) const noexcept {}
     [[nodiscard]] virtual uint element_num() const noexcept { return 0; }
-    [[nodiscard]] virtual bool valid() const noexcept { return false; }
+    [[nodiscard]] virtual bool valid() const noexcept { return true; }
     virtual void invalidate() noexcept {}
 };
 
