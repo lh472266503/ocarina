@@ -17,7 +17,6 @@ class ManagedWrapper;
 //    int i;
 //    float f;
 //};
-
 using ScalarUnion = float;
 
 template<typename U = float>
