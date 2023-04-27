@@ -5,6 +5,7 @@
 #pragma once
 
 #include "dsl/type_trait.h"
+#include "array.h"
 
 namespace ocarina {
 
