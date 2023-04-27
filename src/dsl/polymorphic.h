@@ -127,7 +127,7 @@ public:
     }
     [[nodiscard]] DataAccessor<U> data_accessor(const std::remove_pointer_t<T> *object,
                                                 const Uint &data_index) noexcept {
-        return {data_index * object->datas_size(), get_datas(object)};
+        return {data_index * object->element_num() * uint(sizeof(U)), get_datas(object)};
     }
     [[nodiscard]] datas_type &get_datas(const std::remove_pointer_t<T> *object) noexcept {
         return _type_mgr.all_type.at(object->type_hash()).datas;
