@@ -9,12 +9,9 @@
 
 namespace ocarina {
 
-template<typename T>
-class PolymorphicElement;
 
 template<typename T, typename U = float>
 class ManagedWrapper : public Managed<T>,
-                       public PolymorphicElement<U>,
                        public ISerializable<U> {
 public:
     using Super = Managed<T>;
@@ -28,14 +25,6 @@ public:
     ManagedWrapper() = default;
     OC_SERIALIZABLE_FUNC(U, _index, _size)
     void init(ResourceArray &resource_array) noexcept { _resource_array = &resource_array; }
-
-    [[nodiscard]] uint datas_size() const noexcept override {
-        return sizeof(_index) + sizeof(uint);
-    }
-    void fill_datas(ManagedWrapper<U> &datas) const noexcept override {
-        datas.push_back(bit_cast<U>(_index.hv()));
-        datas.push_back(bit_cast<U>(uint(Super::host_ty::size())));
-    }
 
     explicit ManagedWrapper(ResourceArray &resource_array) : _resource_array(&resource_array) {}
     void register_self() noexcept {

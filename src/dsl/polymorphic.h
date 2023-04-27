@@ -29,16 +29,6 @@ template<EPort p>
     return std::make_pair(inst_id, type_id);
 }
 
-template<typename T>
-class PolymorphicElement {
-public:
-    [[nodiscard]] virtual uint datas_size() const noexcept = 0;
-    virtual void fill_datas(ManagedWrapper<T> &datas) const noexcept = 0;
-    virtual void cache_values(Array<T> *values, const DataAccessor<T> *da) const noexcept {
-        OC_ASSERT(false);
-    }
-};
-
 template<typename T, typename U = float>
 requires std::is_pointer_v<std::remove_cvref_t<T>> && std::is_base_of_v<ISerializable<U>, std::remove_pointer_t<T>>
 class Polymorphic : public vector<T> {
