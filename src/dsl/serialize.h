@@ -42,7 +42,7 @@ public:
     virtual void decode(const DataAccessor<T> *da) const noexcept {}
     [[nodiscard]] virtual uint element_num() const noexcept { return 0; }
     [[nodiscard]] virtual bool valid() const noexcept { return true; }
-    virtual void invalidate() noexcept {}
+    virtual void invalidate() const noexcept {}
 };
 
 template<typename value_ty, typename T = float>
@@ -66,7 +66,9 @@ public:
     }
 
     [[nodiscard]] bool valid() const noexcept override { return _device_value.has_value(); }
-    void invalidate() noexcept override { _device_value.reset(); }
+    void invalidate() const noexcept override {
+        //        _device_value.reset();
+    }
     [[nodiscard]] value_ty hv() const noexcept {
         if (_host_value.index() == 0) {
             return std::get<0>(_host_value);
@@ -171,7 +173,7 @@ public:
     void decode(const DataAccessor<type> *da) const noexcept override { \
         MAP(OC_DECODE_ELEMENT, __VA_ARGS__)                             \
     }                                                                   \
-    void invalidate() noexcept override {                               \
+    void invalidate() const noexcept override {                         \
         MAP(OC_INVALIDATE_ELEMENT, __VA_ARGS__)                         \
     }                                                                   \
     [[nodiscard]] bool valid() const noexcept override {                \
