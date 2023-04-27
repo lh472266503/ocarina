@@ -75,7 +75,7 @@ public:
 
     [[nodiscard]] bool valid() const noexcept override { return _device_value.has_value(); }
     void invalidate() const noexcept override {
-        (const_cast<decltype(_device_value)&>(_device_value)).reset();
+        (const_cast<decltype(_device_value) &>(_device_value)).reset();
     }
     [[nodiscard]] value_ty hv() const noexcept {
         if (_host_value.index() == 0) {
@@ -177,21 +177,21 @@ public:
 #define OC_VALID_ELEMENT(name) name.valid() &&
 #define OC_SIZE_ELEMENT(name) name.element_num() +
 
-#define OC_SERIALIZABLE_FUNC(type, ...)                                 \
-    [[nodiscard]] uint element_num() const noexcept override {          \
-        return MAP(OC_SIZE_ELEMENT, __VA_ARGS__) 0;                     \
-    }                                                                   \
-    void encode(ManagedWrapper<type> &datas) const noexcept override {  \
-        MAP(OC_ENCODE_ELEMENT, __VA_ARGS__)                             \
-    }                                                                   \
-    void decode(const DataAccessor<type> *da) const noexcept override { \
-        MAP(OC_DECODE_ELEMENT, __VA_ARGS__)                             \
-    }                                                                   \
-    void invalidate() const noexcept override {                         \
-        MAP(OC_INVALIDATE_ELEMENT, __VA_ARGS__)                         \
-    }                                                                   \
-    [[nodiscard]] bool valid() const noexcept override {                \
-        return MAP(OC_VALID_ELEMENT, __VA_ARGS__) true;                 \
+#define OC_SERIALIZABLE_FUNC(...)                                              \
+    [[nodiscard]] uint element_num() const noexcept override {                 \
+        return MAP(OC_SIZE_ELEMENT, __VA_ARGS__) 0;                            \
+    }                                                                          \
+    void encode(ManagedWrapper<ScalarUnion> &datas) const noexcept override {  \
+        MAP(OC_ENCODE_ELEMENT, __VA_ARGS__)                                    \
+    }                                                                          \
+    void decode(const DataAccessor<ScalarUnion> *da) const noexcept override { \
+        MAP(OC_DECODE_ELEMENT, __VA_ARGS__)                                    \
+    }                                                                          \
+    void invalidate() const noexcept override {                                \
+        MAP(OC_INVALIDATE_ELEMENT, __VA_ARGS__)                                \
+    }                                                                          \
+    [[nodiscard]] bool valid() const noexcept override {                       \
+        return MAP(OC_VALID_ELEMENT, __VA_ARGS__) true;                        \
     }
 
 }// namespace ocarina

@@ -15,7 +15,7 @@ struct Data : public ISerializable<float>{
     Serialize<float> f;
     Serialize<float4> f4;
 
-    OC_SERIALIZABLE_FUNC(float,f, f4)
+    OC_SERIALIZABLE_FUNC(f, f4)
 };
 
 struct Test : public ISerializable<float>{
@@ -27,7 +27,7 @@ struct Test : public ISerializable<float>{
     Serialize<float3x3> f;
     ManagedWrapper<float> mw;
     Data data;
-    OC_SERIALIZABLE_FUNC(float,a, b, c, d, e, f,mw, data)
+    OC_SERIALIZABLE_FUNC(a, b, c, d, e, f,mw, data)
 };
 
 union oc_scalar{

@@ -22,7 +22,7 @@ private:
 
 public:
     ManagedWrapper() = default;
-    OC_SERIALIZABLE_FUNC(ScalarUnion, _index, _length)
+    OC_SERIALIZABLE_FUNC(_index, _length)
     void init(ResourceArray &resource_array) noexcept { _resource_array = &resource_array; }
 
     explicit ManagedWrapper(ResourceArray &resource_array) : _resource_array(&resource_array) {}
