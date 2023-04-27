@@ -40,7 +40,7 @@ public:
 };
 
 template<typename T, typename U = float>
-requires std::is_pointer_v<std::remove_cvref_t<T>> && std::is_base_of_v<PolymorphicElement<U>, std::remove_pointer_t<T>>
+requires std::is_pointer_v<std::remove_cvref_t<T>> && std::is_base_of_v<ISerializable<U>, std::remove_pointer_t<T>>
 class Polymorphic : public vector<T> {
 public:
     using Super = vector<T>;
