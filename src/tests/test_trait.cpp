@@ -8,25 +8,32 @@
 #include "dsl/polymorphic.h"
 #include "dsl/common.h"
 #include "rhi/common.h"
+#include <type_traits>
 
 using namespace ocarina;
 
-struct Data : public ISerializable<float>{
-    Serialize<float> f;
-    Serialize<float4> f4;
-    
+struct Data : public Serializable<float>{
+    Serial<float> f;
+    Serial<float4> f4;
+
     OC_SERIALIZABLE_FUNC(f, f4)
 };
 
-struct Test : public ISerializable<float>{
-    Serialize<float2> a;
-    Serialize<int3> b;
-    Serialize<float> c;
-    Serialize<int> d;
-    Serialize<vector<float>> e;
-    Serialize<float3x3> f;
+struct Data2 : public Data {
+    using _serial_ty = Data;
+    Serial<float3> f3;
+    OC_SERIALIZABLE_FUNC(f3)
+};
+
+struct Test : public Serializable<float>{
+    Serial<float2> a;
+    Serial<int3> b;
+    Serial<float> c;
+    Serial<int> d;
+    Serial<vector<float>> e;
+    Serial<float3x3> f;
     ManagedWrapper<float> mw;
-    Data data;
+    Data2 data;
     OC_SERIALIZABLE_FUNC(a, b, c, d, e, f,mw, data)
 };
 
@@ -46,6 +53,7 @@ int main(int argc, char *argv[]) {
     Stream stream = device.create_stream();
     Printer::instance().init(device);
 
+//    auto yy = std::is_de;
 
     Test t;
     t.a = make_float2(1,2);

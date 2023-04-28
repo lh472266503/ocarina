@@ -35,8 +35,9 @@ struct DataAccessor {
     }
 };
 
+namespace detail {
 template<typename T = serialize_element_ty>
-class ISerializable {
+class Serializable_impl {
 public:
     /// for host
     virtual void encode(ManagedWrapper<T> &data) const noexcept {}
@@ -46,23 +47,30 @@ public:
     [[nodiscard]] virtual bool has_device_value() const noexcept { return true; }
     virtual void reset_device_value() const noexcept {}
 };
+}// namespace detail
+
+template<typename T = serialize_element_ty>
+class Serializable : public detail::Serializable_impl<T> {
+public:
+    using _serial_ty = detail::Serializable_impl<T>;
+};
 
 template<typename value_ty, typename T = serialize_element_ty>
 requires(is_std_vector_v<value_ty> && is_scalar_v<typename value_ty::value_type>) || is_basic_v<value_ty>
-struct Serialize : public ISerializable<T> {
+struct Serial : public Serializable<T> {
 private:
     using host_ty = std::variant<value_ty, std::function<value_ty()>>;
     host_ty _host_value{};
     optional<dsl_t<value_ty>> _device_value{};
 
 public:
-    explicit Serialize(value_ty val = {}) : _host_value(std::move(val)) {}
-    Serialize &operator=(const value_ty &val) {
+    explicit Serial(value_ty val = {}) : _host_value(std::move(val)) {}
+    Serial &operator=(const value_ty &val) {
         _host_value = val;
         return *this;
     }
 
-    Serialize &operator=(const std::function<value_ty()> &val) {
+    Serial &operator=(const std::function<value_ty()> &val) {
         _host_value = val;
         return *this;
     }
@@ -175,24 +183,27 @@ public:
 #define OC_ENCODE_ELEMENT(name) name.encode(datas);
 #define OC_DECODE_ELEMENT(name) name.decode(da);
 #define OC_INVALIDATE_ELEMENT(name) name.reset_device_value();
-#define OC_VALID_ELEMENT(name) name.has_device_value() &&
-#define OC_SIZE_ELEMENT(name) name.element_num() +
+#define OC_VALID_ELEMENT(name) &&name.has_device_value()
+#define OC_SIZE_ELEMENT(name) +name.element_num()
 
-#define OC_SERIALIZABLE_FUNC(...)                                              \
-    [[nodiscard]] uint element_num() const noexcept override {                 \
-        return MAP(OC_SIZE_ELEMENT, __VA_ARGS__) 0;                            \
-    }                                                                          \
+#define OC_SERIALIZABLE_FUNC(...)                                                       \
+    [[nodiscard]] uint element_num() const noexcept override {                          \
+        return _serial_ty::element_num() MAP(OC_SIZE_ELEMENT, __VA_ARGS__);             \
+    }                                                                                   \
     void encode(ManagedWrapper<serialize_element_ty> &datas) const noexcept override {  \
-        MAP(OC_ENCODE_ELEMENT, __VA_ARGS__)                                    \
-    }                                                                          \
+        _serial_ty::encode(datas);                                                      \
+        MAP(OC_ENCODE_ELEMENT, __VA_ARGS__)                                             \
+    }                                                                                   \
     void decode(const DataAccessor<serialize_element_ty> *da) const noexcept override { \
-        MAP(OC_DECODE_ELEMENT, __VA_ARGS__)                                    \
-    }                                                                          \
-    void reset_device_value() const noexcept override {                        \
-        MAP(OC_INVALIDATE_ELEMENT, __VA_ARGS__)                                \
-    }                                                                          \
-    [[nodiscard]] bool has_device_value() const noexcept override {            \
-        return MAP(OC_VALID_ELEMENT, __VA_ARGS__) true;                        \
+        _serial_ty::decode(da);                                                         \
+        MAP(OC_DECODE_ELEMENT, __VA_ARGS__)                                             \
+    }                                                                                   \
+    void reset_device_value() const noexcept override {                                 \
+        _serial_ty::reset_device_value();                                               \
+        MAP(OC_INVALIDATE_ELEMENT, __VA_ARGS__)                                         \
+    }                                                                                   \
+    [[nodiscard]] bool has_device_value() const noexcept override {                     \
+        return _serial_ty::has_device_value() MAP(OC_VALID_ELEMENT, __VA_ARGS__);       \
     }
 
 }// namespace ocarina

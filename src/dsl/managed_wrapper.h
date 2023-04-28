@@ -11,14 +11,14 @@ namespace ocarina {
 
 template<typename T>
 class ManagedWrapper : public Managed<T>,
-                       public ISerializable<serialize_element_ty> {
+                       public Serializable<serialize_element_ty> {
 public:
     using Super = Managed<T>;
 
 private:
     ResourceArray *_resource_array{};
-    Serialize<uint> _index{InvalidUI32};
-    Serialize<uint> _length{InvalidUI32};
+    Serial<uint> _index{InvalidUI32};
+    Serial<uint> _length{InvalidUI32};
 
 public:
     ManagedWrapper() = default;
@@ -33,8 +33,8 @@ public:
         };
     }
 
-    [[nodiscard]] const Serialize<uint> &index() const noexcept { return _index; }
-    [[nodiscard]] const Serialize<uint> &length() const noexcept { return _length; }
+    [[nodiscard]] const Serial<uint> &index() const noexcept { return _index; }
+    [[nodiscard]] const Serial<uint> &length() const noexcept { return _length; }
 
     template<typename Index>
     requires concepts::all_integral<expr_value_t<Index>>
