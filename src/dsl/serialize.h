@@ -94,9 +94,12 @@ public:
         OC_ASSERT(has_device_value());
         return *_device_value;
     }
-    [[nodiscard]] const dsl_t<value_ty> &operator*() const noexcept {
-        OC_ASSERT(has_device_value());
-        return *_device_value;
+    [[nodiscard]] dsl_t<value_ty> operator*() const noexcept {
+        if (has_device_value()) {
+            return dv();
+        } else {
+            return dsl_t<value_ty>(hv());
+        }
     }
     [[nodiscard]] dsl_t<value_ty> auto_value() const noexcept {
         if (has_device_value()) {
