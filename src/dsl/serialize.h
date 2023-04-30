@@ -101,13 +101,6 @@ public:
             return dsl_t<value_ty>(hv());
         }
     }
-    [[nodiscard]] dsl_t<value_ty> auto_value() const noexcept {
-        if (has_device_value()) {
-            return dv();
-        } else {
-            return dsl_t<value_ty>(hv());
-        }
-    }
     void encode(ManagedWrapper<T> &data) const noexcept override {
         if constexpr (is_scalar_v<value_ty>) {
             data.push_back(bit_cast<T>(hv()));
