@@ -172,7 +172,7 @@ public:
     requires is_integral_expr_v<ObjectID>
     void dispatch(ObjectID &&object_id, const Func &func) const noexcept {
         auto [inst_id, type_id] = ocarina::decode_id<D>(OC_FORWARD(object_id));
-        dispatch(inst_id, type_id, func);
+        dispatch(type_id, inst_id, func);
     }
 
     template<typename TypeID, typename InstanceID, typename Func>
