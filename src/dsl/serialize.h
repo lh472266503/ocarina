@@ -18,7 +18,7 @@ template<typename U = serialize_element_ty>
 requires(sizeof(U) == sizeof(float))
 struct DataAccessor {
     mutable Uint offset;
-    ManagedWrapper<U> &datas;
+    const ManagedWrapper<U> &datas;
 
     template<typename T>
     [[nodiscard]] Array<T> read_dynamic_array(uint size) const noexcept {

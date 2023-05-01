@@ -119,7 +119,14 @@ public:
                                                 const Uint &data_index) noexcept {
         return {data_index * object->element_num() * uint(sizeof(U)), get_datas(object)};
     }
+    [[nodiscard]] DataAccessor<U> data_accessor(const std::remove_pointer_t<T> *object,
+                                                const Uint &data_index) const noexcept {
+        return {data_index * object->element_num() * uint(sizeof(U)), get_datas(object)};
+    }
     [[nodiscard]] datas_type &get_datas(const std::remove_pointer_t<T> *object) noexcept {
+        return _type_mgr.all_type.at(object->type_hash()).datas;
+    }
+    [[nodiscard]] const datas_type &get_datas(const std::remove_pointer_t<T> *object) const noexcept {
         return _type_mgr.all_type.at(object->type_hash()).datas;
     }
     void set_datas(const std::remove_pointer_t<T> *object, datas_type &&datas) noexcept {
@@ -161,9 +168,30 @@ public:
         }
     }
 
+//    template<typename TypeID, typename InstanceID, typename Func>
+//    requires is_all_integral_expr_v<TypeID, InstanceID>
+//    void dispatch(TypeID &&type_id, InstanceID &&inst_id, const Func &func) noexcept {
+//        switch (_mode) {
+//            case EInstance: {
+//                dispatch_instance(OC_FORWARD(inst_id), [&](auto object) {
+//                    func(object, nullptr);
+//                });
+//                break;
+//            }
+//            case EType: {
+//                dispatch_representative(OC_FORWARD(type_id), [&](auto object) {
+//                    DataAccessor<U> da = data_accessor(object, OC_FORWARD(inst_id));
+//                    func(object, &da);
+//                });
+//                break;
+//            }
+//            default: OC_ASSERT(false);
+//        }
+//    }
+
     template<typename TypeID, typename InstanceID, typename Func>
     requires is_all_integral_expr_v<TypeID, InstanceID>
-    void dispatch(TypeID &&type_id, InstanceID &&inst_id, const Func &func) noexcept {
+    void dispatch(TypeID &&type_id, InstanceID &&inst_id, const Func &func) const noexcept {
         switch (_mode) {
             case EInstance: {
                 dispatch_instance(OC_FORWARD(inst_id), [&](auto object) {
