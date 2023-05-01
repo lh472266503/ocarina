@@ -109,6 +109,9 @@ public:
         return _type_mgr.type_counter.at(object->type_hash());
     }
     [[nodiscard]] size_t type_num() const noexcept { return _type_mgr.size(); }
+    [[nodiscard]] size_t instance_num(uint type_id) const noexcept {
+        return instance_num(_type_mgr.representatives.at(type_id));
+    }
     [[nodiscard]] uint type_index(const std::remove_pointer_t<T> *object) const noexcept {
         return _type_mgr.all_type.at(object->type_hash()).type_index;
     }
