@@ -168,26 +168,12 @@ public:
         }
     }
 
-//    template<typename TypeID, typename InstanceID, typename Func>
-//    requires is_all_integral_expr_v<TypeID, InstanceID>
-//    void dispatch(TypeID &&type_id, InstanceID &&inst_id, const Func &func) noexcept {
-//        switch (_mode) {
-//            case EInstance: {
-//                dispatch_instance(OC_FORWARD(inst_id), [&](auto object) {
-//                    func(object, nullptr);
-//                });
-//                break;
-//            }
-//            case EType: {
-//                dispatch_representative(OC_FORWARD(type_id), [&](auto object) {
-//                    DataAccessor<U> da = data_accessor(object, OC_FORWARD(inst_id));
-//                    func(object, &da);
-//                });
-//                break;
-//            }
-//            default: OC_ASSERT(false);
-//        }
-//    }
+    template<typename ObjectID, typename Func>
+    requires is_integral_expr_v<ObjectID>
+    void dispatch(ObjectID &&object_id, const Func &func) const noexcept {
+        auto [inst_id, type_id] = ocarina::decode_id<D>(OC_FORWARD(object_id));
+        dispatch(inst_id, type_id, func);
+    }
 
     template<typename TypeID, typename InstanceID, typename Func>
     requires is_all_integral_expr_v<TypeID, InstanceID>
