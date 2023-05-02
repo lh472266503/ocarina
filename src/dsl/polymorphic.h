@@ -184,7 +184,7 @@ public:
         switch (_mode) {
             case EInstance: {
                 dispatch_instance(OC_FORWARD(inst_id), [&](auto object) {
-                    func(object, nullptr);
+                    func(object);
                 });
                 break;
             }
@@ -192,7 +192,7 @@ public:
                 dispatch_representative(OC_FORWARD(type_id), [&](auto object) {
                     DataAccessor<U> da = data_accessor(object, OC_FORWARD(inst_id));
                     object->decode(&da);
-                    func(object, &da);
+                    func(object);
                     object->reset_device_value();
                 });
                 break;
