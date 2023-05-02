@@ -191,7 +191,9 @@ public:
             case EType: {
                 dispatch_representative(OC_FORWARD(type_id), [&](auto object) {
                     DataAccessor<U> da = data_accessor(object, OC_FORWARD(inst_id));
+                    object->decode(&da);
                     func(object, &da);
+                    object->reset_device_value();
                 });
                 break;
             }
