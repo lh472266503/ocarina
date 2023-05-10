@@ -110,14 +110,18 @@ class ImageBase : public concepts::Noncopyable {
 protected:
     PixelStorage _pixel_storage{PixelStorage::UNKNOWN};
     uint2 _resolution{};
+    vector<float> _average{};
 
 public:
     ImageBase(PixelStorage pixel_format, uint2 resolution)
         : _pixel_storage(pixel_format),
-          _resolution(resolution) {}
+          _resolution(resolution) {
+        _average.resize(channel_num());
+    }
     ImageBase(ImageBase &&other) noexcept {
         _pixel_storage = other._pixel_storage;
         _resolution = other._resolution;
+        _average = other._average;
     }
     ImageBase() = default;
     ImageBase &operator=(ImageBase &&) = default;
@@ -125,6 +129,14 @@ public:
     [[nodiscard]] uint2 resolution() const { return _resolution; }
     [[nodiscard]] uint width() const { return _resolution.x; }
     [[nodiscard]] uint height() const { return _resolution.y; }
+    template<size_t N = 4>
+    [[nodiscard]] const Vector<float, N> &average() const noexcept {
+        return *(reinterpret_cast<Vector<float, N> *>(_average.data()));
+    }
+    template<size_t N = 4>
+    [[nodiscard]] Vector<float, N> &average() noexcept {
+        return *(reinterpret_cast<Vector<float, N> *>(_average.data()));
+    }
     [[nodiscard]] PixelStorage pixel_storage() const { return _pixel_storage; }
     [[nodiscard]] size_t pitch_byte_size() const { return _resolution.x * pixel_size(_pixel_storage); }
     [[nodiscard]] size_t pixel_num() const { return _resolution.x * _resolution.y; }
