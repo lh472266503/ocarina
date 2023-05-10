@@ -131,10 +131,12 @@ public:
     [[nodiscard]] uint height() const { return _resolution.y; }
     template<size_t N = 4>
     [[nodiscard]] const Vector<float, N> &average() const noexcept {
+        OC_ASSERT(N <= channel_num());
         return *(reinterpret_cast<Vector<float, N> *>(_average.data()));
     }
     template<size_t N = 4>
     [[nodiscard]] Vector<float, N> &average() noexcept {
+        OC_ASSERT(N <= channel_num());
         return *(reinterpret_cast<Vector<float, N> *>(_average.data()));
     }
     [[nodiscard]] PixelStorage pixel_storage() const { return _pixel_storage; }
