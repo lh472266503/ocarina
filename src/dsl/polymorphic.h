@@ -13,7 +13,8 @@ namespace ocarina {
 
 enum PolymorphicMode {
     EInstance = 0,
-    EType = 1
+    EType = 1,
+    ESeparate = 2
 };
 
 template<EPort p>
