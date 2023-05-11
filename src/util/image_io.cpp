@@ -57,7 +57,9 @@ ImageIO ImageIO::pure_color(float4 color, ColorSpace color_space, uint2 res) {
             dest[i] = srgb_to_linear(color);
         }
     }
-    return {PixelStorage::FLOAT4, pixel, res};
+    ImageIO ret{PixelStorage::FLOAT4, pixel, res};
+    ret.average<4>() = color;
+    return ret;
 }
 
 ImageIO ImageIO::load(const fs::path &path, ColorSpace color_space, float3 scale) {
@@ -150,25 +152,29 @@ ImageIO ImageIO::load_exr(const fs::path &fn, ColorSpace color_space, float3 sca
             using PixelType = float;
             PixelStorage pixel_storage = detail::PixelStorageImpl<PixelType>::storage;
             PixelType *pixel = new_array<PixelType>(pixel_num);
-            size_t size_in_bytes = pixel_num * detail::PixelStorageImpl<PixelType>::pixel_size;
+            float average = 0;
             if (color_space == SRGB) {
                 for (int i = 0; i < pixel_num; ++i) {
                     PixelType val = reinterpret_cast<PixelType *>(exr_image.images[0])[i];
                     pixel[i] = srgb_to_linear(val) * scale.x;
+                    average = lerp(1.f / (i + 1), average, pixel[i]);
                 }
             } else {
                 for (int i = 0; i < pixel_num; ++i) {
                     PixelType val = reinterpret_cast<PixelType *>(exr_image.images[0])[i];
                     pixel[i] = val * scale.x;
+                    average = lerp(1.f / (i + 1), average, pixel[i]);
                 }
             }
-            return ImageIO(pixel_storage, (std::byte *)pixel, resolution, fn);
+            auto ret = ImageIO(pixel_storage, (std::byte *)pixel, resolution, fn);
+            ret.average<1>() = average;
+            return ret;
         }
         case 2: {
             using PixelType = float2;
             PixelStorage pixel_storage = detail::PixelStorageImpl<PixelType>::storage;
             PixelType *pixel = new_array<PixelType>(pixel_num);
-            size_t size_in_bytes = pixel_num * detail::PixelStorageImpl<PixelType>::pixel_size;
+            float2 average = make_float2(0.f);
             if (color_space == SRGB) {
                 for (int i = 0; i < pixel_num; ++i) {
                     pixel[i] = make_float2(
@@ -176,20 +182,25 @@ ImageIO ImageIO::load_exr(const fs::path &fn, ColorSpace color_space, float3 sca
                             scale.x,
                         srgb_to_linear(reinterpret_cast<float *>(exr_image.images[0])[i]) *
                             scale.y);
+                    average = lerp(1.f / (i + 1), average, pixel[i]);
                 }
             } else {
                 for (int i = 0; i < pixel_num; ++i) {
                     pixel[i] = make_float2(
                         reinterpret_cast<float *>(exr_image.images[1])[i] * scale.x,
                         reinterpret_cast<float *>(exr_image.images[0])[i] * scale.y);
+                    average = lerp(1.f / (i + 1), average, pixel[i]);
                 }
             }
-            return {pixel_storage, (std::byte *)pixel, resolution, fn};
+            auto ret = ImageIO(pixel_storage, (std::byte *)pixel, resolution, fn);
+            ret.average<2>() = average;
+            return ret;
         }
         case 3:
         case 4: {
             PixelStorage pixel_storage = detail::PixelStorageImpl<float4>::storage;
             float4 *pixel = new_array<float4>(pixel_num);
+            float4 average = make_float4(0.f);
             if (color_space == SRGB) {
                 for (int i = 0; i < pixel_num; ++i) {
                     pixel[i] = make_float4(
@@ -198,6 +209,7 @@ ImageIO ImageIO::load_exr(const fs::path &fn, ColorSpace color_space, float3 sca
                                    srgb_to_linear(reinterpret_cast<float *>(exr_image.images[1])[i]),
                                    1.f) *
                                make_float4(scale, 1.f);
+                    average = lerp(1.f / (i + 1), average, pixel[i]);
                 }
             } else {
                 for (int i = 0; i < pixel_num; ++i) {
@@ -207,9 +219,12 @@ ImageIO ImageIO::load_exr(const fs::path &fn, ColorSpace color_space, float3 sca
                                    (reinterpret_cast<float *>(exr_image.images[1])[i]),
                                    1.f) *
                                make_float4(scale, 1.f);
+                    average = lerp(1.f / (i + 1), average, pixel[i]);
                 }
             }
-            return {pixel_storage, (std::byte *)pixel, resolution, fn};
+            auto ret = ImageIO(pixel_storage, (std::byte *)pixel, resolution, fn);
+            ret.average<4>() = average;
+            return ret;
         }
         default:
             OC_ERROR("unknown")

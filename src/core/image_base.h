@@ -130,14 +130,22 @@ public:
     [[nodiscard]] uint width() const { return _resolution.x; }
     [[nodiscard]] uint height() const { return _resolution.y; }
     template<size_t N = 4>
-    [[nodiscard]] const Vector<float, N> &average() const noexcept {
+    [[nodiscard]] const auto &average() const noexcept {
         OC_ASSERT(N <= channel_num());
-        return *(reinterpret_cast<Vector<float, N> *>(_average.data()));
+        if constexpr (N == 1) {
+            return *(reinterpret_cast<const float *>(_average.data()));
+        } else {
+            return *(reinterpret_cast<const Vector<float, N> *>(_average.data()));
+        }
     }
     template<size_t N = 4>
-    [[nodiscard]] Vector<float, N> &average() noexcept {
+    [[nodiscard]] auto &average() noexcept {
         OC_ASSERT(N <= channel_num());
-        return *(reinterpret_cast<Vector<float, N> *>(_average.data()));
+        if constexpr (N == 1) {
+            return *(reinterpret_cast<float *>(_average.data()));
+        } else {
+            return *(reinterpret_cast<Vector<float, N> *>(_average.data()));
+        }
     }
     [[nodiscard]] PixelStorage pixel_storage() const { return _pixel_storage; }
     [[nodiscard]] size_t pitch_byte_size() const { return _resolution.x * pixel_size(_pixel_storage); }
