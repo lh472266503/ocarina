@@ -86,12 +86,14 @@ ImageIO ImageIO::load_hdr(const fs::path &path, ColorSpace color_space, float3 s
     auto pixel = new_array(size_in_bytes);
     float *src = rgb;
     auto dest = (float *)pixel;
+    float4 average = make_float4(0.f);
     if (color_space == SRGB) {
         for (int i = 0; i < pixel_num; ++i, src += 3, dest += 4) {
             dest[0] = srgb_to_linear(src[0]) * scale.x;
             dest[1] = srgb_to_linear(src[1]) * scale.y;
             dest[2] = srgb_to_linear(src[2]) * scale.z;
             dest[3] = 1.f;
+            average = lerp(1.f / (i + 1), average, *reinterpret_cast<float4*>(dest));
         }
     } else {
         for (int i = 0; i < pixel_num; ++i, src += 3, dest += 4) {
@@ -99,10 +101,13 @@ ImageIO ImageIO::load_hdr(const fs::path &path, ColorSpace color_space, float3 s
             dest[1] = src[1] * scale.y;
             dest[2] = src[2] * scale.z;
             dest[3] = 1.f;
+            average = lerp(1.f / (i + 1), average, *reinterpret_cast<float4*>(dest));
         }
     }
     free(rgb);
-    return {pixel_storage, pixel, make_uint2(w, h), path};
+    ImageIO ret = {pixel_storage, pixel, make_uint2(w, h), path};
+    ret.average<4>() = average;
+    return ret;
 }
 
 ImageIO ImageIO::load_exr(const fs::path &fn, ColorSpace color_space, float3 scale) {
@@ -248,6 +253,7 @@ ImageIO ImageIO::load_other(const fs::path &path, ColorSpace color_space, float3
     auto pixel = new_array<std::byte>(size_in_bytes);
     uint8_t *src = rgba;
     auto dest = (uint32_t *)pixel;
+    float4 average = make_float4(0.f);
     if (color_space == SRGB) {
         for (int i = 0; i < pixel_num; ++i, src += 4, dest += 1) {
             float r = (float)src[0] / 255;
@@ -256,6 +262,7 @@ ImageIO ImageIO::load_other(const fs::path &path, ColorSpace color_space, float3
             float a = (float)src[3] / 255;
             float4 color = make_float4(r, g, b, a) * make_float4(scale, 1.f);
             color = srgb_to_linear(color);
+            average = lerp(1.f / (i + 1), average, color);
             *dest = make_rgba(color);
         }
     } else {
@@ -265,11 +272,14 @@ ImageIO ImageIO::load_other(const fs::path &path, ColorSpace color_space, float3
             float b = (float)src[2] / 255;
             float a = (float)src[3] / 255;
             float4 color = make_float4(r, g, b, a) * make_float4(scale, 1.f);
+            average = lerp(1.f / (i + 1), average, color);
             *dest = make_rgba(color);
         }
     }
     free(rgba);
-    return {pixel_storage, pixel, resolution, path};
+    ImageIO ret = {pixel_storage, pixel, resolution, path};
+    ret.average<4>() = average;
+    return ret;
 }
 
 void ImageIO::save(const fs::path &fn) {
