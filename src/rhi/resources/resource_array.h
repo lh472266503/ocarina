@@ -53,7 +53,7 @@ public:
     [[nodiscard]] size_t emplace(const T &buffer) noexcept {
         return impl()->emplace_buffer(buffer.head());
     }
-    size_t emplace(const RHITexture &texture) noexcept;
+    size_t emplace(const Texture &texture) noexcept;
 
     /// for dsl
     [[nodiscard]] const Expression *expression() const noexcept override {

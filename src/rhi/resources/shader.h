@@ -27,8 +27,8 @@ struct prototype_to_shader_invocation<Buffer<T>> {
 };
 
 template<>
-struct prototype_to_shader_invocation<RHITexture> {
-    using type = const RHITexture &;
+struct prototype_to_shader_invocation<Texture> {
+    using type = const Texture &;
 };
 
 template<>
@@ -67,7 +67,7 @@ private:
         push_memory_block(buffer.memory_block());
     }
 
-    void _encode_texture(const RHITexture &texture) noexcept;
+    void _encode_texture(const Texture &texture) noexcept;
     void _encode_resource_array(const ResourceArray &resource_array) noexcept;
     void _encode_accel(const Accel &accel) noexcept {
         push_memory_block(accel.memory_block());

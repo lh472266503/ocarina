@@ -362,10 +362,10 @@ struct Computable<Buffer<T>>
 };
 
 template<>
-struct Computable<RHITexture>
-    : detail::EnableTextureSample<Computable<RHITexture>>,
-      detail::EnableTextureReadAndWrite<Computable<RHITexture>> {
-    OC_COMPUTABLE_COMMON(Computable<RHITexture>)
+struct Computable<Texture>
+    : detail::EnableTextureSample<Computable<Texture>>,
+      detail::EnableTextureReadAndWrite<Computable<Texture>> {
+    OC_COMPUTABLE_COMMON(Computable<Texture>)
 };
 
 template<size_t N>

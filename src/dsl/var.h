@@ -90,7 +90,7 @@ struct Var<Vector<T, 4>> : public Computable<Vector<T, 4>> {
 template<typename T>
 using BufferVar = Var<Buffer<T>>;
 
-using TextureVar = Var<RHITexture>;
+using TextureVar = Var<Texture>;
 
 using ResourceArrayVar = Var<ResourceArray>;
 

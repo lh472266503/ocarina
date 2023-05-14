@@ -338,7 +338,7 @@ class Buffer;
 template<typename T, int... dims>
 class BufferView;
 
-class RHITexture;
+class Texture;
 class Accel;
 class ResourceArray;
 
@@ -394,7 +394,7 @@ template<typename T>
 struct is_image_impl : std::false_type {};
 
 template<>
-struct is_image_impl<RHITexture> : std::true_type {};
+struct is_image_impl<Texture> : std::true_type {};
 
 template<typename T>
 struct texture_element_impl {

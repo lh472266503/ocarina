@@ -162,7 +162,7 @@ int main(int argc, char *argv[]) {
     auto image = ImageIO::pure_color(make_float4(0, 0, 0, 1), ColorSpace::LINEAR, res);
     auto frame = device.create_texture(res, PixelStorage::FLOAT4);
 
-    Kernel raytracing = [&](Var<RHITexture> output) {
+    Kernel raytracing = [&](Var<Texture> output) {
         //        Var ray = make_ray(make_float3(0), make_float3(0));
 //        Var coord = dispatch_idx().xy();
         Var state = seed_buffer.read(dispatch_id());

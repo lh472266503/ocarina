@@ -10,7 +10,7 @@
 
 namespace ocarina {
 
-class RHITexture : public RHIResource {
+class Texture : public RHIResource {
 public:
     class Impl {
     public:
@@ -27,8 +27,8 @@ public:
     };
 
 public:
-    RHITexture() = default;
-    explicit RHITexture(Device::Impl *device, uint3 res,
+    Texture() = default;
+    explicit Texture(Device::Impl *device, uint3 res,
                         PixelStorage pixel_storage)
         : RHIResource(device, Tag::TEXTURE,
                       device->create_texture(res, pixel_storage)) {}
@@ -44,7 +44,7 @@ public:
     template<typename U, typename V>
     requires(is_all_floating_point_expr_v<U, V>)
         [[nodiscard]] auto sample(uint channel_num, const U &u, const V &v) const noexcept {
-        return make_expr<RHITexture>(expression()).sample(channel_num, u, v);
+        return make_expr<Texture>(expression()).sample(channel_num, u, v);
     }
 
     template<typename UV>
@@ -56,7 +56,7 @@ public:
     template<typename U, typename V, typename W>
     requires(is_all_floating_point_expr_v<U, V>)
         [[nodiscard]] auto sample(uint channel_num, const U &u, const V &v, const W &w) const noexcept {
-        return make_expr<RHITexture>(expression()).sample(channel_num, u, v, w);
+        return make_expr<Texture>(expression()).sample(channel_num, u, v, w);
     }
 
     template<typename UVW>
@@ -68,7 +68,7 @@ public:
     template<typename Target, typename X, typename Y>
     requires(is_all_integral_expr_v<X, Y>)
         OC_NODISCARD auto read(const X &x, const Y &y) const noexcept {
-        return make_expr<RHITexture>(expression()).read<Target>(x, y);
+        return make_expr<Texture>(expression()).read<Target>(x, y);
     }
 
     template<typename Target, typename XY>
@@ -83,7 +83,7 @@ public:
     requires(is_all_integral_expr_v<X, Y> &&
              (is_uchar_element_expr_v<Val> || is_float_element_expr_v<Val>))
     void write(const X &x, const Y &y, const Val &elm) noexcept {
-        make_expr<RHITexture>(expression()).write(x, y, elm);
+        make_expr<Texture>(expression()).write(x, y, elm);
     }
 
     template<typename XY, typename Val>

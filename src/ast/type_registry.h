@@ -17,7 +17,7 @@ class Buffer;
 template<typename T,int... dims>
 class BufferView;
 
-class RHITexture;
+class Texture;
 
 template<typename T>
 class ImageView;
@@ -148,7 +148,7 @@ struct TypeDesc<Buffer<T, Dims...>> {
 };
 
 template<>
-struct TypeDesc<RHITexture> {
+struct TypeDesc<Texture> {
     static ocarina::string_view description() noexcept {
         return "texture";
     }
