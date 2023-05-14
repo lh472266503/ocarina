@@ -147,6 +147,7 @@ public:
             return *(reinterpret_cast<Vector<float, N> *>(_average.data()));
         }
     }
+    [[nodiscard]] auto average_vector() const noexcept { return _average; }
     [[nodiscard]] PixelStorage pixel_storage() const { return _pixel_storage; }
     [[nodiscard]] size_t pitch_byte_size() const { return _resolution.x * pixel_size(_pixel_storage); }
     [[nodiscard]] size_t pixel_num() const { return _resolution.x * _resolution.y; }
