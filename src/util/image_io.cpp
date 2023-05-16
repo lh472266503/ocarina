@@ -32,7 +32,7 @@ ImageIO::ImageIO(PixelStorage pixel_storage, const std::byte *pixel, uint2 res)
 }
 
 ImageIO::ImageIO(ImageIO &&other) noexcept
-    : ImageBase(other._pixel_storage, other._resolution) {
+    : ImageBase(ocarina::move(other)) {
     _pixel = ocarina::move(other._pixel);
     _path = ocarina::move(other._path);
 }

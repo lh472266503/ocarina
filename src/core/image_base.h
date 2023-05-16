@@ -121,7 +121,7 @@ public:
     ImageBase(ImageBase &&other) noexcept {
         _pixel_storage = other._pixel_storage;
         _resolution = other._resolution;
-        _average = other._average;
+        _average = ocarina::move(other._average);
     }
     ImageBase() = default;
     ImageBase &operator=(ImageBase &&) = default;
