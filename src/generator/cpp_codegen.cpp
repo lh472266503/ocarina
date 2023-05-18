@@ -233,7 +233,7 @@ void CppCodegen::visit(const MemberExpr *expr) noexcept {
         _emit_member_name(expr->member_index());
     }
 }
-void CppCodegen::visit(const AccessExpr *expr) noexcept {
+void CppCodegen::visit(const SubscriptExpr *expr) noexcept {
     const Type *type = expr->range()->type();
     if (type->has_multi_dims()) {
         current_scratch() << "(*reinterpret_cast<";

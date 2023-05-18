@@ -15,7 +15,7 @@ void RefExpr::_mark(Usage usage) const noexcept {
 uint64_t LiteralExpr::_compute_hash() const noexcept {
     return ocarina::visit([&](auto &&arg) { return hash64(OC_FORWARD(arg)); }, _value);
 }
-uint64_t AccessExpr::_compute_hash() const noexcept {
+uint64_t SubscriptExpr::_compute_hash() const noexcept {
     uint64_t ret = _range->hash();
     for_each_index([&](const Expression *index) {
         ret = hash64(index->hash(), ret);

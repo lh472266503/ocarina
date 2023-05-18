@@ -16,7 +16,7 @@ namespace ocarina {
 class UnaryExpr;
 class BinaryExpr;
 class MemberExpr;
-class AccessExpr;
+class SubscriptExpr;
 class LiteralExpr;
 class RefExpr;
 class CallExpr;
@@ -28,7 +28,7 @@ struct OC_AST_API ExprVisitor {
     virtual void visit(const UnaryExpr *) = 0;
     virtual void visit(const BinaryExpr *) = 0;
     virtual void visit(const MemberExpr *) = 0;
-    virtual void visit(const AccessExpr *) = 0;
+    virtual void visit(const SubscriptExpr *) = 0;
     virtual void visit(const LiteralExpr *) = 0;
     virtual void visit(const RefExpr *) = 0;
     virtual void visit(const CallExpr *) = 0;
@@ -122,7 +122,7 @@ public:
     OC_MAKE_EXPRESSION_ACCEPT_VISITOR
 };
 
-class OC_AST_API AccessExpr : public Expression {
+class OC_AST_API SubscriptExpr : public Expression {
 private:
     using IndexVector = vector<const Expression *>;
 
@@ -134,7 +134,7 @@ private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
-    AccessExpr(const Type *type, const Expression *range, const Expression *index)
+    SubscriptExpr(const Type *type, const Expression *range, const Expression *index)
         : Expression(Tag::ACCESS, type), _range(range) {
         _range->mark(Usage::READ);
         _indexes.push_back(index);
@@ -143,7 +143,7 @@ public:
         });
     }
 
-    AccessExpr(const Type *type, const Expression *range, IndexVector indexes)
+    SubscriptExpr(const Type *type, const Expression *range, IndexVector indexes)
         : Expression(Tag::ACCESS, type), _range(range), _indexes(ocarina::move(indexes)) {
         _range->mark(Usage::READ);
         for_each_index([](const Expression *index) {

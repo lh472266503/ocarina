@@ -152,9 +152,9 @@ public:
         const ArgumentBinding &uniform = Function::current()->get_uniform_var(Type::of<decltype(*this)>(),
                                                                               Variable::Tag::BUFFER,
                                                                               memory_block());
-        const AccessExpr *expr = Function::current()->access(Type::of<element_type>(),
-                                                             uniform.expression(),
-                                                             OC_EXPR(index));
+        const SubscriptExpr *expr = Function::current()->subscript(Type::of<element_type>(),
+                                                                   uniform.expression(),
+                                                                   OC_EXPR(index));
         detail::assign(expr, OC_FORWARD(elm));
     }
 

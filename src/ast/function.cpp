@@ -123,13 +123,13 @@ const CastExpr *Function::cast(const Type *type, CastOp op, const Expression *ex
     return _create_expression<CastExpr>(type, op, expression);
 }
 
-const AccessExpr *Function::access(const Type *type, const Expression *range, const Expression *index) noexcept {
-    return _create_expression<AccessExpr>(type, range, index);
+const SubscriptExpr *Function::subscript(const Type *type, const Expression *range, const Expression *index) noexcept {
+    return _create_expression<SubscriptExpr>(type, range, index);
 }
 
-const AccessExpr *Function::access(const Type *type, const Expression *range,
+const SubscriptExpr *Function::subscript(const Type *type, const Expression *range,
                                    vector<const Expression *> indexes) noexcept {
-    return _create_expression<AccessExpr>(type, range, indexes);
+    return _create_expression<SubscriptExpr>(type, range, indexes);
 }
 
 const MemberExpr *Function::swizzle(const Type *type, const Expression *obj, uint16_t mask, uint16_t swizzle_size) noexcept {

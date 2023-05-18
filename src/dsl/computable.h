@@ -50,9 +50,9 @@ struct EnableSubscriptAccess {
     template<typename Index>
     requires concepts::integral<expr_value_t<Index>>
     auto operator[](Index &&index) const noexcept {
-        const AccessExpr *expr = Function::current()->access(Type::of<element_type>(),
-                                                             static_cast<const T *>(this)->expression(),
-                                                             OC_EXPR(index));
+        const SubscriptExpr *expr = Function::current()->subscript(Type::of<element_type>(),
+                                                                   static_cast<const T *>(this)->expression(),
+                                                                   OC_EXPR(index));
         return eval<element_type>(expr);
     }
 
@@ -60,9 +60,9 @@ struct EnableSubscriptAccess {
     requires concepts::integral<expr_value_t<Index>>
     auto &operator[](Index &&index) noexcept {
         auto f = Function::current();
-        const AccessExpr *expr = f->access(Type::of<element_type>(),
-                                           static_cast<const T *>(this)->expression(),
-                                           OC_EXPR(index));
+        const SubscriptExpr *expr = f->subscript(Type::of<element_type>(),
+                                                 static_cast<const T *>(this)->expression(),
+                                                 OC_EXPR(index));
         Var<element_type> *ret = f->template create_temp_obj<Var<element_type>>(expr);
         return *ret;
     }
@@ -74,18 +74,18 @@ struct EnableReadAndWrite {
     template<typename... Index>
     requires concepts::all_integral<expr_value_t<Index>...>
     auto read(Index &&...index) const noexcept {
-        const AccessExpr *expr = Function::current()->access(Type::of<element_type>(),
-                                                             static_cast<const T *>(this)->expression(),
-                                                             {OC_EXPR(index)...});
+        const SubscriptExpr *expr = Function::current()->subscript(Type::of<element_type>(),
+                                                                   static_cast<const T *>(this)->expression(),
+                                                                   {OC_EXPR(index)...});
         return eval<element_type>(expr);
     }
 
     template<typename Index, typename Val>
     requires concepts::integral<expr_value_t<Index>> && concepts::is_same_v<element_type, expr_value_t<Val>>
     void write(Index &&index, Val &&elm) {
-        const AccessExpr *expr = Function::current()->access(Type::of<element_type>(),
-                                                             static_cast<const T *>(this)->expression(),
-                                                             OC_EXPR(index));
+        const SubscriptExpr *expr = Function::current()->subscript(Type::of<element_type>(),
+                                                                   static_cast<const T *>(this)->expression(),
+                                                                   OC_EXPR(index));
         assign(expr, OC_FORWARD(elm));
     }
 };
@@ -165,10 +165,10 @@ struct EnableTextureReadAndWrite {
 template<typename T>
 struct AtomicRef {
 private:
-    const AccessExpr *_expression{};
+    const SubscriptExpr *_expression{};
 
 public:
-    explicit AtomicRef(const AccessExpr *expression)
+    explicit AtomicRef(const SubscriptExpr *expression)
         : _expression(expression) {}
     AtomicRef(AtomicRef &&) noexcept = delete;
     AtomicRef(const AtomicRef &) noexcept = delete;
@@ -203,7 +203,7 @@ struct BufferAsAtomicAddress {
     requires is_integral_expr_v<Index>
     [[nodiscard]] AtomicRef<T> atomic(Index &&index) noexcept {
         static_assert(is_scalar_expr_v<T>);
-        return AtomicRef<T>(Function::current()->access(Type::of<T>(), static_cast<Computable<Buffer<T>> *>(this)->expression(), OC_EXPR(index)));
+        return AtomicRef<T>(Function::current()->subscript(Type::of<T>(), static_cast<Computable<Buffer<T>> *>(this)->expression(), OC_EXPR(index)));
     }
 };
 
@@ -236,16 +236,16 @@ struct EnableGetMemberByIndex {
     using element_type = std::remove_cvref_t<decltype(std::declval<expr_value_t<T>>()[0])>;
     template<int i>
     [[nodiscard]] auto get() const noexcept {
-        return eval<element_type>(Function::current()->access(Type::of<element_type>(),
-                                                              OC_EXPR(*static_cast<const T *>(this)),
-                                                              OC_EXPR(i)));
+        return eval<element_type>(Function::current()->subscript(Type::of<element_type>(),
+                                                                 OC_EXPR(*static_cast<const T *>(this)),
+                                                                 OC_EXPR(i)));
     }
     template<int i>
     auto &get() noexcept {
         auto f = Function::current();
-        const AccessExpr *expr = f->access(Type::of<element_type>(),
-                                           OC_EXPR(*static_cast<const T *>(this)),
-                                           OC_EXPR(int(i)));
+        const SubscriptExpr *expr = f->subscript(Type::of<element_type>(),
+                                                 OC_EXPR(*static_cast<const T *>(this)),
+                                                 OC_EXPR(int(i)));
         Var<element_type> *ret = f->template create_temp_obj<Var<element_type>>(expr);
         return *ret;
     }
