@@ -46,7 +46,7 @@ public:
         UNARY,
         BINARY,
         MEMBER,
-        ACCESS,
+        SUBSCRIPT,
         LITERAL,
         REF,
         CONSTANT,
@@ -135,7 +135,7 @@ private:
 
 public:
     SubscriptExpr(const Type *type, const Expression *range, const Expression *index)
-        : Expression(Tag::ACCESS, type), _range(range) {
+        : Expression(Tag::SUBSCRIPT, type), _range(range) {
         _range->mark(Usage::READ);
         _indexes.push_back(index);
         for_each_index([](const Expression *index) {
@@ -144,7 +144,7 @@ public:
     }
 
     SubscriptExpr(const Type *type, const Expression *range, IndexVector indexes)
-        : Expression(Tag::ACCESS, type), _range(range), _indexes(ocarina::move(indexes)) {
+        : Expression(Tag::SUBSCRIPT, type), _range(range), _indexes(ocarina::move(indexes)) {
         _range->mark(Usage::READ);
         for_each_index([](const Expression *index) {
             index->mark(Usage::READ);
