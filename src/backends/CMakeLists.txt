@@ -7,10 +7,10 @@ function(ocarina_add_backend name)
             ocarina-generator)
     add_dependencies(ocarina-backend ocarina-backend-${name})
     set_target_properties(ocarina-backend-${name} PROPERTIES
-            UNITY_BUILD OFF
             LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
             RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
             WINDOWS_EXPORT_ALL_SYMBOLS ON
+            UNITY_BUILD OFF
             DEBUG_POSTFIX "")
 endfunction()
 
