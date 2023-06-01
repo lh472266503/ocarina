@@ -222,8 +222,8 @@ Array<float> EnableTextureSample<T>::sample(uint channel_num, const UV &uv)
 template<typename T, typename Offset>
 [[nodiscard]] Array<T> ResourceArrayByteBuffer::read_dynamic_array(uint size, Offset &&offset) const noexcept {
     const CallExpr *expr = Function::current()->call_builtin(Array<T>::type(size),
-                                                             CallOp::RESOURCE_ARRAY_MIX_BUFFER_READ,
-                                                             {_array, _index, OC_EXPR(offset)});
+                                                             CallOp::RESOURCE_ARRAY_BYTE_BUFFER_READ,
+                                                             {_resource_array, _index, OC_EXPR(offset)});
     return detail::eval_array(Array<T>(size, expr));
 }
 
@@ -233,7 +233,7 @@ Array<float> ResourceArrayTexture::sample(uint channel_num, const U &u, const V 
     const noexcept {
     const CallExpr *expr = Function::current()->call_builtin(Array<float>::type(channel_num),
                                                              CallOp::RESOURCE_ARRAY_TEX_SAMPLE,
-                                                             {_array, _index, OC_EXPR(u), OC_EXPR(v)},
+                                                             {_resource_array, _index, OC_EXPR(u), OC_EXPR(v)},
                                                              {channel_num});
     return detail::eval_array(Array<float>(channel_num, expr));
 }
@@ -244,7 +244,7 @@ Array<float> ResourceArrayTexture::sample(uint channel_num, const U &u, const V 
     const noexcept {
     const CallExpr *expr = Function::current()->call_builtin(Array<float>::type(channel_num),
                                                              CallOp::RESOURCE_ARRAY_TEX_SAMPLE,
-                                                             {_array, _index, OC_EXPR(u), OC_EXPR(v), OC_EXPR(w)},
+                                                             {_resource_array, _index, OC_EXPR(u), OC_EXPR(v), OC_EXPR(w)},
                                                              {channel_num});
     return detail::eval_array(Array<float>(channel_num, expr));
 }

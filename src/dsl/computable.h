@@ -412,18 +412,18 @@ class ResourceArrayBuffer {
     static_assert(is_valid_buffer_element_v<T>);
 
 private:
-    const Expression *_array{nullptr};
+    const Expression *_resource_array{nullptr};
     const Expression *_index{nullptr};
 
 public:
     ResourceArrayBuffer(const Expression *array, const Expression *index) noexcept
-        : _array{array}, _index{index} {}
+        : _resource_array{array}, _index{index} {}
 
     template<typename Index>
     requires concepts::integral<expr_value_t<Index>>
     [[nodiscard]] Var<T> read(Index &&index) const noexcept {
         const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::RESOURCE_ARRAY_BUFFER_READ,
-                                                                 {_array, _index, OC_EXPR(index)});
+                                                                 {_resource_array, _index, OC_EXPR(index)});
         return eval<T>(expr);
     }
 
@@ -431,26 +431,25 @@ public:
     requires concepts::integral<expr_value_t<Index>> && concepts::is_same_v<T, expr_value_t<Val>>
     void write(Index &&index, Val &&elm) {
         const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::RESOURCE_ARRAY_BUFFER_WRITE,
-                                                                 {_array, _index, OC_EXPR(index), OC_EXPR(elm)});
+                                                                 {_resource_array, _index, OC_EXPR(index), OC_EXPR(elm)});
         Function::current()->expr_statement(expr);
     }
 };
 
 class ResourceArrayByteBuffer {
 private:
-    const Expression *_array{nullptr};
-    /// offset in byte
+    const Expression *_resource_array{nullptr};
     const Expression *_index{nullptr};
 
 public:
     ResourceArrayByteBuffer(const Expression *array, const Expression *index) noexcept
-        : _array{array}, _index{index} {}
+        : _resource_array{array}, _index{index} {}
 
     template<typename T, typename Offset>
     requires concepts::integral<expr_value_t<Offset>>
     [[nodiscard]] Var<T> read(Offset &&offset) const noexcept {
-        const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::RESOURCE_ARRAY_MIX_BUFFER_READ,
-                                                                 {_array, _index, OC_EXPR(offset)});
+        const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::RESOURCE_ARRAY_BYTE_BUFFER_READ,
+                                                                 {_resource_array, _index, OC_EXPR(offset)});
         return eval<T>(expr);
     }
 
@@ -460,12 +459,12 @@ public:
 
 class ResourceArrayTexture {
 private:
-    const Expression *_array{nullptr};
+    const Expression *_resource_array{nullptr};
     const Expression *_index{nullptr};
 
 public:
     ResourceArrayTexture(const Expression *array, const Expression *index) noexcept
-        : _array{array}, _index{index} {}
+        : _resource_array{array}, _index{index} {}
 
     template<typename U, typename V, typename W>
     requires(is_all_floating_point_expr_v<U, V, W>)
