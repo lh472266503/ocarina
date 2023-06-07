@@ -10,6 +10,34 @@
 #include "dsl/operators.h"
 #include "dsl/type_trait.h"
 
+#define MAKE_VECTOR_OP(op)                                                           \
+    template<typename T>                                                             \
+    requires ocarina::concepts::iterable<T>                                          \
+    [[nodiscard]] T operator op(const T &lhs, const T &rhs) noexcept {               \
+        OC_ASSERT((lhs.size() == rhs.size()) || lhs.size() == 1 || rhs.size() == 1); \
+        T ret;                                                                       \
+        if (lhs.size() == 1) {                                                       \
+            for (int i = 0; i < rhs.size(); ++i) {                                   \
+                ret.push_back(lhs[0] op rhs[i]);                                     \
+            }                                                                        \
+        } else if (rhs.size() == 1) {                                                \
+            for (int i = 0; i < lhs.size(); ++i) {                                   \
+                ret.push_back(lhs[i] op rhs[0]);                                     \
+            }                                                                        \
+        } else {                                                                     \
+            for (int i = 0; i < lhs.size(); ++i) {                                   \
+                ret.push_back(lhs[i] op rhs[i]);                                     \
+            }                                                                        \
+        }                                                                            \
+        return ret;                                                                  \
+    }
+
+MAKE_VECTOR_OP(+)
+MAKE_VECTOR_OP(-)
+MAKE_VECTOR_OP(*)
+MAKE_VECTOR_OP(/)
+#undef MAKE_VECTOR_OP
+
 namespace ocarina {
 
 template<typename T, typename F>
@@ -18,8 +46,8 @@ template<typename T, typename F>
 }
 
 template<typename T, size_t N>
-requires ocarina::is_scalar_v<T> [
-    [nodiscard]] constexpr auto
+requires ocarina::is_scalar_v<T>
+[[nodiscard]] constexpr auto
 select(Vector<bool, N> pred, Vector<T, N> t, Vector<T, N> f) noexcept {
     static_assert(N == 2 || N == 3 || N == 4);
     if constexpr (N == 2) {
@@ -33,8 +61,8 @@ select(Vector<bool, N> pred, Vector<T, N> t, Vector<T, N> f) noexcept {
 }
 
 template<typename T>
-requires std::is_unsigned_v<T> &&(sizeof(T) == 4u || sizeof(T) == 8u)
-    [[nodiscard]] constexpr auto next_pow2(T v) noexcept {
+requires std::is_unsigned_v<T> && (sizeof(T) == 4u || sizeof(T) == 8u)
+[[nodiscard]] constexpr auto next_pow2(T v) noexcept {
     v--;
     v |= v >> 1u;
     v |= v >> 2u;
@@ -105,15 +133,15 @@ template<typename T>
 
 template<typename T>
 requires is_scalar_v<T>
-    OC_NODISCARD constexpr auto sqr(const T &v) {
+OC_NODISCARD constexpr auto sqr(const T &v) {
     return v * v;
 }
 
 #define MAKE_VECTOR_UNARY_FUNC(func)                                     \
     template<typename T>                                                 \
     requires is_vector_v<T>                                              \
-        OC_NODISCARD auto                                                \
-        func(const T &v) noexcept {                                      \
+    OC_NODISCARD auto                                                    \
+    func(const T &v) noexcept {                                          \
         static constexpr auto N = vector_dimension_v<T>;                 \
         using ret_type = Vector<decltype(func(v.x)), N>;                 \
         static_assert(N == 2 || N == 3 || N == 4);                       \
@@ -161,8 +189,8 @@ MAKE_VECTOR_UNARY_FUNC(copysign)
 #define MAKE_VECTOR_BINARY_FUNC(func)                                                 \
     template<typename T>                                                              \
     requires is_vector_v<expr_value_t<T>>                                             \
-        OC_NODISCARD auto                                                             \
-        func(const T &v, const T &u) noexcept {                                       \
+    OC_NODISCARD auto                                                                 \
+    func(const T &v, const T &u) noexcept {                                           \
         static constexpr auto N = vector_dimension_v<T>;                              \
         static_assert(N == 2 || N == 3 || N == 4);                                    \
         if constexpr (N == 2) {                                                       \
@@ -268,17 +296,17 @@ template<typename U, typename V>
 }
 
 template<typename T>
-[[nodiscard]] constexpr auto safe_sqrt(const T& t) noexcept {
+[[nodiscard]] constexpr auto safe_sqrt(const T &t) noexcept {
     return sqrt(max(0.f, t));
 }
 
 template<typename T>
-[[nodiscard]] constexpr auto safe_acos(const T& t) noexcept {
+[[nodiscard]] constexpr auto safe_acos(const T &t) noexcept {
     return acos(clamp(t, -1.f, 1.f));
 }
 
 template<typename T>
-[[nodiscard]] constexpr T safe_asin(const T& t) noexcept {
+[[nodiscard]] constexpr T safe_asin(const T &t) noexcept {
     return asin(clamp(t, -1.f, 1.f));
 }
 
@@ -387,7 +415,6 @@ template<typename T>
 [[nodiscard]] constexpr auto has_invalid(const T &t) noexcept {
     return has_nan(t) || has_inf(t);
 }
-
 
 template<typename T>
 OC_NODISCARD auto max_comp(const T &v) noexcept {

@@ -128,6 +128,13 @@ int main(int argc, char *argv[]) {
         return Var<std::array<float, 10>>();
     };
 
+    vector<float> aaa = {1,2,3};
+    vector<float> bb = {6};
+
+    vector<float> t = {0.5f};
+
+    auto ll = lerp(t, aaa, bb);
+
     Kernel kernel = [&](const BufferVar<Triangle> t_buffer,
                         const Var<Accel> acc,
                         const TextureVar img,
