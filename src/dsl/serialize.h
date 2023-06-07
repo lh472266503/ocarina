@@ -176,11 +176,11 @@ public:
     }
 };
 
-#define OC_ENCODE_ELEMENT(name) name.encode(datas);
-#define OC_DECODE_ELEMENT(name) name.decode(da);
-#define OC_INVALIDATE_ELEMENT(name) name.reset_device_value();
-#define OC_VALID_ELEMENT(name) &&name.has_device_value()
-#define OC_SIZE_ELEMENT(name) +name.element_num()
+#define OC_ENCODE_ELEMENT(name) (name).encode(datas);
+#define OC_DECODE_ELEMENT(name) (name).decode(da);
+#define OC_INVALIDATE_ELEMENT(name) (name).reset_device_value();
+#define OC_VALID_ELEMENT(name) &&(name).has_device_value()
+#define OC_SIZE_ELEMENT(name) +(name).element_num()
 
 #define OC_SERIALIZABLE_FUNC(...)                                                       \
     [[nodiscard]] uint element_num() const noexcept override {                          \
