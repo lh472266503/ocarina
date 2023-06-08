@@ -218,7 +218,22 @@ struct is_dynamic_array_impl<Array<T>> : std::true_type {};
 }// namespace detail
 
 template<typename T>
-static constexpr bool is_dynamic_array_v = detail::is_dynamic_array_impl<std::remove_cvref_t<T>>::value;
+using is_dynamic_array = typename detail::is_dynamic_array_impl<std::remove_cvref_t<T>>;
+
+template<typename T>
+static constexpr bool is_dynamic_array_v = is_dynamic_array<T>::value;
+
+template<typename ...T>
+using any_dynamic_array = std::disjunction<is_dynamic_array<T>...>;
+
+template<typename ...T>
+using all_dynamic_array = std::conjunction<is_dynamic_array<T>...>;
+
+OC_DEFINE_TEMPLATE_VALUE_MULTI(any_dynamic_array)
+OC_DEFINE_TEMPLATE_VALUE_MULTI(all_dynamic_array)
+
+template<typename ...T>
+static constexpr auto none_dynamic_array_v = !any_dynamic_array_v<T...>;
 
 namespace detail {
 
