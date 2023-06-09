@@ -70,7 +70,7 @@ public:
         }
     }
 
-    void save(const fs::path &fn);
+    void save(const fs::path &fn) const;
     void convert_to_8bit_image();
     void convert_to_32bit_image();
     static std::pair<PixelStorage, const std::byte *> convert_to_32bit(PixelStorage pixel_format,

@@ -282,7 +282,7 @@ ImageIO ImageIO::load_other(const fs::path &path, ColorSpace color_space, float3
     return ret;
 }
 
-void ImageIO::save(const fs::path &fn) {
+void ImageIO::save(const fs::path &fn) const {
     save_image(fn, _pixel_storage, resolution(), _pixel.get());
 }
 
