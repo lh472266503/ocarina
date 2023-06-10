@@ -105,10 +105,4 @@ using handle_ty = uint64_t;
 #define OC_NDSC_INLINE [[nodiscard]] inline
 #define OC_NODISCARD [[nodiscard]]
 
-#ifndef NDEBUG
-#define OC_NOEXCEPT
-#else
-#define OC_NOEXCEPT noexcept
-#endif
-
 #define TYPE_PREFIX "oc_"
