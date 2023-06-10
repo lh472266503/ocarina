@@ -61,14 +61,20 @@ template<typename T = std::byte>
 }
 
 template<typename T>
-inline void deallocate(T *p) noexcept {
+inline void deallocate(T *p) {
     using type = std::remove_cvref_t<T>;
     allocator<type>{}.deallocate(const_cast<type *>(p), 0u);
 }
 
 template<typename T, typename... Args>
-[[nodiscard]] inline auto new_with_allocator(Args &&...args) noexcept {
-    return std::construct_at(allocate<T>(), std::forward<Args>(args)...);
+constexpr T *construct_at(T *p, Args &&...args) {
+    return ::new(const_cast<void *>(static_cast<const volatile void *>(p)))
+        T(std::forward<Args>(args)...);
+}
+
+template<typename T, typename... Args>
+[[nodiscard]] inline auto new_with_allocator(Args &&...args) {
+    return ocarina::construct_at(allocate<T>(), std::forward<Args>(args)...);
 }
 
 template<typename T>

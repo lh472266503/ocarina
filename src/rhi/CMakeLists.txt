@@ -7,5 +7,5 @@ set_target_properties(ocarina-rhi PROPERTIES
         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
         WINDOWS_EXPORT_ALL_SYMBOLS ON)
-target_compile_definitions(ocarina-rhi PRIVATE OC_RUNTIME_EXPORT_DLL=1)
+target_compile_definitions(ocarina-rhi PRIVATE OC_RHI_EXPORT_DLL=1)
 target_link_libraries(ocarina-rhi PUBLIC ocarina-generator)

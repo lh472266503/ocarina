@@ -36,10 +36,10 @@
 #define OC_GENERATOR_API __declspec(dllimport)
 #endif
 
-#ifdef OC_RUNTIME_EXPORT_DLL
-#define OC_RUNTIME_API __declspec(dllexport)
+#ifdef OC_RHI_EXPORT_DLL
+#define OC_RHI_API __declspec(dllexport)
 #else
-#define OC_RUNTIME_API __declspec(dllimport)
+#define OC_RHI_API __declspec(dllimport)
 #endif
 
 #ifdef OC_BACKENDS_EXPORT_DLL
@@ -105,5 +105,10 @@ using handle_ty = uint64_t;
 #define OC_NDSC_INLINE [[nodiscard]] inline
 #define OC_NODISCARD [[nodiscard]]
 
+#ifndef NDEBUG
+#define OC_NOEXCEPT
+#else
+#define OC_NOEXCEPT noexcept
+#endif
 
 #define TYPE_PREFIX "oc_"
