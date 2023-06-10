@@ -31,11 +31,7 @@ public:
     [[nodiscard]] static ImageIO load(const fs::path &fn, ColorSpace color_space, float3 scale = make_float3(1.f));
     [[nodiscard]] static ImageIO load_hdr(const fs::path &fn, ColorSpace color_space, float3 scale = make_float3(1.f));
     [[nodiscard]] static ImageIO load_exr(const fs::path &fn, ColorSpace color_space, float3 scale = make_float3(1.f));
-    [[nodiscard]] static ImageIO create_empty(PixelStorage pixel_format, uint2 res) {
-        size_t size_in_bytes = pixel_size(pixel_format) * res.x * res.y;
-        auto pixel = allocate(size_in_bytes);
-        return {pixel_format, pixel, res};
-    }
+    [[nodiscard]] static ImageIO create_empty(PixelStorage pixel_format, uint2 res);
     template<typename T>
     static ImageIO from_data(T *data, uint2 res) {
         size_t size_in_bytes = sizeof(T) * res.x * res.y;

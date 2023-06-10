@@ -62,6 +62,12 @@ ImageIO ImageIO::pure_color(float4 color, ColorSpace color_space, uint2 res) {
     return ret;
 }
 
+ImageIO ImageIO::create_empty(ocarina::PixelStorage pixel_format, ocarina::uint2 res) {
+    size_t size_in_bytes = pixel_size(pixel_format) * res.x * res.y;
+    auto pixel = new_array<std::byte>(size_in_bytes);
+    return {pixel_format, pixel, res};
+}
+
 ImageIO ImageIO::load(const fs::path &path, ColorSpace color_space, float3 scale) {
     auto extension = to_lower(path.extension().string());
     OC_INFO("load picture ", path.string());
@@ -93,7 +99,7 @@ ImageIO ImageIO::load_hdr(const fs::path &path, ColorSpace color_space, float3 s
             dest[1] = srgb_to_linear(src[1]) * scale.y;
             dest[2] = srgb_to_linear(src[2]) * scale.z;
             dest[3] = 1.f;
-            average = lerp(1.f / (i + 1), average, *reinterpret_cast<float4*>(dest));
+            average = lerp(1.f / (i + 1), average, *reinterpret_cast<float4 *>(dest));
         }
     } else {
         for (int i = 0; i < pixel_num; ++i, src += 3, dest += 4) {
@@ -101,7 +107,7 @@ ImageIO ImageIO::load_hdr(const fs::path &path, ColorSpace color_space, float3 s
             dest[1] = src[1] * scale.y;
             dest[2] = src[2] * scale.z;
             dest[3] = 1.f;
-            average = lerp(1.f / (i + 1), average, *reinterpret_cast<float4*>(dest));
+            average = lerp(1.f / (i + 1), average, *reinterpret_cast<float4 *>(dest));
         }
     }
     free(rgb);
@@ -287,7 +293,7 @@ void ImageIO::save(const fs::path &fn) const {
 }
 
 void ImageIO::save_exr(const fs::path &fn, PixelStorage pixel_storage,
-                     uint2 res, const std::byte *ptr) {
+                       uint2 res, const std::byte *ptr) {
     OC_ASSERT(is_32bit(pixel_storage));
     EXRHeader header;
     InitEXRHeader(&header);
@@ -334,7 +340,7 @@ void ImageIO::save_exr(const fs::path &fn, PixelStorage pixel_storage,
 }
 
 void ImageIO::save_hdr(const fs::path &fn, PixelStorage pixel_storage,
-                     uint2 res, const std::byte *ptr) {
+                       uint2 res, const std::byte *ptr) {
     OC_ASSERT(is_32bit(pixel_storage));
     auto path_str = fs::absolute(fn).string();
     stbi_write_hdr(path_str.c_str(), res.x, res.y, 4,
@@ -342,7 +348,7 @@ void ImageIO::save_hdr(const fs::path &fn, PixelStorage pixel_storage,
 }
 
 void ImageIO::save_other(const fs::path &fn, PixelStorage pixel_storage,
-                       uint2 res, const std::byte *ptr) {
+                         uint2 res, const std::byte *ptr) {
     OC_ASSERT(is_8bit(pixel_storage));
     auto path_str = fs::absolute(fn).string();
     auto extension = to_lower(fn.extension().string());
@@ -377,7 +383,7 @@ void ImageIO::convert_to_32bit_image() {
 }
 
 void ImageIO::save_image(const fs::path &fn, PixelStorage pixel_storage,
-                       uint2 res, const std::byte *ptr) {
+                         uint2 res, const std::byte *ptr) {
     OC_ASSERT(ptr != nullptr);
     auto extension = to_lower(fn.extension().string());
     if (extension == ".exr") {
