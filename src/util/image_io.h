@@ -74,7 +74,7 @@ public:
     static std::pair<PixelStorage, const std::byte *> convert_to_8bit(PixelStorage pixel_format,
                                                                      const std::byte *ptr, uint2 res);
     static void save_image(const fs::path &fn, PixelStorage pixel_format,
-                           uint2 res, const std::byte *ptr);
+                           uint2 res, const void *ptr);
     static void save_exr(const fs::path &fn, PixelStorage pixel_format,
                          uint2 res, const std::byte *ptr);
     static void save_hdr(const fs::path &fn, PixelStorage pixel_format,

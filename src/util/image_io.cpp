@@ -383,8 +383,9 @@ void ImageIO::convert_to_32bit_image() {
 }
 
 void ImageIO::save_image(const fs::path &fn, PixelStorage pixel_storage,
-                         uint2 res, const std::byte *ptr) {
-    OC_ASSERT(ptr != nullptr);
+                         uint2 res, const void *raw_ptr) {
+    OC_ASSERT(raw_ptr != nullptr);
+    const std::byte *ptr = reinterpret_cast<const std::byte*>(raw_ptr);
     auto extension = to_lower(fn.extension().string());
     if (extension == ".exr") {
         if (is_32bit(pixel_storage)) {
