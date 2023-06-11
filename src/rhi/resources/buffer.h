@@ -232,7 +232,7 @@ public:
     using Super = Buffer<T>;
 
 private:
-    uint _id;
+    uint _id{~0u};
     ResourceArray &_resource_array;
 
 public:
