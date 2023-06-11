@@ -32,7 +32,7 @@ struct Test : public Serializable<float>{
     Serial<int> d;
     Serial<vector<float>> e;
     Serial<float3x3> f;
-    ManagedWrapper<float> mw;
+    RegistrableManaged<float> mw;
     Data2 data;
     OC_SERIALIZABLE_FUNC(a, b, c, d, e, f,mw, data)
 };
@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
     t.mw.register_self();
     t.mw.push_back(9.98);
     t.mw.push_back(9.98);
-    ManagedWrapper<float> vv(ra);
+    RegistrableManaged<float> vv(ra);
 
     oc_scalar os{.f = 2.3f};
     os.f = 2.f;

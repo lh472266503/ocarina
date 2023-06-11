@@ -78,6 +78,7 @@ template<typename T = std::byte, int... Dims>
 class Buffer : public RHIResource {
     static_assert(is_valid_buffer_element_v<T>);
     static constexpr bool use_for_dsl = is_dsl_basic_v<T>;
+
 public:
     static constexpr size_t element_size = sizeof(T);
     using element_type = T;
@@ -138,8 +139,8 @@ public:
 
     template<typename... Index>
     requires concepts::all_integral<expr_value_t<Index>...>
-        OC_NODISCARD auto
-        read(Index &&...index) const {
+    OC_NODISCARD auto
+    read(Index &&...index) const {
         const ArgumentBinding &uniform = Function::current()->get_uniform_var(Type::of<decltype(*this)>(),
                                                                               Variable::Tag::BUFFER,
                                                                               memory_block());
@@ -227,34 +228,34 @@ BufferView<T, dims...>::BufferView(const Buffer<T, dims...> &buffer)
     : BufferView(buffer.handle(), buffer.size()) {}
 
 template<typename T>
-class BufferWrapper : public Buffer<T> {
+class RegistrableBuffer : public Buffer<T> {
 public:
     using Super = Buffer<T>;
 
 private:
     uint _id{~0u};
-    ResourceArray &_resource_array;
+    ResourceArray *_resource_array{};
 
 public:
-    explicit BufferWrapper(ResourceArray &resource_array)
+    explicit RegistrableBuffer(ResourceArray *resource_array)
         : _resource_array(resource_array) {}
 
     void register_self() noexcept {
-        _id = _resource_array.emplace(super());
+        _id = _resource_array->emplace(super());
     }
 
     [[nodiscard]] Super &super() noexcept { return *this; }
 
     template<typename Index>
     requires concepts::integral<expr_value_t<Index>>
-        OC_NODISCARD auto read(Index &&index) const noexcept {
-        return _resource_array.buffer<T>(_id).read(OC_FORWARD(index));
+    OC_NODISCARD auto read(Index &&index) const noexcept {
+        return _resource_array->buffer<T>(_id).read(OC_FORWARD(index));
     }
 
     template<typename Index, typename Val>
     requires concepts::integral<expr_value_t<Index>> && concepts::is_same_v<T, expr_value_t<Val>>
     void write(Index &&index, Val &&elm) {
-        _resource_array.buffer<T>(_id).write(OC_FORWARD(index), OC_FORWARD(elm));
+        _resource_array->buffer<T>(_id).write(OC_FORWARD(index), OC_FORWARD(elm));
     }
 };
 

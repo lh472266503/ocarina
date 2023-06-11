@@ -10,7 +10,7 @@
 namespace ocarina {
 
 template<typename T>
-class ManagedWrapper : public Managed<T>,
+class RegistrableManaged : public Managed<T>,
                        public Serializable<serialize_element_ty> {
 public:
     using Super = Managed<T>;
@@ -21,11 +21,11 @@ private:
     Serial<uint> _length{InvalidUI32};
 
 public:
-    ManagedWrapper() = default;
+    RegistrableManaged() = default;
     OC_SERIALIZABLE_FUNC(_index, _length)
     void init(ResourceArray &resource_array) noexcept { _resource_array = &resource_array; }
 
-    explicit ManagedWrapper(ResourceArray &resource_array) : _resource_array(&resource_array) {}
+    explicit RegistrableManaged(ResourceArray &resource_array) : _resource_array(&resource_array) {}
     void register_self() noexcept {
         _index = _resource_array->emplace(Super::device());
         _length = [&]() {

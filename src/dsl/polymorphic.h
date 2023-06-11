@@ -7,7 +7,7 @@
 #include "type_trait.h"
 #include "syntax.h"
 #include "core/stl.h"
-#include "managed_wrapper.h"
+#include "registrable_managed.h"
 
 namespace ocarina {
 
@@ -36,7 +36,7 @@ class Polymorphic : public vector<T> {
 public:
     using Super = vector<T>;
     using data_type = U;
-    using datas_type = ManagedWrapper<U>;
+    using datas_type = RegistrableManaged<U>;
 
 protected:
     struct Object {
@@ -154,7 +154,7 @@ public:
             case EInstance: break;
             case EType: {
                 for_each_representative([&](auto object) {
-                    ManagedWrapper<U> data_set{resource_array};
+                    RegistrableManaged<U> data_set{resource_array};
                     set_datas(object, ocarina::move(data_set));
                 });
                 for_each_instance([&](auto object) {
