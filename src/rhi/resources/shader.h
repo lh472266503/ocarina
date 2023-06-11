@@ -134,15 +134,15 @@ public:
 
 private:
     ShaderTag _shader_tag{};
-    const Function *_function{};
-    mutable ArgumentList _argument_list{_function};
+    ocarina::unique_ptr<Function> _function{};
+    mutable ArgumentList _argument_list{nullptr};
 
 public:
     Shader() = default;
-    Shader(Device::Impl *device, const Function &function, ShaderTag tag) noexcept
+    Shader(Device::Impl *device, ocarina::unique_ptr<Function> function, ShaderTag tag) noexcept
     : RHIResource(device, SHADER,
-                  device->create_shader(function)),
-                  _shader_tag(tag), _function(&function), _argument_list(_function) {}
+                  device->create_shader(*function)),
+                  _shader_tag(tag), _function(ocarina::move(function)), _argument_list(_function.get()) {}
 
     [[nodiscard]] ShaderDispatchCommand *dispatch(uint x, uint y = 1, uint z = 1) const noexcept  {
         if (_function->is_raytracing()) {
