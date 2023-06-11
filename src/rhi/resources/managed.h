@@ -68,6 +68,16 @@ public:
         device() = d.template create_buffer<T>(num);
     }
 
+    /**
+     * reset host and device memory
+     * @param d device
+     * @param num number of element
+     */
+    void reset_all(Device &d, size_t num) {
+        reset_device_buffer(d, num);
+        host().resize(num);
+    }
+
     [[nodiscard]] BufferUploadCommand *upload() const noexcept {
         return device_ty::upload(host_ty::data());
     }
