@@ -39,25 +39,25 @@ public:
     template<typename Index>
     requires concepts::all_integral<expr_value_t<Index>>
     OC_NODISCARD auto read(Index &&index) const noexcept {
-        return _resource_array->buffer<T>(_index.hv()).read(OC_FORWARD(index));
+        return _resource_array->buffer<T>(*_index).read(OC_FORWARD(index));
     }
 
     template<typename Target, typename Offset>
     requires is_integral_expr_v<Offset>
     OC_NODISCARD auto byte_read(Offset &&offset) const noexcept {
-        return _resource_array->byte_buffer(_index.hv()).read<Target>(OC_FORWARD(offset));
+        return _resource_array->byte_buffer(*_index).read<Target>(OC_FORWARD(offset));
     }
 
     template<typename Elm, typename Offset>
     requires is_integral_expr_v<Offset>
     [[nodiscard]] Array<Elm> read_dynamic_array(uint size, Offset &&offset) const noexcept {
-        return _resource_array->byte_buffer(_index.hv()).read_dynamic_array<Elm>(size, OC_FORWARD(offset));
+        return _resource_array->byte_buffer(*_index).read_dynamic_array<Elm>(size, OC_FORWARD(offset));
     }
 
     template<typename Index, typename Val>
     requires concepts::integral<expr_value_t<Index>> && concepts::is_same_v<T, expr_value_t<Val>>
     void write(Index &&index, Val &&elm) {
-        _resource_array->buffer<T>(_index.hv()).write(OC_FORWARD(index), OC_FORWARD(elm));
+        _resource_array->buffer<T>(*_index).write(OC_FORWARD(index), OC_FORWARD(elm));
     }
 };
 
