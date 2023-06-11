@@ -39,6 +39,11 @@ inline std::string to_lower(std::string s) noexcept {
     return s;
 }
 
+inline std::string to_upper(std::string s) noexcept {
+    for (auto &&c : s) { c = static_cast<char>(std::toupper(c)); }
+    return s;
+}
+
 inline std::string jsonc_to_json(const std::string &jsonc) {
     const char regex_exprs[][64] = {
         R"((?=[\r\n])\s*\/\/.*)",                               // Single line comment
