@@ -52,6 +52,14 @@ void CUDAResourceArray::remove_texture(handle_ty index) noexcept {
     detail::remove_by_index(_textures.host(), index);
 }
 
+size_t CUDAResourceArray::buffer_num() const noexcept {
+    return _buffers.host().size();
+}
+
+size_t CUDAResourceArray::texture_num() const noexcept {
+    return _textures.host().size();
+}
+
 BufferUploadCommand *CUDAResourceArray::upload_texture_handles() const noexcept {
     return _textures.upload();
 }

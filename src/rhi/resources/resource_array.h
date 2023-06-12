@@ -25,6 +25,8 @@ public:
         [[nodiscard]] virtual BufferUploadCommand *upload_buffer_handles_sync() const noexcept = 0;
         [[nodiscard]] virtual BufferUploadCommand *upload_texture_handles_sync() const noexcept = 0;
         virtual void prepare_slotSOA(Device &device) noexcept = 0;
+        [[nodiscard]] virtual size_t buffer_num() const noexcept = 0;
+        [[nodiscard]] virtual size_t texture_num() const noexcept = 0;
 
         /// for device side structure
         [[nodiscard]] virtual const void *handle_ptr() const noexcept = 0;
@@ -54,6 +56,8 @@ public:
         return impl()->emplace_buffer(buffer.head());
     }
     size_t emplace(const Texture &texture) noexcept;
+    [[nodiscard]] size_t buffer_num() const noexcept;
+    [[nodiscard]] size_t texture_num() const noexcept;
 
     /// for dsl
     [[nodiscard]] const Expression *expression() const noexcept override {

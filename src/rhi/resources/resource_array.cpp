@@ -16,4 +16,12 @@ size_t ResourceArray::emplace(const Texture &texture) noexcept {
     return impl()->emplace_texture(texture.tex_handle());
 }
 
+size_t ResourceArray::buffer_num() const noexcept {
+    return impl()->buffer_num();
+}
+
+size_t ResourceArray::texture_num() const noexcept {
+    return impl()->texture_num();
+}
+
 }// namespace ocarina
