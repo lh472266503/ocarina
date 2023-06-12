@@ -158,7 +158,7 @@ public:
     [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
     [[nodiscard]] ShaderTag shader_tag() const noexcept { return _shader_tag; }
     void compute_fit_size() noexcept { impl()->compute_fit_size(); }
-    [[nodiscard]] bool valid() const noexcept { return _function != nullptr; }
+    [[nodiscard]] bool has_function() const noexcept { return _function != nullptr; }
     [[nodiscard]] const Shader &operator()(prototype_to_shader_invocation_t<Args> &&...args) const noexcept {
         _argument_list.clear();
         (_argument_list << ... << OC_FORWARD(args));
