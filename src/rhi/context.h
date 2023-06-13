@@ -22,8 +22,8 @@ private:
     static Context *s_context;
 
 public:
-    [[nodiscard]] Context &instance() noexcept;
-    void destroy_instance();
+    [[nodiscard]] static Context &instance() noexcept;
+    static void destroy_instance();
 
 private:
     struct Impl;
