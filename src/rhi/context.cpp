@@ -55,12 +55,33 @@ bool create_directory_if_necessary(const fs::path &path) {
 
 }// namespace detail
 
-Context::Context(const fs::path &path, string_view cache_dir)
-    : _impl(std::move(ocarina::make_unique<Impl>())) {
+Context::Context(const fs::path &path, string_view cache_dir) {
+    init(path, cache_dir);
+}
+
+Context& Context::init(const fs::path &path, std::string_view cache_dir) {
+    _impl = std::move(ocarina::make_unique<Impl>());
     _impl->runtime_directory = detail::create_rhi_directory(path);
     _impl->cache_directory = runtime_directory() / cache_dir;
     DynamicModule::add_search_path(runtime_directory());
     detail::create_directory_if_necessary(cache_directory());
+    return *this;
+}
+
+Context *Context::s_context = nullptr;
+
+Context &Context::instance() noexcept {
+    if (s_context == nullptr) {
+        s_context = new Context();
+    }
+    return *s_context;
+}
+
+void Context::destroy_instance() {
+    if (s_context) {
+        delete s_context;
+        s_context = nullptr;
+    }
 }
 
 Context::~Context() noexcept {

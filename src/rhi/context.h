@@ -14,11 +14,24 @@ class Device;
 class DynamicModule;
 class Context : public concepts::Noncopyable {
 private:
+    Context() = default;
+    Context(const Context &) = delete;
+    Context(Context &&) = delete;
+    Context operator=(const Context &) = delete;
+    Context operator=(Context &&) = delete;
+    static Context *s_context;
+
+public:
+    [[nodiscard]] Context &instance() noexcept;
+    void destroy_instance();
+
+private:
     struct Impl;
     ocarina::unique_ptr<Impl> _impl;
 
 public:
     explicit Context(const fs::path &path, string_view cache_dir = ".cache");
+    Context &init(const fs::path &path, string_view cache_dir = ".cache");
     virtual ~Context() noexcept;
     [[nodiscard]] const fs::path &runtime_directory() const noexcept;
     [[nodiscard]] const fs::path &cache_directory() const noexcept;
