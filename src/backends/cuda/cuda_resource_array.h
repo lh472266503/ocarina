@@ -35,6 +35,8 @@ public:
     void remove_buffer(handle_ty index) noexcept override;
     [[nodiscard]] size_t emplace_texture(handle_ty handle) noexcept override;
     void remove_texture(handle_ty index) noexcept override;
+    void set_buffer(ocarina::handle_ty index, ocarina::handle_ty handle) noexcept override;
+    void set_texture(ocarina::handle_ty index, ocarina::handle_ty handle) noexcept override;
     [[nodiscard]] size_t buffer_num() const noexcept override;
     [[nodiscard]] size_t texture_num() const noexcept override;
     [[nodiscard]] BufferUploadCommand *upload_buffer_handles() const noexcept override;

@@ -16,6 +16,10 @@ size_t ResourceArray::emplace(const Texture &texture) noexcept {
     return impl()->emplace_texture(texture.tex_handle());
 }
 
+void ResourceArray::set_texture(ocarina::handle_ty index, const ocarina::Texture &texture) noexcept {
+    impl()->set_texture(index, texture.tex_handle());
+}
+
 size_t ResourceArray::buffer_num() const noexcept {
     return impl()->buffer_num();
 }
