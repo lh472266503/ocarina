@@ -38,6 +38,8 @@ public:
     static bool create_directory_if_necessary(const fs::path &path);
     void write_cache(const string &fn, const string &text) const noexcept;
     [[nodiscard]] string read_cache(const string &fn) const noexcept;
+    [[nodiscard]] static string read_file(const fs::path &fn);
+    static void write_file(const fs::path &fn, const string &text);
     void clear_cache() const noexcept;
     [[nodiscard]] bool is_exist_cache(const string &fn) const noexcept;
     const DynamicModule *obtain_module(const string &module_name) noexcept;

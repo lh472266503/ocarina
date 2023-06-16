@@ -59,7 +59,7 @@ Context::Context(const fs::path &path, string_view cache_dir) {
     init(path, cache_dir);
 }
 
-Context& Context::init(const fs::path &path, std::string_view cache_dir) {
+Context &Context::init(const fs::path &path, std::string_view cache_dir) {
     _impl = std::move(ocarina::make_unique<Impl>());
     _impl->runtime_directory = detail::create_rhi_directory(path);
     _impl->cache_directory = runtime_directory() / cache_dir;
@@ -100,19 +100,27 @@ bool Context::create_directory_if_necessary(const fs::path &path) {
     return detail::create_directory_if_necessary(path);
 }
 
-void Context::write_cache(const string &fn, const string &text) const noexcept {
+string Context::read_file(const fs::path &fn) {
+    std::ifstream fst;
+    fst.open(fn.c_str());
+    std::stringstream buffer;
+    buffer << fst.rdbuf();
+    return buffer.str();
+}
+
+void Context::write_file(const fs::path &fn, const std::string &text) {
     std::ofstream fs;
-    fs.open((cache_directory() / fn).c_str());
+    fs.open(fn.c_str());
     fs << text;
     fs.close();
 }
 
+void Context::write_cache(const string &fn, const string &text) const noexcept {
+    write_file(cache_directory() / fn, text);
+}
+
 string Context::read_cache(const string &fn) const noexcept {
-    std::ifstream fst;
-    fst.open((cache_directory() / fn).c_str());
-    std::stringstream buffer;
-    buffer << fst.rdbuf();
-    return buffer.str();
+    return read_file(cache_directory() / fn);
 }
 
 void Context::clear_cache() const noexcept {
