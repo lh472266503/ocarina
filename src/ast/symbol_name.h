@@ -5,7 +5,7 @@
 #pragma once
 
 #include "variable.h"
-#include "ext/fmt/include/fmt/core.h"
+#include "core/string_util.h"
 
 namespace ocarina::detail {
 
@@ -18,19 +18,19 @@ template<typename T>
 }
 
 [[nodiscard]] inline string struct_name(uint64_t hash) {
-    return "structure_" + to_string(hash);
+    return "structure_" + ocarina::format("{:016x}", hash);
 }
 
 [[nodiscard]] inline string func_name(uint64_t hash) {
-    return "function_" + to_string(hash);
+    return "function_" + ocarina::format("{:016x}", hash);
 }
 
 [[nodiscard]] inline string kernel_name(uint64_t hash) {
-    return "kernel_" + to_string(hash);
+    return "kernel_" + ocarina::format("{:016x}", hash);
 }
 
 [[nodiscard]] inline string raygen_name(uint64_t hash) {
-    return "__raygen__" + to_string(hash);
+    return "__raygen__" + ocarina::format("{:016x}", hash);
 }
 
 [[nodiscard]] inline string member_name(uint index) {
