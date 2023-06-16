@@ -131,6 +131,7 @@ const Type *TypeRegistry::parse_type(ocarina::string_view desc) noexcept {
     }
     uint64_t hash = _hash(desc);
     if (auto iter = _type_set.find(hash); iter != _type_set.cend()) {
+        try_add_to_current_function(*iter);
         return *iter;
     }
 
@@ -285,12 +286,16 @@ void TypeRegistry::parse_array(Type *type, ocarina::string_view desc) noexcept {
 void TypeRegistry::add_type(ocarina::unique_ptr<Type> type) {
     _type_set.insert(type.get());
     type->_index = _types.size();
+    try_add_to_current_function(type.get());
+    _types.push_back(std::move(type));
+}
+
+void TypeRegistry::try_add_to_current_function(const ocarina::Type *type) noexcept {
     if (auto f = Function::current(); f != nullptr && type->is_structure() &&
                                       type->description() != detail::TypeDesc<Ray>::description() &&
                                       type->description() != detail::TypeDesc<Hit>::description()) {
-        f->add_used_structure(type.get());
+        f->add_used_structure(type);
     }
-    _types.push_back(std::move(type));
 }
 
 const Type *TypeRegistry::type_from(ocarina::string_view desc) noexcept {

@@ -310,6 +310,7 @@ public:
     [[nodiscard]] const Type *type_at(uint i) const noexcept;
     [[nodiscard]] size_t type_count() const noexcept;
     void add_type(ocarina::unique_ptr<Type> type);
+    static void try_add_to_current_function(const Type *type) noexcept;
     void for_each(TypeVisitor *visitor) const noexcept;
 };
 
