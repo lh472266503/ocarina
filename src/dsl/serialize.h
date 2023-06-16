@@ -182,24 +182,24 @@ public:
 #define OC_VALID_ELEMENT(name) &&(name).has_device_value()
 #define OC_SIZE_ELEMENT(name) +(name).element_num()
 
-#define OC_SERIALIZABLE_FUNC(...)                                                          \
+#define OC_SERIALIZABLE_FUNC(Super, ...)                                                   \
     [[nodiscard]] uint element_num() const noexcept override {                             \
-        return _serial_ty::element_num() MAP(OC_SIZE_ELEMENT, __VA_ARGS__);                \
+        return Super::element_num() MAP(OC_SIZE_ELEMENT, __VA_ARGS__);                \
     }                                                                                      \
     void encode(RegistrableManaged<serialize_element_ty> &datas) const noexcept override { \
-        _serial_ty::encode(datas);                                                         \
+        Super::encode(datas);                                                         \
         MAP(OC_ENCODE_ELEMENT, __VA_ARGS__)                                                \
     }                                                                                      \
     void decode(const DataAccessor<serialize_element_ty> *da) const noexcept override {    \
-        _serial_ty::decode(da);                                                            \
+        Super::decode(da);                                                            \
         MAP(OC_DECODE_ELEMENT, __VA_ARGS__)                                                \
     }                                                                                      \
     void reset_device_value() const noexcept override {                                    \
-        _serial_ty::reset_device_value();                                                  \
+        Super::reset_device_value();                                                  \
         MAP(OC_INVALIDATE_ELEMENT, __VA_ARGS__)                                            \
     }                                                                                      \
     [[nodiscard]] bool has_device_value() const noexcept override {                        \
-        return _serial_ty::has_device_value() MAP(OC_VALID_ELEMENT, __VA_ARGS__);          \
+        return Super::has_device_value() MAP(OC_VALID_ELEMENT, __VA_ARGS__);          \
     }
 
 }// namespace ocarina

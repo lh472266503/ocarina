@@ -22,7 +22,7 @@ private:
 
 public:
     RegistrableManaged() = default;
-    OC_SERIALIZABLE_FUNC(_index, _length)
+    OC_SERIALIZABLE_FUNC(Serializable<serialize_element_ty>, _index, _length)
     void init(ResourceArray &resource_array) noexcept { _resource_array = &resource_array; }
 
     explicit RegistrableManaged(ResourceArray &resource_array) : _resource_array(&resource_array) {}

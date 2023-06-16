@@ -16,13 +16,12 @@ struct Data : public Serializable<float>{
     Serial<float> f;
     Serial<float4> f4;
 
-    OC_SERIALIZABLE_FUNC(f, f4)
+    OC_SERIALIZABLE_FUNC(Serializable<float>,f, f4)
 };
 
 struct Data2 : public Data {
-    using _serial_ty = Data;
     Serial<float3> f3;
-    OC_SERIALIZABLE_FUNC(f3)
+    OC_SERIALIZABLE_FUNC(Serializable<float>, f3)
 };
 
 struct Test : public Serializable<float>{
@@ -34,7 +33,7 @@ struct Test : public Serializable<float>{
     Serial<float3x3> f;
     RegistrableManaged<float> mw;
     Data2 data;
-    OC_SERIALIZABLE_FUNC(a, b, c, d, e, f,mw, data)
+    OC_SERIALIZABLE_FUNC(Serializable<float>,a, b, c, d, e, f,mw, data)
 };
 
 union oc_scalar{
