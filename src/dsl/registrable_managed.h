@@ -25,6 +25,10 @@ public:
     OC_SERIALIZABLE_FUNC(Serializable<serialize_element_ty>, _index, _length)
     void init(ResourceArray &resource_array) noexcept { _resource_array = &resource_array; }
 
+    [[nodiscard]] ResourceArray *resource_array() const noexcept {
+        return _resource_array;
+    }
+
     explicit RegistrableManaged(ResourceArray &resource_array) : _resource_array(&resource_array) {}
     void register_self() noexcept {
         _index = _resource_array->emplace(Super::device_buffer());
