@@ -89,9 +89,9 @@ int main(int argc, char *argv[]) {
 
     auto vert = device.create_managed<float3>(vertices.size());
 
-    vert.host() = std::move(vertices);
+    vert.host_buffer() = std::move(vertices);
 
-    Buffer v_buffer = device.create_buffer<float3>(vert.host().size());
+    Buffer v_buffer = device.create_buffer<float3>(vert.host_buffer().size());
     Buffer t_buffer = device.create_buffer<Triangle>(triangle.size());
 
     Managed managed = device.create_managed<float>(100);
@@ -99,7 +99,7 @@ int main(int argc, char *argv[]) {
         managed.push_back(i);
     }
     managed.upload_immediately();
-    Mesh cube = device.create_mesh(vert.device(), t_buffer);
+    Mesh cube = device.create_mesh(vert.device_buffer(), t_buffer);
 
     ResourceArray bindless_array = device.create_resource_array();
 
@@ -107,10 +107,10 @@ int main(int argc, char *argv[]) {
     bindless_array.emplace(image);
     auto r2 = bindless_array.emplace(v_buffer);
 
-    uint index = bindless_array.emplace(managed.device());
+    uint index = bindless_array.emplace(managed.device_buffer());
 
     stream << vert.upload_sync();
-    stream << v_buffer.upload_sync(vert.host().data());
+    stream << v_buffer.upload_sync(vert.host_buffer().data());
     stream << t_buffer.upload_sync(triangle.data());
 
     bindless_array.prepare_slotSOA(device);
