@@ -73,13 +73,13 @@ public:
 
     void init(Device &device, size_t capacity = 16_mb) {
         capacity /= sizeof(uint);
-        _buffer.device() = device.create_buffer<uint>(capacity);
-        _buffer.host().reserve(capacity);
+        _buffer.device_buffer() = device.create_buffer<uint>(capacity);
+        _buffer.host_buffer().reserve(capacity);
         reset();
     }
 
     void reset() {
-        _buffer.device().clear_immediately();
+        _buffer.device_buffer().clear_immediately();
         _buffer.resize(_buffer.capacity());
     }
 
@@ -133,7 +133,7 @@ template<typename... Args>
 void Printer::_log(spdlog::level::level_enum level, const string &fmt, const Args &...args) noexcept {
     comment("start log " + fmt);
     constexpr auto count = (0u + ... + static_cast<uint>(is_dsl_v<Args>));
-    uint last = static_cast<uint>(_buffer.device().size() - 1);
+    uint last = static_cast<uint>(_buffer.device_buffer().size() - 1);
     Uint offset = _buffer.atomic(last).fetch_add(count + 1);
     uint item_index = _items.size();
     if_(offset < last, [&] {

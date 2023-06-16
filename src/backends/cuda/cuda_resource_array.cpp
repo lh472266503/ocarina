@@ -11,13 +11,13 @@ CUDAResourceArray::CUDAResourceArray(CUDADevice *device)
     : _device(device) {}
 
 size_t CUDAResourceArray::emplace_buffer(handle_ty handle) noexcept {
-    auto ret = _buffers.host().size();
+    auto ret = _buffers.host_buffer().size();
     _buffers.push_back(handle);
     return ret;
 }
 
 size_t CUDAResourceArray::emplace_texture(handle_ty handle) noexcept {
-    auto ret = _textures.host().size();
+    auto ret = _textures.host_buffer().size();
     _textures.push_back(handle);
     return ret;
 }
@@ -45,29 +45,29 @@ void remove_by_index(vector<T> &v, handle_ty index) noexcept {
 }// namespace detail
 
 void CUDAResourceArray::remove_buffer(handle_ty index) noexcept {
-    detail::remove_by_index(_buffers.host(), index);
+    detail::remove_by_index(_buffers.host_buffer(), index);
 }
 
 void CUDAResourceArray::remove_texture(handle_ty index) noexcept {
-    detail::remove_by_index(_textures.host(), index);
+    detail::remove_by_index(_textures.host_buffer(), index);
 }
 
 void CUDAResourceArray::set_buffer(ocarina::handle_ty index, ocarina::handle_ty handle) noexcept {
-    OC_ASSERT(index < _buffers.host().size());
+    OC_ASSERT(index < _buffers.host_buffer().size());
     _buffers.at(index) = handle;
 }
 
 void CUDAResourceArray::set_texture(ocarina::handle_ty index, ocarina::handle_ty handle) noexcept {
-    OC_ASSERT(index < _textures.host().size());
+    OC_ASSERT(index < _textures.host_buffer().size());
     _textures.at(index) = handle;
 }
 
 size_t CUDAResourceArray::buffer_num() const noexcept {
-    return _buffers.host().size();
+    return _buffers.host_buffer().size();
 }
 
 size_t CUDAResourceArray::texture_num() const noexcept {
-    return _textures.host().size();
+    return _textures.host_buffer().size();
 }
 
 BufferUploadCommand *CUDAResourceArray::upload_texture_handles() const noexcept {

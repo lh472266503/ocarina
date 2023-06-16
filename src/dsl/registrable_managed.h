@@ -27,9 +27,9 @@ public:
 
     explicit RegistrableManaged(ResourceArray &resource_array) : _resource_array(&resource_array) {}
     void register_self() noexcept {
-        _index = _resource_array->emplace(Super::device());
+        _index = _resource_array->emplace(Super::device_buffer());
         _length = [&]() {
-            return static_cast<uint>(Super::host().size());
+            return static_cast<uint>(Super::host_buffer().size());
         };
     }
 

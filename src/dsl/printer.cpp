@@ -25,12 +25,12 @@ void Printer::destroy_instance() noexcept {
 void Printer::retrieve_immediately() noexcept {
     _buffer.download_immediately();
     uint length = std::min(
-        static_cast<uint>(_buffer.host().size() - 1u),
+        static_cast<uint>(_buffer.host_buffer().size() - 1u),
         _buffer.back());
-    bool truncated = _buffer.host().back() > length;
+    bool truncated = _buffer.host_buffer().back() > length;
     uint offset = 0u;
     while (offset < length) {
-        const uint *data = _buffer.host().data() + offset;
+        const uint *data = _buffer.host_buffer().data() + offset;
         Item item = _items[data[0]];
         offset += item.size + 1;
         if (offset > length) {
