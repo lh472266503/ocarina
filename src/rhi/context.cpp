@@ -96,6 +96,10 @@ const fs::path &Context::cache_directory() const noexcept {
     return _impl->cache_directory;
 }
 
+bool Context::create_directory_if_necessary(const fs::path &path) {
+    return detail::create_directory_if_necessary(path);
+}
+
 void Context::write_cache(const string &fn, const string &text) const noexcept {
     std::ofstream fs;
     fs.open((cache_directory() / fn).c_str());
