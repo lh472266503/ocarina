@@ -92,8 +92,6 @@ constexpr auto is_unsigned_v = is_unsigned<T>::value;
 template<typename T>
 using is_scalar = std::disjunction<is_integral<T>,
                                    is_boolean<T>,
-                                   //                                   is_char<T>,
-                                   //                                   is_uchar<T>,
                                    ocarina::is_floating_point<T>>;
 
 template<typename T>

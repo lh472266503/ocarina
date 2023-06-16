@@ -64,9 +64,10 @@ public:
             auto x = ocarina::make_float4x4(s);
             return (*this)(x);
         } else if constexpr (
+            std::is_standard_layout_v<std::remove_cvref_t<T>> ||
             std::is_arithmetic_v<std::remove_cvref_t<T>> ||
             std::is_enum_v<std::remove_cvref_t<T>> ||
-            is_basic_v<T>) {
+            is_basic_v<std::remove_cvref_t<T>>) {
             auto x = s;
             return detail::xxh3_hash64(&x, sizeof(x), _seed);
         } else {
@@ -88,7 +89,7 @@ template<typename T>
 template<typename... Args>
 [[nodiscard]] uint64_t hash64(Args &&...args) noexcept {
     static constexpr auto size = sizeof...(args);
-    array<uint64_t, size> arr = {detail::hash64(args)...};
+    array<uint64_t, size> arr = {detail::hash64(OC_FORWARD(args))...};
     uint64_t ret = Hash64::default_seed;
     for (int i = 0; i < size; ++i) {
         ret = detail::hash64(arr[i], ret);
