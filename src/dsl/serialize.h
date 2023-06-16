@@ -50,10 +50,7 @@ public:
 }// namespace detail
 
 template<typename T = serialize_element_ty>
-class Serializable : public detail::Serializable_impl<T> {
-public:
-    using _serial_ty = detail::Serializable_impl<T>;
-};
+class Serializable : public detail::Serializable_impl<T> {};
 
 template<typename value_ty, typename T = serialize_element_ty>
 requires(is_std_vector_v<value_ty> && is_scalar_v<typename value_ty::value_type>) || is_basic_v<value_ty>
