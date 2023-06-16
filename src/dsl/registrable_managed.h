@@ -40,7 +40,9 @@ public:
     template<typename Index>
     requires concepts::all_integral<expr_value_t<Index>>
     OC_NODISCARD auto read(Index &&index) const noexcept {
-        OC_ASSERT(has_registered());
+        if (!has_registered()) {
+            return Super::read(OC_FORWARD(index));
+        }
         return _resource_array->buffer<T>(*_index).read(OC_FORWARD(index));
     }
 
@@ -61,8 +63,11 @@ public:
     template<typename Index, typename Val>
     requires concepts::integral<expr_value_t<Index>> && concepts::is_same_v<T, expr_value_t<Val>>
     void write(Index &&index, Val &&elm) {
-        OC_ASSERT(has_registered());
-        _resource_array->buffer<T>(*_index).write(OC_FORWARD(index), OC_FORWARD(elm));
+        if (!has_registered()) {
+            Super::write(OC_FORWARD(index), OC_FORWARD(elm));
+        } else {
+            _resource_array->buffer<T>(*_index).write(OC_FORWARD(index), OC_FORWARD(elm));
+        }
     }
 };
 
