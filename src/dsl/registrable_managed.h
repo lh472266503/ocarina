@@ -33,7 +33,7 @@ public:
         };
     }
 
-    [[nodiscard]] bool has_registered() const noexcept { return _index.hv() == InvalidUI32; }
+    [[nodiscard]] bool has_registered() const noexcept { return _index.hv() != InvalidUI32; }
     [[nodiscard]] const Serial<uint> &index() const noexcept { return _index; }
     [[nodiscard]] const Serial<uint> &length() const noexcept { return _length; }
 
