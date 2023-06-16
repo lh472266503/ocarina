@@ -115,11 +115,11 @@ void Context::write_file(const fs::path &fn, const std::string &text) {
     fs.close();
 }
 
-void Context::write_cache(const string &fn, const string &text) const noexcept {
+void Context::write_global_cache(const string &fn, const string &text) const noexcept {
     write_file(cache_directory() / fn, text);
 }
 
-string Context::read_cache(const string &fn) const noexcept {
+string Context::read_global_cache(const string &fn) const noexcept {
     return read_file(cache_directory() / fn);
 }
 

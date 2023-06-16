@@ -36,8 +36,8 @@ public:
     [[nodiscard]] const fs::path &runtime_directory() const noexcept;
     [[nodiscard]] const fs::path &cache_directory() const noexcept;
     static bool create_directory_if_necessary(const fs::path &path);
-    void write_cache(const string &fn, const string &text) const noexcept;
-    [[nodiscard]] string read_cache(const string &fn) const noexcept;
+    void write_global_cache(const string &fn, const string &text) const noexcept;
+    [[nodiscard]] string read_global_cache(const string &fn) const noexcept;
     [[nodiscard]] static string read_file(const fs::path &fn);
     static void write_file(const fs::path &fn, const string &text);
     void clear_cache() const noexcept;

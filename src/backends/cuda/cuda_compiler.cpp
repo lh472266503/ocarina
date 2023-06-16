@@ -96,18 +96,18 @@ ocarina::string CUDACompiler::obtain_ptx() const noexcept {
             codegen.emit(_function);
             const ocarina::string &cu = codegen.scratch().c_str();
 //            cout << cu << endl;
-            context->write_cache(cu_fn, cu);
+            context->write_global_cache(cu_fn, cu);
             ptx = compile(cu, cu_fn, 75);
-            context->write_cache(ptx_fn, ptx);
+            context->write_global_cache(ptx_fn, ptx);
         } else {
-            const ocarina::string &cu = context->read_cache(cu_fn);
+            const ocarina::string &cu = context->read_global_cache(cu_fn);
 //            cout << cu << endl;
             ptx = compile(cu, cu_fn);
-            context->write_cache(ptx_fn, ptx);
+            context->write_global_cache(ptx_fn, ptx);
         }
     } else {
         OC_INFO_FORMAT("find ptx file {}", ptx_fn);
-        ptx = context->read_cache(ptx_fn);
+        ptx = context->read_global_cache(ptx_fn);
     }
     return ptx;
 }
