@@ -363,6 +363,29 @@ template<typename T, typename F2>
     return u * v0 + v * v1 + w * v2;
 }
 
+template<EPort p = D>
+[[nodiscard]] oc_bool<p> in_triangle(const oc_float2<p> &barycentric, const oc_float2<p> &v0,
+                                     const oc_float2<p> &v1, const oc_float2<p> &v2) noexcept {
+    oc_float3<p> a = make_float3(v0, 0.f);
+    oc_float3<p> b = make_float3(v1, 0.f);
+    oc_float3<p> c = make_float3(v2, 0.f);
+    oc_float3<p> n = make_float3(barycentric, 0.f);
+
+    oc_float3<p> ba = a - b;
+    oc_float3<p> cb = b - c;
+    oc_float3<p> ac = c - a;
+
+    oc_float3<p> an = n - a;
+    oc_float3<p> bn = n - b;
+    oc_float3<p> cn = n - c;
+
+    oc_float<p> r0 = cross(ba, bn).z;
+    oc_float<p> r1 = cross(cb, cn).z;
+    oc_float<p> r2 = cross(ac, an).z;
+
+    return (r0 >= 0 && r1 >= 0 && r2 >= 0) || (r0 <= 0 && r1 <= 0 && r2 <= 0);
+}
+
 template<typename T>
 [[nodiscard]] T srgb_to_linear(T S) {
     using raw_ty = expr_value_t<T>;

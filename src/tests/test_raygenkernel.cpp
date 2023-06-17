@@ -131,6 +131,12 @@ int main(int argc, char *argv[]) {
     vector<float> aaa = {1,2,3};
     vector<float> bb = {6};
 
+    float2 bar = make_float2(0,1.0001);
+    float2 a = make_float2(1,1);
+    float2 b = make_float2(-1,1);
+    float2 c = make_float2(0, -1);
+    bool in = in_triangle<H>(bar, a, b, c);
+
     vector<float> t = {0.5f};
 
     auto ll = lerp(t, aaa, bb);
