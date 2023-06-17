@@ -114,17 +114,42 @@ public:
     }
 };
 
-template<typename T = int>
-    class Shader {
-        static_assert(std::is_same_v<T, int>);
+class ShaderInvoke {
+private:
+    SP<ArgumentList> _argument_list;
+    handle_ty _shader_entry;
 
+public:
+    ShaderInvoke(handle_ty entry, SP<ArgumentList> argument_list)
+        : _shader_entry(entry),
+          _argument_list(ocarina::move(argument_list)) {}
+
+    template<typename T>
+    ShaderInvoke &operator<<(T &&arg) {
+        *_argument_list << OC_FORWARD(arg);
+        return *this;
+    }
+
+    //    [[nodiscard]] const Function &function() const noexcept { return _argument_list->function(); }
+
+    //    [[nodiscard]] ShaderDispatchCommand *dispatch(uint x, uint y = 1, uint z = 1) const noexcept {
+    //        return ShaderDispatchCommand::create(function(), _shader_entry, _argument_list, make_uint3(x, y, z));
+    //    }
+    //    [[nodiscard]] ShaderDispatchCommand *dispatch(uint2 dim) const noexcept { return dispatch(dim.x, dim.y, 1); }
+    //    [[nodiscard]] ShaderDispatchCommand *dispatch(uint3 dim) const noexcept { return dispatch(dim.x, dim.y, dim.z); }
+};
+
+template<typename T = int>
+class Shader {
+    static_assert(std::is_same_v<T, int>);
+
+public:
+    class Impl {
     public:
-        class Impl {
-        public:
-            virtual void launch(handle_ty stream, ShaderDispatchCommand *cmd) noexcept = 0;
-            virtual void compute_fit_size() noexcept {};
-        };
+        virtual void launch(handle_ty stream, ShaderDispatchCommand *cmd) noexcept = 0;
+        virtual void compute_fit_size() noexcept {};
     };
+};
 
 template<typename... Args>
 class Shader<void(Args...)> final : public RHIResource {
@@ -135,21 +160,21 @@ public:
 private:
     ShaderTag _shader_tag{};
     ocarina::unique_ptr<Function> _function{};
-    mutable ArgumentList _argument_list{nullptr};
+    mutable SP<ArgumentList> _argument_list{nullptr};
 
 public:
     Shader() = default;
     Shader(Device::Impl *device, ocarina::unique_ptr<Function> function, ShaderTag tag) noexcept
-    : RHIResource(device, SHADER,
-                  device->create_shader(*function)),
-                  _shader_tag(tag), _function(ocarina::move(function)), _argument_list(_function.get()) {}
+        : RHIResource(device, SHADER,
+                      device->create_shader(*function)),
+          _shader_tag(tag), _function(ocarina::move(function)), _argument_list(make_shared<ArgumentList>(_function.get())) {}
 
-    [[nodiscard]] ShaderDispatchCommand *dispatch(uint x, uint y = 1, uint z = 1) const noexcept  {
+    [[nodiscard]] ShaderDispatchCommand *dispatch(uint x, uint y = 1, uint z = 1) const noexcept {
         if (_function->is_raytracing()) {
-            return ShaderDispatchCommand::create(*_function, handle(), _argument_list.params(), make_uint3(x, y, z));
+            return ShaderDispatchCommand::create(*_function, handle(), _argument_list, make_uint3(x, y, z));
         } else {
-            _argument_list << make_uint3(x, y, z);
-            return ShaderDispatchCommand::create(*_function, handle(), _argument_list.ptr(), make_uint3(x, y, z));
+            *_argument_list << make_uint3(x, y, z);
+            return ShaderDispatchCommand::create(*_function, handle(), _argument_list, make_uint3(x, y, z));
         }
     }
     [[nodiscard]] ShaderDispatchCommand *dispatch(uint2 dim) const noexcept { return dispatch(dim.x, dim.y, 1); }
@@ -160,11 +185,11 @@ public:
     void compute_fit_size() noexcept { impl()->compute_fit_size(); }
     [[nodiscard]] bool has_function() const noexcept { return _function != nullptr; }
     [[nodiscard]] const Shader &operator()(prototype_to_shader_invocation_t<Args> &&...args) const noexcept {
-        _argument_list.clear();
-        (_argument_list << ... << OC_FORWARD(args));
+        _argument_list = make_shared<ArgumentList>(_function.get());
+        (*_argument_list << ... << OC_FORWARD(args));
 
         for (const auto &uniform : _function->uniform_vars()) {
-            _argument_list.push_memory_block(uniform.block());
+            _argument_list->push_memory_block(uniform.block());
         }
         return *this;
     }

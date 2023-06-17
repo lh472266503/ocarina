@@ -71,7 +71,7 @@ int main(int argc, char *argv[]) {
 
     fs::path path(argv[0]);
     Context context(path.parent_path());
-    //    context.clear_cache();
+        context.clear_cache();
     Device device = context.create_device("cuda");
     Stream stream = device.create_stream();
     Printer::instance().init(device);
@@ -136,7 +136,7 @@ int main(int argc, char *argv[]) {
     auto ll = lerp(t, aaa, bb);
 
     Kernel kernel = [&](const BufferVar<Triangle> t_buffer,
-                        const Var<Accel> acc,
+//                        const Var<Accel> acc,
                         const TextureVar img,
                         Var<Triangle> tri,
                         ResourceArrayVar ba) {
@@ -171,7 +171,7 @@ int main(int argc, char *argv[]) {
         //        prints("{} {} {} {}", bindless_array.tex(0).sample(4, uv).as_vec4());
     };
     auto shader = device.compile(kernel);
-    stream << shader(t_buffer, accel, image, triangle[0], bindless_array).dispatch(3);
+    stream << shader(t_buffer, image, triangle[0], bindless_array).dispatch(3);
     stream << synchronize() << commit();
 
     float tf = bit_cast<float>(19);
