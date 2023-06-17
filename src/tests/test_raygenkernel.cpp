@@ -62,16 +62,60 @@ auto operator-(Array<float> arr) {
 //    int i = 0;
 //}
 
+template<typename T, typename F2>
+[[nodiscard]] T triangle_lerp2(const F2 &barycentric, const T &v0, const T &v1, const T &v2) noexcept {
+    auto u = barycentric.x;
+    auto v = barycentric.y;
+    auto w = 1 - barycentric.x - barycentric.y;
+    return u * v0 + v * v1 + w * v2;
+}
+
+float3 barycentric2(float2 p, float2 p0, float2 p1, float2 p2) {
+    float3 U = cross(make_float3(p1.x - p0.x, p2.x - p0.x, p0.x - p.x),
+                     make_float3(p1.y - p0.y, p2.y - p0.y, p0.y - p.y));
+    return make_float3(1 - (U.x + U.y) / U.z, U.y / U.z, U.x / U.z);
+}
+
+float2 barycentric(float2 p, float2 v0, float2 v1, float2 v2) {
+    float a1 = v0.x - v2.x;
+    float b1 = v1.x - v2.x;
+    float c1 = p.x - v2.x;
+
+    float a2 = v0.y - v2.y;
+    float b2 = v1.y - v2.y;
+    float c2 = p.y - v2.y;
+
+    float u = (c1 * b2 - c2 * b1) / (a1 * b2 - a2 * b1);
+    float v = (a1 * c2 - a2 * c1) / (a1 * b2 - a2 * b1);
+    return make_float2(u, v);
+}
+
+void test() {
+    float2 a = make_float2(0, 0);
+    float2 b = make_float2(1, 0);
+    float2 c = make_float2(0, 1);
+
+    float2 p = make_float2(0.2,0.1);
+
+    float2 bary = barycentric(p, a, b, c);
+
+    float2 p2 = triangle_lerp(bary, a, b, c);
+
+    return;
+}
+
 int main(int argc, char *argv[]) {
 
-//    func(1, 2, 3, 4, 5, 6, 7, 8, 18);
-//
-//    return 0;
+    //    func(1, 2, 3, 4, 5, 6, 7, 8, 18);
+    //
+    //    return 0;
     log_level_debug();
+
+    test();
 
     fs::path path(argv[0]);
     Context context(path.parent_path());
-        context.clear_cache();
+    context.clear_cache();
     Device device = context.create_device("cuda");
     Stream stream = device.create_stream();
     Printer::instance().init(device);
@@ -128,12 +172,12 @@ int main(int argc, char *argv[]) {
         return Var<std::array<float, 10>>();
     };
 
-    vector<float> aaa = {1,2,3};
+    vector<float> aaa = {1, 2, 3};
     vector<float> bb = {6};
 
-    float2 bar = make_float2(0,1.0001);
-    float2 a = make_float2(1,1);
-    float2 b = make_float2(-1,1);
+    float2 bar = make_float2(0, 1.0001);
+    float2 a = make_float2(1, 1);
+    float2 b = make_float2(-1, 1);
     float2 c = make_float2(0, -1);
     bool in = in_triangle<H>(bar, a, b, c);
 
@@ -142,19 +186,19 @@ int main(int argc, char *argv[]) {
     auto ll = lerp(t, aaa, bb);
 
     Kernel kernel = [&](const BufferVar<Triangle> t_buffer,
-//                        const Var<Accel> acc,
+                        //                        const Var<Accel> acc,
                         const TextureVar img,
                         Var<Triangle> tri,
                         ResourceArrayVar ba) {
         //        t_buffer.atomic()
         //        managed.device().atomic(1).fetch_sub(2);
-                Var<Ray> r = make_ray(Var(float3(0, 0.1, -5)), float3(1.6f, 0, 1));
-                Var hit = accel.trace_closest(r);
+        Var<Ray> r = make_ray(Var(float3(0, 0.1, -5)), float3(1.6f, 0, 1));
+        Var hit = accel.trace_closest(r);
         Int3 f = make_int3(ba.byte_buffer(index).read<float>(19 * 4).cast<int>(), 6, 9);
         auto arr = bindless_array.byte_buffer(index).read_dynamic_array<float>(3, 19 * 4);
-        Printer::instance().warn_with_location("{} {} {} {} {} ", f, arr.sub(1,3).as_vec2());
-//      Int a = 1, b = 2, c = 3;
-//      printer.log_debug("--{} {} {}", a, b, c);
+        Printer::instance().warn_with_location("{} {} {} {} {} ", f, arr.sub(1, 3).as_vec2());
+        //      Int a = 1, b = 2, c = 3;
+        //      printer.log_debug("--{} {} {}", a, b, c);
         //        prints("++{} {} {}", f);
         //        printer.log_debug("--------{} {} {}", 1.5f,f.x,1.11f);
         //        print("sdfasdasdfasdsdafsdafasdfsda{} {} {}", 1.5f,f.x,1.9f);
@@ -178,13 +222,13 @@ int main(int argc, char *argv[]) {
     };
     auto shader = device.compile(kernel);
     stream << shader(t_buffer, image, triangle[0], bindless_array).dispatch(3);
-//    stream << shader.call(t_buffer, image, triangle[0], bindless_array).dispatch(3);
+    //    stream << shader.call(t_buffer, image, triangle[0], bindless_array).dispatch(3);
     stream << synchronize() << commit();
 
     float tf = bit_cast<float>(19);
     OC_WARNING_FORMAT("{}", tf);
     Printer::instance().retrieve_immediately();
-//    cout << "sdafasdf" << endl;
+    //    cout << "sdafasdf" << endl;
     Printer::instance().retrieve_immediately();
     Printer::destroy_instance();
     return 0;
