@@ -38,8 +38,8 @@ public:
     using Super = Buffer<T>;
 
 public:
-    explicit RegistrableBuffer(ResourceArray *resource_array)
-        : Registrable(resource_array) {}
+    explicit RegistrableBuffer(ResourceArray &resource_array)
+        : Registrable(&resource_array) {}
 
     RegistrableBuffer() = default;
     void register_self() noexcept {
