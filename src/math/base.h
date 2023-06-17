@@ -363,6 +363,22 @@ template<typename T, typename F2>
     return u * v0 + v * v1 + w * v2;
 }
 
+template<EPort P = D>
+[[nodiscard]] oc_float2<P> barycentric(const oc_float2<P> &p, const oc_float2<P> &v0,
+                                       const oc_float2<P> &v1, const oc_float2<P> &v2) {
+    oc_float<P> a1 = v0.x - v2.x;
+    oc_float<P> b1 = v1.x - v2.x;
+    oc_float<P> c1 = p.x - v2.x;
+
+    oc_float<P> a2 = v0.y - v2.y;
+    oc_float<P> b2 = v1.y - v2.y;
+    oc_float<P> c2 = p.y - v2.y;
+
+    oc_float<P> u = (c1 * b2 - c2 * b1) / (a1 * b2 - a2 * b1);
+    oc_float<P> v = (a1 * c2 - a2 * c1) / (a1 * b2 - a2 * b1);
+    return make_float2(u, v);
+}
+
 template<EPort p = D>
 [[nodiscard]] oc_bool<p> in_triangle(const oc_float2<p> &barycentric, const oc_float2<p> &v0,
                                      const oc_float2<p> &v1, const oc_float2<p> &v2) noexcept {

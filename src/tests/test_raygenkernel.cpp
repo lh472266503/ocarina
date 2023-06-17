@@ -76,28 +76,15 @@ float3 barycentric2(float2 p, float2 p0, float2 p1, float2 p2) {
     return make_float3(1 - (U.x + U.y) / U.z, U.y / U.z, U.x / U.z);
 }
 
-float2 barycentric(float2 p, float2 v0, float2 v1, float2 v2) {
-    float a1 = v0.x - v2.x;
-    float b1 = v1.x - v2.x;
-    float c1 = p.x - v2.x;
-
-    float a2 = v0.y - v2.y;
-    float b2 = v1.y - v2.y;
-    float c2 = p.y - v2.y;
-
-    float u = (c1 * b2 - c2 * b1) / (a1 * b2 - a2 * b1);
-    float v = (a1 * c2 - a2 * c1) / (a1 * b2 - a2 * b1);
-    return make_float2(u, v);
-}
 
 void test() {
     float2 a = make_float2(0, 0);
     float2 b = make_float2(1, 0);
     float2 c = make_float2(0, 1);
 
-    float2 p = make_float2(0.2,0.1);
+    float2 p = make_float2(0.1,0.3);
 
-    float2 bary = barycentric(p, a, b, c);
+    float2 bary = barycentric<H>(p, a, b, c);
 
     float2 p2 = triangle_lerp(bary, a, b, c);
 
