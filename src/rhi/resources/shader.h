@@ -83,6 +83,10 @@ public:
         _params.clear();
     }
 
+    [[nodiscard]] const Function &function() const noexcept {
+        return *_function;
+    }
+
     void push_memory_block(const MemoryBlock &block) noexcept {
         if (_function->is_raytracing()) {
             add_param(block);
@@ -129,14 +133,15 @@ public:
         *_argument_list << OC_FORWARD(arg);
         return *this;
     }
-
-    //    [[nodiscard]] const Function &function() const noexcept { return _argument_list->function(); }
-
-    //    [[nodiscard]] ShaderDispatchCommand *dispatch(uint x, uint y = 1, uint z = 1) const noexcept {
-    //        return ShaderDispatchCommand::create(function(), _shader_entry, _argument_list, make_uint3(x, y, z));
-    //    }
-    //    [[nodiscard]] ShaderDispatchCommand *dispatch(uint2 dim) const noexcept { return dispatch(dim.x, dim.y, 1); }
-    //    [[nodiscard]] ShaderDispatchCommand *dispatch(uint3 dim) const noexcept { return dispatch(dim.x, dim.y, dim.z); }
+    [[nodiscard]] const Function &function() const noexcept { return _argument_list->function(); }
+    [[nodiscard]] ShaderDispatchCommand *dispatch(uint x, uint y = 1, uint z = 1) const noexcept {
+        if (!function().is_raytracing()) {
+            *_argument_list << make_uint3(x, y, z);
+        }
+        return ShaderDispatchCommand::create(_shader_entry, _argument_list, make_uint3(x, y, z));
+    }
+    [[nodiscard]] ShaderDispatchCommand *dispatch(uint2 dim) const noexcept { return dispatch(dim.x, dim.y, 1); }
+    [[nodiscard]] ShaderDispatchCommand *dispatch(uint3 dim) const noexcept { return dispatch(dim.x, dim.y, dim.z); }
 };
 
 template<typename T = int>
@@ -160,38 +165,27 @@ public:
 private:
     ShaderTag _shader_tag{};
     ocarina::unique_ptr<Function> _function{};
-    mutable SP<ArgumentList> _argument_list{nullptr};
 
 public:
     Shader() = default;
     Shader(Device::Impl *device, ocarina::unique_ptr<Function> function, ShaderTag tag) noexcept
         : RHIResource(device, SHADER,
                       device->create_shader(*function)),
-          _shader_tag(tag), _function(ocarina::move(function)), _argument_list(make_shared<ArgumentList>(_function.get())) {}
+          _shader_tag(tag), _function(ocarina::move(function)) {}
 
-    [[nodiscard]] ShaderDispatchCommand *dispatch(uint x, uint y = 1, uint z = 1) const noexcept {
-        if (_function->is_raytracing()) {
-            return ShaderDispatchCommand::create(*_function, handle(), _argument_list, make_uint3(x, y, z));
-        } else {
-            *_argument_list << make_uint3(x, y, z);
-            return ShaderDispatchCommand::create(*_function, handle(), _argument_list, make_uint3(x, y, z));
-        }
-    }
-    [[nodiscard]] ShaderDispatchCommand *dispatch(uint2 dim) const noexcept { return dispatch(dim.x, dim.y, 1); }
-    [[nodiscard]] ShaderDispatchCommand *dispatch(uint3 dim) const noexcept { return dispatch(dim.x, dim.y, dim.z); }
     [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(_handle); }
     [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
     [[nodiscard]] ShaderTag shader_tag() const noexcept { return _shader_tag; }
     void compute_fit_size() noexcept { impl()->compute_fit_size(); }
     [[nodiscard]] bool has_function() const noexcept { return _function != nullptr; }
-    [[nodiscard]] const Shader &operator()(prototype_to_shader_invocation_t<Args> &&...args) const noexcept {
-        _argument_list = make_shared<ArgumentList>(_function.get());
-        (*_argument_list << ... << OC_FORWARD(args));
-
+    [[nodiscard]] ShaderInvoke operator()(prototype_to_shader_invocation_t<Args> &&...args) const noexcept {
+        auto argument_list = make_shared<ArgumentList>(_function.get());
+        (*argument_list << ... << OC_FORWARD(args));
         for (const auto &uniform : _function->uniform_vars()) {
-            _argument_list->push_memory_block(uniform.block());
+            argument_list->push_memory_block(uniform.block());
         }
-        return *this;
+        ShaderInvoke shader_invoke{handle(), ocarina::move(argument_list)};
+        return shader_invoke;
     }
 };
 

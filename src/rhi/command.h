@@ -228,27 +228,17 @@ class Function;
 class ArgumentList;
 class ShaderDispatchCommand final : public Command {
 private:
-    const Function &_function;
-    // arguments for general kernel
-    span<void *> _args;
-    // params for ray tracing kernel
-    span<const MemoryBlock> _params;
-
     SP<ArgumentList> _argument_list;
-
     uint3 _dispatch_dim;
     handle_ty _entry{};
 
 public:
-    ShaderDispatchCommand(const Function &function, handle_ty entry, SP<ArgumentList> argument_list, uint3 dim);
+    ShaderDispatchCommand(handle_ty entry, SP<ArgumentList> argument_list, uint3 dim);
     [[nodiscard]] span<void *> args() noexcept;
     [[nodiscard]] span<const MemoryBlock> params() noexcept;
     [[nodiscard]] size_t params_size() noexcept;
     [[nodiscard]] uint3 dispatch_dim() const noexcept { return _dispatch_dim; }
-    [[nodiscard]] const Function &function() const noexcept { return _function; }
-    [[nodiscard]] Function &function_nc() noexcept {
-        return *const_cast<Function *>(&_function);
-    }
+
     template<typename T>
     [[nodiscard]] auto entry() const noexcept { return reinterpret_cast<T>(_entry); }
     OC_MAKE_CMD_COMMON_FUNC(ShaderDispatchCommand)

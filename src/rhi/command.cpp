@@ -3,16 +3,17 @@
 //
 
 #include "command.h"
+
+#include <utility>
 #include "resources/shader.h"
 
 namespace ocarina {
 
 OC_COMMAND_POOL_FUNCTIONS_IMPL
 
-ShaderDispatchCommand::ShaderDispatchCommand(const Function &function, handle_ty entry,
-                                             SP<ArgumentList> argument_list, uint3 dim)
-    : Command(true), _function(function), _entry(entry),
-      _argument_list(argument_list), _dispatch_dim(dim) {
+ShaderDispatchCommand::ShaderDispatchCommand(handle_ty entry, SP<ArgumentList> argument_list, uint3 dim)
+    : Command(true), _entry(entry),
+      _argument_list(ocarina::move(argument_list)), _dispatch_dim(dim) {
 }
 
 span<void *> ShaderDispatchCommand::args() noexcept {

@@ -172,6 +172,7 @@ int main(int argc, char *argv[]) {
     };
     auto shader = device.compile(kernel);
     stream << shader(t_buffer, image, triangle[0], bindless_array).dispatch(3);
+//    stream << shader.call(t_buffer, image, triangle[0], bindless_array).dispatch(3);
     stream << synchronize() << commit();
 
     float tf = bit_cast<float>(19);
