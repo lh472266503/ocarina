@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
     t.data.f = 106;
     t.data.f4 = make_float4(199.f);
     ResourceArray ra = device.create_resource_array();
-    t.mw.init(ra);
+    t.mw.set_resource_array(ra);
     t.mw.register_self();
     t.mw.push_back(9.98);
     t.mw.push_back(9.98);
