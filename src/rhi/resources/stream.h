@@ -32,12 +32,21 @@ public:
         virtual void barrier() noexcept = 0;
         virtual void commit(const Commit &commit) noexcept = 0;
         virtual void add_command(Command *cmd) noexcept = 0;
+
+    private:
+        [[nodiscard]] const CommandQueue &command_queue() const noexcept {
+            return _command_queue;
+        }
+        friend class Stream;
     };
 
 public:
     explicit Stream(Device::Impl *device);
     [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
     [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(_handle); }
+    [[nodiscard]] const CommandQueue &command_queue() const noexcept {
+        return impl()->command_queue();
+    }
     Stream &operator<<(Command *command) noexcept;
     Stream &operator<<(const Commit &commit) noexcept;
     void commit(const Commit &cmt) noexcept;
