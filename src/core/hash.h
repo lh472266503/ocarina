@@ -13,10 +13,6 @@
 namespace ocarina {
 namespace detail {
 
-[[nodiscard]] inline auto xxh3_hash64(const void *data, size_t size, uint64_t seed) noexcept {
-    return XXH3_64bits_withSeed(data, size, seed);
-}
-
 template<typename T>
 concept hashable_with_hash_method = requires(T x) {
     x.hash();
@@ -33,6 +29,10 @@ concept hashable_with_hash_code_method = requires(T x) {
 };
 
 }// namespace detail
+
+[[nodiscard]] inline auto xxh3_hash64(const void *data, size_t size, uint64_t seed) noexcept {
+    return XXH3_64bits_withSeed(data, size, seed);
+}
 
 [[nodiscard]] OC_CORE_API std::string_view hash_to_string(uint64_t hash) noexcept;
 
@@ -56,10 +56,10 @@ public:
             return (*this)(std::forward<T>(s)->hash());
         } else if constexpr (concepts::string_viewable<T>) {
             std::string_view sv{std::forward<T>(s)};
-            return detail::xxh3_hash64(sv.data(), sv.size(), _seed);
+            return xxh3_hash64(sv.data(), sv.size(), _seed);
         } else if constexpr (is_vector3_v<T>) {
             auto x = s;
-            return detail::xxh3_hash64(&x, sizeof(vector_element_t<T>) * 3u, _seed);
+            return xxh3_hash64(&x, sizeof(vector_element_t<T>) * 3u, _seed);
         } else if constexpr (is_matrix3_v<T>) {
             auto x = ocarina::make_float4x4(s);
             return (*this)(x);
@@ -69,7 +69,7 @@ public:
             std::is_enum_v<std::remove_cvref_t<T>> ||
             is_basic_v<std::remove_cvref_t<T>>) {
             auto x = s;
-            return detail::xxh3_hash64(&x, sizeof(x), _seed);
+            return xxh3_hash64(&x, sizeof(x), _seed);
         } else {
             static_assert(always_false_v<T>);
             return {};
