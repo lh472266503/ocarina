@@ -41,6 +41,7 @@ class Serializable_impl {
 public:
     /// for host
     virtual void encode(RegistrableManaged<T> &data) const noexcept {}
+    virtual void update(RegistrableManaged<T> &data) const noexcept {}
     /// for device
     virtual void decode(const DataAccessor<T> *da) const noexcept {}
     [[nodiscard]] virtual uint element_num() const noexcept { return 0; }
@@ -59,6 +60,8 @@ private:
     using host_ty = std::variant<value_ty, std::function<value_ty()>>;
     host_ty _host_value{};
     optional<dsl_t<value_ty>> _device_value{};
+    /// origin index in buffer
+    mutable uint _index{InvalidUI32};
 
 public:
     explicit Serial(value_ty val = {}) : _host_value(std::move(val)) {}
@@ -98,7 +101,12 @@ public:
             return dsl_t<value_ty>(hv());
         }
     }
+
+    [[nodiscard]] bool has_encoded() const noexcept { return _index != InvalidUI32; }
+
     void encode(RegistrableManaged<T> &data) const noexcept override {
+        OC_ASSERT(!has_encoded());
+        _index = data.host_buffer().size();
         if constexpr (is_scalar_v<value_ty>) {
             data.push_back(bit_cast<T>(hv()));
         } else if constexpr (is_vector_v<value_ty>) {
@@ -114,6 +122,31 @@ public:
         } else if constexpr (is_std_vector_v<value_ty>) {
             for (int i = 0; i < hv().size(); ++i) {
                 data.push_back(bit_cast<T>(hv()[i]));
+            }
+        } else {
+            static_assert(always_false_v<value_ty>);
+        }
+    }
+
+    void update(RegistrableManaged<T> &data) const noexcept override {
+        OC_ASSERT(has_encoded());
+        if constexpr (is_scalar_v<value_ty>) {
+            data.host_buffer()[_index] = bit_cast<T>(hv());
+        } else if constexpr (is_vector_v<value_ty>) {
+            for (int i = 0; i < vector_dimension_v<value_ty>; ++i) {
+                data.host_buffer()[_index + i] = bit_cast<T>(hv()[i]);
+            }
+        } else if constexpr (is_matrix_v<value_ty>) {
+            uint count = 0;
+            for (int i = 0; i < matrix_dimension_v<value_ty>; ++i) {
+                for (int j = 0; j < matrix_dimension_v<value_ty>; ++j) {
+                    data.host_buffer()[_index + count] = bit_cast<T>(hv()[i][j]);
+                    ++count;
+                }
+            }
+        } else if constexpr (is_std_vector_v<value_ty>) {
+            for (int i = 0; i < hv().size(); ++i) {
+                data.host_buffer()[_index + i] = bit_cast<T>(hv()[i]);
             }
         } else {
             static_assert(always_false_v<value_ty>);
@@ -174,6 +207,7 @@ public:
 };
 
 #define OC_ENCODE_ELEMENT(name) (name).encode(datas);
+#define OC_UPDATE_ELEMENT(name) (name).update(datas);
 #define OC_DECODE_ELEMENT(name) (name).decode(da);
 #define OC_INVALIDATE_ELEMENT(name) (name).reset_device_value();
 #define OC_VALID_ELEMENT(name) &&(name).has_device_value()
@@ -181,22 +215,26 @@ public:
 
 #define OC_SERIALIZABLE_FUNC(Super, ...)                                                   \
     [[nodiscard]] uint element_num() const noexcept override {                             \
-        return Super::element_num() MAP(OC_SIZE_ELEMENT, __VA_ARGS__);                \
+        return Super::element_num() MAP(OC_SIZE_ELEMENT, __VA_ARGS__);                     \
     }                                                                                      \
     void encode(RegistrableManaged<serialize_element_ty> &datas) const noexcept override { \
-        Super::encode(datas);                                                         \
+        Super::encode(datas);                                                              \
         MAP(OC_ENCODE_ELEMENT, __VA_ARGS__)                                                \
     }                                                                                      \
+    void update(RegistrableManaged<serialize_element_ty> &datas) const noexcept override { \
+        Super::update(datas);                                                              \
+        MAP(OC_UPDATE_ELEMENT, __VA_ARGS__)                                                \
+    }                                                                                      \
     void decode(const DataAccessor<serialize_element_ty> *da) const noexcept override {    \
-        Super::decode(da);                                                            \
+        Super::decode(da);                                                                 \
         MAP(OC_DECODE_ELEMENT, __VA_ARGS__)                                                \
     }                                                                                      \
     void reset_device_value() const noexcept override {                                    \
-        Super::reset_device_value();                                                  \
+        Super::reset_device_value();                                                       \
         MAP(OC_INVALIDATE_ELEMENT, __VA_ARGS__)                                            \
     }                                                                                      \
     [[nodiscard]] bool has_device_value() const noexcept override {                        \
-        return Super::has_device_value() MAP(OC_VALID_ELEMENT, __VA_ARGS__);          \
+        return Super::has_device_value() MAP(OC_VALID_ELEMENT, __VA_ARGS__);               \
     }
 
 }// namespace ocarina
