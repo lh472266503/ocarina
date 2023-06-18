@@ -101,7 +101,8 @@ public:
     [[nodiscard]] Texture create_texture(uint3 res, PixelStorage storage) noexcept;
     [[nodiscard]] Texture create_texture(uint2 res, PixelStorage storage) noexcept;
     template<typename T>
-    [[nodiscard]] auto compile(const Kernel<T> &kernel, ShaderTag tag = CS) noexcept {
+    [[nodiscard]] auto compile(const Kernel<T> &kernel, const string &shader_desc = "", ShaderTag tag = CS) noexcept {
+        OC_INFO_FORMAT("compile shader : {}", shader_desc.c_str());
         return _create<Shader<T>>(kernel.function(), tag);
     }
 };
