@@ -20,7 +20,6 @@ class ScopeStmt;
 class RefExpr;
 class IfStmt;
 
-
 class ArgumentBinding : public Hashable {
 private:
     const Type *_type;
@@ -56,6 +55,7 @@ public:
     };
 
 private:
+    mutable string _description{};
     const Type *_ret{nullptr};
     ocarina::vector<ocarina::unique_ptr<Expression>> _all_expressions;
     ocarina::vector<ocarina::unique_ptr<Statement>> _all_statements;
@@ -139,6 +139,8 @@ private:
     };
 
 public:
+    void set_description(string desc) const noexcept { _description = ocarina::move(desc); }
+    [[nodiscard]] string &description() const noexcept { return _description; }
     [[nodiscard]] auto used_custom_func() const noexcept { return _used_custom_func; }
     template<typename Visitor>
     void for_each_custom_func(Visitor &&visitor) const noexcept {
@@ -249,7 +251,7 @@ public:
     [[nodiscard]] const CastExpr *cast(const Type *type, CastOp op, const Expression *expression) noexcept;
     [[nodiscard]] const SubscriptExpr *subscript(const Type *type, const Expression *range, const Expression *index) noexcept;
     [[nodiscard]] const SubscriptExpr *subscript(const Type *type, const Expression *range,
-                                           vector<const Expression *> indexes) noexcept;
+                                                 vector<const Expression *> indexes) noexcept;
     [[nodiscard]] const MemberExpr *swizzle(const Type *type, const Expression *obj, uint16_t mask, uint16_t swizzle_size) noexcept;
     [[nodiscard]] const MemberExpr *member(const Type *type, const Expression *obj, int index) noexcept;
     const CallExpr *call(const Type *type, const Function *func, ocarina::vector<const Expression *> args) noexcept;

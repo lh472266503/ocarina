@@ -197,7 +197,7 @@ protected:
     explicit FuncWrapper(ocarina::unique_ptr<Function> f) : _function(std::move(f)) {}
 
 public:
-    [[nodiscard]] ocarina::unique_ptr<Function> function() const noexcept { return ocarina::move(_function); }
+    [[nodiscard]] ocarina::unique_ptr<Function> &function() const noexcept { return _function; }
 };
 
 namespace detail {
