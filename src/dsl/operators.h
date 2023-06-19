@@ -12,7 +12,8 @@
 
 #define OC_MAKE_DSL_UNARY_OPERATOR(op, tag)                                                                          \
     template<typename T>                                                                                             \
-    requires ocarina::is_dsl_v<T> OC_NODISCARD inline auto                                                           \
+    requires ocarina::is_dsl_v<T>                                                                                    \
+    OC_NODISCARD inline auto                                                                                         \
     operator op(T &&expr) noexcept {                                                                                 \
         if constexpr (ocarina::is_dynamic_array_v<T>) {                                                              \
             using element_t = std::remove_cvref_t<decltype(op std::declval<ocarina::dynamic_array_element_t<T>>())>; \
@@ -22,7 +23,7 @@
             return Array<element_t>(expr.size(), expression);                                                        \
         } else {                                                                                                     \
             using Ret = std::remove_cvref_t<decltype(op std::declval<ocarina::expr_value_t<T>>())>;                  \
-            return ocarina::make_expr<Ret>(                                                                          \
+            return ocarina::eval<Ret>(                                                                               \
                 ocarina::Function::current()->unary(                                                                 \
                     ocarina::Type::of<Ret>(),                                                                        \
                     ocarina::UnaryOp::tag,                                                                           \
@@ -40,8 +41,8 @@ OC_MAKE_DSL_UNARY_OPERATOR(~, BIT_NOT)
 #define OC_MAKE_DSL_BINARY_OPERATOR(op, tag, trait)                                                              \
     template<typename Lhs, typename Rhs>                                                                         \
     requires ocarina::any_dsl_v<Lhs, Rhs> &&                                                                     \
-        ocarina::is_basic_v<ocarina::expr_value_t<Lhs>> &&                                                       \
-        ocarina::is_basic_v<ocarina::expr_value_t<Rhs>>                                                          \
+             ocarina::is_basic_v<ocarina::expr_value_t<Lhs>> &&                                                  \
+             ocarina::is_basic_v<ocarina::expr_value_t<Rhs>>                                                     \
     [[nodiscard]] inline auto                                                                                    \
     operator op(Lhs &&lhs, Rhs &&rhs) noexcept {                                                                 \
         using namespace std::string_view_literals;                                                               \
@@ -53,7 +54,7 @@ OC_MAKE_DSL_UNARY_OPERATOR(~, BIT_NOT)
             decltype(std::declval<ocarina::expr_value_t<Lhs>>() op                                               \
                          std::declval<ocarina::expr_value_t<Rhs>>())>;                                           \
         using Ret = std::conditional_t<is_bool_lhs && is_logic_op, bool, NormalRet>;                             \
-        return ocarina::make_expr<Ret>(ocarina::Function::current()->binary(                                     \
+        return ocarina::eval<Ret>(ocarina::Function::current()->binary(                                          \
             ocarina::Type::of<Ret>(),                                                                            \
             ocarina::BinaryOp::tag,                                                                              \
             ocarina::detail::extract_expression(std::forward<Lhs>(lhs)),                                         \
@@ -99,7 +100,7 @@ OC_MAKE_DSL_UNARY_OPERATOR(~, BIT_NOT)
     decltype(std::declval<Lhs>() op std::declval<Rhs>()) trait##_func();                                         \
     template<typename Lhs, typename Rhs>                                                                         \
     requires any_dsl_v<Lhs, Rhs>                                                                                 \
-        Var<decltype(std::declval<expr_value_t<Lhs>>() op std::declval<expr_value_t<Rhs>>())> trait##_func();    \
+    Var<decltype(std::declval<expr_value_t<Lhs>>() op std::declval<expr_value_t<Rhs>>())> trait##_func();        \
     template<typename Lhs, typename Rhs>                                                                         \
     struct trait {                                                                                               \
         using type = decltype(detail::trait##_func<Lhs, Rhs>());                                                 \
