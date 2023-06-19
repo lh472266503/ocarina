@@ -207,8 +207,7 @@ ImageIO ImageIO::load_exr(const fs::path &fn, ColorSpace color_space, float3 sca
             ret.average<2>() = average;
             return ret;
         }
-        case 3:
-        case 4: {
+        case 3: {
             PixelStorage pixel_storage = detail::PixelStorageImpl<float4>::storage;
             float4 *pixel = new_array<float4>(pixel_num);
             float4 average = make_float4(0.f);
@@ -229,6 +228,35 @@ ImageIO ImageIO::load_exr(const fs::path &fn, ColorSpace color_space, float3 sca
                                    (reinterpret_cast<float *>(exr_image.images[2])[i]),
                                    (reinterpret_cast<float *>(exr_image.images[1])[i]),
                                    1.f) *
+                               make_float4(scale, 1.f);
+                    average = lerp(1.f / (i + 1), average, pixel[i]);
+                }
+            }
+            auto ret = ImageIO(pixel_storage, (std::byte *)pixel, resolution, fn);
+            ret.average<4>() = average;
+            return ret;
+        }
+        case 4: {
+            PixelStorage pixel_storage = detail::PixelStorageImpl<float4>::storage;
+            float4 *pixel = new_array<float4>(pixel_num);
+            float4 average = make_float4(0.f);
+            if (color_space == SRGB) {
+                for (int i = 0; i < pixel_num; ++i) {
+                    pixel[i] = make_float4(
+                                   srgb_to_linear(reinterpret_cast<float *>(exr_image.images[3])[i]),
+                                   srgb_to_linear(reinterpret_cast<float *>(exr_image.images[2])[i]),
+                                   srgb_to_linear(reinterpret_cast<float *>(exr_image.images[1])[i]),
+                                   srgb_to_linear(reinterpret_cast<float *>(exr_image.images[0])[i])) *
+                               make_float4(scale, 1.f);
+                    average = lerp(1.f / (i + 1), average, pixel[i]);
+                }
+            } else {
+                for (int i = 0; i < pixel_num; ++i) {
+                    pixel[i] = make_float4(
+                                   (reinterpret_cast<float *>(exr_image.images[3])[i]),
+                                   (reinterpret_cast<float *>(exr_image.images[2])[i]),
+                                   (reinterpret_cast<float *>(exr_image.images[1])[i]),
+                                   (reinterpret_cast<float *>(exr_image.images[0])[i])) *
                                make_float4(scale, 1.f);
                     average = lerp(1.f / (i + 1), average, pixel[i]);
                 }
@@ -385,7 +413,7 @@ void ImageIO::convert_to_32bit_image() {
 void ImageIO::save_image(const fs::path &fn, PixelStorage pixel_storage,
                          uint2 res, const void *raw_ptr) {
     OC_ASSERT(raw_ptr != nullptr);
-    const std::byte *ptr = reinterpret_cast<const std::byte*>(raw_ptr);
+    const std::byte *ptr = reinterpret_cast<const std::byte *>(raw_ptr);
     auto extension = to_lower(fn.extension().string());
     if (extension == ".exr") {
         if (is_32bit(pixel_storage)) {
