@@ -25,6 +25,7 @@
             const char *str;                                                            \
             assert(CUDA_SUCCESS == cuGetErrorString(result, &str));                     \
             OC_ERROR_FORMAT("CUDA driver error: {} at {}:{}", str, __FILE__, __LINE__); \
+            assert(0);                                                                  \
             std::abort();                                                               \
         }                                                                               \
     }()

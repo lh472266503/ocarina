@@ -109,7 +109,9 @@ public:
     void init_optix_context() noexcept;
     [[nodiscard]] OptixDeviceContext optix_device_context() const noexcept { return _optix_device_context; }
     [[nodiscard]] handle_ty create_buffer(size_t size) noexcept override;
+    [[nodiscard]] handle_ty create_buffer(size_t size, ocarina::handle_ty stream) noexcept override;
     void destroy_buffer(handle_ty handle) noexcept override;
+    void destroy_buffer(ocarina::handle_ty handle, ocarina::handle_ty stream) noexcept override;
     [[nodiscard]] handle_ty create_texture(uint3 res, PixelStorage pixel_storage) noexcept override;
     void destroy_texture(handle_ty handle) noexcept override;
     [[nodiscard]] handle_ty create_shader(const Function &function) noexcept override;

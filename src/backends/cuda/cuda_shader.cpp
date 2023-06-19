@@ -293,13 +293,13 @@ public:
         size_t total_size = cmd->params_size();
         span<const MemoryBlock> blocks = cmd->params();
         if (!_params.valid() || _params.size() < total_size) {
-            _params = Buffer<std::byte>(_device, total_size);
+            _params = Buffer<std::byte>(_device, total_size, stream);
         }
         size_t offset = 0;
         
         for (const MemoryBlock &block : blocks) {
             offset = mem_offset(offset, block.alignment);
-            _params.upload_immediately(block.address, offset, block.size);
+            OC_CU_CHECK(cuMemcpyHtoDAsync(_params.handle() + offset, block.address, block.size, cu_stream));
             offset += block.size;
         }
         _device->use_context([&] {

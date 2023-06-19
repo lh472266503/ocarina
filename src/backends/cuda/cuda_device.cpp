@@ -19,7 +19,6 @@
 #include "optix_accel.h"
 #include "cuda_command_visitor.h"
 
-
 namespace ocarina {
 
 CUDADevice::CUDADevice(Context *context)
@@ -37,6 +36,13 @@ handle_ty CUDADevice::create_buffer(size_t size) noexcept {
         OC_CU_CHECK(cuMemAlloc(&handle, size));
         return handle;
     });
+}
+
+handle_ty CUDADevice::create_buffer(size_t size, ocarina::handle_ty stream) noexcept {
+    OC_ASSERT(size > 0);
+    handle_ty handle{};
+    OC_CU_CHECK(cuMemAllocAsync(&handle, size, reinterpret_cast<CUstream>(stream)));
+    return handle;
 }
 
 namespace detail {
@@ -114,6 +120,10 @@ void CUDADevice::destroy_resource_array(handle_ty handle) noexcept {
 
 void CUDADevice::destroy_buffer(handle_ty handle) noexcept {
     OC_CU_CHECK(cuMemFree(handle));
+}
+
+void CUDADevice::destroy_buffer(ocarina::handle_ty handle, ocarina::handle_ty stream) noexcept {
+    OC_CU_CHECK(cuMemFreeAsync(handle, reinterpret_cast<CUstream>(stream)));
 }
 
 void CUDADevice::destroy_shader(handle_ty handle) noexcept {
