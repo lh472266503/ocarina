@@ -132,6 +132,23 @@ public:
     [[nodiscard]] const datas_type &get_datas(const std::remove_pointer_t<T> *object) const noexcept {
         return _type_mgr.all_type.at(object->type_hash()).datas;
     }
+
+    /**
+     * update data to managed memory
+     * tips: Called on the host side code
+     */
+    void update(const std::remove_pointer_t<T> *object) noexcept {
+        // todo
+    }
+
+    /**
+     * update data to managed memory
+     * tips: Called on the host side code
+     */
+    void update() noexcept {
+        // todo
+    }
+
     void set_datas(const std::remove_pointer_t<T> *object, datas_type &&datas) noexcept {
         _type_mgr.all_type.at(object->type_hash()).datas = ocarina::move(datas);
     }
