@@ -16,6 +16,7 @@ namespace ocarina {
         BufferDownloadCommand,  \
         BufferByteSetCommand,   \
         BufferCopyCommand,      \
+        BufferToTextureCommand, \
         TextureUploadCommand,   \
         TextureDownloadCommand, \
         TextureCopyCommand,     \
@@ -139,12 +140,17 @@ class TextureCopyCommand : public DataCopyCommand {
 private:
     PixelStorage _storage;
     uint3 _res;
+    uint _src_level_num;
+    uint _dst_level_num;
 
 public:
-    TextureCopyCommand(uint64_t src, uint64_t dst, uint3 res, PixelStorage pixel_storage, bool async) noexcept
+    TextureCopyCommand(uint64_t src, uint64_t dst, uint3 res, PixelStorage pixel_storage,
+                       uint src_level_num, uint dst_level_num, bool async) noexcept
         : DataCopyCommand{src, dst, async},
-          _res(res), _storage(pixel_storage) {}
+          _res(res), _src_level_num(src_level_num), _dst_level_num(dst_level_num), _storage(pixel_storage) {}
 
+    [[nodiscard]] uint src_level_num() const noexcept { return _src_level_num; }
+    [[nodiscard]] uint dst_level_num() const noexcept { return _dst_level_num; }
     [[nodiscard]] PixelStorage pixel_storage() const noexcept { return _storage; }
     [[nodiscard]] uint3 resolution() const noexcept { return _res; }
     OC_MAKE_CMD_COMMON_FUNC(TextureCopyCommand)
@@ -196,6 +202,24 @@ public:
     BufferUploadCommand(const void *hp, handle_ty dp, size_t size, bool async = true)
         : BufferOpCommand(reinterpret_cast<handle_ty>(hp), dp, size, async) {}
     OC_MAKE_CMD_COMMON_FUNC(BufferUploadCommand)
+};
+
+class BufferToTextureCommand final : public DataCopyCommand {
+private:
+    PixelStorage _storage;
+    size_t _buffer_offset;
+    uint3 _res;
+    uint _level_num;
+
+public:
+    BufferToTextureCommand(handle_ty src, handle_ty dst, PixelStorage ps, size_t buffer_offset,
+                           size_t level_num, bool async)
+        : DataCopyCommand(src, dst, async) {}
+    [[nodiscard]] PixelStorage pixel_storage() const noexcept { return _storage; }
+    [[nodiscard]] size_t buffer_offset() const noexcept { return _buffer_offset; }
+    [[nodiscard]] uint level_num() const noexcept { return _level_num; }
+    [[nodiscard]] uint3 resolution() const noexcept { return _res; }
+    OC_MAKE_CMD_COMMON_FUNC(BufferToTextureCommand)
 };
 
 class BufferDownloadCommand final : public BufferOpCommand {
