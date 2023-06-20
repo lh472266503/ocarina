@@ -38,7 +38,7 @@ void CUDACommandVisitor::visit(const BufferByteSetCommand *cmd) noexcept {
 }
 
 void CUDACommandVisitor::visit(const BufferCopyCommand *cmd) noexcept {
-    _device->use_context([&]{
+    _device->use_context([&] {
         auto src_buffer = cmd->src() + cmd->src_offset();
         auto dst_buffer = cmd->dst() + cmd->dst_offset();
         if (cmd->async() && _stream) {
@@ -120,6 +120,26 @@ void CUDACommandVisitor::visit(const TextureDownloadCommand *cmd) noexcept {
         }
     });
 }
+
+void CUDACommandVisitor::visit(const TextureCopyCommand *cmd) noexcept {
+    _device->use_context([&] {
+        CUDA_MEMCPY3D copy{};
+        uint pitch = pixel_size(cmd->pixel_storage()) * cmd->resolution().x;
+        copy.srcMemoryType = CU_MEMORYTYPE_ARRAY;
+        copy.srcArray = cmd->src<CUarray>();
+        copy.dstMemoryType = CU_MEMORYTYPE_ARRAY;
+        copy.dstArray = cmd->dst<CUarray>();
+        copy.WidthInBytes = pitch;
+        copy.Height = cmd->resolution().y;
+        copy.Depth = cmd->resolution().z;
+        if (cmd->async() && _stream) {
+            OC_CU_CHECK(cuMemcpy3DAsync(&copy, _stream));
+        } else {
+            OC_CU_CHECK(cuMemcpy3D(&copy));
+        }
+    });
+}
+
 void CUDACommandVisitor::visit(const MeshBuildCommand *cmd) noexcept {
     cmd->mesh<CUDAMesh>()->build_bvh(cmd);
 }

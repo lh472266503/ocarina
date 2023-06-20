@@ -18,6 +18,7 @@ namespace ocarina {
         BufferCopyCommand,      \
         TextureUploadCommand,   \
         TextureDownloadCommand, \
+        TextureCopyCommand,     \
         SynchronizeCommand,     \
         MeshBuildCommand,       \
         AccelBuildCommand,      \
@@ -100,8 +101,22 @@ protected:
 public:
     DataCopyCommand(handle_ty src, handle_ty dst, bool async)
         : Command(async), _src(src), _dst(dst) {}
-    [[nodiscard]] handle_ty src() const noexcept { return _src; }
-    [[nodiscard]] handle_ty dst() const noexcept { return _dst; }
+    template<typename T = handle_ty>
+    [[nodiscard]] T src() const noexcept {
+        if constexpr (std::is_same_v<std::remove_cvref_t<T>, handle_ty>) {
+            return _src;
+        } else {
+            return reinterpret_cast<T>(_src);
+        }
+    }
+    template<typename T = handle_ty>
+    [[nodiscard]] T dst() const noexcept {
+        if constexpr (std::is_same_v<std::remove_cvref_t<T>, handle_ty>) {
+            return _dst;
+        } else {
+            return reinterpret_cast<T>(_dst);
+        }
+    }
 };
 
 class BufferCopyCommand : public DataCopyCommand {
@@ -120,11 +135,20 @@ public:
     OC_MAKE_CMD_COMMON_FUNC(BufferCopyCommand)
 };
 
-//class TextureCopyCommand : public DataCopyCommand {
-//private:
-//    PixelStorage _storage;
-//
-//};
+class TextureCopyCommand : public DataCopyCommand {
+private:
+    PixelStorage _storage;
+    uint3 _res;
+
+public:
+    TextureCopyCommand(uint64_t src, uint64_t dst, uint3 res, PixelStorage pixel_storage, bool async) noexcept
+        : DataCopyCommand{src, dst, async},
+          _res(res), _storage(pixel_storage) {}
+
+    [[nodiscard]] PixelStorage pixel_storage() const noexcept { return _storage; }
+    [[nodiscard]] uint3 resolution() const noexcept { return _res; }
+    OC_MAKE_CMD_COMMON_FUNC(TextureCopyCommand)
+};
 
 class DataOpCommand : public Command {
 protected:
