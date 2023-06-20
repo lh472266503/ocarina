@@ -106,15 +106,10 @@ public:
 
     ~Buffer() override {
         // todo dirty code
-        if (!valid()) {
-            return ;
-        }
-        if (_stream) {
+        if (_stream && valid()) {
             _device->destroy_buffer(_handle, _stream);
-        } else {
-            destroy();
+            _device = nullptr;
         }
-        _device = nullptr;
     }
 
     [[nodiscard]] BufferView<T> view(size_t offset = 0, size_t size = 0) const noexcept {
