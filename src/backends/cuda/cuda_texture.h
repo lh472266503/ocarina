@@ -16,9 +16,10 @@ private:
     CUDADevice *_device{};
     uint3 _res{};
     CUarray _array_handle{};
+    uint level_num{1u};
 
 public:
-    CUDATexture(CUDADevice *device, uint3 res, PixelStorage pixel_storage);
+    CUDATexture(CUDADevice *device, uint3 res, PixelStorage pixel_storage, uint level_num);
     ~CUDATexture();
     void init();
     [[nodiscard]] uint3 resolution() const noexcept override { return _res; }

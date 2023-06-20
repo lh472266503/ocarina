@@ -49,7 +49,7 @@ public:
         [[nodiscard]] virtual handle_ty create_buffer(size_t size, handle_ty stream) noexcept = 0;
         virtual void destroy_buffer(handle_ty handle) noexcept = 0;
         virtual void destroy_buffer(handle_ty handle, handle_ty stream) noexcept = 0;
-        [[nodiscard]] virtual handle_ty create_texture(uint3 res, PixelStorage pixel_storage) noexcept = 0;
+        [[nodiscard]] virtual handle_ty create_texture(uint3 res, PixelStorage pixel_storage, uint level_num) noexcept = 0;
         virtual void destroy_texture(handle_ty handle) noexcept = 0;
         [[nodiscard]] virtual handle_ty create_shader(const Function &function) noexcept = 0;
         virtual void destroy_shader(handle_ty handle) noexcept = 0;

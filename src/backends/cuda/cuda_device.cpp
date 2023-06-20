@@ -81,9 +81,9 @@ handle_ty CUDADevice::create_stream() noexcept {
     });
 }
 
-handle_ty CUDADevice::create_texture(uint3 res, PixelStorage pixel_storage) noexcept {
+handle_ty CUDADevice::create_texture(uint3 res, PixelStorage pixel_storage, uint level_num) noexcept {
     return use_context([&] {
-        auto texture = ocarina::new_with_allocator<CUDATexture>(this, res, pixel_storage);
+        auto texture = ocarina::new_with_allocator<CUDATexture>(this, res, pixel_storage, level_num);
         return reinterpret_cast<handle_ty>(texture);
     });
 }

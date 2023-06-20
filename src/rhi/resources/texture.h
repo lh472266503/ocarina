@@ -10,6 +10,18 @@
 
 namespace ocarina {
 
+namespace detail {
+[[nodiscard]] constexpr uint compute_mip_level_num(uint3 res, uint request_level_num) noexcept {
+    uint max_size = std::max({res.x, res.y, res.z});
+    auto max_levels = 0u;
+    while (max_size != 0u) {
+        max_size >>= 1u;
+        max_levels++;
+    }
+    return request_level_num == 0 ? max_levels : std::min(request_level_num, max_levels);
+}
+}// namespace detail
+
 class Texture : public RHIResource {
 public:
     class Impl {
@@ -29,9 +41,10 @@ public:
 public:
     Texture() = default;
     explicit Texture(Device::Impl *device, uint3 res,
-                        PixelStorage pixel_storage)
+                     PixelStorage pixel_storage, uint level_num = 1u)
         : RHIResource(device, Tag::TEXTURE,
-                      device->create_texture(res, pixel_storage)) {}
+                      device->create_texture(res, pixel_storage,
+                                             detail::compute_mip_level_num(res, level_num))) {}
 
     /// for dsl
     [[nodiscard]] const Expression *expression() const noexcept override {
@@ -43,31 +56,31 @@ public:
 
     template<typename U, typename V>
     requires(is_all_floating_point_expr_v<U, V>)
-        [[nodiscard]] auto sample(uint channel_num, const U &u, const V &v) const noexcept {
+    [[nodiscard]] auto sample(uint channel_num, const U &u, const V &v) const noexcept {
         return make_expr<Texture>(expression()).sample(channel_num, u, v);
     }
 
     template<typename UV>
     requires(is_float_vector2_v<expr_value_t<UV>>)
-        OC_NODISCARD auto sample(uint channel_num, const UV &uv) const noexcept {
+    OC_NODISCARD auto sample(uint channel_num, const UV &uv) const noexcept {
         return sample(channel_num, uv.x, uv.y);
     }
 
     template<typename U, typename V, typename W>
     requires(is_all_floating_point_expr_v<U, V>)
-        [[nodiscard]] auto sample(uint channel_num, const U &u, const V &v, const W &w) const noexcept {
+    [[nodiscard]] auto sample(uint channel_num, const U &u, const V &v, const W &w) const noexcept {
         return make_expr<Texture>(expression()).sample(channel_num, u, v, w);
     }
 
     template<typename UVW>
     requires(is_float_vector3_v<expr_value_t<UVW>>)
-        OC_NODISCARD auto sample(uint channel_num, const UVW &uvw) const noexcept {
+    OC_NODISCARD auto sample(uint channel_num, const UVW &uvw) const noexcept {
         return sample(channel_num, uvw.x, uvw.y, uvw.z);
     }
 
     template<typename Target, typename X, typename Y>
     requires(is_all_integral_expr_v<X, Y>)
-        OC_NODISCARD auto read(const X &x, const Y &y) const noexcept {
+    OC_NODISCARD auto read(const X &x, const Y &y) const noexcept {
         return make_expr<Texture>(expression()).read<Target>(x, y);
     }
 
@@ -87,7 +100,8 @@ public:
     }
 
     template<typename XY, typename Val>
-    requires(is_uint_vector2_v<expr_value_t<XY>>) void write(const XY &xy, const Val &elm) noexcept {
+    requires(is_uint_vector2_v<expr_value_t<XY>>)
+    void write(const XY &xy, const Val &elm) noexcept {
         write(xy.x, xy.y, elm);
     }
 

@@ -8,8 +8,8 @@
 
 namespace ocarina {
 
-CUDATexture::CUDATexture(CUDADevice *device, uint3 res, PixelStorage pixel_storage)
-    : _device(device), _res(res) {
+CUDATexture::CUDATexture(CUDADevice *device, uint3 res, PixelStorage pixel_storage, uint level_num)
+    : _device(device), _res(res), level_num(level_num) {
     _data.pixel_storage = pixel_storage;
     init();
 }
