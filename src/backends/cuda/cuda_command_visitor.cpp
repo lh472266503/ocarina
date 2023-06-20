@@ -37,6 +37,18 @@ void CUDACommandVisitor::visit(const BufferByteSetCommand *cmd) noexcept {
     });
 }
 
+void CUDACommandVisitor::visit(const BufferCopyCommand *cmd) noexcept {
+    _device->use_context([&]{
+        auto src_buffer = cmd->src() + cmd->src_offset();
+        auto dst_buffer = cmd->dst() + cmd->dst_offset();
+        if (cmd->async() && _stream) {
+            OC_CU_CHECK(cuMemcpyDtoD(dst_buffer, src_buffer, cmd->size()));
+        } else {
+            OC_CU_CHECK(cuMemcpyDtoDAsync(dst_buffer, src_buffer, cmd->size(), _stream));
+        }
+    });
+}
+
 void CUDACommandVisitor::visit(const BufferDownloadCommand *cmd) noexcept {
     _device->use_context([&] {
         if (cmd->async() && _stream) {

@@ -15,6 +15,7 @@ namespace ocarina {
     BufferUploadCommand,        \
         BufferDownloadCommand,  \
         BufferByteSetCommand,   \
+        BufferCopyCommand,      \
         TextureUploadCommand,   \
         TextureDownloadCommand, \
         SynchronizeCommand,     \
@@ -92,18 +93,38 @@ public:
 };
 
 class DataCopyCommand : public Command {
-private:
+protected:
     handle_ty _src{};
     handle_ty _dst{};
 
 public:
     DataCopyCommand(handle_ty src, handle_ty dst, bool async)
         : Command(async), _src(src), _dst(dst) {}
-    template<typename T = handle_ty>
-    [[nodiscard]] T src() const noexcept { return reinterpret_cast<T>(_src); }
-    template<typename T = handle_ty>
-    [[nodiscard]] T dst() const noexcept { return reinterpret_cast<T>(_dst); }
+    [[nodiscard]] handle_ty src() const noexcept { return _src; }
+    [[nodiscard]] handle_ty dst() const noexcept { return _dst; }
 };
+
+class BufferCopyCommand : public DataCopyCommand {
+private:
+    size_t _src_offset;
+    size_t _dst_offset;
+    size_t _size;
+
+public:
+    BufferCopyCommand(uint64_t src, uint64_t dst, size_t src_offset, size_t dst_offset, size_t size, bool async) noexcept
+        : DataCopyCommand{src, dst, async},
+          _src_offset{src_offset}, _dst_offset{dst_offset}, _size{size} {}
+    [[nodiscard]] size_t src_offset() const noexcept { return _src_offset; }
+    [[nodiscard]] size_t dst_offset() const noexcept { return _dst_offset; }
+    [[nodiscard]] size_t size() const noexcept { return _size; }
+    OC_MAKE_CMD_COMMON_FUNC(BufferCopyCommand)
+};
+
+//class TextureCopyCommand : public DataCopyCommand {
+//private:
+//    PixelStorage _storage;
+//
+//};
 
 class DataOpCommand : public Command {
 protected:

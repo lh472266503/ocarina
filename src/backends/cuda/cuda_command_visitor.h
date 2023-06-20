@@ -21,6 +21,7 @@ public:
     void visit(const BufferUploadCommand *cmd) noexcept override;
     void visit(const BufferDownloadCommand *cmd) noexcept override;
     void visit(const BufferByteSetCommand *cmd) noexcept override;
+    void visit(const BufferCopyCommand *cmd) noexcept override;
     void visit(const TextureUploadCommand *cmd) noexcept override;
     void visit(const TextureDownloadCommand *cmd) noexcept override;
     void visit(const MeshBuildCommand *cmd) noexcept override;
