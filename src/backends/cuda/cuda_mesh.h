@@ -28,6 +28,6 @@ public:
     [[nodiscard]] handle_ty blas_handle() const noexcept override { return _blas_handle; }
     [[nodiscard]] uint vertex_num() const noexcept override { return _params.vert_num; }
     [[nodiscard]] uint triangle_num() const noexcept override { return _params.tri_num; }
-    void build_bvh(const MeshBuildCommand *cmd) noexcept;
+    void build_bvh(const BLASBuildCommand *cmd) noexcept;
 };
 }// namespace ocarina

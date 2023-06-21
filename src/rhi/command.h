@@ -21,8 +21,8 @@ namespace ocarina {
         TextureDownloadCommand, \
         TextureCopyCommand,     \
         SynchronizeCommand,     \
-        MeshBuildCommand,       \
-        AccelBuildCommand,      \
+        BLASBuildCommand,       \
+        TLASBuildCommand,       \
         ShaderDispatchCommand
 
 /// forward declare
@@ -271,26 +271,26 @@ public:
     return SynchronizeCommand::create();
 }
 
-class MeshBuildCommand final : public Command {
+class BLASBuildCommand final : public Command {
 private:
     handle_ty _mesh{};
 
 public:
-    explicit MeshBuildCommand(handle_ty mesh) : _mesh(mesh) {}
+    explicit BLASBuildCommand(handle_ty mesh) : _mesh(mesh) {}
     template<typename T>
     [[nodiscard]] T *mesh() const { return reinterpret_cast<T *>(_mesh); }
-    OC_MAKE_CMD_COMMON_FUNC(MeshBuildCommand)
+    OC_MAKE_CMD_COMMON_FUNC(BLASBuildCommand)
 };
 
-class AccelBuildCommand final : public Command {
+class TLASBuildCommand final : public Command {
 private:
     handle_ty _accel{};
 
 public:
-    explicit AccelBuildCommand(handle_ty accel) : _accel(accel) {}
+    explicit TLASBuildCommand(handle_ty accel) : _accel(accel) {}
     template<typename T>
     [[nodiscard]] T *accel() const { return reinterpret_cast<T *>(_accel); }
-    OC_MAKE_CMD_COMMON_FUNC(AccelBuildCommand)
+    OC_MAKE_CMD_COMMON_FUNC(TLASBuildCommand)
 };
 
 class Function;

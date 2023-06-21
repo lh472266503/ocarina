@@ -59,8 +59,8 @@ public:
 
     [[nodiscard]] handle_ty handle() const noexcept override { return impl()->handle(); }
     [[nodiscard]] const void *handle_ptr() const noexcept override { return impl()->handle_ptr(); }
-    [[nodiscard]] AccelBuildCommand *build_bvh() noexcept {
-        return AccelBuildCommand::create(_handle);
+    [[nodiscard]] TLASBuildCommand *build_bvh() noexcept {
+        return TLASBuildCommand::create(_handle);
     }
 };
 }// namespace ocarina

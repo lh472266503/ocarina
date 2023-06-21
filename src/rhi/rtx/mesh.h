@@ -30,7 +30,7 @@ public:
     [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
     [[nodiscard]] uint vertex_num() const noexcept { return impl()->vertex_num(); }
     [[nodiscard]] uint triangle_num() const noexcept { return impl()->triangle_num(); }
-    [[nodiscard]] MeshBuildCommand *build_bvh() noexcept { return MeshBuildCommand::create(_handle); }
+    [[nodiscard]] BLASBuildCommand *build_bvh() noexcept { return BLASBuildCommand::create(_handle); }
 };
 
 template<typename VBuffer, typename TBuffer>

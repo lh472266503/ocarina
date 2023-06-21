@@ -13,7 +13,7 @@ namespace ocarina {
 CUDAMesh::~CUDAMesh() {
 }
 
-void CUDAMesh::build_bvh(const MeshBuildCommand *cmd) noexcept {
+void CUDAMesh::build_bvh(const BLASBuildCommand *cmd) noexcept {
     _device->use_context([&] {
         OptixAccelBuildOptions accel_options = {};
         accel_options.buildFlags = (OPTIX_BUILD_FLAG_ALLOW_COMPACTION | OPTIX_BUILD_FLAG_PREFER_FAST_TRACE);
