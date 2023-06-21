@@ -214,9 +214,11 @@ private:
     uint _level;
 
 public:
-    BufferToTextureCommand(handle_ty src, handle_ty dst, PixelStorage ps, size_t buffer_offset,
-                           size_t level, bool async)
-        : DataCopyCommand(src, dst, async), _buffer_offset(buffer_offset), _level(level) {}
+    BufferToTextureCommand(handle_ty src, size_t buffer_offset,
+                           handle_ty dst, PixelStorage ps,
+                           uint3 res, size_t level, bool async)
+        : DataCopyCommand(src, dst, async), _storage(ps), _res(res),
+          _buffer_offset(buffer_offset), _level(level) {}
     [[nodiscard]] PixelStorage pixel_storage() const noexcept { return _storage; }
     [[nodiscard]] size_t buffer_offset() const noexcept { return _buffer_offset; }
     [[nodiscard]] size_t width() const noexcept { return _res.x; }

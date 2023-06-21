@@ -131,6 +131,14 @@ public:
         return TextureDownloadCommand::create(data, array_handle(), impl()->resolution(),
                                               impl()->pixel_storage(), false);
     }
+    [[nodiscard]] BufferToTextureCommand *copy_from_buffer(handle_ty device_ptr, size_t buffer_offset) const noexcept {
+        return BufferToTextureCommand::create(device_ptr, buffer_offset, array_handle(), impl()->pixel_storage(),
+                                              impl()->resolution(), 0, true);
+    }
+    [[nodiscard]] BufferToTextureCommand *copy_from_buffer_sync(handle_ty device_ptr, size_t buffer_offset) const noexcept {
+        return BufferToTextureCommand::create(device_ptr, buffer_offset, array_handle(), impl()->pixel_storage(),
+                                              impl()->resolution(), 0, false);
+    }
 
     void upload_immediately(const void *data) const noexcept {
         upload_sync(data)->accept(*_device->command_visitor());

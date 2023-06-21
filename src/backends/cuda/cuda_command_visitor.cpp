@@ -143,16 +143,15 @@ void CUDACommandVisitor::visit(const TextureCopyCommand *cmd) noexcept {
 void CUDACommandVisitor::visit(const ocarina::BufferToTextureCommand *cmd) noexcept {
     _device->use_context([&] {
         CUDA_MEMCPY3D copy{};
-        uint pitch = pixel_size(cmd->pixel_storage()) * cmd->resolution().x;
         copy.srcMemoryType = CU_MEMORYTYPE_DEVICE;
         copy.srcDevice = cmd->src() + cmd->buffer_offset();
-        copy.srcPitch = pitch;
+        copy.srcPitch = cmd->width_in_bytes();
         copy.srcHeight = cmd->resolution().y;
         copy.dstMemoryType = CU_MEMORYTYPE_ARRAY;
         copy.dstArray = cmd->dst<CUarray>();
-        copy.WidthInBytes = pitch;
-        copy.Height = cmd->resolution().y;
-        copy.Depth = cmd->resolution().z;
+        copy.WidthInBytes = cmd->width_in_bytes();
+        copy.Height = cmd->height();
+        copy.Depth = cmd->depth();
         if (cmd->async() && _stream) {
             OC_CU_CHECK(cuMemcpy3DAsync(&copy, _stream));
         } else {
