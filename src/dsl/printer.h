@@ -78,6 +78,10 @@ public:
         reset();
     }
 
+    [[nodiscard]] Managed<uint> &buffer() noexcept { return _buffer; }
+    [[nodiscard]] const Managed<uint> &buffer() const noexcept { return _buffer; }
+    [[nodiscard]] uint element_num() const noexcept { return _buffer.host_buffer().back(); }
+
     void reset() {
         _buffer.device_buffer().clear_immediately();
         _buffer.resize(_buffer.capacity());
