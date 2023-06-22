@@ -7,6 +7,7 @@
 #include "serialize.h"
 #include "rhi/resources/managed.h"
 #include "dsl/printer.h"
+#include "core/platform.h"
 
 namespace ocarina {
 
@@ -96,7 +97,9 @@ public:
 #ifndef NDEBUG
             $if(index >= uint(Super::device_buffer().size())) {
                 string prefix = ocarina::format("Buffer {} ", typeid(*this).name());
-                Printer::instance().info(prefix + "out of bound: index is {}, buffer size is {}", i, uint(Super::device_buffer().size()));
+                string tb = backtrace_string();
+                string fmt = prefix + "out of bound: index is {}, buffer size is {}, traceback is " + tb;
+                Printer::instance().warn(fmt, i, uint(Super::device_buffer().size()));
                 i = 0;
             };
 #endif

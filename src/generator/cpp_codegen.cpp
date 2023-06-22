@@ -42,7 +42,7 @@ struct LiteralPrinter {
     template<size_t N>
     void operator()(Matrix<N> m) {
         auto printer = *this;
-        scratch << TYPE_PREFIX <<Type::of<Matrix<N>>()->name() << "(";
+        scratch << TYPE_PREFIX << Type::of<Matrix<N>>()->name() << "(";
         for (int i = 0; i < N; ++i) {
             const char *token = i == N - 1 ? ")" : ",";
             printer(m[i]);
@@ -94,7 +94,7 @@ void CppCodegen::visit(const IfStmt *stmt) noexcept {
 }
 
 void CppCodegen::visit(const CommentStmt *stmt) noexcept {
-    current_scratch() << "// " << stmt->string();
+    current_scratch() << "/* " << stmt->string() << " */";
 }
 
 void CppCodegen::visit(const LoopStmt *stmt) noexcept {
@@ -456,7 +456,7 @@ void CppCodegen::_emit_arguments(const Function &f) noexcept {
 void CppCodegen::emit(const Function &func) noexcept {
     FUNCTION_GUARD(func)
     if (!func.description().empty()) {
-        current_scratch() << "// " << func.description() << "\n";
+        current_scratch() << "/* " << func.description() << " */\n";
     }
     TIMER_TAG(codegen, "function " + func.func_name() + " generated");
     func.for_each_structure([&](const Type *type) {
