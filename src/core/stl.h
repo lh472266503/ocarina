@@ -56,8 +56,12 @@ struct allocator {
 };
 
 template<typename T = std::byte>
-[[nodiscard]] inline auto allocate(size_t n = 1u) noexcept {
-    return allocator<T>{}.allocate(n);
+[[nodiscard]] inline auto allocate(size_t n = 1u, bool use_ea = true) noexcept {
+    if (use_ea) {
+        return allocator<T>{}.allocate(n);
+    } else {
+        return reinterpret_cast<T *>(_aligned_malloc(sizeof(T) * n, alignof(T)));
+    }
 }
 
 template<typename T>
@@ -68,7 +72,7 @@ inline void deallocate(T *p) {
 
 template<typename T, typename... Args>
 constexpr T *construct_at(T *p, Args &&...args) {
-    return ::new(const_cast<void *>(static_cast<const volatile void *>(p)))
+    return ::new (const_cast<void *>(static_cast<const volatile void *>(p)))
         T(std::forward<Args>(args)...);
 }
 
@@ -78,10 +82,15 @@ template<typename T, typename... Args>
 }
 
 template<typename T>
-inline void delete_with_allocator(T *p) noexcept {
-    if (p != nullptr) {
-        std::destroy_at(p);
+inline void delete_with_allocator(T *p, bool use_ea = true) noexcept {
+    if (p == nullptr) {
+        return;
+    }
+    std::destroy_at(p);
+    if (use_ea) {
         deallocate(p);
+    } else {
+        _aligned_free(p);
     }
 }
 
@@ -96,10 +105,9 @@ void delete_array(T *ptr) noexcept {
 }
 
 // io
+using std::cerr;
 using std::cout;
 using std::endl;
-using std::cerr;
-
 
 // ptr
 using std::const_pointer_cast;
@@ -121,32 +129,32 @@ using SP = shared_ptr<T>;
 
 // math
 using std::abs;
+using std::acos;
+using std::acosh;
+using std::asin;
+using std::asinh;
+using std::atan;
 using std::atan2;
+using std::atanh;
+using std::ceil;
+using std::copysign;
+using std::cos;
+using std::cosh;
+using std::exp;
+using std::exp2;
+using std::floor;
+using std::fmod;
+using std::log;
+using std::log10;
+using std::log2;
 using std::max;
 using std::min;
 using std::pow;
-using std::sqrt;
-using std::log;
-using std::log2;
-using std::log10;
-using std::exp;
-using std::exp2;
 using std::sin;
-using std::cos;
-using std::tan;
-using std::asin;
-using std::acos;
-using std::atan;
-using std::floor;
-using std::ceil;
-using std::copysign;
 using std::sinh;
-using std::cosh;
+using std::sqrt;
+using std::tan;
 using std::tanh;
-using std::asinh;
-using std::acosh;
-using std::atanh;
-using std::fmod;
 
 [[nodiscard]] inline bool isnan(float x) noexcept {
     auto u = 0u;
@@ -159,7 +167,6 @@ using std::fmod;
     ::memcpy(&u, &x, sizeof(float));
     return (u & 0x7f800000u) == 0x7f800000u && (u & 0x007fffffu) == 0u;
 }
-
 
 inline void oc_memcpy(void *dst, const void *src, size_t size) {
 #ifdef _MSC_VER
@@ -195,7 +202,7 @@ template<class To, class From>
 requires(sizeof(To) == sizeof(From) &&
          std::is_trivially_copyable_v<From> &&
          std::is_trivially_copyable_v<To>)
-    [[nodiscard]] To bit_cast(const From &src) noexcept {
+[[nodiscard]] To bit_cast(const From &src) noexcept {
     static_assert(std::is_trivially_constructible_v<To>,
                   "This implementation requires the destination type to be trivially "
                   "constructible");
@@ -254,13 +261,13 @@ using std::make_index_sequence;
 using std::make_integer_sequence;
 
 // other
+using std::function;
+using std::make_pair;
 using std::monostate;
+using std::move;
 using std::pair;
 using std::variant;
 using std::visit;
-using std::make_pair;
-using std::function;
-using std::move;
 namespace fs = std::filesystem;
 
 }// namespace ocarina

@@ -13,14 +13,15 @@ template<typename T>
 class Pool : public concepts::Noncopyable {
 public:
     static constexpr size_t element_count = 32;
-    static constexpr bool trivially = std::is_trivially_destructible_v<T>;
+    using element_type = std::remove_cvref_t<T>;
+    static constexpr bool trivially = std::is_trivially_destructible_v<element_type>;
 
 private:
     ocarina::vector<T *> _blocks;
     ocarina::vector<T *> _available_objects;
 
     void _enlarge() {
-        T *ptr = ocarina::allocate<T>(element_count);
+        T *ptr = ocarina::allocate<T>(element_count, !trivially);
         _blocks.push_back(ptr);
         _available_objects.reserve(element_count);
         for (int i = 0; i < element_count; ++i) {
@@ -36,7 +37,7 @@ public:
             }
         }
         for (auto &ptr : _blocks) {
-            ocarina::delete_with_allocator(ptr);
+            ocarina::delete_with_allocator(ptr, !trivially);
         }
     }
 
