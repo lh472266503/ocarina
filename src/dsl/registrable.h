@@ -95,7 +95,8 @@ public:
             Uint i = OC_FORWARD(index);
 #ifndef NDEBUG
             $if(index >= uint(Super::device_buffer().size())) {
-                Printer::instance().info("out of bound: index is {}, buffer size is {}", i, uint(Super::device_buffer().size()));
+                string prefix = ocarina::format("Buffer {} ", typeid(*this).name());
+                Printer::instance().info(prefix + "out of bound: index is {}, buffer size is {}", i, uint(Super::device_buffer().size()));
                 i = 0;
             };
 #endif
