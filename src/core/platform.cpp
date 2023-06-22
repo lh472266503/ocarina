@@ -60,4 +60,62 @@ ocarina::string dynamic_module_name(ocarina::string_view name) noexcept {
     return ocarina::string(name) + ".dll";
 }
 
+string demangle(const char *name) noexcept {
+    char buffer[256u];
+    auto length = UnDecorateSymbolName(name, buffer, 256, 0);
+    return {buffer, length};
+}
+
+vector<TraceItem> backtrace() noexcept {
+
+    void *stack[100];
+    auto process = GetCurrentProcess();
+    SymInitialize(process, nullptr, true);
+    auto frame_count = CaptureStackBackTrace(0, 100, stack, nullptr);
+
+    struct Symbol : SYMBOL_INFO {
+        char name_storage[1023];
+    } symbol{};
+    symbol.MaxNameLen = 1024;
+    symbol.SizeOfStruct = sizeof(SYMBOL_INFO);
+    IMAGEHLP_MODULE64 module{};
+    module.SizeOfStruct = sizeof(IMAGEHLP_MODULE64);
+    vector<TraceItem> trace;
+    trace.reserve(frame_count - 1u);
+    for (auto i = 1u; i < frame_count; i++) {
+        auto address = reinterpret_cast<uint64_t>(stack[i]);
+        auto displacement = 0ull;
+        if (SymFromAddr(process, address, &displacement, &symbol)) {
+            TraceItem item{};
+            if (SymGetModuleInfo64(process, symbol.ModBase, &module)) {
+                item.module = module.ModuleName;
+            } else {
+                item.module = "???";
+            }
+            item.symbol = symbol.Name;
+            item.address = address;
+            item.offset = displacement;
+            trace.emplace_back(std::move(item));
+        } else {
+            OC_ERROR_FORMAT(
+                "Failed to get stacktrace at 0x{:012}: {}",
+                address, detail::win32_last_error_message());
+        }
+    }
+    return trace;
+}
+
+string backtrace_string() noexcept {
+    string ret;
+    vector<TraceItem> trace = backtrace();
+    for (int i = 1; i < trace.size(); ++i) {
+        auto &&t = trace[i];
+        using namespace std::string_view_literals;
+        ret += fmt::format(
+            FMT_STRING("\n    {:>2} [0x{:012x}]: {} :: {} + {}"sv),
+            i, t.address, t.module, t.symbol, t.offset);
+    }
+    return ret;
+}
+
 }// namespace ocarina
