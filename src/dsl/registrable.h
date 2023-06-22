@@ -92,11 +92,11 @@ public:
     requires concepts::all_integral<expr_value_t<Index>>
     OC_NODISCARD auto read(Index &&index) const noexcept {
         if (!has_registered()) {
-            Uint i = OC_FORWARD(i);
+            Uint i = OC_FORWARD(index);
 #ifndef NDEBUG
             $if(index >= uint(Super::device_buffer().size())) {
+                Printer::instance().info("out of bound: index is {}, buffer size is {}", i, uint(Super::device_buffer().size()));
                 i = 0;
-                Printer::instance().info("out of bound: index is {}, buffer size is {}", index, uint(Super::device_buffer().size()));
             };
 #endif
             return Super::read(i);
