@@ -6,6 +6,7 @@
 
 #include "serialize.h"
 #include "rhi/resources/managed.h"
+#include "dsl/printer.h"
 
 namespace ocarina {
 
@@ -91,7 +92,14 @@ public:
     requires concepts::all_integral<expr_value_t<Index>>
     OC_NODISCARD auto read(Index &&index) const noexcept {
         if (!has_registered()) {
-            return Super::read(OC_FORWARD(index));
+            Uint i = OC_FORWARD(i);
+#ifndef NDEBUG
+            $if(index >= uint(Super::device_buffer().size())) {
+                i = 0;
+                Printer::instance().info("out of bound: index is {}, buffer size is {}", index, uint(Super::device_buffer().size()));
+            };
+#endif
+            return Super::read(i);
         }
         return _resource_array->buffer<T>(*_index).read(OC_FORWARD(index));
     }
