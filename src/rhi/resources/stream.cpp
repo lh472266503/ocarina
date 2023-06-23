@@ -4,11 +4,12 @@
 
 #include "stream.h"
 #include "rhi/device.h"
+#include "rhi/command.h"
 
 namespace ocarina {
 Stream::Stream(Device::Impl *device)
     : RHIResource(device, Tag::STREAM,
-               device->create_stream()) {}
+                  device->create_stream()) {}
 
 Stream &Stream::operator<<(Command *command) noexcept {
     impl()->add_command(command);
@@ -17,6 +18,11 @@ Stream &Stream::operator<<(Command *command) noexcept {
 
 void Stream::commit(const Commit &commit) noexcept {
     impl()->commit(commit);
+}
+
+Stream &Stream::operator<<(std::function<void()> f) noexcept {
+    impl()->add_command(HostFunctionCommand::create(ocarina::move(f), true));
+    return *this;
 }
 
 Stream &Stream::operator<<(const Commit &cmt) noexcept {

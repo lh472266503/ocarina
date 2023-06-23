@@ -49,6 +49,7 @@ public:
     }
     Stream &operator<<(Command *command) noexcept;
     Stream &operator<<(const Commit &commit) noexcept;
+    Stream &operator<<(std::function<void()> f) noexcept;
     void commit(const Commit &cmt) noexcept;
 };
 
