@@ -7,6 +7,7 @@
 #include "cuda_device.h"
 #include "cuda_shader.h"
 #include "cuda_mesh.h"
+#include "core/stl.h"
 #include "optix_accel.h"
 
 namespace ocarina {
@@ -71,6 +72,22 @@ void CUDACommandVisitor::visit(const SynchronizeCommand *cmd) noexcept {
 void CUDACommandVisitor::visit(const ShaderDispatchCommand *cmd) noexcept {
     cmd->entry<CUDAShader *>()->launch(handle_ty(_stream),
                                        const_cast<ShaderDispatchCommand *>(cmd));
+}
+
+void CUDACommandVisitor::visit(const ocarina::HostFunctionCommand *cmd) noexcept {
+
+    if (cmd->async()) {
+        std::function<void()> *ptr = new_with_allocator<std::function<void()>>(ocarina::move(cmd->function()));
+        OC_CU_CHECK(cuLaunchHostFunc(
+            _stream, [](void *ptr) {
+                auto func = reinterpret_cast<std::function<void()> *>(ptr);
+                (*func)();
+                delete_with_allocator(func);
+            },
+            ptr));
+    } else {
+        cmd->function()();
+    }
 }
 
 namespace detail {

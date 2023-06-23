@@ -20,6 +20,7 @@ namespace ocarina {
         TextureUploadCommand,   \
         TextureDownloadCommand, \
         TextureCopyCommand,     \
+        HostFunctionCommand,    \
         SynchronizeCommand,     \
         BLASBuildCommand,       \
         TLASBuildCommand,       \
@@ -320,6 +321,17 @@ public:
     template<typename T>
     [[nodiscard]] auto entry() const noexcept { return reinterpret_cast<T>(_entry); }
     OC_MAKE_CMD_COMMON_FUNC(ShaderDispatchCommand)
+};
+
+class HostFunctionCommand : public Command {
+private:
+    std::function<void()> _function;
+
+public:
+    HostFunctionCommand(std::function<void()> f, bool async)
+        : Command(async), _function(ocarina::move(f)) {}
+    [[nodiscard]] std::function<void()> function() const noexcept { return _function; }
+    OC_MAKE_CMD_COMMON_FUNC(HostFunctionCommand)
 };
 
 }// namespace ocarina
