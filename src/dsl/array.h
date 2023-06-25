@@ -62,7 +62,7 @@ public:
 
     [[nodiscard]] static const Type *type(uint size) noexcept {
         return Type::from(ocarina::format("array<{},{}>",
-                                          detail::TypeDesc<T>::description(),
+                                          TypeDesc<T>::description(),
                                           size));
     }
 

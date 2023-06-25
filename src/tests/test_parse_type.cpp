@@ -26,14 +26,14 @@ int main() {
     auto str = "123456789"sv;
 
     decltype(auto) tr = TypeRegistry::instance();
-    //    tr.parse_type(detail::TypeDesc<float3>::description());
+    //    tr.parse_type(TypeDesc<float3>::description());
     auto lst = string_split(",adf,fad,gre,ger,", ',');
-    //        tr.parse_type(detail::TypeDesc<bool3>::description());
+    //        tr.parse_type(TypeDesc<bool3>::description());
     using Test = ocarina::tuple<uint, uint, float2>;
 //        using Test = float3x3;
     using Test2 = ocarina::tuple<float4, float4>;
-    tr.parse_type(detail::TypeDesc<Test2>::description());
-//    tr.parse_type(detail::TypeDesc<Test>::description());
+    tr.parse_type(TypeDesc<Test2>::description());
+//    tr.parse_type(TypeDesc<Test>::description());
 
     return 0;
 }

@@ -33,8 +33,8 @@ int main() {
     //    ocarina::tuple<float, float> tp = ocarina::tuple<float, float>(1,5);
     //    cout << typeid(tp).name() << endl;
     //    cout << typeid(struct_member_tuple<std::array<float, 2>>::type).name();
-    cout << detail::TypeDesc<decltype(tp)>::description() << endl;
-    //    cout << detail::TypeDesc<Hit>::description() << endl;
+    cout << TypeDesc<decltype(tp)>::description() << endl;
+    //    cout << TypeDesc<Hit>::description() << endl;
     //    cout << typeid(ocarina::tuple_join_t<tuple<int, float, int>, tuple<int, float, uint>, int>).name() << endl;
     //    cout << typeid(canonical_layout<float2x2>::type).name() << endl;
 }

@@ -292,8 +292,8 @@ void TypeRegistry::add_type(ocarina::unique_ptr<Type> type) {
 
 void TypeRegistry::try_add_to_current_function(const ocarina::Type *type) noexcept {
     if (auto f = Function::current(); f != nullptr && type->is_structure() &&
-                                      type->description() != detail::TypeDesc<Ray>::description() &&
-                                      type->description() != detail::TypeDesc<Hit>::description()) {
+                                      type->description() != TypeDesc<Ray>::description() &&
+                                      type->description() != TypeDesc<Hit>::description()) {
         f->add_used_structure(type);
     }
 }

@@ -11,10 +11,10 @@
 #include "core/string_util.h"
 
 namespace ocarina {
-template<typename T,int... dims>
+template<typename T, int... dims>
 class Buffer;
 
-template<typename T,int... dims>
+template<typename T, int... dims>
 class BufferView;
 
 class Texture;
@@ -23,8 +23,6 @@ template<typename T>
 class ImageView;
 
 class Accel;
-
-namespace detail {
 
 template<typename T>
 struct TypeDesc {
@@ -130,7 +128,7 @@ struct TypeDesc<std::array<T, N>> {
     }
 };
 
-template<typename T, int ...Dims>
+template<typename T, int... Dims>
 struct TypeDesc<Buffer<T, Dims...>> {
     static_assert(alignof(T) >= 4u);
     static ocarina::string_view description() noexcept {
@@ -196,22 +194,20 @@ struct TypeDesc<ResourceArray> {
     }
 };
 
-};// namespace detail
-
 template<typename T>
 const Type *Type::of() noexcept {
-    return Type::from(detail::TypeDesc<std::remove_cvref_t<T>>::description());
+    return Type::from(TypeDesc<std::remove_cvref_t<T>>::description());
 }
 
 /// make struct type description
 #define OC_MAKE_STRUCT_MEMBER_FMT(member) ",{}"
 
 #define OC_MAKE_STRUCT_MEMBER_DESC(member) \
-    ocarina::detail::TypeDesc<std::remove_cvref_t<decltype(this_type::member)>>::description()
+    ocarina::TypeDesc<std::remove_cvref_t<decltype(this_type::member)>>::description()
 
 #define OC_MAKE_STRUCT_DESC(S, ...)                                                        \
     template<>                                                                             \
-    struct ocarina::detail::TypeDesc<S> {                                                  \
+    struct ocarina::TypeDesc<S> {                                                          \
         using this_type = S;                                                               \
         static ocarina::string_view description() noexcept {                               \
             static thread_local ocarina::string s = ocarina::format(                       \
