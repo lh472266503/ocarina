@@ -113,6 +113,8 @@ enum struct CallOp : uint32_t {
     TRANSPOSE,
     INVERSE,
 
+    IS_NULL_BUFFER,
+
     TEX_SAMPLE,
     TEX_READ,
     TEX_WRITE,

@@ -406,6 +406,12 @@ OC_NODISCARD Var<float3> offset_ray_origin(const Pos &p_in, const Normal &n_in) 
     return eval<float3>(expr);
 }
 
+template<typename T>
+[[nodiscard]] Bool is_null(const BufferVar<T> &buffer) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<bool>(), CallOp::IS_NULL_BUFFER, {OC_EXPR(buffer)});
+    return eval<bool>(expr);
+}
+
 inline void unreachable() noexcept {
     Function::current()->expr_statement(Function::current()->call_builtin(nullptr, CallOp::UNREACHABLE, {}));
 }

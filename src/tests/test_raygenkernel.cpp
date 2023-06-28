@@ -103,11 +103,11 @@ int main(int argc, char *argv[]) {
     //    return 0;
     log_level_debug();
 
-    test();
+//    test();
 
     fs::path path(argv[0]);
     Context context(path.parent_path());
-    context.clear_cache();
+//    context.clear_cache();
     Device device = context.create_device("cuda");
     Stream stream = device.create_stream();
     Printer::instance().init(device);
@@ -184,11 +184,12 @@ int main(int argc, char *argv[]) {
                         ResourceArrayVar ba) {
         //        t_buffer.atomic()
         //        managed.device().atomic(1).fetch_sub(2);
-        Var<Ray> r = make_ray(Var(float3(0, 0.1, -5)), float3(1.6f, 0, 1));
-        Var hit = accel.trace_closest(r);
+//        Var<Ray> r = make_ray(Var(float3(0, 0.1, -5)), float3(1.6f, 0, 1));
+//        Var hit = accel.trace_closest(r);
         Int3 f = make_int3(ba.byte_buffer(index).read<float>(19 * 4).cast<int>(), 6, 9);
         auto arr = bindless_array.byte_buffer(index).read_dynamic_array<float>(3, 19 * 4);
         Printer::instance().warn_with_location("{} {} {} {} {} ", f, arr.sub(1, 3).as_vec2());
+        prints("{}---", is_null(t_buffer));
         //      Int a = 1, b = 2, c = 3;
         //      printer.log_debug("--{} {} {}", a, b, c);
         //        prints("++{} {} {}", f);
@@ -213,7 +214,7 @@ int main(int argc, char *argv[]) {
         //        prints("{} {} {} {}", bindless_array.tex(0).sample(4, uv).as_vec4());
     };
     auto shader = device.compile(kernel);
-    stream << shader(t_buffer, image, triangle[0], bindless_array).dispatch(3);
+    stream << shader(Buffer<Triangle>(), image, triangle[0], bindless_array).dispatch(3);
     //    stream << shader.call(t_buffer, image, triangle[0], bindless_array).dispatch(3);
     stream << synchronize() << commit();
 

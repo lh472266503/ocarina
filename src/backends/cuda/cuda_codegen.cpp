@@ -34,7 +34,7 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         case CallOp::COS: OC_GEN_FUNC_NAME(cos); break;
         case CallOp::SIN: OC_GEN_FUNC_NAME(sin); break;
         case CallOp::TAN: OC_GEN_FUNC_NAME(tan); break;
-        case CallOp::SINH : OC_GEN_FUNC_NAME(sinh) ;break;
+        case CallOp::SINH: OC_GEN_FUNC_NAME(sinh); break;
         case CallOp::COSH: OC_GEN_FUNC_NAME(cosh); break;
         case CallOp::TANH: OC_GEN_FUNC_NAME(tanh); break;
         case CallOp::EXP: OC_GEN_FUNC_NAME(exp); break;
@@ -114,7 +114,8 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         case CallOp::TRACE_ANY: OC_GEN_FUNC_NAME(trace_any); break;
         case CallOp::RAY_OFFSET_ORIGIN: OC_GEN_FUNC_NAME(offset_ray_origin); break;
         case CallOp::TRACE_CLOSEST: OC_GEN_FUNC_NAME(trace_closest); break;
-        case CallOp::TEX_SAMPLE:{
+        case CallOp::IS_NULL_BUFFER: OC_GEN_FUNC_NAME(is_null_buffer); break;
+        case CallOp::TEX_SAMPLE: {
             auto t_args = expr->template_args();
             uint N = std::get<uint>(t_args[0]);
             current_scratch() << "oc_tex_sample_float<" << N << ">";

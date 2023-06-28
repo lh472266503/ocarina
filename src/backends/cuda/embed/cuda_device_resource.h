@@ -37,6 +37,10 @@ struct OCTexture {
     OCPixelStorage pixel_storage{};
 };
 
+[[nodiscard]] inline bool oc_is_null_buffer(void *buffer) noexcept {
+    return buffer == nullptr;
+}
+
 struct OCResourceArray {
     void **buffer_slot{};
     cudaTextureObject_t *tex_slot{};
