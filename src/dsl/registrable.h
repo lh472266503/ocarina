@@ -47,6 +47,14 @@ protected:
             buffer_index = 0u;
             access_index = 0u;
         };
+        Uint size_in_byte = _resource_array->buffer<T>(buffer_index).size_in_byte();
+        Uint access_index_in_byte_max = uint(sizeof(T)) * (access_index + 1);
+        $if(access_index_in_byte_max > size_in_byte) {
+            string prefix = ocarina::format("Buffer {} ", typeid(*this).name());
+            string tb = backtrace_string();
+            string fmt = prefix + "out of bound: index is {}, buffer size is {}, traceback is " + tb;
+            Printer::instance().warn(fmt, access_index, size_in_byte / uint(sizeof(T)));
+        };
 #endif
         return _resource_array->buffer<T>(buffer_index).read(access_index);
     }

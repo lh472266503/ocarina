@@ -95,7 +95,7 @@ struct EnableTextureReadAndWrite {
 
     template<typename Output, typename X, typename Y>
     requires(is_all_integral_expr_v<X, Y>)
-        OC_NODISCARD auto read(const X &x, const Y &y) const noexcept {
+    OC_NODISCARD auto read(const X &x, const Y &y) const noexcept {
         const T *texture = static_cast<const T *>(this);
         const CallExpr *expr = Function::current()->call_builtin(Type::of<Output>(), CallOp::TEX_READ,
                                                                  {texture->expression(), OC_EXPR(x), OC_EXPR(y)},
@@ -105,7 +105,7 @@ struct EnableTextureReadAndWrite {
 
     template<typename Output, typename X, typename Y, typename Z>
     requires(is_all_integral_expr_v<X, Y, Z>)
-        OC_NODISCARD auto read(const X &x, const Y &y, const Z &z) const noexcept {
+    OC_NODISCARD auto read(const X &x, const Y &y, const Z &z) const noexcept {
         const T *texture = static_cast<const T *>(this);
         const CallExpr *expr = Function::current()->call_builtin(Type::of<Output>(), CallOp::TEX_READ,
                                                                  {texture->expression(), OC_EXPR(x), OC_EXPR(y), OC_EXPR(z)},
@@ -117,7 +117,7 @@ struct EnableTextureReadAndWrite {
     requires(is_int_vector2_v<expr_value_t<XY>> ||
              is_uint_vector2_v<expr_value_t<XY>> &&
                  (is_uchar_element_expr_v<Target> || is_float_element_expr_v<Target>))
-        OC_NODISCARD auto read(const XY &xy) const noexcept {
+    OC_NODISCARD auto read(const XY &xy) const noexcept {
         return read<Target>(xy.x, xy.y);
     }
 
@@ -125,14 +125,15 @@ struct EnableTextureReadAndWrite {
     requires(is_int_vector3_v<expr_value_t<XYZ>> ||
              is_uint_vector3_v<expr_value_t<XYZ>> &&
                  (is_uchar_element_expr_v<Target> || is_float_element_expr_v<Target>))
-        OC_NODISCARD auto read(const XYZ &xyz) const noexcept {
+    OC_NODISCARD auto read(const XYZ &xyz) const noexcept {
         return read<Target>(xyz.x, xyz.y, xyz.z);
     }
 
     template<typename X, typename Y, typename Val>
     requires(is_all_integral_expr_v<X, Y> &&
              (is_uchar_element_expr_v<Val> ||
-              is_float_element_expr_v<Val>)) void write(const X &x, const Y &y, const Val &elm) noexcept {
+              is_float_element_expr_v<Val>))
+    void write(const X &x, const Y &y, const Val &elm) noexcept {
         const T *texture = static_cast<const T *>(this);
         const CallExpr *expr = Function::current()->call_builtin(Type::of<uchar4>(), CallOp::TEX_WRITE,
                                                                  {texture->expression(),
@@ -143,7 +144,8 @@ struct EnableTextureReadAndWrite {
     template<typename X, typename Y, typename Z, typename Val>
     requires(is_all_integral_expr_v<X, Y, Z> &&
              (is_uchar_element_expr_v<Val> ||
-              is_float_element_expr_v<Val>)) void write(const X &x, const Y &y, const Z &z, const Val &elm) noexcept {
+              is_float_element_expr_v<Val>))
+    void write(const X &x, const Y &y, const Z &z, const Val &elm) noexcept {
         const T *texture = static_cast<const T *>(this);
         const CallExpr *expr = Function::current()->call_builtin(Type::of<uchar4>(), CallOp::TEX_WRITE,
                                                                  {texture->expression(),
@@ -152,12 +154,14 @@ struct EnableTextureReadAndWrite {
     }
 
     template<typename XYZ, typename Val>
-    requires(is_uint_vector3_v<expr_value_t<XYZ>>) void write(const XYZ &xyz, const Val &elm) noexcept {
+    requires(is_uint_vector3_v<expr_value_t<XYZ>>)
+    void write(const XYZ &xyz, const Val &elm) noexcept {
         write(xyz.x, xyz.y, xyz.z, elm);
     }
 
     template<typename XY, typename Val>
-    requires(is_uint_vector2_v<expr_value_t<XY>>) void write(const XY &xy, const Val &elm) noexcept {
+    requires(is_uint_vector2_v<expr_value_t<XY>>)
+    void write(const XY &xy, const Val &elm) noexcept {
         write(xy.x, xy.y, elm);
     }
 };
@@ -212,23 +216,23 @@ struct EnableTextureSample {
 
     template<typename U, typename V>
     requires(is_all_floating_point_expr_v<U, V>)
-        OC_NODISCARD Array<float> sample(uint channel_num, const U &u, const V &v)
-    const noexcept;// implement in dsl/array.h
+    OC_NODISCARD Array<float> sample(uint channel_num, const U &u, const V &v)
+        const noexcept;// implement in dsl/array.h
 
     template<typename U, typename V, typename W>
     requires(is_all_floating_point_expr_v<U, V, W>)
-        OC_NODISCARD Array<float> sample(uint channel_num, const U &u, const V &v, const W &w)
-    const noexcept;// implement in dsl/array.h
+    OC_NODISCARD Array<float> sample(uint channel_num, const U &u, const V &v, const W &w)
+        const noexcept;// implement in dsl/array.h
 
     template<typename UVW>
     requires(is_float_vector3_v<expr_value_t<UVW>>)
-        OC_NODISCARD Array<float> sample(uint channel_num, const UVW &uvw)
-    const noexcept;// implement in dsl/array.h
+    OC_NODISCARD Array<float> sample(uint channel_num, const UVW &uvw)
+        const noexcept;// implement in dsl/array.h
 
     template<typename UV>
     requires(is_float_vector2_v<expr_value_t<UV>>)
-        OC_NODISCARD Array<float> sample(uint channel_num, const UV &uv)
-    const noexcept;// implement in dsl/array.h
+    OC_NODISCARD Array<float> sample(uint channel_num, const UV &uv)
+        const noexcept;// implement in dsl/array.h
 };
 
 template<typename T>
@@ -255,9 +259,9 @@ template<typename T>
 struct EnableStaticCast {
     template<class Dest>
     requires concepts::static_convertible<Dest, expr_value_t<T>>
-        OC_NODISCARD Var<Dest>
-        cast()
-    const noexcept {
+    OC_NODISCARD Var<Dest>
+    cast()
+        const noexcept {
         const CastExpr *expr = Function::current()->cast(Type::of<Dest>(), CastOp::STATIC,
                                                          static_cast<const T *>(this)->expression());
         return eval<Dest>(expr);
@@ -268,9 +272,9 @@ template<typename T>
 struct EnableBitwiseCast {
     template<class Dest>
     requires concepts::bitwise_convertible<Dest, expr_value_t<T>>
-        OC_NODISCARD Var<Dest>
-        as()
-    const noexcept {
+    OC_NODISCARD Var<Dest>
+    as()
+        const noexcept {
         const CastExpr *expr = Function::current()->cast(Type::of<Dest>(), CastOp::BITWISE,
                                                          static_cast<const T *>(this)->expression());
         return eval<Dest>(expr);
@@ -427,6 +431,13 @@ public:
         return eval<T>(expr);
     }
 
+    template<typename Size = uint>
+    [[nodiscard]] Var<Size> size_in_byte() const noexcept {
+        const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::RESOURCE_ARRAY_BUFFER_SIZE,
+                                                                 {_resource_array, _index});
+        return eval<Size>(expr);
+    }
+
     template<typename Index, typename Val>
     requires concepts::integral<expr_value_t<Index>> && concepts::is_same_v<T, expr_value_t<Val>>
     void write(Index &&index, Val &&elm) {
@@ -453,6 +464,13 @@ public:
         return eval<T>(expr);
     }
 
+    template<typename T, typename Size = uint>
+    [[nodiscard]] Var<Size> size_in_byte() const noexcept {
+        const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::RESOURCE_ARRAY_BUFFER_SIZE,
+                                                                 {_resource_array, _index});
+        return eval<Size>(expr);
+    }
+
     template<typename T, typename Offset>
     [[nodiscard]] Array<T> read_dynamic_array(uint size, Offset &&offset) const noexcept;// implement in dsl/array.h
 };
@@ -468,23 +486,23 @@ public:
 
     template<typename U, typename V, typename W>
     requires(is_all_floating_point_expr_v<U, V, W>)
-        OC_NODISCARD Array<float> sample(uint channel_num, const U &u, const V &v, const W &w)
-    const noexcept;// implement in dsl/array.h
+    OC_NODISCARD Array<float> sample(uint channel_num, const U &u, const V &v, const W &w)
+        const noexcept;// implement in dsl/array.h
 
     template<typename U, typename V>
     requires(is_all_floating_point_expr_v<U, V>)
-        OC_NODISCARD Array<float> sample(uint channel_num, const U &u, const V &v)
-    const noexcept;// implement in dsl/array.h
+    OC_NODISCARD Array<float> sample(uint channel_num, const U &u, const V &v)
+        const noexcept;// implement in dsl/array.h
 
     template<typename UVW>
     requires(is_float_vector3_v<expr_value_t<UVW>>)
-        OC_NODISCARD Array<float> sample(uint channel_num, const UVW &uvw)
-    const noexcept;// implement in dsl/array.h
+    OC_NODISCARD Array<float> sample(uint channel_num, const UVW &uvw)
+        const noexcept;// implement in dsl/array.h
 
     template<typename UV>
     requires(is_float_vector2_v<expr_value_t<UV>>)
-        OC_NODISCARD Array<float> sample(uint channel_num, const UV &uv)
-    const noexcept;// implement in dsl/array.h
+    OC_NODISCARD Array<float> sample(uint channel_num, const UV &uv)
+        const noexcept;// implement in dsl/array.h
 };
 
 namespace detail {

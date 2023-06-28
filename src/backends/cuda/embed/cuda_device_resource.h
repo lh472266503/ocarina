@@ -123,6 +123,10 @@ __device__ T oc_resource_array_buffer_read(OCResourceArray resource_array, oc_ui
     return buffer[index];
 }
 
+__device__ oc_uint oc_resource_array_buffer_size(OCResourceArray resource_array, oc_uint buffer_index) noexcept {
+    return resource_array.buffer_slot[buffer_index].size_in_byte;
+}
+
 template<typename T>
 __device__ T oc_resource_array_byte_buffer_read(OCResourceArray resource_array, oc_uint buffer_index, oc_uint offset) noexcept {
     const char *buffer = reinterpret_cast<char *>(resource_array.buffer_slot[buffer_index].head);
