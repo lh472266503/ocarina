@@ -41,6 +41,10 @@ struct OCTexture {
     return buffer == nullptr;
 }
 
+[[nodiscard]] inline bool oc_is_null_texture(OCTexture obj) noexcept {
+    return obj.texture == 0;
+}
+
 struct OCResourceArray {
     void **buffer_slot{};
     cudaTextureObject_t *tex_slot{};

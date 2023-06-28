@@ -115,6 +115,7 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         case CallOp::RAY_OFFSET_ORIGIN: OC_GEN_FUNC_NAME(offset_ray_origin); break;
         case CallOp::TRACE_CLOSEST: OC_GEN_FUNC_NAME(trace_closest); break;
         case CallOp::IS_NULL_BUFFER: OC_GEN_FUNC_NAME(is_null_buffer); break;
+        case CallOp::IS_NULL_TEXTURE: OC_GEN_FUNC_NAME(is_null_texture); break;
         case CallOp::TEX_SAMPLE: {
             auto t_args = expr->template_args();
             uint N = std::get<uint>(t_args[0]);

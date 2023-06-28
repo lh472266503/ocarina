@@ -412,6 +412,12 @@ template<typename T>
     return eval<bool>(expr);
 }
 
+// todo fix bug
+[[nodiscard]] inline Bool is_null(const TextureVar &tex) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<bool>(), CallOp::IS_NULL_TEXTURE, {OC_EXPR(tex)});
+    return eval<bool>(expr);
+}
+
 inline void unreachable() noexcept {
     Function::current()->expr_statement(Function::current()->call_builtin(nullptr, CallOp::UNREACHABLE, {}));
 }

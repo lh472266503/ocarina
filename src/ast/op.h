@@ -114,6 +114,7 @@ enum struct CallOp : uint32_t {
     INVERSE,
 
     IS_NULL_BUFFER,
+    IS_NULL_TEXTURE,
 
     TEX_SAMPLE,
     TEX_READ,

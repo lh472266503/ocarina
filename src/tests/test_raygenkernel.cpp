@@ -189,7 +189,7 @@ int main(int argc, char *argv[]) {
         Int3 f = make_int3(ba.byte_buffer(index).read<float>(19 * 4).cast<int>(), 6, 9);
         auto arr = bindless_array.byte_buffer(index).read_dynamic_array<float>(3, 19 * 4);
         Printer::instance().warn_with_location("{} {} {} {} {} ", f, arr.sub(1, 3).as_vec2());
-        prints("{}---", is_null(t_buffer));
+        prints("{}---", is_null(img));
         //      Int a = 1, b = 2, c = 3;
         //      printer.log_debug("--{} {} {}", a, b, c);
         //        prints("++{} {} {}", f);
@@ -214,7 +214,7 @@ int main(int argc, char *argv[]) {
         //        prints("{} {} {} {}", bindless_array.tex(0).sample(4, uv).as_vec4());
     };
     auto shader = device.compile(kernel);
-    stream << shader(Buffer<Triangle>(), image, triangle[0], bindless_array).dispatch(3);
+    stream << shader(Buffer<Triangle>(), Texture(), triangle[0], bindless_array).dispatch(3);
     //    stream << shader.call(t_buffer, image, triangle[0], bindless_array).dispatch(3);
     stream << synchronize() << commit();
 
