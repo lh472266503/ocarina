@@ -10,9 +10,9 @@ namespace ocarina {
 CUDAResourceArray::CUDAResourceArray(CUDADevice *device)
     : _device(device) {}
 
-size_t CUDAResourceArray::emplace_buffer(handle_ty handle) noexcept {
+size_t CUDAResourceArray::emplace_buffer(handle_ty handle,size_t size_in_byte) noexcept {
     auto ret = _buffers.host_buffer().size();
-    _buffers.push_back(handle);
+    _buffers.emplace_back(handle, size_in_byte);
     return ret;
 }
 
@@ -25,7 +25,7 @@ size_t CUDAResourceArray::emplace_texture(handle_ty handle) noexcept {
 void CUDAResourceArray::prepare_slotSOA(Device &device) noexcept {
     _buffers.reset_device_buffer(device);
     _textures.reset_device_buffer(device);
-    _slot_soa.buffer_slot = _buffers.head();
+    _slot_soa.buffer_slot = reinterpret_cast<void*>(_buffers.head());
     _slot_soa.tex_slot = _textures.head();
 }
 
@@ -52,9 +52,9 @@ void CUDAResourceArray::remove_texture(handle_ty index) noexcept {
     detail::remove_by_index(_textures.host_buffer(), index);
 }
 
-void CUDAResourceArray::set_buffer(ocarina::handle_ty index, ocarina::handle_ty handle) noexcept {
+void CUDAResourceArray::set_buffer(ocarina::handle_ty index, ocarina::handle_ty handle, size_t size_in_byte) noexcept {
     OC_ASSERT(index < _buffers.host_buffer().size());
-    _buffers.at(index) = handle;
+    _buffers.at(index) = {handle, size_in_byte};
 }
 
 void CUDAResourceArray::set_texture(ocarina::handle_ty index, ocarina::handle_ty handle) noexcept {

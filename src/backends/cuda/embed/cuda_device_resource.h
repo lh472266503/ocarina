@@ -45,8 +45,13 @@ struct OCTexture {
     return obj.texture == 0;
 }
 
+struct BufferDesc {
+    void *head{};
+    size_t size_in_byte{};
+};
+
 struct OCResourceArray {
-    void **buffer_slot{};
+    BufferDesc *buffer_slot;
     cudaTextureObject_t *tex_slot{};
 };
 
@@ -114,20 +119,20 @@ __device__ oc_array<float, N> oc_tex_sample_float(OCTexture obj, oc_float u, oc_
 
 template<typename T>
 __device__ T oc_resource_array_buffer_read(OCResourceArray resource_array, oc_uint buffer_index, oc_uint index) noexcept {
-    const T *buffer = reinterpret_cast<T *>(resource_array.buffer_slot[buffer_index]);
+    const T *buffer = reinterpret_cast<T *>(resource_array.buffer_slot[buffer_index].head);
     return buffer[index];
 }
 
 template<typename T>
 __device__ T oc_resource_array_byte_buffer_read(OCResourceArray resource_array, oc_uint buffer_index, oc_uint offset) noexcept {
-    const char *buffer = reinterpret_cast<char *>(resource_array.buffer_slot[buffer_index]);
+    const char *buffer = reinterpret_cast<char *>(resource_array.buffer_slot[buffer_index].head);
     return *reinterpret_cast<const T *>(&buffer[offset]);
 }
 
 template<typename T>
 __device__ void oc_resource_array_buffer_write(OCResourceArray resource_array, oc_uint buffer_index,
                                                oc_uint index, const T &val) noexcept {
-    T *buffer = reinterpret_cast<T *>(resource_array.buffer_slot[buffer_index]);
+    T *buffer = reinterpret_cast<T *>(resource_array.buffer_slot[buffer_index].head);
     buffer[index] = val;
 }
 

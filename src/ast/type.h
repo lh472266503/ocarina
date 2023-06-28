@@ -264,8 +264,13 @@ class Type;
 
 class TypeRegistry;
 
+struct BufferDesc {
+    handle_ty head;
+    size_t size_in_byte;
+};
+
 struct SlotSOA {
-    handle_ty buffer_slot;
+    void* buffer_slot;
     handle_ty tex_slot;
 };
 

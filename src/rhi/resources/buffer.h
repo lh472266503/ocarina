@@ -191,6 +191,7 @@ public:
     }
 
     [[nodiscard]] size_t size() const noexcept { return _size; }
+    [[nodiscard]] size_t size_in_byte() const noexcept { return _size * sizeof(T); }
 
     template<typename... Args>
     [[nodiscard]] BufferUploadCommand *upload(Args &&...args) const noexcept {

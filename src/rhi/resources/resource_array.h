@@ -16,11 +16,11 @@ class ResourceArray : public RHIResource {
 public:
     class Impl {
     public:
-        [[nodiscard]] virtual size_t emplace_buffer(handle_ty handle) noexcept = 0;
+        [[nodiscard]] virtual size_t emplace_buffer(handle_ty handle, size_t size_in_byte) noexcept = 0;
         virtual void remove_buffer(handle_ty index) noexcept = 0;
         [[nodiscard]] virtual size_t emplace_texture(handle_ty handle) noexcept = 0;
         virtual void remove_texture(handle_ty index) noexcept = 0;
-        virtual void set_buffer(handle_ty index, handle_ty handle) noexcept = 0;
+        virtual void set_buffer(handle_ty index, handle_ty handle, size_t size_in_byte) noexcept = 0;
         virtual void set_texture(handle_ty index, handle_ty handle) noexcept = 0;
         [[nodiscard]] virtual BufferUploadCommand *upload_buffer_handles() const noexcept = 0;
         [[nodiscard]] virtual BufferUploadCommand *upload_texture_handles() const noexcept = 0;
@@ -55,12 +55,12 @@ public:
     template<typename T>
     requires is_buffer_or_view_v<T>
     [[nodiscard]] size_t emplace(const T &buffer) noexcept {
-        return impl()->emplace_buffer(buffer.head());
+        return impl()->emplace_buffer(buffer.head(), buffer.size_in_byte());
     }
     template<typename T>
     requires is_buffer_or_view_v<T>
     void set_buffer(handle_ty index, const T &buffer) noexcept {
-        impl()->emplace_buffer(index, buffer.head());
+        impl()->emplace_buffer(index, buffer.head(), buffer.size_in_byte());
     }
     size_t emplace(const Texture &texture) noexcept;
     void set_texture(handle_ty index, const Texture &texture) noexcept;
