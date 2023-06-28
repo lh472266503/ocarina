@@ -57,7 +57,17 @@ public:
     requires concepts::integral<expr_value_t<Index>>
     OC_NODISCARD auto read(Index &&index) const noexcept {
         if (!has_registered()) {
-            return Super::read(OC_FORWARD(index));
+            Uint i = OC_FORWARD(index);
+#ifndef NDEBUG
+            $if(index >= uint(Super::device_buffer().size())) {
+                string prefix = ocarina::format("Buffer {} ", typeid(*this).name());
+                string tb = backtrace_string();
+                string fmt = prefix + "out of bound: index is {}, buffer size is {}, traceback is " + tb;
+                Printer::instance().warn(fmt, i, uint(Super::device_buffer().size()));
+                i = 0;
+            };
+#endif
+            return Super::read(i);
         }
         return _resource_array->buffer<T>(*_index).read(OC_FORWARD(index));
     }
