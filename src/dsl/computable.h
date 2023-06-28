@@ -464,7 +464,7 @@ public:
         return eval<T>(expr);
     }
 
-    template<typename T, typename Size = uint>
+    template<typename T = float, typename Size = uint>
     [[nodiscard]] Var<Size> size_in_byte() const noexcept {
         const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::RESOURCE_ARRAY_BUFFER_SIZE,
                                                                  {_resource_array, _index});
