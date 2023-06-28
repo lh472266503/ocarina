@@ -31,6 +31,17 @@ public:
     [[nodiscard]] bool has_registered() const noexcept { return _index.hv() != InvalidUI32; }
     [[nodiscard]] const Serial<uint> &index() const noexcept { return _index; }
     [[nodiscard]] const Serial<uint> &length() const noexcept { return _length; }
+    [[nodiscard]] Uint check_buffer_num(const Uint &index) const noexcept {
+        Uint ret = index;
+        $if(index >= _resource_array->buffer_num()) {
+            ret = 0;
+            string prefix = ocarina::format("Buffer {} ", typeid(*this).name());
+            string tb = backtrace_string();
+            string fmt = prefix + "out of buffer num: index is {}, buffer num is {}, traceback is " + tb;
+            Printer::instance().warn(fmt, index, _resource_array->buffer_num());
+        };
+        return ret;
+    }
 };
 
 template<typename T>
@@ -69,7 +80,8 @@ public:
 #endif
             return Super::read(i);
         }
-        return _resource_array->buffer<T>(*_index).read(OC_FORWARD(index));
+        Uint i = check_buffer_num(*_index);
+        return _resource_array->buffer<T>(i).read(OC_FORWARD(index));
     }
 
     template<typename Index, typename Val>
@@ -115,7 +127,8 @@ public:
 #endif
             return Super::read(i);
         }
-        return _resource_array->buffer<T>(*_index).read(OC_FORWARD(index));
+        Uint i = check_buffer_num(*_index);
+        return _resource_array->buffer<T>(i).read(OC_FORWARD(index));
     }
 
     template<typename Target, typename Offset>

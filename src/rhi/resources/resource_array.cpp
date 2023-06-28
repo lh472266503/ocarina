@@ -20,11 +20,11 @@ void ResourceArray::set_texture(ocarina::handle_ty index, const ocarina::Texture
     impl()->set_texture(index, texture.tex_handle());
 }
 
-size_t ResourceArray::buffer_num() const noexcept {
+uint ResourceArray::buffer_num() const noexcept {
     return impl()->buffer_num();
 }
 
-size_t ResourceArray::texture_num() const noexcept {
+uint ResourceArray::texture_num() const noexcept {
     return impl()->texture_num();
 }
 

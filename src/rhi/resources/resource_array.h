@@ -64,8 +64,8 @@ public:
     }
     size_t emplace(const Texture &texture) noexcept;
     void set_texture(handle_ty index, const Texture &texture) noexcept;
-    [[nodiscard]] size_t buffer_num() const noexcept;
-    [[nodiscard]] size_t texture_num() const noexcept;
+    [[nodiscard]] uint buffer_num() const noexcept;
+    [[nodiscard]] uint texture_num() const noexcept;
 
     /// for dsl
     [[nodiscard]] const Expression *expression() const noexcept override {
