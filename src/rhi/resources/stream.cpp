@@ -16,6 +16,13 @@ Stream &Stream::operator<<(Command *command) noexcept {
     return *this;
 }
 
+Stream &Stream::operator<<(vector<ocarina::Command *> commands) noexcept {
+    for (Command *cmd : commands) {
+        (*this) << cmd;
+    }
+    return *this;
+}
+
 void Stream::commit(const Commit &commit) noexcept {
     impl()->commit(commit);
 }

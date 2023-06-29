@@ -48,6 +48,15 @@ public:
         return impl()->command_queue();
     }
     Stream &operator<<(Command *command) noexcept;
+    Stream &operator<<(vector<Command *> commands) noexcept;
+    template<typename... Ts>
+    Stream &operator<<(tuple<Ts...> &&tp) noexcept {
+        auto func = [this]<size_t... i>(tuple<Ts...> &&tp,
+                                        std::index_sequence<i...>) noexcept -> decltype(auto) {
+            return (std::move(*this) << ... << std::move(std::get<i>(OC_FORWARD(tp))));
+        };
+        return func(OC_FORWARD(tp), std::index_sequence_for<Ts...>());
+    }
     Stream &operator<<(const Commit &commit) noexcept;
     Stream &operator<<(std::function<void()> f) noexcept;
     void commit(const Commit &cmt) noexcept;
