@@ -26,6 +26,11 @@ public:
         host_ty::reserve(size);
     }
 
+    Managed(Device::Impl *device, size_t size, handle_ty stream)
+        : device_ty(device, size, stream) {
+        host_ty::reserve(size);
+    }
+
     explicit Managed(size_t size) {
         host_ty::reserve(size);
     }
