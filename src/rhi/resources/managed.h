@@ -65,7 +65,7 @@ public:
         host_ty::insert(host_ty::cend(), v.cbegin(), v.cend());
     }
 
-    void reset_device_buffer(Device &d, size_t num = 0) {
+    void reset_device_buffer_immediately(Device &d, size_t num = 0) {
         num = num == 0 ? host_ty ::size() : num;
         if (num == 0) {
             return;
@@ -79,7 +79,7 @@ public:
      * @param num number of element
      */
     void reset_all(Device &d, size_t num) {
-        reset_device_buffer(d, num);
+        reset_device_buffer_immediately(d, num);
         host_buffer().resize(num);
     }
 

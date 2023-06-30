@@ -23,8 +23,8 @@ size_t CUDAResourceArray::emplace_texture(handle_ty handle) noexcept {
 }
 
 void CUDAResourceArray::prepare_slotSOA(Device &device) noexcept {
-    _buffers.reset_device_buffer(device);
-    _textures.reset_device_buffer(device);
+    _buffers.reset_device_buffer_immediately(device);
+    _textures.reset_device_buffer_immediately(device);
     _slot_soa.buffer_slot = reinterpret_cast<void*>(_buffers.head());
     _slot_soa.tex_slot = _textures.head();
 }

@@ -80,7 +80,7 @@ int main(int argc, char *argv[]) {
 
 
     t.encode(vv);
-    vv.reset_device_buffer(device);
+    vv.reset_device_buffer_immediately(device);
     vv.upload_immediately();
     vv.register_self();
     ra.prepare_slotSOA(device);

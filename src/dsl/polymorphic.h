@@ -178,7 +178,7 @@ public:
                 });
                 for_each_representative([&](auto object) {
                     datas_type &data_set = get_datas(object);
-                    data_set.reset_device_buffer(device);
+                    data_set.reset_device_buffer_immediately(device);
                     data_set.register_self();
                     data_set.upload_immediately();
                 });
