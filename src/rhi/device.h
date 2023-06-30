@@ -86,9 +86,19 @@ public:
         return Buffer<T, Dims...>(_impl.get(), size);
     }
 
+    template<typename T = std::byte, int... Dims>
+    [[nodiscard]] Buffer<T, Dims...> create_buffer(size_t size, handle_ty stream) noexcept {
+        return Buffer<T, Dims...>(_impl.get(), size, stream);
+    }
+
     template<typename T = std::byte>
     [[nodiscard]] Managed<T> create_managed(size_t size) noexcept {
         return Managed<T>(_impl.get(), size);
+    }
+
+    template<typename T = std::byte>
+    [[nodiscard]] Managed<T> create_managed(size_t size, handle_ty stream) noexcept {
+        return Managed<T>(_impl.get(), size, stream);
     }
 
     template<typename VBuffer, typename TBuffer>
