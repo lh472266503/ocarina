@@ -138,10 +138,6 @@ void CUDACommandVisitor::visit(const TextureDownloadCommand *cmd) noexcept {
     });
 }
 
-void CUDACommandVisitor::visit(const ResourceArrayUpdateCommand *cmd) noexcept {
-
-}
-
 void CUDACommandVisitor::visit(const TextureCopyCommand *cmd) noexcept {
     _device->use_context([&] {
         CUDA_MEMCPY3D copy{};

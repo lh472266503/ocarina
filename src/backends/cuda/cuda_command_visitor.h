@@ -25,12 +25,11 @@ public:
     void visit(const TextureUploadCommand *cmd) noexcept override;
     void visit(const TextureDownloadCommand *cmd) noexcept override;
     void visit(const TextureCopyCommand *cmd) noexcept override;
-    void visit(const ocarina::BufferToTextureCommand *cmd) noexcept override;
+    void visit(const BufferToTextureCommand *cmd) noexcept override;
     void visit(const BLASBuildCommand *cmd) noexcept override;
     void visit(const TLASBuildCommand *cmd) noexcept override;
     void visit(const SynchronizeCommand *cmd) noexcept override;
     void visit(const ShaderDispatchCommand *cmd) noexcept override;
-    void visit(const ResourceArrayUpdateCommand *cmd) noexcept override;
     void visit(const HostFunctionCommand *cmd) noexcept override;
 };
 

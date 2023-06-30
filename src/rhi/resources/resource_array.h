@@ -66,6 +66,8 @@ public:
     void set_texture(handle_ty index, const Texture &texture) noexcept;
     [[nodiscard]] uint buffer_num() const noexcept;
     [[nodiscard]] uint texture_num() const noexcept;
+    [[nodiscard]] vector<Command *> upload(Device &device) noexcept;
+    [[nodiscard]] vector<Command *> upload_sync(Device &device) noexcept;
 
     /// for dsl
     [[nodiscard]] const Expression *expression() const noexcept override {

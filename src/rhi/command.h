@@ -20,7 +20,6 @@ namespace ocarina {
         TextureUploadCommand,       \
         TextureDownloadCommand,     \
         TextureCopyCommand,         \
-        ResourceArrayUpdateCommand, \
         HostFunctionCommand,        \
         SynchronizeCommand,         \
         BLASBuildCommand,           \
@@ -257,19 +256,6 @@ public:
     [[nodiscard]] size_t width_in_bytes() const noexcept { return pixel_size(_pixel_storage) * width(); }
     [[nodiscard]] size_t size_in_bytes() const noexcept { return height() * width_in_bytes(); }
     [[nodiscard]] uint3 resolution() const noexcept { return _resolution; }
-};
-
-class ResourceArray;
-
-class ResourceArrayUpdateCommand final : public Command {
-private:
-    const ResourceArray *_array{};
-
-public:
-    ResourceArrayUpdateCommand(ResourceArray *array, bool sync)
-        : Command(sync), _array(array) {}
-    [[nodiscard]] const ResourceArray *array() const noexcept { return _array; }
-    OC_MAKE_CMD_COMMON_FUNC(ResourceArrayUpdateCommand)
 };
 
 class TextureUploadCommand final : public TextureOpCommand {
