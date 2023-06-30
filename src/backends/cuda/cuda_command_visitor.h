@@ -30,7 +30,8 @@ public:
     void visit(const TLASBuildCommand *cmd) noexcept override;
     void visit(const SynchronizeCommand *cmd) noexcept override;
     void visit(const ShaderDispatchCommand *cmd) noexcept override;
-    void visit(const ocarina::HostFunctionCommand *cmd) noexcept override;
+    void visit(const ResourceArrayUpdateCommand *cmd) noexcept override;
+    void visit(const HostFunctionCommand *cmd) noexcept override;
 };
 
 }// namespace ocarina
