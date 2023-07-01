@@ -196,7 +196,7 @@ public:
     [[nodiscard]] vector<Command *> reallocate(size_t size, bool async = true) {
         return {BufferReallocateCommand::create(this, size, async),
                 HostFunctionCommand::create([this,size] {
-                    this->_size = size;
+                    this->_size = size / element_size;
                 }, async)};
     }
 

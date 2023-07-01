@@ -10,7 +10,7 @@ namespace ocarina {
 CUDAResourceArray::CUDAResourceArray(CUDADevice *device)
     : _device(device) {}
 
-size_t CUDAResourceArray::emplace_buffer(handle_ty handle,size_t size_in_byte) noexcept {
+size_t CUDAResourceArray::emplace_buffer(handle_ty handle, size_t size_in_byte) noexcept {
     auto ret = _buffers.host_buffer().size();
     _buffers.emplace_back(handle, size_in_byte);
     return ret;
@@ -31,8 +31,8 @@ void CUDAResourceArray::prepare_slotSOA(Device &device) noexcept {
 
 vector<Command *> CUDAResourceArray::update_slotSOA(bool async) noexcept {
     vector<Command *> ret;
-    append(ret, _buffers.device_buffer().reallocate(_buffers.host_buffer().size(), async));
-    append(ret, _textures.device_buffer().reallocate(_textures.host_buffer().size(), async));
+    append(ret, _buffers.device_buffer().reallocate(_buffers.host_buffer().size() * decltype(_buffers)::element_size, async));
+    append(ret, _textures.device_buffer().reallocate(_textures.host_buffer().size() * decltype(_buffers)::element_size, async));
     ret.push_back(HostFunctionCommand::create([&]() {
         _slot_soa.buffer_slot = _buffers.head();
         _slot_soa.tex_slot = _textures.head();

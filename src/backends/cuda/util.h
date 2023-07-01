@@ -18,16 +18,16 @@
         }                                                                                                  \
     }()
 
-#define OC_CU_CHECK(EXPR)                                                               \
-    [&] {                                                                               \
-        CUresult result = EXPR;                                                         \
-        if (result != CUDA_SUCCESS) {                                                   \
-            const char *str;                                                            \
-            assert(CUDA_SUCCESS == cuGetErrorString(result, &str));                     \
-            assert(0);                                                                  \
-            OC_ERROR_FORMAT("CUDA driver error: {} at {}:{}", str, __FILE__, __LINE__); \
-            std::abort();                                                               \
-        }                                                                               \
+#define OC_CU_CHECK(EXPR)                                                                 \
+    [&] {                                                                                 \
+        CUresult result = EXPR;                                                           \
+        if (result != CUDA_SUCCESS) {                                                     \
+            const char *str;                                                              \
+            assert(CUDA_SUCCESS == cuGetErrorString(result, &str));                       \
+            OC_WARNING_FORMAT("CUDA driver error: {} at {}:{}", str, __FILE__, __LINE__); \
+            assert(0);                                                                    \
+            std::abort();                                                                 \
+        }                                                                                 \
     }()
 
 #define OC_NVRTC_CHECK(EXPR)                                                                            \
