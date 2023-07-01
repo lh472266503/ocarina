@@ -36,6 +36,12 @@ inline size_t structure_size(ocarina::span<const MemoryBlock> members) noexcept 
     return size;
 }
 
+template<typename T, typename V>
+requires concepts::iterable<V> && concepts::iterable<T>
+void append(T &v1, V &&v2) {
+    v1.insert(v1.end(), OC_FORWARD(v2).begin(), OC_FORWARD(v2).end());
+}
+
 inline namespace size_literals {
 [[nodiscard]] constexpr auto operator""_kb(size_t bytes) noexcept {
     return static_cast<size_t>(bytes * 1024u);

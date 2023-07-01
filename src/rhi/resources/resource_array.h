@@ -27,6 +27,7 @@ public:
         [[nodiscard]] virtual BufferUploadCommand *upload_buffer_handles_sync() const noexcept = 0;
         [[nodiscard]] virtual BufferUploadCommand *upload_texture_handles_sync() const noexcept = 0;
         virtual void prepare_slotSOA(Device &device) noexcept = 0;
+        virtual vector<Command *> update_slotSOA(bool async) noexcept = 0;
         [[nodiscard]] virtual size_t buffer_num() const noexcept = 0;
         [[nodiscard]] virtual size_t texture_num() const noexcept = 0;
 
@@ -45,6 +46,14 @@ public:
     [[nodiscard]] const Impl *operator->() const noexcept { return impl(); }
     [[nodiscard]] Impl *operator->() noexcept { return impl(); }
     void prepare_slotSOA(Device &device) noexcept { impl()->prepare_slotSOA(device); }
+
+    [[nodiscard]] vector<Command *> update_slotSOA() noexcept {
+        return impl()->update_slotSOA(true);
+    }
+
+    [[nodiscard]] vector<Command *> update_slotSOA_sync() noexcept {
+        return impl()->update_slotSOA(false);
+    }
 
     /// for device side structure
     [[nodiscard]] const void *handle_ptr() const noexcept override { return impl()->handle_ptr(); }

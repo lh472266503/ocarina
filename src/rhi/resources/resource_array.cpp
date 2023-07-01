@@ -5,6 +5,7 @@
 #include "resource_array.h"
 #include "texture.h"
 #include "buffer.h"
+#include "managed.h"
 
 namespace ocarina {
 
@@ -22,9 +23,7 @@ void ResourceArray::set_texture(ocarina::handle_ty index, const ocarina::Texture
 
 vector<Command *> ResourceArray::upload_sync(Device &device) noexcept {
     vector<Command *> ret;
-    ret.push_back(HostFunctionCommand::create([&](){
-        prepare_slotSOA(device);
-    },false));
+    append(ret, update_slotSOA_sync());
     ret.push_back(impl()->upload_buffer_handles_sync());
     ret.push_back(impl()->upload_texture_handles_sync());
     return ret;
@@ -32,9 +31,7 @@ vector<Command *> ResourceArray::upload_sync(Device &device) noexcept {
 
 vector<Command *> ResourceArray::upload(Device &device) noexcept {
     vector<Command *> ret;
-    ret.push_back(HostFunctionCommand::create([&](){
-        prepare_slotSOA(device);
-    }, true));
+    append(ret, update_slotSOA());
     ret.push_back(impl()->upload_buffer_handles());
     ret.push_back(impl()->upload_texture_handles());
     return ret;
