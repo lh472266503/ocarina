@@ -193,6 +193,16 @@ public:
     [[nodiscard]] size_t size() const noexcept { return _size; }
     [[nodiscard]] size_t size_in_byte() const noexcept { return _size * sizeof(T); }
 
+    [[nodiscard]] vector<Command *> reallocate(size_t size) {
+        return {BufferReallocateCommand::create(this, size, true),
+                HostFunctionCommand::create([&] { this->_size = size; }, true)};
+    }
+
+    [[nodiscard]] vector<Command *> reallocate_sync(size_t size) {
+        return {BufferReallocateCommand::create(this, size, false),
+                HostFunctionCommand::create([&] { this->_size = size; }, false)};
+    }
+
     template<typename... Args>
     [[nodiscard]] BufferUploadCommand *upload(Args &&...args) const noexcept {
         return view(0, _size).upload(OC_FORWARD(args)...);

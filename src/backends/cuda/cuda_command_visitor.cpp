@@ -50,6 +50,20 @@ void CUDACommandVisitor::visit(const BufferCopyCommand *cmd) noexcept {
     });
 }
 
+void CUDACommandVisitor::visit(const BufferReallocateCommand *cmd) noexcept {
+    if (cmd->async() && _stream) {
+        RHIResource *rhi_resource = cmd->rhi_resource();
+        OC_CU_CHECK(cuMemFreeAsync(rhi_resource->handle(), _stream));
+        OC_CU_CHECK(cuMemAllocAsync(reinterpret_cast<handle_ty *>(rhi_resource->handle_ptr()), cmd->new_size(), _stream));
+    } else {
+        _device->use_context([&] {
+            RHIResource *rhi_resource = cmd->rhi_resource();
+            OC_CU_CHECK(cuMemFree(rhi_resource->handle()));
+            OC_CU_CHECK(cuMemAlloc(reinterpret_cast<handle_ty *>(rhi_resource->handle_ptr()), cmd->new_size()));
+        });
+    }
+}
+
 void CUDACommandVisitor::visit(const BufferDownloadCommand *cmd) noexcept {
     _device->use_context([&] {
         if (cmd->async() && _stream) {

@@ -11,19 +11,20 @@
 
 namespace ocarina {
 
-#define OC_RUNTIME_CMD              \
-    BufferUploadCommand,            \
-        BufferDownloadCommand,      \
-        BufferByteSetCommand,       \
-        BufferCopyCommand,          \
-        BufferToTextureCommand,     \
-        TextureUploadCommand,       \
-        TextureDownloadCommand,     \
-        TextureCopyCommand,         \
-        HostFunctionCommand,        \
-        SynchronizeCommand,         \
-        BLASBuildCommand,           \
-        TLASBuildCommand,           \
+#define OC_RUNTIME_CMD           \
+    BufferUploadCommand,         \
+        BufferDownloadCommand,   \
+        BufferByteSetCommand,    \
+        BufferCopyCommand,       \
+        BufferReallocateCommand, \
+        BufferToTextureCommand,  \
+        TextureUploadCommand,    \
+        TextureDownloadCommand,  \
+        TextureCopyCommand,      \
+        HostFunctionCommand,     \
+        SynchronizeCommand,      \
+        BLASBuildCommand,        \
+        TLASBuildCommand,        \
         ShaderDispatchCommand
 
 /// forward declare
@@ -189,8 +190,23 @@ public:
     [[nodiscard]] size_t size_in_bytes() const noexcept { return _size_in_bytes; }
 };
 
-class BufferByteSetCommand final : public BufferCommand {
+class RHIResource;
+
+class BufferReallocateCommand : public Command {
+private:
+    RHIResource *_rhi_resource{};
+    size_t _new_size;
+
 public:
+    BufferReallocateCommand(RHIResource *rhi_resource, size_t new_size, bool async = true)
+        : Command(async), _new_size(new_size), _rhi_resource(rhi_resource) {}
+    [[nodiscard]] RHIResource *rhi_resource() const noexcept { return _rhi_resource; }
+    [[nodiscard]] size_t new_size() const noexcept { return _new_size; }
+    OC_MAKE_CMD_COMMON_FUNC(BufferReallocateCommand)
+};
+
+class BufferByteSetCommand final : public BufferCommand {
+private:
     uchar _val{};
 
 public:
