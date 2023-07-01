@@ -41,7 +41,7 @@ protected:
 #ifndef NDEBUG
         $if(buffer_index >= _resource_array->buffer_num()) {
             string prefix = ocarina::format("Buffer {} ", typeid(*this).name());
-            string tb = backtrace_string();
+            string tb = traceback_string();
             string fmt = prefix + "out of buffer num: buffer index is {}, buffer num is {}, traceback is " + tb;
             Printer::instance().warn(fmt, buffer_index, _resource_array->buffer_num());
             buffer_index = 0u;
@@ -51,7 +51,7 @@ protected:
         Uint access_index_in_byte_max = uint(sizeof(T)) * (access_index + 1);
         $if(access_index_in_byte_max > size_in_byte) {
             string prefix = ocarina::format("Buffer {} ", typeid(*this).name());
-            string tb = backtrace_string();
+            string tb = traceback_string();
             string fmt = prefix + "out of bound: index is {}, buffer size is {}, traceback is " + tb;
             Printer::instance().warn(fmt, access_index, size_in_byte / uint(sizeof(T)));
         };
@@ -88,7 +88,7 @@ public:
 #ifndef NDEBUG
             $if(index >= uint(Super::device_buffer().size())) {
                 string prefix = ocarina::format("Buffer {} ", typeid(*this).name());
-                string tb = backtrace_string();
+                string tb = traceback_string();
                 string fmt = prefix + "out of bound: index is {}, buffer size is {}, traceback is " + tb;
                 Printer::instance().warn(fmt, i, uint(Super::device_buffer().size()));
                 i = 0;
@@ -134,7 +134,7 @@ public:
 #ifndef NDEBUG
             $if(index >= uint(Super::device_buffer().size())) {
                 string prefix = ocarina::format("Buffer {} ", typeid(*this).name());
-                string tb = backtrace_string();
+                string tb = traceback_string();
                 string fmt = prefix + "out of bound: index is {}, buffer size is {}, traceback is " + tb;
                 Printer::instance().warn(fmt, i, uint(Super::device_buffer().size()));
                 i = 0;

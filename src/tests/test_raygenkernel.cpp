@@ -88,7 +88,7 @@ void test() {
 
     float2 p2 = triangle_lerp(bary, a, b, c);
 
-    auto tb = backtrace_string();
+    auto tb = traceback_string();
 
     cout << tb << endl;
     exit(0);

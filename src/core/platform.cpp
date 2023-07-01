@@ -66,7 +66,7 @@ string demangle(const char *name) noexcept {
     return {buffer, length};
 }
 
-vector<TraceItem> backtrace() noexcept {
+vector<TraceItem> traceback() noexcept {
 
     void *stack[100];
     auto process = GetCurrentProcess();
@@ -105,15 +105,15 @@ vector<TraceItem> backtrace() noexcept {
     return trace;
 }
 
-string backtrace_string() noexcept {
+string traceback_string() noexcept {
     string ret;
-    vector<TraceItem> trace = backtrace();
+    vector<TraceItem> trace = traceback();
     for (int i = 1; i < trace.size(); ++i) {
         auto &&t = trace[i];
         using namespace std::string_view_literals;
         ret += fmt::format(
-            FMT_STRING("\n    {:>2} [0x{:012x}]: {} :: {} + {}"sv),
-            i, t.address, t.module, t.symbol, t.offset);
+            FMT_STRING("\n    {:>2}: {} :: {} + {}"sv),
+            i, t.module, t.symbol, t.offset);
     }
     return ret;
 }

@@ -22,8 +22,8 @@ struct TraceItem {
     size_t offset;
 };
 
-[[nodiscard]] OC_NEVER_INLINE vector<TraceItem> backtrace() noexcept;
+[[nodiscard]] OC_NEVER_INLINE vector<TraceItem> traceback() noexcept;
 
-[[nodiscard]] OC_NEVER_INLINE string backtrace_string() noexcept;
+[[nodiscard]] OC_NEVER_INLINE string traceback_string() noexcept;
 
 }// namespace ocarina
