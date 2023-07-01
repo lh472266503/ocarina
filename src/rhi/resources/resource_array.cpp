@@ -24,8 +24,8 @@ void ResourceArray::set_texture(ocarina::handle_ty index, const ocarina::Texture
 vector<Command *> ResourceArray::upload_sync(Device &device) noexcept {
     vector<Command *> ret;
     append(ret, update_slotSOA_sync());
-    ret.push_back(impl()->upload_buffer_handles_sync());
-    ret.push_back(impl()->upload_texture_handles_sync());
+//    ret.push_back(impl()->upload_buffer_handles_sync());
+//    ret.push_back(impl()->upload_texture_handles_sync());
     return ret;
 }
 

@@ -270,7 +270,7 @@ struct BufferDesc {
 };
 
 struct SlotSOA {
-    void* buffer_slot;
+    handle_ty buffer_slot;
     handle_ty tex_slot;
 };
 
@@ -329,6 +329,7 @@ private:
         _description = desc;
         update_name(desc);
     }
+
 public:
     static void for_each(TypeVisitor *visitor);
     template<typename T>

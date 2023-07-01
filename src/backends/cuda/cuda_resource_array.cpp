@@ -25,17 +25,17 @@ size_t CUDAResourceArray::emplace_texture(handle_ty handle) noexcept {
 void CUDAResourceArray::prepare_slotSOA(Device &device) noexcept {
     _buffers.reset_device_buffer_immediately(device);
     _textures.reset_device_buffer_immediately(device);
-    _slot_soa.buffer_slot = reinterpret_cast<void*>(_buffers.head());
+    _slot_soa.buffer_slot = _buffers.head();
     _slot_soa.tex_slot = _textures.head();
 }
 
 vector<Command *> CUDAResourceArray::update_slotSOA(bool async) noexcept {
     vector<Command *> ret;
-    append(ret, _buffers.device_buffer().reallocate(_buffers.host_buffer().size(), async));
-    append(ret, _textures.device_buffer().reallocate(_textures.host_buffer().size(), async));
+//    append(ret, _buffers.device_buffer().reallocate(_buffers.host_buffer().size(), async));
+//    append(ret, _textures.device_buffer().reallocate(_textures.host_buffer().size(), async));
     ret.push_back(HostFunctionCommand::create([&]() {
-        _slot_soa.buffer_slot = reinterpret_cast<void*>(_buffers.head());
-        _slot_soa.tex_slot = _textures.head();
+//        _slot_soa.buffer_slot = _buffers.head();
+//        _slot_soa.tex_slot = _textures.head();
     }, async));
     return ret;
 }

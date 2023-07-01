@@ -37,7 +37,7 @@ public:
             return;
         }
         for (auto &ptr : _blocks) {
-            ocarina::delete_with_allocator(ptr);
+            ocarina::deallocate(ptr);
         }
     }
 

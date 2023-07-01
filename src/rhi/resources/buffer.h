@@ -195,7 +195,9 @@ public:
 
     [[nodiscard]] vector<Command *> reallocate(size_t size, bool async = true) {
         return {BufferReallocateCommand::create(this, size, async),
-                HostFunctionCommand::create([&] { this->_size = size; }, async)};
+                HostFunctionCommand::create([this,size] {
+                    this->_size = size;
+                }, async)};
     }
 
     template<typename... Args>
