@@ -69,7 +69,7 @@ public:
     template<typename T>
     requires is_buffer_or_view_v<T>
     void set_buffer(handle_ty index, const T &buffer) noexcept {
-        impl()->emplace_buffer(index, buffer.head(), buffer.size_in_byte());
+        impl()->set_buffer(index, buffer.head(), buffer.size_in_byte());
     }
     size_t emplace(const Texture &texture) noexcept;
     void set_texture(handle_ty index, const Texture &texture) noexcept;
