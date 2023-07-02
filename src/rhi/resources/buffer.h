@@ -49,8 +49,9 @@ public:
         return BufferUploadCommand::create(data, head(), _size * element_size, false);
     }
 
-    [[nodiscard]] BufferDownloadCommand *download(void *data) const noexcept {
-        return BufferDownloadCommand::create(data, head(), size_in_byte(), true);
+    [[nodiscard]] BufferDownloadCommand *download(void *data, uint src_offset = 0) const noexcept {
+        return BufferDownloadCommand::create(data, head() + src_offset * element_size,
+                                             size_in_byte(), true);
     }
 
     [[nodiscard]] BufferDownloadCommand *download_sync(void *data) const noexcept {
@@ -230,7 +231,7 @@ public:
     requires is_buffer_or_view_v<Arg> && std::is_same_v<buffer_element_t<Arg>, T>
     [[nodiscard]] BufferCopyCommand *copy_from(const Arg &src, uint dst_offset) noexcept {
         return BufferCopyCommand::create(src.head(), head(), 0, dst_offset,
-                                         src.size() * element_size, true);
+                                         src.size_in_byte(), true);
     }
 
     template<typename... Args>
