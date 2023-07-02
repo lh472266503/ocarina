@@ -195,7 +195,7 @@ public:
 
     [[nodiscard]] vector<Command *> reallocate(size_t size, bool async = true) {
         return {BufferReallocateCommand::create(this, size, async),
-                HostFunctionCommand::create([this,size] {
+                HostFunctionCommand::create([this, size] {
                     this->_size = size / element_size;
                 }, async)};
     }
@@ -224,6 +224,13 @@ public:
 
     [[nodiscard]] BufferByteSetCommand *clear_sync() const noexcept {
         return byte_set_sync(0);
+    }
+
+    template<typename Arg>
+    requires is_buffer_or_view_v<Arg> && std::is_same_v<buffer_element_t<Arg>, T>
+    [[nodiscard]] BufferCopyCommand *copy_from(const Arg &src, uint dst_offset) noexcept {
+        return BufferCopyCommand::create(src.head(), head(), 0, dst_offset,
+                                         src.size() * element_size, true);
     }
 
     template<typename... Args>

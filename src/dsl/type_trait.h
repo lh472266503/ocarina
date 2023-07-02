@@ -390,6 +390,7 @@ struct buffer_element_impl<BufferView<T>> {
 
 template<typename T>
 using buffer_element = detail::buffer_element_impl<std::remove_cvref_t<T>>;
+OC_DEFINE_TEMPLATE_TYPE(buffer_element)
 
 template<typename T>
 using is_buffer = detail::is_buffer_impl<std::remove_cvref_t<T>>;
