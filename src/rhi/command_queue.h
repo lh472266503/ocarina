@@ -9,10 +9,12 @@
 namespace ocarina {
 class Command;
 
+using CommandList = ocarina::vector<Command *>;
+
 class CommandQueue {
 
 private:
-    ocarina::vector<Command *> _commands{};
+    CommandList _commands{};
 
 public:
     CommandQueue() = default;
