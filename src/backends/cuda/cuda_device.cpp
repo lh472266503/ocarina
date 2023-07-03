@@ -38,13 +38,6 @@ handle_ty CUDADevice::create_buffer(size_t size) noexcept {
     });
 }
 
-handle_ty CUDADevice::create_buffer(size_t size, ocarina::handle_ty stream) noexcept {
-    OC_ASSERT(size > 0);
-    handle_ty handle{};
-    OC_CU_CHECK(cuMemAllocAsync(&handle, size, reinterpret_cast<CUstream>(stream)));
-    return handle;
-}
-
 namespace detail {
 void context_log_cb(unsigned int level, const char *tag, const char *message, void * /*cbdata */) {
     std::cerr << "[" << std::setw(2) << level << "][" << std::setw(12) << tag << "]: " << message << "\n";
@@ -120,10 +113,6 @@ void CUDADevice::destroy_resource_array(handle_ty handle) noexcept {
 
 void CUDADevice::destroy_buffer(handle_ty handle) noexcept {
     OC_CU_CHECK(cuMemFree(handle));
-}
-
-void CUDADevice::destroy_buffer(ocarina::handle_ty handle, ocarina::handle_ty stream) noexcept {
-    OC_CU_CHECK(cuMemFreeAsync(handle, reinterpret_cast<CUstream>(stream)));
 }
 
 void CUDADevice::destroy_shader(handle_ty handle) noexcept {
