@@ -293,7 +293,24 @@ public:
         size_t total_size = cmd->params_size();
         span<const MemoryBlock> blocks = cmd->params();
         if (!_params.valid() || _params.size() < total_size) {
-            _params = Buffer<std::byte>(_device, total_size, stream);
+
+            OC_CU_CHECK(cuMemFreeAsync(_params.handle(), cu_stream));
+            OC_CU_CHECK(cuMemAllocAsync(reinterpret_cast<CUdeviceptr*>(_params.handle_ptr()), total_size, cu_stream));
+
+            std::function<void()> func = [this, total_size]() {
+                _params.set_size(total_size);
+                _params.set_device(_device);
+            };
+            auto ptr = new_with_allocator<std::function<void()>>(ocarina::move(func));
+            OC_CU_CHECK(cuLaunchHostFunc(
+                cu_stream, [](void *ptr) {
+                    auto func = reinterpret_cast<std::function<void()> *>(ptr);
+                    (*func)();
+                    delete_with_allocator(func);
+                },
+                ptr));
+            OC_CU_CHECK(cuStreamSynchronize(cu_stream));
+
         }
         size_t offset = 0;
         

@@ -88,7 +88,6 @@ public:
 
 protected:
     size_t _size{};
-    handle_ty _stream{};
 
 public:
     Buffer() = default;
@@ -104,14 +103,6 @@ public:
     Buffer(BufferView<T, Dims...> buffer_view)
         : RHIResource(nullptr, Tag::BUFFER, buffer_view.head()),
           _size(buffer_view.size()) {}
-
-    ~Buffer() override {
-        // todo dirty code
-        if (_stream && valid()) {
-            _device->destroy_buffer(_handle, _stream);
-            _device = nullptr;
-        }
-    }
 
     [[nodiscard]] BufferView<T> view(size_t offset = 0, size_t size = 0) const noexcept {
         size = size == 0 ? _size - offset : size;
@@ -153,6 +144,8 @@ public:
     [[nodiscard]] auto address(size_t offset) const noexcept {
         return (U)(handle() + offset * element_size);
     }
+
+    void set_size(size_t size) noexcept { _size = size; }
 
     /// head of the buffer
     [[nodiscard]] handle_ty head() const noexcept { return handle(); }
