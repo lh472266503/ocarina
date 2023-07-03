@@ -41,6 +41,20 @@ public:
         return BufferView<T>(_handle, _offset + offset, size, _total_size);
     }
 
+    template<typename Arg>
+    requires is_buffer_or_view_v<Arg> && std::is_same_v<buffer_element_t<Arg>, T>
+    [[nodiscard]] BufferCopyCommand *copy_from(const Arg &src, uint dst_offset) noexcept {
+        return BufferCopyCommand::create(src.head(), head(), 0, dst_offset * element_size,
+                                         src.size_in_byte(), true);
+    }
+
+    template<typename Arg>
+    requires is_buffer_or_view_v<Arg> && std::is_same_v<buffer_element_t<Arg>, T>
+    [[nodiscard]] BufferCopyCommand *copy_to(Arg &dst, uint src_offset) noexcept {
+        return BufferCopyCommand::create(head(), dst.head(), src_offset * element_size,
+                                         0, dst.size_in_byte(), true);
+    }
+
     [[nodiscard]] BufferUploadCommand *upload(const void *data) const noexcept {
         return BufferUploadCommand::create(data, head(), _size * element_size, true);
     }
@@ -190,7 +204,8 @@ public:
                         this->_device = nullptr;
                     }
                     this->_size = size;
-                }, async)};
+                },
+                                            async)};
     }
 
     template<typename... Args>
@@ -219,11 +234,14 @@ public:
         return byte_set_sync(0);
     }
 
-    template<typename Arg>
-    requires is_buffer_or_view_v<Arg> && std::is_same_v<buffer_element_t<Arg>, T>
-    [[nodiscard]] BufferCopyCommand *copy_from(const Arg &src, uint dst_offset) noexcept {
-        return BufferCopyCommand::create(src.head(), head(), 0, dst_offset,
-                                         src.size_in_byte(), true);
+    template<typename... Args>
+    [[nodiscard]] BufferCopyCommand *copy_from(Args &&...args) const noexcept {
+        return view(0, _size).copy_from(OC_FORWARD(args)...);
+    }
+
+    template<typename... Args>
+    [[nodiscard]] BufferCopyCommand *copy_to(Args &&...args) const noexcept {
+        return view(0, _size).copy_to(OC_FORWARD(args)...);
     }
 
     template<typename... Args>
