@@ -21,15 +21,15 @@ void ResourceArray::set_texture(ocarina::handle_ty index, const ocarina::Texture
     impl()->set_texture(index, texture.tex_handle());
 }
 
-vector<Command *> ResourceArray::upload_handles_sync() noexcept {
-    vector<Command *> ret;
+CommandList ResourceArray::upload_handles_sync() noexcept {
+    CommandList ret;
     ret.push_back(impl()->upload_buffer_handles_sync());
     ret.push_back(impl()->upload_texture_handles_sync());
     return ret;
 }
 
-vector<Command *> ResourceArray::upload_handles() noexcept {
-    vector<Command *> ret;
+CommandList ResourceArray::upload_handles() noexcept {
+    CommandList ret;
     ret.push_back(impl()->upload_buffer_handles());
     ret.push_back(impl()->upload_texture_handles());
     return ret;

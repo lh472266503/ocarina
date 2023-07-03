@@ -183,7 +183,7 @@ public:
     [[nodiscard]] size_t size() const noexcept { return _size; }
     [[nodiscard]] size_t size_in_byte() const noexcept { return _size * sizeof(T); }
 
-    [[nodiscard]] vector<Command *> reallocate(size_t size, bool async = true) {
+    [[nodiscard]] CommandList reallocate(size_t size, bool async = true) {
         return {BufferReallocateCommand::create(this, size, async),
                 HostFunctionCommand::create([this, size] {
                     this->_size = size / element_size;

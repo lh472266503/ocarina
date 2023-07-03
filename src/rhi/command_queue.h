@@ -9,7 +9,13 @@
 namespace ocarina {
 class Command;
 
-using CommandList = ocarina::vector<Command *>;
+class CommandList : public ocarina::vector<Command *> {
+public:
+    using Super = ocarina::vector<Command *>;
+    using Super::Super;
+    CommandList &operator<<(Command *command) noexcept;
+    CommandList &operator<<(const vector<Command *> &commands) noexcept;
+};
 
 class CommandQueue {
 

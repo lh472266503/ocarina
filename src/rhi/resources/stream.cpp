@@ -16,7 +16,7 @@ Stream &Stream::operator<<(Command *command) noexcept {
     return *this;
 }
 
-Stream &Stream::operator<<(vector<ocarina::Command *> commands) noexcept {
+Stream &Stream::operator<<(const CommandList &commands) noexcept {
     for (Command *cmd : commands) {
         (*this) << cmd;
     }

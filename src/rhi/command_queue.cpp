@@ -7,6 +7,16 @@
 
 namespace ocarina {
 
+CommandList &CommandList::operator<<(ocarina::Command *command) noexcept {
+    push_back(command);
+    return *this;
+}
+
+CommandList &CommandList::operator<<(const vector<Command *> &commands) noexcept {
+    append(*this, commands);
+    return *this;
+}
+
 void CommandQueue::recycle() noexcept {
     for (Command *command : _commands) {
         command->recycle();

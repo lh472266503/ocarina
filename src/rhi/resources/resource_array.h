@@ -8,6 +8,7 @@
 #include "dsl/type_trait.h"
 #include "dsl/var.h"
 #include "rhi/command.h"
+#include "rhi/command_queue.h"
 #include "rhi/device.h"
 
 namespace ocarina {
@@ -27,7 +28,7 @@ public:
         [[nodiscard]] virtual BufferUploadCommand *upload_buffer_handles_sync() const noexcept = 0;
         [[nodiscard]] virtual BufferUploadCommand *upload_texture_handles_sync() const noexcept = 0;
         virtual void prepare_slotSOA(Device &device) noexcept = 0;
-        virtual vector<Command *> update_slotSOA(bool async) noexcept = 0;
+        virtual CommandList update_slotSOA(bool async) noexcept = 0;
         [[nodiscard]] virtual size_t buffer_num() const noexcept = 0;
         [[nodiscard]] virtual size_t texture_num() const noexcept = 0;
 
@@ -47,11 +48,11 @@ public:
     [[nodiscard]] Impl *operator->() noexcept { return impl(); }
     void prepare_slotSOA(Device &device) noexcept { impl()->prepare_slotSOA(device); }
 
-    [[nodiscard]] vector<Command *> update_slotSOA() noexcept {
+    [[nodiscard]] CommandList update_slotSOA() noexcept {
         return impl()->update_slotSOA(true);
     }
 
-    [[nodiscard]] vector<Command *> update_slotSOA_sync() noexcept {
+    [[nodiscard]] CommandList update_slotSOA_sync() noexcept {
         return impl()->update_slotSOA(false);
     }
 
@@ -75,8 +76,8 @@ public:
     void set_texture(handle_ty index, const Texture &texture) noexcept;
     [[nodiscard]] uint buffer_num() const noexcept;
     [[nodiscard]] uint texture_num() const noexcept;
-    [[nodiscard]] vector<Command *> upload_handles() noexcept;
-    [[nodiscard]] vector<Command *> upload_handles_sync() noexcept;
+    [[nodiscard]] CommandList upload_handles() noexcept;
+    [[nodiscard]] CommandList upload_handles_sync() noexcept;
 
     /// for dsl
     [[nodiscard]] const Expression *expression() const noexcept override {
