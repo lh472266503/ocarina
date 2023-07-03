@@ -56,14 +56,20 @@ void CUDACommandVisitor::visit(const BufferReallocateCommand *cmd) noexcept {
         if (rhi_resource->handle()) {
             OC_CU_CHECK(cuMemFreeAsync(rhi_resource->handle(), _stream));
         }
-        OC_CU_CHECK(cuMemAllocAsync(reinterpret_cast<handle_ty *>(rhi_resource->handle_ptr()), cmd->new_size(), _stream));
+        if (cmd->new_size() > 0) {
+            OC_CU_CHECK(cuMemAllocAsync(reinterpret_cast<handle_ty *>(rhi_resource->handle_ptr()),
+                                        cmd->new_size(), _stream));
+        }
     } else {
         _device->use_context([&] {
             RHIResource *rhi_resource = cmd->rhi_resource();
             if (rhi_resource->handle()) {
                 OC_CU_CHECK(cuMemFree(rhi_resource->handle()));
             }
-            OC_CU_CHECK(cuMemAlloc(reinterpret_cast<handle_ty *>(rhi_resource->handle_ptr()), cmd->new_size()));
+            if (cmd->new_size() > 0) {
+                OC_CU_CHECK(cuMemAlloc(reinterpret_cast<handle_ty *>(rhi_resource->handle_ptr()),
+                                       cmd->new_size()));
+            }
         });
     }
 }

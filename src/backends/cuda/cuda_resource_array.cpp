@@ -31,8 +31,8 @@ void CUDAResourceArray::prepare_slotSOA(Device &device) noexcept {
 
 CommandList CUDAResourceArray::update_slotSOA(bool async) noexcept {
     CommandList ret;
-    append(ret, _buffers.device_buffer().reallocate(_buffers.host_buffer().size() * decltype(_buffers)::element_size, async));
-    append(ret, _textures.device_buffer().reallocate(_textures.host_buffer().size() * decltype(_buffers)::element_size, async));
+    append(ret, _buffers.device_buffer().reallocate(_buffers.host_buffer().size(), async));
+    append(ret, _textures.device_buffer().reallocate(_textures.host_buffer().size(), async));
     ret.push_back(HostFunctionCommand::create([&]() {
         _slot_soa.buffer_slot = _buffers.head();
         _slot_soa.tex_slot = _textures.head();

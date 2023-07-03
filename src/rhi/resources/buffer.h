@@ -184,9 +184,12 @@ public:
     [[nodiscard]] size_t size_in_byte() const noexcept { return _size * sizeof(T); }
 
     [[nodiscard]] CommandList reallocate(size_t size, bool async = true) {
-        return {BufferReallocateCommand::create(this, size, async),
+        return {BufferReallocateCommand::create(this, size * element_size, async),
                 HostFunctionCommand::create([this, size] {
-                    this->_size = size / element_size;
+                    if (size == 0) {
+                        this->_device = nullptr;
+                    }
+                    this->_size = size;
                 }, async)};
     }
 
