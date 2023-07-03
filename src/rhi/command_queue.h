@@ -15,6 +15,7 @@ public:
     using Super::Super;
     CommandList &operator<<(Command *command) noexcept;
     CommandList &operator<<(const vector<Command *> &commands) noexcept;
+    CommandList &operator<<(std::function<void()> func) noexcept;
 };
 
 class CommandQueue {

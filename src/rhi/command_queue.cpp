@@ -17,6 +17,10 @@ CommandList &CommandList::operator<<(const vector<Command *> &commands) noexcept
     return *this;
 }
 
+CommandList &CommandList::operator<<(std::function<void()> func) noexcept {
+    return (*this) << HostFunctionCommand::create(ocarina::move(func), true);
+}
+
 void CommandQueue::recycle() noexcept {
     for (Command *command : _commands) {
         command->recycle();

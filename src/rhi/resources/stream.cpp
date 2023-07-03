@@ -28,8 +28,7 @@ void Stream::commit(const Commit &commit) noexcept {
 }
 
 Stream &Stream::operator<<(std::function<void()> f) noexcept {
-    impl()->add_command(HostFunctionCommand::create(ocarina::move(f), true));
-    return *this;
+    return (*this) << HostFunctionCommand::create(ocarina::move(f), true);
 }
 
 Stream &Stream::operator<<(const Commit &cmt) noexcept {
