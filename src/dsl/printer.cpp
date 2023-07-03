@@ -22,8 +22,7 @@ void Printer::destroy_instance() noexcept {
     }
 }
 
-void Printer::retrieve_immediately() noexcept {
-    _buffer.download_immediately();
+void Printer::output_log() noexcept {
     uint length = std::min(
         static_cast<uint>(_buffer.host_buffer().size() - 1u),
         _buffer.back());
@@ -42,6 +41,22 @@ void Printer::retrieve_immediately() noexcept {
     if (truncated) [[unlikely]] {
         OC_WARNING("Kernel log truncated.");
     }
+}
+
+CommandList Printer::retrieve() noexcept {
+    CommandList ret;
+    ret << _buffer.download();
+    ret << [&]() {
+        output_log();
+        _buffer.resize(_buffer.capacity());
+    };
+    ret << _buffer.device_buffer().clear();
+    return ret;
+}
+
+void Printer::retrieve_immediately() noexcept {
+    _buffer.download_immediately();
+    output_log();
     reset();
 }
 }// namespace ocarina

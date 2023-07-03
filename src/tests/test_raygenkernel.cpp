@@ -217,14 +217,13 @@ int main(int argc, char *argv[]) {
     };
     auto shader = device.compile(kernel);
     stream << shader(t_buffer.view(1), image, triangle[0], bindless_array).dispatch(3);
-    //    stream << shader.call(t_buffer, image, triangle[0], bindless_array).dispatch(3);
-    stream << synchronize() << commit();
+    stream << Printer::instance().retrieve() << synchronize() <<commit();
 
-    float tf = bit_cast<float>(19);
-    OC_WARNING_FORMAT("{}", tf);
+//    float tf = bit_cast<float>(19);
+//    OC_WARNING_FORMAT("{}", tf);
     Printer::instance().retrieve_immediately();
-    //    cout << "sdafasdf" << endl;
-    Printer::instance().retrieve_immediately();
-    Printer::destroy_instance();
+//    //    cout << "sdafasdf" << endl;
+//    Printer::instance().retrieve_immediately();
+//    Printer::destroy_instance();
     return 0;
 }

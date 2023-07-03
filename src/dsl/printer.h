@@ -106,6 +106,8 @@ public:
 
 #undef OC_MAKE_LOG_FUNC
     void retrieve_immediately() noexcept;
+    [[nodiscard]] CommandList retrieve() noexcept;
+    void output_log() noexcept;
 };
 
 template<typename Current, typename... Args>
