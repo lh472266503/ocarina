@@ -12,7 +12,7 @@
 
 namespace ocarina {
 void CUDACommandVisitor::visit(const BufferUploadCommand *cmd) noexcept {
-    OC_ASSERT(cmd->device_ptr() != 0);
+    OC_ASSERT((cmd->device_ptr() == 0) == (cmd->host_ptr() == 0));
     if (cmd->async() && _stream) {
         OC_CU_CHECK(cuMemcpyHtoDAsync(cmd->device_ptr(),
                                       cmd->host_ptr<const void *>(),
@@ -42,7 +42,7 @@ void CUDACommandVisitor::visit(const BufferByteSetCommand *cmd) noexcept {
 void CUDACommandVisitor::visit(const BufferCopyCommand *cmd) noexcept {
     auto src_buffer = cmd->src() + cmd->src_offset();
     auto dst_buffer = cmd->dst() + cmd->dst_offset();
-    OC_ASSERT(cmd->dst() != 0 && cmd->src() != 0);
+    OC_ASSERT((cmd->src() == 0) == (cmd->dst() == 0));
     if (cmd->async() && _stream) {
         OC_CU_CHECK(cuMemcpyDtoDAsync(dst_buffer, src_buffer, cmd->size(), _stream));
     } else {
@@ -77,7 +77,7 @@ void CUDACommandVisitor::visit(const BufferReallocateCommand *cmd) noexcept {
 }
 
 void CUDACommandVisitor::visit(const BufferDownloadCommand *cmd) noexcept {
-    OC_ASSERT(cmd->device_ptr() != 0);
+    OC_ASSERT((cmd->device_ptr() == 0) == (cmd->host_ptr() == 0));
     if (cmd->async() && _stream) {
         OC_CU_CHECK(cuMemcpyDtoHAsync(cmd->host_ptr<void *>(),
                                       cmd->device_ptr(),
