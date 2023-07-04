@@ -8,6 +8,7 @@
 
 namespace ocarina {
 class Command;
+class CommandVisitor;
 
 class CommandList : public ocarina::vector<Command *> {
 public:
@@ -16,6 +17,8 @@ public:
     CommandList &operator<<(Command *command) noexcept;
     CommandList &operator<<(const vector<Command *> &commands) noexcept;
     CommandList &operator<<(std::function<void()> func) noexcept;
+    void accept(CommandVisitor &visitor) const noexcept;
+    void recycle() noexcept;
 };
 
 class CommandQueue {

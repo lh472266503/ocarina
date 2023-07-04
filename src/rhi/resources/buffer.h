@@ -204,8 +204,12 @@ public:
                         this->_device = nullptr;
                     }
                     this->_size = size;
-                },
-                                            async)};
+                },async)};
+    }
+
+    void reallocate_immediately(size_t size) {
+        CommandList command_list = reallocate(size, false);
+        command_list.accept(*_device->command_visitor());
     }
 
     template<typename... Args>

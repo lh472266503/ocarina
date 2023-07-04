@@ -112,7 +112,9 @@ void CUDADevice::destroy_resource_array(handle_ty handle) noexcept {
 }
 
 void CUDADevice::destroy_buffer(handle_ty handle) noexcept {
-    OC_CU_CHECK(cuMemFree(handle));
+    if (handle != 0) {
+        OC_CU_CHECK(cuMemFree(handle));
+    }
 }
 
 void CUDADevice::destroy_shader(handle_ty handle) noexcept {

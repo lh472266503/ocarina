@@ -21,6 +21,18 @@ CommandList &CommandList::operator<<(std::function<void()> func) noexcept {
     return (*this) << HostFunctionCommand::create(ocarina::move(func), true);
 }
 
+void CommandList::accept(CommandVisitor &visitor) const noexcept {
+    for (const Command *command : (*this)) {
+        command->accept(visitor);
+    }
+}
+
+void CommandList::recycle() noexcept {
+    for (Command *command :  (*this)) {
+        command->recycle();
+    }
+}
+
 void CommandQueue::recycle() noexcept {
     for (Command *command : _commands) {
         command->recycle();
