@@ -189,7 +189,7 @@ void CUDACommandVisitor::visit(const ocarina::BufferToTextureCommand *cmd) noexc
         copy.srcMemoryType = CU_MEMORYTYPE_DEVICE;
         copy.srcDevice = cmd->src() + cmd->buffer_offset();
         copy.srcPitch = cmd->width_in_bytes();
-        copy.srcHeight = cmd->resolution().y;
+        copy.srcHeight = cmd->height();
         copy.dstMemoryType = CU_MEMORYTYPE_ARRAY;
         copy.dstArray = cmd->dst<CUarray>();
         copy.WidthInBytes = cmd->width_in_bytes();

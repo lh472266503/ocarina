@@ -131,13 +131,13 @@ public:
         return TextureDownloadCommand::create(data, array_handle(), impl()->resolution(),
                                               impl()->pixel_storage(), false);
     }
-    [[nodiscard]] BufferToTextureCommand *copy_from_buffer(handle_ty device_ptr, size_t buffer_offset) const noexcept {
-        return BufferToTextureCommand::create(device_ptr, buffer_offset, array_handle(), impl()->pixel_storage(),
-                                              impl()->resolution(), 0, true);
-    }
-    [[nodiscard]] BufferToTextureCommand *copy_from_buffer_sync(handle_ty device_ptr, size_t buffer_offset) const noexcept {
-        return BufferToTextureCommand::create(device_ptr, buffer_offset, array_handle(), impl()->pixel_storage(),
-                                              impl()->resolution(), 0, false);
+
+    template<typename Arg>
+    requires is_buffer_or_view_v<Arg>
+    [[nodiscard]] BufferToTextureCommand *copy_from(const Arg &buffer, size_t buffer_offset, bool async = true) const noexcept {
+        return BufferToTextureCommand::create(buffer.handle(), buffer_offset * buffer.element_size, array_handle(),
+                                              impl()->pixel_storage(),
+                                              impl()->resolution(), 0, async);
     }
 
     void upload_immediately(const void *data) const noexcept {
