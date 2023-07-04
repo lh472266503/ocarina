@@ -12,18 +12,19 @@
 
 namespace ocarina {
 void CUDACommandVisitor::visit(const BufferUploadCommand *cmd) noexcept {
-    _device->use_context([&] {
-        if (cmd->async() && _stream) {
-            OC_CU_CHECK(cuMemcpyHtoDAsync(cmd->device_ptr(),
-                                          cmd->host_ptr<const void *>(),
-                                          cmd->size_in_bytes(),
-                                          _stream));
-        } else {
+    OC_ASSERT(cmd->device_ptr() != 0);
+    if (cmd->async() && _stream) {
+        OC_CU_CHECK(cuMemcpyHtoDAsync(cmd->device_ptr(),
+                                      cmd->host_ptr<const void *>(),
+                                      cmd->size_in_bytes(),
+                                      _stream));
+    } else {
+        _device->use_context([&] {
             OC_CU_CHECK(cuMemcpyHtoD(cmd->device_ptr(),
                                      cmd->host_ptr<const void *>(),
                                      cmd->size_in_bytes()));
-        }
-    });
+        });
+    }
 }
 
 void CUDACommandVisitor::visit(const BufferByteSetCommand *cmd) noexcept {
@@ -39,15 +40,16 @@ void CUDACommandVisitor::visit(const BufferByteSetCommand *cmd) noexcept {
 }
 
 void CUDACommandVisitor::visit(const BufferCopyCommand *cmd) noexcept {
-    _device->use_context([&] {
-        auto src_buffer = cmd->src() + cmd->src_offset();
-        auto dst_buffer = cmd->dst() + cmd->dst_offset();
-        if (cmd->async() && _stream) {
+    auto src_buffer = cmd->src() + cmd->src_offset();
+    auto dst_buffer = cmd->dst() + cmd->dst_offset();
+    OC_ASSERT(cmd->dst() != 0 && cmd->src() != 0);
+    if (cmd->async() && _stream) {
+        OC_CU_CHECK(cuMemcpyDtoDAsync(dst_buffer, src_buffer, cmd->size(), _stream));
+    } else {
+        _device->use_context([&] {
             OC_CU_CHECK(cuMemcpyDtoD(dst_buffer, src_buffer, cmd->size()));
-        } else {
-            OC_CU_CHECK(cuMemcpyDtoDAsync(dst_buffer, src_buffer, cmd->size(), _stream));
-        }
-    });
+        });
+    }
 }
 
 void CUDACommandVisitor::visit(const BufferReallocateCommand *cmd) noexcept {
@@ -75,18 +77,19 @@ void CUDACommandVisitor::visit(const BufferReallocateCommand *cmd) noexcept {
 }
 
 void CUDACommandVisitor::visit(const BufferDownloadCommand *cmd) noexcept {
-    _device->use_context([&] {
-        if (cmd->async() && _stream) {
-            OC_CU_CHECK(cuMemcpyDtoHAsync(cmd->host_ptr<void *>(),
-                                          cmd->device_ptr(),
-                                          cmd->size_in_bytes(),
-                                          _stream));
-        } else {
+    OC_ASSERT(cmd->device_ptr() != 0);
+    if (cmd->async() && _stream) {
+        OC_CU_CHECK(cuMemcpyDtoHAsync(cmd->host_ptr<void *>(),
+                                      cmd->device_ptr(),
+                                      cmd->size_in_bytes(),
+                                      _stream));
+    } else {
+        _device->use_context([&] {
             OC_CU_CHECK(cuMemcpyDtoH(cmd->host_ptr<void *>(),
                                      cmd->device_ptr(),
                                      cmd->size_in_bytes()));
-        }
-    });
+        });
+    }
 }
 
 void CUDACommandVisitor::visit(const SynchronizeCommand *cmd) noexcept {
@@ -99,7 +102,6 @@ void CUDACommandVisitor::visit(const ShaderDispatchCommand *cmd) noexcept {
 }
 
 void CUDACommandVisitor::visit(const ocarina::HostFunctionCommand *cmd) noexcept {
-
     if (cmd->async()) {
         std::function<void()> *ptr = new_with_allocator<std::function<void()>>(ocarina::move(cmd->function()));
         OC_CU_CHECK(cuLaunchHostFunc(
