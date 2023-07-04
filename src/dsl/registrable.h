@@ -120,10 +120,21 @@ public:
     RegistrableManaged() = default;
     explicit RegistrableManaged(ResourceArray &resource_array) : Registrable(&resource_array) {}
     void register_self() noexcept {
-        _index = _resource_array->emplace(Super::device_buffer());
+        if (has_registered()) {
+            _resource_array->set_buffer(_index.hv(), Super::device_buffer());
+        } else {
+            _index = _resource_array->emplace(Super::device_buffer());
+        }
         _length = [&]() {
             return static_cast<uint>(Super::device_buffer().size());
         };
+    }
+
+    void unregister() noexcept {
+        if (has_registered()) {
+            (*_resource_array)->remove_buffer(_index.hv());
+            _index = InvalidUI32;
+        }
     }
 
     template<typename Index>
