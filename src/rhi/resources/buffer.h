@@ -200,9 +200,6 @@ public:
     [[nodiscard]] CommandList reallocate(size_t size, bool async = true) {
         return {BufferReallocateCommand::create(this, size * element_size, async),
                 HostFunctionCommand::create([this, size] {
-                    if (size == 0) {
-                        this->_device = nullptr;
-                    }
                     this->_size = size;
                 },async)};
     }
