@@ -511,6 +511,7 @@ def define_unary_func(func_name, param):
 def define_unary_funcs():
     tab = [
         ["rcp" , ["return 1.f / v;", [["int"], ["uint"], ["float"]]]],
+        ["sign" , ["return v >= 0 ? 1: -1;", [["int"], ["float"]]]],
         ["abs" , ["return fabsf(v);", [["float"]]]],
         ["abs" , ["return abs(v);", [["int"]]]],
         ["ceil" , ["return ceilf(v);", [["float"]]]],
