@@ -313,20 +313,17 @@ public:
 
         }
         size_t offset = 0;
-        
         for (const MemoryBlock &block : blocks) {
             offset = mem_offset(offset, block.alignment);
             OC_CU_CHECK(cuMemcpyHtoDAsync(_params.handle() + offset, block.address, block.size, cu_stream));
             offset += block.size;
         }
-        _device->use_context([&] {
-            OC_OPTIX_CHECK(optixLaunch(_optix_pipeline,
-                                       cu_stream,
-                                       _params.handle(),
-                                       offset,
-                                       &_sbt,
-                                       x, y, z));
-        });
+        OC_OPTIX_CHECK(optixLaunch(_optix_pipeline,
+                                   cu_stream,
+                                   _params.handle(),
+                                   offset,
+                                   &_sbt,
+                                   x, y, z));
     }
     ~OptixShader() override {
         _program_group_table.clear();
