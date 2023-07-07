@@ -455,9 +455,6 @@ void CppCodegen::_emit_arguments(const Function &f) noexcept {
 }
 void CppCodegen::emit(const Function &func) noexcept {
     FUNCTION_GUARD(func)
-    if (!func.description().empty()) {
-        current_scratch() << "/* " << func.description() << " */\n";
-    }
     TIMER_TAG(codegen, "function " + func.func_name() + " generated");
     func.for_each_structure([&](const Type *type) {
         visit(type);
@@ -468,6 +465,9 @@ void CppCodegen::emit(const Function &func) noexcept {
     func.for_each_custom_func([&](const Function *f) {
         emit(*f);
     });
+    if (!func.description().empty()) {
+        current_scratch() << "/* " << func.description() << " */\n";
+    }
     _emit_function(func);
     _emit_newline();
 }
