@@ -88,6 +88,7 @@ enum struct CallOp : uint32_t {
     RSQRT,
     SQR,
     RCP,
+    SIGN,
 
     CEIL,
     FLOOR,

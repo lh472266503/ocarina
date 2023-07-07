@@ -80,6 +80,14 @@ OC_NODISCARD auto abs(const T &t) noexcept {
 }
 
 template<typename T>
+requires(is_dsl_v<T> && is_signed_element_v<expr_value_t<T>>)
+OC_NODISCARD auto sign(const T &t) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
+                                                  CallOp::SIGN, {OC_EXPR(t)});
+    return eval<expr_value_t<T>>(expr);
+}
+
+template<typename T>
 requires(is_dsl_v<T>)
 OC_NODISCARD auto rcp(const T &t) noexcept {
     auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
