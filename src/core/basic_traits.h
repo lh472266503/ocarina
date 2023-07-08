@@ -257,6 +257,16 @@ constexpr auto is_vector3_v = is_vector3<T>::value;
 template<typename T>
 constexpr auto is_vector4_v = is_vector4<T>::value;
 
+#define OC_MAKE_IS_ALL_CLS(cls,dim)                                 \
+    template<typename... Ts>                                       \
+    using is_all_##cls##dim = std::conjunction<is_##cls##dim<Ts>...>; \
+    OC_DEFINE_TEMPLATE_VALUE_MULTI(is_all_##cls##dim)
+
+OC_MAKE_IS_ALL_CLS(vector,)
+OC_MAKE_IS_ALL_CLS(vector,2)
+OC_MAKE_IS_ALL_CLS(vector,3)
+OC_MAKE_IS_ALL_CLS(vector,4)
+
 #define OC_MAKE_IS_TYPE_VECTOR_DIM(type, dim)                                                                     \
     template<typename T>                                                                                          \
     using is_##type##_vector##dim = std::conjunction<is_vector##dim<T>, std::is_same<vector_element_t<T>, type>>; \
@@ -293,6 +303,13 @@ using is_matrix3 = is_matrix<T, 3u>;
 
 template<typename T>
 using is_matrix4 = is_matrix<T, 4u>;
+
+OC_MAKE_IS_ALL_CLS(matrix,)
+OC_MAKE_IS_ALL_CLS(matrix,2)
+OC_MAKE_IS_ALL_CLS(matrix,3)
+OC_MAKE_IS_ALL_CLS(matrix,4)
+
+#undef OC_MAKE_IS_ALL_CLS
 
 template<typename T, size_t N = 0u>
 constexpr auto is_matrix_v = is_matrix<T, N>::value;

@@ -223,16 +223,16 @@ using is_dynamic_array = typename detail::is_dynamic_array_impl<std::remove_cvre
 template<typename T>
 static constexpr bool is_dynamic_array_v = is_dynamic_array<T>::value;
 
-template<typename ...T>
+template<typename... T>
 using any_dynamic_array = std::disjunction<is_dynamic_array<T>...>;
 
-template<typename ...T>
+template<typename... T>
 using all_dynamic_array = std::conjunction<is_dynamic_array<T>...>;
 
 OC_DEFINE_TEMPLATE_VALUE_MULTI(any_dynamic_array)
 OC_DEFINE_TEMPLATE_VALUE_MULTI(all_dynamic_array)
 
-template<typename ...T>
+template<typename... T>
 static constexpr auto none_dynamic_array_v = !any_dynamic_array_v<T...>;
 
 namespace detail {
@@ -277,10 +277,13 @@ EXPR_TYPE_TRAITS(scalar)
 
 #undef EXPR_TYPE_TRAITS
 
-#define EXPR_DIMENSION_TRAITS(cls, dim)                          \
-    template<typename T>                                         \
-    using is_##cls##dim##_expr = is_##cls##dim<expr_value_t<T>>; \
-    OC_DEFINE_TEMPLATE_VALUE(is_##cls##dim##_expr)
+#define EXPR_DIMENSION_TRAITS(cls, dim)                                             \
+    template<typename T>                                                            \
+    using is_##cls##dim##_expr = is_##cls##dim<expr_value_t<T>>;                    \
+    OC_DEFINE_TEMPLATE_VALUE(is_##cls##dim##_expr)                                  \
+    template<typename... Ts>                                                        \
+    using is_all_##cls##dim##_expr = is_all_##cls##dim<expr_value_t<Ts>...>; \
+    OC_DEFINE_TEMPLATE_VALUE_MULTI(is_all_##cls##dim##_expr)
 
 EXPR_DIMENSION_TRAITS(vector, )
 EXPR_DIMENSION_TRAITS(vector, 2)
