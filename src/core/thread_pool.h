@@ -102,6 +102,12 @@ public:
             f(i % nx, i / nx % ny, i / nx / ny);
         });
     }
+
+    template<typename ...Args>
+    void parallel_sync(Args &&...args) noexcept {
+        parallel(OC_FORWARD(args)...);
+        synchronize();
+    }
 };
 
 template<typename F>
