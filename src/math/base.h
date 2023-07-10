@@ -349,9 +349,9 @@ template<typename T, size_t N>
         Vector<T, 3> pp0 = Vector<T, 3>{p0.x, p0.y, 0};
         Vector<T, 3> pp1 = Vector<T, 3>{p1.x, p1.y, 0};
         Vector<T, 3> pp2 = Vector<T, 3>{p2.x, p2.y, 0};
-        return 0.5 * length(cross(pp1 - pp0, pp2 - pp0));
+        return 0.5f * length(cross(pp1 - pp0, pp2 - pp0));
     } else {
-        return 0.5 * length(cross(p1 - p0, p2 - p0));
+        return 0.5f * length(cross(p1 - p0, p2 - p0));
     }
 }
 
