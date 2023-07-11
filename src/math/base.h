@@ -399,7 +399,9 @@ template<EPort p = D>
     oc_float<p> r1 = cross(cb, cn).z;
     oc_float<p> r2 = cross(ac, an).z;
 
-    return (r0 >= 0 && r1 >= 0 && r2 >= 0) || (r0 <= 0 && r1 <= 0 && r2 <= 0);
+    oc_bool<p> cond = length_squared(cross(ac, ba)) > 0;
+
+    return ((r0 >= 0 && r1 >= 0 && r2 >= 0) || (r0 <= 0 && r1 <= 0 && r2 <= 0)) && cond;
 }
 
 template<typename T>
