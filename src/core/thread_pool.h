@@ -103,7 +103,7 @@ public:
         });
     }
 
-    template<typename ...Args>
+    template<typename... Args>
     void parallel_sync(Args &&...args) noexcept {
         parallel(OC_FORWARD(args)...);
         synchronize();
@@ -114,6 +114,11 @@ template<typename F>
 requires std::is_invocable_v<F>
 inline auto async(F &&f) noexcept {
     return ThreadPool::instance().async(std::forward<F>(f));
+}
+
+template<typename... Args>
+void parallel_for(Args &&...args) noexcept {
+    ThreadPool::instance().parallel_sync(OC_FORWARD(args)...);
 }
 
 }// namespace ocarina
