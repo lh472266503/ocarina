@@ -21,7 +21,7 @@ public:
     Registrable() = default;
     explicit Registrable(ResourceArray *resource_array)
         : _resource_array(resource_array) {}
-    OC_SERIALIZABLE_FUNC(Serializable<serialize_element_ty>, _index)
+    OC_SERIALIZABLE_FUNC(Serializable<serialize_element_ty>, _index, _length)
     void set_resource_array(ResourceArray &resource_array) noexcept {
         _resource_array = &resource_array;
     }
@@ -52,8 +52,8 @@ protected:
         $if(access_index_in_byte_max > size_in_byte) {
             string prefix = ocarina::format("Buffer {} ", typeid(*this).name());
             string tb = traceback_string();
-            string fmt = prefix + "out of bound: index is {}, buffer size is {}, traceback is " + tb;
-            Printer::instance().warn(fmt, access_index, size_in_byte / uint(sizeof(T)));
+            string fmt = prefix + "out of bound: buffer index is {} access index is {}, buffer size is {}, traceback is " + tb;
+            Printer::instance().warn(fmt, buffer_index, access_index, size_in_byte / uint(sizeof(T)));
         };
 #endif
         return _resource_array->buffer<T>(buffer_index).read(access_index);
