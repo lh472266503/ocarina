@@ -58,6 +58,7 @@ private:
     OptixDeviceContext _optix_device_context{};
     OptixPipeline _optix_pipeline{};
     std::unique_ptr<CommandVisitor> _cmd_visitor;
+    uint32_t _compute_capability{};
 
     class ContextGuard {
     private:
@@ -81,6 +82,7 @@ private:
 
 public:
     explicit CUDADevice(Context *context);
+    void init_hardware_info();
     template<typename Func>
     decltype(auto) use_context(Func &&func) noexcept {
         ContextGuard cg(_cu_ctx);

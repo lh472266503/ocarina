@@ -27,6 +27,18 @@ CUDADevice::CUDADevice(Context *context)
     OC_CU_CHECK(cuDeviceGet(&_cu_device, 0));
     OC_CU_CHECK(cuDevicePrimaryCtxRetain(&_cu_ctx, _cu_device));
     _cmd_visitor = std::make_unique<CUDACommandVisitor>(this);
+    init_hardware_info();
+}
+
+void CUDADevice::init_hardware_info() {
+    auto compute_cap_major = 0;
+    auto compute_cap_minor = 0;
+    OC_CU_CHECK(cuDeviceGetAttribute(&compute_cap_major, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MAJOR, _cu_device));
+    OC_CU_CHECK(cuDeviceGetAttribute(&compute_cap_minor, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MINOR, _cu_device));
+    OC_INFO_FORMAT(
+        "Created CUDA device : (capability = {}.{}).",
+       compute_cap_major, compute_cap_minor);
+    _compute_capability = 10u * compute_cap_major + compute_cap_minor;
 }
 
 handle_ty CUDADevice::create_buffer(size_t size) noexcept {
@@ -83,7 +95,7 @@ handle_ty CUDADevice::create_texture(uint3 res, PixelStorage pixel_storage, uint
 
 handle_ty CUDADevice::create_shader(const Function &function) noexcept {
     CUDACompiler compiler(this, function);
-    ocarina::string ptx = compiler.obtain_ptx();
+    ocarina::string ptx = compiler.obtain_ptx(_compute_capability);
 
     auto ptr = use_context([&] {
         auto shader = CUDAShader::create(this, ptx, function);

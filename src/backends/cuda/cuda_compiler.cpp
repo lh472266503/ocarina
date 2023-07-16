@@ -85,7 +85,7 @@ ocarina::string CUDACompiler::compile(const string &cu, const string &fn, int sm
     return ptx;
 }
 
-ocarina::string CUDACompiler::obtain_ptx() const noexcept {
+ocarina::string CUDACompiler::obtain_ptx(int sm) const noexcept {
     ocarina::string ptx_fn = _function.func_name() + ".ptx";
     string cu_fn = _function.func_name() + ".cu";
     ocarina::string ptx;
@@ -102,7 +102,7 @@ ocarina::string CUDACompiler::obtain_ptx() const noexcept {
         } else {
             const ocarina::string &cu = context->read_global_cache(cu_fn);
 //            cout << cu << endl;
-            ptx = compile(cu, cu_fn);
+            ptx = compile(cu, cu_fn, sm);
             context->write_global_cache(ptx_fn, ptx);
         }
     } else {

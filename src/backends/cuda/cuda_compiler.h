@@ -19,8 +19,8 @@ private:
 
 public:
     CUDACompiler(CUDADevice *device, const Function &f);
-    [[nodiscard]] ocarina::string compile(const string &cu, const string &fn, int sm = 50) const noexcept;
-    [[nodiscard]] ocarina::string obtain_ptx() const noexcept;
+    [[nodiscard]] ocarina::string compile(const string &cu, const string &fn, int sm) const noexcept;
+    [[nodiscard]] ocarina::string obtain_ptx(int sm) const noexcept;
 };
 
 }// namespace ocarina
