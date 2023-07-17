@@ -22,17 +22,18 @@ struct alignas(16) Hit {
 OC_STRUCT(ocarina::Hit, inst_id, prim_id, bary){
     void init(){
         inst_id = uint(-1);
-    }
+}
 
-    [[nodiscard]] auto is_miss() const noexcept {
-        return make_expr(inst_id == uint(-1));
-    }
+[[nodiscard]] auto is_miss() const noexcept {
+    return make_expr(inst_id == uint(-1));
+}
 
-    template<typename ...Args>
-    [[nodiscard]] auto lerp(Args &&...args) const noexcept {
-        return ocarina::triangle_lerp(bary, OC_FORWARD(args)...);
-    }
-};
+template<typename... Args>
+[[nodiscard]] auto lerp(Args &&...args) const noexcept {
+    return ocarina::triangle_lerp(bary, OC_FORWARD(args)...);
+}
+}
+;
 
 namespace ocarina {
 using OCHit = Var<Hit>;
@@ -76,7 +77,7 @@ public:
     [[nodiscard]] auto t_min() const noexcept { return org_min.w; }
 };
 
-template<typename ...Args>
+template<typename... Args>
 requires none_dsl_v<Args...>
 [[nodiscard]] Ray make_ray(Args &&...args) noexcept {
     return Ray{OC_FORWARD(args)...};
@@ -84,6 +85,7 @@ requires none_dsl_v<Args...>
 
 }// namespace ocarina
 
+// clang-format off
 OC_STRUCT(ocarina::Ray, org_min, dir_max) {
 
     void update_origin(Float3 origin) noexcept {
@@ -104,6 +106,7 @@ OC_STRUCT(ocarina::Ray, org_min, dir_max) {
     [[nodiscard]] auto t_max() const noexcept { return dir_max.w; }
     [[nodiscard]] auto t_min() const noexcept { return org_min.w; }
 };
+// clang-format on
 
 namespace ocarina {
 using OCRay = Var<Ray>;
@@ -127,5 +130,4 @@ inline float3 offset_ray_origin(const float3 &p_in, const float3 &n_in) noexcept
     return select(abs(p) < origin, p + float_scale * n, p_i);
 }
 
-} // ocarina
-
+}// namespace ocarina
