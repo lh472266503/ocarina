@@ -326,11 +326,11 @@ void CppCodegen::add_generated(const Type *type) noexcept {
 }
 
 bool CppCodegen::has_generated(const Function *func) const noexcept {
-    return _generated_func.contains(func);
+    return _generated_func.contains(func->hash());
 }
 
 void CppCodegen::add_generated(const Function *func) noexcept {
-    _generated_func.emplace(func);
+    _generated_func.emplace(func->hash());
 }
 
 void CppCodegen::_emit_uniform_var(const ArgumentBinding &uniform) noexcept {

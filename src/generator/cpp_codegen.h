@@ -13,7 +13,7 @@ namespace ocarina {
 
 class OC_GENERATOR_API CppCodegen : public Codegen, protected ExprVisitor, protected StmtVisitor, protected TypeVisitor {
 protected:
-    ocarina::set<const Function *> _generated_func;
+    ocarina::set<uint64_t> _generated_func;
     ocarina::set<const Type *> _generated_struct;
 
 protected:
