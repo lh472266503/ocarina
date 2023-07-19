@@ -24,7 +24,7 @@ static constexpr string_view window_lib_name = "libocarina-window-";
 #endif
 
 namespace detail {
-[[nodiscard]] fs::path create_rhi_directory(fs::path path) noexcept {
+[[nodiscard]] fs::path create_runtime_directory(fs::path path) noexcept {
     path = fs::canonical(path);
     if (fs::is_directory(path)) {
         return path;
@@ -61,7 +61,7 @@ Context::Context(const fs::path &path, string_view cache_dir) {
 
 Context &Context::init(const fs::path &path, std::string_view cache_dir) {
     _impl = std::move(ocarina::make_unique<Impl>());
-    _impl->runtime_directory = detail::create_rhi_directory(path);
+    _impl->runtime_directory = detail::create_runtime_directory(path);
     _impl->cache_directory = runtime_directory() / cache_dir;
     DynamicModule::add_search_path(runtime_directory());
     detail::create_directory_if_necessary(cache_directory());
