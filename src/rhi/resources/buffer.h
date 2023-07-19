@@ -227,11 +227,11 @@ public:
         return view(0, _size).byte_set_sync(value);
     }
 
-    [[nodiscard]] BufferByteSetCommand *clear() const noexcept {
+    [[nodiscard]] BufferByteSetCommand *reset() const noexcept {
         return byte_set(0);
     }
 
-    [[nodiscard]] BufferByteSetCommand *clear_sync() const noexcept {
+    [[nodiscard]] BufferByteSetCommand *reset_sync() const noexcept {
         return byte_set_sync(0);
     }
 
@@ -267,8 +267,8 @@ public:
         download_sync(data)->accept(*_device->command_visitor());
     }
 
-    void clear_immediately() const noexcept {
-        clear_sync()->accept(*_device->command_visitor());
+    void reset_immediately() const noexcept {
+        reset_sync()->accept(*_device->command_visitor());
     }
 };
 

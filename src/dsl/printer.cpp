@@ -50,7 +50,7 @@ CommandList Printer::retrieve() noexcept {
         output_log();
         _buffer.resize(_buffer.capacity());
     };
-    ret << _buffer.device_buffer().clear();
+    ret << _buffer.device_buffer().reset();
     return ret;
 }
 
