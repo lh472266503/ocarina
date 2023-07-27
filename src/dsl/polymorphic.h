@@ -30,7 +30,7 @@ template<EPort p>
 }
 
 template<typename T, typename U = float>
-requires is_ptr_v<std::remove_cvref_t<T>> && std::is_base_of_v<Serializable<U>, std::remove_pointer_t<ptr_t<T>>>
+requires is_ptr_v<T> && std::is_base_of_v<Serializable<U>, ptr_t<T>>
 class Polymorphic : public vector<T> {
 public:
     using Super = vector<T>;
@@ -106,31 +106,31 @@ public:
     }
 
     [[nodiscard]] size_t all_instance_num() const noexcept { return Super::size(); }
-    [[nodiscard]] uint instance_num(const std::remove_pointer_t<T> *object) const noexcept {
+    [[nodiscard]] uint instance_num(const ptr_type *object) const noexcept {
         return _type_mgr.type_counter.at(object->type_hash());
     }
     [[nodiscard]] size_t type_num() const noexcept { return _type_mgr.size(); }
     [[nodiscard]] size_t instance_num(uint type_id) const noexcept {
         return instance_num(_type_mgr.representatives.at(type_id));
     }
-    [[nodiscard]] uint type_index(const std::remove_pointer_t<T> *object) const noexcept {
+    [[nodiscard]] uint type_index(const ptr_type *object) const noexcept {
         return _type_mgr.all_type.at(object->type_hash()).type_index;
     }
-    [[nodiscard]] uint data_index(const std::remove_pointer_t<T> *object) const noexcept {
+    [[nodiscard]] uint data_index(const ptr_type *object) const noexcept {
         return _type_mgr.all_object.at(reinterpret_cast<uint64_t>(object)).data_index;
     }
-    [[nodiscard]] DataAccessor<U> data_accessor(const std::remove_pointer_t<T> *object,
+    [[nodiscard]] DataAccessor<U> data_accessor(const ptr_type *object,
                                                 const Uint &data_index) noexcept {
         return {data_index * object->element_num() * uint(sizeof(U)), get_datas(object)};
     }
-    [[nodiscard]] DataAccessor<U> data_accessor(const std::remove_pointer_t<T> *object,
+    [[nodiscard]] DataAccessor<U> data_accessor(const ptr_type *object,
                                                 const Uint &data_index) const noexcept {
         return {data_index * object->element_num() * uint(sizeof(U)), get_datas(object)};
     }
-    [[nodiscard]] datas_type &get_datas(const std::remove_pointer_t<T> *object) noexcept {
+    [[nodiscard]] datas_type &get_datas(const ptr_type *object) noexcept {
         return _type_mgr.all_type.at(object->type_hash()).datas;
     }
-    [[nodiscard]] const datas_type &get_datas(const std::remove_pointer_t<T> *object) const noexcept {
+    [[nodiscard]] const datas_type &get_datas(const ptr_type *object) const noexcept {
         return _type_mgr.all_type.at(object->type_hash()).datas;
     }
 
@@ -138,7 +138,7 @@ public:
      * update data to managed memory
      * tips: Called on the host side code
      */
-    void update(const std::remove_pointer_t<T> *object) noexcept {
+    void update(const ptr_type *object) noexcept {
         // todo
     }
 
@@ -150,12 +150,12 @@ public:
         // todo
     }
 
-    void set_datas(const std::remove_pointer_t<T> *object, datas_type &&datas) noexcept {
+    void set_datas(const ptr_type *object, datas_type &&datas) noexcept {
         _type_mgr.all_type.at(object->type_hash()).datas = ocarina::move(datas);
     }
     void set_mode(PolymorphicMode mode) noexcept { _mode = mode; }
     [[nodiscard]] PolymorphicMode mode() const noexcept { return _mode; }
-    [[nodiscard]] uint encode_id(uint id, const std::remove_pointer_t<T> *object) const noexcept {
+    [[nodiscard]] uint encode_id(uint id, const ptr_type *object) const noexcept {
         switch (_mode) {
             case EInstance:
                 return ocarina::encode_id<H>(id, type_index(object));
