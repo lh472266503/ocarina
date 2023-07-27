@@ -26,18 +26,6 @@ namespace ocarina {
     template<typename... T>                          \
     using template_name##_t = typename template_name<T...>::type;
 
-template<typename... T>
-struct always_false : std::false_type {};
-
-template<typename... T>
-constexpr auto always_false_v = always_false<T...>::value;
-
-template<typename... T>
-struct always_true : std::true_type {};
-
-template<typename... T>
-constexpr auto always_true_v = always_true<T...>::value;
-
 template<typename T>
 requires std::is_enum_v<T>
 [[nodiscard]] constexpr auto

@@ -11,7 +11,6 @@
 namespace ocarina {
 
 using handle_ty = uint64_t;
-using ptr_t = uint64_t;
 
 class RHIResource : public concepts::Noncopyable {
 public:
