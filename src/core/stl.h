@@ -7,6 +7,7 @@
 #include "header.h"
 #include <functional>
 #include <deque>
+#include <stack>
 #include <queue>
 #include <variant>
 #include <span>
@@ -237,6 +238,8 @@ using std::span;
 using std::unordered_map;
 using std::unordered_set;
 using std::vector;
+using std::stack;
+using std::deque;
 
 #if 1
 // tuple

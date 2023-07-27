@@ -6,6 +6,7 @@
 
 #include "core/header.h"
 #include "core/stl.h"
+#include "element_trait.h"
 
 namespace ocarina {
 
