@@ -31,7 +31,7 @@ template<EPort p>
 
 namespace detail {
 template<typename Arg>
-[[nodiscard]] ptr_t<Arg>* raw_ptr(Arg arg) {
+[[nodiscard]] ptr_t<Arg> *raw_ptr(Arg arg) {
     if constexpr (std::is_pointer_v<Arg>) {
         return arg;
     } else {
@@ -88,7 +88,7 @@ protected:
             all_object.insert(make_pair(reinterpret_cast<uint64_t>(detail::raw_ptr(t)), Object{type_counter[hash_code]++, typeid(*t).name()}));
             all_type[hash_code].class_name = typeid(*t).name();
 #else
-            all_object.insert(make_pair(reinterpret_cast<uint64_t>(t), Object{type_counter[hash_code]++}));
+            all_object.insert(make_pair(reinterpret_cast<uint64_t>(detail::raw_ptr(t)), Object{type_counter[hash_code]++}));
 #endif
         }
 
@@ -183,13 +183,13 @@ public:
             case EType: {
                 for_each_representative([&](auto object) {
                     RegistrableManaged<U> data_set{resource_array};
-                    set_datas(object, ocarina::move(data_set));
+                    set_datas(detail::raw_ptr(object), ocarina::move(data_set));
                 });
                 for_each_instance([&](auto object) {
-                    object->encode(get_datas(object));
+                    object->encode(get_datas(detail::raw_ptr(object)));
                 });
                 for_each_representative([&](auto object) {
-                    datas_type &data_set = get_datas(object);
+                    datas_type &data_set = get_datas(detail::raw_ptr(object));
                     if (data_set.empty()) {
                         return;
                     }
@@ -235,19 +235,19 @@ public:
 
     template<typename Index>
     requires is_integral_expr_v<Index>
-    void dispatch_instance(Index &&index, const std::function<void(const T &)> &func) const noexcept {
+    void dispatch_instance(Index &&index, const std::function<void(const ptr_type *)> &func) const noexcept {
         if (Super::empty()) [[unlikely]] { OC_ERROR_FORMAT("{} lst is empty", typeid(*this).name()); }
         comment("dispatch_instance");
         comment(typeid(*this).name());
         if (Super::size() == 1) {
             comment(typeid(*Super::at(0u)).name());
-            func(Super::at(0u));
+            func(detail::raw_ptr(Super::at(0u)));
             return;
         }
         switch_(OC_FORWARD(index), [&] {
             for (int i = 0; i < Super::size(); ++i) {
                 comment(typeid(*Super::at(i)).name());
-                case_(i, [&] {func(Super::at(i));break_(); });
+                case_(i, [&] {func(detail::raw_ptr(Super::at(i)));break_(); });
             }
             default_([&] {unreachable();break_(); });
         });
@@ -255,7 +255,7 @@ public:
 
     template<typename Index>
     requires is_integral_expr_v<Index>
-    void dispatch_representative(Index &&index, const std::function<void(const T &)> &func) const noexcept {
+    void dispatch_representative(Index &&index, const std::function<void(const ptr_type *)> &func) const noexcept {
         auto lst = _type_mgr.representatives;
         if (lst.empty()) [[unlikely]] { OC_ERROR_FORMAT("{} type lst is empty", typeid(*this).name()); }
         comment("dispatch_type");
