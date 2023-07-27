@@ -29,6 +29,17 @@ template<EPort p>
     return std::make_pair(inst_id, type_id);
 }
 
+namespace detail {
+template<typename Arg>
+[[nodiscard]] ptr_t<Arg>* raw_ptr(Arg arg) {
+    if constexpr (std::is_pointer_v<Arg>) {
+        return arg;
+    } else {
+        return arg.get();
+    }
+}
+}// namespace detail
+
 template<typename T, typename U = float>
 requires is_ptr_v<T> && std::is_base_of_v<Serializable<U>, ptr_t<T>>
 class Polymorphic : public vector<T> {
@@ -63,18 +74,18 @@ protected:
         map<uint64_t, Object> all_object;
         map<uint64_t, TypeData> all_type;
         // Used to store a representative of each type
-        vector<T> representatives;
+        vector<ptr_type *> representatives;
 
         void add_object(T t) noexcept {
             uint64_t hash_code = t->type_hash();
             if (auto iter = all_type.find(hash_code); iter == all_type.cend()) {
                 all_type[hash_code] = TypeData();
                 all_type[hash_code].type_index = representatives.size();
-                representatives.push_back(t);
+                representatives.push_back(detail::raw_ptr(t));
                 type_counter[hash_code] = 0;
             }
 #ifndef NDEBUG
-            all_object.insert(make_pair(reinterpret_cast<uint64_t>(t), Object{type_counter[hash_code]++, typeid(*t).name()}));
+            all_object.insert(make_pair(reinterpret_cast<uint64_t>(detail::raw_ptr(t)), Object{type_counter[hash_code]++, typeid(*t).name()}));
             all_type[hash_code].class_name = typeid(*t).name();
 #else
             all_object.insert(make_pair(reinterpret_cast<uint64_t>(t), Object{type_counter[hash_code]++}));
@@ -180,7 +191,7 @@ public:
                 for_each_representative([&](auto object) {
                     datas_type &data_set = get_datas(object);
                     if (data_set.empty()) {
-                        return ;
+                        return;
                     }
                     data_set.reset_device_buffer_immediately(device);
                     data_set.register_self();
