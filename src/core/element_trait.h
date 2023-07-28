@@ -109,4 +109,14 @@ using ptr_t = detail::ptr_impl<std::remove_cvref_t<T>>::type;
 template<typename T>
 static constexpr bool is_ptr_v = detail::is_ptr_impl<std::remove_cvref_t<T>>::value;
 
+template<typename Arg>
+requires is_ptr_v<Arg>
+[[nodiscard]] ptr_t<Arg> *raw_ptr(Arg arg) {
+    if constexpr (std::is_pointer_v<Arg>) {
+        return arg;
+    } else {
+        return arg.get();
+    }
+}
+
 }// namespace ocarina
