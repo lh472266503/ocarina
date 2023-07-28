@@ -40,7 +40,6 @@ public:
     using datas_type = RegistrableManaged<U>;
 
 protected:
-
     struct Set {
         string class_name;
         datas_type data_set;
@@ -63,18 +62,36 @@ protected:
         }
 
         void erase(T t) noexcept {
+
             uint64_t hash_code = t->type_hash();
             if (auto iter = type_map.find(hash_code); iter == type_map.cend()) {
-                
+                OC_ASSERT(false);
+            }
+            auto &lst = type_map[hash_code].lst;
+
+            erase_if(lst, [&](auto elm) {
+                return elm == raw_ptr(t);
+            });
+            
+            if (lst.size() == 0) {
+                erase_if(representatives, [&](auto elm) {
+                    return elm->type_hash() == hash_code;
+                });
+                type_map.erase(hash_code);
+            } else {
+                uint index = ocarina::get_index(representatives, [&](auto elm) {
+                    return elm->type_hash() == hash_code;
+                });
+                representatives[index] = lst[0];
             }
         }
 
         void clear() noexcept {
-            representatives.clear();
+            type_map.clear();
         }
 
-        [[nodiscard]] bool empty() const noexcept { return representatives.empty(); }
-        [[nodiscard]] auto size() const noexcept { return representatives.size(); }
+        [[nodiscard]] bool empty() const noexcept { return type_map.empty(); }
+        [[nodiscard]] auto size() const noexcept { return type_map.size(); }
     } _type_mgr;
     PolymorphicMode _mode{EInstance};
 
