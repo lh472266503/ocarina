@@ -80,6 +80,15 @@ protected:
 #endif
         }
 
+        void erase(T t) noexcept {
+            uint64_t hash_code = t->type_hash();
+            all_type[hash_code].counter--;
+            all_object.erase(reinterpret_cast<uint64_t>(raw_ptr(t)));
+            if (all_type[hash_code].counter == 0) {
+                all_type.erase(hash_code);
+            }
+        }
+
         void clear() noexcept {
             all_type.clear();
             all_object.clear();
@@ -99,6 +108,7 @@ public:
     }
 
     Super::iterator erase(Super::iterator iter) noexcept {
+        _type_mgr.erase(*iter);
         return Super::erase(iter);
     }
 
