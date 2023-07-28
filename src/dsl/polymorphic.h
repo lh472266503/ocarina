@@ -7,6 +7,7 @@
 #include "type_trait.h"
 #include "syntax.h"
 #include "core/stl.h"
+#include "core/util.h"
 #include "registrable.h"
 
 namespace ocarina {
@@ -61,6 +62,7 @@ protected:
 
     struct Set {
         string class_name;
+        datas_type data_set;
         vector<ptr_type *> lst;
     };
 
@@ -69,7 +71,7 @@ protected:
         map<uint64_t, TypeData> all_type;
         // Used to store a representative of each type
         vector<ptr_type *> representatives;
-
+        vector<ptr_type *> representatives2;
         map<uint64_t, Set> type_map;
 
         void add_object(T t) noexcept {
@@ -78,6 +80,7 @@ protected:
             if (auto iter = type_map.find(hash_code); iter == type_map.cend()) {
                 type_map[hash_code] = Set();
                 type_map[hash_code].class_name = typeid(*t).name();
+                representatives2.push_back(raw_ptr(t));
             }
             type_map[hash_code].lst.push_back(raw_ptr(t));
 
@@ -96,16 +99,9 @@ protected:
 
         void erase(T t) noexcept {
             uint64_t hash_code = t->type_hash();
-            all_type[hash_code].counter--;
-            all_object.erase(reinterpret_cast<uint64_t>(raw_ptr(t)));
-            if (all_type[hash_code].counter == 0) {
-                all_type.erase(hash_code);
-            }
         }
 
         void clear() noexcept {
-            all_type.clear();
-            all_object.clear();
             representatives.clear();
         }
 
@@ -133,16 +129,25 @@ public:
 
     [[nodiscard]] size_t all_instance_num() const noexcept { return Super::size(); }
     [[nodiscard]] uint instance_num(const ptr_type *object) const noexcept {
-        return _type_mgr.all_type.at(object->type_hash()).counter;
+        return _type_mgr.type_map.at(object->type_hash()).lst.size();
+//        return _type_mgr.all_type.at(object->type_hash()).counter;
     }
     [[nodiscard]] size_t type_num() const noexcept { return _type_mgr.size(); }
     [[nodiscard]] size_t instance_num(uint type_id) const noexcept {
         return instance_num(_type_mgr.representatives.at(type_id));
     }
     [[nodiscard]] uint type_index(const ptr_type *object) const noexcept {
+//        uint64_t hash_code = object->type_hash();
+//        return ocarina::get_index(_type_mgr.representatives, [&](auto obj) {
+//            return obj->type_hash() == hash_code;
+//        });
         return _type_mgr.all_type.at(object->type_hash()).type_index;
     }
     [[nodiscard]] uint data_index(const ptr_type *object) const noexcept {
+//        uint64_t hash_code = object->type_hash();
+//        return ocarina::get_index(_type_mgr.type_map.at(hash_code).lst, [&](auto obj) {
+//            return obj->type_hash() == hash_code;
+//        });
         return _type_mgr.all_object.at(reinterpret_cast<uint64_t>(object)).data_index;
     }
     [[nodiscard]] DataAccessor<U> data_accessor(const ptr_type *object,
@@ -154,9 +159,11 @@ public:
         return {data_index * object->element_num() * uint(sizeof(U)), get_datas(object)};
     }
     [[nodiscard]] datas_type &get_datas(const ptr_type *object) noexcept {
+//        return _type_mgr.type_map.at(object->type_hash()).data_set;
         return _type_mgr.all_type.at(object->type_hash()).datas;
     }
     [[nodiscard]] const datas_type &get_datas(const ptr_type *object) const noexcept {
+//        return _type_mgr.type_map.at(object->type_hash()).data_set;
         return _type_mgr.all_type.at(object->type_hash()).datas;
     }
 
@@ -177,6 +184,7 @@ public:
     }
 
     void set_datas(const ptr_type *object, datas_type &&datas) noexcept {
+//        _type_mgr.type_map.at(object->type_hash()).data_set = ocarina::move(datas);
         _type_mgr.all_type.at(object->type_hash()).datas = ocarina::move(datas);
     }
     void set_mode(PolymorphicMode mode) noexcept { _mode = mode; }
