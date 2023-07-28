@@ -271,6 +271,16 @@ public:
     }
 
     template<typename Func>
+    [[nodiscard]] uint get_index(Func &&func) const noexcept {
+        for (uint i = 0; i < Super::size(); ++i) {
+            if (func(Super::at(i))) {
+                return i;
+            }
+        }
+        return InvalidUI32;
+    }
+
+    template<typename Func>
     void for_each_instance(Func &&func) noexcept {
         for (int i = 0; i < Super::size(); ++i) {
             func(Super::at(i));
