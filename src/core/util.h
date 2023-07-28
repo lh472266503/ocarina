@@ -42,6 +42,17 @@ void append(T &v1, V &&v2) {
     v1.insert(v1.end(), OC_FORWARD(v2).begin(), OC_FORWARD(v2).end());
 }
 
+template<typename T, typename F>
+requires concepts::subscriptable<T>
+[[nodiscard]] uint get_index(T &t, F &&func) noexcept {
+    for (uint i = 0; i < t.size(); ++i) {
+        if (func(t.at(i))) {
+            return i;
+        }
+    }
+    return InvalidUI32;
+}
+
 inline namespace size_literals {
 [[nodiscard]] constexpr auto operator""_kb(size_t bytes) noexcept {
     return static_cast<size_t>(bytes * 1024u);

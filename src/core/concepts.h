@@ -17,40 +17,45 @@ struct Noncopyable {
     Noncopyable &operator=(Noncopyable &&) noexcept = default;
 };
 
-
 template<typename T>
 concept iterable = requires(T v) {
-                       v.begin();
-                       v.end();
-                   };
+    v.begin();
+    v.end();
+};
+
+template<typename T>
+concept subscriptable = requires(T v) {
+    v[0];
+    v.at(0);
+};
 
 template<typename T>
 concept string_viewable = requires(T v) {
-                              ocarina::string_view{v};
-                          };
+    ocarina::string_view{v};
+};
 
 template<typename T>
 concept span_convertible = requires(T v) {
-                               ocarina::span{v};
-                           };
+    ocarina::span{v};
+};
 
 template<typename T, typename... Args>
 concept constructible = requires(Args... args) {
-                            T{args...};
-                        };
+    T{args...};
+};
 
 template<typename Dest, typename Src>
 concept static_convertible = requires(Src s) {
-                                 static_cast<Dest>(s);
-                             };
+    static_cast<Dest>(s);
+};
 
 template<typename Dest, typename Src>
 concept bitwise_convertible = sizeof(Src) >= sizeof(Dest);
 
 template<typename Dest, typename Src>
 concept reinterpret_convertible = requires(Src s) {
-                                      reinterpret_cast<Dest *>(&s);
-                                  };
+    reinterpret_cast<Dest *>(&s);
+};
 
 template<typename F, typename... Args>
 concept invocable = std::is_invocable_v<F, Args...>;
@@ -62,14 +67,13 @@ template<typename T>
 concept pointer = std::is_pointer_v<T>;
 
 template<typename T>
-concept non_pointer = !
-std::is_pointer_v<T>;
+concept non_pointer = !std::is_pointer_v<T>;
 
 template<typename T>
 concept container = requires(T a) {
-                        a.begin();
-                        a.size();
-                    };
+    a.begin();
+    a.size();
+};
 
 template<typename T>
 concept integral = is_integral_v<T>;
@@ -137,8 +141,7 @@ template<typename... T>
 concept all_integral = (integral<T> && ...);
 
 template<typename A, typename B>
-concept different = !
-same<A, B>;
+concept different = !same<A, B>;
 
 template<typename Lhs, typename Rhs>
 concept access_able = requires(Lhs lhs, Rhs rhs) { lhs[rhs]; };
