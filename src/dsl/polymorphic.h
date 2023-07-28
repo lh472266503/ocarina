@@ -59,14 +59,28 @@ protected:
 #endif
     };
 
+    struct Set {
+        string class_name;
+        vector<ptr_type *> lst;
+    };
+
     struct {
         map<uint64_t, Object> all_object;
         map<uint64_t, TypeData> all_type;
         // Used to store a representative of each type
         vector<ptr_type *> representatives;
 
+        map<uint64_t, Set> type_map;
+
         void add_object(T t) noexcept {
             uint64_t hash_code = t->type_hash();
+
+            if (auto iter = type_map.find(hash_code); iter == type_map.cend()) {
+                type_map[hash_code] = Set();
+                type_map[hash_code].class_name = typeid(*t).name();
+            }
+            type_map[hash_code].lst.push_back(raw_ptr(t));
+
             if (auto iter = all_type.find(hash_code); iter == all_type.cend()) {
                 all_type[hash_code] = TypeData();
                 all_type[hash_code].type_index = representatives.size();
