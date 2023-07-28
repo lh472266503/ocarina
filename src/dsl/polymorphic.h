@@ -53,13 +53,13 @@ protected:
         uint type_index{};
         // used to store current type data
         datas_type datas;
+        uint counter = 0;
 #ifndef NDEBUG
         string class_name;
 #endif
     };
 
     struct {
-        map<uint64_t, uint> type_counter;
         map<uint64_t, Object> all_object;
         map<uint64_t, TypeData> all_type;
         // Used to store a representative of each type
@@ -71,20 +71,18 @@ protected:
                 all_type[hash_code] = TypeData();
                 all_type[hash_code].type_index = representatives.size();
                 representatives.push_back(raw_ptr(t));
-                type_counter[hash_code] = 0;
             }
 #ifndef NDEBUG
-            all_object.insert(make_pair(reinterpret_cast<uint64_t>(raw_ptr(t)), Object{type_counter[hash_code]++, typeid(*t).name()}));
+            all_object.insert(make_pair(reinterpret_cast<uint64_t>(raw_ptr(t)), Object{all_type[hash_code].counter++, typeid(*t).name()}));
             all_type[hash_code].class_name = typeid(*t).name();
 #else
-            all_object.insert(make_pair(reinterpret_cast<uint64_t>(raw_ptr(t)), Object{type_counter[hash_code]++}));
+            all_object.insert(make_pair(reinterpret_cast<uint64_t>(raw_ptr(t)), Object{all_type[hash_code].counter++}));
 #endif
         }
 
         void clear() noexcept {
             all_type.clear();
             all_object.clear();
-            type_counter.clear();
             representatives.clear();
         }
 
@@ -100,6 +98,10 @@ public:
         Super::push_back(arg);
     }
 
+    Super::iterator erase(Super::iterator iter) noexcept {
+        return Super::erase(iter);
+    }
+
     void clear() {
         Super ::clear();
         _type_mgr.clear();
@@ -107,7 +109,7 @@ public:
 
     [[nodiscard]] size_t all_instance_num() const noexcept { return Super::size(); }
     [[nodiscard]] uint instance_num(const ptr_type *object) const noexcept {
-        return _type_mgr.type_counter.at(object->type_hash());
+        return _type_mgr.all_type.at(object->type_hash()).counter;
     }
     [[nodiscard]] size_t type_num() const noexcept { return _type_mgr.size(); }
     [[nodiscard]] size_t instance_num(uint type_id) const noexcept {
