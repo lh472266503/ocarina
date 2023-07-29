@@ -83,6 +83,20 @@ protected:
             return InvalidUI64;
         }
 
+        template<typename Func>
+        void for_each_representative(Func &&func) const noexcept {
+            for (const auto &it : type_map) {
+                func(it.second.objects[0]);
+            }
+        }
+
+        template<typename Func>
+        void for_each_representative(Func &&func) noexcept {
+            for (const auto &it : type_map) {
+                func(it.second.objects[0]);
+            }
+        }
+
         void erase(T t) noexcept {
 
             uint64_t hash_code = t->type_hash();
