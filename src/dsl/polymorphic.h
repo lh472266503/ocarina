@@ -61,6 +61,28 @@ protected:
             type_map[hash_code].objects.push_back(raw_ptr(t));
         }
 
+        [[nodiscard]] uint type_index(uint64_t hash_code) noexcept {
+            uint cursor = 0;
+            for (auto iter = type_map.cbegin(); iter != type_map.cend(); ++iter, ++cursor) {
+                if (hash_code == iter->first) {
+                    return cursor;
+                }
+            }
+            OC_ASSERT(false);
+            return InvalidUI32;
+        }
+
+        [[nodiscard]] uint64_t type_hash(uint type_index) noexcept {
+            uint cursor = 0;
+            for (auto iter = type_map.cbegin(); iter != type_map.cend(); ++iter, ++cursor) {
+                if (cursor == type_index) {
+                    return iter->first;
+                }
+            }
+            OC_ASSERT(false);
+            return InvalidUI64;
+        }
+
         void erase(T t) noexcept {
 
             uint64_t hash_code = t->type_hash();
