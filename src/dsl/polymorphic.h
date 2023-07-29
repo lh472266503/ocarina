@@ -40,25 +40,25 @@ public:
     using datas_type = RegistrableManaged<U>;
 
 protected:
-    struct Set {
+    struct TypeData {
         string class_name;
         datas_type data_set;
-        vector<ptr_type *> lst;
+        vector<ptr_type *> objects;
     };
 
     struct {
         // Used to store a representative of each type
         vector<ptr_type *> representatives;
-        map<uint64_t, Set> type_map;
+        map<uint64_t, TypeData> type_map;
 
         void add_object(T t) noexcept {
             uint64_t hash_code = t->type_hash();
             if (auto iter = type_map.find(hash_code); iter == type_map.cend()) {
-                type_map[hash_code] = Set();
+                type_map[hash_code] = TypeData();
                 type_map[hash_code].class_name = typeid(*t).name();
                 representatives.push_back(raw_ptr(t));
             }
-            type_map[hash_code].lst.push_back(raw_ptr(t));
+            type_map[hash_code].objects.push_back(raw_ptr(t));
         }
 
         void erase(T t) noexcept {
@@ -67,7 +67,7 @@ protected:
             if (auto iter = type_map.find(hash_code); iter == type_map.cend()) {
                 OC_ASSERT(false);
             }
-            auto &lst = type_map[hash_code].lst;
+            auto &lst = type_map[hash_code].objects;
 
             erase_if(lst, [&](auto elm) {
                 return elm == raw_ptr(t);
@@ -114,7 +114,7 @@ public:
 
     [[nodiscard]] size_t all_instance_num() const noexcept { return Super::size(); }
     [[nodiscard]] uint instance_num(const ptr_type *object) const noexcept {
-        return _type_mgr.type_map.at(object->type_hash()).lst.size();
+        return _type_mgr.type_map.at(object->type_hash()).objects.size();
     }
     [[nodiscard]] size_t type_num() const noexcept { return _type_mgr.size(); }
     [[nodiscard]] size_t instance_num(uint type_id) const noexcept {
@@ -128,7 +128,7 @@ public:
     }
     [[nodiscard]] uint data_index(const ptr_type *object) const noexcept {
         uint64_t hash_code = object->type_hash();
-        return ocarina::get_index(_type_mgr.type_map.at(hash_code).lst, [&](auto obj) {
+        return ocarina::get_index(_type_mgr.type_map.at(hash_code).objects, [&](auto obj) {
             return object == raw_ptr(obj);
         });
     }
