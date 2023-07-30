@@ -81,6 +81,34 @@ protected:
         }
 
         template<typename Func>
+        void for_each_type(Func &&func) const noexcept {
+            if constexpr (std::invocable<Func, TypeData, uint>) {
+                uint cursor = 0u;
+                for (auto iter = type_map.cbegin(); iter != type_map.cend(); ++iter, ++cursor) {
+                    func(iter->second, cursor);
+                }
+            } else {
+                for (const auto &it : type_map) {
+                    func(it.second);
+                }
+            }
+        }
+
+        template<typename Func>
+        void for_each_type(Func &&func) noexcept {
+            if constexpr (std::invocable<Func, TypeData, uint>) {
+                uint cursor = 0u;
+                for (auto iter = type_map.begin(); iter != type_map.end(); ++iter, ++cursor) {
+                    func(iter->second, cursor);
+                }
+            } else {
+                for (auto &it : type_map) {
+                    func(it.second);
+                }
+            }
+        }
+
+        template<typename Func>
         void for_each_representative(Func &&func) const noexcept {
             if constexpr (std::invocable<Func, ptr_type *, uint>) {
                 uint cursor = 0u;
@@ -98,7 +126,7 @@ protected:
         void for_each_representative(Func &&func) noexcept {
             if constexpr (std::invocable<Func, ptr_type *, uint>) {
                 uint cursor = 0u;
-                for (auto iter = type_map.cbegin(); iter != type_map.cend(); ++iter, ++cursor) {
+                for (auto iter = type_map.begin(); iter != type_map.end(); ++iter, ++cursor) {
                     func(iter->second.objects[0], cursor);
                 }
             } else {
@@ -221,21 +249,15 @@ public:
         switch (_mode) {
             case EInstance: break;
             case EType: {
-                for_each_representative([&](auto object) {
-                    RegistrableManaged<U> data_set{resource_array};
-                    set_datas(raw_ptr(object), ocarina::move(data_set));
-                });
-                for_each_instance([&](auto object) {
-                    object->encode(get_datas(raw_ptr(object)));
-                });
-                for_each_representative([&](auto object) {
-                    datas_type &data_set = get_datas(raw_ptr(object));
-                    if (data_set.empty()) {
-                        return;
+                _type_mgr.for_each_type([&](TypeData &type_data) {
+                    type_data.data_set.set_resource_array(resource_array);
+                    type_data.data_set.reserve(type_data.objects.size() * type_data.objects[0]->element_num());
+                    for (ptr_type *object : type_data.objects) {
+                        object->encode(type_data.data_set);
                     }
-                    data_set.reset_device_buffer_immediately(device);
-                    data_set.register_self();
-                    data_set.upload_immediately();
+                    type_data.data_set.reset_device_buffer_immediately(device);
+                    type_data.data_set.register_self();
+                    type_data.data_set.upload_immediately();
                 });
                 break;
             }
