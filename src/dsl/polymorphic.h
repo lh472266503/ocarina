@@ -47,8 +47,6 @@ protected:
     };
 
     struct {
-        // Used to store a representative of each type
-        vector<ptr_type *> representatives;
         map<uint64_t, TypeData> type_map;
 
         void add_object(T t) noexcept {
@@ -56,12 +54,11 @@ protected:
             if (auto iter = type_map.find(hash_code); iter == type_map.cend()) {
                 type_map[hash_code] = TypeData();
                 type_map[hash_code].class_name = typeid(*t).name();
-                representatives.push_back(raw_ptr(t));
             }
             type_map[hash_code].objects.push_back(raw_ptr(t));
         }
 
-        [[nodiscard]] uint type_index(uint64_t hash_code) noexcept {
+        [[nodiscard]] uint type_index(uint64_t hash_code) const noexcept {
             uint cursor = 0;
             for (auto iter = type_map.cbegin(); iter != type_map.cend(); ++iter, ++cursor) {
                 if (hash_code == iter->first) {
@@ -72,7 +69,7 @@ protected:
             return InvalidUI32;
         }
 
-        [[nodiscard]] uint64_t type_hash(uint type_index) noexcept {
+        [[nodiscard]] uint64_t type_hash(uint type_index) const noexcept {
             uint cursor = 0;
             for (auto iter = type_map.cbegin(); iter != type_map.cend(); ++iter, ++cursor) {
                 if (cursor == type_index) {
@@ -85,20 +82,33 @@ protected:
 
         template<typename Func>
         void for_each_representative(Func &&func) const noexcept {
-            for (const auto &it : type_map) {
-                func(it.second.objects[0]);
+            if constexpr (std::invocable<Func, ptr_type *, uint>) {
+                uint cursor = 0u;
+                for (auto iter = type_map.cbegin(); iter != type_map.cend(); ++iter, ++cursor) {
+                    func(iter->second.objects[0], cursor);
+                }
+            } else {
+                for (const auto &it : type_map) {
+                    func(it.second.objects[0]);
+                }
             }
         }
 
         template<typename Func>
         void for_each_representative(Func &&func) noexcept {
-            for (const auto &it : type_map) {
-                func(it.second.objects[0]);
+            if constexpr (std::invocable<Func, ptr_type *, uint>) {
+                uint cursor = 0u;
+                for (auto iter = type_map.cbegin(); iter != type_map.cend(); ++iter, ++cursor) {
+                    func(iter->second.objects[0], cursor);
+                }
+            } else {
+                for (const auto &it : type_map) {
+                    func(it.second.objects[0]);
+                }
             }
         }
 
         void erase(T t) noexcept {
-
             uint64_t hash_code = t->type_hash();
             if (auto iter = type_map.find(hash_code); iter == type_map.cend()) {
                 OC_ASSERT(false);
@@ -108,17 +118,9 @@ protected:
             erase_if(lst, [&](auto elm) {
                 return elm == raw_ptr(t);
             });
-            
+
             if (lst.size() == 0) {
-                erase_if(representatives, [&](auto elm) {
-                    return elm->type_hash() == hash_code;
-                });
                 type_map.erase(hash_code);
-            } else {
-                uint index = ocarina::get_index(representatives, [&](auto elm) {
-                    return elm->type_hash() == hash_code;
-                });
-                representatives[index] = lst[0];
             }
         }
 
@@ -150,17 +152,17 @@ public:
 
     [[nodiscard]] size_t all_instance_num() const noexcept { return Super::size(); }
     [[nodiscard]] uint instance_num(const ptr_type *object) const noexcept {
-        return _type_mgr.type_map.at(object->type_hash()).objects.size();
+        uint64_t hash_code = object->type_hash();
+        return _type_mgr.type_map.at(hash_code).objects.size();
     }
     [[nodiscard]] size_t type_num() const noexcept { return _type_mgr.size(); }
-    [[nodiscard]] size_t instance_num(uint type_id) const noexcept {
-        return instance_num(_type_mgr.representatives.at(type_id));
+    [[nodiscard]] size_t instance_num(uint type_idx) const noexcept {
+        uint64_t hash_code = _type_mgr.type_hash(type_idx);
+        return _type_mgr.type_map.at(hash_code).objects.size();
     }
     [[nodiscard]] uint type_index(const ptr_type *object) const noexcept {
         uint64_t hash_code = object->type_hash();
-        return ocarina::get_index(_type_mgr.representatives, [&](auto obj) {
-            return obj->type_hash() == hash_code;
-        });
+        return _type_mgr.type_index(hash_code);
     }
     [[nodiscard]] uint data_index(const ptr_type *object) const noexcept {
         uint64_t hash_code = object->type_hash();
@@ -294,20 +296,25 @@ public:
     template<typename Index>
     requires is_integral_expr_v<Index>
     void dispatch_representative(Index &&index, const std::function<void(const ptr_type *)> &func) const noexcept {
-        auto lst = _type_mgr.representatives;
-        if (lst.empty()) [[unlikely]] { OC_ERROR_FORMAT("{} type lst is empty", typeid(*this).name()); }
+        if (_type_mgr.empty()) [[unlikely]] {
+            OC_ERROR_FORMAT("{} type lst is empty", typeid(*this).name());
+        }
         comment("dispatch_type");
         comment(typeid(*this).name());
         if (_type_mgr.size() == 1) {
-            comment(typeid(*lst.at(0u)).name());
-            func(lst.at(0u));
+            ptr_type *elm = _type_mgr.type_map.begin()->second.objects[0];
+            comment(typeid(*elm).name());
+            func(elm);
             return;
         }
         switch_(OC_FORWARD(index), [&] {
-            for (int i = 0; i < lst.size(); ++i) {
-                comment(typeid(*lst.at(i)).name());
-                case_(i, [&] {func(lst.at(i));break_(); });
-            }
+            _type_mgr.for_each_representative([&](ptr_type *elm, uint i) {
+                comment(typeid(*elm).name());
+                case_(i, [&] {
+                    func(elm);
+                    break_();
+                });
+            });
             default_([&] {unreachable();break_(); });
         });
     }
@@ -338,16 +345,12 @@ public:
 
     template<typename Func>
     void for_each_representative(Func &&func) const noexcept {
-        for (const auto &elm : _type_mgr.representatives) {
-            func(elm);
-        }
+        _type_mgr.for_each_representative(OC_FORWARD(func));
     }
 
     template<typename Func>
     void for_each_representative(Func &&func) noexcept {
-        for (auto &elm : _type_mgr.representatives) {
-            func(elm);
-        }
+        _type_mgr.for_each_representative(OC_FORWARD(func));
     }
 };
 
