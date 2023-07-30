@@ -106,9 +106,9 @@ public:
     void end() noexcept override {
         if (_tag.empty()) { return; }
         if (elapse_ms() < 1000) {
-            OC_INFO_FORMAT("task {} is take {} ms", _tag.c_str(), elapse_ms());
+            OC_INFO_FORMAT("task {} is take {:.2f} ms", _tag.c_str(), elapse_ms());
         } else {
-            OC_INFO_FORMAT("task {} is take {} s", _tag.c_str(), elapse_s());
+            OC_INFO_FORMAT("task {} is take {:.2f} s", _tag.c_str(), elapse_s());
         }
     }
 };
