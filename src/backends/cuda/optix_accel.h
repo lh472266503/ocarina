@@ -15,7 +15,7 @@ class OptixAccel : public Accel::Impl {
 private:
     Buffer<std::byte> _tlas_buffer;
     OptixTraversableHandle _tlas_handle{};
-    ocarina::vector<const Mesh::Impl *> _meshes;
+    ocarina::vector<const RHIMesh::Impl *> _meshes;
     ocarina::vector<float4x4> _transforms;
     CUDADevice *_device;
     Buffer<OptixInstance> _instances{};
@@ -23,7 +23,7 @@ private:
 public:
     explicit OptixAccel(CUDADevice *device) : _device(device) {}
 
-    void add_mesh(const Mesh::Impl *mesh, float4x4 mat) noexcept override {
+    void add_mesh(const RHIMesh::Impl *mesh, float4x4 mat) noexcept override {
         _meshes.push_back(mesh);
         _transforms.push_back(mat);
     }

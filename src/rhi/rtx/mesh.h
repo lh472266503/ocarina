@@ -11,7 +11,7 @@
 
 namespace ocarina {
 
-class Mesh : public RHIResource {
+class RHIMesh : public RHIResource {
 public:
     class Impl {
     public:
@@ -21,8 +21,8 @@ public:
     };
 
 public:
-    Mesh() = default;
-    Mesh(Device::Impl *device, const MeshParams &params)
+    RHIMesh() = default;
+    RHIMesh(Device::Impl *device, const MeshParams &params)
         : RHIResource(device, Tag::MESH,
                       device->create_mesh(params)) {}
 
@@ -34,7 +34,7 @@ public:
 };
 
 template<typename VBuffer, typename TBuffer>
-Mesh Device::create_mesh(const VBuffer &v_buffer, const TBuffer &t_buffer,
+RHIMesh Device::create_mesh(const VBuffer &v_buffer, const TBuffer &t_buffer,
                          AccelUsageTag usage_tag, AccelGeomTag geom_tag) noexcept {
     MeshParams params;
     params.vert_handle = v_buffer.head();
@@ -48,7 +48,7 @@ Mesh Device::create_mesh(const VBuffer &v_buffer, const TBuffer &t_buffer,
     params.usage_tag = usage_tag;
     params.geom_tag = geom_tag;
 
-    return _create<Mesh>(params);
+    return _create<RHIMesh>(params);
 }
 
 }// namespace ocarina

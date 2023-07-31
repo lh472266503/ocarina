@@ -33,7 +33,7 @@ void OptixAccel::build_bvh(CUDACommandVisitor *visitor) noexcept {
     _device->use_context([&] {
         vector<OptixTraversableHandle> traversable_handles;
         traversable_handles.reserve(_meshes.size());
-        for (const Mesh::Impl *mesh : _meshes) {
+        for (const RHIMesh::Impl *mesh : _meshes) {
             traversable_handles.push_back(mesh->blas_handle());
         }
         size_t instance_num = _meshes.size();

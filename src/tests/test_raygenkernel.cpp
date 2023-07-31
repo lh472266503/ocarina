@@ -135,7 +135,7 @@ int main(int argc, char *argv[]) {
         managed.push_back(i);
     }
     managed.upload_immediately();
-    Mesh cube = device.create_mesh(vert.device_buffer(), t_buffer);
+    RHIMesh cube = device.create_mesh(vert.device_buffer(), t_buffer);
 
     ResourceArray bindless_array = device.create_resource_array();
 

@@ -10,7 +10,7 @@
 
 namespace ocarina {
 class CUDADevice;
-class CUDAMesh : public Mesh::Impl {
+class CUDAMesh : public RHIMesh::Impl {
 private:
     CUDADevice *_device;
     MeshParams _params;

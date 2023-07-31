@@ -109,18 +109,18 @@ int main(int argc, char *argv[]) {
     auto triangle_buffer = device.create_buffer<Triangle>(triangles.size());
     stream << triangle_buffer.upload_sync(triangles.data());
     stream << synchronize() << commit();
-    std::vector<Mesh> meshes;
+    std::vector<RHIMesh> meshes;
     for (auto handle : meshHandles) {
         auto mesh = device.create_mesh(vertex_buffer, triangle_buffer.view(handle.tri_offset, handle.tri_num));
         meshes.push_back(std::move(mesh));
     }
-    for (Mesh &mesh : meshes) {
+    for (RHIMesh &mesh : meshes) {
         stream << mesh.build_bvh();
     }
     stream << synchronize() << commit();
 
     auto accel = device.create_accel();
-    for (const Mesh &mesh : meshes) {
+    for (const RHIMesh &mesh : meshes) {
         accel.add_mesh(mesh, make_float4x4(1.f));
     }
 

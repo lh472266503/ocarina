@@ -30,7 +30,7 @@ class Stream;
 
 class Texture;
 
-class Mesh;
+class RHIMesh;
 
 class Accel;
 
@@ -100,7 +100,7 @@ public:
     }
 
     template<typename VBuffer, typename TBuffer>
-    [[nodiscard]] Mesh create_mesh(const VBuffer &v_buffer,
+    [[nodiscard]] RHIMesh create_mesh(const VBuffer &v_buffer,
                                    const TBuffer &t_buffer,
                                    AccelUsageTag usage_tag = AccelUsageTag::FAST_TRACE,
                                    AccelGeomTag geom_tag = AccelGeomTag::DISABLE_ANYHIT) noexcept;// implement in mesh.h

@@ -18,7 +18,7 @@ private:
 public:
     class Impl {
     public:
-        virtual void add_mesh(const Mesh::Impl *mesh, float4x4 transform) noexcept = 0;
+        virtual void add_mesh(const RHIMesh::Impl *mesh, float4x4 transform) noexcept = 0;
         [[nodiscard]] virtual handle_ty handle() const noexcept = 0;
         [[nodiscard]] virtual const void *handle_ptr() const noexcept = 0;
         [[nodiscard]] virtual size_t data_size() const noexcept = 0;
@@ -34,7 +34,7 @@ public:
     [[nodiscard]] uint vertex_num() const noexcept { return _vertex_num; }
     [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
     [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(_handle); }
-    void add_mesh(const Mesh &mesh, float4x4 transform) noexcept {
+    void add_mesh(const RHIMesh &mesh, float4x4 transform) noexcept {
         _vertex_num += mesh.vertex_num();
         _triangle_num += mesh.triangle_num();
         impl()->add_mesh(mesh.impl(), transform);
