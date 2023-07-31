@@ -345,8 +345,14 @@ public:
 
     template<typename Func>
     void for_each_instance(Func &&func) const noexcept {
-        for (int i = 0; i < Super::size(); ++i) {
-            func(Super::at(i));
+        if constexpr (std::invocable<Func, T, uint>) {
+            for (uint i = 0; i < Super::size(); ++i) {
+                func(Super::at(i), i);
+            }
+        } else {
+            for (uint i = 0; i < Super::size(); ++i) {
+                func(Super::at(i));
+            }
         }
     }
 
@@ -357,8 +363,14 @@ public:
 
     template<typename Func>
     void for_each_instance(Func &&func) noexcept {
-        for (int i = 0; i < Super::size(); ++i) {
-            func(Super::at(i));
+        if constexpr (std::invocable<Func, T, uint>) {
+            for (uint i = 0; i < Super::size(); ++i) {
+                func(Super::at(i), i);
+            }
+        } else {
+            for (uint i = 0; i < Super::size(); ++i) {
+                func(Super::at(i));
+            }
         }
     }
 
