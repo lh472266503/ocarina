@@ -39,8 +39,10 @@ void OptixAccel::clear() noexcept {
     _transforms.clear();
     _tlas_buffer.destroy();
     _instances.destroy();
-    OC_CU_CHECK(cuMemFree(_tlas_handle));
-    _tlas_handle = 0;
+    if (_tlas_handle != 0) {
+        OC_CU_CHECK(cuMemFree(_tlas_handle));
+        _tlas_handle = 0;
+    }
 }
 
 void OptixAccel::build_bvh(CUDACommandVisitor *visitor) noexcept {
