@@ -80,11 +80,11 @@ public:
         return BufferByteSetCommand::create(head(), size_in_byte(), value, false);
     }
 
-    [[nodiscard]] BufferByteSetCommand *clear() const noexcept {
+    [[nodiscard]] BufferByteSetCommand *reset() const noexcept {
         return byte_set(0);
     }
 
-    [[nodiscard]] BufferByteSetCommand *clear_sync() const noexcept {
+    [[nodiscard]] BufferByteSetCommand *reset_sync() const noexcept {
         return byte_set_sync(0);
     }
 };
