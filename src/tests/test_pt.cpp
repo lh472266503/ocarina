@@ -121,7 +121,7 @@ int main(int argc, char *argv[]) {
 
     auto accel = device.create_accel();
     for (const RHIMesh &mesh : meshes) {
-        accel.add_mesh(mesh, make_float4x4(1.f));
+//        accel.add_mesh((mesh), make_float4x4(1.f));
     }
 
     Callable lcg = [](Uint &state) noexcept {
