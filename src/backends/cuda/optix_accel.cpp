@@ -37,6 +37,8 @@ void OptixAccel::add_mesh(const RHIMesh::Impl *mesh, ocarina::float4x4 mat) noex
 void OptixAccel::clear() noexcept {
     _meshes.clear();
     _transforms.clear();
+    _tlas_buffer.destroy();
+    _instances.destroy();
 }
 
 void OptixAccel::build_bvh(CUDACommandVisitor *visitor) noexcept {

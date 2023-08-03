@@ -19,5 +19,6 @@ void RHIResource::destroy() {
         case Tag::ACCEL: _device->destroy_accel(_handle); break;
         case Tag::RESOURCE_ARRAY: _device->destroy_resource_array(_handle); break;
     }
+    _handle = 0;
 }
 }// namespace ocarina

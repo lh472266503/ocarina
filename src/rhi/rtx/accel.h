@@ -14,6 +14,7 @@ class Accel : public RHIResource {
 private:
     uint _triangle_num{};
     uint _vertex_num{};
+    vector<RHIMesh> _meshes;
 
 public:
     class Impl {
@@ -28,20 +29,27 @@ public:
 
 public:
     Accel() = default;
-
     explicit Accel(Device::Impl *device)
         : RHIResource(device, Tag::ACCEL, device->create_accel()) {}
     [[nodiscard]] uint triangle_num() const noexcept { return _triangle_num; }
     [[nodiscard]] uint vertex_num() const noexcept { return _vertex_num; }
     [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
     [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(_handle); }
-    void add_mesh(const RHIMesh &mesh, float4x4 transform) noexcept {
+
+    void add_mesh(RHIMesh m, float4x4 transform) noexcept {
+        _meshes.push_back(ocarina::move(m));
+        RHIMesh &mesh = _meshes.back();
         _vertex_num += mesh.vertex_num();
         _triangle_num += mesh.triangle_num();
         impl()->add_mesh(mesh.impl(), transform);
     }
 
-    void clear() noexcept { impl()->clear(); }
+    void clear() noexcept {
+        impl()->clear();
+        _meshes.clear();
+        _triangle_num = 0;
+        _vertex_num = 0;
+    }
 
     [[nodiscard]] const Expression *expression() const noexcept override {
         const ArgumentBinding &uniform = Function::current()->get_uniform_var(Type::of<decltype(*this)>(),
