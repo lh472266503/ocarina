@@ -26,6 +26,7 @@ class Texture : public RHIResource {
 public:
     class Impl {
     public:
+        virtual ~Impl() = default;
         [[nodiscard]] virtual uint3 resolution() const noexcept = 0;
         [[nodiscard]] virtual PixelStorage pixel_storage() const noexcept = 0;
         [[nodiscard]] virtual handle_ty array_handle() const noexcept = 0;

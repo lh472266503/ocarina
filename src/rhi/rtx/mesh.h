@@ -15,6 +15,7 @@ class RHIMesh : public RHIResource {
 public:
     class Impl {
     public:
+        virtual ~Impl() = default;
         [[nodiscard]] virtual handle_ty blas_handle() const noexcept = 0;
         [[nodiscard]] virtual uint vertex_num() const noexcept = 0;
         [[nodiscard]] virtual uint triangle_num() const noexcept = 0;

@@ -10,9 +10,6 @@
 
 namespace ocarina {
 
-CUDAMesh::~CUDAMesh() {
-}
-
 void CUDAMesh::build_bvh(const BLASBuildCommand *cmd) noexcept {
     _device->use_context([&] {
         OptixAccelBuildOptions accel_options = {};

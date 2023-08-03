@@ -29,6 +29,16 @@ void mat4x4_to_array12(float4x4 mat, float *output) {
 }
 }// namespace detail
 
+void OptixAccel::add_mesh(const RHIMesh::Impl *mesh, ocarina::float4x4 mat) noexcept {
+    _meshes.push_back(mesh);
+    _transforms.push_back(mat);
+}
+
+void OptixAccel::clear() noexcept {
+    _meshes.clear();
+    _transforms.clear();
+}
+
 void OptixAccel::build_bvh(CUDACommandVisitor *visitor) noexcept {
     _device->use_context([&] {
         vector<OptixTraversableHandle> traversable_handles;

@@ -151,6 +151,7 @@ class Shader {
 public:
     class Impl {
     public:
+        virtual ~Impl() = default;
         virtual void launch(handle_ty stream, ShaderDispatchCommand *cmd) noexcept = 0;
         virtual void compute_fit_size() noexcept {};
     };

@@ -22,15 +22,11 @@ private:
     
 public:
     explicit OptixAccel(CUDADevice *device) : _device(device) {}
-
-    void add_mesh(const RHIMesh::Impl *mesh, float4x4 mat) noexcept override {
-        _meshes.push_back(mesh);
-        _transforms.push_back(mat);
-    }
-
+    void add_mesh(const RHIMesh::Impl *mesh, float4x4 mat) noexcept override;
     void build_bvh(CUDACommandVisitor *visitor) noexcept;
     [[nodiscard]] size_t data_size() const noexcept override;
     [[nodiscard]] size_t data_alignment() const noexcept override;
+    void clear() noexcept override;
     [[nodiscard]] handle_ty handle() const noexcept override { return _tlas_handle; }
     [[nodiscard]] const void *handle_ptr() const noexcept override { return &_tlas_handle; }
 };

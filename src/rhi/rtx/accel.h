@@ -22,6 +22,7 @@ public:
         [[nodiscard]] virtual handle_ty handle() const noexcept = 0;
         [[nodiscard]] virtual const void *handle_ptr() const noexcept = 0;
         [[nodiscard]] virtual size_t data_size() const noexcept = 0;
+        [[nodiscard]] virtual void clear() noexcept = 0;
         [[nodiscard]] virtual size_t data_alignment() const noexcept = 0;
     };
 
@@ -39,6 +40,8 @@ public:
         _triangle_num += mesh.triangle_num();
         impl()->add_mesh(mesh.impl(), transform);
     }
+
+    void clear() noexcept { impl()->clear(); }
 
     [[nodiscard]] const Expression *expression() const noexcept override {
         const ArgumentBinding &uniform = Function::current()->get_uniform_var(Type::of<decltype(*this)>(),

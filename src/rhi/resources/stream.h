@@ -32,6 +32,7 @@ public:
         virtual void barrier() noexcept = 0;
         virtual void commit(const Commit &commit) noexcept = 0;
         virtual void add_command(Command *cmd) noexcept = 0;
+        virtual ~Impl() = default;
 
     private:
         [[nodiscard]] const CommandQueue &command_queue() const noexcept {

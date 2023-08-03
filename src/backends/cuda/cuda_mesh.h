@@ -23,7 +23,6 @@ public:
         : _device(device), _params(params) {
         init_build_input();
     }
-    ~CUDAMesh();
     void init_build_input() noexcept;
     [[nodiscard]] handle_ty blas_handle() const noexcept override { return _blas_handle; }
     [[nodiscard]] uint vertex_num() const noexcept override { return _params.vert_num; }

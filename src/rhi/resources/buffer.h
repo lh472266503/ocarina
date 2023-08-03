@@ -201,7 +201,8 @@ public:
         return {BufferReallocateCommand::create(this, size * element_size, async),
                 HostFunctionCommand::create([this, size] {
                     this->_size = size;
-                },async)};
+                },
+                                            async)};
     }
 
     void reallocate_immediately(size_t size) {
