@@ -61,7 +61,7 @@ private:
     host_ty _host_value{};
     optional<dsl_t<value_ty>> _device_value{};
     /// origin index in buffer
-    mutable uint _index{InvalidUI32};
+    mutable uint _offset{InvalidUI32};
 
 public:
     explicit Serial(value_ty val = {}) : _host_value(std::move(val)) {}
@@ -102,11 +102,11 @@ public:
         }
     }
 
-    [[nodiscard]] bool has_encoded() const noexcept { return _index != InvalidUI32; }
+    [[nodiscard]] bool has_encoded() const noexcept { return _offset != InvalidUI32; }
 
     void encode(RegistrableManaged<T> &data) const noexcept override {
         OC_ASSERT(!has_encoded());
-        _index = data.host_buffer().size();
+        _offset = data.host_buffer().size();
         if constexpr (is_scalar_v<value_ty>) {
             data.push_back(bit_cast<T>(hv()));
         } else if constexpr (is_vector_v<value_ty>) {
@@ -131,22 +131,22 @@ public:
     void update(RegistrableManaged<T> &data) const noexcept override {
         OC_ASSERT(has_encoded());
         if constexpr (is_scalar_v<value_ty>) {
-            data.host_buffer()[_index] = bit_cast<T>(hv());
+            data.host_buffer()[_offset] = bit_cast<T>(hv());
         } else if constexpr (is_vector_v<value_ty>) {
             for (int i = 0; i < vector_dimension_v<value_ty>; ++i) {
-                data.host_buffer()[_index + i] = bit_cast<T>(hv()[i]);
+                data.host_buffer()[_offset + i] = bit_cast<T>(hv()[i]);
             }
         } else if constexpr (is_matrix_v<value_ty>) {
             uint count = 0;
             for (int i = 0; i < matrix_dimension_v<value_ty>; ++i) {
                 for (int j = 0; j < matrix_dimension_v<value_ty>; ++j) {
-                    data.host_buffer()[_index + count] = bit_cast<T>(hv()[i][j]);
+                    data.host_buffer()[_offset + count] = bit_cast<T>(hv()[i][j]);
                     ++count;
                 }
             }
         } else if constexpr (is_std_vector_v<value_ty>) {
             for (int i = 0; i < hv().size(); ++i) {
-                data.host_buffer()[_index + i] = bit_cast<T>(hv()[i]);
+                data.host_buffer()[_offset + i] = bit_cast<T>(hv()[i]);
             }
         } else {
             static_assert(always_false_v<value_ty>);
