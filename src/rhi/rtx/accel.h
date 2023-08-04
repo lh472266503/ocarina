@@ -28,7 +28,7 @@ public:
         [[nodiscard]] virtual handle_ty handle() const noexcept = 0;
         [[nodiscard]] virtual const void *handle_ptr() const noexcept = 0;
         [[nodiscard]] virtual size_t data_size() const noexcept = 0;
-        [[nodiscard]] virtual void clear() noexcept {
+        virtual void clear() noexcept {
             _meshes.clear();
             _transforms.clear();
         }
