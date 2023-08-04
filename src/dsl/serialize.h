@@ -104,7 +104,7 @@ public:
 
     [[nodiscard]] bool has_encoded() const noexcept { return _offset != InvalidUI32; }
 
-    void encode(RegistrableManaged<T> &data) const noexcept override {
+    void _encode(RegistrableManaged<T> &data) const noexcept {
         OC_ASSERT(!has_encoded());
         _offset = data.host_buffer().size();
         if constexpr (is_scalar_v<value_ty>) {
@@ -150,6 +150,14 @@ public:
             }
         } else {
             static_assert(always_false_v<value_ty>);
+        }
+    }
+
+    void encode(RegistrableManaged<T> &data) const noexcept override {
+        if (has_encoded()) {
+            update(data);
+        } else {
+            _encode(data);
         }
     }
 
