@@ -41,9 +41,11 @@ auto args_to_tuple(const Current &cur, const Args &...args) {
 class Printer {
 public:
     struct Item {
-        std::function<void(const uint *)> func;
+        std::function<string(const uint *)> func;
         uint size;
     };
+
+    using OutputFunc = void(const char *);
 
 private:
     Managed<uint> _buffer;
@@ -105,9 +107,9 @@ public:
     OC_MAKE_LOG_FUNC(err)
 
 #undef OC_MAKE_LOG_FUNC
-    void retrieve_immediately() noexcept;
-    [[nodiscard]] CommandList retrieve() noexcept;
-    void output_log() noexcept;
+    void retrieve_immediately(OutputFunc *func = nullptr) noexcept;
+    [[nodiscard]] CommandList retrieve(OutputFunc *func = nullptr) noexcept;
+    void output_log(OutputFunc *func = nullptr) noexcept;
 };
 
 template<typename Current, typename... Args>
@@ -161,7 +163,7 @@ void Printer::_log(spdlog::level::level_enum level, const string &fmt, const Arg
         }
     };
 
-    auto decode = [this, level, fmt, tuple_args = std::tuple{convert(args)...}](const uint *data) -> void {
+    auto decode = [this, level, fmt, tuple_args = std::tuple{convert(args)...}](const uint *data) -> std::string {
         auto decode_arg = [tuple_args, data]<size_t i>() noexcept {
             using Arg = std::tuple_element_t<i, std::tuple<Args...>>;
             if constexpr (is_dsl_v<Arg>) {
@@ -177,8 +179,9 @@ void Printer::_log(spdlog::level::level_enum level, const string &fmt, const Arg
         auto host_print = [&]<size_t... i>(std::index_sequence<i...>) {
             std::string str = ocarina::format(fmt, decode_arg.template operator()<i>()...);
             _logger.log(level, str);
+            return str;
         };
-        host_print(std::index_sequence_for<Args...>());
+        return host_print(std::index_sequence_for<Args...>());
     };
     _items.push_back({decode, count});
 }

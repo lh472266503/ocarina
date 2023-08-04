@@ -22,7 +22,7 @@ void Printer::destroy_instance() noexcept {
     }
 }
 
-void Printer::output_log() noexcept {
+void Printer::output_log(OutputFunc *func) noexcept {
     uint length = std::min(
         static_cast<uint>(_buffer.host_buffer().size() - 1u),
         _buffer.back());
@@ -35,7 +35,10 @@ void Printer::output_log() noexcept {
         if (offset > length) {
             truncated = true;
         } else {
-            item.func(data + 1);
+            auto str = item.func(data + 1);
+            if (func) {
+                func(str.c_str());
+            }
         }
     }
     if (truncated) [[unlikely]] {
@@ -43,20 +46,20 @@ void Printer::output_log() noexcept {
     }
 }
 
-CommandList Printer::retrieve() noexcept {
+CommandList Printer::retrieve(OutputFunc *func) noexcept {
     CommandList ret;
     ret << _buffer.download();
     ret << [&]() {
-        output_log();
+        output_log(func);
         _buffer.resize(_buffer.capacity());
     };
     ret << _buffer.device_buffer().reset();
     return ret;
 }
 
-void Printer::retrieve_immediately() noexcept {
+void Printer::retrieve_immediately(OutputFunc *func) noexcept {
     _buffer.download_immediately();
-    output_log();
+    output_log(func);
     reset();
 }
 }// namespace ocarina
