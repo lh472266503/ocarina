@@ -83,6 +83,11 @@ public:
         host_buffer().resize(num);
     }
 
+    void clear_all() {
+        host_ty::clear();
+        device_ty::destroy();
+    }
+
     [[nodiscard]] BufferUploadCommand *upload() const noexcept {
         return device_ty::upload(host_ty::data());
     }
