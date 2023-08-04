@@ -175,7 +175,8 @@ void Printer::_log(spdlog::level::level_enum level, const string &fmt, const Arg
             }
         };
         auto host_print = [&]<size_t... i>(std::index_sequence<i...>) {
-            _logger.log(level, fmt, decode_arg.template operator()<i>()...);
+            std::string str = ocarina::format(fmt, decode_arg.template operator()<i>()...);
+            _logger.log(level, str);
         };
         host_print(std::index_sequence_for<Args...>());
     };
