@@ -5,6 +5,7 @@
 #include "optix_accel.h"
 #include "cuda_device.h"
 #include <optix_stubs.h>
+#include "cuda_mesh.h"
 #include "cuda_command_visitor.h"
 
 namespace ocarina {
@@ -29,14 +30,9 @@ void mat4x4_to_array12(float4x4 mat, float *output) {
 }
 }// namespace detail
 
-void OptixAccel::add_mesh(const RHIMesh::Impl *mesh, ocarina::float4x4 mat) noexcept {
-    _meshes.push_back(mesh);
-    _transforms.push_back(mat);
-}
 
 void OptixAccel::clear() noexcept {
-    _meshes.clear();
-    _transforms.clear();
+    Accel::Impl::clear();
     _tlas_buffer.destroy();
     _instances.destroy();
     if (_tlas_handle != 0) {
@@ -49,8 +45,9 @@ void OptixAccel::build_bvh(CUDACommandVisitor *visitor) noexcept {
     _device->use_context([&] {
         vector<OptixTraversableHandle> traversable_handles;
         traversable_handles.reserve(_meshes.size());
-        for (const RHIMesh::Impl *mesh : _meshes) {
-            traversable_handles.push_back(mesh->blas_handle());
+        for (const RHIMesh &mesh : _meshes) {
+            const auto *cuda_mesh = dynamic_cast<const CUDAMesh *>(mesh.impl());
+            traversable_handles.push_back(cuda_mesh->blas_handle());
         }
         size_t instance_num = _meshes.size();
         OptixBuildInput instance_input = {};
