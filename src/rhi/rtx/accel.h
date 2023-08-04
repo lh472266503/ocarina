@@ -20,6 +20,7 @@ public:
     protected:
         vector<RHIMesh> _meshes;
         vector<float4x4> _transforms;
+
     public:
         virtual void add_mesh(RHIMesh mesh, float4x4 transform) noexcept {
             _meshes.push_back(ocarina::move(mesh));
@@ -49,7 +50,9 @@ public:
     }
 
     void clear() noexcept {
-        impl()->clear();
+        if (impl()) {
+            impl()->clear();
+        }
         _triangle_num = 0;
         _vertex_num = 0;
     }
