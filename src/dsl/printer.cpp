@@ -22,7 +22,7 @@ void Printer::destroy_instance() noexcept {
     }
 }
 
-void Printer::output_log(OutputFunc *func) noexcept {
+void Printer::output_log(const OutputFunc & func) noexcept {
     uint length = std::min(
         static_cast<uint>(_buffer.host_buffer().size() - 1u),
         _buffer.back());
@@ -46,7 +46,7 @@ void Printer::output_log(OutputFunc *func) noexcept {
     }
 }
 
-CommandList Printer::retrieve(OutputFunc *func) noexcept {
+CommandList Printer::retrieve(const OutputFunc & func) noexcept {
     CommandList ret;
     ret << _buffer.download();
     ret << [&]() {
@@ -57,7 +57,7 @@ CommandList Printer::retrieve(OutputFunc *func) noexcept {
     return ret;
 }
 
-void Printer::retrieve_immediately(OutputFunc *func) noexcept {
+void Printer::retrieve_immediately(const OutputFunc & func) noexcept {
     _buffer.download_immediately();
     output_log(func);
     reset();

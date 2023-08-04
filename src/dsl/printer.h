@@ -45,7 +45,7 @@ public:
         uint size;
     };
 
-    using OutputFunc = void(const char *);
+    using OutputFunc = std::function<void(const char *)>;
 
 private:
     Managed<uint> _buffer;
@@ -107,9 +107,9 @@ public:
     OC_MAKE_LOG_FUNC(err)
 
 #undef OC_MAKE_LOG_FUNC
-    void retrieve_immediately(OutputFunc *func = nullptr) noexcept;
-    [[nodiscard]] CommandList retrieve(OutputFunc *func = nullptr) noexcept;
-    void output_log(OutputFunc *func = nullptr) noexcept;
+    void retrieve_immediately(const OutputFunc &func = nullptr) noexcept;
+    [[nodiscard]] CommandList retrieve(const OutputFunc & func = nullptr) noexcept;
+    void output_log(const OutputFunc & func = nullptr) noexcept;
 };
 
 template<typename Current, typename... Args>
