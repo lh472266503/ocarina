@@ -22,7 +22,7 @@ public:
         vector<float4x4> _transforms;
 
     public:
-        virtual void add_mesh(RHIMesh mesh, float4x4 transform) noexcept {
+        virtual void add_instance(RHIMesh mesh, float4x4 transform) noexcept {
             _meshes.push_back(ocarina::move(mesh));
             _transforms.push_back(transform);
         }
@@ -45,8 +45,10 @@ public:
     [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
     [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(_handle); }
 
-    void add_mesh(RHIMesh mesh, float4x4 transform) noexcept {
-        impl()->add_mesh(ocarina::move(mesh), transform);
+    void add_instance(RHIMesh mesh, float4x4 transform) noexcept {
+        _triangle_num += mesh.triangle_num();
+        _vertex_num += mesh.vertex_num();
+        impl()->add_instance(ocarina::move(mesh), transform);
     }
 
     void clear() noexcept {

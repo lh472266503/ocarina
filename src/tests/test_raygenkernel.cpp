@@ -155,7 +155,7 @@ int main(int argc, char *argv[]) {
     stream << cube.build_bvh();
 
     Accel accel = device.create_accel();
-    accel.add_mesh(ocarina::move(cube), make_float4x4(1.f));
+    accel.add_instance(ocarina::move(cube), make_float4x4(1.f));
     stream << accel.build_bvh();
     stream << synchronize() << commit();
 
