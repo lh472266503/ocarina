@@ -33,6 +33,8 @@ protected:
     RHIResource(Device::Impl *device, Tag tag, handle_ty handle)
         : _device(device), _tag(tag), _handle(handle) {}
 
+    void _destroy();
+
 public:
     RHIResource() = default;
 
@@ -70,7 +72,7 @@ public:
         return {handle_ptr(), data_size(), data_alignment(), max_member_size()};
     }
     [[nodiscard]] bool valid() const noexcept { return bool(_device); }
-    void destroy();
-    virtual ~RHIResource() { destroy(); }
+    virtual void destroy() { _destroy(); }
+    virtual ~RHIResource() { _destroy(); }
 };
 }// namespace ocarina

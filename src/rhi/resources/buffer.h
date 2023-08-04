@@ -114,6 +114,11 @@ public:
         : RHIResource(nullptr, Tag::BUFFER, buffer_view.head()),
           _size(buffer_view.size()) {}
 
+    void destroy() override {
+        _destroy();
+        _size = 0;
+    }
+
     [[nodiscard]] BufferView<T> view(size_t offset = 0, size_t size = 0) const noexcept {
         size = size == 0 ? _size - offset : size;
         return BufferView<T>(_handle, offset, size, _size);
@@ -201,8 +206,7 @@ public:
         return {BufferReallocateCommand::create(this, size * element_size, async),
                 HostFunctionCommand::create([this, size] {
                     this->_size = size;
-                },
-                                            async)};
+                }, async)};
     }
 
     void reallocate_immediately(size_t size) {

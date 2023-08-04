@@ -6,7 +6,7 @@
 
 namespace ocarina {
 
-void RHIResource::destroy() {
+void RHIResource::_destroy() {
     if (!valid()) {
         return;
     }
