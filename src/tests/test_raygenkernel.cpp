@@ -187,7 +187,7 @@ int main(int argc, char *argv[]) {
         Var t = t_buffer.read(0);
         Int3 f = make_int3(ba.byte_buffer(index).read<float>(19 * 4).cast<int>(), 6, 9);
         auto arr = bindless_array.byte_buffer(index).read_dynamic_array<float>(3, 19 * 4);
-        Printer::instance().warn_with_location("{} {} {}, {} {} ,{} {} {}", f, arr.sub(1, 3).as_vec2(), t.i, t.j, t.k);
+        Printer::instance().warn_with_location("{} {} {}, {} {} ,{} {} {}", f, arr.sub(1, 3).as_vec2(), t.i.cast<float>() + 2.4f, t.j, t.k);
 
 //        prints("{}---", is_null(img));
         //      Int a = 1, b = 2, c = 3;
@@ -219,7 +219,7 @@ int main(int argc, char *argv[]) {
 
 //    float tf = bit_cast<float>(19);
 //    OC_WARNING_FORMAT("{}", tf);
-    Printer::instance().retrieve_immediately();
+//    Printer::instance().retrieve_immediately();
 //    //    cout << "sdafasdf" << endl;
 //    Printer::instance().retrieve_immediately();
 //    Printer::destroy_instance();

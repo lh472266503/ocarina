@@ -35,10 +35,7 @@ void Printer::output_log(const OutputFunc & func) noexcept {
         if (offset > length) {
             truncated = true;
         } else {
-            auto str = item.func(data + 1);
-            if (func) {
-                func(str.c_str());
-            }
+            item.func(data + 1, func);
         }
     }
     if (truncated) [[unlikely]] {

@@ -40,12 +40,12 @@ auto args_to_tuple(const Current &cur, const Args &...args) {
 
 class Printer {
 public:
+    using OutputFunc = std::function<void(int, const char *)>;
+
     struct Item {
-        std::function<string(const uint *)> func;
+        std::function<void(const uint *, const OutputFunc &)> func;
         uint size;
     };
-
-    using OutputFunc = std::function<void(const char *)>;
 
 private:
     Managed<uint> _buffer;
@@ -108,8 +108,8 @@ public:
 
 #undef OC_MAKE_LOG_FUNC
     void retrieve_immediately(const OutputFunc &func = nullptr) noexcept;
-    [[nodiscard]] CommandList retrieve(const OutputFunc & func = nullptr) noexcept;
-    void output_log(const OutputFunc & func = nullptr) noexcept;
+    [[nodiscard]] CommandList retrieve(const OutputFunc &func = nullptr) noexcept;
+    void output_log(const OutputFunc &func = nullptr) noexcept;
 };
 
 template<typename Current, typename... Args>
@@ -163,7 +163,7 @@ void Printer::_log(spdlog::level::level_enum level, const string &fmt, const Arg
         }
     };
 
-    auto decode = [this, level, fmt, tuple_args = std::tuple{convert(args)...}](const uint *data) -> std::string {
+    auto decode = [this, level, fmt, tuple_args = std::tuple{convert(args)...}](const uint *data, const OutputFunc &func) {
         auto decode_arg = [tuple_args, data]<size_t i>() noexcept {
             using Arg = std::tuple_element_t<i, std::tuple<Args...>>;
             if constexpr (is_dsl_v<Arg>) {
@@ -176,12 +176,15 @@ void Printer::_log(spdlog::level::level_enum level, const string &fmt, const Arg
                 return std::get<i>(tuple_args);
             }
         };
-        auto host_print = [&]<size_t... i>(std::index_sequence<i...>) {
-            std::string str = ocarina::format(fmt, decode_arg.template operator()<i>()...);
-            _logger.log(level, str);
-            return str;
+        auto format = [&]<size_t... i>(std::index_sequence<i...>) -> string {
+            return ocarina::format(fmt, decode_arg.template operator()<i>()...);
         };
-        return host_print(std::index_sequence_for<Args...>());
+        string content = format(std::index_sequence_for<Args...>());
+        if (func) {
+            func(to_underlying(level), content.c_str());
+        } else {
+            _logger.log(level, content);
+        }
     };
     _items.push_back({decode, count});
 }
