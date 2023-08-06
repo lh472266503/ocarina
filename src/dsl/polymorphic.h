@@ -213,6 +213,16 @@ public:
         return _type_mgr.type_map.at(object->type_hash()).data_set;
     }
 
+    template<typename Func>
+    [[nodiscard]] auto find_if(Func &&func) const noexcept {
+        return std::find_if(Super::cbegin(), Super::cend(), OC_FORWARD(func));
+    }
+
+    template<typename Func>
+    [[nodiscard]] auto find_if(Func &&func) noexcept {
+        return std::find_if(Super::begin(), Super::end(), OC_FORWARD(func));
+    }
+
     /**
      * update data to managed memory
      * tips: Called on the host side code
