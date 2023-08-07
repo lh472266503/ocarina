@@ -103,6 +103,7 @@ public:
     }
 
     [[nodiscard]] bool has_encoded() const noexcept { return _offset != InvalidUI32; }
+    void invalidation() noexcept { _offset = InvalidUI32;}
 
     void init_encode(RegistrableManaged<T> &data) const noexcept {
         OC_ASSERT(!has_encoded());
