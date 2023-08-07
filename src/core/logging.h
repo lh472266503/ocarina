@@ -64,6 +64,7 @@ inline void exception_if_not(bool predicate, Args &&...args) {
 template<typename... Args>
 [[noreturn]] inline void error(Args &&...args) {
     logger().error(serialize(std::forward<Args>(args)...));
+    OC_ASSERT(0);
     exit(-1);
 }
 
