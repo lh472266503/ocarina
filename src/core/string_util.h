@@ -193,6 +193,14 @@ template<typename FMT, typename... Args>
     return ret;
 }
 
+[[nodiscard]] inline std::string from_file(const fs::path &fn) {
+    std::ifstream fst;
+    fst.open(fn.c_str());
+    std::stringstream buffer;
+    buffer << fst.rdbuf();
+    std::string str = buffer.str();
+    return str;
+}
 
 template<typename T>
 [[nodiscard]] string to_str(const T &val) noexcept {
