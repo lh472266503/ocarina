@@ -10,7 +10,7 @@ namespace ocarina {
 MemoryStats *MemoryStats::s_stats = nullptr;
 
 MemoryStats &MemoryStats::instance() {
-    if (s_stats) {
+    if (s_stats == nullptr) {
         s_stats = new MemoryStats();
     }
     return *s_stats;

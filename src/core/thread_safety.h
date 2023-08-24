@@ -12,9 +12,10 @@ template<typename Mutex = std::mutex>
 class thread_safety {
 
 private:
-    mutable Mutex _mutex;
+    mutable Mutex _mutex{};
 
 public:
+    thread_safety() = default;
     template<typename F>
     decltype(auto) with_lock(F &&f) const noexcept {
         std::lock_guard lock{_mutex};
