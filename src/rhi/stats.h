@@ -8,14 +8,14 @@
 
 namespace ocarina {
 
-class Stats {
+class MemoryStats {
 private:
-    static Stats *s_stats;
-    Stats() = default;
-    Stats(const Stats &) = delete;
-    Stats(Stats &&) = delete;
-    Stats operator=(const Stats &) = delete;
-    Stats operator=(Stats &&) = delete;
+    static MemoryStats *s_stats;
+    MemoryStats() = default;
+    MemoryStats(const MemoryStats &) = delete;
+    MemoryStats(MemoryStats &&) = delete;
+    MemoryStats operator=(const MemoryStats &) = delete;
+    MemoryStats operator=(MemoryStats &&) = delete;
 
 private:
     size_t _buffer_size;
@@ -24,7 +24,7 @@ private:
     map<handle_ty, pair<string, size_t>> _tex_map;
 
 public:
-    static Stats &instance();
+    static MemoryStats &instance();
     static void destroy_instance();
     void on_buffer_allocate(handle_ty handle, size_t size, string name = "");
     void on_buffer_free(handle_ty handle);

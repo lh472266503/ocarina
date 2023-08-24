@@ -6,6 +6,7 @@
 
 #include "resource.h"
 #include "rhi/command.h"
+#include "rhi/stats.h"
 #include "resource_array.h"
 
 namespace ocarina {
@@ -107,14 +108,17 @@ public:
     Buffer() = default;
 
     Buffer(Device::Impl *device, size_t size)
-        : RHIResource(device, Tag::BUFFER, device->create_buffer(size * sizeof(T))),
-          _size(size) {}
+        : RHIResource(device, Tag::BUFFER, device->create_buffer(size * element_size)),
+          _size(size) {
+        MemoryStats::instance().on_buffer_allocate(_handle, size_in_byte());
+    }
 
     Buffer(BufferView<T, Dims...> buffer_view)
         : RHIResource(nullptr, Tag::BUFFER, buffer_view.head()),
           _size(buffer_view.size()) {}
 
     void destroy() override {
+        MemoryStats::instance().on_buffer_free(_handle);
         _destroy();
         _size = 0;
     }

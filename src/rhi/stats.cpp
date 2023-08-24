@@ -7,35 +7,35 @@
 
 namespace ocarina {
 
-Stats *Stats::s_stats = nullptr;
+MemoryStats *MemoryStats::s_stats = nullptr;
 
-Stats &Stats::instance() {
+MemoryStats &MemoryStats::instance() {
     if (s_stats) {
-        s_stats = new Stats();
+        s_stats = new MemoryStats();
     }
     return *s_stats;
 }
 
-void Stats::destroy_instance() {
+void MemoryStats::destroy_instance() {
     if (s_stats) {
         delete s_stats;
         s_stats = nullptr;
     }
 }
 
-void Stats::on_buffer_allocate(ocarina::handle_ty handle, size_t size, std::string name) {
+void MemoryStats::on_buffer_allocate(ocarina::handle_ty handle, size_t size, std::string name) {
 
 }
 
-void Stats::on_buffer_free(ocarina::handle_ty handle) {
+void MemoryStats::on_buffer_free(ocarina::handle_ty handle) {
 
 }
 
-void Stats::on_tex_allocate(ocarina::handle_ty handle, size_t size, std::string name) {
+void MemoryStats::on_tex_allocate(ocarina::handle_ty handle, size_t size, std::string name) {
 
 }
 
-void Stats::on_tex_free(ocarina::handle_ty handle) {
+void MemoryStats::on_tex_free(ocarina::handle_ty handle) {
 
 }
 
