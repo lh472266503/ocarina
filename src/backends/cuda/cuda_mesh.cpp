@@ -29,10 +29,10 @@ void CUDAMesh::build_bvh(const BLASBuildCommand *cmd) noexcept {
                        gas_buffer_sizes.outputSizeInBytes,
                        gas_buffer_sizes.tempSizeInBytes);
 
-        _blas_buffer = Buffer<std::byte>(_device, gas_buffer_sizes.outputSizeInBytes);
+        _blas_buffer = Buffer<std::byte>(_device, gas_buffer_sizes.outputSizeInBytes, "mesh BLAS buffer");
 
-        Buffer temp_buffer = Buffer(_device, gas_buffer_sizes.tempSizeInBytes);
-        Buffer compact_size_buffer = Buffer<uint64_t>(_device, 1);
+        Buffer temp_buffer = Buffer(_device, gas_buffer_sizes.tempSizeInBytes, "mesh BLAS temp buffer");
+        Buffer compact_size_buffer = Buffer<uint64_t>(_device, 1, "mesh BLAS compact_size_buffer");
         OptixAccelEmitDesc emit_desc;
         emit_desc.type = OPTIX_PROPERTY_TYPE_COMPACTED_SIZE;
         emit_desc.result = compact_size_buffer.handle();
@@ -48,7 +48,7 @@ void CUDAMesh::build_bvh(const BLASBuildCommand *cmd) noexcept {
         OC_INFO_FORMAT("blas : compacted_gas_size is {} byte", compacted_gas_size);
 
         if (compacted_gas_size < gas_buffer_sizes.outputSizeInBytes) {
-            _blas_buffer = Buffer<std::byte>(_device, compacted_gas_size);
+            _blas_buffer = Buffer<std::byte>(_device, compacted_gas_size, "mesh BLAS compacted buffer");
             OC_OPTIX_CHECK(optixAccelCompact(_device->optix_device_context(), nullptr,
                                              _blas_handle,
                                              _blas_buffer.handle(),

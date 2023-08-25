@@ -37,15 +37,16 @@ void CUDADevice::init_hardware_info() {
     OC_CU_CHECK(cuDeviceGetAttribute(&compute_cap_minor, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MINOR, _cu_device));
     OC_INFO_FORMAT(
         "Created CUDA device : (capability = {}.{}).",
-       compute_cap_major, compute_cap_minor);
+        compute_cap_major, compute_cap_minor);
     _compute_capability = 10u * compute_cap_major + compute_cap_minor;
 }
 
-handle_ty CUDADevice::create_buffer(size_t size) noexcept {
+handle_ty CUDADevice::create_buffer(size_t size, const string &desc) noexcept {
     OC_ASSERT(size > 0);
     return use_context([&] {
         handle_ty handle{};
         OC_CU_CHECK(cuMemAlloc(&handle, size));
+        MemoryStats::instance().on_buffer_allocate(handle, size, desc);
         return handle;
     });
 }
@@ -125,6 +126,7 @@ void CUDADevice::destroy_resource_array(handle_ty handle) noexcept {
 
 void CUDADevice::destroy_buffer(handle_ty handle) noexcept {
     if (handle != 0) {
+        MemoryStats::instance().on_buffer_free(handle);
         OC_CU_CHECK(cuMemFree(handle));
     }
 }

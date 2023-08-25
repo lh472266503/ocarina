@@ -33,7 +33,7 @@ string MemoryStats::buffer_detail_info() const noexcept {
     string ret;
     for (const auto &item : _buffer_map) {
         const BufferData &data = item.second;
-        ret += ocarina::format("block {}, size {} \n", data.name, bytes_string(data.size));
+        ret += ocarina::format("size {}, block {}\n", bytes_string(data.size), data.name);
     }
     return ret;
 }
