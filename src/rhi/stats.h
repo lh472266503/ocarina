@@ -55,6 +55,9 @@ public:
     [[nodiscard]] string total_buffer_info() const noexcept;
     [[nodiscard]] string buffer_detail_info() const noexcept;
     [[nodiscard]] string buffer_info() const noexcept;
+    [[nodiscard]] string total_tex_info() const noexcept;
+    [[nodiscard]] string tex_detail_info() const noexcept;
+    [[nodiscard]] string tex_info() const noexcept;
 };
 
 }// namespace ocarina

@@ -42,6 +42,22 @@ string MemoryStats::buffer_info() const noexcept {
     return total_buffer_info() + buffer_detail_info();
 }
 
+string MemoryStats::total_tex_info() const noexcept {
+    return ocarina::format("total tex memory is {} \n", bytes_string(_tex_size));
+}
+
+string MemoryStats::tex_detail_info() const noexcept {
+    string ret;
+    for (const auto &item : _tex_map) {
+        const TexData &data = item.second;
+        ret += ocarina::format("res ({}, {}), memory size {}, tex name {}\n",
+                               data.res.x, data.res.y,
+                               bytes_string(data.res.x * data.res.y),
+                               data.name);
+    }
+    return ret;
+}
+
 void MemoryStats::on_buffer_allocate(ocarina::handle_ty handle, size_t size, std::string name) {
     with_lock([&] {
         _buffer_size += size;
