@@ -50,6 +50,9 @@ void MemoryStats::on_buffer_allocate(ocarina::handle_ty handle, size_t size, std
 }
 
 void MemoryStats::on_buffer_free(ocarina::handle_ty handle) {
+    if (!_buffer_map.contains(handle)) {
+        return;
+    }
     with_lock([&] {
         _buffer_size -= buffer_size(handle);
         _buffer_map.erase(handle);
