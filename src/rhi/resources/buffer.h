@@ -107,10 +107,10 @@ protected:
 public:
     Buffer() = default;
 
-    Buffer(Device::Impl *device, size_t size)
+    Buffer(Device::Impl *device, size_t size, const string &desc = "")
         : RHIResource(device, Tag::BUFFER, device->create_buffer(size * element_size)),
           _size(size) {
-        MemoryStats::instance().on_buffer_allocate(_handle, size_in_byte());
+        MemoryStats::instance().on_buffer_allocate(_handle, size_in_byte(), desc);
     }
 
     Buffer(BufferView<T, Dims...> buffer_view)

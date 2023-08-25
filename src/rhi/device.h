@@ -80,8 +80,8 @@ public:
     [[nodiscard]] Context *context() const noexcept { return _impl->_context; }
 
     template<typename T = std::byte, int... Dims>
-    [[nodiscard]] Buffer<T, Dims...> create_buffer(size_t size) noexcept {
-        return Buffer<T, Dims...>(_impl.get(), size);
+    [[nodiscard]] Buffer<T, Dims...> create_buffer(size_t size, const string &desc = "") noexcept {
+        return Buffer<T, Dims...>(_impl.get(), size, desc);
     }
 
     template<typename T = std::byte, int... Dims>
