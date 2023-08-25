@@ -48,7 +48,7 @@ void OptixAccel::build_bvh(CUDACommandVisitor *visitor) noexcept {
         }
         size_t instance_num = _meshes.size();
         OptixBuildInput instance_input = {};
-        _instances = Buffer<OptixInstance>(_device, instance_num);
+        _instances = Buffer<OptixInstance>(_device, instance_num, "instance buffer");
         instance_input.type = OPTIX_BUILD_INPUT_TYPE_INSTANCES;
         instance_input.instanceArray.numInstances = instance_num;
         instance_input.instanceArray.instances = _instances.ptr<CUdeviceptr>();
@@ -66,8 +66,8 @@ void OptixAccel::build_bvh(CUDACommandVisitor *visitor) noexcept {
                        ias_buffer_sizes.outputSizeInBytes,
                        ias_buffer_sizes.tempSizeInBytes);
 
-        auto ias_buffer = Buffer<std::byte>(_device, ias_buffer_sizes.outputSizeInBytes);
-        auto temp_buffer = Buffer<std::byte>(_device, ias_buffer_sizes.tempSizeInBytes);
+        auto ias_buffer = Buffer<std::byte>(_device, ias_buffer_sizes.outputSizeInBytes, "TLAS buffer");
+        auto temp_buffer = Buffer<std::byte>(_device, ias_buffer_sizes.tempSizeInBytes, "TLAS temp buffer");
         Buffer compact_size_buffer = Buffer<uint64_t>(_device, 1);
         OptixAccelEmitDesc emit_desc;
         emit_desc.type = OPTIX_PROPERTY_TYPE_COMPACTED_SIZE;
@@ -102,13 +102,15 @@ void OptixAccel::build_bvh(CUDACommandVisitor *visitor) noexcept {
         OC_INFO_FORMAT("tlas : compacted_gas_size is {} byte", compacted_gas_size);
 
         if (compacted_gas_size < ias_buffer_sizes.outputSizeInBytes) {
-            _tlas_buffer = Buffer<std::byte>(_device, compacted_gas_size);
+            _tlas_buffer = Buffer<std::byte>(_device, compacted_gas_size, "TLAS compacted buffer");
             OC_OPTIX_CHECK(optixAccelCompact(_device->optix_device_context(), nullptr,
                                              _tlas_handle,
                                              _tlas_buffer.ptr<CUdeviceptr>(),
                                              compacted_gas_size,
                                              &_tlas_handle));
             OC_INFO("tlas : optixAccelCompact was executed");
+        } else {
+            _tlas_buffer = ocarina::move(ias_buffer);
         }
         OC_INFO("tlas handle is ", _tlas_handle);
         OC_CU_CHECK(cuCtxSynchronize());
