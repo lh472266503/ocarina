@@ -11,11 +11,10 @@
 
 namespace ocarina {
 
-
 template<typename T, typename U>
 requires is_integral_v<T> && is_integral_v<U>
-    OC_NODISCARD static constexpr auto
-    mem_offset(T offset, U alignment) noexcept {
+OC_NODISCARD static constexpr auto
+mem_offset(T offset, U alignment) noexcept {
     return (offset + alignment - 1u) / alignment * alignment;
 }
 
@@ -31,7 +30,7 @@ inline size_t structure_size(ocarina::span<const MemoryBlock> members) noexcept 
     }
     auto mod = size % max_member_size;
     if (mod != 0) {
-        size += (max_member_size) - mod;
+        size += (max_member_size)-mod;
     }
     return size;
 }
@@ -66,6 +65,30 @@ inline namespace size_literals {
     return static_cast<size_t>(bytes * Pow<3>(1024u));
 }
 }// namespace size_literals
+
+[[nodiscard]] constexpr float to_kb(size_t bytes) noexcept {
+    return static_cast<float>(bytes) / 1024;
+}
+
+[[nodiscard]] constexpr float to_mb(size_t bytes) noexcept {
+    return static_cast<float>(bytes) / sqr(1024);
+}
+
+[[nodiscard]] constexpr float to_gb(size_t bytes) noexcept {
+    return static_cast<double>(bytes) / Pow<3>(1024u);
+}
+
+[[nodiscard]] inline string bytes_string(size_t bytes) noexcept {
+    if (bytes > 1_gb) {
+        return ocarina::format("{:.2f} gb", to_gb(bytes));
+    } else if (bytes > 1_mb) {
+        return ocarina::format("{:.2f} mb", to_mb(bytes));
+    } else if (bytes > 1_kb) {
+        return ocarina::format("{:.2f} kb", to_kb(bytes));
+    } else {
+        return ocarina::format("{} byte", bytes);
+    }
+}
 
 class Guarded {
 public:

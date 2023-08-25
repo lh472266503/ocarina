@@ -52,6 +52,9 @@ public:
     void on_buffer_free(handle_ty handle);
     void on_tex_allocate(handle_ty handle, uint2 res, string name = "");
     void on_tex_free(handle_ty handle);
+    [[nodiscard]] string total_buffer_info() const noexcept;
+    [[nodiscard]] string buffer_detail_info() const noexcept;
+    [[nodiscard]] string buffer_info() const noexcept;
 };
 
 }// namespace ocarina

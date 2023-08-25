@@ -4,6 +4,8 @@
 
 #include "core/stl.h"
 #include "stats.h"
+#include "core/util.h"
+#include "core/string_util.h"
 
 namespace ocarina {
 
@@ -21,6 +23,23 @@ void MemoryStats::destroy_instance() {
         delete s_stats;
         s_stats = nullptr;
     }
+}
+
+string MemoryStats::total_buffer_info() const noexcept {
+    return ocarina::format("total buffer memory is {} \n", bytes_string(_buffer_size));
+}
+
+string MemoryStats::buffer_detail_info() const noexcept {
+    string ret;
+    for (const auto &item : _buffer_map) {
+        const BufferData &data = item.second;
+        ret += ocarina::format("block {}, size {} \n", data.name, bytes_string(data.size));
+    }
+    return ret;
+}
+
+string MemoryStats::buffer_info() const noexcept {
+    return total_buffer_info() + buffer_detail_info();
 }
 
 void MemoryStats::on_buffer_allocate(ocarina::handle_ty handle, size_t size, std::string name) {
