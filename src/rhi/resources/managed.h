@@ -65,12 +65,12 @@ public:
         host_ty::insert(host_ty::cend(), v.cbegin(), v.cend());
     }
 
-    void reset_device_buffer_immediately(Device &d, size_t num = 0) {
+    void reset_device_buffer_immediately(Device &d, const string &desc = "", size_t num = 0) {
         num = num == 0 ? host_ty ::size() : num;
         if (num == 0) {
             return;
         }
-        device_buffer() = d.template create_buffer<T>(num);
+        device_buffer() = d.template create_buffer<T>(num, desc);
     }
 
     /**
@@ -78,8 +78,8 @@ public:
      * @param d device
      * @param num number of element
      */
-    void reset_all(Device &d, size_t num) {
-        reset_device_buffer_immediately(d, num);
+    void reset_all(Device &d, size_t num, const string &desc = "") {
+        reset_device_buffer_immediately(d, desc, num);
         host_buffer().resize(num);
     }
 
