@@ -133,6 +133,7 @@ public:
 
     // Move assignment
     Buffer &operator=(Buffer &&other) noexcept {
+        destroy();
         RHIResource::operator=(std::move(other));
         this->_size = other._size;
         return *this;
