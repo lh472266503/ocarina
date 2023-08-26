@@ -39,7 +39,7 @@ string MemoryStats::buffer_detail_info() const noexcept {
 }
 
 string MemoryStats::buffer_info() const noexcept {
-    return total_buffer_info() + buffer_detail_info();
+    return buffer_detail_info() + total_buffer_info();
 }
 
 string MemoryStats::total_tex_info() const noexcept {
@@ -56,6 +56,10 @@ string MemoryStats::tex_detail_info() const noexcept {
                                data.name);
     }
     return ret;
+}
+
+string MemoryStats::tex_info() const noexcept {
+    return tex_detail_info() + total_tex_info();
 }
 
 void MemoryStats::on_buffer_allocate(ocarina::handle_ty handle, size_t size, std::string name) {
