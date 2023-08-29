@@ -42,10 +42,11 @@ public:
 public:
     Texture() = default;
     explicit Texture(Device::Impl *device, uint3 res,
-                     PixelStorage pixel_storage, uint level_num = 1u)
+                     PixelStorage pixel_storage, uint level_num = 1u,
+                     const string &desc = "")
         : RHIResource(device, Tag::TEXTURE,
                       device->create_texture(res, pixel_storage,
-                                             detail::compute_mip_level_num(res, level_num))) {}
+                                             detail::compute_mip_level_num(res, level_num), desc)) {}
 
     /// for dsl
     [[nodiscard]] const Expression *expression() const noexcept override {

@@ -47,7 +47,8 @@ public:
         explicit Impl(Context *ctx) : _context(ctx) {}
         [[nodiscard]] virtual handle_ty create_buffer(size_t size, const string& desc) noexcept = 0;
         virtual void destroy_buffer(handle_ty handle) noexcept = 0;
-        [[nodiscard]] virtual handle_ty create_texture(uint3 res, PixelStorage pixel_storage, uint level_num) noexcept = 0;
+        [[nodiscard]] virtual handle_ty create_texture(uint3 res, PixelStorage pixel_storage,
+                                                       uint level_num, const string &desc) noexcept = 0;
         virtual void destroy_texture(handle_ty handle) noexcept = 0;
         [[nodiscard]] virtual handle_ty create_shader(const Function &function) noexcept = 0;
         virtual void destroy_shader(handle_ty handle) noexcept = 0;
@@ -108,8 +109,8 @@ public:
     [[nodiscard]] Accel create_accel() noexcept;
     [[nodiscard]] ResourceArray create_resource_array() noexcept;
     void init_rtx() noexcept { _impl->init_rtx(); }
-    [[nodiscard]] Texture create_texture(uint3 res, PixelStorage storage) noexcept;
-    [[nodiscard]] Texture create_texture(uint2 res, PixelStorage storage) noexcept;
+    [[nodiscard]] Texture create_texture(uint3 res, PixelStorage storage, const string &desc = "") noexcept;
+    [[nodiscard]] Texture create_texture(uint2 res, PixelStorage storage, const string &desc = "") noexcept;
     template<typename T>
     [[nodiscard]] auto compile(const Kernel<T> &kernel, const string &shader_desc = "", ShaderTag tag = CS) noexcept {
         OC_INFO_FORMAT("compile shader : {}", shader_desc.c_str());

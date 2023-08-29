@@ -22,12 +22,12 @@ ResourceArray Device::create_resource_array() noexcept {
     return _create<ResourceArray>();
 }
 
-Texture Device::create_texture(uint3 res, PixelStorage storage) noexcept {
+Texture Device::create_texture(uint3 res, PixelStorage storage, const string &desc) noexcept {
     return _create<Texture>(res, storage);
 }
 
-Texture Device::create_texture(uint2 res, PixelStorage storage) noexcept{
-    return create_texture(make_uint3(res, 1u), storage);
+Texture Device::create_texture(uint2 res, PixelStorage storage, const string &desc) noexcept {
+    return create_texture(make_uint3(res, 1u), storage, desc);
 }
 
 }// namespace ocarina

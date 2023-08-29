@@ -112,7 +112,9 @@ public:
     [[nodiscard]] OptixDeviceContext optix_device_context() const noexcept { return _optix_device_context; }
     [[nodiscard]] handle_ty create_buffer(size_t size, const string &desc) noexcept override;
     void destroy_buffer(handle_ty handle) noexcept override;
-    [[nodiscard]] handle_ty create_texture(uint3 res, PixelStorage pixel_storage, uint level_num) noexcept override;
+    [[nodiscard]] handle_ty create_texture(uint3 res, PixelStorage pixel_storage,
+                                           uint level_num,
+                                           const string &desc) noexcept override;
     void destroy_texture(handle_ty handle) noexcept override;
     [[nodiscard]] handle_ty create_shader(const Function &function) noexcept override;
     void destroy_shader(handle_ty handle) noexcept override;
