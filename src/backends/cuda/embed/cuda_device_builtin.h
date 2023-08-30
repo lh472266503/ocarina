@@ -430,6 +430,13 @@ __device__ auto operator+(oc_array<T, N> lhs, oc_array<U, N> rhs) {
     return ret;
 }
 
+template<typename T,typename U>
+__device__ auto operator+(oc_array<T, 1> lhs, oc_array<U, 1> rhs) {
+    oc_array<decltype(T{} + U{}), 1> ret;
+    ret[0] = lhs[0] + rhs[0];
+    return ret;
+}
+
 template<typename T,typename U, oc_uint N>
 __device__ auto operator+(oc_array<T, N> lhs, U rhs) {
     oc_array<decltype(T{} + U{}), N> ret;
@@ -464,6 +471,13 @@ __device__ auto operator-(oc_array<T, N> lhs, oc_array<U, N> rhs) {
     for(oc_uint i = 0u; i < N; ++i) {
         ret[i] = lhs[i] - rhs[i];
     }
+    return ret;
+}
+
+template<typename T,typename U>
+__device__ auto operator-(oc_array<T, 1> lhs, oc_array<U, 1> rhs) {
+    oc_array<decltype(T{} - U{}), 1> ret;
+    ret[0] = lhs[0] - rhs[0];
     return ret;
 }
 
@@ -504,6 +518,13 @@ __device__ auto operator*(oc_array<T, N> lhs, oc_array<U, N> rhs) {
     return ret;
 }
 
+template<typename T,typename U>
+__device__ auto operator*(oc_array<T, 1> lhs, oc_array<U, 1> rhs) {
+    oc_array<decltype(T{} * U{}), 1> ret;
+    ret[0] = lhs[0] * rhs[0];
+    return ret;
+}
+
 template<typename T,typename U, oc_uint N>
 __device__ auto operator*(oc_array<T, N> lhs, U rhs) {
     oc_array<decltype(T{} * U{}), N> ret;
@@ -541,6 +562,13 @@ __device__ auto operator/(oc_array<T, N> lhs, oc_array<U, N> rhs) {
     return ret;
 }
 
+template<typename T,typename U>
+__device__ auto operator/(oc_array<T, 1> lhs, oc_array<U, 1> rhs) {
+    oc_array<decltype(T{} / U{}), 1> ret;
+    ret[0] = lhs[0] / rhs[0];
+    return ret;
+}
+
 template<typename T,typename U, oc_uint N>
 __device__ auto operator/(oc_array<T, N> lhs, U rhs) {
     oc_array<decltype(T{} / U{}), N> ret;
@@ -575,6 +603,13 @@ __device__ auto operator%(oc_array<T, N> lhs, oc_array<U, N> rhs) {
     for(oc_uint i = 0u; i < N; ++i) {
         ret[i] = lhs[i] % rhs[i];
     }
+    return ret;
+}
+
+template<typename T,typename U>
+__device__ auto operator%(oc_array<T, 1> lhs, oc_array<U, 1> rhs) {
+    oc_array<decltype(T{} % U{}), 1> ret;
+    ret[0] = lhs[0] % rhs[0];
     return ret;
 }
 

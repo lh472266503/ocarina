@@ -137,6 +137,13 @@ template<typename T,typename U, oc_uint N>
     return ret;
 }}
 
+template<typename T,typename U>
+{device_flag} auto operator{op}(oc_array<T, 1> lhs, oc_array<U, 1> rhs) {{
+    oc_array<decltype(T{{}} {op} U{{}}), 1> ret;
+    ret[0] = lhs[0] {op} rhs[0];
+    return ret;
+}}
+
 template<typename T,typename U, oc_uint N>
 {device_flag} auto operator{op}(oc_array<T, N> lhs, U rhs) {{
     oc_array<decltype(T{{}} {op} U{{}}), N> ret;
