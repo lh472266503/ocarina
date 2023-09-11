@@ -224,9 +224,9 @@ void CppCodegen::visit(const BinaryExpr *expr) noexcept {
 void CppCodegen::visit(const ocarina::ConditionalExpr *expr) {
     current_scratch() << "(";
     expr->pred()->accept(*this);
-    current_scratch() << "?";
+    current_scratch() << " ? ";
     expr->true_()->accept(*this);
-    current_scratch() << ":";
+    current_scratch() << " : ";
     expr->false_()->accept(*this);
     current_scratch() << ")";
 }
