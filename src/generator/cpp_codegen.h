@@ -34,6 +34,7 @@ protected:
 
     void visit(const UnaryExpr *expr) noexcept override;
     void visit(const BinaryExpr *expr) noexcept override;
+    void visit(const ocarina::ConditionalExpr *expr) override;
     void visit(const MemberExpr *expr) noexcept override;
     void visit(const SubscriptExpr *expr) noexcept override;
     void visit(const LiteralExpr *expr) noexcept override;

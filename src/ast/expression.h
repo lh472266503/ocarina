@@ -21,6 +21,7 @@ class LiteralExpr;
 class RefExpr;
 class CallExpr;
 class CastExpr;
+class ConditionalExpr;
 
 class Function;
 
@@ -29,6 +30,7 @@ struct OC_AST_API ExprVisitor {
     virtual void visit(const BinaryExpr *) = 0;
     virtual void visit(const MemberExpr *) = 0;
     virtual void visit(const SubscriptExpr *) = 0;
+    virtual void visit(const ConditionalExpr *) = 0;
     virtual void visit(const LiteralExpr *) = 0;
     virtual void visit(const RefExpr *) = 0;
     virtual void visit(const CallExpr *) = 0;
@@ -52,6 +54,7 @@ public:
         CONSTANT,
         CALL,
         CAST,
+        CONDITIONAL,
         SAMPLE
     };
 
@@ -122,12 +125,37 @@ public:
     OC_MAKE_EXPRESSION_ACCEPT_VISITOR
 };
 
+class OC_AST_API ConditionalExpr : public Expression {
+private:
+    const Expression *_pred{};
+    const Expression *_true{};
+    const Expression *_false{};
+
+private:
+    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+
+public:
+    ConditionalExpr(const Type *type, const Expression *pred,
+                    const Expression *t, const Expression *f)
+        : Expression(Tag::CONDITIONAL, type),
+          _pred(pred), _true(t), _false(f) {
+        _pred->mark(Usage::READ);
+        _true->mark(Usage::READ);
+        _false->mark(Usage::READ);
+    }
+
+    [[nodiscard]] const Expression *pred() const noexcept { return _pred; }
+    [[nodiscard]] const Expression *true_() const noexcept { return _true; }
+    [[nodiscard]] const Expression *false_() const noexcept { return _false; }
+    OC_MAKE_EXPRESSION_ACCEPT_VISITOR
+};
+
 class OC_AST_API SubscriptExpr : public Expression {
 private:
     using IndexVector = vector<const Expression *>;
 
 private:
-    const Expression *_range;
+    const Expression *_range{};
     IndexVector _indexes;
 
 private:
@@ -191,7 +219,7 @@ private:
     }
 
 public:
-    explicit RefExpr(const Variable& v) noexcept
+    explicit RefExpr(const Variable &v) noexcept
         : Expression(Tag::REF, v.type()), _variable(v) {}
     [[nodiscard]] auto variable() const noexcept { return _variable; }
     OC_MAKE_EXPRESSION_ACCEPT_VISITOR
@@ -265,9 +293,9 @@ public:
           _arguments(std::move(args)) {}
     CallExpr(const Type *type, CallOp op,
              ocarina::vector<const Expression *> &&args,
-             ocarina::vector<Template>&& t_args = {})
+             ocarina::vector<Template> &&t_args = {})
         : Expression(Tag::CALL, type), _call_op(op),
-          _arguments(std::move(args)),_template_args(std::move(t_args)) {}
+          _arguments(std::move(args)), _template_args(std::move(t_args)) {}
     [[nodiscard]] ocarina::span<const Expression *const> arguments() const noexcept { return _arguments; }
     [[nodiscard]] ocarina::span<const Template> template_args() const noexcept { return _template_args; }
     [[nodiscard]] auto call_op() const noexcept { return _call_op; }

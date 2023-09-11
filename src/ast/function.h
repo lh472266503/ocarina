@@ -246,8 +246,9 @@ public:
     [[nodiscard]] const RefExpr *reference_argument(const Type *type) noexcept;
     [[nodiscard]] const RefExpr *local(const Type *type) noexcept;
     [[nodiscard]] const LiteralExpr *literal(const Type *type, basic_literal_t value) noexcept;
-    [[nodiscard]] const BinaryExpr *binary(const Type *type, BinaryOp op, const Expression *lhs, const Expression *rhs) noexcept;
     [[nodiscard]] const UnaryExpr *unary(const Type *type, UnaryOp op, const Expression *expression) noexcept;
+    [[nodiscard]] const BinaryExpr *binary(const Type *type, BinaryOp op, const Expression *lhs, const Expression *rhs) noexcept;
+    [[nodiscard]] const ConditionalExpr *conditional(const Type *type, const Expression *pred, const Expression *t, const Expression *f) noexcept;
     [[nodiscard]] const CastExpr *cast(const Type *type, CastOp op, const Expression *expression) noexcept;
     [[nodiscard]] const SubscriptExpr *subscript(const Type *type, const Expression *range, const Expression *index) noexcept;
     [[nodiscard]] const SubscriptExpr *subscript(const Type *type, const Expression *range,

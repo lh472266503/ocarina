@@ -33,6 +33,13 @@ uint64_t BinaryExpr::_compute_hash() const noexcept {
     return ret;
 }
 
+uint64_t ConditionalExpr::_compute_hash() const noexcept {
+    auto ret = _pred->hash();
+    ret = hash64(_true, ret);
+    ret = hash64(ret, _false->hash());
+    return ret;
+}
+
 int MemberExpr::swizzle_index(int idx) const noexcept {
     int shift = (_swizzle_size - 1 - idx) * 4;
     auto org = 0xf << (_swizzle_size - 1) * 4;

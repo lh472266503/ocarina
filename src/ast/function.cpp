@@ -111,28 +111,38 @@ const LiteralExpr *Function::literal(const Type *type, LiteralExpr::value_type v
     return _create_expression<LiteralExpr>(type, value);
 }
 
-const BinaryExpr *Function::binary(const Type *type, BinaryOp op, const Expression *lhs, const Expression *rhs) noexcept {
+const UnaryExpr *Function::unary(const Type *type, UnaryOp op,
+                                 const Expression *expression) noexcept {
+    return _create_expression<UnaryExpr>(type, op, expression);
+}
+
+const BinaryExpr *Function::binary(const Type *type, BinaryOp op, const Expression *lhs,
+                                   const Expression *rhs) noexcept {
     return _create_expression<BinaryExpr>(type, op, lhs, rhs);
 }
 
-const UnaryExpr *Function::unary(const Type *type, UnaryOp op, const Expression *expression) noexcept {
-    return _create_expression<UnaryExpr>(type, op, expression);
+const ConditionalExpr *Function::conditional(const Type *type, const Expression *pred,
+                                             const Expression *t,
+                                             const Expression *f) noexcept {
+    return _create_expression<ConditionalExpr>(type, pred, t, f);
 }
 
 const CastExpr *Function::cast(const Type *type, CastOp op, const Expression *expression) noexcept {
     return _create_expression<CastExpr>(type, op, expression);
 }
 
-const SubscriptExpr *Function::subscript(const Type *type, const Expression *range, const Expression *index) noexcept {
+const SubscriptExpr *Function::subscript(const Type *type, const Expression *range,
+                                         const Expression *index) noexcept {
     return _create_expression<SubscriptExpr>(type, range, index);
 }
 
 const SubscriptExpr *Function::subscript(const Type *type, const Expression *range,
-                                   vector<const Expression *> indexes) noexcept {
+                                         vector<const Expression *> indexes) noexcept {
     return _create_expression<SubscriptExpr>(type, range, indexes);
 }
 
-const MemberExpr *Function::swizzle(const Type *type, const Expression *obj, uint16_t mask, uint16_t swizzle_size) noexcept {
+const MemberExpr *Function::swizzle(const Type *type, const Expression *obj, uint16_t mask,
+                                    uint16_t swizzle_size) noexcept {
     return _create_expression<MemberExpr>(type, obj, mask, swizzle_size);
 }
 
@@ -206,7 +216,7 @@ void Function::break_() noexcept {
     _create_statement<BreakStmt>();
 }
 
-void Function::comment(const ocarina::string& string) noexcept {
+void Function::comment(const ocarina::string &string) noexcept {
     _create_statement<CommentStmt>(string);
 }
 

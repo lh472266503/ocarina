@@ -220,6 +220,17 @@ void CppCodegen::visit(const BinaryExpr *expr) noexcept {
     expr->rhs()->accept(*this);
     current_scratch() << ")";
 }
+
+void CppCodegen::visit(const ocarina::ConditionalExpr *expr) {
+    current_scratch() << "(";
+    expr->pred()->accept(*this);
+    current_scratch() << "?";
+    expr->true_()->accept(*this);
+    current_scratch() << ":";
+    expr->false_()->accept(*this);
+    current_scratch() << ")";
+}
+
 void CppCodegen::visit(const MemberExpr *expr) noexcept {
     expr->parent()->accept(*this);
     if (expr->is_swizzle()) {
@@ -233,6 +244,7 @@ void CppCodegen::visit(const MemberExpr *expr) noexcept {
         _emit_member_name(expr->member_index());
     }
 }
+
 void CppCodegen::visit(const SubscriptExpr *expr) noexcept {
     const Type *type = expr->range()->type();
     if (type->has_multi_dims()) {
@@ -254,14 +266,17 @@ void CppCodegen::visit(const SubscriptExpr *expr) noexcept {
         current_scratch() << "]";
     });
 }
+
 void CppCodegen::visit(const LiteralExpr *expr) noexcept {
     ocarina::visit(
         detail::LiteralPrinter(current_scratch()),
         expr->value());
 }
+
 void CppCodegen::visit(const RefExpr *expr) noexcept {
     _emit_variable_name(expr->variable());
 }
+
 void CppCodegen::visit(const CallExpr *expr) noexcept {
     switch (expr->call_op()) {
         case CallOp::CUSTOM: {
@@ -279,6 +294,7 @@ void CppCodegen::visit(const CallExpr *expr) noexcept {
         }
     }
 }
+
 void CppCodegen::visit(const CastExpr *expr) noexcept {
     switch (expr->cast_op()) {
         case CastOp::STATIC: current_scratch() << "static_cast<"; break;
