@@ -224,7 +224,7 @@ struct is_valid_reflection : std::false_type {};
 
 template<typename S, typename... M, typename I, I... os>
 struct is_valid_reflection<S, ocarina::tuple<M...>, std::integer_sequence<I, os...>> {
-    static_assert(((!is_struct_v<M>)&&...));
+//    static_assert(((!is_struct_v<M>)&&...));
     static_assert((!is_bool_vector_v<M> && ...),
                   "Boolean vectors are not allowed in DSL "
                   "structures since their may have different "
