@@ -94,7 +94,7 @@ void CppCodegen::visit(const IfStmt *stmt) noexcept {
 }
 
 void CppCodegen::visit(const CommentStmt *stmt) noexcept {
-    current_scratch() << "/* " << stmt->string() << " */";
+    _emit_comment(stmt->string());
 }
 
 void CppCodegen::visit(const LoopStmt *stmt) noexcept {
@@ -308,6 +308,8 @@ void CppCodegen::visit(const CastExpr *expr) noexcept {
 
 void CppCodegen::visit(const Type *type) noexcept {
     if (!type->is_structure() || has_generated(type)) { return; }
+    _emit_comment(type->cname());
+    _emit_newline();
     current_scratch() << "struct ";
     current_scratch() << "alignas(";
     current_scratch() << type->alignment();
@@ -446,9 +448,15 @@ void CppCodegen::_emit_statements(ocarina::span<const Statement *const> stmts) n
         _emit_newline();
     }
 }
+
 void CppCodegen::_emit_body(const Function &f) noexcept {
     f.body()->accept(*this);
 }
+
+void CppCodegen::_emit_comment(const std::string &content) noexcept {
+    current_scratch() << "/* " << content << " */";
+}
+
 void CppCodegen::_emit_arguments(const Function &f) noexcept {
     current_scratch() << "(";
     for (const auto &v : f.arguments()) {
@@ -482,7 +490,8 @@ void CppCodegen::emit(const Function &func) noexcept {
         emit(*f);
     });
     if (!func.description().empty()) {
-        current_scratch() << "/* " << func.description() << " */\n";
+        _emit_comment(func.description());
+        _emit_newline();
     }
     _emit_function(func);
     _emit_newline();

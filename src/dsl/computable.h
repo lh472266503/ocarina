@@ -540,7 +540,9 @@ public:
     namespace detail {                            \
     template<>                                    \
     struct Computable<S> {                        \
+    public:                                       \
         using this_type = S;                      \
+        static constexpr auto cname = #S;         \
         OC_COMPUTABLE_COMMON(S)                   \
     public:                                       \
         MAP(OC_MAKE_STRUCT_MEMBER, ##__VA_ARGS__) \

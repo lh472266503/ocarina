@@ -319,6 +319,7 @@ private:
     Tag _tag{Tag::NONE};
     ocarina::string _description;
     ocarina::string _name;
+    mutable ocarina::string _cname;
     ocarina::vector<const Type *> _members;
     [[nodiscard]] uint64_t _compute_hash() const noexcept override { return hash64(_description); }
     vector<int> _dims;
@@ -351,6 +352,8 @@ public:
     [[nodiscard]] constexpr Tag tag() const noexcept { return _tag; }
     [[nodiscard]] auto description() const noexcept { return ocarina::string_view{_description}; }
     [[nodiscard]] ocarina::string name() const noexcept { return _name; }
+    [[nodiscard]] ocarina::string cname() const noexcept { return _cname; }
+    void set_cname(string s) const noexcept { _cname = ocarina::move(s); }
     [[nodiscard]] constexpr int dimension() const noexcept { return _dimension; }
     [[nodiscard]] ocarina::span<const Type *const> members() const noexcept;
     [[nodiscard]] const Type *element() const noexcept;

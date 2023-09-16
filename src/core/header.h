@@ -113,7 +113,7 @@ using handle_ty = uint64_t;
 
 #define OC_MAKE_MEMBER_SETTER(member)                     \
     void set_##member(decltype(_##member) val) noexcept { \
-        _##member = val;                                  \
+        _##member = ocarina::move(val);                   \
     }
 
 #define OC_MAKE_MEMBER_GETTER_SETTER(member, modifier) \

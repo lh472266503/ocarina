@@ -196,7 +196,11 @@ struct TypeDesc<ResourceArray> {
 
 template<typename T>
 const Type *Type::of() noexcept {
-    return Type::from(TypeDesc<std::remove_cvref_t<T>>::description());
+    auto ret = Type::from(TypeDesc<std::remove_cvref_t<T>>::description());
+    if constexpr (ocarina::is_struct_v<T>) {
+        ret->set_cname(Var<T>::cname);
+    }
+    return ret;
 }
 
 /// make struct type description
