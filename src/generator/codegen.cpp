@@ -85,6 +85,9 @@ void Codegen::_emit_func_name(const Function &f) noexcept {
 }
 
 void Codegen::_emit_struct_name(const Type *type) noexcept {
+    _emit_comment(type->cname());
+    _emit_newline();
+    _emit_indent();
     current_scratch() << detail::struct_name(type->hash());
 }
 

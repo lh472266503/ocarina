@@ -308,8 +308,6 @@ void CppCodegen::visit(const CastExpr *expr) noexcept {
 
 void CppCodegen::visit(const Type *type) noexcept {
     if (!type->is_structure() || has_generated(type)) { return; }
-    _emit_comment(type->cname());
-    _emit_newline();
     current_scratch() << "struct ";
     current_scratch() << "alignas(";
     current_scratch() << type->alignment();

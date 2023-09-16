@@ -57,7 +57,7 @@ protected:
     virtual void _emit_function(const Function &f) noexcept;
     virtual void _emit_arguments(const Function &f) noexcept;
     virtual void _emit_body(const Function &f) noexcept;
-    virtual void _emit_comment(const string &content) noexcept;
+    void _emit_comment(const string &content) noexcept override;
     virtual void _emit_local_var_define(const ScopeStmt *scope) noexcept;
     virtual void _emit_builtin_vars_define(const Function &f) noexcept;
     virtual void _emit_builtin_var(Variable v) noexcept {}
