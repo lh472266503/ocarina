@@ -426,6 +426,7 @@ void CppCodegen::_emit_type_name(const Type *type) noexcept {
         }
     }
 }
+
 void CppCodegen::_emit_function(const Function &f) noexcept {
     if (has_generated(&f)) {
         return;
@@ -437,9 +438,11 @@ void CppCodegen::_emit_function(const Function &f) noexcept {
     _emit_body(f);
     add_generated(&f);
 }
+
 void CppCodegen::_emit_variable_name(Variable v) noexcept {
     current_scratch() << v.name();
 }
+
 void CppCodegen::_emit_statements(ocarina::span<const Statement *const> stmts) noexcept {
     for (const Statement *stmt : stmts) {
         _emit_indent();
@@ -477,6 +480,7 @@ void CppCodegen::_emit_arguments(const Function &f) noexcept {
     }
     current_scratch() << ")";
 }
+
 void CppCodegen::emit(const Function &func) noexcept {
     FUNCTION_GUARD(func)
     TIMER_TAG(codegen, "function " + func.func_name() + " generated");

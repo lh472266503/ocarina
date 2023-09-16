@@ -97,6 +97,7 @@ struct TypeDesc<float3x3> {
         using namespace std::string_view_literals;
         return "matrix<3>"sv;
     }
+    
     static constexpr ocarina::string_view name() noexcept {
         return "float3x3";
     }

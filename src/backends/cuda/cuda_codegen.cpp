@@ -372,6 +372,7 @@ void CUDACodegen::_emit_type_name(const Type *type) noexcept {
         }
     }
 }
+
 void CUDACodegen::_emit_struct_name(const Type *type) noexcept {
     if (type->description() == TypeDesc<Ray>::description()) {
         current_scratch() << "OCRay";
