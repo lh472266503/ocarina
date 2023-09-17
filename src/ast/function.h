@@ -57,13 +57,7 @@ public:
     struct StructureSet {
         ocarina::map<uint64_t, const Type *> struct_map;
         vector<const Type *> struct_lst;
-        void add(const Type *type) noexcept {
-            if (struct_map.contains(type->hash())) {
-                return;
-            }
-            struct_map.insert(make_pair(type->hash(), type));
-            struct_lst.push_back(type);
-        }
+        void add(const Type *type) noexcept;
     };
 
 private:

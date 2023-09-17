@@ -8,6 +8,17 @@
 
 namespace ocarina {
 
+void Function::StructureSet::add(const ocarina::Type *type) noexcept {
+    if (struct_map.contains(type->hash())) {
+        return;
+    }
+    for (const Type *m : type->members()) {
+        add(m);
+    }
+    struct_map.insert(make_pair(type->hash(), type));
+    struct_lst.push_back(type);
+}
+
 ocarina::vector<Function *> &Function::_function_stack() noexcept {
     static ocarina::vector<Function *> ret;
     return ret;
