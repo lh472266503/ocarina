@@ -97,7 +97,7 @@ struct TypeDesc<float3x3> {
         using namespace std::string_view_literals;
         return "matrix<3>"sv;
     }
-    
+
     static constexpr ocarina::string_view name() noexcept {
         return "float3x3";
     }
@@ -199,7 +199,11 @@ template<typename T>
 const Type *Type::of() noexcept {
     auto ret = Type::from(TypeDesc<std::remove_cvref_t<T>>::description());
     if constexpr (ocarina::is_struct_v<T>) {
-        ret->set_cname(Var<T>::cname);
+        if constexpr (requires() {
+                          Var<T>::cname;
+                      }) {
+            ret->set_cname(Var<T>::cname);
+        }
     }
     return ret;
 }
@@ -229,7 +233,7 @@ struct is_valid_reflection : std::false_type {};
 
 template<typename S, typename... M, typename I, I... os>
 struct is_valid_reflection<S, ocarina::tuple<M...>, std::integer_sequence<I, os...>> {
-//    static_assert(((!is_struct_v<M>)&&...));
+    //    static_assert(((!is_struct_v<M>)&&...));
     static_assert((!is_bool_vector_v<M> && ...),
                   "Boolean vectors are not allowed in DSL "
                   "structures since their may have different "
