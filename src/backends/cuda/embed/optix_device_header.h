@@ -6,17 +6,6 @@ constexpr float ray_t_max = 1e16f;
 
 #include "optix.h"
 
-struct alignas(16) OCHit {
-    oc_uint m0{oc_uint(-1)};
-    oc_uint m1{oc_uint(-1)};
-    oc_float2 m2;
-};
-
-struct alignas(16) OCRay {
-public:
-    oc_float4 m0;
-    oc_float4 m1;
-};
 
 __device__ oc_float3 oc_offset_ray_origin(const oc_float3 &p_in, const oc_float3 &n_in) noexcept {
     constexpr auto origin = 1.0f / 32.0f;

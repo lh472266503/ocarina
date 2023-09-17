@@ -1,4 +1,16 @@
 
+struct alignas(16) OCHit {
+    oc_uint m0{oc_uint(-1)};
+    oc_uint m1{oc_uint(-1)};
+    oc_float2 m2;
+};
+
+struct alignas(16) OCRay {
+public:
+    oc_float4 m0;
+    oc_float4 m1;
+};
+
 
 enum struct OCPixelStorage : oc_uint {
     BYTE1,
