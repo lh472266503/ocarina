@@ -54,6 +54,18 @@ public:
         CALLABLE,
     };
 
+    struct StructureSet {
+        ocarina::map<uint64_t, const Type *> struct_map;
+        vector<const Type *> struct_lst;
+        void add(const Type *type) noexcept {
+            if (struct_map.contains(type->hash())) {
+                return;
+            }
+            struct_map.insert(make_pair(type->hash(), type));
+            struct_lst.push_back(type);
+        }
+    };
+
 private:
     mutable string _description{};
     const Type *_ret{nullptr};
@@ -69,7 +81,7 @@ private:
     ScopeStmt _body{true};
     Tag _tag{Tag::CALLABLE};
     ocarina::map<uint64_t, const Function *> _used_custom_func;
-    ocarina::map<uint64_t, const Type *> _used_struct;
+    StructureSet _used_struct;
     mutable bool _raytracing{false};
     mutable uint3 _block_dim{make_uint3(0)};
     mutable uint3 _grid_dim{make_uint3(0)};
@@ -151,12 +163,12 @@ public:
     [[nodiscard]] auto used_structure() const noexcept { return _used_struct; }
     template<typename Visitor>
     void for_each_structure(Visitor &&visitor) const noexcept {
-        for (const auto &[_, type] : _used_struct) {
+        for (const auto &type : _used_struct.struct_lst) {
             visitor(type);
         }
     }
     void add_used_structure(const Type *type) noexcept {
-        _used_struct.insert(make_pair(type->hash(), type));
+        _used_struct.add(type);
     }
     const ArgumentBinding &get_uniform_var(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept;
     [[nodiscard]] auto &uniform_vars() const noexcept { return _uniform_vars; }
