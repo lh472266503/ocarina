@@ -24,8 +24,11 @@ OC_STRUCT(ocarina::Hit, inst_id, prim_id, bary){
     void init(){
         inst_id = uint(-1);
     }
-    [[nodiscard]] auto is_miss() const noexcept {
-        return make_expr(inst_id == uint(-1));
+    [[nodiscard]] Bool is_miss() const noexcept {
+        return eval(inst_id == uint(-1));
+    }
+    [[nodiscard]] Bool is_hit() const noexcept {
+        return !is_miss();
     }
     template<typename... Args>
     [[nodiscard]] auto lerp(Args &&...args) const noexcept {
@@ -47,7 +50,6 @@ public:
     float4 dir_max{0.f};
 
 public:
-    Ray() = default;
     explicit Ray(float t_max = ray_t_max)
         : dir_max(make_float4(0, 0, 0, t_max)) {}
 
