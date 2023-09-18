@@ -9,7 +9,9 @@
 namespace ocarina {
 
 void Function::StructureSet::add(const ocarina::Type *type) noexcept {
-    if (struct_map.contains(type->hash()) || !type->is_structure()) {
+    if (struct_map.contains(type->hash()) || !type->is_structure() ||
+        type->description() == TypeDesc<Hit>::description() ||
+        type->description() == TypeDesc<Ray>::description()) {
         return;
     }
     for (const Type *m : type->members()) {

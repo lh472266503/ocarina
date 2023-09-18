@@ -47,6 +47,7 @@ public:
     float4 dir_max{0.f};
 
 public:
+    Ray() = default;
     explicit Ray(float t_max = ray_t_max)
         : dir_max(make_float4(0, 0, 0, t_max)) {}
 
