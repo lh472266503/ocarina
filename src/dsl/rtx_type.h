@@ -19,21 +19,20 @@ struct alignas(16) Hit {
 
 }// namespace ocarina
 
+// clang-format off
 OC_STRUCT(ocarina::Hit, inst_id, prim_id, bary){
     void init(){
         inst_id = uint(-1);
-}
-
-[[nodiscard]] auto is_miss() const noexcept {
-    return make_expr(inst_id == uint(-1));
-}
-
-template<typename... Args>
-[[nodiscard]] auto lerp(Args &&...args) const noexcept {
-    return ocarina::triangle_lerp(bary, OC_FORWARD(args)...);
-}
-}
-;
+    }
+    [[nodiscard]] auto is_miss() const noexcept {
+        return make_expr(inst_id == uint(-1));
+    }
+    template<typename... Args>
+    [[nodiscard]] auto lerp(Args &&...args) const noexcept {
+        return ocarina::triangle_lerp(bary, OC_FORWARD(args)...);
+    }
+};
+// clang-format on
 
 namespace ocarina {
 using OCHit = Var<Hit>;
