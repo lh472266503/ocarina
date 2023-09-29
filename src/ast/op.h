@@ -156,10 +156,10 @@ enum struct CallOp : uint32_t {
     ATOMIC_SUB,
 
     // ray tracing
-    TRACE_CLOSEST,
-    TRACE_ANY,
     MAKE_RAY,
     RAY_OFFSET_ORIGIN,
+    TRACE_CLOSEST,
+    TRACE_ANY,
 
     COUNT
 };

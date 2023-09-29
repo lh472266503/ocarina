@@ -1,4 +1,17 @@
 
+
+template<class To, class From>
+[[nodiscard]] __device__ To bit_cast(const From &src) noexcept {
+    static_assert(sizeof(To) == sizeof(From));
+    union {
+        From from;
+        To to;
+    } u;
+    u.from = src;
+    return u.to;
+}
+
+
 struct alignas(16) OCHit {
     oc_uint m0{oc_uint(-1)};
     oc_uint m1{oc_uint(-1)};
@@ -11,6 +24,35 @@ public:
     oc_float4 m1;
 };
 
+constexpr float ray_t_max = 1e16f;
+
+__device__ oc_float3 oc_offset_ray_origin(const oc_float3 &p_in, const oc_float3 &n_in) noexcept {
+    constexpr auto origin = 1.0f / 32.0f;
+    constexpr auto float_scale = 1.0f / 65536.0f;
+    constexpr auto int_scale = 256.0f;
+
+    oc_float3 n = n_in;
+    auto of_i = oc_make_int3(static_cast<int>(int_scale * n.x),
+                             static_cast<int>(int_scale * n.y),
+                             static_cast<int>(int_scale * n.z));
+
+    oc_float3 p = p_in;
+    oc_float3 p_i = oc_make_float3(
+        bit_cast<float>(bit_cast<int>(p.x) + oc_select(p.x < 0, -of_i.x, of_i.x)),
+        bit_cast<float>(bit_cast<int>(p.y) + oc_select(p.y < 0, -of_i.y, of_i.y)),
+        bit_cast<float>(bit_cast<int>(p.z) + oc_select(p.z < 0, -of_i.z, of_i.z)));
+
+    return oc_select(oc_abs(p) < origin, p + float_scale * n, p_i);
+}
+
+__device__ inline OCRay oc_make_ray(oc_float3 org, oc_float3 dir, oc_float t_max = ray_t_max) noexcept {
+    OCRay ret;
+
+    ret.m0 = oc_make_float4(org, 0.f);
+    ret.m1 = oc_make_float4(dir, t_max);
+
+    return ret;
+}
 
 enum struct OCPixelStorage : oc_uint {
     BYTE1,
@@ -79,17 +121,6 @@ struct oc_is_same<A, A> {
 
 template<typename A, typename B>
 static constexpr bool oc_is_same_v = oc_is_same<A, B>::value;
-
-template<class To, class From>
-[[nodiscard]] __device__ To bit_cast(const From &src) noexcept {
-    static_assert(sizeof(To) == sizeof(From));
-    union {
-        From from;
-        To to;
-    } u;
-    u.from = src;
-    return u.to;
-}
 
 using uchar = unsigned char;
 

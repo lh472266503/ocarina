@@ -2,38 +2,7 @@
 // Created by Zero on 2022/8/17.
 //
 
-constexpr float ray_t_max = 1e16f;
-
 #include "optix.h"
-
-
-__device__ oc_float3 oc_offset_ray_origin(const oc_float3 &p_in, const oc_float3 &n_in) noexcept {
-    constexpr auto origin = 1.0f / 32.0f;
-    constexpr auto float_scale = 1.0f / 65536.0f;
-    constexpr auto int_scale = 256.0f;
-
-    oc_float3 n = n_in;
-    auto of_i = oc_make_int3(static_cast<int>(int_scale * n.x),
-                             static_cast<int>(int_scale * n.y),
-                             static_cast<int>(int_scale * n.z));
-
-    oc_float3 p = p_in;
-    oc_float3 p_i = oc_make_float3(
-        bit_cast<float>(bit_cast<int>(p.x) + oc_select(p.x < 0, -of_i.x, of_i.x)),
-        bit_cast<float>(bit_cast<int>(p.y) + oc_select(p.y < 0, -of_i.y, of_i.y)),
-        bit_cast<float>(bit_cast<int>(p.z) + oc_select(p.z < 0, -of_i.z, of_i.z)));
-
-    return oc_select(oc_abs(p) < origin, p + float_scale * n, p_i);
-}
-
-__device__ inline OCRay oc_make_ray(oc_float3 org, oc_float3 dir, oc_float t_max = ray_t_max) noexcept {
-    OCRay ret;
-
-    ret.m0 = oc_make_float4(org, 0.f);
-    ret.m1 = oc_make_float4(dir, t_max);
-
-    return ret;
-}
 
 template<typename... Args>
 __device__ inline void trace(OptixTraversableHandle handle,
