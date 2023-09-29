@@ -18,7 +18,9 @@ namespace ocarina {
 static constexpr auto optix_include = OC_STRINGIFY(OPTIX_INCLUDE);
 
 CUDACompiler::CUDACompiler(CUDADevice *device, const Function &f)
-    : _device(device), _function(f) {}
+    : _device(device), _function(f) {
+    f.set_raytracing(true);
+}
 
 ocarina::string CUDACompiler::compile(const string &cu, const string &fn, int sm) const noexcept {
     TIMER_TAG(compile, "compile " + fn);
