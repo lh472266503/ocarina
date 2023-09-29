@@ -23,13 +23,28 @@ OC_MAKE_BUILTIN_FUNC(dispatch_id, uint)
 OC_MAKE_BUILTIN_FUNC(thread_idx, uint3)
 OC_MAKE_BUILTIN_FUNC(dispatch_dim, uint3)
 
+template<typename DispatchIdx>
+requires is_uint_vector3_v<expr_value_t<DispatchIdx>> ||
+    is_uint_vector3_v<expr_value_t<DispatchIdx>>
+[[nodiscard]] auto dispatch_id(DispatchIdx &&idx) {
+    if constexpr (is_uint_vector2_v<expr_value_t<DispatchIdx>>) {
+        Uint3 dim = dispatch_dim();
+        return idx.y * dim.x + idx.x;
+    } else if constexpr (is_uint_vector3_v<expr_value_t<DispatchIdx>>) {
+        Uint3 dim = dispatch_dim();
+        return (dim.x * dim.y) * idx.z + dim.x * idx.y + idx.x;
+    } else {
+        static_assert(always_false_v<DispatchIdx>);
+    }
+}
+
 #undef OC_MAKE_BUILTIN_FUNC
 
 #define OC_MAKE_LOGIC_FUNC(func, tag)                                             \
     template<typename T>                                                          \
     requires is_bool_vector_expr_v<T>                                             \
-    OC_NODISCARD auto                                                             \
-    func(const T &t) noexcept {                                                   \
+        OC_NODISCARD auto                                                         \
+        func(const T &t) noexcept {                                               \
         auto expr = Function::current()->call_builtin(Type::of<bool>(),           \
                                                       CallOp::tag, {OC_EXPR(t)}); \
         return eval<bool>(expr);                                                  \
