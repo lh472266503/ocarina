@@ -157,6 +157,7 @@ using std::sqrt;
 using std::tan;
 using std::tanh;
 using std::round;
+using std::roundf;
 
 [[nodiscard]] inline bool isnan(float x) noexcept {
     auto u = 0u;

@@ -65,7 +65,7 @@ struct element_impl<shared_ptr<T>> {
 }// namespace detail
 
 template<typename T>
-using element_t = detail::element_impl<std::remove_cvref_t<T>>::type;
+using element_t = typename detail::element_impl<std::remove_cvref_t<T>>::type;
 
 namespace detail {
 template<typename T>
