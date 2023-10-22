@@ -161,6 +161,32 @@ public:
     }
 };
 
+template<typename T>
+class Container : public Array<T> {
+private:
+    Uint _count{0u};
+    using Super = Array<T>;
+
+public:
+    using Array<T>::Array;
+    void push_back(const Var<T> &t) noexcept {
+        Super::operator[](_count) = t;
+        _count += 1;
+    }
+    void pop() noexcept {
+        _count -= 1;
+    }
+    [[nodiscar]] Var<T> top() const noexcept {
+        return Super::operator[](_count - 1);
+    }
+    [[nodiscard]] Uint count() const noexcept {
+        return _count;
+    }
+    void clear() noexcept {
+        _count = 0;
+    }
+};
+
 namespace detail {
 
 template<typename T>

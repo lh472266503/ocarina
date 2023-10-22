@@ -283,7 +283,7 @@ struct alignas(16) oc_ushort4{
 
 template<typename T, oc_uint N>
 class oc_array {
-protected:
+private:
     T _data[N];
 
 public:
@@ -296,22 +296,6 @@ public:
     [[nodiscard]] __device__ T &operator[](size_t i) noexcept { return _data[i]; }
     [[nodiscard]] __device__ T operator[](size_t i) const noexcept { return _data[i]; }
 };
-
-template<typename T, oc_uint N>
-class oc_vector : public oc_array<T, N> {
-private:
-    oc_uint _count{0u};
-
-public:
-    using oc_array<T, N>::oc_array;
-    oc_uint count() { return _count; }
-    [[nodiscard]] T top() const noexcept { return _data[_count - 1]; }
-    void push_back(const T &t) noexcept { _data[_count] = t; _count += 1; }
-    void push_back(T t) noexcept { _data[_count] = t; _count += 1; }
-    void pop() noexcept { _count -= 1; }
-    void clear() noexcept { _count = 0; }
-};
-
 
 template<typename T, oc_uint N>
 __device__ oc_array<T, N> operator+(oc_array<T, N> arg) {
