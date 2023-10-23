@@ -8,6 +8,7 @@
 #include "computable.h"
 #include "ast/type_registry.h"
 #include "core/string_util.h"
+#include "syntax_sugar.h"
 
 namespace ocarina {
 
@@ -184,6 +185,16 @@ public:
     }
     void clear() noexcept {
         _count = 0;
+    }
+    template<typename F>
+    void for_each(F &&f) const noexcept {
+        $for(i, _count) {
+            if constexpr (std::invocable<F, Var<T>>) {
+                f((*this)[i]);
+            } else {
+                f(i, (*this)[i]);
+            }
+        };
     }
 };
 

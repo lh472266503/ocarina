@@ -182,14 +182,26 @@ int main(int argc, char *argv[]) {
                         ResourceArrayVar ba) {
         //        t_buffer.atomic()
         //        managed.device().atomic(1).fetch_sub(2);
-//        Var<Ray> r = make_ray(Var(float3(0, 0.1, -5)), float3(1.6f, 0, 1));
-//        Var hit = accel.trace_closest(r);
+        //        Var<Ray> r = make_ray(Var(float3(0, 0.1, -5)), float3(1.6f, 0, 1));
+        //        Var hit = accel.trace_closest(r);
         Var t = t_buffer.read(0);
         Int3 f = make_int3(ba.byte_buffer(index).read<float>(19 * 4).cast<int>(), 6, 9);
         auto arr = bindless_array.byte_buffer(index).read_dynamic_array<float>(3, 19 * 4);
         Printer::instance().warn_with_location("{} {} {}, {} {} ,{} {} {}", f, arr.sub(1, 3).as_vec2(), t.i.cast<float>() + 2.4f, t.j, t.k);
+
+        Container<int> container{4};
+
+        container.push_back(5);
+        container.push_back(8);
+
+        container.for_each([&](Int i) {
+            Printer::instance().info("{}", i);
+        });
+
+        container.pop();
+
         Var ff = select(Var(false), tri, tri);
-//        prints("{}---", is_null(img));
+        //        prints("{}---", is_null(img));
         //      Int a = 1, b = 2, c = 3;
         //      printer.log_debug("--{} {} {}", a, b, c);
         //        prints("++{} {} {}", f);
