@@ -177,7 +177,7 @@ public:
     void pop() noexcept {
         _count -= 1;
     }
-    [[nodiscar]] Var<T> top() const noexcept {
+    [[nodiscard]] Var<T> top() const noexcept {
         return Super::operator[](_count - 1);
     }
     [[nodiscard]] Uint count() const noexcept {
