@@ -12,9 +12,9 @@
 
 namespace ocarina {
 
-#define OC_MAKE_BUILTIN_FUNC(func, type)                     \
-    [[nodiscard]] inline auto func() noexcept {              \
-        return make_expr<type>(Function::current()->func()); \
+#define OC_MAKE_BUILTIN_FUNC(func, type)                \
+    [[nodiscard]] inline auto func() noexcept {         \
+        return eval<type>(Function::current()->func()); \
     }
 OC_MAKE_BUILTIN_FUNC(dispatch_idx, uint3)
 OC_MAKE_BUILTIN_FUNC(block_idx, uint3)
@@ -25,7 +25,7 @@ OC_MAKE_BUILTIN_FUNC(dispatch_dim, uint3)
 
 template<typename DispatchIdx>
 requires is_uint_vector3_v<expr_value_t<DispatchIdx>> ||
-    is_uint_vector3_v<expr_value_t<DispatchIdx>>
+         is_uint_vector3_v<expr_value_t<DispatchIdx>>
 [[nodiscard]] auto dispatch_id(DispatchIdx &&idx) {
     if constexpr (is_uint_vector2_v<expr_value_t<DispatchIdx>>) {
         Uint3 dim = dispatch_dim();
@@ -43,8 +43,8 @@ requires is_uint_vector3_v<expr_value_t<DispatchIdx>> ||
 #define OC_MAKE_LOGIC_FUNC(func, tag)                                             \
     template<typename T>                                                          \
     requires is_bool_vector_expr_v<T>                                             \
-        OC_NODISCARD auto                                                         \
-        func(const T &t) noexcept {                                               \
+    OC_NODISCARD auto                                                             \
+    func(const T &t) noexcept {                                                   \
         auto expr = Function::current()->call_builtin(Type::of<bool>(),           \
                                                       CallOp::tag, {OC_EXPR(t)}); \
         return eval<bool>(expr);                                                  \
