@@ -83,6 +83,7 @@ namespace detail {
     if (ret == "vector"sv ||
         ret == "matrix"sv ||
         ret == "struct"sv ||
+        ret == "d_array"sv ||
         ret == "array"sv) {
         auto [start, end] = bracket_matching_near(str);
         ret = str.substr(0, end + 1);
@@ -165,6 +166,8 @@ const Type *TypeRegistry::parse_type(ocarina::string_view desc) noexcept {
         parse_matrix(type.get(), desc);
     } else if (desc.starts_with("array")) {
         parse_array(type.get(), desc);
+    } else if (desc.starts_with("d_array")) {
+        parse_dynamic_array(type.get(), desc);
     } else if (desc.starts_with("struct")) {
         parse_struct(type.get(), desc);
     } else if (desc.starts_with("buffer")) {
@@ -281,6 +284,11 @@ void TypeRegistry::parse_array(Type *type, ocarina::string_view desc) noexcept {
     type->_alignment = alignment;
     type->_dimension = len;
     type->_size = size;
+}
+
+void TypeRegistry::parse_dynamic_array(Type *type, ocarina::string_view desc) noexcept {
+    auto p = desc.substr(2);
+    parse_array(type, desc.substr(2));
 }
 
 void TypeRegistry::add_type(ocarina::unique_ptr<Type> type) {

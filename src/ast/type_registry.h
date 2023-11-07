@@ -19,9 +19,6 @@ class BufferView;
 
 class Texture;
 
-template<typename T>
-class ImageView;
-
 class Accel;
 
 template<typename T>
@@ -111,6 +108,22 @@ struct TypeDesc<float4x4> {
     }
     static constexpr ocarina::string_view name() noexcept {
         return "float4x4";
+    }
+};
+
+template<typename T>
+struct TypeDesc<vector<T>> {
+    static_assert(alignof(T) >= 4u);
+
+    static ocarina::string_view description() noexcept {
+        static thread_local auto s = ocarina::format(
+            "d_array<{},0>",
+            TypeDesc<T>::description());
+        return s;
+    }
+
+    static ocarina::string_view name() noexcept {
+        return description();
     }
 };
 
@@ -298,6 +311,7 @@ private:
     void parse_vector(Type *type, ocarina::string_view desc) noexcept;
     void parse_matrix(Type *type, ocarina::string_view desc) noexcept;
     void parse_array(Type *type, ocarina::string_view desc) noexcept;
+    void parse_dynamic_array(Type *type, ocarina::string_view desc) noexcept;
     void parse_buffer(Type *type, ocarina::string_view desc) noexcept;
     void parse_texture(Type *type, ocarina::string_view desc) noexcept;
     void parse_accel(Type *type, ocarina::string_view desc) noexcept;

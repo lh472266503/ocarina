@@ -341,6 +341,9 @@ struct is_std_vector_impl<ocarina::vector<T>> : std::true_type {};
 }// namespace detail
 
 template<typename T>
+using is_std_vector = detail::is_std_vector_impl<std::remove_cvref_t<T>>;
+
+template<typename T>
 static constexpr bool is_std_vector_v = detail::is_std_vector_impl<std::remove_cvref_t<T>>::value;
 
 }// namespace ocarina

@@ -110,6 +110,20 @@ using expr_value_t = typename expr_value<T>::type;
 
 namespace detail {
 template<typename T>
+using is_valid_dsl_type_impl = std::disjunction<is_basic<T>,
+                                                is_struct<T>,
+                                                is_std_vector<T>,
+                                                is_array<T>>;
+}
+
+template<typename T>
+using is_valid_dsl_type = detail::is_valid_dsl_type_impl<std::remove_cvref_t<T>>;
+
+template<typename T>
+constexpr bool is_valid_dsl_type_v = is_valid_dsl_type<T>::value;
+
+namespace detail {
+template<typename T>
 struct dsl_impl {
     using type = Var<T>;
 };
