@@ -324,13 +324,10 @@ using is_all_basic = std::conjunction<is_basic<Ts>...>;
 OC_DEFINE_TEMPLATE_VALUE_MULTI(is_all_basic)
 
 template<typename T>
-using is_valid_buffer_element = std::conjunction<
+using is_simple_type = std::conjunction<
     std::is_same<T, std::remove_cvref_t<T>>,
     std::is_trivially_copyable<T>,
     std::is_trivially_destructible<T>>;
-
-template<typename T>
-constexpr auto is_valid_buffer_element_v = is_valid_buffer_element<T>::value;
 
 namespace detail {
 template<typename T>

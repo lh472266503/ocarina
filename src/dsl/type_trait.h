@@ -374,6 +374,12 @@ class Texture;
 class Accel;
 class ResourceArray;
 
+template<typename T>
+using is_valid_buffer_element = std::disjunction<is_simple_type<T>, is_valid_dsl_type<T>>;
+
+template<typename T>
+constexpr auto is_valid_buffer_element_v = is_valid_buffer_element<T>::value;
+
 namespace detail {
 
 template<typename T>

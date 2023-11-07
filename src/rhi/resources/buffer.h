@@ -92,7 +92,7 @@ public:
 
 template<typename T = std::byte, int... Dims>
 class Buffer : public RHIResource {
-//    static_assert(is_valid_buffer_element_v<T>);
+    static_assert(is_valid_buffer_element_v<T>);
     static constexpr bool use_for_dsl = is_dsl_basic_v<T>;
 
 public:
