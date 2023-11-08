@@ -239,7 +239,7 @@ const Type *Type::of() noexcept {
     template<>                                                                             \
     struct ocarina::TypeDesc<S> {                                                          \
         using this_type = S;                                                               \
-        static ocarina::string_view description() noexcept {                               \
+        static ocarina::string description() noexcept {                                    \
             static thread_local ocarina::string s = ocarina::format(                       \
                 FMT_STRING("struct<{}" MAP(OC_MAKE_STRUCT_MEMBER_FMT, ##__VA_ARGS__) ">"), \
                 alignof(this_type),                                                        \
