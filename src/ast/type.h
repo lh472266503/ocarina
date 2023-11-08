@@ -154,13 +154,13 @@ struct struct_member_tuple<Matrix<N>> {
     template<>                                                                                    \
     struct ocarina::struct_member_tuple<S> {                                                      \
         using this_type = S;                                                                      \
+        static constexpr string_view members[] = {MAP_LIST(OC_STRINGIFY, __VA_ARGS__)};           \
         using type = ocarina::tuple<MAP_LIST(OC_MEMBER_TYPE_MAP, ##__VA_ARGS__)>;                 \
         using offset = std::index_sequence<MAP_LIST(OC_TYPE_OFFSET_OF, ##__VA_ARGS__)>;           \
         static_assert(is_valid_reflection_v<this_type, type, offset>,                             \
                       "may be order of members is wrong!");                                       \
         static_assert(sizeof(this_type) >= 4);                                                    \
         static constexpr auto member_index(ocarina::string_view name) {                           \
-            constexpr string_view members[] = {MAP_LIST(OC_STRINGIFY, __VA_ARGS__)};              \
             return std::find(std::begin(members), std::end(members), name) - std::begin(members); \
         }                                                                                         \
     };
@@ -320,8 +320,8 @@ private:
     ocarina::string _description;
     ocarina::string _name;
     mutable ocarina::string _cname;
-    const Type * _parent{nullptr};
-    ocarina::vector<string> _member_name;
+    const Type *_parent{nullptr};
+    mutable ocarina::vector<string_view> _member_name;
     ocarina::vector<const Type *> _members;
     [[nodiscard]] uint64_t _compute_hash() const noexcept override { return hash64(_description); }
     vector<int> _dims;
@@ -331,6 +331,12 @@ private:
     void set_description(ocarina::string_view desc) noexcept {
         _description = desc;
         update_name(desc);
+    }
+    void update_member_name(const string_view *names, int num) noexcept {
+        _member_name.clear();
+        for (int i = 0; i < num; ++i) {
+            _member_name.push_back(names[i]);
+        }
     }
 
 public:
@@ -343,6 +349,7 @@ public:
     [[nodiscard]] static const Type *from(std::string_view description) noexcept;
     [[nodiscard]] static const Type *at(uint32_t uid) noexcept;
     [[nodiscard]] static size_t count() noexcept;
+
     [[nodiscard]] bool operator==(const Type &rhs) const noexcept { return hash() == rhs.hash(); }
     [[nodiscard]] bool operator!=(const Type &rhs) const noexcept { return !(*this == rhs); }
     [[nodiscard]] bool operator<(const Type &rhs) const noexcept { return _index < rhs._index; }

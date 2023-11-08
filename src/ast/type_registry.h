@@ -210,13 +210,17 @@ struct TypeDesc<ResourceArray> {
 
 template<typename T>
 const Type *Type::of() noexcept {
-    auto ret = Type::from(TypeDesc<std::remove_cvref_t<T>>::description());
+    using raw_type = std::remove_cvref_t<T>;
+    auto ret = Type::from(TypeDesc<raw_type>::description());
     if constexpr (ocarina::is_struct_v<T>) {
         if constexpr (requires() {
                           Var<T>::cname;
                       }) {
             ret->set_cname(Var<T>::cname);
         }
+        auto arr = ocarina::struct_member_tuple<raw_type>::members;
+        int num = sizeof(ocarina::struct_member_tuple<raw_type>::members) / sizeof(arr[1]);
+        const_cast<Type *>(ret)->update_member_name(arr, num);
     }
     return ret;
 }

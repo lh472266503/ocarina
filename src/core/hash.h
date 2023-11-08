@@ -124,6 +124,8 @@ protected:
 public:
     [[nodiscard]] const char *class_name() const noexcept { return typeid(*this).name(); }
 
+    void reset_hash() const noexcept { _hash_computed = false; }
+
     [[nodiscard]] uint64_t hash() const noexcept {
         if (!_hash_computed) {
             _hash = hash64(class_name(), _compute_hash());
