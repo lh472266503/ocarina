@@ -115,14 +115,14 @@ template<typename T>
 struct TypeDesc<vector<T>> {
     static_assert(alignof(T) >= 4u);
 
-    static ocarina::string_view description() noexcept {
+    static ocarina::string &description() noexcept {
         static thread_local auto s = ocarina::format(
             "d_array<{},0>",
             TypeDesc<T>::description());
         return s;
     }
 
-    static ocarina::string_view name() noexcept {
+    static ocarina::string &name() noexcept {
         return description();
     }
 };

@@ -35,6 +35,14 @@ inline size_t structure_size(ocarina::span<const MemoryBlock> members) noexcept 
     return size;
 }
 
+inline size_t structure_alignment(span<const MemoryBlock> members) noexcept {
+    size_t ret = 0;
+    for (const MemoryBlock block : members) {
+        ret = max(block.alignment, ret);
+    }
+    return ret;
+}
+
 template<typename T, typename V>
 requires concepts::iterable<V> && concepts::iterable<T>
 void append(T &v1, V &&v2) {
