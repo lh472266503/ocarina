@@ -28,6 +28,20 @@ const Type *Type::element() const noexcept {
     return _members.front();
 }
 
+bool Type::is_valid() const noexcept {
+    switch (_tag) {
+        case Tag::STRUCTURE: {
+            bool ret = true;
+            for (auto member : _members) {
+                ret = ret && member->is_valid();
+            }
+            return ret;
+        }
+        case Tag::ARRAY: return dimension() > 0;
+        default: return true;
+    }
+}
+
 size_t Type::max_member_size() const noexcept {
     switch (_tag) {
         case Tag::BOOL:

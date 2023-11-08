@@ -357,6 +357,7 @@ public:
     [[nodiscard]] constexpr int dimension() const noexcept { return _dimension; }
     [[nodiscard]] ocarina::span<const Type *const> members() const noexcept;
     [[nodiscard]] const Type *element() const noexcept;
+    [[nodiscard]] bool is_valid() const noexcept;
     [[nodiscard]] constexpr bool is_scalar() const noexcept {
         return _tag == Tag::BOOL || _tag == Tag::FLOAT || _tag == Tag::INT ||
                _tag == Tag::UINT || _tag == Tag::UCHAR || _tag == Tag::CHAR ||
