@@ -184,16 +184,16 @@ struct TypeDesc<T[N]> : public TypeDesc<std::array<T, N>> {};
 
 template<typename... T>
 struct TypeDesc<ocarina::tuple<T...>> {
-    static ocarina::string_view description() noexcept {
+    static ocarina::string &description() noexcept {
         static thread_local ocarina::string str = []() -> ocarina::string {
             auto ret = ocarina::format("struct<{}", alignof(ocarina::tuple<T...>));
             (ret.append(",").append(TypeDesc<T>::description()), ...);
             ret.append(">");
             return ret;
         }();
-        return string_view(str);
+        return str;
     }
-    static ocarina::string_view name() noexcept {
+    static ocarina::string &name() noexcept {
         return description();
     }
 };
