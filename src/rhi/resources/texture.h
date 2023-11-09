@@ -137,7 +137,7 @@ public:
     template<typename Arg>
     requires is_buffer_or_view_v<Arg>
     [[nodiscard]] BufferToTextureCommand *copy_from(const Arg &buffer, size_t buffer_offset, bool async = true) const noexcept {
-        return BufferToTextureCommand::create(buffer.handle(), buffer_offset * buffer.element_size, array_handle(),
+        return BufferToTextureCommand::create(buffer.handle(), buffer_offset * buffer.element_size(), array_handle(),
                                               impl()->pixel_storage(),
                                               impl()->resolution(), 0, async);
     }

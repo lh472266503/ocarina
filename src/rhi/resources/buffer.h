@@ -16,10 +16,8 @@ class Buffer;
 
 template<typename T, int... Dims>
 class BufferView {
-public:
-    static constexpr size_t element_size = sizeof(T);
-
 private:
+    size_t _element_size{sizeof(T)};
     handle_ty _handle{};
     size_t _offset{};
     size_t _size{};
@@ -29,14 +27,15 @@ public:
     BufferView(const Buffer<T, Dims...> &buffer);
     [[nodiscard]] handle_ty handle() const { return _handle; }
     [[nodiscard]] size_t size() const { return _size; }
-    [[nodiscard]] size_t size_in_byte() const noexcept { return _size * element_size; }
+    [[nodiscard]] size_t element_size() const noexcept { return _element_size; }
+    [[nodiscard]] size_t size_in_byte() const noexcept { return _size * _element_size; }
     BufferView(handle_ty handle, size_t offset, size_t size, size_t total_size)
         : _handle(handle), _offset(offset), _size(size), _total_size(total_size) {}
 
     BufferView(handle_ty handle, size_t total_size)
         : _handle(handle), _offset(0), _total_size(total_size), _size(total_size) {}
 
-    [[nodiscard]] handle_ty head() const { return _handle + _offset * element_size; }
+    [[nodiscard]] handle_ty head() const { return _handle + _offset * _element_size; }
 
     [[nodiscard]] BufferView<T> subview(size_t offset, size_t size) const noexcept {
         return BufferView<T>(_handle, _offset + offset, size, _total_size);
@@ -45,27 +44,27 @@ public:
     template<typename Arg>
     requires is_buffer_or_view_v<Arg> && std::is_same_v<buffer_element_t<Arg>, T>
     [[nodiscard]] BufferCopyCommand *copy_from(const Arg &src, uint dst_offset) noexcept {
-        return BufferCopyCommand::create(src.head(), head(), 0, dst_offset * element_size,
+        return BufferCopyCommand::create(src.head(), head(), 0, dst_offset * _element_size,
                                          src.size_in_byte(), true);
     }
 
     template<typename Arg>
     requires is_buffer_or_view_v<Arg> && std::is_same_v<buffer_element_t<Arg>, T>
     [[nodiscard]] BufferCopyCommand *copy_to(Arg &dst, uint src_offset) noexcept {
-        return BufferCopyCommand::create(head(), dst.head(), src_offset * element_size,
+        return BufferCopyCommand::create(head(), dst.head(), src_offset * _element_size,
                                          0, dst.size_in_byte(), true);
     }
 
     [[nodiscard]] BufferUploadCommand *upload(const void *data) const noexcept {
-        return BufferUploadCommand::create(data, head(), _size * element_size, true);
+        return BufferUploadCommand::create(data, head(), _size * _element_size, true);
     }
 
     [[nodiscard]] BufferUploadCommand *upload_sync(const void *data) const noexcept {
-        return BufferUploadCommand::create(data, head(), _size * element_size, false);
+        return BufferUploadCommand::create(data, head(), _size * _element_size, false);
     }
 
     [[nodiscard]] BufferDownloadCommand *download(void *data, uint src_offset = 0) const noexcept {
-        return BufferDownloadCommand::create(data, head() + src_offset * element_size,
+        return BufferDownloadCommand::create(data, head() + src_offset * _element_size,
                                              size_in_byte(), true);
     }
 
@@ -96,19 +95,21 @@ class Buffer : public RHIResource {
     static constexpr bool use_for_dsl = is_dsl_basic_v<T>;
 
 public:
-    static constexpr size_t element_size = sizeof(T);
     using element_type = T;
     static constexpr std::array<int, sizeof...(Dims)> dims = {Dims...};
     static constexpr bool has_multi_dim() noexcept { return !dims.empty(); }
 
 protected:
     size_t _size{};
+    size_t _element_size{sizeof(T)};
 
 public:
     Buffer() = default;
 
+    [[nodiscard]] size_t element_size() const noexcept { return _element_size; }
+
     Buffer(Device::Impl *device, size_t size, const string &desc = "")
-        : RHIResource(device, Tag::BUFFER, device->create_buffer(size * element_size, desc)),
+        : RHIResource(device, Tag::BUFFER, device->create_buffer(size * _element_size, desc)),
           _size(size) {}
 
     Buffer(BufferView<T, Dims...> buffer_view)
@@ -159,7 +160,7 @@ public:
 
     template<typename U = void *>
     [[nodiscard]] auto address(size_t offset) const noexcept {
-        return (U)(handle() + offset * element_size);
+        return (U)(handle() + offset * _element_size);
     }
 
     void set_size(size_t size) noexcept { _size = size; }
@@ -205,7 +206,7 @@ public:
     [[nodiscard]] size_t size_in_byte() const noexcept { return _size * sizeof(T); }
 
     [[nodiscard]] CommandList reallocate(size_t size, bool async = true) {
-        return {BufferReallocateCommand::create(this, size * element_size, async),
+        return {BufferReallocateCommand::create(this, size * _element_size, async),
                 HostFunctionCommand::create([this, size] {
                     this->_size = size;
                 },
