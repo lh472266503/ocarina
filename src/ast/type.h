@@ -320,7 +320,6 @@ private:
     ocarina::string _description;
     ocarina::string _name;
     mutable ocarina::string _cname;
-    const Type *_parent{nullptr};
     mutable ocarina::vector<string_view> _member_name;
     ocarina::vector<const Type *> _members;
     [[nodiscard]] uint64_t _compute_hash() const noexcept override { return hash64(_description); }

@@ -126,11 +126,15 @@ namespace detail {
  * MATRIX: matrix<2> | matrix<3> | matrix<4>
  * STRUCT: struct<4,TYPE...> | struct<8,TYPE...> | struct<16,TYPE...>
  */
-const Type *TypeRegistry::parse_type(ocarina::string_view desc) noexcept {
+const Type *TypeRegistry::parse_type(ocarina::string_view desc, uint64_t ext_hash) noexcept {
     if (desc == "void") {
         return nullptr;
     }
     uint64_t hash = _hash(desc);
+    if (desc.starts_with("d_array")) {
+        // dynamic array need change attribute, special handling
+        hash = hash64(hash, ext_hash);
+    }
     if (auto iter = _type_set.find(hash); iter != _type_set.cend()) {
         try_add_to_current_function(*iter);
         return *iter;
@@ -230,6 +234,7 @@ void TypeRegistry::parse_matrix(Type *type, ocarina::string_view desc) noexcept 
 
 void TypeRegistry::parse_struct(Type *type, string_view desc) noexcept {
     type->_tag = Type::Tag::STRUCTURE;
+    uint64_t ext_hash = hash64(desc);
     auto lst = detail::find_content(desc);
     auto alignment_str = lst[0];
     auto alignment = std::stoi(string(alignment_str));
@@ -237,7 +242,7 @@ void TypeRegistry::parse_struct(Type *type, string_view desc) noexcept {
     auto size = 0u;
     for (int i = 1; i < lst.size(); ++i) {
         auto type_str = lst[i];
-        type->_members.push_back(parse_type(type_str));
+        type->_members.push_back(parse_type(type_str, hash64(ext_hash, i - 1)));
         auto member = type->_members[i - 1];
         size = mem_offset(size, member->alignment());
         size += member->size();
