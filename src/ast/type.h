@@ -345,10 +345,12 @@ public:
 
     template<typename T>
     [[nodiscard]] static auto of(T &&) noexcept { return of<std::remove_cvref_t<T>>(); }
-    [[nodiscard]] static const Type *from(std::string_view description) noexcept;
+    [[nodiscard]] static const Type *from(ocarina::string_view description) noexcept;
     [[nodiscard]] static const Type *at(uint32_t uid) noexcept;
     [[nodiscard]] static size_t count() noexcept;
-
+    void update_dynamic_member_length(ocarina::string_view member_name, uint length) noexcept;
+    void update_structure_alignment_and_size() noexcept;
+    [[nodiscard]] const Type *get_member(ocarina::string_view name) noexcept;
     [[nodiscard]] bool operator==(const Type &rhs) const noexcept { return hash() == rhs.hash(); }
     [[nodiscard]] bool operator!=(const Type &rhs) const noexcept { return !(*this == rhs); }
     [[nodiscard]] bool operator<(const Type &rhs) const noexcept { return _index < rhs._index; }

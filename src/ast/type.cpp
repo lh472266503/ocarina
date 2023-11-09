@@ -42,6 +42,35 @@ bool Type::is_valid() const noexcept {
     }
 }
 
+const Type *Type::get_member(ocarina::string_view name) noexcept {
+    for (int i = 0; i < _member_name.size(); ++i) {
+        if (_member_name[i] == name) {
+            return _members[i];
+        }
+    }
+    return nullptr;
+}
+
+void Type::update_dynamic_member_length(ocarina::string_view member_name, uint length) noexcept {
+    Type *member = const_cast<Type *>(get_member(member_name));
+    member->_dimension = length;
+    member->_size = length * member->max_member_size();
+    update_structure_alignment_and_size();
+}
+
+void Type::update_structure_alignment_and_size() noexcept {
+    vector<MemoryBlock> blocks;
+    for(const Type *member : _members) {
+        MemoryBlock block;
+        block.max_member_size = member->max_member_size();
+        block.size = member->size();
+        block.alignment = member->alignment();
+        blocks.push_back(block);
+    }
+    _alignment = structure_alignment(blocks);
+    _size = structure_size(blocks);
+}
+
 size_t Type::max_member_size() const noexcept {
     switch (_tag) {
         case Tag::BOOL:
