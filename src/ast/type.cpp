@@ -42,7 +42,7 @@ bool Type::is_valid() const noexcept {
     }
 }
 
-const Type *Type::get_member(ocarina::string_view name) noexcept {
+const Type *Type::get_member(ocarina::string_view name) const noexcept {
     for (int i = 0; i < _member_name.size(); ++i) {
         if (_member_name[i] == name) {
             return _members[i];
@@ -51,14 +51,14 @@ const Type *Type::get_member(ocarina::string_view name) noexcept {
     return nullptr;
 }
 
-void Type::update_dynamic_member_length(ocarina::string_view member_name, uint length) noexcept {
+void Type::update_dynamic_member_length(ocarina::string_view member_name, uint length) const noexcept {
     Type *member = const_cast<Type *>(get_member(member_name));
     member->_dimension = length;
     member->_size = length * member->max_member_size();
     update_structure_alignment_and_size();
 }
 
-void Type::update_structure_alignment_and_size() noexcept {
+void Type::update_structure_alignment_and_size() const noexcept {
     vector<MemoryBlock> blocks;
     for(const Type *member : _members) {
         MemoryBlock block;
@@ -67,8 +67,8 @@ void Type::update_structure_alignment_and_size() noexcept {
         block.alignment = member->alignment();
         blocks.push_back(block);
     }
-    _alignment = structure_alignment(blocks);
-    _size = structure_size(blocks);
+    const_cast<Type *>(this)->_alignment = structure_alignment(blocks);
+    const_cast<Type *>(this)->_size = structure_size(blocks);
 }
 
 size_t Type::max_member_size() const noexcept {
@@ -85,8 +85,8 @@ size_t Type::max_member_size() const noexcept {
         case Tag::STRUCTURE: {
             size_t size = 0;
             for (const Type *member : _members) {
-                if (member->size() > size) {
-                    size = member->size();
+                if (member->max_member_size() > size) {
+                    size = member->max_member_size();
                 }
             }
             return size;

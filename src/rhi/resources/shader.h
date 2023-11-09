@@ -59,7 +59,7 @@ private:
         _cursor += sizeof(T);
         OC_ASSERT(_cursor < Size);
         oc_memcpy(dst_ptr, &arg, sizeof(T));
-        push_memory_block({dst_ptr, sizeof(T), alignof(T), sizeof(T)});
+        push_memory_block({dst_ptr, sizeof(T), alignof(T), Type::of<T>()->max_member_size()});
     }
 
     template<typename T>

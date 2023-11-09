@@ -16,6 +16,7 @@ struct Triangle {
 public:
     uint i, j, k;
     vector<float> f;
+//    array<float, 3> f;
     Triangle(uint i, uint j, uint k) : i(i), j(j), k(k) {}
     Triangle() = default;
 };
@@ -103,8 +104,12 @@ int main(int argc, char *argv[]) {
     //
     //    return 0;
     log_level_debug();
+    auto type = Type::of<Triangle>();
+    type->update_dynamic_member_length("f", 3);
 
 //    test();
+
+    int pp = alignof(void *);
 
     fs::path path(argv[0]);
     Context context(path.parent_path());
@@ -177,31 +182,30 @@ int main(int argc, char *argv[]) {
 
     auto ll = lerp(t, aaa, bb);
 
-    Kernel kernel = [&](const BufferVar<Triangle> t_buffer,
-                        //                        const Var<Accel> acc,
-                        Var<Triangle> tri,
+    Kernel kernel = [&](
                         ResourceArrayVar ba) {
         //        t_buffer.atomic()
         //        managed.device().atomic(1).fetch_sub(2);
         //        Var<Ray> r = make_ray(Var(float3(0, 0.1, -5)), float3(1.6f, 0, 1));
         //        Var hit = accel.trace_closest(r);
-        Var t = t_buffer.read(0);
-        Int3 f = make_int3(ba.byte_buffer(index).read<float>(19 * 4).cast<int>(), 6, 9);
-        auto arr = bindless_array.byte_buffer(index).read_dynamic_array<float>(3, 19 * 4);
-        Printer::instance().warn_with_location("{} {} {}, {} {} ,{} {} {}", f, arr.sub(1, 3).as_vec2(), t.i.cast<float>() + 2.4f, t.j, t.k);
+//        Var t = t_buffer.read(0);
+//        Int3 f = make_int3(ba.byte_buffer(index).read<float>(19 * 4).cast<int>(), 6, 9);
+//        auto arr = bindless_array.byte_buffer(index).read_dynamic_array<float>(3, 19 * 4);
+//        Printer::instance().warn_with_location("{} {} {}, {} {} ,{} {} {}", f, arr.sub(1, 3).as_vec2(), t.i.cast<float>() + 2.4f, t.j, t.k);
 
         Container<int> container{4};
-
+        Var<Triangle> tri;
+        tri.f[0] = 1.f;
         container.push_back(5);
         container.push_back(8);
 
         container.for_each([&](Int i) {
-            Printer::instance().info("{}", i);
+            Printer::instance().info("{}", tri.f[0]);
         });
 
         container.pop();
 
-        Var ff = select(Var(false), tri, tri);
+//        Var ff = select(Var(false), tri, tri);
         //        prints("{}---", is_null(img));
         //      Int a = 1, b = 2, c = 3;
         //      printer.log_debug("--{} {} {}", a, b, c);
@@ -227,7 +231,7 @@ int main(int argc, char *argv[]) {
         //        prints("{} {} {} {}", bindless_array.tex(0).sample(4, uv).as_vec4());
     };
     auto shader = device.compile(kernel);
-    stream << shader(t_buffer.view(1), triangle[0], bindless_array).dispatch(3);
+    stream << shader(bindless_array).dispatch(3);
     stream << Printer::instance().retrieve() << synchronize() <<commit();
 
 //    float tf = bit_cast<float>(19);
