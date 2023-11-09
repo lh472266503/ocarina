@@ -65,7 +65,7 @@ OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(ushort)
 
 template<>
 struct TypeDesc<void> {
-    static constexpr ocarina::string_view description() noexcept {
+    static constexpr ocarina::string_view description(string_view sv = "") noexcept {
         using namespace std::string_view_literals;
         return "void"sv;
     }
@@ -78,7 +78,7 @@ struct TypeDesc<void> {
 /// matrices
 template<>
 struct TypeDesc<float2x2> {
-    static constexpr ocarina::string_view description() noexcept {
+    static constexpr ocarina::string_view description(string_view sv = "") noexcept {
         using namespace std::string_view_literals;
         return "matrix<2>"sv;
     }
@@ -90,7 +90,7 @@ struct TypeDesc<float2x2> {
 
 template<>
 struct TypeDesc<float3x3> {
-    static constexpr ocarina::string_view description() noexcept {
+    static constexpr ocarina::string_view description(string_view sv = "") noexcept {
         using namespace std::string_view_literals;
         return "matrix<3>"sv;
     }
@@ -102,7 +102,7 @@ struct TypeDesc<float3x3> {
 
 template<>
 struct TypeDesc<float4x4> {
-    static constexpr ocarina::string_view description() noexcept {
+    static constexpr ocarina::string_view description(string_view sv = "") noexcept {
         using namespace std::string_view_literals;
         return "matrix<4>"sv;
     }
@@ -115,7 +115,7 @@ template<typename T>
 struct TypeDesc<vector<T>> {
     static_assert(alignof(T) >= 4u);
 
-    static ocarina::string &description() noexcept {
+    static ocarina::string &description(string_view sv = "") noexcept {
         static thread_local auto s = ocarina::format(
             "d_array<{},0>",
             TypeDesc<T>::description());
@@ -130,7 +130,7 @@ struct TypeDesc<vector<T>> {
 template<typename T, size_t N>
 struct TypeDesc<std::array<T, N>> {
     static_assert(alignof(T) >= 4u);
-    static ocarina::string description() noexcept {
+    static ocarina::string description(string_view sv = "") noexcept {
         static thread_local auto s = ocarina::format(
             "array<{},{}>",
             TypeDesc<T>::description(), N);
@@ -145,7 +145,7 @@ struct TypeDesc<std::array<T, N>> {
 template<typename T, int... Dims>
 struct TypeDesc<Buffer<T, Dims...>> {
     static_assert(alignof(T) >= 4u);
-    static ocarina::string description() noexcept {
+    static ocarina::string description(string_view sv = "") noexcept {
         static thread_local string str = []() -> string {
             auto ret = ocarina::format("buffer<{}", TypeDesc<T>::description());
             (ret.append(",").append(to_string(Dims)), ...);
@@ -161,7 +161,7 @@ struct TypeDesc<Buffer<T, Dims...>> {
 
 template<>
 struct TypeDesc<Texture> {
-    static ocarina::string_view description() noexcept {
+    static ocarina::string_view description(string_view sv = "") noexcept {
         return "texture";
     }
     static ocarina::string_view name() noexcept {
@@ -171,7 +171,7 @@ struct TypeDesc<Texture> {
 
 template<>
 struct TypeDesc<Accel> {
-    static ocarina::string_view description() noexcept {
+    static ocarina::string_view description(string_view sv = "") noexcept {
         return "accel";
     }
     static ocarina::string_view name() noexcept {
@@ -184,7 +184,7 @@ struct TypeDesc<T[N]> : public TypeDesc<std::array<T, N>> {};
 
 template<typename... T>
 struct TypeDesc<ocarina::tuple<T...>> {
-    static ocarina::string &description() noexcept {
+    static ocarina::string &description(string_view sv = "") noexcept {
         static thread_local ocarina::string str = []() -> ocarina::string {
             auto ret = ocarina::format("struct<{}", alignof(ocarina::tuple<T...>));
             (ret.append(",").append(TypeDesc<T>::description()), ...);
@@ -239,7 +239,7 @@ const Type *Type::of() noexcept {
     template<>                                                                             \
     struct ocarina::TypeDesc<S> {                                                          \
         using this_type = S;                                                               \
-        static ocarina::string description() noexcept {                                    \
+        static ocarina::string description(string_view sv = "") noexcept {                 \
             static thread_local ocarina::string s = ocarina::format(                       \
                 FMT_STRING("struct<{}" MAP(OC_MAKE_STRUCT_MEMBER_FMT, ##__VA_ARGS__) ">"), \
                 alignof(this_type),                                                        \
