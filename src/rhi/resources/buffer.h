@@ -109,12 +109,12 @@ public:
     [[nodiscard]] size_t element_size() const noexcept { return _element_size; }
 
     Buffer(Device::Impl *device, size_t size, const string &desc = "")
-        : RHIResource(device, Tag::BUFFER, device->create_buffer(size * _element_size, desc)),
-          _size(size) {}
+        : RHIResource(device, Tag::BUFFER, device->create_buffer(size * sizeof(T), desc)),
+          _size(size), _element_size(sizeof(T)) {}
 
     Buffer(BufferView<T, Dims...> buffer_view)
         : RHIResource(nullptr, Tag::BUFFER, buffer_view.head()),
-          _size(buffer_view.size()) {}
+          _size(buffer_view.size()), _element_size(sizeof(T)) {}
 
     void destroy() override {
         _destroy();
@@ -283,6 +283,6 @@ public:
 
 template<typename T, int... dims>
 BufferView<T, dims...>::BufferView(const Buffer<T, dims...> &buffer)
-    : BufferView(buffer.handle(), buffer.size()) {}
+    : BufferView(buffer.handle(), buffer.size()), _element_size(buffer.element_size()) {}
 
 }// namespace ocarina
