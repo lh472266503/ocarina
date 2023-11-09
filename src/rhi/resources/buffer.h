@@ -17,7 +17,7 @@ class Buffer;
 template<typename T, int... Dims>
 class BufferView {
 private:
-    size_t _element_size{sizeof(T)};
+    size_t _element_size{Buffer<T>::calculate_size()};
     handle_ty _handle{};
     size_t _offset{};
     size_t _size{};
@@ -101,20 +101,29 @@ public:
 
 protected:
     size_t _size{};
-    size_t _element_size{sizeof(T)};
+    size_t _element_size{0};
 
 public:
-    Buffer() = default;
+    Buffer() : _element_size(calculate_size()) {}
 
-    [[nodiscard]] size_t element_size() const noexcept { return _element_size; }
+    [[nodiscard]] size_t element_size() const noexcept {
+        return _element_size;
+    }
 
     Buffer(Device::Impl *device, size_t size, const string &desc = "")
-        : RHIResource(device, Tag::BUFFER, device->create_buffer(size * sizeof(T), desc)),
-          _size(size), _element_size(sizeof(T)) {}
+        : RHIResource(device, Tag::BUFFER, device->create_buffer(size * calculate_size(), desc)),
+          _size(size), _element_size(calculate_size()) {}
+
+    static size_t calculate_size() noexcept {
+        if constexpr (is_struct_v<T>) {
+            return Type::of<T>()->size();
+        }
+        return sizeof(T);
+    }
 
     Buffer(BufferView<T, Dims...> buffer_view)
         : RHIResource(nullptr, Tag::BUFFER, buffer_view.head()),
-          _size(buffer_view.size()), _element_size(sizeof(T)) {}
+          _size(buffer_view.size()), _element_size(calculate_size()) {}
 
     void destroy() override {
         _destroy();
@@ -130,6 +139,7 @@ public:
     Buffer(Buffer &&other) noexcept
         : RHIResource(std::move(other)) {
         this->_size = other._size;
+        this->_element_size = other._element_size;
     }
 
     // Move assignment
@@ -137,6 +147,7 @@ public:
         destroy();
         RHIResource::operator=(std::move(other));
         this->_size = other._size;
+        this->_element_size = other._element_size;
         return *this;
     }
 
