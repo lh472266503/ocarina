@@ -25,7 +25,7 @@ public:
     Array() = default;
 
     explicit Array(const Expression *expression)
-        : _size(0), _expression(expression) {}
+        : _size(expression->type()->dimension()), _expression(expression) {}
 
     explicit Array(size_t num, const Expression *expression = nullptr)
         : _size(num),
