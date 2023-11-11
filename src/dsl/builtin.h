@@ -25,7 +25,7 @@ OC_MAKE_BUILTIN_FUNC(dispatch_dim, uint3)
 
 template<typename DispatchIdx>
 requires is_uint_vector3_v<expr_value_t<DispatchIdx>> ||
-         is_uint_vector3_v<expr_value_t<DispatchIdx>>
+         is_uint_vector2_v<expr_value_t<DispatchIdx>>
 [[nodiscard]] auto dispatch_id(DispatchIdx &&idx) {
     if constexpr (is_uint_vector2_v<expr_value_t<DispatchIdx>>) {
         Uint3 dim = dispatch_dim();
