@@ -24,13 +24,12 @@ OC_MAKE_BUILTIN_FUNC(thread_idx, uint3)
 OC_MAKE_BUILTIN_FUNC(dispatch_dim, uint3)
 
 template<typename DispatchIdx>
-requires is_uint_vector3_v<expr_value_t<DispatchIdx>> || is_int_vector3_v<expr_value_t<DispatchIdx>> ||
-         is_uint_vector2_v<expr_value_t<DispatchIdx>> || is_int_vector2_v<expr_value_t<DispatchIdx>>
+requires concepts::all_integral<vector_element_t<expr_value_t<DispatchIdx>>>
 [[nodiscard]] auto dispatch_id(DispatchIdx &&idx) {
-    if constexpr (is_uint_vector2_v<expr_value_t<DispatchIdx>> || is_int_vector2_v<expr_value_t<DispatchIdx>>) {
+    if constexpr (is_vector2_expr_v<DispatchIdx>) {
         Uint3 dim = dispatch_dim();
         return idx.y * dim.x + idx.x;
-    } else if constexpr (is_uint_vector3_v<expr_value_t<DispatchIdx>> || is_int_vector3_v<expr_value_t<DispatchIdx>>) {
+    } else if constexpr (is_vector3_expr_v<DispatchIdx>) {
         Uint3 dim = dispatch_dim();
         return (dim.x * dim.y) * idx.z + dim.x * idx.y + idx.x;
     } else {
