@@ -8,6 +8,7 @@
 #include "dsl/type_trait.h"
 #include "var.h"
 #include "builtin.h"
+#include "rhi/resources/managed.h"
 #include "math/box.h"
 #include "syntax.h"
 
@@ -29,7 +30,7 @@ using OCDebugData = Var<DebugData>;
 class Debugger {
 private:
     static Debugger *s_debugger;
-    Managed<DebugData> _debug_data;
+    Managed<DebugData> _data;
 
 private:
     Debugger() = default;
@@ -41,18 +42,23 @@ private:
 public:
     [[nodiscard]] static Debugger &instance() noexcept;
     static void destroy_instance() noexcept;
-    void reset() noexcept;
+    void reset() noexcept { _data[0] = DebugData{}; }
+    void init(Device &device) noexcept { _data.reset_all(device, 1); }
+    [[nodiscard]] auto &host_data() const noexcept { return _data.host_buffer()[0]; }
+    [[nodiscard]] auto &host_data() noexcept { return _data.host_buffer()[0]; }
+    void filp_enabled() noexcept { host_data().enabled = !host_data().enabled; }
+    void reset_area() noexcept { host_data().range = Box2u{}; }
 
     /// for dsl
-    [[nodiscard]] Bool is_enabled() const noexcept {return cast<bool>(_debug_data.read(0).enabled);}
+    [[nodiscard]] Bool is_enabled() const noexcept { return cast<bool>(_data.read(0).enabled); }
     /// for dsl
-    [[nodiscard]] OCDebugData debug_data() const noexcept {return _debug_data.read(0);}
+    [[nodiscard]] OCDebugData device_data() const noexcept { return _data.read(0); }
     /// for dsl
     template<typename Func>
     void execute(Func &&func) const noexcept {
         if_(is_enabled(), [&] {
             Uint2 idx = dispatch_idx().xy();
-            if_(debug_data()->range->contains(idx), [&] {
+            if_(device_data()->range->contains(idx), [&] {
                 if constexpr (std::invocable<Func, Uint2>) {
                     func(idx);
                 } else {

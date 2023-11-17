@@ -23,8 +23,4 @@ void Debugger::destroy_instance() noexcept {
     }
 }
 
-void Debugger::reset() noexcept {
-    _debug_data[0] = DebugData{};
-}
-
 }// namespace ocarina

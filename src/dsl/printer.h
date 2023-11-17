@@ -75,8 +75,7 @@ public:
 
     void init(Device &device, size_t capacity = 16_mb) {
         capacity /= sizeof(uint);
-        _buffer.device_buffer() = device.create_buffer<uint>(capacity);
-        _buffer.host_buffer().reserve(capacity);
+        _buffer.reset_all(device, capacity);
         reset();
     }
 
