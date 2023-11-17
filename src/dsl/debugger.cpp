@@ -3,6 +3,7 @@
 //
 
 #include "debugger.h"
+#include "syntax.h"
 
 namespace ocarina {
 
@@ -22,8 +23,14 @@ void Debugger::destroy_instance() noexcept {
     }
 }
 
+void Debugger::reset() noexcept {
+    _lower.reset();
+    _upper.reset();
+    _open.reset();
+}
+
 void Debugger::switching(Bool open) noexcept {
-    _open = open;
+    _open.emplace(open);
 }
 
 }// namespace ocarina

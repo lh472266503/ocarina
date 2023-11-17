@@ -6,7 +6,9 @@
 
 #include "core/basic_types.h"
 #include "dsl/type_trait.h"
-#include "dsl/var.h"
+#include "var.h"
+#include "builtin.h"
+#include "syntax.h"
 
 namespace ocarina {
 
@@ -28,17 +30,20 @@ public:
     [[nodiscard]] static Debugger &instance() noexcept;
     static void destroy_instance() noexcept;
     void switching(Bool open) noexcept;
+    void reset() noexcept;
 
     template<typename Func>
     void execute(Func &&func) const noexcept {
         Uint2 pixel = dispatch_idx().xy();
-        $if(all(pixel <= *_upper) && all(pixel >= *_lower)){
-            if constexpr (std::invocable<Func, Uint2>) {
+        if constexpr (std::invocable<Func, Uint2>) {
+            if_(all(pixel <= *_upper) && all(pixel >= *_lower), [&] {
                 func(pixel);
-            } else {
+            });
+        } else {
+            if_(all(pixel <= *_upper) && all(pixel >= *_lower), [&] {
                 func();
-            }
-        };
+            });
+        }
     }
 };
 
