@@ -150,12 +150,20 @@ template<EPort p = D>
     return 0 <= pixel.x && pixel.x < res.x && 0 <= pixel.y && pixel.y < res.y;
 }
 
-}// namespace math
+}
 
-}// namespace vision
+}// namespace ocarina::math
 
+// clang-format off
 OC_STRUCT(ocarina::math::Box2u, lower, upper) {
     [[nodiscard]] Bool contains(const Uint2 &point) const noexcept {
         return ocarina::all(point >= lower) && ocarina::all(upper >= point);
     }
 };
+// clang-format on
+
+namespace ocarina {
+inline namespace math {
+using OCBox2u = Var<Box2u>;
+}
+}// namespace ocarina::math

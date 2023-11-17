@@ -62,7 +62,7 @@ template<typename T>
 }
 
 }// namespace math
-}// namespace vision
+}// namespace ocarina
 
 
 template<typename T>
