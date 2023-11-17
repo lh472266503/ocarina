@@ -29,12 +29,12 @@ using OCDebugData = Var<DebugData>;
 class Debugger {
 private:
     static Debugger *s_debugger;
-    optional<OCDebugData> _debug_data;
+    Managed<DebugData> _debug_data;
 
 private:
     Debugger() = default;
-    Debugger(const Debugger &) = default;
-    Debugger(Debugger &&) = default;
+    Debugger(const Debugger &) = delete;
+    Debugger(Debugger &&) = delete;
     Debugger operator=(const Debugger &) = delete;
     Debugger operator=(Debugger &&) = delete;
 
@@ -42,15 +42,17 @@ public:
     [[nodiscard]] static Debugger &instance() noexcept;
     static void destroy_instance() noexcept;
     void reset() noexcept;
-    [[nodiscard]] Bool is_enabled() const noexcept {
-        return cast<bool>(_debug_data->enabled);
-    }
-    void init(const OCDebugData &data) noexcept { _debug_data.emplace(data); }
+
+    /// for dsl
+    [[nodiscard]] Bool is_enabled() const noexcept {return cast<bool>(_debug_data.read(0).enabled);}
+    /// for dsl
+    [[nodiscard]] OCDebugData debug_data() const noexcept {return _debug_data.read(0);}
+    /// for dsl
     template<typename Func>
     void execute(Func &&func) const noexcept {
         if_(is_enabled(), [&] {
             Uint2 idx = dispatch_idx().xy();
-            if_(_debug_data->range->contains(idx), [&] {
+            if_(debug_data()->range->contains(idx), [&] {
                 if constexpr (std::invocable<Func, Uint2>) {
                     func(idx);
                 } else {
