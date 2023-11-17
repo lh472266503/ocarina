@@ -18,3 +18,4 @@
 #include "computable.inl"
 #include "polymorphic.h"
 #include "printer.h"
+#include "env.h"
