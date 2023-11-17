@@ -14,10 +14,13 @@
 namespace ocarina {
 struct DebugData {
     Box2u range{};
-    bool switching{};
+    int enabled{};
 };
 }// namespace ocarina
-OC_STRUCT(ocarina::DebugData, range, switching){};
+
+// clang-format off
+OC_STRUCT(ocarina::DebugData, range, enabled){};
+// clang-format on
 
 namespace ocarina {
 
@@ -39,10 +42,13 @@ public:
     [[nodiscard]] static Debugger &instance() noexcept;
     static void destroy_instance() noexcept;
     void reset() noexcept;
-    void init(const OCDebugData &data) noexcept { _debug_data = data; }
+    [[nodiscard]] Bool is_enabled() const noexcept {
+        return cast<bool>(_debug_data->enabled);
+    }
+    void init(const OCDebugData &data) noexcept { _debug_data.emplace(data); }
     template<typename Func>
     void execute(Func &&func) const noexcept {
-        if_(_debug_data->switching, [&] {
+        if_(is_enabled(), [&] {
             Uint2 idx = dispatch_idx().xy();
             if_(_debug_data->range->contains(idx), [&] {
                 if constexpr (std::invocable<Func, Uint2>) {
