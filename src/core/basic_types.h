@@ -143,6 +143,23 @@ using basic_types = ocarina::tuple<
     float2x2, float3x3, float4x4>;
 
 namespace detail {
+template<typename T>
+struct tuple_to_variant_impl {
+    static_assert(always_false_v<T>);
+};
+
+template<typename... Ts>
+struct tuple_to_variant_impl<ocarina::tuple<Ts...>> {
+    using type = ocarina::variant<Ts...>;
+};
+}// namespace detail
+
+template<typename T>
+using tuple_to_variant_t = typename detail::tuple_to_variant_impl<T>::type;
+
+using basic_variant_t = tuple_to_variant_t<basic_types>;
+
+namespace detail {
 using texture_elements = ocarina::tuple<uchar, uchar2, uchar4, float, float2, float4>;
 template<typename T, typename... Ts>
 [[nodiscard]] constexpr bool is_contain(const ocarina::tuple<Ts...> *tp) noexcept {
@@ -204,15 +221,15 @@ using texture_sample_t = typename detail::texture_sample_impl<std::remove_cvref_
 }// namespace ocarina
 
 template<typename T, size_t N>
-requires ocarina::is_number_v<T> [
-    [nodiscard]] constexpr auto
+requires ocarina::is_number_v<T>
+[[nodiscard]] constexpr auto
 operator+(const ocarina::Vector<T, N> v) noexcept {
     return v;
 }
 
 template<typename T, size_t N>
-requires ocarina::is_number_v<T> [
-    [nodiscard]] constexpr auto
+requires ocarina::is_number_v<T>
+[[nodiscard]] constexpr auto
 operator-(const ocarina::Vector<T, N> v) noexcept {
     using R = ocarina::Vector<T, N>;
     if constexpr (N == 2) {
@@ -236,8 +253,8 @@ template<typename T, size_t N>
 }
 
 template<typename T, size_t N>
-requires ocarina::is_integral_v<T> [
-    [nodiscard]] constexpr auto
+requires ocarina::is_integral_v<T>
+[[nodiscard]] constexpr auto
 operator~(const ocarina::Vector<T, N> v) noexcept {
     using R = ocarina::Vector<T, N>;
     if constexpr (N == 2) {
@@ -249,43 +266,40 @@ operator~(const ocarina::Vector<T, N> v) noexcept {
     }
 }
 
-#define OC_MAKE_VECTOR_BINARY_OPERATOR(op, ...)                              \
-    template<typename T, size_t N>                                           \
-    requires __VA_ARGS__                                                     \
-        [                                                                    \
-            [nodiscard]] constexpr auto                                      \
-        operator op(                                                         \
-            ocarina::Vector<T, N> lhs, ocarina::Vector<T, N> rhs) noexcept { \
-        if constexpr (N == 2) {                                              \
-            return ocarina::Vector<T, 2>{                                    \
-                lhs.x op rhs.x,                                              \
-                lhs.y op rhs.y};                                             \
-        } else if constexpr (N == 3) {                                       \
-            return ocarina::Vector<T, 3>{                                    \
-                lhs.x op rhs.x,                                              \
-                lhs.y op rhs.y,                                              \
-                lhs.z op rhs.z};                                             \
-        } else {                                                             \
-            return ocarina::Vector<T, 4>{                                    \
-                lhs.x op rhs.x,                                              \
-                lhs.y op rhs.y,                                              \
-                lhs.z op rhs.z,                                              \
-                lhs.w op rhs.w};                                             \
-        }                                                                    \
-    }                                                                        \
-    template<typename T, size_t N>                                           \
-    requires __VA_ARGS__                                                     \
-        [                                                                    \
-            [nodiscard]] constexpr auto                                      \
-        operator op(ocarina::Vector<T, N> lhs, T rhs) noexcept {             \
-        return lhs op ocarina::Vector<T, N>{rhs};                            \
-    }                                                                        \
-    template<typename T, size_t N>                                           \
-    requires __VA_ARGS__                                                     \
-        [                                                                    \
-            [nodiscard]] constexpr auto                                      \
-        operator op(T lhs, ocarina::Vector<T, N> rhs) noexcept {             \
-        return ocarina::Vector<T, N>{lhs} op rhs;                            \
+#define OC_MAKE_VECTOR_BINARY_OPERATOR(op, ...)                          \
+    template<typename T, size_t N>                                       \
+    requires __VA_ARGS__                                                 \
+    [[nodiscard]] constexpr auto                                         \
+    operator op(                                                         \
+        ocarina::Vector<T, N> lhs, ocarina::Vector<T, N> rhs) noexcept { \
+        if constexpr (N == 2) {                                          \
+            return ocarina::Vector<T, 2>{                                \
+                lhs.x op rhs.x,                                          \
+                lhs.y op rhs.y};                                         \
+        } else if constexpr (N == 3) {                                   \
+            return ocarina::Vector<T, 3>{                                \
+                lhs.x op rhs.x,                                          \
+                lhs.y op rhs.y,                                          \
+                lhs.z op rhs.z};                                         \
+        } else {                                                         \
+            return ocarina::Vector<T, 4>{                                \
+                lhs.x op rhs.x,                                          \
+                lhs.y op rhs.y,                                          \
+                lhs.z op rhs.z,                                          \
+                lhs.w op rhs.w};                                         \
+        }                                                                \
+    }                                                                    \
+    template<typename T, size_t N>                                       \
+    requires __VA_ARGS__                                                 \
+    [[nodiscard]] constexpr auto                                         \
+    operator op(ocarina::Vector<T, N> lhs, T rhs) noexcept {             \
+        return lhs op ocarina::Vector<T, N>{rhs};                        \
+    }                                                                    \
+    template<typename T, size_t N>                                       \
+    requires __VA_ARGS__                                                 \
+    [[nodiscard]] constexpr auto                                         \
+    operator op(T lhs, ocarina::Vector<T, N> rhs) noexcept {             \
+        return ocarina::Vector<T, N>{lhs} op rhs;                        \
     }
 OC_MAKE_VECTOR_BINARY_OPERATOR(+, ocarina::is_number_v<T>)
 OC_MAKE_VECTOR_BINARY_OPERATOR(-, ocarina::is_number_v<T>)
@@ -330,40 +344,40 @@ OC_MAKE_VECTOR_ASSIGN_OPERATOR(^=, ocarina::is_integral_v<T>)
 
 #undef OC_MAKE_VECTOR_ASSIGN_OPERATOR
 
-#define OC_MAKE_VECTOR_LOGIC_OPERATOR(op, ...)                               \
-    template<typename T, size_t N>                                           \
-    requires __VA_ARGS__                                                     \
-        [[nodiscard]] constexpr auto                                         \
-        operator op(                                                         \
-            ocarina::Vector<T, N> lhs, ocarina::Vector<T, N> rhs) noexcept { \
-        if constexpr (N == 2) {                                              \
-            return ocarina::bool2{                                           \
-                lhs.x op rhs.x,                                              \
-                lhs.y op rhs.y};                                             \
-        } else if constexpr (N == 3) {                                       \
-            return ocarina::bool3{                                           \
-                lhs.x op rhs.x,                                              \
-                lhs.y op rhs.y,                                              \
-                lhs.z op rhs.z};                                             \
-        } else {                                                             \
-            return ocarina::bool4{                                           \
-                lhs.x op rhs.x,                                              \
-                lhs.y op rhs.y,                                              \
-                lhs.z op rhs.z,                                              \
-                lhs.w op rhs.w};                                             \
-        }                                                                    \
-    }                                                                        \
-    template<typename T, size_t N>                                           \
-    requires __VA_ARGS__                                                     \
-        [[nodiscard]] constexpr auto                                         \
-        operator op(ocarina::Vector<T, N> lhs, T rhs) noexcept {             \
-        return lhs op ocarina::Vector<T, N>{rhs};                            \
-    }                                                                        \
-    template<typename T, size_t N>                                           \
-    requires __VA_ARGS__                                                     \
-        [[nodiscard]] constexpr auto                                         \
-        operator op(T lhs, ocarina::Vector<T, N> rhs) noexcept {             \
-        return ocarina::Vector<T, N>{lhs} op rhs;                            \
+#define OC_MAKE_VECTOR_LOGIC_OPERATOR(op, ...)                           \
+    template<typename T, size_t N>                                       \
+    requires __VA_ARGS__                                                 \
+    [[nodiscard]] constexpr auto                                         \
+    operator op(                                                         \
+        ocarina::Vector<T, N> lhs, ocarina::Vector<T, N> rhs) noexcept { \
+        if constexpr (N == 2) {                                          \
+            return ocarina::bool2{                                       \
+                lhs.x op rhs.x,                                          \
+                lhs.y op rhs.y};                                         \
+        } else if constexpr (N == 3) {                                   \
+            return ocarina::bool3{                                       \
+                lhs.x op rhs.x,                                          \
+                lhs.y op rhs.y,                                          \
+                lhs.z op rhs.z};                                         \
+        } else {                                                         \
+            return ocarina::bool4{                                       \
+                lhs.x op rhs.x,                                          \
+                lhs.y op rhs.y,                                          \
+                lhs.z op rhs.z,                                          \
+                lhs.w op rhs.w};                                         \
+        }                                                                \
+    }                                                                    \
+    template<typename T, size_t N>                                       \
+    requires __VA_ARGS__                                                 \
+    [[nodiscard]] constexpr auto                                         \
+    operator op(ocarina::Vector<T, N> lhs, T rhs) noexcept {             \
+        return lhs op ocarina::Vector<T, N>{rhs};                        \
+    }                                                                    \
+    template<typename T, size_t N>                                       \
+    requires __VA_ARGS__                                                 \
+    [[nodiscard]] constexpr auto                                         \
+    operator op(T lhs, ocarina::Vector<T, N> rhs) noexcept {             \
+        return ocarina::Vector<T, N>{lhs} op rhs;                        \
     }
 OC_MAKE_VECTOR_LOGIC_OPERATOR(||, ocarina::is_all_boolean_v<T>)
 OC_MAKE_VECTOR_LOGIC_OPERATOR(&&, ocarina::is_all_boolean_v<T>)
