@@ -47,7 +47,7 @@ public:
     [[nodiscard]] auto &host_data() const noexcept { return _data.host_buffer()[0]; }
     [[nodiscard]] auto &host_data() noexcept { return _data.host_buffer()[0]; }
     void filp_enabled() noexcept { host_data().enabled = !host_data().enabled; }
-    void reset_area() noexcept { host_data().range = Box2u{}; }
+    void reset_range() noexcept { host_data().range = Box2u{}; }
 
     /// for dsl
     [[nodiscard]] Bool is_enabled() const noexcept { return cast<bool>(_data.read(0).enabled); }
