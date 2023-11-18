@@ -88,8 +88,8 @@ public:
         device_ty::destroy();
     }
 
-    [[nodiscard]] BufferUploadCommand *upload() const noexcept {
-        return device_ty::upload(host_ty::data());
+    [[nodiscard]] BufferUploadCommand *upload(bool async = true) const noexcept {
+        return device_ty::upload(host_ty::data(), async);
     }
 
     [[nodiscard]] BufferDownloadCommand *download() noexcept {

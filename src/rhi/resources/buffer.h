@@ -55,8 +55,8 @@ public:
                                          0, dst.size_in_byte(), true);
     }
 
-    [[nodiscard]] BufferUploadCommand *upload(const void *data) const noexcept {
-        return BufferUploadCommand::create(data, head(), _size * _element_size, true);
+    [[nodiscard]] BufferUploadCommand *upload(const void *data, bool async = true) const noexcept {
+        return BufferUploadCommand::create(data, head(), _size * _element_size, async);
     }
 
     [[nodiscard]] BufferUploadCommand *upload_sync(const void *data) const noexcept {
