@@ -15,7 +15,7 @@
 namespace ocarina {
 struct DebugData {
     Box2u range{};
-    int enabled{};
+    int enabled{1};
 };
 }// namespace ocarina
 
