@@ -6,10 +6,14 @@
 
 #include "syntax.h"
 
-#define $if(...) ::ocarina::detail::IfStmtBuilder::create(__VA_ARGS__) / [&]() noexcept
+#define $source_location ocarina::format("{},{}", __FILE__, __LINE__)
+
+#define $sign_source_location comment($source_location);
+
+#define $if(...) ::ocarina::detail::IfStmtBuilder::create_with_source_location($source_location, __VA_ARGS__) / [&]() noexcept
 #define $else % [&]() noexcept
-#define $elif(...) *[&] {                              \
-    return ::ocarina::detail::IfStmtBuilder::create(__VA_ARGS__); \
+#define $elif(...) *[&] {                                                                                \
+    return ::ocarina::detail::IfStmtBuilder::create_with_source_location($source_location, __VA_ARGS__); \
 } / [&]
 
 #define $comment(...) ::ocarina::comment(#__VA_ARGS__);

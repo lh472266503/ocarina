@@ -11,6 +11,10 @@
 
 namespace ocarina {
 
+inline void comment(const ocarina::string &str) noexcept {
+    Function::current()->comment(str);
+}
+
 namespace detail {
 template<typename Lhs, typename Rhs>
 inline void assign(Lhs &&lhs, Rhs &&rhs) noexcept {
@@ -83,8 +87,15 @@ public:
     template<typename Condition>
     requires concepts::bool_able<expr_value_t<Condition>>
     [[nodiscard]] static IfStmtBuilder create(Condition &&condition) noexcept {
-        IfStmtBuilder builder(Function::current()->if_(extract_expression(std::forward<Condition>(condition))));
+        IfStmtBuilder builder(Function::current()->if_(extract_expression(OC_FORWARD(condition))));
         return builder;
+    }
+
+    template<typename Condition>
+    requires concepts::bool_able<expr_value_t<Condition>>
+    [[nodiscard]] static IfStmtBuilder create_with_source_location(const string &str, Condition &&condition) noexcept {
+        comment(str);
+        return create(OC_FORWARD(condition));
     }
 
     template<typename TrueBranch>
@@ -111,9 +122,22 @@ public:
         } / std::forward<TrueBranch>(true_branch);
     }
 
+    template<typename Condition, typename TrueBranch>
+    IfStmtBuilder elif_with_source_location(const string &str, Condition &&condition, TrueBranch &&true_branch) noexcept {
+        return (*this) * [&] {
+            return detail::IfStmtBuilder::create_with_source_location(str,std::forward<Condition>(condition));
+        } / std::forward<TrueBranch>(true_branch);
+    }
+
     template<typename FalseBranch>
     void else_(FalseBranch &&false_branch) noexcept {
         (*this) % std::forward<FalseBranch>(false_branch);
+    }
+
+    template<typename FalseBranch>
+    void else_with_source_location(const string &str, FalseBranch &&false_branch) noexcept {
+        comment(str);
+        else_(OC_FORWARD(false_branch));
     }
 };
 }// namespace detail
@@ -124,9 +148,6 @@ detail::IfStmtBuilder if_(Condition &&condition,
     return detail::IfStmtBuilder::create(std::forward<Condition>(condition)) / std::forward<TrueBranch>(true_branch);
 }
 
-inline void comment(const ocarina::string &str) noexcept {
-    Function::current()->comment(str);
-}
 
 namespace detail {
 
