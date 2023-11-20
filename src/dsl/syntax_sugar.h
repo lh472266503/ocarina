@@ -24,8 +24,8 @@
 #define $default ::ocarina::detail::DefaultStmtBuilder($source_location) *[&]() noexcept
 #define $continue ::ocarina::continue_($source_location)
 
-#define $loop ::ocarina::detail::LoopStmtBuilder::create() *[&]() noexcept
-#define $while(...) ::ocarina::detail::LoopStmtBuilder::create() / [&]() noexcept { \
+#define $loop ::ocarina::detail::LoopStmtBuilder::create_with_source_location($source_location) *[&]() noexcept
+#define $while(...) ::ocarina::detail::LoopStmtBuilder::create_with_source_location($source_location) / [&]() noexcept { \
     if_(!(__VA_ARGS__), [&] {                                                       \
         break_();                                                                   \
     });                                                                             \

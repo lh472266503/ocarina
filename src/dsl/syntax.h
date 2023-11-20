@@ -289,6 +289,11 @@ public:
         return LoopStmtBuilder(Function::current()->loop());
     }
 
+    static auto create_with_source_location(const string &str) noexcept {
+        comment(str);
+        return LoopStmtBuilder(Function::current()->loop());
+    }
+
     template<typename Func>
     LoopStmtBuilder &operator/(Func &&func) noexcept {
         Function::current()->with(_loop->body(), std::forward<Func>(func));
