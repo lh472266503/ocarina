@@ -166,6 +166,13 @@ public:
         return builder;
     }
 
+    template<typename CaseExpr>
+    requires concepts::integral<CaseExpr>
+    [[nodiscard]] static CaseStmtBuilder create_with_source_location(const string &str, CaseExpr &&case_expr) noexcept {
+        comment(str);
+        return create(OC_FORWARD(case_expr));
+    }
+
     template<typename Body>
     void operator*(Body &&body) noexcept {
         Function::current()->with(_case_stmt->body(), std::forward<Body>(body));
@@ -179,6 +186,11 @@ private:
 public:
     DefaultStmtBuilder() noexcept
         : _default_stmt(Function::current()->switch_default()) {}
+
+    DefaultStmtBuilder(const string &str) noexcept
+        : _default_stmt(Function::current()->switch_default()) {
+        comment(str);
+    }
 
     template<typename Body>
     void operator*(Body &&body) noexcept {
@@ -199,6 +211,13 @@ public:
     [[nodiscard]] static SwitchStmtBuilder create(T &&t) noexcept {
         SwitchStmtBuilder builder(Function::current()->switch_(t.expression()));
         return builder;
+    }
+
+    template<typename T>
+    requires concepts::switch_able<expr_value_t<T>>
+    [[nodiscard]] static SwitchStmtBuilder create_with_source_location(const string &str, T &&t) noexcept {
+        comment(str);
+        return create(OC_FORWARD(t));
     }
 
     template<typename CaseExpr, typename Body>
@@ -240,7 +259,10 @@ void case_(T &&t, Body &&body) noexcept {
     detail::CaseStmtBuilder::create(std::forward<T>(t)) * std::forward<Body>(body);
 }
 
-inline void break_() noexcept {
+inline void break_(const string &str = "") noexcept {
+    if (!str.empty()) {
+        comment(str);
+    }
     Function::current()->break_();
 }
 
@@ -249,7 +271,10 @@ void default_(Body &&body) noexcept {
     detail::DefaultStmtBuilder() * std::forward<Body>(body);
 }
 
-inline void continue_() noexcept {
+inline void continue_(const string &str = "") noexcept {
+    if (!str.empty()) {
+        comment(str);
+    }
     Function::current()->continue_();
 }
 
