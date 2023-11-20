@@ -125,7 +125,7 @@ public:
     template<typename Condition, typename TrueBranch>
     IfStmtBuilder elif_with_source_location(const string &str, Condition &&condition, TrueBranch &&true_branch) noexcept {
         return (*this) * [&] {
-            return detail::IfStmtBuilder::create_with_source_location(str,std::forward<Condition>(condition));
+            return detail::IfStmtBuilder::create_with_source_location(str, std::forward<Condition>(condition));
         } / std::forward<TrueBranch>(true_branch);
     }
 
@@ -147,7 +147,6 @@ detail::IfStmtBuilder if_(Condition &&condition,
                           TrueBranch &&true_branch) noexcept {
     return detail::IfStmtBuilder::create(std::forward<Condition>(condition)) / std::forward<TrueBranch>(true_branch);
 }
-
 
 namespace detail {
 
@@ -236,7 +235,7 @@ public:
     }
 
     template<typename Body>
-    SwitchStmtBuilder &operator*(Body &&func) &&noexcept {
+    SwitchStmtBuilder &operator*(Body &&func) && noexcept {
         Function::current()->with(_switch_stmt->body(), std::forward<Body>(func));
         return *this;
     }
@@ -388,7 +387,7 @@ template<typename T>
 template<typename... Args>
 void prints(ocarina::string f, Args &&...args) {
     auto all_tuple = std::tuple_cat(detail::to_tuple(args)...);
-    auto func = [&]<typename... A, size_t... i>(std::tuple<A...> && tp, std::index_sequence<i...>) {
+    auto func = [&]<typename... A, size_t... i>(std::tuple<A...> &&tp, std::index_sequence<i...>) {
         print(f, std::get<i>(OC_FORWARD(tp))...);
     };
     func(ocarina::move(all_tuple), std::make_index_sequence<std::tuple_size_v<decltype(all_tuple)>>());
@@ -407,6 +406,7 @@ void oc_assert(const Bool &cond, string f, Args &&...args) {
     });
 }
 
+namespace detail {
 template<typename Count>
 requires concepts::integral<expr_value_t<Count>>
 auto range(Count &&count) noexcept {
@@ -429,26 +429,53 @@ auto range(Begin &&begin, End &&end, Step &&step) noexcept {
                                                      make_expr(std::forward<Step>(step)));
 }
 
+template<typename Count>
+requires concepts::integral<expr_value_t<Count>>
+auto range_with_source_location(const string &str, Count &&count) noexcept {
+    comment(str);
+    return detail::ForStmtBuilder<expr_value_t<Count>>(0, make_expr(std::forward<Count>(count)), 1);
+}
+
+template<typename Begin, typename End>
+requires concepts::integral<expr_value_t<Begin>>
+auto range_with_source_location(const string &str, Begin &&begin, End &&end) noexcept {
+    comment(str);
+    return detail::ForStmtBuilder<expr_value_t<End>>(make_expr(std::forward<Begin>(begin)),
+                                                     make_expr(std::forward<End>(end)),
+                                                     1);
+}
+
+template<typename Begin, typename End, typename Step>
+requires concepts::integral<expr_value_t<Begin>>
+auto range_with_source_location(const string &str, Begin &&begin, End &&end, Step &&step) noexcept {
+    comment(str);
+    return detail::ForStmtBuilder<expr_value_t<End>>(make_expr(std::forward<Begin>(begin)),
+                                                     make_expr(std::forward<End>(end)),
+                                                     make_expr(std::forward<Step>(step)));
+}
+
+}// namespace detail
+
 template<typename Count, typename Body>
 requires concepts::integral<expr_value_t<Count>>
 void for_range(Count &&count, Body &&body) noexcept {
-    range(std::forward<Count>(count)) / std::forward<Body>(body);
+    detail::range(std::forward<Count>(count)) / std::forward<Body>(body);
 }
 
 template<typename Begin, typename End, typename Body>
 requires concepts::integral<expr_value_t<Begin>>
 void for_range(Begin &&begin, End &&end, Body &&body) noexcept {
-    range(std::forward<Begin>(begin),
-          std::forward<End>(end)) /
+    detail::range(std::forward<Begin>(begin),
+                  std::forward<End>(end)) /
         std::forward<Body>(body);
 }
 
 template<typename Begin, typename End, typename Step, typename Body>
 requires concepts::integral<expr_value_t<Begin>>
 void for_range(Begin &&begin, End &&end, Step &&step, Body &&body) noexcept {
-    range(std::forward<Begin>(begin),
-          std::forward<End>(end),
-          std::forward<Step>(step)) /
+    detail::range(std::forward<Begin>(begin),
+                  std::forward<End>(end),
+                  std::forward<Step>(step)) /
         std::forward<Body>(body);
 }
 

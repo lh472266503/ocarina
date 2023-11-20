@@ -31,6 +31,6 @@
     });                                                                             \
 } *[&]() noexcept
 
-#define $for(v, ...) ::ocarina::range(__VA_ARGS__) / [&](auto v) noexcept
+#define $for(v, ...) ::ocarina::detail::range_with_source_location($source_location, __VA_ARGS__) / [&](auto v) noexcept
 
 #define $return(...) ::ocarina::return_(__VA_ARGS__)
