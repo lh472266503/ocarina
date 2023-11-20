@@ -60,28 +60,28 @@ public:
     }
 
     [[nodiscard]] BufferUploadCommand *upload_sync(const void *data) const noexcept {
-        return BufferUploadCommand::create(data, head(), _size * _element_size, false);
+        return upload(data, false);
     }
 
-    [[nodiscard]] BufferDownloadCommand *download(void *data, uint src_offset = 0) const noexcept {
+    [[nodiscard]] BufferDownloadCommand *download(void *data, uint src_offset = 0, bool async = true) const noexcept {
         return BufferDownloadCommand::create(data, head() + src_offset * _element_size,
-                                             size_in_byte(), true);
+                                             size_in_byte(), async);
     }
 
     [[nodiscard]] BufferDownloadCommand *download_sync(void *data) const noexcept {
-        return BufferDownloadCommand::create(data, head(), size_in_byte(), false);
+        return download(data, 0, false);
     }
 
-    [[nodiscard]] BufferByteSetCommand *byte_set(uchar value) const noexcept {
-        return BufferByteSetCommand::create(head(), size_in_byte(), value, true);
+    [[nodiscard]] BufferByteSetCommand *byte_set(uchar value, bool async = true) const noexcept {
+        return BufferByteSetCommand::create(head(), size_in_byte(), value, async);
     }
 
     [[nodiscard]] BufferByteSetCommand *byte_set_sync(uchar value) const noexcept {
-        return BufferByteSetCommand::create(head(), size_in_byte(), value, false);
+        return byte_set(value, false);
     }
 
-    [[nodiscard]] BufferByteSetCommand *reset() const noexcept {
-        return byte_set(0);
+    [[nodiscard]] BufferByteSetCommand *reset(bool async = true) const noexcept {
+        return byte_set(0, async);
     }
 
     [[nodiscard]] BufferByteSetCommand *reset_sync() const noexcept {

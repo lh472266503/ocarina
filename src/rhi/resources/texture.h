@@ -117,21 +117,19 @@ public:
     [[nodiscard]] size_t data_size() const noexcept override { return impl()->data_size(); }
     [[nodiscard]] size_t data_alignment() const noexcept override { return impl()->data_alignment(); }
     [[nodiscard]] size_t max_member_size() const noexcept override { return impl()->max_member_size(); }
-    [[nodiscard]] TextureUploadCommand *upload(const void *data) const noexcept {
+    [[nodiscard]] TextureUploadCommand *upload(const void *data, bool async = true) const noexcept {
         return TextureUploadCommand::create(data, array_handle(), impl()->resolution(),
-                                            impl()->pixel_storage(), true);
+                                            impl()->pixel_storage(), async);
     }
     [[nodiscard]] TextureUploadCommand *upload_sync(const void *data) const noexcept {
-        return TextureUploadCommand::create(data, array_handle(), impl()->resolution(),
-                                            impl()->pixel_storage(), false);
+        return upload(data, false);
     }
-    [[nodiscard]] TextureDownloadCommand *download(void *data) const noexcept {
+    [[nodiscard]] TextureDownloadCommand *download(void *data, bool async = true) const noexcept {
         return TextureDownloadCommand::create(data, array_handle(), impl()->resolution(),
-                                              impl()->pixel_storage(), true);
+                                              impl()->pixel_storage(), async);
     }
     [[nodiscard]] TextureDownloadCommand *download_sync(void *data) const noexcept {
-        return TextureDownloadCommand::create(data, array_handle(), impl()->resolution(),
-                                              impl()->pixel_storage(), false);
+        return download(data, false);
     }
 
     template<typename Arg>
