@@ -264,6 +264,7 @@ public:
     const CallExpr *call(const Type *type, const Function *func, ocarina::vector<const Expression *> args) noexcept;
     const CallExpr *call_builtin(const Type *type, CallOp op, ocarina::vector<const Expression *> args,
                                  ocarina::vector<CallExpr::Template> t_args = {}) noexcept;
+    [[nodiscard]] ScopeStmt *scope() noexcept;
     [[nodiscard]] IfStmt *if_(const Expression *expr) noexcept;
     [[nodiscard]] SwitchStmt *switch_(const Expression *expr) noexcept;
     [[nodiscard]] SwitchCaseStmt *switch_case(const Expression *expr) noexcept;

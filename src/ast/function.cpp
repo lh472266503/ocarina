@@ -193,6 +193,10 @@ const ArgumentBinding &Function::get_uniform_var(const Type *type, Variable::Tag
     return _uniform_vars.back();
 }
 
+ScopeStmt *Function::scope() noexcept {
+    return _create_statement<ScopeStmt>(false);
+}
+
 IfStmt *Function::if_(const Expression *expr) noexcept {
     return _create_statement<IfStmt>(expr);
 }

@@ -76,6 +76,19 @@ template<typename T, typename Arg>
 
 namespace detail {
 
+class ScopeStmtBuilder {
+public:
+    ScopeStmtBuilder(const string &str) noexcept {
+        comment(str);
+    }
+
+    template<typename Body>
+    void operator + (Body &&body) noexcept {
+        auto scope = Function::current()->scope();
+        Function::current()->with(scope, OC_FORWARD(body));
+    }
+};
+
 class IfStmtBuilder {
 private:
     IfStmt *_if{nullptr};
@@ -107,7 +120,6 @@ public:
     template<typename Func>
     IfStmtBuilder operator*(Func &&func) noexcept {
         return Function::current()->with(_if->false_branch(), std::forward<Func>(func));
-        ;
     }
 
     template<typename FalseBranch>

@@ -26,11 +26,13 @@
 
 #define $loop ::ocarina::detail::LoopStmtBuilder::create_with_source_location($source_location) *[&]() noexcept
 #define $while(...) ::ocarina::detail::LoopStmtBuilder::create_with_source_location($source_location) / [&]() noexcept { \
-    if_(!(__VA_ARGS__), [&] {                                                       \
-        break_();                                                                   \
-    });                                                                             \
+    if_(!(__VA_ARGS__), [&] {                                                                                            \
+        break_();                                                                                                        \
+    });                                                                                                                  \
 } *[&]() noexcept
 
 #define $for(v, ...) ::ocarina::detail::range_with_source_location($source_location, __VA_ARGS__) / [&](auto v) noexcept
 
 #define $return(...) ::ocarina::return_(__VA_ARGS__)
+
+#define $scope ::ocarina::detail::ScopeStmtBuilder($source_location) + [&]() noexcept
