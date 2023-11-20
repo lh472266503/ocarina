@@ -150,7 +150,7 @@ namespace detail {
 template<typename T, typename... A>
 [[nodiscard]] auto tuple_insert(ocarina::tuple<A...> &&lst, T &&t) {
     using ret_type = ocarina::tuple<T, A...>;
-    auto func = []<typename TT, typename... AA, size_t... i>( TT &&t,
+    auto func = []<typename TT, typename... AA, size_t... i>(TT &&t,
                                                              ocarina::tuple<AA...> &&lst,
                                                              std::index_sequence<i...>)
         -> ret_type {
@@ -239,9 +239,9 @@ public:
               }
           }))) {}
 
-
-    auto operator()(prototype_to_callable_invocation_t<Args> ...args) const noexcept {
+    auto operator()(prototype_to_callable_invocation_t<Args>... args) const noexcept {
         const CallExpr *expr = Function::current()->call(Type::of<Ret>(), _function.get(), {(OC_EXPR(args))...});
+        comment(ocarina::format("call function {}", function()->description()));
         if constexpr (!std::is_same_v<std::remove_cvref_t<Ret>, void>) {
             return eval<Ret>(expr);
         } else {
@@ -278,8 +278,8 @@ public:
           }))) {}
 
     template<typename... A>
-    requires std::is_invocable_v<signature, expr_value_t<A>
-                                            ...> auto
+    requires std::is_invocable_v<signature, expr_value_t<A>...>
+    auto
     operator()(A &&...args) const noexcept {}
 };
 
