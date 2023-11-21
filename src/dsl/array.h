@@ -163,6 +163,31 @@ public:
         }
         return r;
     }
+
+    [[nodiscard]] Var<T> sum() const noexcept {
+        return reduce(0.f, [](auto r, auto x) noexcept { return r + x; });
+    }
+    [[nodiscard]] Var<T> max() const noexcept {
+        return reduce(0.f, [](auto r, auto x) noexcept {
+            return ocarina::max(r, x);
+        });
+    }
+    [[nodiscard]] Var<T> min() const noexcept {
+        return reduce(std::numeric_limits<float>::max(), [](auto r, auto x) noexcept {
+            return ocarina::min(r, x);
+        });
+    }
+
+    template<typename F>
+    [[nodiscard]] Bool any(F &&f) const noexcept {
+        return reduce(false, [&f](auto ans, auto value) noexcept { return ans || f(value); });
+    }
+    template<typename F>
+    [[nodiscard]] Bool all(F &&f) const noexcept {
+        return reduce(true, [&f](auto ans, auto value) noexcept { return ans && f(value); });
+    }
+    template<typename F>
+    [[nodiscard]] Bool none(F &&f) const noexcept { return !any(OC_FORWARD(f)); }
 };
 
 template<typename T>
