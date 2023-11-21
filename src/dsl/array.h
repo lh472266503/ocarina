@@ -169,12 +169,55 @@ template<typename P, typename T>
 requires is_all_scalar_v<P, T>
 [[nodiscard]] Array<T> select(const Array<P> &pred, const Array<T> &t, const Array<T> &f) noexcept {
     Array<T> ret{pred.size()};
-    ret = t.map([&] (int i, auto v) {
+    ret = t.map([&](int i, auto v) {
         return select(cast<bool>(pred[i]), t[i], f[i]);
     });
     return ret;
 }
 
+#define OC_MAKE_ARRAY_UNARY_FUNC(func, Tag)                   \
+    template<typename T>                                      \
+    requires is_scalar_v<T>                                   \
+    [[nodiscard]] Array<T> func(const Array<T> &x) noexcept { \
+        Array<T> ret{x.size()};                               \
+        ret = x.map([&](auto v) {                             \
+            return func(v);                                   \
+        });                                                   \
+        return ret;                                           \
+    }
+
+OC_MAKE_ARRAY_UNARY_FUNC(abs, ABS)
+OC_MAKE_ARRAY_UNARY_FUNC(exp, EXP)
+OC_MAKE_ARRAY_UNARY_FUNC(exp2, EXP2)
+OC_MAKE_ARRAY_UNARY_FUNC(exp10, EXP10)
+OC_MAKE_ARRAY_UNARY_FUNC(log, LOG)
+OC_MAKE_ARRAY_UNARY_FUNC(log2, LOG2)
+OC_MAKE_ARRAY_UNARY_FUNC(log10, LOG10)
+OC_MAKE_ARRAY_UNARY_FUNC(cos, COS)
+OC_MAKE_ARRAY_UNARY_FUNC(sin, SIN)
+OC_MAKE_ARRAY_UNARY_FUNC(tan, TAN)
+OC_MAKE_ARRAY_UNARY_FUNC(cosh, COSH)
+OC_MAKE_ARRAY_UNARY_FUNC(sinh, SINH)
+OC_MAKE_ARRAY_UNARY_FUNC(tanh, TANH)
+OC_MAKE_ARRAY_UNARY_FUNC(acos, ACOS)
+OC_MAKE_ARRAY_UNARY_FUNC(asin, ASIN)
+OC_MAKE_ARRAY_UNARY_FUNC(atan, ATAN)
+OC_MAKE_ARRAY_UNARY_FUNC(asinh, ASINH)
+OC_MAKE_ARRAY_UNARY_FUNC(acosh, ACOSH)
+OC_MAKE_ARRAY_UNARY_FUNC(atanh, ATANH)
+OC_MAKE_ARRAY_UNARY_FUNC(degrees, DEGREES)
+OC_MAKE_ARRAY_UNARY_FUNC(radians, RADIANS)
+OC_MAKE_ARRAY_UNARY_FUNC(ceil, CEIL)
+OC_MAKE_ARRAY_UNARY_FUNC(round, ROUND)
+OC_MAKE_ARRAY_UNARY_FUNC(floor, FLOOR)
+OC_MAKE_ARRAY_UNARY_FUNC(sqrt, SQRT)
+OC_MAKE_ARRAY_UNARY_FUNC(rsqrt, RSQRT)
+OC_MAKE_ARRAY_UNARY_FUNC(isinf, IS_INF)
+OC_MAKE_ARRAY_UNARY_FUNC(isnan, IS_NAN)
+OC_MAKE_ARRAY_UNARY_FUNC(fract, FRACT)
+OC_MAKE_ARRAY_UNARY_FUNC(saturate, SATURATE)
+
+#undef OC_MAKE_ARRAY_UNARY_FUNC
 
 template<typename T>
 class Container : public Array<T> {

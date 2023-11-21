@@ -193,17 +193,30 @@ int main(int argc, char *argv[]) {
 //        auto arr = bindless_array.byte_buffer(index).read_dynamic_array<float>(3, 19 * 4);
 //        Printer::instance().warn_with_location("{} {} {}, {} {} ,{} {} {}", f, arr.sub(1, 3).as_vec2(), t.i.cast<float>() + 2.4f, t.j, t.k);
 
-        Container<int> container{4};
-        Var<Triangle> tri;
-        tri.f[0] = 1.f;
-        container.push_back(5);
-        container.push_back(8);
+        Array<float> p{3};
+        Array<float> t{3};
+        Array<float> f{3};
+        for (int i = 0; i < 3; ++i) {
+            p[i] = 0;
+            t[i] = -i;
+            f[i] = -2 * i;
+        }
 
-        container.for_each([&](Int i) {
-            Printer::instance().info("{}", tri.f[0]);
-        });
+        p[1] = 1;
 
-        container.pop();
+        auto r = select(p, t, f);
+        Printer::instance().info("{} {} {}", abs(r).as_vec3());
+        //        Container<int> container{4};
+//        Var<Triangle> tri;
+//        tri.f[0] = 1.f;
+//        container.push_back(5);
+//        container.push_back(8);
+//
+//        container.for_each([&](Int i) {
+//            Printer::instance().info("{}", tri.f[0]);
+//        });
+//
+//        container.pop();
 
 //        Var ff = select(Var(false), tri, tri);
         //        prints("{}---", is_null(img));
