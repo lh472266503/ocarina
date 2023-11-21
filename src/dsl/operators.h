@@ -20,7 +20,7 @@
             auto expression = ocarina::Function::current()->unary(expr.type(),                                       \
                                                                   ocarina::UnaryOp::tag,                             \
                                                                   expr.expression());                                \
-            return Array<element_t>(expr.size(), expression);                                                        \
+            return ocarina::Array<element_t>(expr.size(), expression);                                                        \
         } else {                                                                                                     \
             using Ret = std::remove_cvref_t<decltype(op std::declval<ocarina::expr_value_t<T>>())>;                  \
             return ocarina::eval<Ret>(                                                                               \
