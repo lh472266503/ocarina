@@ -32,6 +32,11 @@ public:
           _expression(expression == nullptr ? Function::current()->local(type()) : expression) {}
 
     template<typename U>
+    requires is_dsl_v<U> || is_basic_v<U>
+    explicit Array(size_t num, U &&u)
+        : _size(num), _expression(OC_EXPR(u)) {}
+
+    template<typename U>
     requires is_vector_v<U> && concepts::different<std::remove_cvref_t<U>, Array<T>>
     explicit Array(U &&vec) noexcept
         : Array(vector_expr_dimension_v<U>) {
