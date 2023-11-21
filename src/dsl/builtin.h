@@ -139,7 +139,7 @@ OC_NODISCARD auto sqr(const T &t) noexcept {
 
 #define OC_MAKE_ARRAY_UNARY_FUNC(func, tag)                                                                   \
     template<typename T>                                                                                      \
-    requires is_scalar_v<T>                                                                                   \
+    requires is_basic_v<T>                                                                                   \
     [[nodiscard]] Array<T> func(const Array<T> &t) noexcept {                                                  \
         auto expr = Function::current() -> call_builtin(Array<T>::type(t.size()), CallOp::tag, {OC_EXPR(t)}); \
         return eval_array(Array<T>(t.size(), expr));                                                          \
@@ -240,7 +240,7 @@ void coordinate_system(const A &a, Var<float3> &b, Var<float3> &c) noexcept {
         return eval<expr_value_t<ret_type>>(expr);                                                            \
     }                                                                                                         \
     template<typename T>                                                                                      \
-    requires is_scalar_v<T>                                                                                   \
+    requires is_basic_v<T>                                                                                   \
     OC_NODISCARD Array<T> func(const Array<T> &t) noexcept {                                                  \
         auto expr = Function::current() -> call_builtin(Array<T>::type(t.size()), CallOp::tag, {OC_EXPR(t)}); \
         return eval_array(Array<T>(t.size(), expr));                                                          \
