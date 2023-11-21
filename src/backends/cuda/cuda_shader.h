@@ -16,6 +16,7 @@ protected:
     CUDADevice *_device{};
 
 public:
+    // todo Find out the difference cuda shader and optix shader
     CUDAShader(Device::Impl *device,
                const Function &f);
     virtual ~CUDAShader() {}
