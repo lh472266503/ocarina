@@ -81,6 +81,7 @@ OC_NODISCARD auto select(U &&pred, T &&t, F &&f) noexcept {
 template<typename P, typename T>
 requires is_all_scalar_v<P, T>
 [[nodiscard]] Array<T> select(const Array<P> &pred, const Array<T> &t, const Array<T> &f) noexcept {
+    OC_ASSERT(t.size() == f.size() && t.size() == pred.size());
     auto expr = Function::current()->call_builtin(Array<T>::type(pred.size()),
                                                   CallOp::SELECT, {OC_EXPR(pred), OC_EXPR(t), OC_EXPR(f)});
     return eval_array(Array<T>(pred.size(), expr));
