@@ -2558,6 +2558,16 @@ __device__ oc_ushort4 oc_select(oc_bool4 pred, oc_ushort4 t, oc_ushort4 f) {
 	return oc_ushort4(oc_select(pred.x, t.x, f.x), oc_select(pred.y, t.y, f.y), oc_select(pred.z, t.z, f.z), oc_select(pred.w, t.w, f.w));
 }
 
+
+template<typename P, typename T, oc_uint N>
+[[nodiscard]] __device__ oc_array<T, N> oc_select(const oc_array<P, N> &pred, const oc_array<T, N> &t, const oc_array<T, N> &f) noexcept {
+    oc_array<T, N> ret{};
+    for(oc_uint i = 0; i < N; ++i) {
+        ret[i] = oc_select(static_cast<oc_bool>(pred[i]), t[i], f[i]);
+    }
+    return ret;
+}
+
 __device__ oc_int oc_rcp(oc_int v) { return 1.f / v; }
 __device__ oc_int2 oc_rcp(oc_int2 v) { return oc_int2(oc_rcp(v.x), oc_rcp(v.y)); }
 __device__ oc_int3 oc_rcp(oc_int3 v) { return oc_int3(oc_rcp(v.x), oc_rcp(v.y), oc_rcp(v.z)); }

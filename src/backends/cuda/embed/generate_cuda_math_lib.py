@@ -488,6 +488,18 @@ def define_select():
             content += func
             content += "\n"  
         content += "\n"
+        
+    content += """
+template<typename P, typename T, oc_uint N>
+[[nodiscard]] __device__ oc_array<T, N> oc_select(const oc_array<P, N> &pred, const oc_array<T, N> &t, const oc_array<T, N> &f) noexcept {
+    oc_array<T, N> ret{};
+    for(oc_uint i = 0; i < N; ++i) {
+        ret[i] = oc_select(static_cast<oc_bool>(pred[i]), t[i], f[i]);
+    }
+    return ret;
+}
+
+"""
             
 def define_unary_func(func_name, param):
     global content, name_lst

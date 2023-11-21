@@ -165,16 +165,6 @@ public:
     }
 };
 
-template<typename P, typename T>
-requires is_all_scalar_v<P, T>
-[[nodiscard]] Array<T> select(const Array<P> &pred, const Array<T> &t, const Array<T> &f) noexcept {
-    Array<T> ret{pred.size()};
-    ret = t.map([&](int i, auto v) {
-        return select(cast<bool>(pred[i]), t[i], f[i]);
-    });
-    return ret;
-}
-
 #define OC_MAKE_ARRAY_UNARY_FUNC(func, Tag)                   \
     template<typename T>                                      \
     requires is_scalar_v<T>                                   \

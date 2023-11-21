@@ -55,6 +55,8 @@ OC_MAKE_LOGIC_FUNC(none, NONE)
 
 #undef OC_MAKE_LOGIC_FUNC
 
+
+/// used for dsl scalar vector or matrix
 template<typename U, typename T, typename F>
 requires(any_dsl_v<U, T, F> && std::is_same_v<expr_value_t<T>, expr_value_t<F>> &&
          vector_dimension_v<expr_value_t<T>> == vector_dimension_v<expr_value_t<F>> &&
@@ -66,6 +68,7 @@ OC_NODISCARD auto select(U &&pred, T &&t, F &&f) noexcept {
     return eval<T>(expr);
 }
 
+/// used for dsl structure
 template<typename U, typename T, typename F>
 requires(std::is_same_v<expr_value_t<U>, bool> &&
          is_dsl_v<U> && any_dsl_v<T, F> && !is_basic_v<expr_value_t<F>> && !is_basic_v<expr_value_t<T>> &&
@@ -73,6 +76,15 @@ requires(std::is_same_v<expr_value_t<U>, bool> &&
 OC_NODISCARD auto select(U &&pred, T &&t, F &&f) noexcept {
     auto expr = Function::current()->conditional(Type::of<expr_value_t<T>>(), OC_EXPR(pred), OC_EXPR(t), OC_EXPR(f));
     return eval<T>(expr);
+}
+
+/// used for dynamic array
+template<typename P, typename T>
+requires is_all_scalar_v<P, T>
+[[nodiscard]] Array<T> select(const Array<P> &pred, const Array<T> &t, const Array<T> &f) noexcept {
+    auto expr = Function::current()->call_builtin(Array<T>::type(pred.size()),
+                                                  CallOp::SELECT, {OC_EXPR(pred), OC_EXPR(t), OC_EXPR(f)});
+    return eval_array(Array<T>(pred.size(), expr));
 }
 
 #define OC_MAKE_TRIPLE_FUNC(func, tag)                                                                \
