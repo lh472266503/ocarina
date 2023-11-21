@@ -206,8 +206,8 @@ int main(int argc, char *argv[]) {
 
         Array<float> r = select(p, t, f);
 //        r = t +f;
-//        Printer::instance().info("{} {} {}", r.as_vec3());
-        //        Container<int> container{4};
+        Printer::instance().info("{} {} {} {} {} {}", abs(r).as_vec3(), r.as_vec3());
+//                Container<int> container{4};
 //        Var<Triangle> tri;
 //        tri.f[0] = 1.f;
 //        container.push_back(5);

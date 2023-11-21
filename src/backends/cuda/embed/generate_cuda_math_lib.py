@@ -525,6 +525,16 @@ def define_unary_func(func_name, param):
                 body2 += f"{prefix}_{func_name}(v.{field_name})" + split
             func = f"__device__ {ret_type} {prefix}_{func_name}({arg_type} v) {{ {body2} }}\n"
             content += func
+        
+        t_body = f""
+        t_elm_type = f"{prefix}_{scalar}"
+        t_ret_type = f"oc_array<{t_elm_type}, N>"
+        t_body = f"\n    {t_ret_type} ret{{}};\n"
+        t_body += f"    for(oc_uint i = 0; i < N; ++i) ret[i] = {prefix}_{func_name}(x[i]);\n    return ret;\n"
+        ff = f"template<oc_uint N>\n__device__ {t_ret_type} {prefix}_{func_name}(oc_array<{t_elm_type}, N> x) {{{t_body}}}\n"
+        content += ff
+        print(ff)
+        
     content += "\n"
     
 def define_unary_funcs():
