@@ -65,7 +65,8 @@ void CppCodegen::visit(const ReturnStmt *stmt) noexcept {
     }
 }
 void CppCodegen::visit(const ScopeStmt *stmt) noexcept {
-    current_scratch() << "{\n";
+    current_scratch() << "{";
+    _emit_newline();
     indent_inc();
     if (stmt->is_func_body()) {
         _emit_builtin_vars_define(current_function());
@@ -313,7 +314,8 @@ void CppCodegen::visit(const Type *type) noexcept {
     current_scratch() << type->alignment();
     current_scratch() << ") ";
     _emit_struct_name(type);
-    current_scratch() << " {\n";
+    current_scratch() << " {";
+    _emit_newline();
     indent_inc();
     for (int i = 0; i < type->members().size(); ++i) {
         const Type *member = type->members()[i];
@@ -321,10 +323,12 @@ void CppCodegen::visit(const Type *type) noexcept {
         _emit_type_name(member);
         _emit_space();
         _emit_member_name(i);
-        current_scratch() << "{};\n";
+        current_scratch() << "{};";
+        _emit_newline();
     }
     indent_dec();
-    current_scratch() << "};\n";
+    current_scratch() << "};";
+    _emit_newline();
 
     add_generated(type);
 }
@@ -369,7 +373,8 @@ void CppCodegen::_emit_local_var_define(const ScopeStmt *scope) noexcept {
     for (const auto &var : scope->local_vars()) {
         _emit_indent();
         _emit_variable_define(var);
-        current_scratch() << "{};\n";
+        current_scratch() << "{};";
+        _emit_newline();
     }
 }
 
@@ -377,7 +382,8 @@ void CppCodegen::_emit_builtin_vars_define(const Function &f) noexcept {
     for (const Variable &var : f.builtin_vars()) {
         _emit_indent();
         _emit_builtin_var(var);
-        current_scratch() << ";\n";
+        current_scratch() << ";";
+        _emit_newline();
     }
 }
 
