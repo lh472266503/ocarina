@@ -143,6 +143,12 @@ public:
         *this = static_cast<const Array &>(rhs);
         return *this;
     }
+    Array &operator=(const Var<T> &rhs) noexcept {
+        for (int i = 0; i < size(); ++i) {
+            (*this)[i] = rhs;
+        }
+        return *this;
+    }
 
     [[nodiscard]] const Expression *expression() const noexcept { return _expression; }
     [[nodiscard]] uint size() const noexcept { return _size; }
