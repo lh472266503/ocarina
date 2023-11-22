@@ -133,20 +133,29 @@ public:
 #include "swizzle_inl/array_swizzle.inl.h"
 
     Array &operator=(const Array &rhs) noexcept {
-        if (&rhs != this) [[likely]] {
-            OC_ASSERT(_size == rhs._size);
+        OC_ASSERT(_size == rhs._size || rhs._size == 1);
+        if (&rhs == this) {
+            return *this;
+        }
+        if (rhs._size == 1) {
+            for (int i = 0; i < size(); ++i) {
+                (*this)[i] = rhs[0];
+            }
+        } else {
             Function::current()->assign(_expression, rhs._expression);
         }
         return *this;
     }
-    Array &operator=(Array &&rhs) noexcept {
-        *this = static_cast<const Array &>(rhs);
-        return *this;
-    }
+
     Array &operator=(const Var<T> &rhs) noexcept {
         for (int i = 0; i < size(); ++i) {
             (*this)[i] = rhs;
         }
+        return *this;
+    }
+
+    Array &operator=(Array &&rhs) noexcept {
+        *this = static_cast<const Array &>(rhs);
         return *this;
     }
 
