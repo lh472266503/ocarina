@@ -110,7 +110,25 @@ requires is_all_scalar_v<T>
 /// used for dynamic array
 template<typename P, typename T>
 requires is_all_scalar_v<T>
+[[nodiscard]] Array<T> select(const Var<P> &pred, const T &t, const Array<T> &f) noexcept {
+    Array<T> arr(f.size());
+    arr = t;
+    return select(pred, arr, f);
+}
+
+/// used for dynamic array
+template<typename P, typename T>
+requires is_all_scalar_v<T>
 [[nodiscard]] Array<T> select(const Var<P> &pred, const Array<T> &t, const Var<T> &f) noexcept {
+    Array<T> arr(t.size());
+    arr = f;
+    return select(pred, t, arr);
+}
+
+/// used for dynamic array
+template<typename P, typename T>
+requires is_all_scalar_v<T>
+[[nodiscard]] Array<T> select(const Var<P> &pred, const Array<T> &t, const T &f) noexcept {
     Array<T> arr(t.size());
     arr = f;
     return select(pred, t, arr);
