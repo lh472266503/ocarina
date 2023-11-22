@@ -349,9 +349,6 @@ void CppCodegen::add_generated(const Function *func) noexcept {
     _generated_func.emplace(func->hash());
 }
 
-void CppCodegen::_emit_uniform_var(const ArgumentBinding &uniform) noexcept {
-}
-
 void CppCodegen::_emit_variable_define(const Variable &v) noexcept {
     if (v.type()->is_buffer()) {
         _emit_type_name(v.type());

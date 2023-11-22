@@ -296,15 +296,6 @@ void CUDACodegen::_emit_builtin_var(Variable v) noexcept {
     }
 }
 
-void CUDACodegen::_emit_uniform_var(const ArgumentBinding &uniform) noexcept {
-    current_scratch() << "extern \"C\" __constant__ ";
-    _emit_type_name(uniform.type());
-    _emit_space();
-    uniform.expression()->accept(*this);
-    current_scratch() << ";";
-    _emit_newline();
-}
-
 void CUDACodegen::_emit_arguments(const Function &f) noexcept {
     current_scratch() << "(";
     if (f.is_general_kernel()) {

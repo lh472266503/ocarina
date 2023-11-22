@@ -50,7 +50,6 @@ protected:
     [[nodiscard]] bool has_generated(const Type *type) const noexcept;
     void add_generated(const Type *type) noexcept;
     virtual void _emit_types_define() noexcept;
-    virtual void _emit_uniform_var(const ArgumentBinding &uniform) noexcept;
     virtual void _emit_variable_define(const Variable &v) noexcept;
     virtual void _emit_type_name(const Type *type) noexcept;
     virtual void _emit_raytracing_param(const Function &f) noexcept {}
