@@ -189,7 +189,7 @@ void CUDACodegen::_emit_raytracing_param(const Function &f) noexcept {
         size_t alignment = CUDADevice::alignment(arg.type());
         blocks.emplace_back(nullptr, size, alignment, CUDADevice::max_member_size(arg.type()));
         offset = mem_offset(offset, alignment);
-        current_scratch() << ocarina::format("// {} bytes\n", size);
+        current_scratch() << ocarina::format("/* {} bytes */\n", size);
         _emit_indent();
         _emit_variable_define(arg);
         offset += size;
