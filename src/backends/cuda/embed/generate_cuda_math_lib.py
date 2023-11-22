@@ -195,8 +195,12 @@ template<typename T,typename U, oc_uint N>
 }}
 
 template<typename T, typename U, oc_uint N>
-{device_flag} oc_array<oc_bool, N> operator{op}(oc_array<T, N> lhs, oc_array<U, 1> rhs) {{
-    return lhs {op} rhs[0];
+{device_flag} oc_array<oc_bool, N> operator{op}(oc_array<T, N> lhs, oc_array<U, 1> rhs) {{    
+    oc_array<oc_bool, N> ret;
+    for(oc_uint i = 0u; i < N; ++i) {{
+        ret[i] = lhs[i] {op} rhs[0];
+    }}
+    return ret;
 }}
 
 template<typename T, typename U, oc_uint N>
@@ -210,14 +214,18 @@ template<typename T, typename U, oc_uint N>
 
 template<typename T, typename U, oc_uint N>
 {device_flag} oc_array<oc_bool, N> operator{op}(oc_array<T, 1> lhs, oc_array<U, N> rhs) {{
-    return lhs[0] {op} rhs;
+    oc_array<oc_bool, N> ret;
+    for(oc_uint i = 0u; i < N; ++i) {{
+        ret[i] = lhs[0] {op} rhs[i];
+    }}
+    return ret;
 }}
 
 
 """
         content += func
 
-    for op in cmp_binary:
+    for op in bit_binary:
         func = f"""
 template<typename T, typename U, oc_uint N>
 {device_flag} auto operator{op}(oc_array<T, N> lhs, oc_array<U, N> rhs) {{
