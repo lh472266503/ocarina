@@ -41,7 +41,7 @@ requires concepts::all_integral<vector_element_t<expr_value_t<DispatchIdx>>>
 
 #define OC_MAKE_LOGIC_FUNC(func, tag)                                               \
     template<typename T>                                                            \
-    requires is_bool_vector_expr_v<T>                                               \
+    requires is_bool_vector_expr_v<T> || is_dynamic_array_v<T>                      \
     OC_NODISCARD auto                                                               \
     func(const T &t) noexcept {                                                     \
         auto expr = Function::current() -> call_builtin(Type::of<bool>(),           \
