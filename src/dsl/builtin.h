@@ -71,7 +71,8 @@ OC_NODISCARD auto select(U &&pred, T &&t, F &&f) noexcept {
 template<typename U, typename T, typename F>
 requires(std::is_same_v<expr_value_t<U>, bool> &&
          is_dsl_v<U> && any_dsl_v<T, F> && !is_basic_v<expr_value_t<F>> && !is_basic_v<expr_value_t<T>> &&
-         std::is_same_v<expr_value_t<T>, expr_value_t<F>>)
+         std::is_same_v<expr_value_t<T>, expr_value_t<F>>) &&
+        none_dynamic_array_v<U, T, F>
 OC_NODISCARD auto select(U &&pred, T &&t, F &&f) noexcept {
     auto expr = Function::current()->conditional(Type::of<expr_value_t<T>>(), OC_EXPR(pred), OC_EXPR(t), OC_EXPR(f));
     return eval<T>(expr);
@@ -88,28 +89,28 @@ requires is_all_scalar_v<P, T>
 }
 
 /// used for dynamic array
-template<typename T>
+template<typename P, typename T>
 requires is_all_scalar_v<T>
-[[nodiscard]] Array<T> select(const Bool &pred, const Array<T> &t, const Array<T> &f) noexcept {
+[[nodiscard]] Array<T> select(const Var<P> &pred, const Array<T> &t, const Array<T> &f) noexcept {
     OC_ASSERT(t.size() == f.size());
-    auto expr = Function::current()->call_builtin(Array<T>::type(t.size()),
-                                                  CallOp::SELECT, {OC_EXPR(pred), OC_EXPR(t), OC_EXPR(f)});
-    return eval_array(Array<T>(t.size(), expr));
+    Array<P> pred_arr{t.size()};
+    pred_arr = pred;
+    return select(pred_arr, t, f);
 }
 
 /// used for dynamic array
-template<typename T>
+template<typename P, typename T>
 requires is_all_scalar_v<T>
-[[nodiscard]] Array<T> select(const Bool &pred, const Var<T> &t, const Array<T> &f) noexcept {
+[[nodiscard]] Array<T> select(const Var<P> &pred, const Var<T> &t, const Array<T> &f) noexcept {
     Array<T> arr(f.size());
     arr = t;
     return select(pred, arr, f);
 }
 
 /// used for dynamic array
-template<typename T>
+template<typename P, typename T>
 requires is_all_scalar_v<T>
-[[nodiscard]] Array<T> select(const Bool &pred, const Array<T> &t, const Var<T> &f) noexcept {
+[[nodiscard]] Array<T> select(const Var<P> &pred, const Array<T> &t, const Var<T> &f) noexcept {
     Array<T> arr(t.size());
     arr = f;
     return select(pred, t, arr);
