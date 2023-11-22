@@ -36,3 +36,13 @@
 #define $return(...) ::ocarina::return_(__VA_ARGS__)
 
 #define $scope ::ocarina::detail::ScopeStmtBuilder($source_location) + [&]() noexcept
+
+#define $debug(...) Printer::instance().debug(__VA_ARGS__);
+#define $info(...) Printer::instance().info(__VA_ARGS__);
+#define $warn(...) Printer::instance().warn(__VA_ARGS__);
+#define $err(...) Printer::instance().err(__VA_ARGS__);
+
+#define $debug_with_location(...) Printer::instance().debug_with_location(__VA_ARGS__);
+#define $info_with_location(...) Printer::instance().info_with_location(__VA_ARGS__);
+#define $warn_with_location(...) Printer::instance().warn_with_location(__VA_ARGS__);
+#define $err_with_location(...) Printer::instance().err_with_location(__VA_ARGS__);
