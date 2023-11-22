@@ -76,6 +76,11 @@ public:
             });
         });
     }
+
+    template<typename Func>
+    void operator*(Func &&func) const noexcept {
+        execute(OC_FORWARD(func));
+    }
 };
 
 }// namespace ocarina
