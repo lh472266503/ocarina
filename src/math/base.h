@@ -124,9 +124,6 @@ requires is_all_floating_point_expr_v<T, U>
     return abs(t - u) < epsilon;
 }
 
-#define CHECK_UNIT_VEC(vec) oc_assert(is_close(length(vec), 1),                           \
-                                      "vec({},{},{}) is not a unit vector, length is {}", \
-                                      (vec).x, (vec).y, (vec).z, length(vec));
 
 template<typename T>
 [[nodiscard]] auto saturate(const T &f) { return min(1.f, max(0.f, f)); }

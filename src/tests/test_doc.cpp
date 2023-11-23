@@ -75,6 +75,9 @@ void test_compute_shader(Device &device, Stream &stream) {
         $info("vert from resource array {} {} {}", resource_array.buffer<float3>(v_idx).read(dispatch_id()));
         $info("vert from ra {} {} {}", ra.buffer<float3>(v_idx).read(dispatch_id()));
 
+        $debugger_execute {
+            $info("vert ----------- from buffer {} {} {}", vert.read(dispatch_id()));
+        };
     };
     Triple triple1{1,2,3};
     auto shader = device.compile(kernel, "test desc");
@@ -89,6 +92,7 @@ int main(int argc, char *argv[]) {
     Device device = context.create_device("cuda");
     Stream stream = device.create_stream();
     Printer::instance().init(device);
+    Debugger::instance().init(device);
 
     /// create rtx context if need
     device.init_rtx();

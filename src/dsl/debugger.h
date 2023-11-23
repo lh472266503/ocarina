@@ -31,6 +31,7 @@ class Debugger {
 private:
     static Debugger *s_debugger;
     Managed<DebugData> _data;
+    mutable string _desc{};
 
 private:
     Debugger() = default;
@@ -65,6 +66,9 @@ public:
     /// for dsl
     template<typename Func>
     void execute(Func &&func) const noexcept {
+        if (!_desc.empty()) {
+            comment(_desc);
+        }
         if_(_is_enabled(), [&] {
             Uint2 idx = dispatch_idx().xy();
             if_(_device_data()->range->contains(idx), [&] {
@@ -75,6 +79,12 @@ public:
                 }
             });
         });
+        _desc = "";
+    }
+
+    const Debugger &set_description(const string &desc) const {
+        _desc = desc;
+        return *this;
     }
 
     template<typename Func>

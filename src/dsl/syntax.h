@@ -410,19 +410,6 @@ void prints(ocarina::string f, Args &&...args) {
     func(ocarina::move(all_tuple), std::make_index_sequence<std::tuple_size_v<decltype(all_tuple)>>());
 }
 
-template<typename... Args>
-inline void oc_assert(bool cond, string f, Args &&...args) noexcept {
-    OC_ASSERT(cond);
-}
-
-// todo add lineinfo
-template<typename... Args>
-void oc_assert(const Bool &cond, string f, Args &&...args) {
-    if_(!cond, [&] {
-        print(f, OC_FORWARD(args)...);
-    });
-}
-
 namespace detail {
 template<typename Count>
 requires concepts::integral<expr_value_t<Count>>

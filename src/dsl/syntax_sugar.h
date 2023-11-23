@@ -46,3 +46,5 @@
 #define $info_with_location(...) Printer::instance().info_with_location(__VA_ARGS__);
 #define $warn_with_location(...) Printer::instance().warn_with_location(__VA_ARGS__);
 #define $err_with_location(...) Printer::instance().err_with_location(__VA_ARGS__);
+
+#define $debugger_execute Debugger::instance().set_description("debugger_execute " + $source_location) * [&]() noexcept
