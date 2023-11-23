@@ -39,6 +39,7 @@ private:
     Debugger(Debugger &&) = delete;
     Debugger operator=(const Debugger &) = delete;
     Debugger operator=(Debugger &&) = delete;
+    friend class Env;
 
 public:
     [[nodiscard]] static Debugger &instance() noexcept;

@@ -69,7 +69,7 @@ private:
     Printer operator=(const Printer &) = delete;
     Printer operator=(Printer &&) = delete;
     static Printer *s_printer;
-
+    friend class Env;
 public:
     [[nodiscard]] static Printer &instance() noexcept;
     static void destroy_instance() noexcept;

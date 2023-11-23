@@ -31,9 +31,15 @@ private:
     Env operator=(Env &&) = delete;
     static Env *s_env;
 
+private:
+    Printer _printer;
+    Debugger _debugger;
+
 public:
     [[nodiscard]] static Env &instance() noexcept;
     static void destroy_instance() noexcept;
+    [[nodiscard]] Printer &printer() noexcept { return _printer; }
+    [[nodiscard]] Debugger &debugger() noexcept { return _debugger; }
 };
 
 }// namespace ocarina
