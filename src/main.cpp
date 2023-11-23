@@ -9,7 +9,7 @@
 #include "core/hash.h"
 #include "core/string_util.h"
 #include "ast/type_registry.h"
-#include "dsl/common.h"
+#include "dsl/dsl.h"
 
 using namespace ocarina;
 

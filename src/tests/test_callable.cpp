@@ -2,7 +2,7 @@
 // Created by Zero on 16/05/2022.
 //
 
-#include "dsl/common.h"
+#include "dsl/dsl.h"
 #include "core/concepts.h"
 #include "dsl/operators.h"
 #include "dsl/func.h"

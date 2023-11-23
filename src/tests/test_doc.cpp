@@ -4,7 +4,7 @@
 
 #include "util/image_io.h"
 #include "core/stl.h"
-#include "dsl/common.h"
+#include "dsl/dsl.h"
 #include "rhi/common.h"
 #include "math/base.h"
 #include "core/platform.h"

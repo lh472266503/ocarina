@@ -3,13 +3,13 @@
 //
 
 #include "core/stl.h"
-#include "dsl/common.h"
+#include "dsl/dsl.h"
 #include "rhi/context.h"
 #include "rhi/common.h"
 #include <windows.h>
 #include "math/base.h"
 #include "util/image_io.h"
-#include "dsl/common.h"
+#include "dsl/dsl.h"
 
 using namespace ocarina;
 
