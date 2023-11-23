@@ -16,7 +16,7 @@ struct Triple {
     Triple() = default;
 };
 
-/// register a DSL struct
+/// register a DSL struct, if you need upload a struct to device, be sure to register
 OC_STRUCT(Triple, i, j, k){
     [[nodiscard]] Uint sum() const noexcept {
         return i + j + k;
