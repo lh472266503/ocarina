@@ -120,7 +120,7 @@ void test_compute_shader(Device &device, Stream &stream) {
             $info("begin end step for statement dispatch_idx is {} {} {}, i = {} ", dispatch_idx(), i);
         };
 
-
+        $debug_if(dispatch_id() == 0, "{} ", step);
         /// execute if thread idx in debug range
         $debugger_execute {
             Float f = 2.f;

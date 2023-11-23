@@ -80,7 +80,10 @@ public:
         reset();
     }
 
-    Printer &set_description(const string &desc) noexcept { _desc = desc; return *this; }
+    Printer &set_description(const string &desc) noexcept {
+        _desc = desc;
+        return *this;
+    }
     [[nodiscard]] Managed<uint> &buffer() noexcept { return _buffer; }
     [[nodiscard]] const Managed<uint> &buffer() const noexcept { return _buffer; }
     [[nodiscard]] uint element_num() const noexcept { return _buffer.host_buffer().back(); }
@@ -90,16 +93,28 @@ public:
         _buffer.resize(_buffer.capacity());
     }
 
-#define OC_MAKE_LOG_FUNC(level_name)                                                              \
-    template<typename... Args>                                                                    \
-    void level_name(const string &fmt, const Args &...args) noexcept {                            \
-        _logs(spdlog::level::level_enum::level_name, fmt, OC_FORWARD(args)...);                   \
-    }                                                                                             \
-    template<typename... Args>                                                                    \
-    void level_name##_with_location(const string &fmt, const Args &...args) noexcept {            \
-        Uint3 idx = dispatch_idx();                                                               \
-        Uint id = dispatch_id();                                                                  \
-        level_name(fmt + " [with thread idx({}, {}, {}), id({})]", OC_FORWARD(args)..., idx, id); \
+#define OC_MAKE_LOG_FUNC(level_name)                                                                          \
+    template<typename... Args>                                                                                \
+    void level_name(const string &fmt, const Args &...args) noexcept {                                        \
+        _logs(spdlog::level::level_enum::level_name, fmt, OC_FORWARD(args)...);                               \
+    }                                                                                                         \
+    template<typename... Args>                                                                                \
+    void level_name##_with_location(const string &fmt, const Args &...args) noexcept {                        \
+        Uint3 idx = dispatch_idx();                                                                           \
+        Uint id = dispatch_id();                                                                              \
+        level_name(fmt + " [with thread idx({}, {}, {}), id({})]", OC_FORWARD(args)..., idx, id);             \
+    }                                                                                                         \
+    template<typename... Args>                                                                                \
+    void level_name##_if(const Bool &cond, const string &fmt, const Args &...args) noexcept {                 \
+        if_(cond, [&] {                                                                                       \
+            level_name(fmt, OC_FORWARD(args)...);                                                             \
+        });                                                                                                   \
+    }                                                                                                         \
+    template<typename... Args>                                                                                \
+    void level_name##_with_location##_if(const Bool &cond, const string &fmt, const Args &...args) noexcept { \
+        if_(cond, [&] {                                                                                       \
+            level_name##_with_location(fmt, OC_FORWARD(args)...);                                             \
+        });                                                                                                   \
     }
 
     OC_MAKE_LOG_FUNC(debug)
