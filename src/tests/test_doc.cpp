@@ -15,8 +15,9 @@ struct Triple {
     Triple(uint i, uint j, uint k) : i(i), j(j), k(k) {}
     Triple() = default;
 };
-OC_STRUCT(Triple, i, j, k){
 
+/// register a DSL struct
+OC_STRUCT(Triple, i, j, k){
     [[nodiscard]] Uint sum() const noexcept {
         return i + j + k;
     }
@@ -75,15 +76,55 @@ void test_compute_shader(Device &device, Stream &stream) {
         $info("triple   {} {} {}", triple.i, triple.j, triple.k);
 
         Var t = triangle.read(dispatch_id());
+
+        /// Note the usage and implementation of DSL struct member function, e.g sum()
         $info("triple  index {} : i = {}, j = {}, k = {},  sum: {} ",dispatch_id(), t.i, t.j, t.k, t->sum());
 
         $info("vert from capture {} {} {}", vert.read(dispatch_id()));
         $info("vert from capture resource array {} {} {}", resource_array.buffer<float3>(v_idx).read(dispatch_id()));
         $info("vert from ra {} {} {}", ra.buffer<float3>(v_idx).read(dispatch_id()));
 
+        $switch(dispatch_id()) {
+            $case(1) {
+                $info("dispatch_idx is {} {} {}", dispatch_idx());
+            };
+            $default {
+                $info("switch default  dispatch_idx is {} {} {}", dispatch_idx());
+            };
+        };
+
+        $if(dispatch_id() == 1) {
+            $info("if branch dispatch_idx is {} {} {}", dispatch_idx());
+        } $elif(dispatch_id() == 2) {
+            $info("if else branch dispatch_idx is {} {} {}", dispatch_idx());
+        } $else {
+            $info("else branch dispatch_idx is {} {} {}", dispatch_idx());
+        };
+
+        Uint count = 2;
+
+        $for(i, count) {
+            $info("count for statement dispatch_idx is {} {} {}, i = {} ", dispatch_idx(), i);
+        };
+
+        Uint begin = 2;
+        Uint end = 10;
+        $for(i, begin, end) {
+            $info("begin end for statement dispatch_idx is {} {} {}, i = {} ", dispatch_idx(), i);
+        };
+
+        Uint step = 2;
+
+        $for(i, begin, end, step) {
+            $info("begin end step for statement dispatch_idx is {} {} {}, i = {} ", dispatch_idx(), i);
+        };
+
+
         /// execute if thread idx in debug range
         $debugger_execute {
-            $warn_with_location("this thread idx is in debug range {} {} {}", vert.read(dispatch_id()));
+            Float f = 2.f;
+            Float a = 6.f;
+            $warn_with_location("this thread idx is in debug range {} {} {},  f * a = {} ", vert.read(dispatch_id()), f * a);
         };
     };
     Triple triple1{1,2,3};
