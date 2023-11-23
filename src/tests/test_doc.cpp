@@ -47,14 +47,15 @@ auto get_cube(float x = 1, float y = 1, float z = 1) {
     return ocarina::make_pair(vertices, triangles);
 }
 
+
 void test_compute_shader(Device &device, Stream &stream) {
     auto [vertices, triangles] = get_cube();
 
     Buffer<float3> vert = device.create_buffer<float3>(vertices.size());
     Buffer tri = device.create_buffer<Triple>(triangles.size());
 
+    /// used for store the handle of texture or buffer
     ResourceArray resource_array = device.create_resource_array();
-
     uint v_idx = resource_array.emplace(vert);
     uint t_idx = resource_array.emplace(tri);
 
@@ -75,13 +76,14 @@ void test_compute_shader(Device &device, Stream &stream) {
         $info("vert from capture resource array {} {} {}", resource_array.buffer<float3>(v_idx).read(dispatch_id()));
         $info("vert from ra {} {} {}", ra.buffer<float3>(v_idx).read(dispatch_id()));
 
+        /// execute if thread idx in debug range
         $debugger_execute {
             $info_with_location("vert ----------- from buffer {} {} {}", vert.read(dispatch_id()));
         };
     };
     Triple triple1{1,2,3};
 
-    // set debug range
+    /// set debug range
     Debugger::instance().set_lower(make_uint2(0));
     Debugger::instance().set_upper(make_uint2(1));
     auto shader = device.compile(kernel, "test desc");
@@ -94,6 +96,13 @@ void test_compute_shader(Device &device, Stream &stream) {
 int main(int argc, char *argv[]) {
     fs::path path(argv[0]);
     Context context(path.parent_path());
+
+    /**
+     * Conventional scheme
+     * create device and stream
+     * stream used for process some command,e.g buffer upload and download, dispatch shader
+     * default is asynchronous operation
+     */
     Device device = context.create_device("cuda");
     Stream stream = device.create_stream();
     Printer::instance().init(device);
