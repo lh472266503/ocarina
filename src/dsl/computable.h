@@ -18,20 +18,26 @@ class Array;
 
 namespace detail {
 template<typename Lhs, typename Rhs>
-inline void assign(Lhs &&lhs, Rhs &&rhs) noexcept;// implement in syntax.h
-}
+inline void assign(Lhs &&lhs, Rhs &&rhs) noexcept;// implement in stmt_builder.h
+
+template<typename Index, typename Size>
+requires is_all_integral_expr_v<Index, Size>
+[[nodiscard]] Var<bool> over_boundary(Index &&index, Size &&size, const string &desc,
+                                      const string &tb) noexcept;// implement in computable.inl
+
+}// namespace detail
 
 template<typename T>
-[[nodiscard]] inline Var<expr_value_t<T>> eval(T &&x) noexcept;// implement in syntax.h
+[[nodiscard]] inline Var<expr_value_t<T>> eval(T &&x) noexcept;// implement in stmt_builder.h
 
 template<typename T>
-[[nodiscard]] inline Var<expr_value_t<T>> eval(const Expression *expr) noexcept;// implement in syntax.h
+[[nodiscard]] inline Var<expr_value_t<T>> eval(const Expression *expr) noexcept;// implement in stmt_builder.h
 
 template<typename T>
-[[nodiscard]] inline Expr<expr_value_t<T>> make_expr(T &&x) noexcept;// implement in syntax.h
+[[nodiscard]] inline Expr<expr_value_t<T>> make_expr(T &&x) noexcept;// implement in stmt_builder.h
 
 template<typename T>
-[[nodiscard]] inline Expr<expr_value_t<T>> make_expr(const Expression *expr) noexcept;// implement in syntax.h
+[[nodiscard]] inline Expr<expr_value_t<T>> make_expr(const Expression *expr) noexcept;// implement in stmt_builder.h
 
 class Hit;
 class Ray;
@@ -81,8 +87,7 @@ struct EnableReadAndWrite {
     }
 
     template<typename Index, typename Size>
-    requires concepts::all_integral<expr_value_t<Index>,
-                                    expr_value_t<Size>>
+    requires is_all_integral_expr_v<Index, Size>
     auto read_and_check(Index &&index, Size size) const noexcept {
         return read(OC_FORWARD(index));
     }
@@ -97,7 +102,7 @@ struct EnableReadAndWrite {
     }
 
     template<typename Index, typename Val, typename Size>
-    requires concepts::all_integral<expr_value_t<Index>, expr_value_t<Size>> &&
+    requires is_all_integral_expr_v<Index, Size> &&
              concepts::is_same_v<element_type, expr_value_t<Val>>
     void write_and_check(Index &&index, Val &&elm, Size size) {
         write(OC_FORWARD(index), OC_FORWARD(elm));

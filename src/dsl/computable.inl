@@ -3,6 +3,8 @@
 //
 
 #include "rtx_type.h"
+#include "stmt_builder.h"
+#include "printer.h"
 
 namespace ocarina::detail {
 
@@ -24,6 +26,15 @@ const noexcept {
                                                              CallOp::TRACE_CLOSEST,
                                                              {expression(), OC_EXPR(ray)});
     return eval<Hit>(expr);
+}
+
+template<typename Index, typename Size>
+inline Var<bool> over_boundary(Index &&index, Size &&size, const string &desc, const string &tb) noexcept {
+    Bool ret = false;
+    if_(index > size, [&] {
+        ret = true;
+    });
+    return ret;
 }
 
 }// namespace ocarina::detail
