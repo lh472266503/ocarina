@@ -59,7 +59,7 @@ void test_compute_shader(Device &device, Stream &stream) {
     uint v_idx = resource_array.emplace(vert);
     uint t_idx = resource_array.emplace(tri);
 
-    resource_array.prepare_slotSOA(device);
+    /// upload buffer and texture handle to device memory
     stream << resource_array->upload_buffer_handles() << synchronize();
     stream << resource_array->upload_texture_handles() << synchronize();
 

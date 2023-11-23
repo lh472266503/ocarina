@@ -17,6 +17,7 @@ class ResourceArray : public RHIResource {
 public:
     class Impl {
     public:
+        static constexpr auto slot_size = 50000;
         [[nodiscard]] virtual size_t emplace_buffer(handle_ty handle, size_t size_in_byte) noexcept = 0;
         virtual void remove_buffer(handle_ty index) noexcept = 0;
         [[nodiscard]] virtual size_t emplace_texture(handle_ty handle) noexcept = 0;
