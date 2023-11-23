@@ -53,21 +53,32 @@ void test_compute_shader(Device &device, Stream &stream) {
     Buffer<float3> vert = device.create_buffer<float3>(vertices.size());
     Buffer tri = device.create_buffer<Triple>(triangles.size());
 
+    ResourceArray resource_array = device.create_resource_array();
+
+    uint v_idx = resource_array.emplace(vert);
+    uint t_idx = resource_array.emplace(tri);
+
+    resource_array.prepare_slotSOA(device);
+    stream << resource_array->upload_buffer_handles() << synchronize();
+    stream << resource_array->upload_texture_handles() << synchronize();
+
     stream << vert.upload(vertices.data())
            << tri.upload(triangles.data());
 
-    Kernel kernel = [&](Var<Triple> triple, BufferVar<Triple> triangle) {
+    Kernel kernel = [&](Var<Triple> triple, BufferVar<Triple> triangle, Var<ResourceArray> ra) {
         $info("triple   {} {} {}", triple.i, triple.j, triple.k);
 
         Var t = triangle.read(dispatch_id());
         $info("triple  index {} :  {} {} {}",dispatch_id(), t.i, t.j, t.k);
 
-        $info("vert {} {} {}", vert.read(dispatch_id()));
+        $info("vert from buffer {} {} {}", vert.read(dispatch_id()));
+        $info("vert from resource array {} {} {}", resource_array.buffer<float3>(v_idx).read(dispatch_id()));
+        $info("vert from ra {} {} {}", ra.buffer<float3>(v_idx).read(dispatch_id()));
 
     };
     Triple triple1{1,2,3};
     auto shader = device.compile(kernel, "test desc");
-    stream << shader(triple1, tri).dispatch(6)
+    stream << shader(triple1, tri, resource_array).dispatch(6)
            << Printer::instance().retrieve()
            << synchronize() << commit();
 }
