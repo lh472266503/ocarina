@@ -438,6 +438,12 @@ public:
         return eval<Size>(expr);
     }
 
+    template<typename Size = uint>
+    [[nodiscard]] Var<Size> size() const noexcept {
+        Var<Size> ret = size_in_byte();
+        return ret / static_cast<uint>(sizeof(T));
+    }
+
     template<typename Index, typename Val>
     requires concepts::integral<expr_value_t<Index>> && concepts::is_same_v<T, expr_value_t<Val>>
     void write(Index &&index, Val &&elm) {

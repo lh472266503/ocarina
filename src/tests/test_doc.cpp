@@ -124,7 +124,8 @@ void test_compute_shader(Device &device, Stream &stream) {
         $debugger_execute {
             Float f = 2.f;
             Float a = 6.f;
-            $warn_with_location("this thread idx is in debug range {} {} {},  f * a = {} ", vert.read(dispatch_id()), f * a);
+            $warn_with_location("this thread idx is in debug range {} {} {},  f * a = {} ",
+                                vert.read(dispatch_id()), ra.buffer<Triple>(t_idx).size_in_byte() / 12);
         };
     };
     Triple triple1{1,2,3};
