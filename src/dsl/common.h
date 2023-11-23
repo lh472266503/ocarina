@@ -10,7 +10,7 @@
 #include "var.h"
 #include "array.h"
 #include "stmt_builder.h"
-#include "syntax_sugar.h"
+#include "syntax.h"
 #include "operators.h"
 #include "func.h"
 #include "struct.h"

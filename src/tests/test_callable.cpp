@@ -12,7 +12,7 @@
 #include "rhi/device.h"
 #include "generator/cpp_codegen.h"
 #include "core/platform.h"
-#include "dsl/syntax_sugar.h"
+#include "dsl/syntax.h"
 #include "core/util.h"
 #include "dsl/rtx_type.h"
 #include "rhi/resources/stream.h"

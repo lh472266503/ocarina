@@ -8,7 +8,7 @@
 
 #define $source_location ocarina::format("{},{}", __FILE__, __LINE__)
 
-#define $sign_source_location comment($source_location);
+#define $sign_source_location ocarina::comment($source_location);
 
 #define $if(...) ::ocarina::detail::IfStmtBuilder::create_with_source_location($source_location, __VA_ARGS__) / [&]() noexcept
 #define $else % [&]() noexcept

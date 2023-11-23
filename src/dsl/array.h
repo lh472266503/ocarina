@@ -8,7 +8,7 @@
 #include "computable.h"
 #include "ast/type_registry.h"
 #include "core/string_util.h"
-#include "syntax_sugar.h"
+#include "syntax.h"
 
 namespace ocarina {
 
