@@ -7,6 +7,7 @@
 #include "dsl/common.h"
 #include "rhi/common.h"
 #include "math/base.h"
+#include "core/platform.h"
 
 using namespace ocarina;
 
@@ -139,6 +140,8 @@ void test_compute_shader(Device &device, Stream &stream) {
            /// explict retrieve log
            << Printer::instance().retrieve()
            << synchronize() << commit();
+
+    cout << traceback_string() << endl;
 }
 
 int main(int argc, char *argv[]) {

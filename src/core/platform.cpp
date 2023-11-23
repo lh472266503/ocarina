@@ -66,7 +66,7 @@ string demangle(const char *name) noexcept {
     return {buffer, length};
 }
 
-vector<TraceItem> traceback() noexcept {
+vector<TraceItem> traceback(int top) noexcept {
 
     void *stack[100];
     auto process = GetCurrentProcess();
@@ -82,7 +82,7 @@ vector<TraceItem> traceback() noexcept {
     module.SizeOfStruct = sizeof(IMAGEHLP_MODULE64);
     vector<TraceItem> trace;
     trace.reserve(frame_count - 1u);
-    for (auto i = 1u; i < frame_count; i++) {
+    for (auto i = 1u + top; i < frame_count; i++) {
         auto address = reinterpret_cast<uint64_t>(stack[i]);
         auto displacement = 0ull;
         if (SymFromAddr(process, address, &displacement, &symbol)) {
@@ -105,9 +105,9 @@ vector<TraceItem> traceback() noexcept {
     return trace;
 }
 
-string traceback_string() noexcept {
+string traceback_string(int top) noexcept {
     string ret;
-    vector<TraceItem> trace = traceback();
+    vector<TraceItem> trace = traceback(top);
     for (int i = 1; i < trace.size(); ++i) {
         auto &&t = trace[i];
         using namespace std::string_view_literals;
