@@ -15,7 +15,12 @@ struct Triple {
     Triple(uint i, uint j, uint k) : i(i), j(j), k(k) {}
     Triple() = default;
 };
-OC_STRUCT(Triple, i, j, k){};
+OC_STRUCT(Triple, i, j, k){
+
+    [[nodiscard]] Uint sum() const noexcept {
+        return i + j + k;
+    }
+};
 
 auto get_cube(float x = 1, float y = 1, float z = 1) {
     x = x / 2.f;
@@ -70,7 +75,7 @@ void test_compute_shader(Device &device, Stream &stream) {
         $info("triple   {} {} {}", triple.i, triple.j, triple.k);
 
         Var t = triangle.read(dispatch_id());
-        $info("triple  index {} :  {} {} {}",dispatch_id(), t.i, t.j, t.k);
+        $info("triple  index {} : i = {}, j = {}, k = {},  sum: {} ",dispatch_id(), t.i, t.j, t.k, t->sum());
 
         $info("vert from capture {} {} {}", vert.read(dispatch_id()));
         $info("vert from capture resource array {} {} {}", resource_array.buffer<float3>(v_idx).read(dispatch_id()));
@@ -78,7 +83,7 @@ void test_compute_shader(Device &device, Stream &stream) {
 
         /// execute if thread idx in debug range
         $debugger_execute {
-            $info_with_location("vert ----------- from buffer {} {} {}", vert.read(dispatch_id()));
+            $warn_with_location("this thread idx is in debug range {} {} {}", vert.read(dispatch_id()));
         };
     };
     Triple triple1{1,2,3};
@@ -89,6 +94,7 @@ void test_compute_shader(Device &device, Stream &stream) {
     auto shader = device.compile(kernel, "test desc");
     stream << Debugger::instance().upload();
     stream << shader(triple1, tri, resource_array).dispatch(2,3)
+           /// explict retrieve log
            << Printer::instance().retrieve()
            << synchronize() << commit();
 }
