@@ -51,6 +51,7 @@ private:
     Managed<uint> _buffer;
     spdlog::logger _logger{logger()};
     vector<Item> _items;
+    bool _enabled{true};
     mutable string _desc;
 
 private:
@@ -68,17 +69,16 @@ private:
     Printer(Printer &&) = delete;
     Printer operator=(const Printer &) = delete;
     Printer operator=(Printer &&) = delete;
-    static Printer *s_printer;
     friend class Env;
-public:
-    [[nodiscard]] static Printer &instance() noexcept;
-    static void destroy_instance() noexcept;
 
+public:
     void init(Device &device, size_t capacity = 16_mb) {
         capacity /= sizeof(uint);
         _buffer.reset_all(device, capacity);
         reset();
     }
+
+    OC_MAKE_MEMBER_GETTER_SETTER(enabled, )
 
     Printer &set_description(const string &desc) noexcept {
         _desc = desc;
@@ -155,6 +155,10 @@ void Printer::_logs(spdlog::level::level_enum level, const string &fmt, const Ar
 
 template<typename... Args>
 void Printer::_log(spdlog::level::level_enum level, const string &fmt, const Args &...args) noexcept {
+    if (!_enabled) {
+        return;
+    }
+
     if (!_desc.empty()) {
         comment(_desc);
     }

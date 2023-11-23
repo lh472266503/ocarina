@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
     //    context.clear_cache();
     Device device = context.create_device("cuda");
     Stream stream = device.create_stream();
-    Printer::instance().init(device);
+    Env::printer().init(device);
 
 //    auto yy = std::is_de;
 
@@ -91,21 +91,21 @@ int main(int argc, char *argv[]) {
     Kernel kernel = [&](Float a) {
         DataAccessor<float> da{0u, vv};
         t.decode(&da);
-        Printer::instance().info("a = {} {}", t.a.dv());
-        Printer::instance().info("b = {} {} {}", t.b.dv());
-        Printer::instance().info("c = {}", t.c.dv());
-        Printer::instance().info("d = {}", t.d.dv());
-        Printer::instance().info("e = {} {} {}", t.e.dv().as_vec3());
-        Printer::instance().info("f0 = {} {} {}", t.f.dv()[0]);
-        Printer::instance().info("f1 = {} {} {}", t.f.dv()[1]);
-        Printer::instance().info("f2 = {} {} {}", t.f.dv()[2]);
-        Printer::instance().info("data.f = {}", t.data.f.dv());
-        Printer::instance().info("data.f4 = {} {} {} {}", *t.data.f4);
+        Env::printer().info("a = {} {}", t.a.dv());
+        Env::printer().info("b = {} {} {}", t.b.dv());
+        Env::printer().info("c = {}", t.c.dv());
+        Env::printer().info("d = {}", t.d.dv());
+        Env::printer().info("e = {} {} {}", t.e.dv().as_vec3());
+        Env::printer().info("f0 = {} {} {}", t.f.dv()[0]);
+        Env::printer().info("f1 = {} {} {}", t.f.dv()[1]);
+        Env::printer().info("f2 = {} {} {}", t.f.dv()[2]);
+        Env::printer().info("data.f = {}", t.data.f.dv());
+        Env::printer().info("data.f4 = {} {} {} {}", *t.data.f4);
     };
     auto shader = device.compile(kernel);
     stream << shader(1.5f).dispatch(1);
     stream << synchronize() << commit();
-    Printer::instance().retrieve_immediately();
+    Env::printer().retrieve_immediately();
 
     return 0;
 

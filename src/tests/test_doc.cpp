@@ -132,13 +132,13 @@ void test_compute_shader(Device &device, Stream &stream) {
     Triple triple1{1,2,3};
 
     /// set debug range
-    Debugger::instance().set_lower(make_uint2(0));
-    Debugger::instance().set_upper(make_uint2(1));
+    Env::debugger().set_lower(make_uint2(0));
+    Env::debugger().set_upper(make_uint2(1));
     auto shader = device.compile(kernel, "test desc");
-    stream << Debugger::instance().upload();
+    stream << Env::debugger().upload();
     stream << shader(triple1, tri, resource_array).dispatch(2,3)
            /// explict retrieve log
-           << Printer::instance().retrieve()
+           << Env::printer().retrieve()
            << synchronize() << commit();
 
     cout << traceback_string() << endl;
@@ -156,8 +156,8 @@ int main(int argc, char *argv[]) {
      */
     Device device = context.create_device("cuda");
     Stream stream = device.create_stream();
-    Printer::instance().init(device);
-    Debugger::instance().init(device);
+    Env::printer().init(device);
+    Env::debugger().init(device);
 
     /// create rtx context if need
     device.init_rtx();

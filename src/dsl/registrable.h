@@ -43,7 +43,7 @@ protected:
 //            string prefix = ocarina::format("Buffer {} ", typeid(*this).name());
 //            string tb = traceback_string();
 //            string fmt = prefix + "out of buffer num: buffer index is {}, buffer num is {}, traceback is " + tb;
-//            Printer::instance().warn(fmt, buffer_index, _resource_array->buffer_num());
+//            Env::printer().warn(fmt, buffer_index, _resource_array->buffer_num());
 //            buffer_index = 0u;
 //            access_index = 0u;
 //        };
@@ -53,7 +53,7 @@ protected:
 //            string prefix = ocarina::format("Buffer {} ", typeid(*this).name());
 //            string tb = traceback_string();
 //            string fmt = prefix + "out of bound: buffer index is {} access index is {}, buffer size is {}, traceback is " + tb;
-//            Printer::instance().warn(fmt, buffer_index, access_index, size_in_byte / uint(sizeof(T)));
+//            Env::printer().warn(fmt, buffer_index, access_index, size_in_byte / uint(sizeof(T)));
 //        };
 //#endif
         return _resource_array->buffer<T>(buffer_index).read(access_index);
@@ -90,7 +90,7 @@ public:
 //                string prefix = ocarina::format("Buffer {} ", typeid(*this).name());
 //                string tb = traceback_string();
 //                string fmt = prefix + "out of bound: index is {}, buffer size is {}, traceback is " + tb;
-//                Printer::instance().warn(fmt, i, uint(Super::device_buffer().size()));
+//                Env::printer().warn(fmt, i, uint(Super::device_buffer().size()));
 //                i = 0;
 //            };
 //#endif
@@ -147,7 +147,7 @@ public:
 //                string prefix = ocarina::format("Buffer {} ", typeid(*this).name());
 //                string tb = traceback_string();
 //                string fmt = prefix + "out of bound: index is {}, buffer size is {}, traceback is " + tb;
-//                Printer::instance().warn(fmt, i, uint(Super::device_buffer().size()));
+//                Env::printer().warn(fmt, i, uint(Super::device_buffer().size()));
 //                i = 0;
 //            };
 //#endif

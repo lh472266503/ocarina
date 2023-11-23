@@ -29,7 +29,6 @@ using OCDebugData = Var<DebugData>;
 
 class Debugger {
 private:
-    static Debugger *s_debugger;
     Managed<DebugData> _data;
     mutable string _desc{};
 
@@ -42,8 +41,6 @@ private:
     friend class Env;
 
 public:
-    [[nodiscard]] static Debugger &instance() noexcept;
-    static void destroy_instance() noexcept;
     void reset() noexcept { _data[0] = DebugData{}; }
     void init(Device &device) noexcept { _data.reset_all(device, 1); }
     [[nodiscard]] auto &host_data() const noexcept { return _data.host_buffer()[0]; }

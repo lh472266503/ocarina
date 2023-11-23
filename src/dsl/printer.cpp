@@ -6,23 +6,7 @@
 
 namespace ocarina {
 
-Printer *Printer::s_printer = nullptr;
-
-Printer &Printer::instance() noexcept {
-    if (s_printer == nullptr) {
-        s_printer = new Printer();
-    }
-    return *s_printer;
-}
-
-void Printer::destroy_instance() noexcept {
-    if (s_printer) {
-        delete s_printer;
-        s_printer = nullptr;
-    }
-}
-
-void Printer::output_log(const OutputFunc & func) noexcept {
+void Printer::output_log(const OutputFunc &func) noexcept {
     uint length = std::min(
         static_cast<uint>(_buffer.host_buffer().size() - 1u),
         _buffer.back());
@@ -43,7 +27,10 @@ void Printer::output_log(const OutputFunc & func) noexcept {
     }
 }
 
-CommandList Printer::retrieve(const OutputFunc & func) noexcept {
+CommandList Printer::retrieve(const OutputFunc &func) noexcept {
+    if (!_enabled) {
+        return {};
+    }
     CommandList ret;
     ret << _buffer.download();
     ret << [&]() {
@@ -54,7 +41,10 @@ CommandList Printer::retrieve(const OutputFunc & func) noexcept {
     return ret;
 }
 
-void Printer::retrieve_immediately(const OutputFunc & func) noexcept {
+void Printer::retrieve_immediately(const OutputFunc &func) noexcept {
+    if (!_enabled) {
+        return;
+    }
     _buffer.download_immediately();
     output_log(func);
     reset();

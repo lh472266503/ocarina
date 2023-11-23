@@ -116,7 +116,7 @@ int main(int argc, char *argv[]) {
 //    context.clear_cache();
     Device device = context.create_device("cuda");
     Stream stream = device.create_stream();
-    Printer::instance().init(device);
+    Env::printer().init(device);
 //    auto path1 = R"(E:/work/test_dir/D5.png)";
 //    auto path2 = R"(E:/work/test_dir/D5.jpg)";
 //    auto image_io = ImageIO::load(path1, LINEAR);
@@ -191,7 +191,7 @@ int main(int argc, char *argv[]) {
 //        Var t = t_buffer.read(0);
 //        Int3 f = make_int3(ba.byte_buffer(index).read<float>(19 * 4).cast<int>(), 6, 9);
 //        auto arr = bindless_array.byte_buffer(index).read_dynamic_array<float>(3, 19 * 4);
-//        Printer::instance().warn_with_location("{} {} {}, {} {} ,{} {} {}", f, arr.sub(1, 3).as_vec2(), t.i.cast<float>() + 2.4f, t.j, t.k);
+//        Env::printer().warn_with_location("{} {} {}, {} {} ,{} {} {}", f, arr.sub(1, 3).as_vec2(), t.i.cast<float>() + 2.4f, t.j, t.k);
 
         Array<float> p{3};
         Array<float> t{3};
@@ -210,7 +210,7 @@ int main(int argc, char *argv[]) {
         rr[0] = make_float3(-9);
         rr[1] = make_float3(-8);
         rr = abs(rr);
-        Printer::instance().info("{} {} {} {} {} {}", rr[0], rr[1]);
+        Env::printer().info("{} {} {} {} {} {}", rr[0], rr[1]);
 //                Container<int> container{4};
 //        Var<Triangle> tri;
 //        tri.f[0] = 1.f;
@@ -218,7 +218,7 @@ int main(int argc, char *argv[]) {
 //        container.push_back(8);
 //
 //        container.for_each([&](Int i) {
-//            Printer::instance().info("{}", tri.f[0]);
+//            Env::printer().info("{}", tri.f[0]);
 //        });
 //
 //        container.pop();
@@ -250,13 +250,13 @@ int main(int argc, char *argv[]) {
     };
     auto shader = device.compile(kernel);
     stream << shader(bindless_array).dispatch(3);
-    stream << Printer::instance().retrieve() << synchronize() <<commit();
+    stream << Env::printer().retrieve() << synchronize() <<commit();
 
 //    float tf = bit_cast<float>(19);
 //    OC_WARNING_FORMAT("{}", tf);
-//    Printer::instance().retrieve_immediately();
+//    Env::printer().retrieve_immediately();
 //    //    cout << "sdafasdf" << endl;
-//    Printer::instance().retrieve_immediately();
+//    Env::printer().retrieve_immediately();
 //    Printer::destroy_instance();
     return 0;
 }
