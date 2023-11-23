@@ -51,6 +51,7 @@ private:
     Managed<uint> _buffer;
     spdlog::logger _logger{logger()};
     vector<Item> _items;
+    mutable string _desc;
 
 private:
     void _log_to_buffer(Uint offset, uint index) noexcept {}
@@ -79,6 +80,7 @@ public:
         reset();
     }
 
+    Printer &set_description(const string &desc) noexcept { _desc = desc; return *this; }
     [[nodiscard]] Managed<uint> &buffer() noexcept { return _buffer; }
     [[nodiscard]] const Managed<uint> &buffer() const noexcept { return _buffer; }
     [[nodiscard]] uint element_num() const noexcept { return _buffer.host_buffer().back(); }
@@ -138,6 +140,9 @@ void Printer::_logs(spdlog::level::level_enum level, const string &fmt, const Ar
 
 template<typename... Args>
 void Printer::_log(spdlog::level::level_enum level, const string &fmt, const Args &...args) noexcept {
+    if (!_desc.empty()) {
+        comment(_desc);
+    }
     comment("start log " + fmt);
     constexpr auto count = (0u + ... + static_cast<uint>(is_dsl_v<Args>));
     uint last = static_cast<uint>(_buffer.device_buffer().size() - 1);
@@ -150,6 +155,7 @@ void Printer::_log(spdlog::level::level_enum level, const string &fmt, const Arg
         _log_to_buffer(offset + 1, 0, OC_FORWARD(args)...);
     });
     comment("end log " + fmt);
+    _desc = "";
 
     uint dsl_counter = 0;
     // todo change to index_sequence

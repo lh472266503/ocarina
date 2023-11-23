@@ -82,7 +82,7 @@ public:
         _desc = "";
     }
 
-    const Debugger &set_description(const string &desc) const {
+    Debugger &set_description(const string &desc) {
         _desc = desc;
         return *this;
     }

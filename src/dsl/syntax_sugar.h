@@ -37,14 +37,14 @@
 
 #define $scope ::ocarina::detail::ScopeStmtBuilder($source_location) + [&]() noexcept
 
-#define $debug(...) Printer::instance().debug(__VA_ARGS__);
-#define $info(...) Printer::instance().info(__VA_ARGS__);
-#define $warn(...) Printer::instance().warn(__VA_ARGS__);
-#define $err(...) Printer::instance().err(__VA_ARGS__);
+#define $debug(...) Printer::instance().set_description("debug " + $source_location).debug(__VA_ARGS__);
+#define $info(...) Printer::instance().set_description("info " + $source_location).info(__VA_ARGS__);
+#define $warn(...) Printer::instance().set_description("warn " + $source_location).warn(__VA_ARGS__);
+#define $err(...) Printer::instance().set_description("err " + $source_location).err(__VA_ARGS__);
 
-#define $debug_with_location(...) Printer::instance().debug_with_location(__VA_ARGS__);
-#define $info_with_location(...) Printer::instance().info_with_location(__VA_ARGS__);
-#define $warn_with_location(...) Printer::instance().warn_with_location(__VA_ARGS__);
-#define $err_with_location(...) Printer::instance().err_with_location(__VA_ARGS__);
+#define $debug_with_location(...) Printer::instance().set_description("debug " + $source_location).debug_with_location(__VA_ARGS__);
+#define $info_with_location(...) Printer::instance().set_description("info " + $source_location).info_with_location(__VA_ARGS__);
+#define $warn_with_location(...) Printer::instance().set_description("warn " + $source_location).warn_with_location(__VA_ARGS__);
+#define $err_with_location(...) Printer::instance().set_description("err " + $source_location).err_with_location(__VA_ARGS__);
 
 #define $debugger_execute Debugger::instance().set_description("debugger_execute " + $source_location) * [&]() noexcept
