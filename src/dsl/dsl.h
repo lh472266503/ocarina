@@ -19,3 +19,21 @@
 #include "polymorphic.h"
 #include "printer.h"
 #include "debugger.h"
+
+namespace ocarina {
+
+class Env {
+private:
+    Env() = default;
+    Env(const Env &) = delete;
+    Env(Env &&) = delete;
+    Env operator=(const Env &) = delete;
+    Env operator=(Env &&) = delete;
+    static Env *s_env;
+
+public:
+    [[nodiscard]] static Env &instance() noexcept;
+    static void destroy_instance() noexcept;
+};
+
+}// namespace ocarina
