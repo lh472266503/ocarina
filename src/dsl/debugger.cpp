@@ -3,7 +3,7 @@
 //
 
 #include "debugger.h"
-#include "syntax.h"
+#include "stmt_builder.h"
 
 namespace ocarina {
 

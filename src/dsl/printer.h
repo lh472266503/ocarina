@@ -10,7 +10,7 @@
 #include "rhi/resources/managed.h"
 #include <dsl/computable.h>
 #include <dsl/var.h>
-#include <dsl/syntax.h>
+#include <dsl/stmt_builder.h>
 #include <dsl/builtin.h>
 #include <dsl/operators.h>
 

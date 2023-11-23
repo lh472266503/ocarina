@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "syntax.h"
+#include "stmt_builder.h"
 
 #define $source_location ocarina::format("{},{}", __FILE__, __LINE__)
 

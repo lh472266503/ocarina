@@ -5,7 +5,7 @@
 #pragma once
 
 #include "type_trait.h"
-#include "syntax.h"
+#include "stmt_builder.h"
 #include "core/stl.h"
 #include "core/util.h"
 #include "registrable.h"

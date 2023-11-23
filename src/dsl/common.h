@@ -9,7 +9,7 @@
 #include "expr.h"
 #include "var.h"
 #include "array.h"
-#include "syntax.h"
+#include "stmt_builder.h"
 #include "syntax_sugar.h"
 #include "operators.h"
 #include "func.h"

@@ -9,7 +9,7 @@
 #include "var.h"
 #include "builtin.h"
 #include "expr.h"
-#include "syntax.h"
+#include "stmt_builder.h"
 #include "type_trait.h"
 
 namespace ocarina {

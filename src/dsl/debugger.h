@@ -10,7 +10,7 @@
 #include "builtin.h"
 #include "rhi/resources/managed.h"
 #include "math/box.h"
-#include "syntax.h"
+#include "stmt_builder.h"
 
 namespace ocarina {
 struct DebugData {
