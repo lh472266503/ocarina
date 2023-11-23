@@ -182,10 +182,20 @@ public:
     /// for dsl trait
     auto operator[](int i) { return T{}; }
 
+    template<typename Index>
+    requires concepts::all_integral<expr_value_t<Index>>
+    OC_NODISCARD auto
+    read(Index &&index) const {
+        const ArgumentBinding &uniform = Function::current()->get_uniform_var(Type::of<decltype(*this)>(),
+                                                                              Variable::Tag::BUFFER,
+                                                                              memory_block());
+        return make_expr<Buffer<T>>(uniform.expression()).read_and_check(OC_FORWARD(index), static_cast<uint>(_size));
+    }
+
     template<typename... Index>
     requires concepts::all_integral<expr_value_t<Index>...>
     OC_NODISCARD auto
-    read(Index &&...index) const {
+    read_multi(Index &&...index) const {
         const ArgumentBinding &uniform = Function::current()->get_uniform_var(Type::of<decltype(*this)>(),
                                                                               Variable::Tag::BUFFER,
                                                                               memory_block());
@@ -198,7 +208,7 @@ public:
         const ArgumentBinding &uniform = Function::current()->get_uniform_var(Type::of<decltype(*this)>(),
                                                                               Variable::Tag::BUFFER,
                                                                               memory_block());
-        make_expr<Buffer<T>>(uniform.expression()).write(OC_FORWARD(index), OC_FORWARD(elm));
+        make_expr<Buffer<T>>(uniform.expression()).write_and_check(OC_FORWARD(index), OC_FORWARD(elm), static_cast<uint>(_size));
     }
 
     template<typename Index>

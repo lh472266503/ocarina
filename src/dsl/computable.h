@@ -80,6 +80,13 @@ struct EnableReadAndWrite {
         return eval<element_type>(expr);
     }
 
+    template<typename Index, typename Size>
+    requires concepts::all_integral<expr_value_t<Index>,
+                                    expr_value_t<Size>>
+    auto read_and_check(Index &&index, Size size) const noexcept {
+        return read(OC_FORWARD(index));
+    }
+
     template<typename Index, typename Val>
     requires concepts::integral<expr_value_t<Index>> && concepts::is_same_v<element_type, expr_value_t<Val>>
     void write(Index &&index, Val &&elm) {
@@ -87,6 +94,13 @@ struct EnableReadAndWrite {
                                                                    static_cast<const T *>(this)->expression(),
                                                                    OC_EXPR(index));
         assign(expr, OC_FORWARD(elm));
+    }
+
+    template<typename Index, typename Val, typename Size>
+    requires concepts::all_integral<expr_value_t<Index>, expr_value_t<Size>> &&
+             concepts::is_same_v<element_type, expr_value_t<Val>>
+    void write_and_check(Index &&index, Val &&elm, Size size) {
+        write(OC_FORWARD(index), OC_FORWARD(elm));
     }
 };
 
