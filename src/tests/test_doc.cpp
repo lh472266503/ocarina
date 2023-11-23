@@ -71,8 +71,8 @@ void test_compute_shader(Device &device, Stream &stream) {
         Var t = triangle.read(dispatch_id());
         $info("triple  index {} :  {} {} {}",dispatch_id(), t.i, t.j, t.k);
 
-        $info("vert from buffer {} {} {}", vert.read(dispatch_id()));
-        $info("vert from resource array {} {} {}", resource_array.buffer<float3>(v_idx).read(dispatch_id()));
+        $info("vert from capture {} {} {}", vert.read(dispatch_id()));
+        $info("vert from capture resource array {} {} {}", resource_array.buffer<float3>(v_idx).read(dispatch_id()));
         $info("vert from ra {} {} {}", ra.buffer<float3>(v_idx).read(dispatch_id()));
 
         $debugger_execute {
@@ -80,10 +80,13 @@ void test_compute_shader(Device &device, Stream &stream) {
         };
     };
     Triple triple1{1,2,3};
+
+    // set debug range
     Debugger::instance().set_lower(make_uint2(0));
+    Debugger::instance().set_upper(make_uint2(1));
     auto shader = device.compile(kernel, "test desc");
     stream << Debugger::instance().upload();
-    stream << shader(triple1, tri, resource_array).dispatch(6)
+    stream << shader(triple1, tri, resource_array).dispatch(2,3)
            << Printer::instance().retrieve()
            << synchronize() << commit();
 }
