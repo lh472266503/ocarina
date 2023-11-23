@@ -76,11 +76,13 @@ void test_compute_shader(Device &device, Stream &stream) {
         $info("vert from ra {} {} {}", ra.buffer<float3>(v_idx).read(dispatch_id()));
 
         $debugger_execute {
-            $info("vert ----------- from buffer {} {} {}", vert.read(dispatch_id()));
+            $info_with_location("vert ----------- from buffer {} {} {}", vert.read(dispatch_id()));
         };
     };
     Triple triple1{1,2,3};
+    Debugger::instance().set_lower(make_uint2(0));
     auto shader = device.compile(kernel, "test desc");
+    stream << Debugger::instance().upload();
     stream << shader(triple1, tri, resource_array).dispatch(6)
            << Printer::instance().retrieve()
            << synchronize() << commit();
