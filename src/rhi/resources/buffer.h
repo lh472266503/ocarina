@@ -198,10 +198,7 @@ public:
         const ArgumentBinding &uniform = Function::current()->get_uniform_var(Type::of<decltype(*this)>(),
                                                                               Variable::Tag::BUFFER,
                                                                               memory_block());
-        const SubscriptExpr *expr = Function::current()->subscript(Type::of<element_type>(),
-                                                                   uniform.expression(),
-                                                                   OC_EXPR(index));
-        detail::assign(expr, OC_FORWARD(elm));
+        make_expr<Buffer<T>>(uniform.expression()).write(OC_FORWARD(index), OC_FORWARD(elm));
     }
 
     template<typename Index>
