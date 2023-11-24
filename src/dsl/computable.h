@@ -20,10 +20,8 @@ namespace detail {
 template<typename Lhs, typename Rhs>
 inline void assign(Lhs &&lhs, Rhs &&rhs) noexcept;// implement in stmt_builder.h
 
-template<typename Index, typename Size>
-requires is_all_integral_expr_v<Index, Size>
-[[nodiscard]] Var<bool> over_boundary(Index &&index, Size &&size, const string &desc,
-                                      const string &tb) noexcept;// implement in computable.inl
+[[nodiscard]] Var<bool> over_boundary(Var<int> index, Var<int> size, const string &desc,
+                                      const string &tb) noexcept;// implement in dsl.cpp
 
 }// namespace detail
 
@@ -88,7 +86,8 @@ struct EnableReadAndWrite {
 
     template<typename Index, typename Size>
     requires is_all_integral_expr_v<Index, Size>
-    auto read_and_check(Index &&index, Size size) const noexcept {
+    auto read_and_check(Index &&index, Size size, const string &desc) const noexcept {
+        over_boundary(index, size, desc, "");
         return read(OC_FORWARD(index));
     }
 

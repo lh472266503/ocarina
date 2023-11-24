@@ -28,13 +28,4 @@ const noexcept {
     return eval<Hit>(expr);
 }
 
-template<typename Index, typename Size>
-inline Var<bool> over_boundary(Index &&index, Size &&size, const string &desc, const string &tb) noexcept {
-    Bool ret = false;
-    if_(index > size, [&] {
-        ret = true;
-    });
-    return ret;
-}
-
 }// namespace ocarina::detail

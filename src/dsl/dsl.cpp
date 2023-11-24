@@ -22,4 +22,16 @@ void Env::destroy_instance() noexcept {
     }
 }
 
+namespace detail {
+[[nodiscard]] Var<bool> over_boundary(Var<int> index, Var<int> size, const string &desc,
+                                      const string &tb) noexcept {
+    Bool ret = false;
+    if_(index > size, [&] {
+        $warn(desc + " {}", index);
+        ret = true;
+    });
+    return ret;
+}
+}// namespace detail
+
 }// namespace ocarina

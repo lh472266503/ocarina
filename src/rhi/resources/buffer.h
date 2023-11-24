@@ -189,7 +189,7 @@ public:
         const ArgumentBinding &uniform = Function::current()->get_uniform_var(Type::of<decltype(*this)>(),
                                                                               Variable::Tag::BUFFER,
                                                                               memory_block());
-        return make_expr<Buffer<T>>(uniform.expression()).read_and_check(OC_FORWARD(index), static_cast<uint>(_size));
+        return make_expr<Buffer<T>>(uniform.expression()).read_and_check(OC_FORWARD(index), static_cast<uint>(_size), typeid(*this).name());
     }
 
     template<typename... Index>
