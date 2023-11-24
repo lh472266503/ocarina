@@ -91,10 +91,8 @@ void Codegen::_emit_func_name(const Function &f) noexcept {
 }
 
 void Codegen::_emit_struct_name(const Type *type) noexcept {
-    _emit_comment(ocarina::format("{} : size = {}", type->cname(), type->size()));
-    _emit_newline();
-    _emit_indent();
     current_scratch() << detail::struct_name(type->hash());
+    _emit_comment(ocarina::format("{} : size = {}", type->cname(), type->size()));
 }
 
 void Codegen::_emit_member_name(int index) noexcept {

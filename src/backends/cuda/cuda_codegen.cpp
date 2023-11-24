@@ -178,7 +178,8 @@ void CUDACodegen::visit(const MemberExpr *expr) noexcept {
 }
 
 void CUDACodegen::_emit_raytracing_param(const Function &f) noexcept {
-    current_scratch() << "struct Params {\n";
+    current_scratch() << "struct Params {";
+    _emit_newline();
     indent_inc();
     size_t offset = 0;
     ocarina::vector<MemoryBlock> blocks;
@@ -189,7 +190,8 @@ void CUDACodegen::_emit_raytracing_param(const Function &f) noexcept {
         size_t alignment = CUDADevice::alignment(arg.type());
         blocks.emplace_back(nullptr, size, alignment, CUDADevice::max_member_size(arg.type()));
         offset = mem_offset(offset, alignment);
-        current_scratch() << ocarina::format("/* {} bytes */\n", size);
+        current_scratch() << ocarina::format("/* {} bytes */", size);
+        _emit_newline();
         _emit_indent();
         _emit_variable_define(arg);
         offset += size;
@@ -206,9 +208,12 @@ void CUDACodegen::_emit_raytracing_param(const Function &f) noexcept {
         func(arg);
     });
     indent_dec();
-    current_scratch() << "};\n";
-    current_scratch() << ocarina::format("static_assert(sizeof(Params) == {});\n", structure_size(blocks));
-    current_scratch() << "extern \"C\" __constant__ Params params;\n";
+    current_scratch() << "};";
+    _emit_newline();
+    current_scratch() << ocarina::format("static_assert(sizeof(Params) == {});", structure_size(blocks));
+    _emit_newline();
+    current_scratch() << "extern \"C\" __constant__ Params params;";
+    _emit_newline();
 }
 
 void CUDACodegen::_emit_function(const Function &f) noexcept {
@@ -225,24 +230,29 @@ void CUDACodegen::_emit_function(const Function &f) noexcept {
 void CUDACodegen::_emit_builtin_vars_define(const Function &f) noexcept {
     const char *str = "oc_uint3 d_idx = oc_make_uint3(blockIdx.x * blockDim.x + threadIdx.x,"
                       "blockIdx.y * blockDim.y + threadIdx.y,"
-                      "blockIdx.z * blockDim.z + threadIdx.z);\n";
+                      "blockIdx.z * blockDim.z + threadIdx.z);";
+    _emit_newline();
     if (f.is_general_kernel()) {
         _emit_indent();
         current_scratch() << str;
         _emit_indent();
-        current_scratch() << "if (oc_any(d_idx >= d_dim)) { return; }\n";
+        current_scratch() << "if (oc_any(d_idx >= d_dim)) { return; }";
+        _emit_newline();
     } else if (f.is_raytracing_kernel()) {
         _emit_indent();
-        current_scratch() << "oc_uint3 d_idx = getLaunchIndex();\n";
+        current_scratch() << "oc_uint3 d_idx = getLaunchIndex();";
+        _emit_newline();
         _emit_indent();
-        current_scratch() << "oc_uint3 d_dim = getLaunchDim();\n";
+        current_scratch() << "oc_uint3 d_dim = getLaunchDim();";
+        _emit_newline();
         for (const Variable &arg : f.arguments()) {
             _emit_indent();
             current_scratch() << "const auto &";
             _emit_variable_name(arg);
             current_scratch() << " = params.";
             _emit_variable_name(arg);
-            current_scratch() << ";\n";
+            current_scratch() << ";";
+            _emit_newline();
         }
 
         f.for_each_uniform_var([&](const ArgumentBinding &uniform) {
@@ -251,7 +261,8 @@ void CUDACodegen::_emit_builtin_vars_define(const Function &f) noexcept {
             _emit_variable_name(uniform.expression()->variable());
             current_scratch() << " = params.";
             _emit_variable_name(uniform.expression()->variable());
-            current_scratch() << ";\n";
+            current_scratch() << ";";
+            _emit_newline();
         });
     } else if (f.is_callable()) {
         _emit_indent();

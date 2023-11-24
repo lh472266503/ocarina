@@ -50,8 +50,7 @@ ocarina::string CUDACompiler::compile(const string &cu, const string &fn, int sm
 #endif
         "-extra-device-vectorization",
         "-dw",
-        "-w"
-    };
+        "-w"};
     ocarina::vector<string> includes;
     if (_function.is_raytracing()) {
         includes.push_back(ocarina::format("-I {}", optix_include));
@@ -59,7 +58,7 @@ ocarina::string CUDACompiler::compile(const string &cu, const string &fn, int sm
         header_names.push_back("optix_device_header.h");
         header_sources.push_back(optix_device_header);
     }
-    for (const auto & header_name: header_names) {
+    for (const auto &header_name : header_names) {
         includes.push_back(ocarina::format("-include={}", header_name));
         compile_option.push_back(includes.back().c_str());
     }
@@ -98,13 +97,13 @@ ocarina::string CUDACompiler::obtain_ptx(int sm) const noexcept {
             CUDACodegen codegen{Env::code_obfuscation()};
             codegen.emit(_function);
             const ocarina::string &cu = codegen.scratch().c_str();
-//            cout << cu << endl;
+            //            cout << cu << endl;
             context->write_global_cache(cu_fn, cu);
             ptx = compile(cu, cu_fn, 75);
             context->write_global_cache(ptx_fn, ptx);
         } else {
             const ocarina::string &cu = context->read_global_cache(cu_fn);
-//            cout << cu << endl;
+            //            cout << cu << endl;
             ptx = compile(cu, cu_fn, sm);
             context->write_global_cache(ptx_fn, ptx);
         }

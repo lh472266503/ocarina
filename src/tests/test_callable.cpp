@@ -122,7 +122,7 @@ int main(int argc, char *argv[]) {
 
     Stream stream = device.create_stream();
 
-    CppCodegen codegen;
+    CppCodegen codegen{false};
     decltype(auto) f = *callable.function();
     codegen.emit(f);
     cout << codegen.scratch().c_str();
