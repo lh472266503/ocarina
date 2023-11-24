@@ -547,24 +547,42 @@ struct Computable<ResourceArray> {
 public:
     template<typename T, typename Index>
     requires concepts::integral<expr_value_t<Index>>
-    [[nodiscard]] ResourceArrayBuffer<T> buffer(Index index, uint buffer_num = 0) const noexcept {
+    [[nodiscard]] ResourceArrayBuffer<T> buffer(Index index, const string &desc = "",
+                                                uint buffer_num = 0) const noexcept {
         if (buffer_num != 0) {
-
+            if constexpr (is_integral_v<Index>) {
+                OC_ASSERT(index <= buffer_num);
+            } else {
+                index = correct_index(index, buffer_num, desc, traceback_string(1));
+            }
         }
         return ResourceArrayBuffer<T>(expression(), OC_EXPR(index));
     }
 
     template<typename Index>
     requires concepts::integral<expr_value_t<Index>>
-    [[nodiscard]] ResourceArrayTexture tex(Index index, uint tex_num = 0) const noexcept {
+    [[nodiscard]] ResourceArrayTexture tex(Index index, const string &desc = "",
+                                           uint tex_num = 0) const noexcept {
+        if (tex_num != 0) {
+            if constexpr (is_integral_v<Index>) {
+                OC_ASSERT(index <= tex_num);
+            } else {
+                index = correct_index(index, tex_num, desc, traceback_string(1));
+            }
+        }
         return ResourceArrayTexture(expression(), OC_EXPR(index));
     }
 
     template<typename Index>
     requires concepts::integral<expr_value_t<Index>>
-    [[nodiscard]] ResourceArrayByteBuffer byte_buffer(Index index, uint buffer_num = 0) const noexcept {
+    [[nodiscard]] ResourceArrayByteBuffer byte_buffer(Index index, const string &desc = "",
+                                                      uint buffer_num = 0) const noexcept {
         if (buffer_num != 0) {
-
+            if constexpr (is_integral_v<Index>) {
+                OC_ASSERT(index <= buffer_num);
+            } else {
+                index = correct_index(index, buffer_num, desc, traceback_string(1));
+            }
         }
         return ResourceArrayByteBuffer(expression(), OC_EXPR(index));
     }

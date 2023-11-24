@@ -91,19 +91,19 @@ public:
     template<typename Index>
     requires is_integral_expr_v<Index>
     [[nodiscard]] ResourceArrayTexture tex(Index &&index) const noexcept {
-        return make_expr<ResourceArray>(expression()).tex(OC_FORWARD(index));
+        return make_expr<ResourceArray>(expression()).tex(OC_FORWARD(index), typeid(*this).name(), texture_num());
     }
 
     template<typename T, typename Index>
     requires is_integral_expr_v<Index>
     [[nodiscard]] ResourceArrayBuffer<T> buffer(Index &&index) const noexcept {
-        return make_expr<ResourceArray>(expression()).buffer<T>(OC_FORWARD(index));
+        return make_expr<ResourceArray>(expression()).buffer<T>(OC_FORWARD(index), typeid(*this).name(), buffer_num());
     }
 
     template<typename Index>
     requires is_integral_expr_v<Index>
     [[nodiscard]] ResourceArrayByteBuffer byte_buffer(Index &&index) const noexcept {
-        return make_expr<ResourceArray>(expression()).byte_buffer(OC_FORWARD(index));
+        return make_expr<ResourceArray>(expression()).byte_buffer(OC_FORWARD(index), typeid(*this).name(), buffer_num());
     }
 
     [[nodiscard]] Var<ResourceArray> var() const noexcept {

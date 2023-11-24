@@ -82,7 +82,7 @@ void test_compute_shader(Device &device, Stream &stream) {
         $info("triple  index {} : i = {}, j = {}, k = {},  sum: {} ",dispatch_id(), t.i, t.j, t.k, t->sum());
 
         $info("vert from capture {} {} {}", vert.read(dispatch_id()));
-        $info("vert from capture resource array {} {} {}", resource_array.buffer<float3>(v_idx).read(dispatch_id()));
+        $info("vert from capture resource array {} {} {}", resource_array.buffer<float3>(dispatch_id()).read(dispatch_id()));
         $info("vert from ra {} {} {}", ra.buffer<float3>(v_idx).read(dispatch_id()));
 
         $switch(dispatch_id()) {
@@ -136,7 +136,7 @@ void test_compute_shader(Device &device, Stream &stream) {
     Env::debugger().set_upper(make_uint2(1));
     auto shader = device.compile(kernel, "test desc");
     stream << Env::debugger().upload();
-    stream << shader(triple1, tri, resource_array).dispatch(3,10)
+    stream << shader(triple1, tri, resource_array).dispatch(3,2)
            /// explict retrieve log
            << Env::printer().retrieve()
            << synchronize() << commit();
