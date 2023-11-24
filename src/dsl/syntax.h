@@ -81,4 +81,16 @@
         $err_with_location(string(fmt), __VA_ARGS__); \
     };
 
-#define $debugger_execute Env::debugger().set_description("debugger_execute " + $source_location) *[&]() noexcept
+#define $condition_execute Env::debugger().set_description("condition execute " + $source_location) *[&]() noexcept
+
+#define $condition_debug(...) $condition_execute { $debug(__VA_ARGS__); }
+#define $condition_debug_with_location(...) $condition_execute { $debug_with_location(__VA_ARGS__); }
+
+#define $condition_info(...) $condition_execute { $info(__VA_ARGS__); }
+#define $condition_info_with_location(...) $condition_execute { $info_with_location(__VA_ARGS__); }
+
+#define $condition_warn(...) $condition_execute { $warn(__VA_ARGS__); }
+#define $condition_warn_with_location(...) $condition_execute { $warn_with_location(__VA_ARGS__); }
+
+#define $condition_err(...) $condition_execute { $err(__VA_ARGS__); }
+#define $condition_err_with_location(...) $condition_execute { $err_with_location(__VA_ARGS__); }

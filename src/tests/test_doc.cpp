@@ -122,7 +122,7 @@ void test_compute_shader(Device &device, Stream &stream) {
 
         $debug_if(dispatch_id() == 0, "{} ", step);
         /// execute if thread idx in debug range
-        $debugger_execute {
+        $condition_execute {
             Float f = 2.f;
             Float a = 6.f;
             $warn_with_location("this thread idx is in debug range {} {} {},  f * a = {} ",
