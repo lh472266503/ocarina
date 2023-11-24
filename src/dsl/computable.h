@@ -24,6 +24,8 @@ inline void assign(Lhs &&lhs, Rhs &&rhs) noexcept;// implement in stmt_builder.h
 [[nodiscard]] Var<uint> correct_index(Var<uint> index, Var<uint> size, const string &desc,
                                       const string &tb) noexcept;// implement in dsl.cpp
 
+[[nodiscard]] Var<uint> divide(Var<uint> lhs, Var<uint> rhs) noexcept;// implement in dsl.cpp
+
 }// namespace detail
 
 template<typename T>
@@ -455,7 +457,10 @@ public:
 
     template<typename Index>
     requires concepts::integral<expr_value_t<Index>>
-    [[nodiscard]] Var<T> read(Index &&index) const noexcept {
+    [[nodiscard]] Var<T> read(Index index) const noexcept {
+        if constexpr (is_dsl_v<Index>) {
+            index = detail::correct_index(index, size(), typeid(*this).name(), traceback_string());
+        }
         const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::RESOURCE_ARRAY_BUFFER_READ,
                                                                  {_resource_array, _index, OC_EXPR(index)});
         return eval<T>(expr);
@@ -471,12 +476,15 @@ public:
     template<typename Size = uint>
     [[nodiscard]] Var<Size> size() const noexcept {
         Var<Size> ret = size_in_byte();
-        return ret / static_cast<uint>(sizeof(T));
+        return detail::divide(ret, static_cast<uint>(sizeof(T)));
     }
 
     template<typename Index, typename Val>
     requires concepts::integral<expr_value_t<Index>> && concepts::is_same_v<T, expr_value_t<Val>>
-    void write(Index &&index, Val &&elm) {
+    void write(Index index, Val &&elm) {
+        if constexpr (is_dsl_v<Index>) {
+            index = detail::correct_index(index, size(), typeid(*this).name(), traceback_string());
+        }
         const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::RESOURCE_ARRAY_BUFFER_WRITE,
                                                                  {_resource_array, _index, OC_EXPR(index), OC_EXPR(elm)});
         Function::current()->expr_statement(expr);

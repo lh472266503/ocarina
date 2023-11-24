@@ -34,6 +34,11 @@ namespace detail {
     }
     return index;
 }
+
+[[nodiscard]] Var<uint> divide(Var<uint> lhs, Var<uint> rhs) noexcept {
+    return lhs / rhs;
+}
+
 }// namespace detail
 
 }// namespace ocarina
