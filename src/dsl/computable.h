@@ -87,7 +87,7 @@ struct EnableReadAndWrite {
 
     template<typename Index>
     requires is_all_integral_expr_v<Index>
-    auto read_and_check(Index &&index, uint size, const string &desc) const noexcept {
+    auto read_and_check(Index index, uint size, const string &desc) const noexcept {
         if constexpr (is_integral_v<Index>) {
             OC_ASSERT(index <= size);
             return read(OC_FORWARD(index));
