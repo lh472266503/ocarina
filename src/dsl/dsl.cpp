@@ -28,8 +28,9 @@ namespace detail {
     if (Env::valid_check()) {
         if_(index >= size, [&] {
             string tips = ocarina::format("buffer access over boundary : {}, ", desc.c_str());
-            $warn_with_location(tips + "index = {}, size = {}, correct index to 0. \n" + tb, index, size);
+            $warn_with_location(tips + "index = {}, size = {}, current thread will be terminated \n" + tb, index, size);
             index = 0;
+            $return();
         });
     }
     return index;
