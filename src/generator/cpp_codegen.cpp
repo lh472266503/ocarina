@@ -458,6 +458,9 @@ void CppCodegen::_emit_body(const Function &f) noexcept {
 }
 
 void CppCodegen::_emit_comment(const std::string &content) noexcept {
+    if (_obfuscation) {
+        return;
+    }
     current_scratch() << "/* " << content << " */";
 }
 

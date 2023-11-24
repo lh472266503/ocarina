@@ -12,6 +12,7 @@
 #include "cuda_codegen.h"
 #include "rhi/context.h"
 #include "core/util.h"
+#include "dsl/dsl.h"
 
 namespace ocarina {
 
@@ -94,7 +95,7 @@ ocarina::string CUDACompiler::obtain_ptx(int sm) const noexcept {
     Context *context = _device->context();
     if (!context->is_exist_cache(ptx_fn)) {
         if (!context->is_exist_cache(cu_fn)) {
-            CUDACodegen codegen;
+            CUDACodegen codegen{Env::code_obfuscation()};
             codegen.emit(_function);
             const ocarina::string &cu = codegen.scratch().c_str();
 //            cout << cu << endl;

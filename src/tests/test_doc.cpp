@@ -158,6 +158,9 @@ int main(int argc, char *argv[]) {
     Stream stream = device.create_stream();
     Env::printer().init(device);
     Env::debugger().init(device);
+    
+//    Env::set_code_obfuscation(true);
+//    Env::set_valid_check(false);
 
     /// create rtx context if need
     device.init_rtx();

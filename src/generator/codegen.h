@@ -53,6 +53,9 @@ private:
     ocarina::vector<const Function *> _func_stack;
 
 protected:
+    bool _obfuscation{false};
+
+protected:
     void indent_inc() noexcept { _indent += 1; }
     void indent_dec() noexcept { _indent -= 1; }
     void push(Scratch &scratch) noexcept { _scratch_stack.push_back(&scratch); }
@@ -83,7 +86,7 @@ protected:
 
     public:
         Guard(Codegen *codegen, T &val)
-        : _codegen(codegen), _val(val) {
+            : _codegen(codegen), _val(val) {
             _codegen->push(_val);
         }
         ~Guard() {
@@ -104,7 +107,7 @@ protected:
     virtual void _emit_member_name(int index) noexcept;
 
 public:
-    Codegen() { push(_scratch); }
+    Codegen(bool obfuscation) : _obfuscation(obfuscation) { push(_scratch); }
     explicit Codegen(Scratch &scratch)
         : _scratch(scratch) {
         push(_scratch);

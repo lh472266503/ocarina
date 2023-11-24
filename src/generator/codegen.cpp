@@ -68,9 +68,15 @@ void Codegen::Scratch::replace(string_view substr, string_view new_str) noexcept
 }
 
 void Codegen::_emit_newline() noexcept {
+    if (_obfuscation) {
+        return;
+    }
     current_scratch() << "\n";
 }
 void Codegen::_emit_indent() noexcept {
+    if (_obfuscation) {
+        return;
+    }
     static constexpr auto indent_str = "    ";
     for (int i = 0; i < _indent; ++i) {
         current_scratch() << indent_str;

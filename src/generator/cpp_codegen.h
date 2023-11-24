@@ -64,8 +64,8 @@ protected:
     virtual void _emit_statements(ocarina::span<const Statement *const> stmts) noexcept;
 
 public:
+    CppCodegen(bool obfuscation): Codegen(obfuscation) {}
     void emit(const Function &func) noexcept override;
-
 };
 
 }// namespace ocarina
