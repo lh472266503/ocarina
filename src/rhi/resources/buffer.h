@@ -185,14 +185,18 @@ public:
     template<typename Index>
     requires concepts::all_integral<expr_value_t<Index>>
     OC_NODISCARD auto
-    read(Index &&index) const {
+    read(Index &&index, bool check_boundary = true) const {
         const ArgumentBinding &uniform = Function::current()->get_uniform_var(Type::of<decltype(*this)>(),
                                                                               Variable::Tag::BUFFER,
                                                                               memory_block());
         auto expr = make_expr<Buffer<T>>(uniform.expression());
-        return expr.read_and_check(OC_FORWARD(index),
-                                   static_cast<uint>(_size),
-                                   typeid(*this).name());
+        if (check_boundary) {
+            return expr.read_and_check(OC_FORWARD(index),
+                                       static_cast<uint>(_size),
+                                       typeid(*this).name());
+        } else {
+            return expr.read(OC_FORWARD(index));
+        }
     }
 
     template<typename... Index>
@@ -207,13 +211,17 @@ public:
 
     template<typename Index, typename Val>
     requires concepts::integral<expr_value_t<Index>> && concepts::is_same_v<element_type, expr_value_t<Val>>
-    void write(Index &&index, Val &&elm) {
+    void write(Index &&index, Val &&elm, bool check_boundary = true) {
         const ArgumentBinding &uniform = Function::current()->get_uniform_var(Type::of<decltype(*this)>(),
                                                                               Variable::Tag::BUFFER,
                                                                               memory_block());
         auto expr = make_expr<Buffer<T>>(uniform.expression());
-        expr.write_and_check(OC_FORWARD(index), OC_FORWARD(elm),
-                             static_cast<uint>(_size), typeid(*this).name());
+        if (check_boundary) {
+            expr.write_and_check(OC_FORWARD(index), OC_FORWARD(elm),
+                                 static_cast<uint>(_size), typeid(*this).name());
+        } else {
+            expr.write(OC_FORWARD(index), OC_FORWARD(elm));
+        }
     }
 
     template<typename Index>

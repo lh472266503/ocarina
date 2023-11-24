@@ -133,9 +133,9 @@ void Printer::_log_to_buffer(Uint offset, uint index, const Current &cur, const 
     using type = expr_value_t<Current>;
     if constexpr (is_dsl_v<Current>) {
         if constexpr (is_integral_v<type> || is_boolean_v<type>) {
-            _buffer.write(offset + index, cast<uint>(cur));
+            _buffer.write(offset + index, cast<uint>(cur), false);
         } else if constexpr (is_floating_point_v<type>) {
-            _buffer.write(offset + index, as<uint>(cur));
+            _buffer.write(offset + index, as<uint>(cur), false);
         } else {
             static_assert(always_false_v<type>, "unsupported type for printing in kernel.");
         }
@@ -168,7 +168,7 @@ void Printer::_log(spdlog::level::level_enum level, const string &fmt, const Arg
     Uint offset = _buffer.atomic(last).fetch_add(count + 1);
     uint item_index = _items.size();
     if_(offset < last, [&] {
-        _buffer.write(offset, item_index);
+        _buffer.write(offset, item_index, false);
     });
     if_(offset + count < last, [&] {
         _log_to_buffer(offset + 1, 0, OC_FORWARD(args)...);
