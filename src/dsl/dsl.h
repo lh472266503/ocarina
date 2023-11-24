@@ -36,7 +36,7 @@ private:
     Debugger _debugger;
 
     /// Check if the array or buffer is over boundary
-    bool _valid_check{false};
+    bool _valid_check{true};
     bool _code_obfuscation{false};
 
 public:

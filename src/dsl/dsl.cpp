@@ -25,11 +25,13 @@ void Env::destroy_instance() noexcept {
 namespace detail {
 [[nodiscard]] Var<uint> correct_index(Var<uint> index, Var<uint> size, const string &desc,
                                       const string &tb) noexcept {
-    if_(index >= size, [&] {
-        string tips = ocarina::format("buffer access over boundary : {}, ", desc.c_str());
-        $warn_with_location(tips + "index = {}, size = {}\n" + tb, index, size);
-        index = 0;
-    });
+    if (Env::valid_check()) {
+        if_(index >= size, [&] {
+            string tips = ocarina::format("buffer access over boundary : {}, ", desc.c_str());
+            $warn_with_location(tips + "index = {}, size = {}, correct index to 0. \n" + tb, index, size);
+            index = 0;
+        });
+    }
     return index;
 }
 }// namespace detail

@@ -106,11 +106,17 @@ struct EnableReadAndWrite {
         assign(expr, OC_FORWARD(elm));
     }
 
-    template<typename Index, typename Val, typename Size>
-    requires is_all_integral_expr_v<Index, Size> &&
+    template<typename Index, typename Val>
+    requires is_all_integral_expr_v<Index> &&
              concepts::is_same_v<element_type, expr_value_t<Val>>
-    void write_and_check(Index &&index, Val &&elm, Size size) {
-        write(OC_FORWARD(index), OC_FORWARD(elm));
+    void write_and_check(Index &&index, Val &&elm, uint size, const string &desc) {
+        if constexpr (is_integral_v<Index>) {
+            OC_ASSERT(index <= size);
+            write(OC_FORWARD(index), OC_FORWARD(elm));
+        } else {
+            index = correct_index(OC_FORWARD(index), size, desc, traceback_string(1));
+            write(OC_FORWARD(index), OC_FORWARD(elm));
+        }
     }
 };
 
