@@ -10,6 +10,7 @@
 #include "type_trait.h"
 #include "ast/function.h"
 #include <utility>
+#include "core/platform.h"
 
 namespace ocarina {
 
@@ -20,7 +21,7 @@ namespace detail {
 template<typename Lhs, typename Rhs>
 inline void assign(Lhs &&lhs, Rhs &&rhs) noexcept;// implement in stmt_builder.h
 
-[[nodiscard]] Var<bool> over_boundary(Var<int> index, Var<int> size, const string &desc,
+[[nodiscard]] Var<uint> correct_index(Var<uint> index, Var<uint> size, const string &desc,
                                       const string &tb) noexcept;// implement in dsl.cpp
 
 }// namespace detail
@@ -84,11 +85,16 @@ struct EnableReadAndWrite {
         return eval<element_type>(expr);
     }
 
-    template<typename Index, typename Size>
-    requires is_all_integral_expr_v<Index, Size>
-    auto read_and_check(Index &&index, Size size, const string &desc) const noexcept {
-        over_boundary(index, size, desc, "");
-        return read(OC_FORWARD(index));
+    template<typename Index>
+    requires is_all_integral_expr_v<Index>
+    auto read_and_check(Index &&index, uint size, const string &desc) const noexcept {
+        if constexpr (is_integral_v<Index>) {
+            OC_ASSERT(index <= size);
+            return read(OC_FORWARD(index));
+        } else {
+            index = correct_index(OC_FORWARD(index), size, desc, traceback_string(1));
+            return read(index);
+        }
     }
 
     template<typename Index, typename Val>

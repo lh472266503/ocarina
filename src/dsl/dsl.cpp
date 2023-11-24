@@ -23,14 +23,14 @@ void Env::destroy_instance() noexcept {
 }
 
 namespace detail {
-[[nodiscard]] Var<bool> over_boundary(Var<int> index, Var<int> size, const string &desc,
+[[nodiscard]] Var<uint> correct_index(Var<uint> index, Var<uint> size, const string &desc,
                                       const string &tb) noexcept {
-    Bool ret = false;
-    if_(index > size, [&] {
-        $warn(desc + " {}", index);
-        ret = true;
+    if_(index >= size, [&] {
+        string tips = ocarina::format("buffer access over boundary : {}, ", desc.c_str());
+        $warn_with_location(tips + "index = {}, size = {}\n" + tb, index, size);
+        index = 0;
     });
-    return ret;
+    return index;
 }
 }// namespace detail
 

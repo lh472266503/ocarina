@@ -136,7 +136,7 @@ void test_compute_shader(Device &device, Stream &stream) {
     Env::debugger().set_upper(make_uint2(1));
     auto shader = device.compile(kernel, "test desc");
     stream << Env::debugger().upload();
-    stream << shader(triple1, tri, resource_array).dispatch(2,30)
+    stream << shader(triple1, tri, resource_array).dispatch(3,10)
            /// explict retrieve log
            << Env::printer().retrieve()
            << synchronize() << commit();
