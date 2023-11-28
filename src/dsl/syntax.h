@@ -35,7 +35,7 @@
 
 #define $return(...) ::ocarina::return_(__VA_ARGS__)
 
-#define $scope ::ocarina::detail::ScopeStmtBuilder($source_location) + [&]() noexcept
+#define $scope ::ocarina::detail::ScopeStmtBuilder("scope " + $source_location) + [&]() noexcept
 
 #define $debug(...) Env::printer().set_description("debug " + $source_location).debug(__VA_ARGS__);
 #define $info(...) Env::printer().set_description("info " + $source_location).info(__VA_ARGS__);
