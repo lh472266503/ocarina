@@ -167,8 +167,9 @@ public:
     void add_used_structure(const Type *type) noexcept {
         _used_struct.add(type);
     }
-    const CapturedVar &get_captured_var(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept;
+    [[nodiscard]] const CapturedVar &get_captured_var(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept;
     [[nodiscard]] auto &captured_vars() const noexcept { return _captured_vars; }
+    [[nodiscard]] const CapturedVar *get_captured_var_by_handle(const void *handle) const noexcept;
     template<typename Visitor>
     void for_each_captured_var(Visitor &&visitor) const noexcept {
         for (const CapturedVar &var : _captured_vars) {

@@ -192,6 +192,17 @@ const CapturedVar &Function::get_captured_var(const Type *type, Variable::Tag ta
     return _captured_vars.back();
 }
 
+const CapturedVar *Function::get_captured_var_by_handle(const void *handle) const noexcept {
+    const CapturedVar *var = nullptr;
+    for (const CapturedVar &v : _captured_vars) {
+        if (v.handle_ptr() == handle) {
+            var = &v;
+            break;
+        }
+    }
+    return var;
+}
+
 ScopeStmt *Function::scope() noexcept {
     return _create_statement<ScopeStmt>(false);
 }

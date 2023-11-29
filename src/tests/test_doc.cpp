@@ -161,8 +161,8 @@ void test_lambda(Device &device, Stream &stream) {
         Uint end = 10;
         $scope{
             $for(i, begin, end) {
-                Float3 elm =  vert.read(i);
-                $info("begin end for statement dispatch_idx is {} {} {}, {} ", elm, cb(elm.x, elm.y));
+//                Float3 elm =  vert.read(i);
+                $info("begin end for statement dispatch_idx is , {} ", cb(1, 2));
             };
         };
     };
