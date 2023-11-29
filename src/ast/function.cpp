@@ -179,7 +179,6 @@ const CallExpr *Function::call_builtin(const Type *type, CallOp op,
 }
 
 const CapturedVar &Function::get_captured_var(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept {
-    OC_ASSERT(is_kernel());
     if (auto iter = std::find_if(_captured_vars.begin(),
                                  _captured_vars.end(),
                                  [&](auto v) {

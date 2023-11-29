@@ -11,7 +11,7 @@ namespace ocarina {
 void CUDACodegen::visit(const CallExpr *expr) noexcept {
 #define OC_GEN_FUNC_NAME(func_name) current_scratch() << TYPE_PREFIX #func_name
     switch (expr->call_op()) {
-        case CallOp::CUSTOM: _emit_func_name(*expr->function()); break;
+        case CallOp::CUSTOM: CppCodegen::visit(expr); return;
         case CallOp::ALL: OC_GEN_FUNC_NAME(all); break;
         case CallOp::ANY: OC_GEN_FUNC_NAME(any); break;
         case CallOp::NONE: OC_GEN_FUNC_NAME(none); break;
@@ -265,9 +265,6 @@ void CUDACodegen::_emit_builtin_vars_define(const Function &f) noexcept {
             _emit_newline();
         });
     } else if (f.is_callable()) {
-        _emit_indent();
-        current_scratch() << str;
-        _emit_newline();
     }
     CppCodegen::_emit_builtin_vars_define(f);
 }
@@ -315,8 +312,8 @@ void CUDACodegen::_emit_arguments(const Function &f) noexcept {
             _emit_variable_define(v);
             current_scratch() << ",";
         }
-        for (const auto &uniform : f.captured_vars()) {
-            _emit_variable_define(uniform.expression()->variable());
+        for (const auto &var : f.captured_vars()) {
+            _emit_variable_define(var.expression()->variable());
             current_scratch() << ",";
         }
         Variable dispatch_dim(Type::of<uint3>(), Variable::Tag::LOCAL, -1, "d_dim");
@@ -326,9 +323,15 @@ void CUDACodegen::_emit_arguments(const Function &f) noexcept {
             _emit_variable_define(v);
             current_scratch() << ",";
         }
-        if (f.arguments().size() + f.captured_vars().size() > 0) {
-            current_scratch().pop_back();
+        for (const auto &var : f.captured_vars()) {
+            _emit_variable_define(var.expression()->variable());
+            current_scratch() << ",";
         }
+        Variable dispatch_dim(Type::of<uint3>(), Variable::Tag::LOCAL, -1, "d_dim");
+        _emit_variable_define(dispatch_dim);
+        current_scratch() << ",";
+        Variable dispatch_idx(Type::of<uint3>(), Variable::Tag::LOCAL, -1, "d_idx");
+        _emit_variable_define(dispatch_idx);
     }
     current_scratch() << ")";
 }

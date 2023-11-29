@@ -287,9 +287,7 @@ void CppCodegen::visit(const CallExpr *expr) noexcept {
                 arg->accept(*this);
                 current_scratch() << ",";
             }
-            if (!expr->arguments().empty()) {
-                current_scratch().pop_back();
-            }
+            current_scratch() << "d_dim, d_idx";
             current_scratch() << ")";
             break;
         }
@@ -470,8 +468,8 @@ void CppCodegen::_emit_arguments(const Function &f) noexcept {
         _emit_variable_define(v);
         current_scratch() << ",";
     }
-    for (const auto &uniform : f.captured_vars()) {
-        _emit_variable_define(uniform.expression()->variable());
+    for (const auto &var : f.captured_vars()) {
+        _emit_variable_define(var.expression()->variable());
         current_scratch() << ",";
     }
     if (f.is_kernel() && !f.is_raytracing()) {

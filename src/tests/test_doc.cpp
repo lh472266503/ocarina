@@ -152,6 +152,7 @@ void test_lambda(Device &device, Stream &stream) {
            << tri.upload(triangles.data());
 
     Lambda cb = [&] (Float a, Float b) {
+//        Float3 c = vert.read(dispatch_id(), false);
         return a + b;
     };
 
