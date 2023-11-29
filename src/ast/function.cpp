@@ -192,6 +192,12 @@ const CapturedVar &Function::get_captured_var(const Type *type, Variable::Tag ta
     return _captured_vars.back();
 }
 
+const CapturedVar &Function::add_captured_var(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept {
+    const RefExpr *expr = _ref(Variable(type, tag, _next_variable_uid()));
+    _captured_vars.emplace_back(expr, type, block);
+    return _captured_vars.back();
+}
+
 bool Function::has_captured_var(const void *handle) const noexcept {
     bool ret = std::find_if(_captured_vars.begin(),
                             _captured_vars.end(),
@@ -204,7 +210,7 @@ bool Function::has_captured_var(const void *handle) const noexcept {
 void Function::update_captured_vars(const Function *func) noexcept {
     func->for_each_captured_var([&](const CapturedVar &var) {
         if (!has_captured_var(var.handle_ptr())) {
-            get_captured_var(var.type(), var.expression()->variable().tag(), var.block());
+            add_captured_var(var.type(), var.expression()->variable().tag(), var.block());
         }
     });
 }

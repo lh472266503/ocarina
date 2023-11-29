@@ -168,6 +168,7 @@ public:
         _used_struct.add(type);
     }
     const CapturedVar &get_captured_var(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept;
+    const CapturedVar &add_captured_var(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept;
     [[nodiscard]] bool has_captured_var(const void *handle) const noexcept;
     [[nodiscard]] auto &captured_vars() const noexcept { return _captured_vars; }
     [[nodiscard]] const CapturedVar *get_captured_var_by_handle(const void *handle) const noexcept;
