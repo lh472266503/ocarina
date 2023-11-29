@@ -231,10 +231,10 @@ void CUDACodegen::_emit_builtin_vars_define(const Function &f) noexcept {
     const char *str = "oc_uint3 d_idx = oc_make_uint3(blockIdx.x * blockDim.x + threadIdx.x,"
                       "blockIdx.y * blockDim.y + threadIdx.y,"
                       "blockIdx.z * blockDim.z + threadIdx.z);";
-    _emit_newline();
     if (f.is_general_kernel()) {
         _emit_indent();
         current_scratch() << str;
+        _emit_newline();
         _emit_indent();
         current_scratch() << "if (oc_any(d_idx >= d_dim)) { return; }";
         _emit_newline();
@@ -267,6 +267,7 @@ void CUDACodegen::_emit_builtin_vars_define(const Function &f) noexcept {
     } else if (f.is_callable()) {
         _emit_indent();
         current_scratch() << str;
+        _emit_newline();
     }
     CppCodegen::_emit_builtin_vars_define(f);
 }

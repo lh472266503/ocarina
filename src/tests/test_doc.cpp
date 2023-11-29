@@ -151,8 +151,8 @@ void test_lambda(Device &device, Stream &stream) {
     stream << vert.upload(vertices.data())
            << tri.upload(triangles.data());
 
-    Callable cb = [&] () {
-
+    Lambda cb = [&] (Float a, Float b) {
+        return a + b;
     };
 
     Kernel kernel = [&]() {
@@ -160,7 +160,8 @@ void test_lambda(Device &device, Stream &stream) {
         Uint end = 10;
         $scope{
             $for(i, begin, end) {
-                $info("begin end for statement dispatch_idx is {} {} {} ", vert.read(i));
+                Float3 elm =  vert.read(i);
+                $info("begin end for statement dispatch_idx is {} {} {}, {} ", elm, cb(elm.x, elm.y));
             };
         };
     };
