@@ -183,7 +183,7 @@ void CUDACodegen::_emit_raytracing_param(const Function &f) noexcept {
     indent_inc();
     size_t offset = 0;
     ocarina::vector<MemoryBlock> blocks;
-    blocks.reserve(f.arguments().size() + f.uniform_vars().size());
+    blocks.reserve(f.arguments().size() + f.captured_vars().size());
     auto func = [&](const Variable &arg) {
         _emit_indent();
         size_t size = CUDADevice::size(arg.type());
@@ -203,7 +203,7 @@ void CUDACodegen::_emit_raytracing_param(const Function &f) noexcept {
         func(arg);
     }
 
-    f.for_each_uniform_var([&](const ArgumentBinding &uniform) {
+    f.for_each_captured_var([&](const ArgumentBinding &uniform) {
         const Variable &arg = uniform.expression()->variable();
         func(arg);
     });
@@ -255,7 +255,7 @@ void CUDACodegen::_emit_builtin_vars_define(const Function &f) noexcept {
             _emit_newline();
         }
 
-        f.for_each_uniform_var([&](const ArgumentBinding &uniform) {
+        f.for_each_captured_var([&](const ArgumentBinding &uniform) {
             _emit_indent();
             current_scratch() << "const auto &";
             _emit_variable_name(uniform.expression()->variable());
@@ -314,7 +314,7 @@ void CUDACodegen::_emit_arguments(const Function &f) noexcept {
             _emit_variable_define(v);
             current_scratch() << ",";
         }
-        for (const auto &uniform : f.uniform_vars()) {
+        for (const auto &uniform : f.captured_vars()) {
             _emit_variable_define(uniform.expression()->variable());
             current_scratch() << ",";
         }
@@ -325,7 +325,7 @@ void CUDACodegen::_emit_arguments(const Function &f) noexcept {
             _emit_variable_define(v);
             current_scratch() << ",";
         }
-        if (f.arguments().size() + f.uniform_vars().size() > 0) {
+        if (f.arguments().size() + f.captured_vars().size() > 0) {
             current_scratch().pop_back();
         }
     }

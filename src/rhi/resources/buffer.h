@@ -186,9 +186,9 @@ public:
     requires concepts::all_integral<expr_value_t<Index>>
     OC_NODISCARD auto
     read(Index &&index, bool check_boundary = true) const {
-        const ArgumentBinding &uniform = Function::current()->get_uniform_var(Type::of<decltype(*this)>(),
-                                                                              Variable::Tag::BUFFER,
-                                                                              memory_block());
+        const ArgumentBinding &uniform = Function::current()->get_captured_var(Type::of<decltype(*this)>(),
+                                                                               Variable::Tag::BUFFER,
+                                                                               memory_block());
         auto expr = make_expr<Buffer<T>>(uniform.expression());
         if (check_boundary) {
             return expr.read_and_check(OC_FORWARD(index),
@@ -203,18 +203,18 @@ public:
     requires concepts::all_integral<expr_value_t<Index>...>
     OC_NODISCARD auto
     read_multi(Index &&...index) const {
-        const ArgumentBinding &uniform = Function::current()->get_uniform_var(Type::of<decltype(*this)>(),
-                                                                              Variable::Tag::BUFFER,
-                                                                              memory_block());
+        const ArgumentBinding &uniform = Function::current()->get_captured_var(Type::of<decltype(*this)>(),
+                                                                               Variable::Tag::BUFFER,
+                                                                               memory_block());
         return make_expr<Buffer<T>>(uniform.expression()).read(OC_FORWARD(index)...);
     }
 
     template<typename Index, typename Val>
     requires concepts::integral<expr_value_t<Index>> && concepts::is_same_v<element_type, expr_value_t<Val>>
     void write(Index &&index, Val &&elm, bool check_boundary = true) {
-        const ArgumentBinding &uniform = Function::current()->get_uniform_var(Type::of<decltype(*this)>(),
-                                                                              Variable::Tag::BUFFER,
-                                                                              memory_block());
+        const ArgumentBinding &uniform = Function::current()->get_captured_var(Type::of<decltype(*this)>(),
+                                                                               Variable::Tag::BUFFER,
+                                                                               memory_block());
         auto expr = make_expr<Buffer<T>>(uniform.expression());
         if (check_boundary) {
             expr.write_and_check(OC_FORWARD(index), OC_FORWARD(elm),
@@ -227,9 +227,9 @@ public:
     template<typename Index>
     requires concepts::integral<expr_value_t<Index>>
     [[nodiscard]] detail::AtomicRef<T> atomic(Index &&index) const noexcept {
-        const ArgumentBinding &uniform = Function::current()->get_uniform_var(Type::of<decltype(*this)>(),
-                                                                              Variable::Tag::BUFFER,
-                                                                              memory_block());
+        const ArgumentBinding &uniform = Function::current()->get_captured_var(Type::of<decltype(*this)>(),
+                                                                               Variable::Tag::BUFFER,
+                                                                               memory_block());
         return make_expr<Buffer<T>>(uniform.expression()).atomic(OC_FORWARD(index));
     }
 

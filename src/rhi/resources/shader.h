@@ -182,8 +182,8 @@ public:
     [[nodiscard]] ShaderInvoke operator()(prototype_to_shader_invocation_t<Args> &&...args) const noexcept {
         auto argument_list = make_shared<ArgumentList>(_function.get());
         (*argument_list << ... << OC_FORWARD(args));
-        for (const auto &uniform : _function->uniform_vars()) {
-            argument_list->push_memory_block(uniform.block());
+        for (const auto &var : _function->captured_vars()) {
+            argument_list->push_memory_block(var.block());
         }
         ShaderInvoke shader_invoke{handle(), ocarina::move(argument_list)};
         return shader_invoke;

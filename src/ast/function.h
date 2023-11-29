@@ -66,7 +66,7 @@ private:
     ocarina::vector<ocarina::unique_ptr<Expression>> _all_expressions;
     ocarina::vector<ocarina::unique_ptr<Statement>> _all_statements;
     ocarina::vector<Variable> _arguments;
-    ocarina::vector<ArgumentBinding> _uniform_vars;
+    ocarina::vector<ArgumentBinding> _captured_vars;
     ocarina::vector<Variable> _builtin_vars;
     ocarina::vector<Usage> _variable_usages;
     ocarina::vector<ScopeStmt *> _scope_stack;
@@ -164,20 +164,13 @@ public:
     void add_used_structure(const Type *type) noexcept {
         _used_struct.add(type);
     }
-    const ArgumentBinding &get_uniform_var(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept;
-    [[nodiscard]] auto &uniform_vars() const noexcept { return _uniform_vars; }
+    const ArgumentBinding &get_captured_var(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept;
+    [[nodiscard]] auto &captured_vars() const noexcept { return _captured_vars; }
     template<typename Visitor>
-    void for_each_uniform_var(Visitor &&visitor) const noexcept {
-        for (const ArgumentBinding &uniform : _uniform_vars) {
-            visitor(uniform);
+    void for_each_captured_var(Visitor &&visitor) const noexcept {
+        for (const ArgumentBinding &var : _captured_vars) {
+            visitor(var);
         }
-    }
-    [[nodiscard]] uint64_t uniform_hash() const noexcept {
-        uint64_t ret = Hash64::default_seed;
-        for (const ArgumentBinding &uniform : _uniform_vars) {
-            ret = hash64(ret, uniform.hash());
-        }
-        return ret;
     }
     [[nodiscard]] static Function *current() noexcept {
         if (_function_stack().empty()) {
