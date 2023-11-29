@@ -254,6 +254,45 @@ template<typename T>
 Callable(T &&) -> Callable<detail::dsl_function_t<T>>;
 
 template<typename T>
+class Lambda {
+    static_assert(always_false_v<T>);
+};
+
+template<typename Ret, typename... Args>
+class Lambda<Ret(Args...)> : public FuncWrapper {
+    static_assert(std::negation_v<std::disjunction<std::is_pointer<Args>...>>);
+
+public:
+    using signature = canonical_signature_t<Ret(Args...)>;
+
+public:
+    Lambda() = default;
+    template<typename Func>
+    Lambda(Func &&func) noexcept
+        : FuncWrapper(std::move(Function::define_callable([&] {
+              if constexpr (std::is_same_v<void, Ret>) {
+                  detail::create<Args...>(OC_FORWARD(func), ocarina::index_sequence_for<Args...>());
+              } else {
+                  decltype(auto) ret = detail::create<Args...>(OC_FORWARD(func), ocarina::index_sequence_for<Args...>());
+                  Function::current()->return_(ret.expression());
+              }
+          }))) {}
+
+    auto operator()(prototype_to_callable_invocation_t<Args>... args) const noexcept {
+        const CallExpr *expr = Function::current()->call(Type::of<Ret>(), _function.get(), {(OC_EXPR(args))...});
+        comment(ocarina::format("call function {}", function()->description()));
+        if constexpr (!std::is_same_v<std::remove_cvref_t<Ret>, void>) {
+            return eval<Ret>(expr);
+        } else {
+            Function::current()->expr_statement(expr);
+        }
+    }
+};
+
+template<typename T>
+Lambda(T &&) -> Lambda<detail::dsl_function_t<T>>;
+
+template<typename T>
 class Kernel {
     static_assert(always_false_v<T>);
 };
