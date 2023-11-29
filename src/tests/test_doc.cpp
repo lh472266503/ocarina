@@ -148,12 +148,16 @@ void test_lambda(Device &device, Stream &stream) {
     Buffer<float3> vert = device.create_buffer<float3>(vertices.size());
     Buffer tri = device.create_buffer<Triple>(triangles.size());
 
+    ResourceArray resource_array = device.create_resource_array();
+    uint v_idx = resource_array.emplace(vert);
+    stream << resource_array->upload_buffer_handles() << synchronize();
     stream << vert.upload(vertices.data())
            << tri.upload(triangles.data());
 
-    Lambda cb = [&] (Float a, Float b) {
-//        Float3 c = vert.read(dispatch_id(), false);
-        return a + b;
+    Lambda cb = [&] () {
+        Float3 c = vert.read(dispatch_id(), false);
+        $info("begin end for statement dispatch_idx is , {} {} {}", resource_array.buffer<float3>(0).read(dispatch_id()));
+        $info("begin end for statement dispatch_idx is--- , {}  {} {}", c);
     };
 
     Kernel kernel = [&]() {
@@ -161,8 +165,9 @@ void test_lambda(Device &device, Stream &stream) {
         Uint end = 10;
         $scope{
             $for(i, begin, end) {
+                cb();
 //                Float3 elm =  vert.read(i);
-                $info("begin end for statement dispatch_idx is , {} ", cb(1, 2));
+//                $info("begin end for statement dispatch_idx is , {} {} {}", resource_array.buffer<float3>(0).read(dispatch_id()));
             };
         };
     };

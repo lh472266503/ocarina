@@ -279,6 +279,7 @@ public:
           }))) {}
 
     auto operator()(prototype_to_callable_invocation_t<Args>... args) const noexcept {
+        Function::current()->update_captured_vars(_function.get());
         vector<const Expression *> arguments{(OC_EXPR(args))...};
         _function->for_each_captured_var([&](const CapturedVar &captured_var) {
             const CapturedVar *var = Function::current()->get_captured_var_by_handle(captured_var.handle_ptr());

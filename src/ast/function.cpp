@@ -192,6 +192,23 @@ const CapturedVar &Function::get_captured_var(const Type *type, Variable::Tag ta
     return _captured_vars.back();
 }
 
+bool Function::has_captured_var(const void *handle) const noexcept {
+    bool ret = std::find_if(_captured_vars.begin(),
+                            _captured_vars.end(),
+                            [&](auto v) {
+                                return v.handle_ptr() == handle;
+                            }) != _captured_vars.end();
+    return ret;
+}
+
+void Function::update_captured_vars(const Function *func) noexcept {
+    func->for_each_captured_var([&](const CapturedVar &var) {
+        if (!has_captured_var(var.handle_ptr())) {
+            get_captured_var(var.type(), var.expression()->variable().tag(), var.block());
+        }
+    });
+}
+
 const CapturedVar *Function::get_captured_var_by_handle(const void *handle) const noexcept {
     const CapturedVar *var = nullptr;
     for (const CapturedVar &v : _captured_vars) {

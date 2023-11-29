@@ -167,7 +167,8 @@ public:
     void add_used_structure(const Type *type) noexcept {
         _used_struct.add(type);
     }
-    [[nodiscard]] const CapturedVar &get_captured_var(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept;
+    const CapturedVar &get_captured_var(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept;
+    [[nodiscard]] bool has_captured_var(const void *handle) const noexcept;
     [[nodiscard]] auto &captured_vars() const noexcept { return _captured_vars; }
     [[nodiscard]] const CapturedVar *get_captured_var_by_handle(const void *handle) const noexcept;
     template<typename Visitor>
@@ -176,6 +177,7 @@ public:
             visitor(var);
         }
     }
+    void update_captured_vars(const Function *func) noexcept;
     [[nodiscard]] static Function *current() noexcept {
         if (_function_stack().empty()) {
             return nullptr;
@@ -197,7 +199,6 @@ public:
         ScopeGuard guard(_scope_stack, scope);
         return func();
     }
-
     void mark_variable_usage(uint uid, Usage usage) noexcept {
         _variable_usages[uid] = usage;
     }
