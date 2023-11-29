@@ -50,10 +50,10 @@ public:
 
     /// for dsl
     [[nodiscard]] const Expression *expression() const noexcept override {
-        const ArgumentBinding &uniform = Function::current()->get_captured_var(Type::of<decltype(*this)>(),
+        const CapturedVar &captured_var = Function::current()->get_captured_var(Type::of<decltype(*this)>(),
                                                                                Variable::Tag::TEXTURE,
                                                                                memory_block());
-        return uniform.expression();
+        return captured_var.expression();
     }
 
     template<typename U, typename V>

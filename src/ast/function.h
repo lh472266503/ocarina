@@ -20,7 +20,7 @@ class ScopeStmt;
 class RefExpr;
 class IfStmt;
 
-class ArgumentBinding : public Hashable {
+class CapturedVar : public Hashable {
 private:
     const Type *_type;
     const RefExpr *_expr{nullptr};
@@ -32,7 +32,7 @@ private:
     }
 
 public:
-    ArgumentBinding(const RefExpr *expr, const Type *type, MemoryBlock block)
+    CapturedVar(const RefExpr *expr, const Type *type, MemoryBlock block)
         : _type(type), _block(block), _expr(expr) {}
 
     [[nodiscard]] const Type *type() const noexcept { return _type; }
@@ -66,7 +66,7 @@ private:
     ocarina::vector<ocarina::unique_ptr<Expression>> _all_expressions;
     ocarina::vector<ocarina::unique_ptr<Statement>> _all_statements;
     ocarina::vector<Variable> _arguments;
-    ocarina::vector<ArgumentBinding> _captured_vars;
+    ocarina::vector<CapturedVar> _captured_vars;
     ocarina::vector<Variable> _builtin_vars;
     ocarina::vector<Usage> _variable_usages;
     ocarina::vector<ScopeStmt *> _scope_stack;
@@ -82,9 +82,11 @@ private:
 
 private:
     static ocarina::vector<Function *> &_function_stack() noexcept;
+
     static void _push(Function *f) {
         _function_stack().push_back(f);
     }
+
     static void _pop(Function *f) {
         OC_ASSERT(f == _function_stack().back());
         _function_stack().pop_back();
@@ -129,6 +131,7 @@ private:
         return ret;
     }
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+
     class ScopeGuard {
     private:
         ocarina::vector<ScopeStmt *> &_scope_stack;
@@ -164,11 +167,11 @@ public:
     void add_used_structure(const Type *type) noexcept {
         _used_struct.add(type);
     }
-    const ArgumentBinding &get_captured_var(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept;
+    const CapturedVar &get_captured_var(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept;
     [[nodiscard]] auto &captured_vars() const noexcept { return _captured_vars; }
     template<typename Visitor>
     void for_each_captured_var(Visitor &&visitor) const noexcept {
-        for (const ArgumentBinding &var : _captured_vars) {
+        for (const CapturedVar &var : _captured_vars) {
             visitor(var);
         }
     }
