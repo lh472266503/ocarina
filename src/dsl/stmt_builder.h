@@ -83,8 +83,8 @@ public:
     ScopeStmtBuilder(const string &str):_str(str) {}
     template<typename Body>
     void operator + (Body &&body) noexcept {
-        auto scope = Function::current()->scope();
         comment("start " + _str);
+        auto scope = Function::current()->scope();
         Function::current()->with(scope, OC_FORWARD(body));
         comment("end " + _str);
     }

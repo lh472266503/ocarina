@@ -140,8 +140,35 @@ void test_compute_shader(Device &device, Stream &stream) {
            /// explict retrieve log
            << Env::printer().retrieve()
            << synchronize() << commit();
+}
 
-    cout << traceback_string() << endl;
+void test_lambda(Device &device, Stream &stream) {
+    auto [vertices, triangles] = get_cube();
+
+    Buffer<float3> vert = device.create_buffer<float3>(vertices.size());
+    Buffer tri = device.create_buffer<Triple>(triangles.size());
+
+    stream << vert.upload(vertices.data())
+           << tri.upload(triangles.data());
+
+    Callable cb = [&] () {
+
+    };
+
+    Kernel kernel = [&]() {
+        Uint begin = 2;
+        Uint end = 10;
+        $scope{
+            $for(i, begin, end) {
+                $info("begin end for statement dispatch_idx is {} {} {} ", vert.read(i));
+            };
+        };
+    };
+    Shader shader = device.compile(kernel);
+
+    stream << shader().dispatch(1)
+           << Env::printer().retrieve()
+           << synchronize() << commit();
 }
 
 int main(int argc, char *argv[]) {
@@ -164,7 +191,8 @@ int main(int argc, char *argv[]) {
 
     /// create rtx context if need
     device.init_rtx();
-    test_compute_shader(device, stream);
+//    test_compute_shader(device, stream);
+    test_lambda(device, stream);
 
     return 0;
 }
