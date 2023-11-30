@@ -21,8 +21,9 @@ struct Triple {
 OC_STRUCT(Triple, i, j, k){
     [[nodiscard]] Uint sum() const noexcept {
         return i + j + k;
-    }
-};
+}
+}
+;
 
 auto get_cube(float x = 1, float y = 1, float z = 1) {
     x = x / 2.f;
@@ -54,7 +55,6 @@ auto get_cube(float x = 1, float y = 1, float z = 1) {
     return ocarina::make_pair(vertices, triangles);
 }
 
-
 void test_compute_shader(Device &device, Stream &stream) {
     auto [vertices, triangles] = get_cube();
 
@@ -79,7 +79,7 @@ void test_compute_shader(Device &device, Stream &stream) {
         Var t = triangle.read(dispatch_id());
 
         /// Note the usage and implementation of DSL struct member function, e.g sum()
-        $info("triple  index {} : i = {}, j = {}, k = {},  sum: {} ",dispatch_id(), t.i, t.j, t.k, t->sum());
+        $info("triple  index {} : i = {}, j = {}, k = {},  sum: {} ", dispatch_id(), t.i, t.j, t.k, t->sum());
 
         $info("vert from capture {} {} {}", vert.read(dispatch_id()));
         $info("vert from capture resource array {} {} {}", resource_array.buffer<float3>(0).read(Var(10000)));
@@ -96,9 +96,11 @@ void test_compute_shader(Device &device, Stream &stream) {
 
         $if(dispatch_id() == 1) {
             $info("if branch dispatch_idx is {} {} {}", dispatch_idx());
-        } $elif(dispatch_id() == 2) {
+        }
+        $elif(dispatch_id() == 2) {
             $info("if else branch dispatch_idx is {} {} {}", dispatch_idx());
-        } $else {
+        }
+        $else {
             $info("else branch dispatch_idx is {} {} {}", dispatch_idx());
         };
 
@@ -129,7 +131,7 @@ void test_compute_shader(Device &device, Stream &stream) {
                                 vert.read(dispatch_id()), ra.buffer<Triple>(t_idx).size_in_byte() / 12);
         };
     };
-    Triple triple1{1,2,3};
+    Triple triple1{1, 2, 3};
 
     /// set debug range
     Env::debugger().set_lower(make_uint2(0));
@@ -154,20 +156,21 @@ void test_lambda(Device &device, Stream &stream) {
     stream << vert.upload(vertices.data())
            << tri.upload(triangles.data());
 
-    Lambda cb = [&] () {
-        Float3 c = vert.read(dispatch_id(), false);
-        $info("begin end for statement dispatch_idx is , {} {} {}", resource_array.buffer<float3>(0).read(dispatch_id()));
-        $info("begin end for statement dispatch_idx is--- , {}  {} {}", c);
-    };
-
     Kernel kernel = [&]() {
         Uint begin = 2;
         Uint end = 10;
-        $scope{
+
+        static Lambda cb = [&]() {
+            Float3 c = vert.read(dispatch_id(), false);
+            $info("begin end for statement dispatch_idx is--- , {}", end);
+            $info("begin end for statement dispatch_idx is , {} {} {}", resource_array.buffer<float3>(0).read(dispatch_id()));
+        };
+
+        $scope {
             $for(i, begin, end) {
                 cb();
-//                Float3 elm =  vert.read(i);
-//                $info("begin end for statement dispatch_idx is , {} {} {}", resource_array.buffer<float3>(0).read(dispatch_id()));
+                //                Float3 elm =  vert.read(i);
+                //                $info("begin end for statement dispatch_idx is , {} {} {}", resource_array.buffer<float3>(0).read(dispatch_id()));
             };
         };
     };
@@ -192,13 +195,13 @@ int main(int argc, char *argv[]) {
     Stream stream = device.create_stream();
     Env::printer().init(device);
     Env::debugger().init(device);
-    
-//    Env::set_code_obfuscation(true);
-//    Env::set_valid_check(false);
+
+    //    Env::set_code_obfuscation(true);
+    //    Env::set_valid_check(false);
 
     /// create rtx context if need
     device.init_rtx();
-//    test_compute_shader(device, stream);
+    //    test_compute_shader(device, stream);
     test_lambda(device, stream);
 
     return 0;

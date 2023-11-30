@@ -100,6 +100,7 @@ private:
     [[nodiscard]] auto _create_expression(Args &&...args) {
         auto expr = ocarina::make_unique<Expr>(std::forward<Args>(args)...);
         auto ret = expr.get();
+        expr->set_function(this);
         _all_expressions.push_back(std::move(expr));
         return ret;
     }

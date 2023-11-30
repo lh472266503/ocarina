@@ -60,6 +60,7 @@ public:
 
 private:
     const Type *_type;
+    const Function *_function{};
     Tag _tag;
 
 protected:
@@ -70,6 +71,8 @@ public:
     explicit Expression(Tag tag, const Type *type) noexcept : _type{type}, _tag{tag} {}
     virtual ~Expression() noexcept = default;
     [[nodiscard]] auto type() const noexcept { return _type; }
+    [[nodiscard]] const Function *function() const noexcept { return _function; }
+    void set_function(const Function *f) noexcept { _function = f; }
     [[nodiscard]] auto usage() const noexcept { return _usage; }
     [[nodiscard]] auto tag() const noexcept { return _tag; }
     [[nodiscard]] bool is_ref() const noexcept { return tag() == Tag::REF; }
