@@ -97,9 +97,27 @@ private:
         return ret;
     }
 
+    void _add_context_expression() noexcept {}
+    template<typename First, typename... Rest>
+    void _add_context_expression(First &&first, Rest &&...rest) noexcept {
+        _add_context_expression(OC_FORWARD(rest)...);
+        using raw_type = std::remove_pointer_t<std::remove_cvref_t<First>>;
+        if constexpr (std::is_same_v<std::remove_cvref_t<raw_type>, Expression>) {
+            if (first->context() != this) {
+                _context_expressions.push_back(first);
+            }
+        }
+    }
+
+    template<typename... Args>
+    void add_context_expression(Args &&...args) noexcept {
+        _add_context_expression(OC_FORWARD(args)...);
+    }
+
     template<typename Expr, typename... Args>
     [[nodiscard]] auto _create_expression(Args &&...args) {
         auto expr = ocarina::make_unique<Expr>(std::forward<Args>(args)...);
+        add_context_expression(OC_FORWARD(args)...);
         auto ret = expr.get();
         expr->set_context(this);
         _all_expressions.push_back(std::move(expr));
@@ -122,11 +140,10 @@ private:
     class ScopeGuard {
     private:
         ocarina::vector<ScopeStmt *> &_scope_stack;
-        ScopeStmt *_scope;
 
     public:
         ScopeGuard(ocarina::vector<ScopeStmt *> &stack, ScopeStmt *scope)
-            : _scope_stack(stack), _scope(scope) {
+            : _scope_stack(stack) {
             _scope_stack.push_back(scope);
         }
         ~ScopeGuard() {
