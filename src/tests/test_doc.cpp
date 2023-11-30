@@ -162,7 +162,8 @@ void test_lambda(Device &device, Stream &stream) {
 
         Lambda cb = [&](Float a) {
             a = a + a;
-            $info("begin end for statement dispatch_idx is--- , {}", a);
+            Var v = vert.read(1);
+//            $info("begin end for statement dispatch_idx is--- , {}", a);
 //            $info("begin end for statement dispatch_idx is , {} {} {}", resource_array.buffer<float3>(0).read(dispatch_id()));
         };
 

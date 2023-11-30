@@ -165,12 +165,7 @@ public:
         }
     }
     void update_captured_vars(const Function *func) noexcept;
-    [[nodiscard]] static Function *current() noexcept {
-        if (_function_stack().empty()) {
-            return nullptr;
-        }
-        return _function_stack().back();
-    }
+    [[nodiscard]] static Function *current() noexcept;
     template<typename Func>
     static auto define_callable(Func &&func) noexcept {
         return _define(Tag::CALLABLE, std::forward<Func>(func));
@@ -196,11 +191,7 @@ public:
         return function;
     }
     explicit Function(Tag tag) noexcept;
-    ~Function() noexcept {
-        for (auto &mem : _temp_memory) {
-            delete_with_allocator(mem.first);
-        }
-    }
+    ~Function() noexcept;
     template<typename T, typename... Args>
     T *create_temp_obj(Args &&...args) noexcept {
         T *ptr = new_with_allocator<T>(std::forward<Args>(args)...);

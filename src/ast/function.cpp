@@ -26,6 +26,12 @@ ocarina::vector<Function *> &Function::_function_stack() noexcept {
     return ret;
 }
 
+Function::~Function() {
+    for (auto &mem : _temp_memory) {
+        delete_with_allocator(mem.first);
+    }
+}
+
 void Function::_push(ocarina::Function *f) {
     _function_stack().push_back(f);
 }
@@ -243,6 +249,13 @@ const CapturedVar *Function::get_captured_var_by_handle(const void *handle) cons
         }
     }
     return var;
+}
+
+Function *Function::current() noexcept {
+    if (_function_stack().empty()) {
+        return nullptr;
+    }
+    return _function_stack().back();
 }
 
 ScopeStmt *Function::scope() noexcept {
