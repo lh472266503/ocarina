@@ -74,7 +74,7 @@ private:
     ocarina::vector<ocarina::pair<std::byte *, size_t>> _temp_memory;
     ScopeStmt _body{true};
     Tag _tag{Tag::CALLABLE};
-    ocarina::map<uint64_t, const Function *> _used_custom_func;
+    ocarina::map<uint64_t, SP<const Function>> _used_custom_func;
     StructureSet _used_struct;
     mutable bool _raytracing{false};
     mutable uint3 _block_dim{make_uint3(0)};
@@ -100,13 +100,13 @@ private:
     [[nodiscard]] auto _create_expression(Args &&...args) {
         auto expr = ocarina::make_unique<Expr>(std::forward<Args>(args)...);
         auto ret = expr.get();
-        expr->set_function(this);
+        expr->set_context(this);
         _all_expressions.push_back(std::move(expr));
         return ret;
     }
     [[nodiscard]] const RefExpr *_ref(const Variable &variable) noexcept;
     [[nodiscard]] const RefExpr *_builtin(Variable::Tag tag, const Type *type) noexcept;
-    void add_used_function(const Function *func) noexcept;
+    void add_used_function(SP<const Function> func) noexcept;
 
     template<typename Stmt, typename... Args>
     auto _create_statement(Args &&...args) {
@@ -140,7 +140,7 @@ public:
     template<typename Visitor>
     void for_each_custom_func(Visitor &&visitor) const noexcept {
         for (const auto &[_, f] : _used_custom_func) {
-            visitor(f);
+            visitor(f.get());
         }
     }
     [[nodiscard]] auto used_structure() const noexcept { return _used_struct; }
@@ -247,7 +247,7 @@ public:
                                                  vector<const Expression *> indexes) noexcept;
     [[nodiscard]] const MemberExpr *swizzle(const Type *type, const Expression *obj, uint16_t mask, uint16_t swizzle_size) noexcept;
     [[nodiscard]] const MemberExpr *member(const Type *type, const Expression *obj, int index) noexcept;
-    const CallExpr *call(const Type *type, const Function *func, ocarina::vector<const Expression *> args) noexcept;
+    const CallExpr *call(const Type *type, SP<const Function> func, ocarina::vector<const Expression *> args) noexcept;
     const CallExpr *call_builtin(const Type *type, CallOp op, ocarina::vector<const Expression *> args,
                                  ocarina::vector<CallExpr::Template> t_args = {}) noexcept;
     [[nodiscard]] ScopeStmt *scope() noexcept;

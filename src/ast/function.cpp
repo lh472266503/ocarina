@@ -77,7 +77,7 @@ const RefExpr *Function::_builtin(Variable::Tag tag, const Type *type) noexcept 
     return _ref(variable);
 }
 
-void Function::add_used_function(const Function *func) noexcept {
+void Function::add_used_function(SP<const Function> func) noexcept {
     _used_custom_func.insert(make_pair(func->hash(), func));
 }
 
@@ -182,10 +182,10 @@ const MemberExpr *Function::member(const Type *type, const Expression *obj, int 
     return _create_expression<MemberExpr>(type, obj, index, 0);
 }
 
-const CallExpr *Function::call(const Type *type, const Function *func,
+const CallExpr *Function::call(const Type *type, SP<const Function> func,
                                ocarina::vector<const Expression *> args) noexcept {
     add_used_function(func);
-    return _create_expression<CallExpr>(type, func, std::move(args));
+    return _create_expression<CallExpr>(type, func.get(), std::move(args));
 }
 
 const CallExpr *Function::call_builtin(const Type *type, CallOp op,

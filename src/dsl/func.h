@@ -240,7 +240,7 @@ public:
           }))) {}
 
     auto operator()(prototype_to_callable_invocation_t<Args>... args) const noexcept {
-        const CallExpr *expr = Function::current()->call(Type::of<Ret>(), _function.get(), {(OC_EXPR(args))...});
+        const CallExpr *expr = Function::current()->call(Type::of<Ret>(), _function, {(OC_EXPR(args))...});
         comment(ocarina::format("call function {}", function()->description()));
         if constexpr (!std::is_same_v<std::remove_cvref_t<Ret>, void>) {
             return eval<Ret>(expr);
@@ -285,7 +285,7 @@ public:
             const CapturedVar *var = Function::current()->get_captured_var_by_handle(captured_var.handle_ptr());
             arguments.push_back(var->expression());
         });
-        const CallExpr *expr = Function::current()->call(Type::of<Ret>(), _function.get(), arguments);
+        const CallExpr *expr = Function::current()->call(Type::of<Ret>(), _function, arguments);
         comment(ocarina::format("call function {}", function()->description()));
         if constexpr (!std::is_same_v<std::remove_cvref_t<Ret>, void>) {
             return eval<Ret>(expr);
