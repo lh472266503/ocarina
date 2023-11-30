@@ -160,15 +160,15 @@ void test_lambda(Device &device, Stream &stream) {
         Uint begin = 2;
         Uint end = 10;
 
-        static Lambda cb = [&]() {
-            Float3 c = vert.read(dispatch_id(), false);
-            $info("begin end for statement dispatch_idx is--- , {}", end);
-            $info("begin end for statement dispatch_idx is , {} {} {}", resource_array.buffer<float3>(0).read(dispatch_id()));
+        static Lambda cb = [&](Float a) {
+            a = cast<float>(end);
+//            $info("begin end for statement dispatch_idx is--- , {}", end);
+//            $info("begin end for statement dispatch_idx is , {} {} {}", resource_array.buffer<float3>(0).read(dispatch_id()));
         };
 
         $scope {
             $for(i, begin, end) {
-                cb();
+                cb(Float(1.f));
                 //                Float3 elm =  vert.read(i);
                 //                $info("begin end for statement dispatch_idx is , {} {} {}", resource_array.buffer<float3>(0).read(dispatch_id()));
             };

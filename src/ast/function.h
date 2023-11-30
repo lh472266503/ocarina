@@ -187,6 +187,7 @@ public:
         return func();
     }
     void mark_variable_usage(uint uid, Usage usage) noexcept {
+        OC_ASSERT(uid < _variable_usages.size());
         _variable_usages[uid] = usage;
     }
     template<typename Func>
