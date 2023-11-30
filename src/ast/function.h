@@ -64,6 +64,7 @@ private:
     mutable string _description{};
     const Type *_ret{nullptr};
     ocarina::vector<ocarina::unique_ptr<Expression>> _all_expressions;
+    ocarina::vector<const Expression *> _context_expressions;
     ocarina::vector<ocarina::unique_ptr<Statement>> _all_statements;
     ocarina::vector<Variable> _arguments;
     ocarina::vector<CapturedVar> _captured_vars;
@@ -215,7 +216,8 @@ public:
     }
 
     [[nodiscard]] bool has_configure() const noexcept { return all(block_dim() != 0u) || all(grid_dim() != 0u); }
-
+    /// Some variables are captured in the upper environment, must be push it to argument list
+    void remedy_ast_nodes() noexcept;
     [[nodiscard]] ocarina::string func_name() const noexcept;
     void assign(const Expression *lhs, const Expression *rhs) noexcept;
     void return_(const Expression *expression) noexcept;

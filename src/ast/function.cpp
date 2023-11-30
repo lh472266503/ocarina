@@ -251,6 +251,10 @@ const CapturedVar *Function::get_captured_var_by_handle(const void *handle) cons
     return var;
 }
 
+void Function::remedy_ast_nodes() noexcept {
+    int i ;
+}
+
 Function *Function::current() noexcept {
     if (_function_stack().empty()) {
         return nullptr;

@@ -306,6 +306,7 @@ void CUDACodegen::_emit_builtin_var(Variable v) noexcept {
 }
 
 void CUDACodegen::_emit_arguments(const Function &f) noexcept {
+    const_cast<Function &>(f).remedy_ast_nodes();
     current_scratch() << "(";
     if (f.is_general_kernel()) {
         for (const auto &v : f.arguments()) {
