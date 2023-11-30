@@ -26,6 +26,25 @@ ocarina::vector<Function *> &Function::_function_stack() noexcept {
     return ret;
 }
 
+void Function::_push(ocarina::Function *f) {
+    _function_stack().push_back(f);
+}
+
+void Function::_pop(ocarina::Function *f) {
+    OC_ASSERT(f == _function_stack().back());
+    _function_stack().pop_back();
+}
+
+const RefExpr *Function::_ref(const ocarina::Variable &variable) noexcept {
+    return _create_expression<RefExpr>(variable);
+}
+
+uint Function::_next_variable_uid() noexcept {
+    auto ret = _variable_usages.size();
+    _variable_usages.push_back(Usage::NONE);
+    return ret;
+}
+
 void Function::return_(const Expression *expression) noexcept {
     if (expression) {
         _ret = expression->type();

@@ -83,20 +83,9 @@ private:
 private:
     static ocarina::vector<Function *> &_function_stack() noexcept;
 
-    static void _push(Function *f) {
-        _function_stack().push_back(f);
-    }
-
-    static void _pop(Function *f) {
-        OC_ASSERT(f == _function_stack().back());
-        _function_stack().pop_back();
-    }
-
-    [[nodiscard]] uint _next_variable_uid() noexcept {
-        auto ret = _variable_usages.size();
-        _variable_usages.push_back(Usage::NONE);
-        return ret;
-    }
+    static void _push(Function *f);
+    static void _pop(Function *f);
+    [[nodiscard]] uint _next_variable_uid() noexcept;
 
     template<typename Func>
     static auto _define(Function::Tag tag, Func &&func) noexcept {
@@ -114,12 +103,8 @@ private:
         _all_expressions.push_back(std::move(expr));
         return ret;
     }
-    [[nodiscard]] const RefExpr *_ref(const Variable &variable) noexcept {
-        return _create_expression<RefExpr>(variable);
-    }
-
+    [[nodiscard]] const RefExpr *_ref(const Variable &variable) noexcept;
     [[nodiscard]] const RefExpr *_builtin(Variable::Tag tag, const Type *type) noexcept;
-
     void add_used_function(const Function *func) noexcept;
 
     template<typename Stmt, typename... Args>
