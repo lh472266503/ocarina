@@ -10,56 +10,62 @@
 namespace ocarina {
 
 namespace detail {
+
+template<typename T>
+struct valid_vector_impl : public std::disjunction<
+                               std::is_same<T, bool>,
+                               std::is_same<T, float>,
+                               std::is_same<T, int>,
+                               std::is_same<T, char>,
+                               std::is_same<T, short>,
+                               std::is_same<T, ushort>,
+                               std::is_same<T, uchar>,
+                               std::is_same<T, uint>> {};
+
+};// namespace detail
+
+template<typename T>
+static constexpr auto valid_vector_v = detail::valid_vector_impl<std::remove_cvref_t<T>>::value;
+
 template<typename T, size_t N>
-struct VectorStorage {
+struct Vector {
     static_assert(always_false_v<T>, "Invalid vector storage");
 };
 
 template<typename T>
-struct alignas(sizeof(T) * 2) VectorStorage<T, 2> {
-    T x, y;
-    explicit constexpr VectorStorage(T s = {}) noexcept : x{s}, y{s} {}
-    constexpr VectorStorage(T x, T y) noexcept : x{x}, y{y} {}
+struct alignas(sizeof(T) * 2) Vector<T, 2> {
+    static_assert(valid_vector_v<T>, "Invalid vector type");
+    T x{}, y{};
+    Vector() = default;
+    explicit constexpr Vector(T s) noexcept : x{s}, y{s} {}
+    constexpr Vector(T x, T y) noexcept : x{x}, y{y} {}
+    [[nodiscard]] constexpr T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
+    [[nodiscard]] constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
 #include "swizzle_inl/swizzle_2.inl.h"
 };
 
 template<typename T>
-struct alignas(sizeof(T) * 4) VectorStorage<T, 3> {
-    T x, y, z;
-    explicit constexpr VectorStorage(T s = {}) noexcept : x{s}, y{s}, z{s} {}
-    constexpr VectorStorage(T x, T y, T z) noexcept : x{x}, y{y}, z{z} {}
+struct alignas(sizeof(T) * 4) Vector<T, 3> {
+    static_assert(valid_vector_v<T>, "Invalid vector type");
+    T x{}, y{}, z{};
+    Vector() = default;
+    explicit constexpr Vector(T s) noexcept : x{s}, y{s}, z{s} {}
+    constexpr Vector(T x, T y, T z) noexcept : x{x}, y{y}, z{z} {}
+    [[nodiscard]] constexpr T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
+    [[nodiscard]] constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
 #include "swizzle_inl/swizzle_3.inl.h"
 };
 
 template<typename T>
-struct alignas(sizeof(T) * 4) VectorStorage<T, 4> {
-    T x, y, z, w;
-    explicit constexpr VectorStorage(T s = {}) noexcept : x{s}, y{s}, z{s}, w{s} {}
-    constexpr VectorStorage(T x, T y, T z, T w) noexcept : x{x}, y{y}, z{z}, w{w} {}
-#include "swizzle_inl/swizzle_4.inl.h"
-};
-
-}// namespace detail
-
-template<typename T, size_t N>
-struct Vector : public detail::VectorStorage<T, N> {
-    static constexpr auto dimension = N;
-    using value_type = T;
-    using Storage = detail::VectorStorage<T, N>;
-    static_assert(std::disjunction_v<
-                      std::is_same<T, bool>,
-                      std::is_same<T, float>,
-                      std::is_same<T, int>,
-                      std::is_same<T, char>,
-                      std::is_same<T, short>,
-                      std::is_same<T, ushort>,
-                      std::is_same<T, uchar>,
-                      std::is_same<T, uint>>,
-                  "Invalid vector type");
-    static_assert(N == 2 || N == 3 || N == 4, "Invalid vector dimension");
-    using Storage::VectorStorage;
+struct alignas(sizeof(T) * 4) Vector<T, 4> {
+    static_assert(valid_vector_v<T>, "Invalid vector type");
+    T x{}, y{}, z{}, w{};
+    Vector() = default;
+    explicit constexpr Vector(T s) noexcept : x{s}, y{s}, z{s}, w{s} {}
+    constexpr Vector(T x, T y, T z, T w) noexcept : x{x}, y{y}, z{z}, w{w} {}
     [[nodiscard]] constexpr T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
     [[nodiscard]] constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
+#include "swizzle_inl/swizzle_4.inl.h"
 };
 
 #define OC_MAKE_VECTOR_TYPES(T) \

@@ -64,7 +64,7 @@ private:
     mutable uint _offset{InvalidUI32};
 
 public:
-    explicit Serial(value_ty val = {}) : _host_value(std::move(val)) {}
+    explicit Serial(value_ty val = value_ty{}) : _host_value(std::move(val)) {}
     Serial &operator=(const value_ty &val) {
         _host_value = val;
         return *this;
