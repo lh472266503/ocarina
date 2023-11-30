@@ -237,7 +237,9 @@ public:
                   decltype(auto) ret = detail::create<Args...>(OC_FORWARD(func), ocarina::index_sequence_for<Args...>());
                   Function::current()->return_(ret.expression());
               }
-          }))) {}
+          }))) {
+        _function->remedy_ast_nodes();
+    }
 
     auto operator()(prototype_to_callable_invocation_t<Args>... args) const noexcept {
         const CallExpr *expr = Function::current()->call(Type::of<Ret>(), _function, {(OC_EXPR(args))...});
@@ -276,7 +278,9 @@ public:
                   decltype(auto) ret = detail::create<Args...>(OC_FORWARD(func), ocarina::index_sequence_for<Args...>());
                   Function::current()->return_(ret.expression());
               }
-          }))) {}
+          }))) {
+        _function->remedy_ast_nodes();
+    }
 
     auto operator()(prototype_to_callable_invocation_t<Args>... args) const noexcept {
         Function::current()->update_captured_vars(_function.get());
