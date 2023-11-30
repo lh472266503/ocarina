@@ -165,11 +165,11 @@ public:
 
 private:
     ShaderTag _shader_tag{};
-    ocarina::unique_ptr<Function> _function{};
+    ocarina::shared_ptr<Function> _function{};
 
 public:
     Shader() = default;
-    Shader(Device::Impl *device, ocarina::unique_ptr<Function> function, ShaderTag tag) noexcept
+    Shader(Device::Impl *device, ocarina::shared_ptr<Function> function, ShaderTag tag) noexcept
         : RHIResource(device, SHADER,
                       device->create_shader(*function)),
           _shader_tag(tag), _function(ocarina::move(function)) {}

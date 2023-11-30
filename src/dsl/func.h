@@ -192,12 +192,12 @@ auto create(Func &&func, ocarina::index_sequence<i...>) {
 
 class FuncWrapper : public concepts::Noncopyable {
 protected:
-    mutable ocarina::unique_ptr<Function> _function;
+    mutable ocarina::shared_ptr<Function> _function;
     FuncWrapper() = default;
-    explicit FuncWrapper(ocarina::unique_ptr<Function> f) : _function(std::move(f)) {}
+    explicit FuncWrapper(ocarina::shared_ptr<Function> f) : _function(std::move(f)) {}
 
 public:
-    [[nodiscard]] ocarina::unique_ptr<Function> &function() const noexcept { return _function; }
+    [[nodiscard]] ocarina::shared_ptr<Function> &function() const noexcept { return _function; }
 };
 
 namespace detail {

@@ -161,7 +161,7 @@ void test_lambda(Device &device, Stream &stream) {
         Uint end = 10;
 
         static Lambda cb = [&](Float a) {
-            a = cast<float>(end);
+            a = a + a;
 //            $info("begin end for statement dispatch_idx is--- , {}", end);
 //            $info("begin end for statement dispatch_idx is , {} {} {}", resource_array.buffer<float3>(0).read(dispatch_id()));
         };
