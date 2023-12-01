@@ -160,18 +160,21 @@ void test_lambda(Device &device, Stream &stream) {
         Uint begin = 2;
         Uint end = 10;
 
-        Lambda cb2 = [&](Uint& b) {
-            return b;
-        };
+
 
         Lambda cb = [&](Float a) {
             a = a + end;
 
-            cb2(begin);
+            Lambda cb2 = [&](Uint& b) {
+                b = begin;
+                return b;
+            };
+
+            cb2(end);
         };
         Var v = vert.read(1);
         cb(Float(1.f));
-        cb2(end);
+      $info("{}         ---------", end);
     };
     Shader shader = device.compile(kernel);
 
