@@ -119,6 +119,18 @@ private:
         return ocarina::make_unique<Expr>(std::get<i>(tuple)...);
     }
 
+    template<typename Expr, typename Tuple, size_t ...i>
+    [[nodiscard]] auto _create_expression(Tuple &tuple, std::index_sequence<i...>) {
+//        add_exterior_expression(OC_FORWARD(args)...);
+//        using Tuple = std::tuple<std::remove_reference_t<Args>...>;
+//        Tuple tuple = Tuple{OC_FORWARD(args)...};
+        auto expr = ocarina::make_unique<Expr>(std::get<i>(tuple)...);
+        auto ret = expr.get();
+        expr->set_context(this);
+        _all_expressions.push_back(std::move(expr));
+        return ret;
+    }
+
     template<typename Expr, typename... Args>
     [[nodiscard]] auto create_expression(Args &&...args) {
         add_exterior_expression(OC_FORWARD(args)...);
