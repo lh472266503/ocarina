@@ -103,7 +103,7 @@ private:
         _add_exterior_expression(OC_FORWARD(rest)...);
         using raw_type = std::remove_pointer_t<std::remove_cvref_t<First>>;
         if constexpr (std::is_same_v<std::remove_cvref_t<raw_type>, Expression>) {
-            if (first->context() != this) {
+            if (first && first->context() != this) {
                 _exterior_expressions.push_back(first);
             }
         }
