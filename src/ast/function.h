@@ -120,11 +120,8 @@ private:
     }
 
     template<typename Expr, typename Tuple, size_t ...i>
-    [[nodiscard]] auto _create_expression(Tuple &tuple, std::index_sequence<i...>) {
-//        add_exterior_expression(OC_FORWARD(args)...);
-//        using Tuple = std::tuple<std::remove_reference_t<Args>...>;
-//        Tuple tuple = Tuple{OC_FORWARD(args)...};
-        auto expr = ocarina::make_unique<Expr>(std::get<i>(tuple)...);
+    [[nodiscard]] auto _create_expression(Tuple &&tuple, std::index_sequence<i...>) {
+        auto expr = ocarina::make_unique<Expr>(std::get<i>(OC_FORWARD(tuple))...);
         auto ret = expr.get();
         expr->set_context(this);
         _all_expressions.push_back(std::move(expr));
@@ -134,26 +131,30 @@ private:
     template<typename Expr, typename... Args>
     [[nodiscard]] auto create_expression(Args &&...args) {
         add_exterior_expression(OC_FORWARD(args)...);
-//        using Tuple = std::tuple<std::remove_reference_t<Args>...>;
-//        Tuple tuple = Tuple{OC_FORWARD(args)...};
-        auto expr = ocarina::make_unique<Expr>(std::forward<Args>(args)...);
-        auto ret = expr.get();
-        expr->set_context(this);
-        _all_expressions.push_back(std::move(expr));
-        return ret;
+        using Tuple = std::tuple<std::remove_reference_t<Args>...>;
+        Tuple tuple = Tuple{OC_FORWARD(args)...};
+        return _create_expression<Expr>(OC_FORWARD(tuple), std::index_sequence_for<Args...>());
     }
     [[nodiscard]] const RefExpr *_ref(const Variable &variable) noexcept;
     [[nodiscard]] const RefExpr *_builtin(Variable::Tag tag, const Type *type) noexcept;
     void add_used_function(SP<const Function> func) noexcept;
 
-    template<typename Stmt, typename... Args>
-    auto create_statement(Args &&...args) {
-        add_exterior_expression(OC_FORWARD(args)...);
-        auto stmt = ocarina::make_unique<Stmt>(std::forward<Args>(args)...);
+
+    template<typename Stmt, typename Tuple, size_t ...i>
+    [[nodiscard]] auto _create_statement(Tuple &&tuple, std::index_sequence<i...>) {
+        auto stmt = ocarina::make_unique<Stmt>(std::get<i>(OC_FORWARD(tuple))...);
         auto ret = stmt.get();
         _all_statements.push_back(std::move(stmt));
         current_scope()->add_stmt(ret);
         return ret;
+    }
+
+    template<typename Stmt, typename... Args>
+    auto create_statement(Args &&...args) {
+        add_exterior_expression(OC_FORWARD(args)...);
+        using Tuple = std::tuple<std::remove_reference_t<Args>...>;
+        Tuple tuple = Tuple{OC_FORWARD(args)...};
+        return _create_statement<Stmt>(OC_FORWARD(tuple), std::index_sequence_for<Args...>());
     }
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
