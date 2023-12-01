@@ -103,20 +103,24 @@ private:
         }
     }
 
+    [[nodiscard]] bool is_exterior(const Expression *expression) const noexcept {
+        return expression && (expression->context() != this);
+    }
+
     void add_exterior_expression() noexcept {}
     template<typename First, typename... Rest>
     void add_exterior_expression(First &&first, Rest &&...rest) noexcept {
         using raw_type = std::remove_pointer_t<std::remove_cvref_t<First>>;
         if constexpr (std::is_same_v<std::remove_cvref_t<raw_type>, Expression>) {
-            if (first && first->context() != this) {
+            if (is_exterior(first)) {
                 _add_exterior_expression(first);
             }
         } else if constexpr (is_std_vector_v<First>) {
             using element_ty = element_t<First>;
             using raw_element_type = std::remove_pointer_t<std::remove_cvref_t<element_ty>>;
             if constexpr (std::is_same_v<std::remove_cvref_t<raw_element_type>, Expression>) {
-                for (auto expression : first) {
-                    if (expression && expression->context() != this) {
+                for (const Expression * expression : first) {
+                    if (is_exterior(expression)) {
                         _add_exterior_expression(expression);
                     }
                 }
