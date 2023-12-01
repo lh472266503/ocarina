@@ -160,12 +160,22 @@ void test_lambda(Device &device, Stream &stream) {
         Uint begin = 2;
         Uint end = 10;
 
+        Lambda cb2 = [&](Float b) {
+            return b;
+        };
+
         Lambda cb = [&](Float a) {
             a = a + begin;
             Var v = vert.read(1);
+
+
+            cb2(a);
+
 //            $info("begin end for statement dispatch_idx is--- , {}", a);
 //            $info("begin end for statement dispatch_idx is , {} {} {}", resource_array.buffer<float3>(0).read(dispatch_id()));
         };
+
+        cb2(1);
 
         $scope {
             $for(i, begin, end) {

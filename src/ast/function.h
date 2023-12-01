@@ -64,7 +64,7 @@ private:
     mutable string _description{};
     const Type *_ret{nullptr};
     ocarina::vector<ocarina::unique_ptr<Expression>> _all_expressions;
-    ocarina::vector<const Expression *> _context_expressions;
+    ocarina::vector<const Expression *> _exterior_expressions;
     ocarina::vector<ocarina::unique_ptr<Statement>> _all_statements;
     ocarina::vector<Variable> _arguments;
     ocarina::vector<CapturedVar> _captured_vars;
@@ -104,7 +104,7 @@ private:
         using raw_type = std::remove_pointer_t<std::remove_cvref_t<First>>;
         if constexpr (std::is_same_v<std::remove_cvref_t<raw_type>, Expression>) {
             if (first->context() != this) {
-                _context_expressions.push_back(first);
+                _exterior_expressions.push_back(first);
             }
         }
     }
@@ -114,10 +114,17 @@ private:
         _add_context_expression(OC_FORWARD(args)...);
     }
 
+    template<typename Expr, typename Tuple, size_t ...i>
+    [[nodiscard]] auto _create_expression_by_tuple(Tuple &tuple, ocarina::index_sequence<i...>) {
+        return ocarina::make_unique<Expr>(std::get<i>(tuple)...);
+    }
+
     template<typename Expr, typename... Args>
     [[nodiscard]] auto _create_expression(Args &&...args) {
-        auto expr = ocarina::make_unique<Expr>(std::forward<Args>(args)...);
         add_context_expression(OC_FORWARD(args)...);
+//        using Tuple = std::tuple<std::remove_reference_t<Args>...>;
+//        Tuple tuple = Tuple{OC_FORWARD(args)...};
+        auto expr = ocarina::make_unique<Expr>(std::forward<Args>(args)...);
         auto ret = expr.get();
         expr->set_context(this);
         _all_expressions.push_back(std::move(expr));

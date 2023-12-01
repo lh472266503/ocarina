@@ -252,7 +252,7 @@ const CapturedVar *Function::get_captured_var_by_handle(const void *handle) cons
 }
 
 void Function::remedy_ast_nodes() noexcept {
-    for (const Expression *expression : _context_expressions) {
+    for (const Expression *expression : _exterior_expressions) {
 
         int i = 0;
 
