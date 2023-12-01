@@ -97,15 +97,8 @@ private:
         return ret;
     }
 
-    void _add_exterior_expression(const Expression *expression) noexcept {
-        if (std::find(_exterior_expressions.begin(), _exterior_expressions.end(), expression) == _exterior_expressions.end()) {
-            _exterior_expressions.push_back(expression);
-        }
-    }
-
-    [[nodiscard]] bool is_exterior(const Expression *expression) const noexcept {
-        return expression && (expression->context() != this);
-    }
+    void _add_exterior_expression(const Expression *expression) noexcept;
+    [[nodiscard]] bool is_exterior(const Expression *expression) const noexcept;
 
     template<std::size_t i = 0, typename... Args>
     requires(i >= sizeof...(Args))
@@ -124,7 +117,8 @@ private:
             using vec_element_ty = element_t<element_ty>;
             using raw_element_type = std::remove_pointer_t<std::remove_cvref_t<vec_element_ty>>;
             if constexpr (std::is_same_v<std::remove_cvref_t<raw_element_type>, Expression>) {
-                for (const Expression *expression : arg) {
+                for (int j = 0; j < arg.size(); ++j) {
+                    const Expression *expression = arg[j];
                     if (is_exterior(expression)) {
                         _add_exterior_expression(expression);
                     }

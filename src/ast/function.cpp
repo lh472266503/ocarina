@@ -251,6 +251,16 @@ const CapturedVar *Function::get_captured_var_by_handle(const void *handle) cons
     return var;
 }
 
+void Function::_add_exterior_expression(const ocarina::Expression *expression) noexcept {
+    if (std::find(_exterior_expressions.begin(), _exterior_expressions.end(), expression) == _exterior_expressions.end()) {
+        _exterior_expressions.push_back(expression);
+    }
+}
+
+bool Function::is_exterior(const ocarina::Expression *expression) const noexcept {
+    return expression && (expression->context() != this);
+}
+
 void Function::remedy_ast_nodes() noexcept {
     for (const Expression *expression : _exterior_expressions) {
 
