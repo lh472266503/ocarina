@@ -238,7 +238,6 @@ public:
                   Function::current()->return_(ret.expression());
               }
           }))) {
-        _function->remedy_ast_nodes();
     }
 
     auto operator()(prototype_to_callable_invocation_t<Args>... args) const noexcept {
@@ -279,7 +278,6 @@ public:
                   Function::current()->return_(ret.expression());
               }
           }))) {
-        _function->remedy_ast_nodes();
     }
 
     auto operator()(prototype_to_callable_invocation_t<Args>... args) const noexcept {

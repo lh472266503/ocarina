@@ -270,8 +270,6 @@ public:
     }
 
     [[nodiscard]] bool has_configure() const noexcept { return all(block_dim() != 0u) || all(grid_dim() != 0u); }
-    /// Some variables are captured in the upper environment, must be push it to argument list
-    void remedy_ast_nodes() noexcept;
     [[nodiscard]] ocarina::string func_name() const noexcept;
     void assign(const Expression *lhs, const Expression *rhs) noexcept;
     void return_(const Expression *expression) noexcept;

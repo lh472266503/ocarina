@@ -52,7 +52,7 @@ uint Function::_next_variable_uid() noexcept {
 }
 
 const Expression *Function::create_captured_argument(const Expression *expression) noexcept {
-    return argument(expression->type());
+    return reference_argument(expression->type());
 }
 
 void Function::return_(const Expression *expression) noexcept {
@@ -263,13 +263,6 @@ bool Function::contain(const Expression *exterior_expr) const noexcept {
 
 bool Function::is_exterior(const ocarina::Expression *expression) const noexcept {
     return expression && (expression->context() != this);
-}
-
-void Function::remedy_ast_nodes() noexcept {
-    for (const Expression *expression : _exterior_expressions) {
-
-        int i = 0;
-    }
 }
 
 Function *Function::current() noexcept {
