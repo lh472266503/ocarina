@@ -83,10 +83,10 @@ private:
 
 private:
     static ocarina::vector<Function *> &_function_stack() noexcept;
-
     static void _push(Function *f);
     static void _pop(Function *f);
     [[nodiscard]] uint _next_variable_uid() noexcept;
+    [[nodiscard]] const Expression *create_captured_argument(const Expression *expression) noexcept;
 
     template<typename Func>
     static auto _define(Function::Tag tag, Func &&func) noexcept {
@@ -97,7 +97,7 @@ private:
         return ret;
     }
 
-    void _add_exterior_expression(const Expression *expression) noexcept;
+    [[nodiscard]] bool contain(const Expression *exterior_expr) const noexcept;
     [[nodiscard]] bool is_exterior(const Expression *expression) const noexcept;
 
     template<std::size_t i = 0, typename... Args>
@@ -110,8 +110,9 @@ private:
         using raw_type = std::remove_pointer_t<std::remove_cvref_t<element_ty>>;
         auto &arg = std::get<i>(tuple);
         if constexpr (std::is_same_v<std::remove_cvref_t<raw_type>, Expression>) {
-            if (is_exterior(arg)) {
-                _add_exterior_expression(arg);
+            if (is_exterior(arg) && !contain(arg)) {
+                _exterior_expressions.push_back(arg);
+                arg = create_captured_argument(arg);
             }
         } else if constexpr (is_std_vector_v<element_ty>) {
             using vec_element_ty = element_t<element_ty>;
@@ -119,8 +120,9 @@ private:
             if constexpr (std::is_same_v<std::remove_cvref_t<raw_element_type>, Expression>) {
                 for (int j = 0; j < arg.size(); ++j) {
                     const Expression *expression = arg[j];
-                    if (is_exterior(expression)) {
-                        _add_exterior_expression(expression);
+                    if (is_exterior(expression) && !contain(expression)) {
+                        _exterior_expressions.push_back(expression);
+                        (const_cast<vector<const Expression *> &>(arg))[j] = create_captured_argument(expression);
                     }
                 }
             }

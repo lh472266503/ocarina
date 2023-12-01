@@ -51,6 +51,10 @@ uint Function::_next_variable_uid() noexcept {
     return ret;
 }
 
+const Expression *Function::create_captured_argument(const Expression *expression) noexcept {
+    return argument(expression->type());
+}
+
 void Function::return_(const Expression *expression) noexcept {
     if (expression) {
         _ret = expression->type();
@@ -251,10 +255,10 @@ const CapturedVar *Function::get_captured_var_by_handle(const void *handle) cons
     return var;
 }
 
-void Function::_add_exterior_expression(const ocarina::Expression *expression) noexcept {
-    if (std::find(_exterior_expressions.begin(), _exterior_expressions.end(), expression) == _exterior_expressions.end()) {
-        _exterior_expressions.push_back(expression);
-    }
+bool Function::contain(const Expression *exterior_expr) const noexcept {
+    return std::find(_exterior_expressions.begin(),
+                     _exterior_expressions.end(),
+                     exterior_expr) != _exterior_expressions.end();
 }
 
 bool Function::is_exterior(const ocarina::Expression *expression) const noexcept {
