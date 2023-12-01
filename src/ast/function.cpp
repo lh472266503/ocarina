@@ -42,7 +42,7 @@ void Function::_pop(ocarina::Function *f) {
 }
 
 const RefExpr *Function::_ref(const ocarina::Variable &variable) noexcept {
-    return _create_expression<RefExpr>(variable);
+    return create_expression<RefExpr>(variable);
 }
 
 uint Function::_next_variable_uid() noexcept {
@@ -55,7 +55,7 @@ void Function::return_(const Expression *expression) noexcept {
     if (expression) {
         _ret = expression->type();
     }
-    _create_statement<ReturnStmt>(expression);
+    create_statement<ReturnStmt>(expression);
 }
 
 Function::Function(Function::Tag tag) noexcept
@@ -139,59 +139,59 @@ const RefExpr *Function::reference_argument(const Type *type) noexcept {
 }
 
 const RefExpr *Function::local(const Type *type) noexcept {
-    auto ret = _create_expression<RefExpr>(Variable(type, Variable::Tag::LOCAL,
-                                                    _next_variable_uid()));
+    auto ret = create_expression<RefExpr>(Variable(type, Variable::Tag::LOCAL,
+                                                   _next_variable_uid()));
     body()->add_var(ret->variable());
     return ret;
 }
 
 const LiteralExpr *Function::literal(const Type *type, LiteralExpr::value_type value) noexcept {
-    return _create_expression<LiteralExpr>(type, value);
+    return create_expression<LiteralExpr>(type, value);
 }
 
 const UnaryExpr *Function::unary(const Type *type, UnaryOp op,
                                  const Expression *expression) noexcept {
-    return _create_expression<UnaryExpr>(type, op, expression);
+    return create_expression<UnaryExpr>(type, op, expression);
 }
 
 const BinaryExpr *Function::binary(const Type *type, BinaryOp op, const Expression *lhs,
                                    const Expression *rhs) noexcept {
-    return _create_expression<BinaryExpr>(type, op, lhs, rhs);
+    return create_expression<BinaryExpr>(type, op, lhs, rhs);
 }
 
 const ConditionalExpr *Function::conditional(const Type *type, const Expression *pred,
                                              const Expression *t,
                                              const Expression *f) noexcept {
-    return _create_expression<ConditionalExpr>(type, pred, t, f);
+    return create_expression<ConditionalExpr>(type, pred, t, f);
 }
 
 const CastExpr *Function::cast(const Type *type, CastOp op, const Expression *expression) noexcept {
-    return _create_expression<CastExpr>(type, op, expression);
+    return create_expression<CastExpr>(type, op, expression);
 }
 
 const SubscriptExpr *Function::subscript(const Type *type, const Expression *range,
                                          const Expression *index) noexcept {
-    return _create_expression<SubscriptExpr>(type, range, index);
+    return create_expression<SubscriptExpr>(type, range, index);
 }
 
 const SubscriptExpr *Function::subscript(const Type *type, const Expression *range,
                                          vector<const Expression *> indexes) noexcept {
-    return _create_expression<SubscriptExpr>(type, range, indexes);
+    return create_expression<SubscriptExpr>(type, range, indexes);
 }
 
 const MemberExpr *Function::swizzle(const Type *type, const Expression *obj, uint16_t mask,
                                     uint16_t swizzle_size) noexcept {
-    return _create_expression<MemberExpr>(type, obj, mask, swizzle_size);
+    return create_expression<MemberExpr>(type, obj, mask, swizzle_size);
 }
 
 const MemberExpr *Function::member(const Type *type, const Expression *obj, int index) noexcept {
-    return _create_expression<MemberExpr>(type, obj, index, 0);
+    return create_expression<MemberExpr>(type, obj, index, 0);
 }
 
 const CallExpr *Function::call(const Type *type, SP<const Function> func,
                                ocarina::vector<const Expression *> args) noexcept {
     add_used_function(func);
-    return _create_expression<CallExpr>(type, func.get(), std::move(args));
+    return create_expression<CallExpr>(type, func.get(), std::move(args));
 }
 
 const CallExpr *Function::call_builtin(const Type *type, CallOp op,
@@ -200,7 +200,7 @@ const CallExpr *Function::call_builtin(const Type *type, CallOp op,
     if (to_underlying(op) >= to_underlying(CallOp::MAKE_RAY)) {
         set_raytracing(true);
     }
-    return _create_expression<CallExpr>(type, op, std::move(args), std::move(t_args));
+    return create_expression<CallExpr>(type, op, std::move(args), std::move(t_args));
 }
 
 const CapturedVar &Function::get_captured_var(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept {
@@ -255,7 +255,6 @@ void Function::remedy_ast_nodes() noexcept {
     for (const Expression *expression : _exterior_expressions) {
 
         int i = 0;
-
     }
 }
 
@@ -267,51 +266,51 @@ Function *Function::current() noexcept {
 }
 
 ScopeStmt *Function::scope() noexcept {
-    return _create_statement<ScopeStmt>(false);
+    return create_statement<ScopeStmt>(false);
 }
 
 IfStmt *Function::if_(const Expression *expr) noexcept {
-    return _create_statement<IfStmt>(expr);
+    return create_statement<IfStmt>(expr);
 }
 
 SwitchStmt *Function::switch_(const Expression *expr) noexcept {
-    return _create_statement<SwitchStmt>(expr);
+    return create_statement<SwitchStmt>(expr);
 }
 
 SwitchCaseStmt *Function::switch_case(const Expression *expr) noexcept {
-    return _create_statement<SwitchCaseStmt>(expr);
+    return create_statement<SwitchCaseStmt>(expr);
 }
 
 const ExprStmt *Function::expr_statement(const Expression *expr) noexcept {
-    return _create_statement<ExprStmt>(expr);
+    return create_statement<ExprStmt>(expr);
 }
 
 SwitchDefaultStmt *Function::switch_default() noexcept {
-    return _create_statement<SwitchDefaultStmt>();
+    return create_statement<SwitchDefaultStmt>();
 }
 
 LoopStmt *Function::loop() noexcept {
-    return _create_statement<LoopStmt>();
+    return create_statement<LoopStmt>();
 }
 
 ForStmt *Function::for_(const Expression *init, const Expression *cond, const Expression *step) noexcept {
-    return _create_statement<ForStmt>(init, cond, step);
+    return create_statement<ForStmt>(init, cond, step);
 }
 
 void Function::continue_() noexcept {
-    _create_statement<ContinueStmt>();
+    create_statement<ContinueStmt>();
 }
 
 void Function::break_() noexcept {
-    _create_statement<BreakStmt>();
+    create_statement<BreakStmt>();
 }
 
 void Function::comment(const ocarina::string &string) noexcept {
-    _create_statement<CommentStmt>(string);
+    create_statement<CommentStmt>(string);
 }
 
 void Function::print(string fmt, const vector<const Expression *> &args) noexcept {
-    _create_statement<PrintStmt>(fmt, args);
+    create_statement<PrintStmt>(fmt, args);
 }
 
 ocarina::span<const Variable> Function::arguments() const noexcept {
@@ -335,7 +334,7 @@ ocarina::string Function::func_name() const noexcept {
 }
 
 void Function::assign(const Expression *lhs, const Expression *rhs) noexcept {
-    _create_statement<AssignStmt>(lhs, rhs);
+    create_statement<AssignStmt>(lhs, rhs);
 }
 
 uint64_t Function::_compute_hash() const noexcept {

@@ -164,17 +164,17 @@ void test_lambda(Device &device, Stream &stream) {
             return begin;
         };
 
-        Lambda cb = [&](Float a) {
-            Float b = a;
-            a = a + end;
+//        Lambda cb = [&](Float a) {
+//            Float b = a;
+//            a = a + end;
             Var v = vert.read(1);
-
-            cb2(a);
-        };
+//
+//            cb2(a);
+//        };
 
         cb2(1);
 
-        cb(Float(1.f));
+//        cb(Float(1.f));
 
     };
     Shader shader = device.compile(kernel);

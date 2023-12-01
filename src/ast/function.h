@@ -97,10 +97,10 @@ private:
         return ret;
     }
 
-    void _add_context_expression() noexcept {}
+    void _add_exterior_expression() noexcept {}
     template<typename First, typename... Rest>
-    void _add_context_expression(First &&first, Rest &&...rest) noexcept {
-        _add_context_expression(OC_FORWARD(rest)...);
+    void _add_exterior_expression(First &&first, Rest &&...rest) noexcept {
+        _add_exterior_expression(OC_FORWARD(rest)...);
         using raw_type = std::remove_pointer_t<std::remove_cvref_t<First>>;
         if constexpr (std::is_same_v<std::remove_cvref_t<raw_type>, Expression>) {
             if (first->context() != this) {
@@ -110,8 +110,8 @@ private:
     }
 
     template<typename... Args>
-    void add_context_expression(Args &&...args) noexcept {
-        _add_context_expression(OC_FORWARD(args)...);
+    void add_exterior_expression(Args &&...args) noexcept {
+        _add_exterior_expression(OC_FORWARD(args)...);
     }
 
     template<typename Expr, typename Tuple, size_t ...i>
@@ -120,8 +120,8 @@ private:
     }
 
     template<typename Expr, typename... Args>
-    [[nodiscard]] auto _create_expression(Args &&...args) {
-        add_context_expression(OC_FORWARD(args)...);
+    [[nodiscard]] auto create_expression(Args &&...args) {
+        add_exterior_expression(OC_FORWARD(args)...);
 //        using Tuple = std::tuple<std::remove_reference_t<Args>...>;
 //        Tuple tuple = Tuple{OC_FORWARD(args)...};
         auto expr = ocarina::make_unique<Expr>(std::forward<Args>(args)...);
@@ -135,7 +135,8 @@ private:
     void add_used_function(SP<const Function> func) noexcept;
 
     template<typename Stmt, typename... Args>
-    auto _create_statement(Args &&...args) {
+    auto create_statement(Args &&...args) {
+        add_exterior_expression(OC_FORWARD(args)...);
         auto stmt = ocarina::make_unique<Stmt>(std::forward<Args>(args)...);
         auto ret = stmt.get();
         _all_statements.push_back(std::move(stmt));
