@@ -213,6 +213,12 @@ public:
             visitor(var);
         }
     }
+    template<typename F>
+    void for_each_exterior_expr(F &&func) const noexcept {
+        for (const Expression *expr : _exterior_expressions) {
+            func(expr);
+        }
+    }
     void update_captured_vars(const Function *func) noexcept;
     [[nodiscard]] static Function *current() noexcept;
     template<typename Func>
