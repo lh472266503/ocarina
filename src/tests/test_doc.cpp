@@ -161,29 +161,21 @@ void test_lambda(Device &device, Stream &stream) {
         Uint end = 10;
 
         Lambda cb2 = [&](Float b) {
-            return b;
+            return begin;
         };
 
         Lambda cb = [&](Float a) {
-            a = a + begin;
+            Float b = a;
+            a = a + end;
             Var v = vert.read(1);
 
-
             cb2(a);
-
-//            $info("begin end for statement dispatch_idx is--- , {}", a);
-//            $info("begin end for statement dispatch_idx is , {} {} {}", resource_array.buffer<float3>(0).read(dispatch_id()));
         };
 
         cb2(1);
 
-        $scope {
-            $for(i, begin, end) {
-                cb(Float(1.f));
-                //                Float3 elm =  vert.read(i);
-                //                $info("begin end for statement dispatch_idx is , {} {} {}", resource_array.buffer<float3>(0).read(dispatch_id()));
-            };
-        };
+        cb(Float(1.f));
+
     };
     Shader shader = device.compile(kernel);
 
