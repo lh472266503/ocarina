@@ -97,26 +97,16 @@ private:
         return ret;
     }
 
-    void _add_exterior_expression() noexcept {}
+    void add_exterior_expression() noexcept {}
     template<typename First, typename... Rest>
-    void _add_exterior_expression(First &&first, Rest &&...rest) noexcept {
-        _add_exterior_expression(OC_FORWARD(rest)...);
+    void add_exterior_expression(First &&first, Rest &&...rest) noexcept {
         using raw_type = std::remove_pointer_t<std::remove_cvref_t<First>>;
         if constexpr (std::is_same_v<std::remove_cvref_t<raw_type>, Expression>) {
             if (first && first->context() != this) {
                 _exterior_expressions.push_back(first);
             }
         }
-    }
-
-    template<typename... Args>
-    void add_exterior_expression(Args &&...args) noexcept {
-        _add_exterior_expression(OC_FORWARD(args)...);
-    }
-
-    template<typename Expr, typename Tuple, size_t ...i>
-    [[nodiscard]] auto _create_expression_by_tuple(Tuple &tuple, ocarina::index_sequence<i...>) {
-        return ocarina::make_unique<Expr>(std::get<i>(tuple)...);
+        add_exterior_expression(OC_FORWARD(rest)...);
     }
 
     template<typename Expr, typename Tuple, size_t ...i>
