@@ -107,26 +107,31 @@ private:
         return expression && (expression->context() != this);
     }
 
-    void add_exterior_expression() noexcept {}
-    template<typename First, typename... Rest>
-    void add_exterior_expression(First &&first, Rest &&...rest) noexcept {
-        using raw_type = std::remove_pointer_t<std::remove_cvref_t<First>>;
+    template<std::size_t i = 0, typename... Args>
+    requires(i >= sizeof...(Args))
+    void traverse_tuple(std::tuple<Args...> &tuple) noexcept {}
+    template<std::size_t i = 0, typename... Args>
+    requires(i < sizeof...(Args))
+    void traverse_tuple(std::tuple<Args...> &tuple) noexcept {
+        using element_ty = std::tuple_element_t<i, std::tuple<Args...>>;
+        using raw_type = std::remove_pointer_t<std::remove_cvref_t<element_ty>>;
+        auto &arg = std::get<i>(tuple);
         if constexpr (std::is_same_v<std::remove_cvref_t<raw_type>, Expression>) {
-            if (is_exterior(first)) {
-                _add_exterior_expression(first);
+            if (is_exterior(arg)) {
+                _add_exterior_expression(arg);
             }
-        } else if constexpr (is_std_vector_v<First>) {
-            using element_ty = element_t<First>;
-            using raw_element_type = std::remove_pointer_t<std::remove_cvref_t<element_ty>>;
+        } else if constexpr (is_std_vector_v<element_ty>) {
+            using vec_element_ty = element_t<element_ty>;
+            using raw_element_type = std::remove_pointer_t<std::remove_cvref_t<vec_element_ty>>;
             if constexpr (std::is_same_v<std::remove_cvref_t<raw_element_type>, Expression>) {
-                for (const Expression * expression : first) {
+                for (const Expression *expression : arg) {
                     if (is_exterior(expression)) {
                         _add_exterior_expression(expression);
                     }
                 }
             }
         }
-        add_exterior_expression(OC_FORWARD(rest)...);
+        traverse_tuple<i + 1>(tuple);
     }
 
     template<typename Expr, typename Tuple, size_t... i>
@@ -140,9 +145,9 @@ private:
 
     template<typename Expr, typename... Args>
     [[nodiscard]] auto create_expression(Args &&...args) {
-        add_exterior_expression(OC_FORWARD(args)...);
         using Tuple = std::tuple<std::remove_reference_t<Args>...>;
         Tuple tuple = Tuple{OC_FORWARD(args)...};
+        traverse_tuple(tuple);
         return _create_expression<Expr>(OC_FORWARD(tuple), std::index_sequence_for<Args...>());
     }
     [[nodiscard]] const RefExpr *_ref(const Variable &variable) noexcept;
@@ -160,9 +165,9 @@ private:
 
     template<typename Stmt, typename... Args>
     auto create_statement(Args &&...args) {
-        add_exterior_expression(OC_FORWARD(args)...);
         using Tuple = std::tuple<std::remove_reference_t<Args>...>;
         Tuple tuple = Tuple{OC_FORWARD(args)...};
+        traverse_tuple(tuple);
         return _create_statement<Stmt>(OC_FORWARD(tuple), std::index_sequence_for<Args...>());
     }
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
