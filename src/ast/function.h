@@ -63,6 +63,7 @@ public:
 private:
     mutable string _description{};
     const Type *_ret{nullptr};
+    size_t _original_params_num{};
     ocarina::vector<ocarina::unique_ptr<Expression>> _all_expressions;
     ocarina::vector<const Expression *> _exterior_expressions;
     ocarina::vector<ocarina::unique_ptr<Statement>> _all_statements;
@@ -98,21 +99,41 @@ private:
     }
 
     [[nodiscard]] bool contain(const Expression *exterior_expr) const noexcept;
-    [[nodiscard]] bool is_exterior(const Expression *expression) const noexcept;
 
     template<std::size_t i = 0, typename... Args>
     requires(i >= sizeof...(Args))
-    void traverse_tuple(std::tuple<Args...> &tuple) noexcept {}
+    void traverse_tuple(std::tuple<Args...> &) noexcept {}
     template<std::size_t i = 0, typename... Args>
     requires(i < sizeof...(Args))
     void traverse_tuple(std::tuple<Args...> &tuple) noexcept {
         using element_ty = std::tuple_element_t<i, std::tuple<Args...>>;
         using raw_type = std::remove_pointer_t<std::remove_cvref_t<element_ty>>;
         auto &arg = std::get<i>(tuple);
+
+        auto is_exterior = [&](const Expression *expression) {
+            return expression && (expression->context() != this);
+        };
+
+        auto exterior_expr_index = [&](const Expression *expr) {
+            return std::find(_exterior_expressions.begin(),
+                             _exterior_expressions.end(),
+                             expr) -
+                   _exterior_expressions.begin();
+        };
+
+        auto get_captured_argument = [&](uint index) {
+            return _arguments.at(index + _original_params_num);
+        };
+
         if constexpr (std::is_same_v<std::remove_cvref_t<raw_type>, Expression>) {
-            if (is_exterior(arg) && !contain(arg)) {
-                _exterior_expressions.push_back(arg);
-                arg = create_captured_argument(arg);
+            if (is_exterior(arg)) {
+                int index = exterior_expr_index(arg);
+                if (index == _exterior_expressions.size()) {
+                    _exterior_expressions.push_back(arg);
+                    arg = create_captured_argument(arg);
+                } else {
+                    arg = _ref(get_captured_argument(index));
+                }
             }
         } else if constexpr (is_std_vector_v<element_ty>) {
             using vec_element_ty = element_t<element_ty>;
@@ -120,9 +141,15 @@ private:
             if constexpr (std::is_same_v<std::remove_cvref_t<raw_element_type>, Expression>) {
                 for (int j = 0; j < arg.size(); ++j) {
                     const Expression *expression = arg[j];
-                    if (is_exterior(expression) && !contain(expression)) {
-                        _exterior_expressions.push_back(expression);
-                        (const_cast<vector<const Expression *> &>(arg))[j] = create_captured_argument(expression);
+
+                    if (is_exterior(expression)) {
+                        int index = exterior_expr_index(expression);
+                        if (index == _exterior_expressions.size()) {
+                            _exterior_expressions.push_back(expression);
+                            (const_cast<vector<const Expression *> &>(arg))[j] = create_captured_argument(expression);
+                        } else {
+                            (const_cast<vector<const Expression *> &>(arg))[j] = _ref(get_captured_argument(index));
+                        }
                     }
                 }
             }
@@ -184,6 +211,7 @@ private:
 
 public:
     void set_description(string desc) const noexcept { _description = ocarina::move(desc); }
+    void set_original_params_num(size_t num) noexcept { _original_params_num = num; }
     [[nodiscard]] string &description() const noexcept { return _description; }
     [[nodiscard]] auto used_custom_func() const noexcept { return _used_custom_func; }
     template<typename Visitor>

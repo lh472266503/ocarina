@@ -265,10 +265,6 @@ bool Function::contain(const Expression *exterior_expr) const noexcept {
                      exterior_expr) != _exterior_expressions.end();
 }
 
-bool Function::is_exterior(const ocarina::Expression *expression) const noexcept {
-    return expression && (expression->context() != this);
-}
-
 Function *Function::current() noexcept {
     if (_function_stack().empty()) {
         return nullptr;

@@ -238,6 +238,7 @@ public:
                   Function::current()->return_(ret.expression());
               }
           }))) {
+        _function->set_original_params_num(sizeof...(Args));
     }
 
     auto operator()(prototype_to_callable_invocation_t<Args>... args) const noexcept {
@@ -278,6 +279,7 @@ public:
                   Function::current()->return_(ret.expression());
               }
           }))) {
+        _function->set_original_params_num(sizeof...(Args));
     }
 
     auto operator()(prototype_to_callable_invocation_t<Args>... args) const noexcept {
@@ -327,7 +329,9 @@ public:
     Kernel(Func &&func) noexcept
         : FuncWrapper(std::move(Function::define_kernel([&] {
               detail::create<Args...>(OC_FORWARD(func), ocarina::index_sequence_for<Args...>());
-          }))) {}
+          }))) {
+        _function->set_original_params_num(sizeof...(Args));
+    }
 
     template<typename... A>
     requires std::is_invocable_v<signature, expr_value_t<A>...>

@@ -159,18 +159,27 @@ void test_lambda(Device &device, Stream &stream) {
     Kernel kernel = [&]() {
         Uint begin = 2;
         Uint end = 10;
+        Uint end1 = 10;
+        Uint end2 = 10;
+        Uint end3 = 10;
+        Uint end4 = 10;
+        Uint end6 = 10;
 
 
 
         Lambda cb = [&](Float a) {
-            a = a + end;
+            a = a + end6;
+
+            auto b = begin;
+
+            auto c = end6;
 
             Lambda cb2 = [&](Uint& b) {
-                b = begin;
+                b = begin + b;
                 return b;
             };
-
-            cb2(end);
+//
+            cb2(end6);
         };
         Var v = vert.read(1);
         cb(Float(1.f));
