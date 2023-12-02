@@ -271,19 +271,6 @@ auto outline(Func &&func, const string &desc = "") {
     return callable();
 }
 
-namespace detail {
-struct CallableOutlineBuilder {
-public:
-    string desc;
-    CallableOutlineBuilder(const string &str) : desc(str) {}
-    template<typename F>
-    auto operator%(F &&body) && noexcept {
-        return outline(OC_FORWARD(body), desc);
-    }
-};
-
-}// namespace detail
-
 template<typename Func>
 class Lambda {
 private:
@@ -291,7 +278,10 @@ private:
     Func _func;
 
 public:
-    Lambda(Func &&f) noexcept : _func(std::forward<Func>(f)) {}
+    Lambda(Func &&f) noexcept
+        : _func(std::forward<Func>(f)) {}
+    Lambda(Func &&f, const string &str) noexcept
+        : _func(std::forward<Func>(f)), _desc(str) {}
     Lambda(Lambda &&) noexcept = default;
     Lambda(const Lambda &) noexcept = default;
     Lambda &operator=(Lambda &&) noexcept = default;
@@ -308,15 +298,27 @@ public:
             },
                     _desc);
         } else {
-            optional<ret_type> ret;
+            ret_type ret;
             outline([&] {
-                ret.emplace(_func(OC_FORWARD(args)...));
+                ret = _func(OC_FORWARD(args)...);
             },
                     _desc);
-            return ocarina::move(ret).value();
+            return ret;
         }
     }
 };
+
+namespace detail {
+struct CallableOutlineBuilder {
+public:
+    string desc;
+    CallableOutlineBuilder(const string &str) : desc(str) {}
+    template<typename F>
+    auto operator%(F &&body) && noexcept {
+        return Lambda(OC_FORWARD(body), desc)();
+    }
+};
+}// namespace detail
 
 template<typename T>
 class Kernel {

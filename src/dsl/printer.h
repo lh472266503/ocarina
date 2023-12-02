@@ -166,12 +166,13 @@ void Printer::_log(spdlog::level::level_enum level, const string &fmt, const Arg
     constexpr auto count = (0u + ... + static_cast<uint>(is_dsl_v<Args>));
 
     uint last = static_cast<uint>(_buffer.device_buffer().size() - 1);
-    Uint offset = _buffer.atomic(last).fetch_add(count + 1);
-    uint item_index = _items.size();
-    if_(offset < last, [&] {
-        _buffer.write(offset, item_index, false);
-    });
+    Uint item_index = static_cast<uint>(_items.size());
+
     outline([&] {
+        Uint offset = _buffer.atomic(last).fetch_add(count + 1);
+        if_(offset < last, [&] {
+            _buffer.write(offset, item_index, false);
+        });
         if_(offset + count < last, [&] {
             _log_to_buffer(offset + 1, 0, OC_FORWARD(args)...);
         });

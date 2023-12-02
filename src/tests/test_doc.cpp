@@ -144,6 +144,10 @@ void test_compute_shader(Device &device, Stream &stream) {
            << synchronize() << commit();
 }
 
+struct Test {
+    Uint a;
+};
+
 void test_lambda(Device &device, Stream &stream) {
     auto [vertices, triangles] = get_cube();
 
@@ -162,8 +166,8 @@ void test_lambda(Device &device, Stream &stream) {
         Uint end1 = 10;
         Uint end2 = 10;
         Uint end3 = 10;
-        Uint end4 = 10;
-        Uint end6 = 10;
+//        Uint end4 = 10;
+//        Uint end6 = 10;
 
 //        Lambda func = [&](int i, float z, Float a) {
 //            $info("{}    {}   {}     ---------", i,z, a);
@@ -172,10 +176,27 @@ void test_lambda(Device &device, Stream &stream) {
 //
 //       func(1,2.f, Float(7.f));
 
+        Var aa = $outline {
+            Var aa = $outline {
+                return begin * 5;
+            };
+            return aa;
+        };
+
+//        auto ld = Lambda([&] {
+//            Test test;
+//            test.a = begin * 2;
+//            return test;
+//        });
+
+//        auto aa = ld();
+//        Uint b = aa + 2;
+
+
 //        $outline {
-        $info("{} {} {} --===", begin,begin,begin);
+//        $info("{} {} {} --===", begin,begin,begin);
         $info("{} === --===", end);
-        $info("{}  --===", begin);
+        $info("{} {} --===", aa,end);
         $info("{}  --===", begin);
 //        };
 //        Callable cb = [&](Float a) {
