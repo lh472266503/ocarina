@@ -167,14 +167,17 @@ void test_lambda(Device &device, Stream &stream) {
 
 //        Lambda func = [&](int i, float z, Float a) {
 //            $info("{}    {}   {}     ---------", i,z, a);
-//            return a;
+////            return a;
 //        };
 //
-//        auto a = func(1,2.f, Float(7.f));
+//       func(1,2.f, Float(7.f));
 
-        $outline {
-            $info("{}  --===", begin);
-        };
+//        $outline {
+        $info("{} {} {} --===", begin,begin,begin);
+        $info("{} === --===", end);
+        $info("{}  --===", begin);
+        $info("{}  --===", begin);
+//        };
 //        Callable cb = [&](Float a) {
 //            a = a + end6;
 //            auto c = end6;
