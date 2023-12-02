@@ -148,7 +148,7 @@ private:
     }
     [[nodiscard]] const RefExpr *_ref(const Variable &variable) noexcept;
     [[nodiscard]] const RefExpr *_builtin(Variable::Tag tag, const Type *type) noexcept;
-    void add_used_function(SP<const Function> func) noexcept;
+    const Function *add_used_function(SP<const Function> func) noexcept;
 
     template<typename Stmt, typename Tuple, size_t... i>
     [[nodiscard]] auto _create_statement(Tuple &&tuple, std::index_sequence<i...>) {
