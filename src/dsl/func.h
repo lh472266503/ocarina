@@ -264,25 +264,27 @@ public:
 template<typename T>
 Callable(T &&) -> Callable<detail::dsl_function_t<T>>;
 
-namespace detail {
-struct CallableOutliner {
-public:
-    string desc;
-    CallableOutliner(const string &str) : desc(str) {}
-    template<typename F>
-    void operator%(F &&body) && noexcept {
-        Callable{std::forward<F>(body)}();
-    }
-};
-
-}// namespace detail
-
 template<typename Func>
 void outline(Func &&func, const string &desc = "") {
     Callable callable = OC_FORWARD(func);
     callable.function()->set_description(desc);
     callable();
 }
+
+namespace detail {
+struct CallableOutlineBuilder {
+public:
+    string desc;
+    CallableOutlineBuilder(const string &str) : desc(str) {}
+    template<typename F>
+    void operator%(F &&body) && noexcept {
+        outline(OC_FORWARD(body), desc);
+    }
+};
+
+}// namespace detail
+
+
 
 template<typename Func>
 class Lambda {
@@ -310,10 +312,10 @@ public:
         } else {
             optional<ret_type> ret;
             outline([&] {
-                ret.emplace(_func(args)...);
+                ret.emplace(_func(OC_FORWARD(args)...));
             },
                     _desc);
-            return move(ret).value();
+            return ocarina::move(ret).value();
         }
     }
 };

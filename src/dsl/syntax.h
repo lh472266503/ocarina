@@ -37,6 +37,8 @@
 
 #define $scope ::ocarina::detail::ScopeStmtBuilder("scope " + $source_location) + [&]() noexcept
 
+#define $outline ::ocarina::detail::CallableOutlineBuilder("callable " + $source_location) % [&]() noexcept
+
 #define $debug(...) Env::printer().set_description("debug " + $source_location).debug(__VA_ARGS__);
 #define $info(...) Env::printer().set_description("info " + $source_location).info(__VA_ARGS__);
 #define $warn(...) Env::printer().set_description("warn " + $source_location).warn(__VA_ARGS__);

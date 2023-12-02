@@ -165,25 +165,33 @@ void test_lambda(Device &device, Stream &stream) {
         Uint end4 = 10;
         Uint end6 = 10;
 
+//        Lambda func = [&](int i, float z, Float a) {
+//            $info("{}    {}   {}     ---------", i,z, a);
+//            return a;
+//        };
+//
+//        auto a = func(1,2.f, Float(7.f));
 
-
-        Callable cb = [&](Float a) {
-            a = a + end6;
-            auto c = end6;
-
-            Callable cb2 = [&](Uint& b) {
-                b = begin + b;
-                Var v = vert.read(1);
-                $info("{}         ---------", v.x);
-                return b;
-            };
-
-            cb2(end6);
-
-            int i = 0;
+        $outline {
+            $info("{}  --===", begin);
         };
-
-        cb(Float(1.f));
+//        Callable cb = [&](Float a) {
+//            a = a + end6;
+//            auto c = end6;
+//
+//            Callable cb2 = [&](Uint& b) {
+//                b = begin + b;
+//                Var v = vert.read(1);
+//                $info("{}         ---------", v.x);
+//                return b;
+//            };
+//
+//            cb2(end6);
+//
+//            int i = 0;
+//        };
+//
+//        cb(Float(1.f));
 
     };
     Shader shader = device.compile(kernel);
