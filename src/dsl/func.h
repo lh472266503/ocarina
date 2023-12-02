@@ -237,9 +237,7 @@ public:
                   decltype(auto) ret = detail::create<Args...>(OC_FORWARD(func), ocarina::index_sequence_for<Args...>());
                   Function::current()->return_(ret.expression());
               }
-          }))) {
-        _function->set_original_params_num(sizeof...(Args));
-    }
+          }))) {}
 
     auto operator()(prototype_to_callable_invocation_t<Args>... args) const noexcept {
         const CallExpr *expr = Function::current()->call(Type::of<Ret>(), _function, {(OC_EXPR(args))...});
@@ -278,9 +276,7 @@ public:
                   decltype(auto) ret = detail::create<Args...>(OC_FORWARD(func), ocarina::index_sequence_for<Args...>());
                   Function::current()->return_(ret.expression());
               }
-          }))) {
-        _function->set_original_params_num(sizeof...(Args));
-    }
+          }))) {}
 
     auto operator()(prototype_to_callable_invocation_t<Args>... args) const noexcept {
         Function::current()->update_captured_vars(_function.get());
@@ -329,9 +325,7 @@ public:
     Kernel(Func &&func) noexcept
         : FuncWrapper(std::move(Function::define_kernel([&] {
               detail::create<Args...>(OC_FORWARD(func), ocarina::index_sequence_for<Args...>());
-          }))) {
-        _function->set_original_params_num(sizeof...(Args));
-    }
+          }))) {}
 
     template<typename... A>
     requires std::is_invocable_v<signature, expr_value_t<A>...>

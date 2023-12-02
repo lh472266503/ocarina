@@ -169,17 +169,16 @@ void test_lambda(Device &device, Stream &stream) {
 
         Lambda cb = [&](Float a) {
             a = a + end6;
-
-            auto b = begin;
-
             auto c = end6;
 
             Lambda cb2 = [&](Uint& b) {
-                b = begin + b;
+//                b = begin + b;
                 return b;
             };
-//
+
             cb2(end6);
+
+            int i = 0;
         };
         Var v = vert.read(1);
         cb(Float(1.f));

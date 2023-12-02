@@ -148,7 +148,8 @@ private:
                             _exterior_expressions.push_back(expression);
                             (const_cast<vector<const Expression *> &>(arg))[j] = create_captured_argument(expression);
                         } else {
-                            (const_cast<vector<const Expression *> &>(arg))[j] = _ref(get_captured_argument(index));
+                            auto variable = get_captured_argument(index);
+                            (const_cast<vector<const Expression *> &>(arg))[j] = _ref(variable);
                         }
                     }
                 }
@@ -211,7 +212,6 @@ private:
 
 public:
     void set_description(string desc) const noexcept { _description = ocarina::move(desc); }
-    void set_original_params_num(size_t num) noexcept { _original_params_num = num; }
     [[nodiscard]] string &description() const noexcept { return _description; }
     [[nodiscard]] auto used_custom_func() const noexcept { return _used_custom_func; }
     template<typename Visitor>
