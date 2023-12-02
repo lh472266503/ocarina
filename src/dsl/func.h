@@ -264,6 +264,60 @@ public:
 template<typename T>
 Callable(T &&) -> Callable<detail::dsl_function_t<T>>;
 
+namespace detail {
+struct CallableOutliner {
+public:
+    string desc;
+    CallableOutliner(const string &str) : desc(str) {}
+    template<typename F>
+    void operator%(F &&body) && noexcept {
+        Callable{std::forward<F>(body)}();
+    }
+};
+
+}// namespace detail
+
+template<typename Func>
+void outline(Func &&func, const string &desc = "") {
+    Callable callable = OC_FORWARD(func);
+    callable.function()->set_description(desc);
+    callable();
+}
+
+template<typename Func>
+class Lambda {
+private:
+    string _desc;
+    Func _func;
+
+public:
+    Lambda(Func &&f) noexcept : _func(std::forward<Func>(f)) {}
+    Lambda(Lambda &&) noexcept = default;
+    Lambda(const Lambda &) noexcept = default;
+    Lambda &operator=(Lambda &&) noexcept = default;
+    Lambda &operator=(const Lambda &) noexcept = default;
+    void set_description(const string &desc) noexcept { _desc = desc; }
+
+    template<typename... Args>
+    requires std::invocable<Func, Args...>
+    auto operator()(Args &&...args) const noexcept {
+        using ret_type = decltype(_func(OC_FORWARD(args)...));
+        if constexpr (std::is_same_v<ret_type, void>) {
+            outline([&] {
+                _func(OC_FORWARD(args)...);
+            },
+                    _desc);
+        } else {
+            optional<ret_type> ret;
+            outline([&] {
+                ret.emplace(_func(args)...);
+            },
+                    _desc);
+            return move(ret).value();
+        }
+    }
+};
+
 template<typename T>
 class Kernel {
     static_assert(always_false_v<T>);
