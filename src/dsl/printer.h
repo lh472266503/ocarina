@@ -162,7 +162,7 @@ void Printer::_log(spdlog::level::level_enum level, const string &fmt, const Arg
     if (!_desc.empty()) {
         comment(_desc);
     }
-    comment("start log " + fmt);
+    comment("start log >>>>>>>>>> ");
     constexpr auto count = (0u + ... + static_cast<uint>(is_dsl_v<Args>));
 
     uint last = static_cast<uint>(_buffer.device_buffer().size() - 1);
@@ -177,7 +177,7 @@ void Printer::_log(spdlog::level::level_enum level, const string &fmt, const Arg
             _log_to_buffer(offset + 1, 0, OC_FORWARD(args)...);
         });
     });
-    comment("end log " + fmt);
+    comment("end log <<<<<<<<<<");
     _desc = "";
 
     uint dsl_counter = 0;
