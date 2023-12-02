@@ -167,12 +167,12 @@ void test_lambda(Device &device, Stream &stream) {
 
 
 
-        Lambda cb = [&](Float a) {
+        Callable cb = [&](Float a) {
             a = a + end6;
             auto c = end6;
 
-            Lambda cb2 = [&](Uint& b) {
-//                b = begin + b;
+            Callable cb2 = [&](Uint& b) {
+                b = begin + b;
                 return b;
             };
 
