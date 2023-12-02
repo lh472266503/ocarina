@@ -173,6 +173,8 @@ void test_lambda(Device &device, Stream &stream) {
 
             Callable cb2 = [&](Uint& b) {
                 b = begin + b;
+                Var v = vert.read(1);
+                $info("{}         ---------", v.x);
                 return b;
             };
 
@@ -180,9 +182,9 @@ void test_lambda(Device &device, Stream &stream) {
 
             int i = 0;
         };
-        Var v = vert.read(1);
+
         cb(Float(1.f));
-      $info("{}         ---------", end);
+
     };
     Shader shader = device.compile(kernel);
 
