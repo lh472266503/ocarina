@@ -308,6 +308,9 @@ public:
     }
 };
 
+template<typename T>
+Lambda(T &&) -> Lambda<canonical_signature_t<std::remove_cvref_t<T>>>;
+
 namespace detail {
 struct CallableOutlineBuilder {
 public:
