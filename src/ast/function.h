@@ -63,11 +63,11 @@ public:
 private:
     mutable string _description{};
     const Type *_ret{nullptr};
-    size_t _original_params_num{};
     ocarina::vector<ocarina::unique_ptr<Expression>> _all_expressions;
     ocarina::vector<const Expression *> _exterior_expressions;
     ocarina::vector<ocarina::unique_ptr<Statement>> _all_statements;
     ocarina::vector<Variable> _arguments;
+    ocarina::vector<Variable> _captured_arguments;
     ocarina::vector<CapturedVar> _captured_vars;
     ocarina::vector<Variable> _builtin_vars;
     ocarina::vector<Usage> _variable_usages;
@@ -98,8 +98,6 @@ private:
         return ret;
     }
 
-    [[nodiscard]] bool contain(const Expression *exterior_expr) const noexcept;
-
     template<std::size_t i = 0, typename... Args>
     requires(i >= sizeof...(Args))
     void traverse_tuple(std::tuple<Args...> &) noexcept {}
@@ -121,10 +119,6 @@ private:
                    _exterior_expressions.begin();
         };
 
-        auto get_captured_argument = [&](uint index) {
-            return _arguments.at(index + _original_params_num);
-        };
-
         if constexpr (std::is_same_v<std::remove_cvref_t<raw_type>, Expression>) {
             if (is_exterior(arg)) {
                 int index = exterior_expr_index(arg);
@@ -132,7 +126,7 @@ private:
                     _exterior_expressions.push_back(arg);
                     arg = create_captured_argument(arg);
                 } else {
-                    arg = _ref(get_captured_argument(index));
+                    arg = _ref(_captured_arguments.at(index));
                 }
             }
         } else if constexpr (is_std_vector_v<element_ty>) {
@@ -148,7 +142,7 @@ private:
                             _exterior_expressions.push_back(expression);
                             (const_cast<vector<const Expression *> &>(arg))[j] = create_captured_argument(expression);
                         } else {
-                            auto variable = get_captured_argument(index);
+                            auto variable = _captured_arguments.at(index);
                             (const_cast<vector<const Expression *> &>(arg))[j] = _ref(variable);
                         }
                     }
@@ -338,6 +332,7 @@ public:
     [[nodiscard]] const ScopeStmt *body() const noexcept;
     [[nodiscard]] ScopeStmt *body() noexcept;
     [[nodiscard]] ocarina::span<const Variable> arguments() const noexcept;
+    [[nodiscard]] vector<Variable> all_arguments() const noexcept;
     [[nodiscard]] ocarina::span<const Variable> builtin_vars() const noexcept;
     [[nodiscard]] constexpr Tag tag() const noexcept { return _tag; }
     [[nodiscard]] constexpr bool is_callable() const noexcept { return _tag == Tag::CALLABLE; }

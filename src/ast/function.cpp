@@ -52,7 +52,9 @@ uint Function::_next_variable_uid() noexcept {
 }
 
 const Expression *Function::create_captured_argument(const Expression *expression) noexcept {
-    return reference_argument(expression->type());
+    Variable variable(expression->type(), Variable::Tag::REFERENCE, _next_variable_uid());
+    _captured_arguments.push_back(variable);
+    return _ref(variable);
 }
 
 void Function::return_(const Expression *expression) noexcept {
@@ -259,12 +261,6 @@ const CapturedVar *Function::get_captured_var_by_handle(const void *handle) cons
     return var;
 }
 
-bool Function::contain(const Expression *exterior_expr) const noexcept {
-    return std::find(_exterior_expressions.begin(),
-                     _exterior_expressions.end(),
-                     exterior_expr) != _exterior_expressions.end();
-}
-
 Function *Function::current() noexcept {
     if (_function_stack().empty()) {
         return nullptr;
@@ -322,6 +318,12 @@ void Function::print(string fmt, const vector<const Expression *> &args) noexcep
 
 ocarina::span<const Variable> Function::arguments() const noexcept {
     return _arguments;
+}
+
+vector<Variable> Function::all_arguments() const noexcept {
+    vector<Variable> ret = _arguments;
+    append(ret, _captured_arguments);
+    return ret;
 }
 
 ocarina::span<const Variable> Function::builtin_vars() const noexcept {
