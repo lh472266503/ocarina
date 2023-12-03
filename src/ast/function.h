@@ -68,6 +68,7 @@ private:
     ocarina::vector<ocarina::unique_ptr<Statement>> _all_statements;
     ocarina::vector<Variable> _arguments;
     ocarina::vector<Variable> _captured_arguments;
+    ocarina::vector<Variable> _output_arguments;
     ocarina::vector<CapturedVar> _captured_vars;
     ocarina::vector<Variable> _builtin_vars;
     ocarina::vector<Usage> _variable_usages;
