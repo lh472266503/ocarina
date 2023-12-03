@@ -160,21 +160,21 @@ void test_lambda(Device &device, Stream &stream) {
     stream << vert.upload(vertices.data())
            << tri.upload(triangles.data());
 
-    Kernel kernel = [&]() {
+    Kernel kernel = [&](Uint i) {
         Uint begin = 2;
-        Uint end = 10;
-        Uint end1 = 10;
-        Uint end2 = 10;
-        Uint end3 = 10;
-//        Uint end4 = 10;
-//        Uint end6 = 10;
+        //        Uint end = 10;
+        //        Uint end1 = 10;
+        //        Uint end2 = 10;
+        //        Uint end3 = 10;
+        //        Uint end4 = 10;
+        //        Uint end6 = 10;
 
-//        Lambda func = [&](int i, float z, Float a) {
-//            $info("{}    {}   {}     ---------", i,z, a);
-////            return a;
-//        };
-//
-//       func(1,2.f, Float(7.f));
+        //        Lambda func = [&](int i, float z, Float a) {
+        //            $info("{}    {}   {}     ---------", i,z, a);
+        ////            return a;
+        //        };
+        //
+        //       func(1,2.f, Float(7.f));
 
         Var aa = $outline {
             Var aa = $outline {
@@ -183,44 +183,42 @@ void test_lambda(Device &device, Stream &stream) {
             return aa;
         };
 
-//        auto ld = Lambda([&] {
-//            Test test;
-//            test.a = begin * 2;
-//            return test;
-//        });
+        //        auto ld = Lambda([&] {
+        //            Test test;
+        //            test.a = begin * 2;
+        //            return test;
+        //        });
 
-//        auto aa = ld();
-//        Uint b = aa + 2;
+        //        auto aa = ld();
+        //        Uint b = aa + 2;
 
-
-//        $outline {
-//        $info("{} {} {} --===", begin,begin,begin);
-        $info("{} === --===", end);
-        $info("{} {} --===", aa,end);
-        $info("{}  --===", begin);
-//        };
-//        Callable cb = [&](Float a) {
-//            a = a + end6;
-//            auto c = end6;
-//
-//            Callable cb2 = [&](Uint& b) {
-//                b = begin + b;
-//                Var v = vert.read(1);
-//                $info("{}         ---------", v.x);
-//                return b;
-//            };
-//
-//            cb2(end6);
-//
-//            int i = 0;
-//        };
-//
-//        cb(Float(1.f));
-
+        //        $outline {
+        //        $info("{} {} {} --===", begin,begin,begin);
+        //        $info("{} === --===", end);
+        //        $info("{} {} --===", aa,end);
+        //        $info("{}  --===", begin);
+        //        };
+        //        Callable cb = [&](Float a) {
+        //            a = a + end6;
+        //            auto c = end6;
+        //
+        //            Callable cb2 = [&](Uint& b) {
+        //                b = begin + b;
+        //                Var v = vert.read(1);
+        //                $info("{}         ---------", v.x);
+        //                return b;
+        //            };
+        //
+        //            cb2(end6);
+        //
+        //            int i = 0;
+        //        };
+        //
+        //        cb(Float(1.f));
     };
     Shader shader = device.compile(kernel);
 
-    stream << shader().dispatch(1)
+    stream << shader(1).dispatch(1)
            << Env::printer().retrieve()
            << synchronize() << commit();
 }
