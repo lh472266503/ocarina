@@ -83,6 +83,8 @@ private:
     mutable uint3 _block_dim{make_uint3(0)};
     mutable uint3 _grid_dim{make_uint3(0)};
 
+    friend class FunctionCorrector;
+
 private:
     static ocarina::vector<Function *> &_function_stack() noexcept;
     static void _push(Function *f);
