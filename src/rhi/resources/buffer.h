@@ -43,14 +43,14 @@ public:
 
     template<typename Arg>
     requires is_buffer_or_view_v<Arg> && std::is_same_v<buffer_element_t<Arg>, T>
-    [[nodiscard]] BufferCopyCommand *copy_from(const Arg &src, uint dst_offset) noexcept {
+    [[nodiscard]] BufferCopyCommand *copy_from(const Arg &src, uint dst_offset = 0) noexcept {
         return BufferCopyCommand::create(src.head(), head(), 0, dst_offset * _element_size,
                                          src.size_in_byte(), true);
     }
 
     template<typename Arg>
     requires is_buffer_or_view_v<Arg> && std::is_same_v<buffer_element_t<Arg>, T>
-    [[nodiscard]] BufferCopyCommand *copy_to(Arg &dst, uint src_offset) noexcept {
+    [[nodiscard]] BufferCopyCommand *copy_to(Arg &dst, uint src_offset = 0) noexcept {
         return BufferCopyCommand::create(head(), dst.head(), src_offset * _element_size,
                                          0, dst.size_in_byte(), true);
     }
@@ -187,8 +187,8 @@ public:
     OC_NODISCARD auto
     read(Index &&index, bool check_boundary = true) const {
         const CapturedVar &captured_var = Function::current()->get_captured_var(Type::of<decltype(*this)>(),
-                                                                               Variable::Tag::BUFFER,
-                                                                               memory_block());
+                                                                                Variable::Tag::BUFFER,
+                                                                                memory_block());
         auto expr = make_expr<Buffer<T>>(captured_var.expression());
         if (check_boundary) {
             return expr.read_and_check(OC_FORWARD(index),
@@ -204,8 +204,8 @@ public:
     OC_NODISCARD auto
     read_multi(Index &&...index) const {
         const CapturedVar &captured_var = Function::current()->get_captured_var(Type::of<decltype(*this)>(),
-                                                                               Variable::Tag::BUFFER,
-                                                                               memory_block());
+                                                                                Variable::Tag::BUFFER,
+                                                                                memory_block());
         return make_expr<Buffer<T>>(captured_var.expression()).read(OC_FORWARD(index)...);
     }
 
@@ -213,8 +213,8 @@ public:
     requires concepts::integral<expr_value_t<Index>> && concepts::is_same_v<element_type, expr_value_t<Val>>
     void write(Index &&index, Val &&elm, bool check_boundary = true) {
         const CapturedVar &captured_var = Function::current()->get_captured_var(Type::of<decltype(*this)>(),
-                                                                               Variable::Tag::BUFFER,
-                                                                               memory_block());
+                                                                                Variable::Tag::BUFFER,
+                                                                                memory_block());
         auto expr = make_expr<Buffer<T>>(captured_var.expression());
         if (check_boundary) {
             expr.write_and_check(OC_FORWARD(index), OC_FORWARD(elm),
@@ -228,8 +228,8 @@ public:
     requires concepts::integral<expr_value_t<Index>>
     [[nodiscard]] detail::AtomicRef<T> atomic(Index &&index) const noexcept {
         const CapturedVar &captured_var = Function::current()->get_captured_var(Type::of<decltype(*this)>(),
-                                                                               Variable::Tag::BUFFER,
-                                                                               memory_block());
+                                                                                Variable::Tag::BUFFER,
+                                                                                memory_block());
         return make_expr<Buffer<T>>(captured_var.expression()).atomic(OC_FORWARD(index));
     }
 
