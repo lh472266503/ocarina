@@ -162,7 +162,7 @@ void test_lambda(Device &device, Stream &stream) {
 
     Kernel kernel = [&](Uint i) {
         Uint begin = 2;
-        //        Uint end = 10;
+                Uint end = 10;
         //        Uint end1 = 10;
         //        Uint end2 = 10;
         //        Uint end3 = 10;
@@ -178,8 +178,8 @@ void test_lambda(Device &device, Stream &stream) {
 
         Var aa = $outline {
             Var aa = $outline {
-                return begin * 5;
-            };
+                return begin * begin;
+            } + end + end;
             return aa;
         };
 
@@ -193,9 +193,9 @@ void test_lambda(Device &device, Stream &stream) {
         //        Uint b = aa + 2;
 
         //        $outline {
-        //        $info("{} {} {} --===", begin,begin,begin);
+//                $info("{} {} {} --===", begin,begin,begin);
         //        $info("{} === --===", end);
-        //        $info("{} {} --===", aa,end);
+                $info("{} {} --===", aa,aa);
         //        $info("{}  --===", begin);
         //        };
         //        Callable cb = [&](Float a) {

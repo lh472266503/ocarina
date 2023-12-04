@@ -122,33 +122,28 @@ private:
                    _exterior_expressions.begin();
         };
 
-        if constexpr (std::is_same_v<std::remove_cvref_t<raw_type>, Expression>) {
-            if (is_exterior(arg)) {
-                int index = exterior_expr_index(arg);
-                if (index == _exterior_expressions.size()) {
-                    _exterior_expressions.push_back(arg);
-                    arg = create_captured_argument(arg);
-                } else {
-                    arg = _ref(_captured_arguments.at(index));
-                }
+        auto process_expression = [&](const Expression *&expression) {
+            if (!is_exterior(expression)) {
+                return;
             }
+            int index = exterior_expr_index(expression);
+            if (index == _exterior_expressions.size()) {
+                _exterior_expressions.push_back(expression);
+                expression = create_captured_argument(expression);
+            } else {
+                expression = _ref(_captured_arguments.at(index));
+            }
+        };
+
+        if constexpr (std::is_same_v<std::remove_cvref_t<raw_type>, Expression>) {
+            process_expression(arg);
         } else if constexpr (is_std_vector_v<element_ty>) {
             using vec_element_ty = element_t<element_ty>;
             using raw_element_type = std::remove_pointer_t<std::remove_cvref_t<vec_element_ty>>;
             if constexpr (std::is_same_v<std::remove_cvref_t<raw_element_type>, Expression>) {
                 for (int j = 0; j < arg.size(); ++j) {
-                    const Expression *expression = arg[j];
-
-                    if (is_exterior(expression)) {
-                        int index = exterior_expr_index(expression);
-                        if (index == _exterior_expressions.size()) {
-                            _exterior_expressions.push_back(expression);
-                            (const_cast<vector<const Expression *> &>(arg))[j] = create_captured_argument(expression);
-                        } else {
-                            auto variable = _captured_arguments.at(index);
-                            (const_cast<vector<const Expression *> &>(arg))[j] = _ref(variable);
-                        }
-                    }
+                    auto &expression = const_cast<const Expression *&>(arg[j]);
+                    process_expression(expression);
                 }
             }
         }
