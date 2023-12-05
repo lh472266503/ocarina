@@ -99,16 +99,15 @@ public:
         _logs(spdlog::level::level_enum::level_name, fmt, OC_FORWARD(args)...);                               \
     }                                                                                                         \
     template<typename... Args>                                                                                \
-    void level_name##_with_traceback(const string &fmt, const Args &...args) noexcept {                       \
-        string tb = ocarina::format(" traceback is :\n {}", traceback_string(1));                             \
-        _logs(spdlog::level::level_enum::level_name, fmt + tb + " [with thread idx({}, {}, {}), id({})]",     \
-              OC_FORWARD(args)..., dispatch_idx(), dispatch_id());                                            \
-    }                                                                                                         \
-    template<typename... Args>                                                                                \
     void level_name##_with_location(const string &fmt, const Args &...args) noexcept {                        \
         Uint3 idx = dispatch_idx();                                                                           \
         Uint id = dispatch_id();                                                                              \
         level_name(fmt + " [with thread idx({}, {}, {}), id({})]", OC_FORWARD(args)..., idx, id);             \
+    }                                                                                                         \
+    template<typename... Args>                                                                                \
+    void level_name##_with_traceback(const string &fmt, const Args &...args) noexcept {                       \
+        string tb = ocarina::format(" traceback is :\n {}", traceback_string(1));                             \
+        level_name##_with_location(fmt + tb, OC_FORWARD(args)...);                                            \
     }                                                                                                         \
     template<typename... Args>                                                                                \
     void level_name##_if(const Bool &cond, const string &fmt, const Args &...args) noexcept {                 \
@@ -121,6 +120,11 @@ public:
         if_(cond, [&] {                                                                                       \
             level_name##_with_location(fmt, OC_FORWARD(args)...);                                             \
         });                                                                                                   \
+    }                                                                                                         \
+    template<typename... Args>                                                                                \
+    void level_name##_with_traceback_if(const Bool &cond, const string &fmt, const Args &...args) noexcept {  \
+        string tb = ocarina::format(" traceback is :\n {}", traceback_string(1));                             \
+        level_name##_with_location##_if(cond, fmt + tb, OC_FORWARD(args)...);                                 \
     }
 
     OC_MAKE_LOG_FUNC(debug)
