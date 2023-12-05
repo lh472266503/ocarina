@@ -184,8 +184,6 @@ public:
     const void *address{};
     size_t size{};
     size_t alignment{};
-
-    // todo calculate max member size by object
     size_t max_member_size = 8;
 
 public:
