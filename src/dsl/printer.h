@@ -99,6 +99,12 @@ public:
         _logs(spdlog::level::level_enum::level_name, fmt, OC_FORWARD(args)...);                               \
     }                                                                                                         \
     template<typename... Args>                                                                                \
+    void level_name##_with_traceback(const string &fmt, const Args &...args) noexcept {                       \
+        string tb = ocarina::format(" traceback is :\n {}", traceback_string(1));                             \
+        _logs(spdlog::level::level_enum::level_name, fmt + tb + " [with thread idx({}, {}, {}), id({})]",     \
+              OC_FORWARD(args)..., dispatch_idx(), dispatch_id());                                            \
+    }                                                                                                         \
+    template<typename... Args>                                                                                \
     void level_name##_with_location(const string &fmt, const Args &...args) noexcept {                        \
         Uint3 idx = dispatch_idx();                                                                           \
         Uint id = dispatch_id();                                                                              \
