@@ -489,7 +489,7 @@ void CppCodegen::emit(const Function &func) noexcept {
         _emit_comment(func.description());
         _emit_newline();
     }
-    TIMER_TAG(codegen, "function " + func.func_name() + " generated");
+    TIMER_TAG(codegen, "function " + func.func_name() + " " + func.description() + " generated");
     func.for_each_structure([&](const Type *type) {
         visit(type);
     });

@@ -186,7 +186,7 @@ void Printer::_log(spdlog::level::level_enum level, const string &fmt, const Arg
         if_(offset + count < last, [&] {
             _log_to_buffer(offset + 1, 0, OC_FORWARD(args)...);
         });
-    });
+    }, "log output");
     comment("end log <<<<<<<<<<");
     _desc = "";
 
