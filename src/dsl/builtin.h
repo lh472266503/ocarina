@@ -37,6 +37,13 @@ requires concepts::all_integral<vector_element_t<expr_value_t<DispatchIdx>>>
     }
 }
 
+template<typename DispatchId>
+requires ocarina::is_integral_expr_v<DispatchId>
+[[nodiscard]] auto dispatch_idx(DispatchId &&id) {
+    Uint2 dim = dispatch_dim().xy();
+    return make_uint2(id % dim.x, id / dim.x);
+}
+
 #undef OC_MAKE_BUILTIN_FUNC
 
 #define OC_MAKE_LOGIC_FUNC(func, tag)                                               \
