@@ -302,4 +302,6 @@ public:
     OC_MAKE_EXPRESSION_ACCEPT_VISITOR
 };
 
+#undef OC_MAKE_EXPRESSION_ACCEPT_VISITOR
+
 }// namespace ocarina
