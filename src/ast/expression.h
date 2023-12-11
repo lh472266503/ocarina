@@ -37,10 +37,6 @@ struct OC_AST_API ExprVisitor {
     virtual void visit(const CastExpr *) = 0;
 };
 
-enum struct CastOp : uint32_t {
-    STATIC,
-    BITWISE
-};
 
 class OC_AST_API Expression : public concepts::Noncopyable, public Hashable {
 public:

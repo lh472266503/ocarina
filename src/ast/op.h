@@ -15,6 +15,11 @@ enum struct UnaryOp : uint32_t {
     BIT_NOT
 };
 
+enum struct CastOp : uint32_t {
+    STATIC,
+    BITWISE
+};
+
 enum struct BinaryOp : uint32_t {
     // arithmetic
     ADD,
