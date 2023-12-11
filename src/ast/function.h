@@ -108,7 +108,7 @@ private:
     requires(i < sizeof...(Args))
     void traverse_tuple(std::tuple<Args...> &tuple) noexcept {
         using element_ty = std::tuple_element_t<i, std::tuple<Args...>>;
-        using raw_type = std::remove_pointer_t<std::remove_cvref_t<element_ty>>;
+        using raw_type = typename std::remove_pointer_t<std::remove_cvref_t<element_ty>>;
         auto &arg = std::get<i>(tuple);
 
         auto is_exterior = [&](const Expression *expression) {
@@ -139,7 +139,7 @@ private:
             process_expression(arg);
         } else if constexpr (is_std_vector_v<element_ty>) {
             using vec_element_ty = element_t<element_ty>;
-            using raw_element_type = std::remove_pointer_t<std::remove_cvref_t<vec_element_ty>>;
+            using raw_element_type = typename std::remove_pointer_t<std::remove_cvref_t<vec_element_ty>>;
             if constexpr (std::is_same_v<std::remove_cvref_t<raw_element_type>, Expression>) {
                 for (int j = 0; j < arg.size(); ++j) {
                     auto &expression = const_cast<const Expression *&>(arg[j]);
