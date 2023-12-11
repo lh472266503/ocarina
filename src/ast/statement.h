@@ -78,7 +78,6 @@ public:
     [[nodiscard]] auto tag() const noexcept { return _tag; }
     virtual void accept(StmtVisitor &) const = 0;
     virtual ~Statement() noexcept = default;
-    [[nodiscard]] virtual bool is_reference(const Expression *expr) const noexcept { return false; }
 };
 
 class OC_AST_API ScopeStmt : public Statement {
@@ -96,7 +95,6 @@ public:
     [[nodiscard]] ocarina::span<const Variable> local_vars() const noexcept { return _local_vars; }
     [[nodiscard]] bool is_func_body() const noexcept { return _is_func_body; }
     [[nodiscard]] ocarina::span<const Statement *const> statements() const noexcept { return _statements; }
-    [[nodiscard]] bool is_reference(const Expression *expr) const noexcept override;
     [[nodiscard]] bool empty() const noexcept { return _statements.empty(); }
     [[nodiscard]] auto size() const noexcept { return _statements.size(); }
     void add_stmt(const Statement *stmt) noexcept { _statements.push_back(stmt); }
@@ -137,7 +135,6 @@ public:
     explicit ReturnStmt(const Expression *expr = nullptr) noexcept
         : Statement(Tag::RETURN), _expression(expr) {}
     [[nodiscard]] const Expression *expression() const noexcept { return _expression; }
-    [[nodiscard]] bool is_reference(const Expression *expr) const noexcept override;
     OC_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 
@@ -151,7 +148,6 @@ private:
 public:
     explicit ExprStmt(const Expression *expr = nullptr) noexcept
         : Statement(Tag::EXPR), _expression(expr) {}
-    [[nodiscard]] bool is_reference(const Expression *expr) const noexcept override;
     const Expression *expression() const { return _expression; }
     OC_MAKE_STATEMENT_ACCEPT_VISITOR
 };
@@ -169,7 +165,6 @@ public:
         : Statement(Tag::ASSIGN), _lhs(lhs), _rhs(rhs) {}
     [[nodiscard]] auto lhs() const noexcept { return _lhs; }
     [[nodiscard]] auto rhs() const noexcept { return _rhs; }
-    [[nodiscard]] bool is_reference(const Expression *expr) const noexcept override;
     OC_MAKE_STATEMENT_ACCEPT_VISITOR
 };
 
