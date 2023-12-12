@@ -8,7 +8,6 @@
 #include "core/concepts.h"
 #include "core/constants.h"
 #include "dsl/operators.h"
-#include "dsl/type_trait.h"
 
 #define MAKE_VECTOR_OP(op)                                                           \
     template<typename T>                                                             \
