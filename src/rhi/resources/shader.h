@@ -105,7 +105,7 @@ public:
     ArgumentList &operator<<(T &&arg) {
         if constexpr (is_buffer_v<T>) {
             _encode_buffer(OC_FORWARD(arg));
-        } else if constexpr (is_image_v<T>) {
+        } else if constexpr (is_texture_v<T>) {
             _encode_texture(OC_FORWARD(arg));
         } else if constexpr (is_accel_v<T>) {
             _encode_accel(OC_FORWARD(arg));

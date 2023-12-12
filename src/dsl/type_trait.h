@@ -430,21 +430,16 @@ OC_DEFINE_TEMPLATE_VALUE(is_buffer_or_view)
 namespace detail {
 
 template<typename T>
-struct is_image_impl : std::false_type {};
+struct is_texture_impl : std::false_type {};
 
 template<>
-struct is_image_impl<Texture> : std::true_type {};
-
-template<typename T>
-struct texture_element_impl {
-    using type = T;
-};
+struct is_texture_impl<Texture> : std::true_type {};
 
 }// namespace detail
 
 template<typename T>
-using is_image = detail::is_image_impl<std::remove_cvref_t<T>>;
-OC_DEFINE_TEMPLATE_VALUE(is_image)
+using is_texture = detail::is_texture_impl<std::remove_cvref_t<T>>;
+OC_DEFINE_TEMPLATE_VALUE(is_texture)
 
 namespace detail {
 template<typename T>
