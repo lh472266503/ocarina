@@ -11,17 +11,22 @@ template<class To, class From>
     return u.to;
 }
 
-
 struct alignas(16) OCHit {
     oc_uint m0{oc_uint(-1)};
     oc_uint m1{oc_uint(-1)};
     oc_float2 m2;
+    OCHit() = default;
+    OCHit(oc_uint inst_id, oc_uint prim_id, oc_float2 bary)
+        : m0(inst_id), m1(prim_id), m2(bary) {}
 };
 
 struct alignas(16) OCRay {
 public:
     oc_float4 m0;
     oc_float4 m1;
+    OCRay() = default;
+    OCRay(oc_float4 org, oc_float4 dir)
+        : m0(org), m1(dir) {}
 };
 
 constexpr float ray_t_max = 1e16f;
