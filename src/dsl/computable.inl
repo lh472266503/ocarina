@@ -8,9 +8,7 @@
 
 namespace ocarina::detail {
 
-template<typename TRay>
-requires std::is_same_v<expr_value_t<TRay>, Ray>
-Var<bool> Computable<Accel>::trace_any(const TRay &ray)
+Var<bool> Computable<Accel>::trace_any(const Var<Ray> &ray)
 const noexcept {
     const CallExpr *expr = Function::current()->call_builtin(Type::of<bool>(),
                                                              CallOp::TRACE_ANY,
@@ -18,9 +16,7 @@ const noexcept {
     return eval<bool>(expr);
 }
 
-template<typename TRay>
-requires std::is_same_v<expr_value_t<TRay>, Ray>
-Var<Hit> Computable<Accel>::trace_closest(const TRay &ray)
+Var<Hit> Computable<Accel>::trace_closest(const Var<Ray> &ray)
 const noexcept {
     const CallExpr *expr = Function::current()->call_builtin(Type::of<bool>(),
                                                              CallOp::TRACE_CLOSEST,
