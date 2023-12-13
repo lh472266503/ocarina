@@ -50,7 +50,7 @@ concept static_convertible = requires(Src s) {
 };
 
 template<typename Dest, typename Src>
-concept bitwise_convertible = sizeof(Src) >= sizeof(Dest);
+concept bitwise_convertible = sizeof(Src) == sizeof(Dest);
 
 template<typename Dest, typename Src>
 concept reinterpret_convertible = requires(Src s) {
