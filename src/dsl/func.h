@@ -289,7 +289,7 @@ public:
     void set_description(const string &desc) noexcept { _desc = desc; }
 
     template<typename... Args>
-    requires std::invocable<Func, Args...>
+    requires std::is_invocable_v<Func, Args...>
     auto operator()(Args &&...args) const noexcept {
         using ret_type = decltype(_func(OC_FORWARD(args)...));
         if constexpr (std::is_same_v<ret_type, void>) {
