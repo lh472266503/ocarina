@@ -317,7 +317,7 @@ namespace detail {
 struct CallableOutlineBuilder {
 public:
     string desc;
-    CallableOutlineBuilder(const string &str) : desc(str) {}
+    explicit CallableOutlineBuilder(string str) : desc(std::move(str)) {}
     template<typename F>
     auto operator%(F &&body) && noexcept {
         return Lambda(OC_FORWARD(body), desc)();
