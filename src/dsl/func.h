@@ -264,12 +264,14 @@ public:
 template<typename T>
 Callable(T &&) -> Callable<detail::dsl_function_t<T>>;
 
+namespace detail {
 template<typename Func>
-auto outline(Func &&func, const string &desc = "") {
+auto callable_wrap(Func &&func, const string &desc = "") {
     Callable callable = OC_FORWARD(func);
     callable.function()->set_description(desc);
     return callable();
 }
+}// namespace detail
 
 template<typename Func>
 class Lambda {
@@ -293,16 +295,16 @@ public:
     auto operator()(Args &&...args) const noexcept {
         using ret_type = decltype(_func(OC_FORWARD(args)...));
         if constexpr (std::is_same_v<ret_type, void>) {
-            outline([&] {
+            detail::callable_wrap([&] {
                 _func(OC_FORWARD(args)...);
             },
-                    _desc);
+                            _desc);
         } else {
             ret_type ret;
-            outline([&] {
+            detail::callable_wrap([&] {
                 ret = _func(OC_FORWARD(args)...);
             },
-                    _desc);
+                            _desc);
             return ret;
         }
     }
@@ -322,6 +324,11 @@ public:
     }
 };
 }// namespace detail
+
+template<typename Func>
+auto outline(Func &&func, const string &desc = "") {
+    return detail::CallableOutlineBuilder(desc) % OC_FORWARD(func);
+}
 
 template<typename T>
 class Kernel {
