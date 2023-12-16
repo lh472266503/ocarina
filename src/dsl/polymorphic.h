@@ -310,7 +310,9 @@ public:
     template<typename Index>
     requires is_integral_expr_v<Index>
     void dispatch_instance(Index &&index, const std::function<void(const ptr_type *)> &func) const noexcept {
-        if (Super::empty()) [[unlikely]] { OC_ERROR_FORMAT("{} lst is empty", typeid(*this).name()); }
+        if (Super::empty()) [[unlikely]] {
+            return;
+        }
         comment("dispatch_instance");
         comment(typeid(*this).name());
         if (Super::size() == 1) {
@@ -331,7 +333,7 @@ public:
     requires is_integral_expr_v<Index>
     void dispatch_representative(Index &&index, const std::function<void(const ptr_type *)> &func) const noexcept {
         if (_type_mgr.empty()) [[unlikely]] {
-            OC_ERROR_FORMAT("{} type lst is empty", typeid(*this).name());
+            return;
         }
         comment("dispatch_type");
         comment(typeid(*this).name());
