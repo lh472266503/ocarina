@@ -10,28 +10,28 @@
 
 #define $sign_source_location ocarina::comment($source_location);
 
-#define $if(...) ::ocarina::detail::IfStmtBuilder::create_with_source_location($source_location, __VA_ARGS__) / [&]() noexcept
+#define $if(...) ::ocarina::detail::IfStmtBuilder::create_with_source_location("if: " + $source_location, __VA_ARGS__) / [&]() noexcept
 #define $else % [&]() noexcept
-#define $elif(...) *[&] {                                                                                \
-    return ::ocarina::detail::IfStmtBuilder::create_with_source_location($source_location, __VA_ARGS__); \
+#define $elif(...) *[&] {                                                                                           \
+    return ::ocarina::detail::IfStmtBuilder::create_with_source_location("elif: " + $source_location, __VA_ARGS__); \
 } / [&]
 
 #define $comment(...) ::ocarina::comment(#__VA_ARGS__);
 
-#define $switch(...) ::ocarina::detail::SwitchStmtBuilder::create_with_source_location($source_location, __VA_ARGS__) *[&]() noexcept
-#define $case(...) ::ocarina::detail::CaseStmtBuilder::create_with_source_location($source_location, __VA_ARGS__) *[&]() noexcept
-#define $break ::ocarina::break_($source_location)
-#define $default ::ocarina::detail::DefaultStmtBuilder($source_location) *[&]() noexcept
-#define $continue ::ocarina::continue_($source_location)
+#define $switch(...) ::ocarina::detail::SwitchStmtBuilder::create_with_source_location("switch: " + $source_location, __VA_ARGS__) *[&]() noexcept
+#define $case(...) ::ocarina::detail::CaseStmtBuilder::create_with_source_location("switch case: " + $source_location, __VA_ARGS__) *[&]() noexcept
+#define $break ::ocarina::break_("break: " + $source_location)
+#define $default ::ocarina::detail::DefaultStmtBuilder("default: " + $source_location) *[&]() noexcept
+#define $continue ::ocarina::continue_("continue: " + $source_location)
 
-#define $loop ::ocarina::detail::LoopStmtBuilder::create_with_source_location($source_location) *[&]() noexcept
-#define $while(...) ::ocarina::detail::LoopStmtBuilder::create_with_source_location($source_location) / [&]() noexcept { \
-    if_(!(__VA_ARGS__), [&] {                                                                                            \
-        break_();                                                                                                        \
-    });                                                                                                                  \
+#define $loop ::ocarina::detail::LoopStmtBuilder::create_with_source_location("loop: " + $source_location) *[&]() noexcept
+#define $while(...) ::ocarina::detail::LoopStmtBuilder::create_with_source_location("while: " + $source_location) / [&]() noexcept { \
+    if_(!(__VA_ARGS__), [&] {                                                                                                        \
+        break_();                                                                                                                    \
+    });                                                                                                                              \
 } *[&]() noexcept
 
-#define $for(v, ...) ::ocarina::detail::range_with_source_location($source_location, __VA_ARGS__) / [&](auto v) noexcept
+#define $for(v, ...) ::ocarina::detail::range_with_source_location("for: " + $source_location, __VA_ARGS__) / [&](auto v) noexcept
 
 #define $return(...) ::ocarina::return_(__VA_ARGS__)
 
@@ -85,14 +85,22 @@
 
 #define $condition_execute Env::debugger().set_description("condition execute " + $source_location) *[&]() noexcept
 
-#define $condition_debug(...) $condition_execute { $debug(__VA_ARGS__); }
-#define $condition_debug_with_location(...) $condition_execute { $debug_with_location(__VA_ARGS__); }
+#define $condition_debug(...) \
+    $condition_execute { $debug(__VA_ARGS__); }
+#define $condition_debug_with_location(...) \
+    $condition_execute { $debug_with_location(__VA_ARGS__); }
 
-#define $condition_info(...) $condition_execute { $info(__VA_ARGS__); }
-#define $condition_info_with_location(...) $condition_execute { $info_with_location(__VA_ARGS__); }
+#define $condition_info(...) \
+    $condition_execute { $info(__VA_ARGS__); }
+#define $condition_info_with_location(...) \
+    $condition_execute { $info_with_location(__VA_ARGS__); }
 
-#define $condition_warn(...) $condition_execute { $warn(__VA_ARGS__); }
-#define $condition_warn_with_location(...) $condition_execute { $warn_with_location(__VA_ARGS__); }
+#define $condition_warn(...) \
+    $condition_execute { $warn(__VA_ARGS__); }
+#define $condition_warn_with_location(...) \
+    $condition_execute { $warn_with_location(__VA_ARGS__); }
 
-#define $condition_err(...) $condition_execute { $err(__VA_ARGS__); }
-#define $condition_err_with_location(...) $condition_execute { $err_with_location(__VA_ARGS__); }
+#define $condition_err(...) \
+    $condition_execute { $err(__VA_ARGS__); }
+#define $condition_err_with_location(...) \
+    $condition_execute { $err_with_location(__VA_ARGS__); }
