@@ -223,6 +223,34 @@ void test_lambda(Device &device, Stream &stream) {
            << synchronize() << commit();
 }
 
+
+struct Base {
+    int a = 1;
+    int b = 3;
+    virtual ~Base() = default;
+    virtual void operator=(Base &base) noexcept {
+
+    }
+};
+
+struct Derive : public Base {
+    int c = 9;
+    Derive(int arg):c(arg) {}
+
+    void operator=(Base &other) noexcept override {
+        *this = dynamic_cast<Derive &>(other);
+    }
+};
+
+void test_poly() {
+    Base *p1 = new Derive(0);
+    Base *p2 = new Derive(8);
+
+    *p1 = *p2;
+
+    return;
+}
+
 int main(int argc, char *argv[]) {
     fs::path path(argv[0]);
     Context context(path.parent_path());
@@ -244,7 +272,8 @@ int main(int argc, char *argv[]) {
     /// create rtx context if need
     device.init_rtx();
     //    test_compute_shader(device, stream);
-    test_lambda(device, stream);
+//    test_lambda(device, stream);
 
+    test_poly();
     return 0;
 }
