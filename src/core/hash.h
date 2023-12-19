@@ -117,7 +117,7 @@ private:
 
 protected:
     [[nodiscard]] virtual uint64_t _compute_hash() const noexcept {
-        return hash64(class_name(), Hash64::default_seed);
+        return hash64(class_name(), reinterpret_cast<uint64_t>(this));
     }
     [[nodiscard]] virtual uint64_t _compute_type_hash() const noexcept {
         return hash64(class_name());
