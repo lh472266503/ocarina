@@ -116,7 +116,9 @@ private:
     mutable bool _type_hash_computed{false};
 
 protected:
-    [[nodiscard]] virtual uint64_t _compute_hash() const noexcept = 0;
+    [[nodiscard]] virtual uint64_t _compute_hash() const noexcept {
+        return hash64(class_name(), Hash64::default_seed);
+    }
     [[nodiscard]] virtual uint64_t _compute_type_hash() const noexcept {
         return hash64(class_name());
     }
