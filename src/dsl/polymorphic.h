@@ -47,7 +47,7 @@ public:
     template<typename Derive>
     requires std::is_base_of_v<element_ty, Derive>
     Derive *link(uint64_t hash, UP<Derive> elm) noexcept {
-        auto [iter, first] = _tags.try_emplace(hash, Super::size());
+        auto [iter, first] = _tags.try_emplace(hash,static_cast<uint>(Super::size()));
         _tag = _tags[hash];
         uint index = _tags[hash];
         Derive *ret = nullptr;
