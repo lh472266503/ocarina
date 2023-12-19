@@ -130,7 +130,7 @@ struct TypeDesc<vector<T>> {
 template<typename T, size_t N>
 struct TypeDesc<std::array<T, N>> {
     static_assert(alignof(T) >= 4u);
-    static ocarina::string description() noexcept {
+    static ocarina::string &description() noexcept {
         static thread_local auto s = ocarina::format(
             "array<{},{}>",
             TypeDesc<T>::description(), N);
@@ -145,7 +145,7 @@ struct TypeDesc<std::array<T, N>> {
 template<typename T, int... Dims>
 struct TypeDesc<Buffer<T, Dims...>> {
     static_assert(alignof(T) >= 4u);
-    static ocarina::string description() noexcept {
+    static ocarina::string &description() noexcept {
         static thread_local string str = []() -> string {
             auto ret = ocarina::format("buffer<{}", TypeDesc<T>::description());
             (ret.append(",").append(to_string(Dims)), ...);
@@ -154,7 +154,7 @@ struct TypeDesc<Buffer<T, Dims...>> {
         }();
         return str;
     }
-    static ocarina::string name() noexcept {
+    static ocarina::string_view name() noexcept {
         return description();
     }
 };
@@ -193,7 +193,7 @@ struct TypeDesc<ocarina::tuple<T...>> {
         }();
         return str;
     }
-    static ocarina::string &name() noexcept {
+    static ocarina::string_view name() noexcept {
         return description();
     }
 };

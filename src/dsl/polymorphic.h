@@ -8,6 +8,7 @@
 #include "stmt_builder.h"
 #include "core/stl.h"
 #include "core/util.h"
+#include "serialize.h"
 #include "registrable.h"
 
 namespace ocarina {
@@ -29,6 +30,29 @@ template<EPort p>
     oc_uint<p> type_id = 0x000000ff & id;
     return std::make_pair(inst_id, type_id);
 }
+
+template<typename T>
+requires is_ptr_v<T>
+class PolyInvoker : public vector<T> {
+public:
+    using Super = vector<T>;
+    using element_ty = T;
+
+protected:
+    Uint _tag{};
+    ocarina::unordered_map<ocarina::string_view, uint> _tags;
+
+public:
+    void link(string_view name, element_ty && elm) noexcept {
+        auto [iter, first] = _tags.try_emplace(name, Super::size());
+        _tag = _tags[name];
+        if (first) {
+            Super::push_back(OC_FORWARD(elm));
+        }
+        uint index = _tags[name];
+        
+    }
+};
 
 template<typename T, typename U = float>
 requires is_ptr_v<T> && std::is_base_of_v<Serializable<U>, ptr_t<T>>
