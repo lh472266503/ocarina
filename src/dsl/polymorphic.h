@@ -32,8 +32,7 @@ template<EPort p>
 }
 
 template<typename T>
-requires is_ptr_v<T>
-class PolyInvoker : public vector<T> {
+class PolyExecutor : public vector<UP<T>> {
 public:
     using Super = vector<T>;
     using element_ty = T;
@@ -43,14 +42,43 @@ protected:
     ocarina::unordered_map<ocarina::string_view, uint> _tags;
 
 public:
-    void link(string_view name, element_ty && elm) noexcept {
+    template<typename Derive>
+    requires std::is_base_of_v<element_ty, Derive>
+    Derive *link(string_view name, UP<Derive> elm) noexcept {
         auto [iter, first] = _tags.try_emplace(name, Super::size());
         _tag = _tags[name];
-        if (first) {
-            Super::push_back(OC_FORWARD(elm));
-        }
         uint index = _tags[name];
-        
+        Derive *ret = nullptr;
+        if (first) {
+            ret = elm.get();
+            Super::push_back(ocarina::move(elm));
+        } else {
+            ret = dynamic_cast<Derive *>(Super::at(index));
+            *ret = *elm.get();
+        }
+        return ret;
+    }
+
+    template<typename Derive>
+    requires std::is_base_of_v<element_ty, Derive>
+    Derive *link(UP<Derive> elm) noexcept {
+        return link(typeid(*elm.get()).name(), elm);
+    }
+
+    template<typename Func>
+    void dispatch(Func &&func) noexcept {
+        comment(ocarina::format("PolyInvoker dispatch {}", typeid(T).name()));
+        if (Super::size() == 1) {
+            comment(typeid(*Super::at(0u)).name());
+            func(raw_ptr(Super::at(0u)));
+        }
+        switch_(_tag, [&] {
+            for (int i = 0; i < Super::size(); ++i) {
+                comment(typeid(*Super::at(i)).name());
+                case_(i, [&] {func(raw_ptr(Super::at(i)));break_(); });
+            }
+            default_([&] { unreachable();break_(); });
+        });
     }
 };
 
