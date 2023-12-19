@@ -56,6 +56,7 @@ public:
             ret = dynamic_cast<Derive *>(Super::at(index));
             *ret = *elm.get();
         }
+        OC_ASSERT(ret != nullptr);
         return ret;
     }
 
