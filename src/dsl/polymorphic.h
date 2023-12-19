@@ -9,6 +9,7 @@
 #include "core/stl.h"
 #include "core/util.h"
 #include "serialize.h"
+#include "core/hash.h"
 #include "registrable.h"
 
 namespace ocarina {
@@ -32,6 +33,7 @@ template<EPort p>
 }
 
 template<typename T>
+requires std::is_base_of_v<Hashable, T>
 class PolyEvaluator : public vector<UP<T>> {
 public:
     using Super = vector<UP<T>>;
