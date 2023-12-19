@@ -32,22 +32,22 @@ template<EPort p>
 }
 
 template<typename T>
-class PolyExecutor : public vector<UP<T>> {
+class PolyEvaluator : public vector<UP<T>> {
 public:
     using Super = vector<T>;
     using element_ty = T;
 
 protected:
     Uint _tag{};
-    ocarina::unordered_map<ocarina::string_view, uint> _tags;
+    ocarina::unordered_map<uint64_t, uint> _tags;
 
 public:
     template<typename Derive>
     requires std::is_base_of_v<element_ty, Derive>
-    Derive *link(string_view name, UP<Derive> elm) noexcept {
-        auto [iter, first] = _tags.try_emplace(name, Super::size());
-        _tag = _tags[name];
-        uint index = _tags[name];
+    Derive *link(uint64_t hash, UP<Derive> elm) noexcept {
+        auto [iter, first] = _tags.try_emplace(hash, Super::size());
+        _tag = _tags[hash];
+        uint index = _tags[hash];
         Derive *ret = nullptr;
         if (first) {
             ret = elm.get();
@@ -63,12 +63,12 @@ public:
     template<typename Derive>
     requires std::is_base_of_v<element_ty, Derive>
     Derive *link(UP<Derive> elm) noexcept {
-        return link(typeid(*elm.get()).name(), elm);
+        return link(elm->type_hash(), elm);
     }
 
     template<typename Func>
     void dispatch(Func &&func) noexcept {
-        comment(ocarina::format("PolyInvoker dispatch {}", typeid(T).name()));
+        comment(ocarina::format("PolyEvaluator dispatch {}", typeid(T).name()));
         if (Super::size() == 1) {
             comment(typeid(*Super::at(0u)).name());
             func(raw_ptr(Super::at(0u)));
