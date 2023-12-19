@@ -53,10 +53,10 @@ public:
             ret = elm.get();
             Super::push_back(ocarina::move(elm));
         } else {
-            ret = dynamic_cast<Derive *>(Super::at(index));
-            *ret = *elm.get();
+            auto ptr = dynamic_cast<Derive *>(Super::at(index).get());
+            OC_ASSERT(ptr != nullptr);
+            *ret = *ptr;
         }
-        OC_ASSERT(ret != nullptr);
         return ret;
     }
 
