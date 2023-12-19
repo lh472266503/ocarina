@@ -34,7 +34,7 @@ template<EPort p>
 template<typename T>
 class PolyEvaluator : public vector<UP<T>> {
 public:
-    using Super = vector<T>;
+    using Super = vector<UP<T>>;
     using element_ty = T;
 
 protected:
@@ -63,7 +63,8 @@ public:
     template<typename Derive>
     requires std::is_base_of_v<element_ty, Derive>
     Derive *link(UP<Derive> elm) noexcept {
-        return link(elm->type_hash(), elm);
+        uint64_t hash = elm->type_hash();
+        return link(hash, ocarina::move(elm));
     }
 
     template<typename Func>
