@@ -228,9 +228,7 @@ struct Base {
     int a = 1;
     int b = 3;
     virtual ~Base() = default;
-    virtual void operator=(Base &base) noexcept {
-
-    }
+    virtual Base& operator=(const Base &base) noexcept = default;
 };
 
 struct Derive1 {
@@ -241,8 +239,10 @@ struct Derive : public Base {
     int c = 9;
     Derive(int arg):c(arg) {}
 
-    void operator=(Base &other) noexcept override {
-        *this = dynamic_cast<Derive &>(other);
+    Base&  operator=(const Base &other) noexcept override {
+        *this = dynamic_cast<decltype(*this) &>(const_cast<Base &>(other));
+        
+        return *this;
     }
 };
 
@@ -250,7 +250,15 @@ struct Derive : public Base {
 
 void test_poly() {
     unique_ptr<Base> p1 = make_unique<Derive>(1);
+    p1->a = 10;
     unique_ptr<Base> p2 = make_unique<Derive>(2);
+    p2->a = 8;
+
+    cout << "before p1->a = " << p1->a << ", p1->c = " << dynamic_cast<Derive *>(p1.get())->c << endl;
+    cout << "before p2->a = " << p2->a << ", p2->c = " << dynamic_cast<Derive *>(p2.get())->c << endl;
+    *p1 = *p2;
+    cout << "after p1->a = " << p1->a << ", p1->c = " << dynamic_cast<Derive *>(p1.get())->c << endl;
+    cout << "after p2->a = " << p2->a << ", p2->c = " << dynamic_cast<Derive *>(p2.get())->c << endl;
 
     auto p3 = make_unique<Derive1>();
 
