@@ -228,7 +228,11 @@ struct Base {
     int a = 1;
     int b = 3;
     virtual ~Base() = default;
-    virtual Base& operator=(const Base &base) noexcept = default;
+    virtual Base& operator=(const Base &base) noexcept {
+        a = base.a;
+        b = base.b;
+        return *this;
+    }
 };
 
 struct Derive1 {
@@ -241,7 +245,7 @@ struct Derive : public Base {
 
     Base&  operator=(const Base &other) noexcept override {
         *this = dynamic_cast<decltype(*this) &>(const_cast<Base &>(other));
-        
+
         return *this;
     }
 };
