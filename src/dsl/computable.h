@@ -19,7 +19,7 @@ class Array;
 
 namespace detail {
 template<typename Lhs, typename Rhs>
-inline void assign(Lhs &&lhs, Rhs &&rhs) noexcept;// implement in stmt_builder.h
+void assign(Lhs &&lhs, Rhs &&rhs) noexcept;// implement in stmt_builder.h
 
 [[nodiscard]] Var<uint> correct_index(Var<uint> index, Var<uint> size, const string &desc,
                                       const string &tb) noexcept;// implement in dsl.cpp
