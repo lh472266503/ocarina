@@ -111,7 +111,7 @@ static constexpr bool is_ptr_v = detail::is_ptr_impl<std::remove_cvref_t<T>>::va
 
 template<typename Arg>
 requires is_ptr_v<Arg>
-[[nodiscard]] ptr_t<Arg> *raw_ptr(Arg arg) {
+[[nodiscard]] ptr_t<Arg> *raw_ptr(Arg &arg) {
     if constexpr (std::is_pointer_v<Arg>) {
         return arg;
     } else {

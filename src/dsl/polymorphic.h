@@ -70,7 +70,7 @@ public:
     }
 
     template<typename Func>
-    void dispatch(Func &&func) noexcept {
+    void dispatch(Func &&func) const noexcept {
         comment(ocarina::format("PolyEvaluator dispatch {}", typeid(T).name()));
         if (Super::size() == 1) {
             comment(typeid(*Super::at(0u)).name());
