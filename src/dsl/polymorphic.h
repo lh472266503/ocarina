@@ -75,6 +75,7 @@ public:
         if (Super::size() == 1) {
             comment(typeid(*Super::at(0u)).name());
             func(raw_ptr(Super::at(0u)));
+            return;
         }
         switch_(_tag, [&] {
             for (int i = 0; i < Super::size(); ++i) {
