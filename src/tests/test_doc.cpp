@@ -162,7 +162,7 @@ void test_lambda(Device &device, Stream &stream) {
 
     Kernel kernel = [&](Uint i) {
         Uint begin = 2;
-                Uint end = 10;
+        Uint end = 10;
         //        Uint end1 = 10;
         //        Uint end2 = 10;
         //        Uint end3 = 10;
@@ -179,7 +179,8 @@ void test_lambda(Device &device, Stream &stream) {
         Var aa = $outline {
             Var aa = $outline {
                 return begin * begin;
-            } + end + end;
+            }
+            +end + end;
             return aa;
         };
 
@@ -193,9 +194,9 @@ void test_lambda(Device &device, Stream &stream) {
         //        Uint b = aa + 2;
 
         //        $outline {
-//                $info("{} {} {} --===", begin,begin,begin);
+        //                $info("{} {} {} --===", begin,begin,begin);
         //        $info("{} === --===", end);
-                $info("{} {} --===", aa,aa);
+        $info("{} {} --===", aa, aa);
         //        $info("{}  --===", begin);
         //        };
         //        Callable cb = [&](Float a) {
@@ -223,54 +224,69 @@ void test_lambda(Device &device, Stream &stream) {
            << synchronize() << commit();
 }
 
-
 struct Base {
     int a = 1;
     int b = 3;
     virtual ~Base() = default;
-    virtual Base& operator=(const Base &base) noexcept {
+    virtual Base &operator=(const Base &base) noexcept {
         a = base.a;
         b = base.b;
         return *this;
     }
 };
 
-struct Derive1 {
+struct Derive1 : public Base{
+    int d = 9;
+    SP<int> sp;
+    Derive1(int arg) : d(arg) {}
     virtual ~Derive1() = default;
 };
 
 struct Derive : public Base {
     int c = 9;
-    Derive(int arg):c(arg) {}
+    SP<int> sp;
+    Derive(int arg) : c(arg) {}
 
-    Base&  operator=(const Base &other) noexcept override {
-        *this = dynamic_cast<decltype(*this) &>(const_cast<Base &>(other));
+    Derive &operator=(const Base &other) noexcept override {
+        Derive *ptr = dynamic_cast<decltype(this) >(const_cast<Base *>(&other));
+//        *this = ;
 
         return *this;
     }
+
+    Derive &operator=(const Derive &other) noexcept {
+
+        Base::operator=(other);
+        *sp = *other.sp;
+        c = other.c;
+        //        *this = dynamic_cast<decltype(*this) &>(const_cast<Base &>(other));
+
+        return *this;
+    }
+
 };
-
-
 
 void test_poly() {
     unique_ptr<Base> p1 = make_unique<Derive>(1);
     p1->a = 10;
-    unique_ptr<Base> p2 = make_unique<Derive>(2);
+    unique_ptr<Base> p2 = make_unique<Derive1>(2);
     p2->a = 8;
 
-    cout << "before p1->a = " << p1->a << ", p1->c = " << dynamic_cast<Derive *>(p1.get())->c << endl;
-    cout << "before p2->a = " << p2->a << ", p2->c = " << dynamic_cast<Derive *>(p2.get())->c << endl;
+//    dynamic_cast<Derive *>(p1.get())->sp = std::make_shared<int>(123);
+//    dynamic_cast<Derive *>(p2.get())->sp = std::make_shared<int>(456);
+
+//    cout << "before p1->a = " << p1->a << ", p1->c = " << dynamic_cast<Derive *>(p1.get())->c << endl;
+//    cout << "before p2->a = " << p2->a << ", p2->c = " << dynamic_cast<Derive *>(p2.get())->c << endl;
     *p1 = *p2;
-    cout << "after p1->a = " << p1->a << ", p1->c = " << dynamic_cast<Derive *>(p1.get())->c << endl;
-    cout << "after p2->a = " << p2->a << ", p2->c = " << dynamic_cast<Derive *>(p2.get())->c << endl;
+//    cout << "after p1->a = " << p1->a << ", p1->c = " << dynamic_cast<Derive *>(p1.get())->c << endl;
+//    cout << "after p2->a = " << p2->a << ", p2->c = " << dynamic_cast<Derive *>(p2.get())->c << endl;
 
-    auto p3 = make_unique<Derive1>();
-
-    unique_ptr<Derive> derive = dynamic_unique_pointer_cast<Derive>(move(p2));
+//    auto p3 = make_unique<Derive1>(1);
+//
+//    unique_ptr<Derive> derive = dynamic_unique_pointer_cast<Derive>(move(p2));
 
     return;
 }
-
 
 int main(int argc, char *argv[]) {
     fs::path path(argv[0]);
@@ -293,7 +309,7 @@ int main(int argc, char *argv[]) {
     /// create rtx context if need
     device.init_rtx();
     //    test_compute_shader(device, stream);
-//    test_lambda(device, stream);
+    //    test_lambda(device, stream);
 
     test_poly();
     return 0;
