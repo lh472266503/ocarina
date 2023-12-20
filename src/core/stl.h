@@ -123,6 +123,16 @@ using std::static_pointer_cast;
 using std::unique_ptr;
 using std::weak_ptr;
 
+template<typename To, typename From>
+std::unique_ptr<To> dynamic_unique_pointer_cast(std::unique_ptr<From> &&from) {
+    if (To *casted = dynamic_cast<To *>(from.get())) {
+        from.release();
+        return std::unique_ptr<To>(casted);
+    } else {
+        return std::unique_ptr<To>(nullptr);
+    }
+}
+
 template<typename T>
 using UP = unique_ptr<T>;
 template<typename T>

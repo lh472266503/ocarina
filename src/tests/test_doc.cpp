@@ -233,6 +233,10 @@ struct Base {
     }
 };
 
+struct Derive1 {
+    virtual ~Derive1() = default;
+};
+
 struct Derive : public Base {
     int c = 9;
     Derive(int arg):c(arg) {}
@@ -242,14 +246,19 @@ struct Derive : public Base {
     }
 };
 
-void test_poly() {
-    Base *p1 = new Derive(0);
-    Base *p2 = new Derive(8);
 
-    *p1 = *p2;
+
+void test_poly() {
+    unique_ptr<Base> p1 = make_unique<Derive>(1);
+    unique_ptr<Base> p2 = make_unique<Derive>(2);
+
+    auto p3 = make_unique<Derive1>();
+
+    unique_ptr<Derive> derive = dynamic_unique_pointer_cast<Derive>(move(p2));
 
     return;
 }
+
 
 int main(int argc, char *argv[]) {
     fs::path path(argv[0]);
