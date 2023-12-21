@@ -263,12 +263,23 @@ struct Derive : public Base {
     }
 };
 
-void test_poly() {
-    deep_copy_unique_ptr<Base> p1 = make_deep_copy_unique<Derive>(1);
-    deep_copy_unique_ptr<Derive> p2 = make_deep_copy_unique<Derive>(2);
-    //    p0 = p1;
-    //    p0 = p1;
+void func(deep_copy_shared_ptr<Derive> d) {
 
+}
+
+void func(deep_copy_unique_ptr<Derive> d) {
+
+}
+
+void test_poly() {
+    deep_copy_shared_ptr<Base> p1 = make_deep_copy_shared<Derive>(1);
+    deep_copy_shared_ptr<Derive> p2 = make_deep_copy_shared<Derive>(2);
+
+    deep_copy_unique_ptr<Base> p3 = make_deep_copy_unique<Derive>(1);
+    deep_copy_unique_ptr<Derive> p4 = make_deep_copy_unique<Derive>(2);
+    //    p0 = p1;
+    //    p0 = p1;
+    func(p2);
     p1->a = 10;
     //    deep_copy_shared_ptr<Base> p2 = make_deep_copy_shared<Derive>(2);
     p2->a = 8;
