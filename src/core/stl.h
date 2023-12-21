@@ -161,13 +161,13 @@ using std::log2;
 using std::max;
 using std::min;
 using std::pow;
+using std::round;
+using std::roundf;
 using std::sin;
 using std::sinh;
 using std::sqrt;
 using std::tan;
 using std::tanh;
-using std::round;
-using std::roundf;
 
 [[nodiscard]] inline bool isnan(float x) noexcept {
     auto u = 0u;
@@ -244,11 +244,10 @@ using std::optional;
 using std::queue;
 using std::set;
 using std::span;
+using std::stack;
 using std::unordered_map;
 using std::unordered_set;
 using std::vector;
-using std::stack;
-using std::deque;
 
 #if 1
 // tuple
@@ -274,6 +273,7 @@ using std::make_index_sequence;
 using std::make_integer_sequence;
 
 // other
+using std::addressof;
 using std::function;
 using std::make_pair;
 using std::monostate;
@@ -281,7 +281,90 @@ using std::move;
 using std::pair;
 using std::variant;
 using std::visit;
-using std::addressof;
 namespace fs = std::filesystem;
+
+template<typename T>
+struct deep_copy_shared_ptr {
+private:
+    ocarina::shared_ptr<T> _ptr{};
+
+public:
+    deep_copy_shared_ptr() = default;
+    template<typename U>
+    requires std::is_convertible_v<U *, T *>
+    explicit deep_copy_shared_ptr(const shared_ptr<U> &u) : _ptr(u) {}
+    template<typename U>
+    requires std::is_convertible_v<U *, T *>
+    deep_copy_shared_ptr(const deep_copy_shared_ptr<U> &u) : _ptr(u.ptr()) {}
+    [[nodiscard]] const T &operator*() const noexcept { return *_ptr; }
+    [[nodiscard]] T &operator*() noexcept { return *_ptr; }
+    [[nodiscard]] const T *operator->() const noexcept { return _ptr.get(); }
+    [[nodiscard]] T *operator->() noexcept { return _ptr.get(); }
+    [[nodiscard]] const T *get() const noexcept { return _ptr.get(); }
+    [[nodiscard]] T *get() noexcept { return _ptr.get(); }
+    [[nodiscard]] const ocarina::shared_ptr<T> &ptr() const noexcept { return _ptr; }
+    [[nodiscard]] ocarina::shared_ptr<T> &ptr() noexcept { return _ptr; }
+
+    template<typename Other>
+    requires std::is_convertible_v<Other *, T *>
+    deep_copy_shared_ptr<T> &operator=(const deep_copy_shared_ptr<Other> &other) noexcept {
+        OC_ASSERT(_ptr && other.ptr());
+        *_ptr = *other.ptr();
+        return *this;
+    }
+
+    deep_copy_shared_ptr<T> &operator=(const deep_copy_shared_ptr<T> &other) noexcept {
+        OC_ASSERT(_ptr && other.ptr());
+        *_ptr = *other.ptr();
+        return *this;
+    }
+};
+
+template<typename T, typename... Args>
+[[nodiscard]] deep_copy_shared_ptr<T> make_deep_copy_shared(Args &&...args) noexcept {
+    return deep_copy_shared_ptr<T>(make_shared<T>(OC_FORWARD(args)...));
+}
+
+template<typename T>
+struct deep_copy_unique_ptr {
+private:
+    ocarina::unique_ptr<T> _ptr{};
+
+public:
+    deep_copy_unique_ptr() = default;
+    template<typename U>
+    requires std::is_convertible_v<U *, T *>
+    explicit deep_copy_unique_ptr(unique_ptr<U> &&u) : _ptr(ocarina::move(u)) {}
+    template<typename U>
+    requires std::is_convertible_v<U *, T *>
+    deep_copy_unique_ptr(deep_copy_unique_ptr<U> &&u) : _ptr(ocarina::move(u.ptr())) {}
+    [[nodiscard]] const T &operator*() const noexcept { return *_ptr; }
+    [[nodiscard]] T &operator*() noexcept { return *_ptr; }
+    [[nodiscard]] const T *operator->() const noexcept { return _ptr.get(); }
+    [[nodiscard]] T *operator->() noexcept { return _ptr.get(); }
+    [[nodiscard]] const T *get() const noexcept { return _ptr.get(); }
+    [[nodiscard]] T *get() noexcept { return _ptr.get(); }
+    [[nodiscard]] const ocarina::unique_ptr<T> &ptr() const noexcept { return _ptr; }
+    [[nodiscard]] ocarina::unique_ptr<T> &ptr() noexcept { return _ptr; }
+
+    template<typename Other>
+    requires std::is_convertible_v<Other *, T *>
+    deep_copy_unique_ptr<T> &operator=(const deep_copy_unique_ptr<Other> &other) noexcept {
+        OC_ASSERT(_ptr && other.ptr());
+        *_ptr = *other.ptr();
+        return *this;
+    }
+
+    deep_copy_unique_ptr<T> &operator=(const deep_copy_unique_ptr<T> &other) noexcept {
+        OC_ASSERT(_ptr && other.ptr());
+        *_ptr = *other.ptr();
+        return *this;
+    }
+};
+
+template<typename T, typename... Args>
+[[nodiscard]] deep_copy_unique_ptr<T> make_deep_copy_unique(Args &&...args) noexcept {
+    return deep_copy_unique_ptr<T>(make_unique<T>(OC_FORWARD(args)...));
+}
 
 }// namespace ocarina
