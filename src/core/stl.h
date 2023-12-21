@@ -367,4 +367,10 @@ template<typename T, typename... Args>
     return deep_copy_unique_ptr<T>(make_unique<T>(OC_FORWARD(args)...));
 }
 
+template<typename T>
+using DCUP = deep_copy_unique_ptr<T>;
+
+template<typename T>
+using DCSP = deep_copy_shared_ptr<T>;
+
 }// namespace ocarina
