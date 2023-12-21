@@ -231,9 +231,13 @@ private:
     ocarina::shared_ptr<T> _ptr{};
 
 public:
+    deep_copy_shared_ptr() = default;
     template<typename U>
     requires requires(ocarina::shared_ptr<T> t, U u) { t = u; }
     explicit deep_copy_shared_ptr(U &&u) : _ptr(OC_FORWARD(u)) {}
+    template<typename U>
+    requires requires(ocarina::shared_ptr<T> t, U u) { t = u.ptr(); }
+    explicit deep_copy_shared_ptr(U &&u) : _ptr(OC_FORWARD(u).ptr()) {}
     [[nodiscard]] const T &operator*() const noexcept { return *_ptr; }
     [[nodiscard]] T &operator*() noexcept { return *_ptr; }
     [[nodiscard]] const T *operator->() const noexcept { return _ptr.get(); }
@@ -302,7 +306,9 @@ struct Derive : public Base {
 
 void test_poly() {
     deep_copy_shared_ptr<Derive> p1 = make_deep_copy_shared<Derive>(1);
-    deep_copy_shared_ptr<Base> p0(p1);
+    deep_copy_shared_ptr<Base> p0 = p1;
+//    p0 = p1;
+
 //    p0 = p1;
 //    p1->a = 10;
 //    deep_copy_shared_ptr<Base> p2 = make_deep_copy_shared<Derive>(2);
