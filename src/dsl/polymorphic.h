@@ -411,7 +411,7 @@ public:
         if (_type_mgr.empty()) [[unlikely]] {
             return;
         }
-        comment(ocarina::format("const dispatch_instance, case num = {}", type_num()));
+        comment(ocarina::format("const dispatch_representative, case num = {}", type_num()));
         comment(typeid(*this).name());
         if (_type_mgr.size() == 1) {
             ptr_type *elm = _type_mgr.type_map.begin()->second.objects[0];

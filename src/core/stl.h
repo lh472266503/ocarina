@@ -308,14 +308,20 @@ public:
     template<typename Other>
     requires std::is_convertible_v<Other *, T *>
     deep_copy_shared_ptr<T> &operator=(const deep_copy_shared_ptr<Other> &other) noexcept {
-        OC_ASSERT(_ptr && other.ptr());
-        *_ptr = *other.ptr();
+        if (_ptr) {
+            *_ptr = *other.ptr();
+        } else {
+            _ptr = other.ptr();
+        }
         return *this;
     }
 
     deep_copy_shared_ptr<T> &operator=(const deep_copy_shared_ptr<T> &other) noexcept {
-        OC_ASSERT(_ptr && other.ptr());
-        *_ptr = *other.ptr();
+        if (_ptr) {
+            *_ptr = *other.ptr();
+        } else {
+            _ptr = other.ptr();
+        }
         return *this;
     }
 };
