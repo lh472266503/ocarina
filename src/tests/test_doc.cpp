@@ -224,6 +224,45 @@ void test_lambda(Device &device, Stream &stream) {
            << synchronize() << commit();
 }
 
+
+template<typename T>
+struct deep_copy_shared_ptr {
+private:
+    ocarina::shared_ptr<T> _ptr{};
+
+public:
+    template<typename U>
+    requires requires(ocarina::shared_ptr<T> t, U u) { t = u; }
+    explicit deep_copy_shared_ptr(U &&u) : _ptr(OC_FORWARD(u)) {}
+    [[nodiscard]] const T &operator*() const noexcept { return *_ptr; }
+    [[nodiscard]] T &operator*() noexcept { return *_ptr; }
+    [[nodiscard]] const T *operator->() const noexcept { return _ptr.get(); }
+    [[nodiscard]] T *operator->() noexcept { return _ptr.get(); }
+    [[nodiscard]] const T *get() const noexcept { return _ptr.get(); }
+    [[nodiscard]] T *get() noexcept { return _ptr.get(); }
+    [[nodiscard]] const ocarina::shared_ptr<T>& ptr() const noexcept { return _ptr;}
+    [[nodiscard]] ocarina::shared_ptr<T>& ptr() noexcept { return _ptr;}
+
+    template<typename Other>
+    requires requires(shared_ptr<T> t, Other &other) {
+        t = other.ptr();
+        *t = *other.ptr();
+    }
+    deep_copy_shared_ptr<T> operator=(const Other &other) noexcept {
+        if (_ptr){
+            *_ptr = *other.ptr();
+        } else {
+            _ptr = other.ptr();
+        }
+        return *this;
+    }
+};
+
+template<typename T, typename ...Args>
+[[nodiscard]] deep_copy_shared_ptr<T> make_deep_copy_shared(Args &&...args) noexcept {
+    return deep_copy_shared_ptr<T>(make_shared<T>(OC_FORWARD(args)...));
+}
+
 struct Base {
     int a = 1;
     int b = 3;
@@ -231,7 +270,7 @@ struct Base {
     virtual Base &operator=(const Base &base) noexcept = default;
 };
 
-struct Derive1 : public Base{
+struct Derive1 : public Base {
     int d = 9;
     SP<int> sp;
     Derive1(int arg) : d(arg) {}
@@ -244,42 +283,43 @@ struct Derive : public Base {
     Derive(int arg) : c(arg) {}
 
     Derive &operator=(const Base &other) noexcept override {
-//        Derive *ptr = dynamic_cast<decltype(this) >(const_cast<Base *>(&other));
-        *this =* dynamic_cast<decltype(this) >(const_cast<Base *>(&other));
+        //        Derive *ptr = dynamic_cast<decltype(this) >(const_cast<Base *>(&other));
+        *this = *dynamic_cast<decltype(this)>(const_cast<Base *>(&other));
 
         return *this;
     }
 
     Derive &operator=(const Derive &other) noexcept {
 
-//        Base::operator=(other);
+        //        Base::operator=(other);
         *sp = *other.sp;
         c = other.c;
         //        *this = dynamic_cast<decltype(*this) &>(const_cast<Base &>(other));
 
         return *this;
     }
-
 };
 
 void test_poly() {
-    unique_ptr<Base> p1 = make_unique<Derive>(1);
-    p1->a = 10;
-    unique_ptr<Base> p2 = make_unique<Derive>(2);
-    p2->a = 8;
+    deep_copy_shared_ptr<Derive> p1 = make_deep_copy_shared<Derive>(1);
+    deep_copy_shared_ptr<Base> p0(p1);
+//    p0 = p1;
+//    p1->a = 10;
+//    deep_copy_shared_ptr<Base> p2 = make_deep_copy_shared<Derive>(2);
+//    p2->a = 8;
 
-    dynamic_cast<Derive *>(p1.get())->sp = std::make_shared<int>(123);
-    dynamic_cast<Derive *>(p2.get())->sp = std::make_shared<int>(456);
-
-    cout << "before p1->a = " << p1->a << ", p1->c = " << dynamic_cast<Derive *>(p1.get())->c << endl;
-    cout << "before p2->a = " << p2->a << ", p2->c = " << dynamic_cast<Derive *>(p2.get())->c << endl;
-    *p1 = *p2;
-    cout << "after p1->a = " << p1->a << ", p1->c = " << dynamic_cast<Derive *>(p1.get())->c << endl;
-    cout << "after p2->a = " << p2->a << ", p2->c = " << dynamic_cast<Derive *>(p2.get())->c << endl;
-
-//    auto p3 = make_unique<Derive1>(1);
+//    dynamic_cast<Derive *>(p1.get())->sp = std::make_shared<int>(123);
+//    dynamic_cast<Derive *>(p2.get())->sp = std::make_shared<int>(456);
 //
-//    unique_ptr<Derive> derive = dynamic_unique_pointer_cast<Derive>(move(p2));
+//    cout << "before p1->a = " << p1->a << ", p1->c = " << dynamic_cast<Derive *>(p1.get())->c << endl;
+//    cout << "before p2->a = " << p2->a << ", p2->c = " << dynamic_cast<Derive *>(p2.get())->c << endl;
+//    *p1 = *p2;
+//    cout << "after p1->a = " << p1->a << ", p1->c = " << dynamic_cast<Derive *>(p1.get())->c << endl;
+//    cout << "after p2->a = " << p2->a << ", p2->c = " << dynamic_cast<Derive *>(p2.get())->c << endl;
+
+    //    auto p3 = make_unique<Derive1>(1);
+    //
+    //    unique_ptr<Derive> derive = dynamic_unique_pointer_cast<Derive>(move(p2));
 
     return;
 }
