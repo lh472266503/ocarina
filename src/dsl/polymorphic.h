@@ -236,7 +236,9 @@ protected:
     PolymorphicMode _mode{EInstance};
 
 public:
-    explicit Polymorphic(PolymorphicMode mode = EInstance) : _mode(mode) {}
+    explicit Polymorphic(PolymorphicMode mode = EInstance)
+        : _mode(mode) {}
+    
     void push_back(T arg) noexcept {
         _type_mgr.add_object(arg);
         Super::push_back(arg);
