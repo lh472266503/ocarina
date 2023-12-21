@@ -71,6 +71,23 @@ public:
 
     template<typename Func>
     void dispatch(Func &&func) const noexcept {
+        comment(ocarina::format("PolyEvaluator const dispatch {}", typeid(T).name()));
+        if (Super::size() == 1) {
+            comment(typeid(*Super::at(0u)).name());
+            func(raw_ptr(Super::at(0u)));
+            return;
+        }
+        switch_(_tag, [&] {
+            for (int i = 0; i < Super::size(); ++i) {
+                comment(typeid(*Super::at(i)).name());
+                case_(i, [&] {func(raw_ptr(Super::at(i)));break_(); });
+            }
+            default_([&] { unreachable();break_(); });
+        });
+    }
+
+    template<typename Func>
+    void dispatch(Func &&func) noexcept {
         comment(ocarina::format("PolyEvaluator dispatch {}", typeid(T).name()));
         if (Super::size() == 1) {
             comment(typeid(*Super::at(0u)).name());
@@ -370,7 +387,7 @@ public:
         if (Super::empty()) [[unlikely]] {
             return;
         }
-        comment("dispatch_instance");
+        comment("const dispatch_instance");
         comment(typeid(*this).name());
         if (Super::size() == 1) {
             comment(typeid(*Super::at(0u)).name());
@@ -392,7 +409,7 @@ public:
         if (_type_mgr.empty()) [[unlikely]] {
             return;
         }
-        comment("dispatch_type");
+        comment("const dispatch_type");
         comment(typeid(*this).name());
         if (_type_mgr.size() == 1) {
             ptr_type *elm = _type_mgr.type_map.begin()->second.objects[0];
