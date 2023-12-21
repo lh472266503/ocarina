@@ -250,7 +250,15 @@ struct Derive : public Base {
         return *this;
     }
 
-//    Derive &operator=(const Derive &other) noexcept = default;
+    Derive &operator=(const Derive &other) noexcept {
+
+//        Base::operator=(other);
+        *sp = *other.sp;
+        c = other.c;
+        //        *this = dynamic_cast<decltype(*this) &>(const_cast<Base &>(other));
+
+        return *this;
+    }
 
 };
 
