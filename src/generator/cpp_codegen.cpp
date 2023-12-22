@@ -500,7 +500,7 @@ void CppCodegen::emit(const Function &func) noexcept {
     if (func.is_raytracing_kernel()) {
         _emit_raytracing_param(func);
     }
-    if (!func.description().empty()) {
+    if (!has_generated(&func) && !func.description().empty()) {
         _emit_comment(func.description());
         _emit_newline();
     }
