@@ -62,6 +62,11 @@ public:
         return ret;
     }
 
+    void clear() noexcept {
+        Super::clear();
+        _tags.clear();
+    }
+
     template<typename Derive>
     requires std::is_base_of_v<element_ty, Derive>
     Derive *link(UP<Derive> elm) noexcept {
