@@ -273,17 +273,19 @@ auto callable_wrap(Func &&func, const string &desc = "") {
 }
 }// namespace detail
 
-template<typename Func>
+template<typename F>
 class Lambda {
 private:
     string _desc;
-    Func _func;
+    std::function<F> _func;
 
 public:
+    template<typename Func>
     Lambda(Func &&f) noexcept
         : _func(std::forward<Func>(f)) {}
+    template<typename Func>
     Lambda(Func &&f, const string &str) noexcept
-        : _func(std::forward<Func>(f)), _desc(str) {}
+        : _func(std::forward<F>(f)), _desc(str) {}
     Lambda(Lambda &&) noexcept = default;
     Lambda(const Lambda &) noexcept = default;
     Lambda &operator=(Lambda &&) noexcept = default;
@@ -291,7 +293,7 @@ public:
     void set_description(const string &desc) noexcept { _desc = desc; }
 
     template<typename... Args>
-    requires std::is_invocable_v<Func, Args...>
+    requires std::is_invocable_v<F, Args...>
     auto operator()(Args &&...args) const noexcept {
         using ret_type = decltype(_func(OC_FORWARD(args)...));
         if constexpr (std::is_same_v<ret_type, void>) {
@@ -320,7 +322,9 @@ public:
     explicit CallableOutlineBuilder(string str) : desc(std::move(str)) {}
     template<typename F>
     auto operator%(F &&body) && noexcept {
-        return Lambda(OC_FORWARD(body), desc)();
+        auto ret = Lambda(OC_FORWARD(body));
+        ret.set_description(desc);
+        return ret();
     }
 };
 }// namespace detail
