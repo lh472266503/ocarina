@@ -510,6 +510,12 @@ public:
         return eval<Size>(expr);
     }
 
+    template<typename Size = uint>
+    [[nodiscard]] Var<Size> size() const noexcept {
+        Var<Size> ret = size_in_byte();
+        return detail::divide(ret, static_cast<uint>(sizeof(float)));
+    }
+
     template<typename T, typename Offset>
     [[nodiscard]] Array<T> read_dynamic_array(uint size, Offset &&offset) const noexcept;// implement in dsl/array.h
 };

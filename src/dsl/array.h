@@ -310,6 +310,9 @@ Array<float> EnableTextureSample<T>::sample(uint channel_num, const UV &uv)
 
 template<typename T, typename Offset>
 [[nodiscard]] Array<T> ResourceArrayByteBuffer::read_dynamic_array(uint size, Offset &&offset) const noexcept {
+    if constexpr (is_dsl_v<Offset>) {
+        offset = detail::correct_index(offset, this->size_in_byte(), typeid(*this).name(), traceback_string());
+    }
     const CallExpr *expr = Function::current()->call_builtin(Array<T>::type(size),
                                                              CallOp::RESOURCE_ARRAY_BYTE_BUFFER_READ,
                                                              {_resource_array, _index, OC_EXPR(offset)});

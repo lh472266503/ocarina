@@ -11,6 +11,7 @@
 #include "serialize.h"
 #include "core/hash.h"
 #include "registrable.h"
+#include "env.h"
 
 namespace ocarina {
 
