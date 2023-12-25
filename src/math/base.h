@@ -100,6 +100,12 @@ rcp(const T &v) {
     return 1.f / v;
 }
 
+template<typename T, typename U>
+requires ocarina::is_all_scalar_expr_v<T, U>
+auto divide(T &&t, U &&u) noexcept {
+    return OC_FORWARD(t) * rcp(OC_FORWARD(u));
+}
+
 template<typename T>
 requires is_scalar_v<T>
 [[nodiscard]] constexpr auto
