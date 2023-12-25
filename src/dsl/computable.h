@@ -512,7 +512,7 @@ public:
 
     template<typename Size = uint>
     [[nodiscard]] Var<Size> size() const noexcept {
-        Var<Size> ret = size_in_byte();
+        Var<Size> ret = size_in_byte<float, Size>();
         return detail::divide(ret, static_cast<uint>(sizeof(float)));
     }
 
