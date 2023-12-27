@@ -12,7 +12,7 @@
 using namespace ocarina;
 
 struct Triple {
-    uint i{}, j{}, k{};
+    uint i{5}, j{}, k{};
     Triple(uint i, uint j, uint k) : i(i), j(j), k(k) {}
     Triple() = default;
 };
@@ -21,9 +21,13 @@ struct Triple {
 OC_STRUCT(Triple, i, j, k){
     [[nodiscard]] Uint sum() const noexcept {
         return i + j + k;
-}
-}
-;
+    }
+};
+
+struct TTT {
+    Triple triple;
+};
+OC_STRUCT(TTT, triple){};
 
 auto get_cube(float x = 1, float y = 1, float z = 1) {
     x = x / 2.f;
@@ -161,6 +165,8 @@ void test_lambda(Device &device, Stream &stream) {
            << tri.upload(triangles.data());
 
     Kernel kernel = [&](Uint i) {
+        OCRay hit;
+
         Uint begin = 2;
         Uint end = 10;
         //        Uint end1 = 10;
@@ -175,7 +181,11 @@ void test_lambda(Device &device, Stream &stream) {
         //        };
         //
         //       func(1,2.f, Float(7.f));
-
+        Var<TTT> triple{};
+        Float3 a;
+        float3 b;
+        a = b;
+//        triple = TTT();
         Var aa = $outline {
             Var aa = $outline {
                 return begin * begin;
@@ -196,7 +206,7 @@ void test_lambda(Device &device, Stream &stream) {
         //        $outline {
         //                $info("{} {} {} --===", begin,begin,begin);
         //        $info("{} === --===", end);
-        $info("{} {} --===", aa, aa);
+        $info("{} {} --===", aa, triple.triple.i);
         //        $info("{}  --===", begin);
         //        };
         //        Callable cb = [&](Float a) {
@@ -223,8 +233,6 @@ void test_lambda(Device &device, Stream &stream) {
            << Env::printer().retrieve()
            << synchronize() << commit();
 }
-
-
 
 struct Base {
     int a = 1;
@@ -264,11 +272,9 @@ struct Derive : public Base {
 };
 
 void func(deep_copy_shared_ptr<Derive> d) {
-
 }
 
 void func(deep_copy_unique_ptr<Derive> d) {
-
 }
 
 void test_poly() {
@@ -321,8 +327,8 @@ int main(int argc, char *argv[]) {
     /// create rtx context if need
     device.init_rtx();
     //    test_compute_shader(device, stream);
-    //    test_lambda(device, stream);
+    test_lambda(device, stream);
 
-    test_poly();
+    //    test_poly();
     return 0;
 }

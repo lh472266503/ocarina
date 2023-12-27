@@ -84,7 +84,7 @@ public:
     }
 
     template<typename U>
-    requires is_array_expr_v<U>
+    requires is_array_expr_v<U> || is_std_vector_v<U>
     static Array<T> create(U &&array) noexcept {
         Array<T> ret{array.size()};
         for (uint i = 0; i < ret.size(); ++i) {
@@ -145,6 +145,11 @@ public:
             Function::current()->assign(_expression, rhs._expression);
         }
         return *this;
+    }
+
+    void assignment(const vector<T>& rhs ) {
+        auto tmp = Array<T>::create(rhs);
+        *this = tmp;
     }
 
     Array &operator=(const Var<T> &rhs) noexcept {

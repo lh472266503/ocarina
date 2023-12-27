@@ -325,12 +325,21 @@ protected:                                                                      
     Computable(Computable &&) noexcept = default;                                       \
     Computable(const Computable &) noexcept = default;
 
+#define OC_MAKE_ASSIGNMENT_FUNC      \
+public:                              \
+    void                             \
+    assignment(const this_type &t) { \
+        assign(*this, t);            \
+    }
+
 template<typename T>
 struct Computable
     : detail::EnableBitwiseCast<Computable<T>>,
       detail::EnableStaticCast<Computable<T>> {
+    using this_type = T;
     static_assert(is_scalar_v<T>);
     OC_COMPUTABLE_COMMON(Computable<T>)
+    OC_MAKE_ASSIGNMENT_FUNC
 };
 
 template<typename T>
@@ -339,7 +348,10 @@ struct Computable<Vector<T, 2>>
       detail::EnableBitwiseCast<Computable<Vector<T, 2>>>,
       detail::EnableGetMemberByIndex<Computable<Vector<T, 2>>>,
       detail::EnableSubscriptAccess<Computable<Vector<T, 2>>> {
+    using this_type = Vector<T, 2>;
     OC_COMPUTABLE_COMMON(Computable<Vector<T, 2>>)
+    OC_MAKE_ASSIGNMENT_FUNC
+
 public:
     Var<T> x{Function::current()->swizzle(Type::of<T>(), expression(), 0, 1)};
     Var<T> y{Function::current()->swizzle(Type::of<T>(), expression(), 1, 1)};
@@ -352,7 +364,10 @@ struct Computable<Vector<T, 3>>
       detail::EnableBitwiseCast<Computable<Vector<T, 3>>>,
       detail::EnableGetMemberByIndex<Computable<Vector<T, 3>>>,
       detail::EnableSubscriptAccess<Computable<Vector<T, 3>>> {
+    using this_type = Vector<T, 3>;
     OC_COMPUTABLE_COMMON(Computable<Vector<T, 3>>)
+    OC_MAKE_ASSIGNMENT_FUNC
+
 public:
     Var<T> x{Function::current()->swizzle(Type::of<T>(), expression(), 0, 1)};
     Var<T> y{Function::current()->swizzle(Type::of<T>(), expression(), 1, 1)};
@@ -366,7 +381,10 @@ struct Computable<Vector<T, 4>>
       detail::EnableBitwiseCast<Computable<Vector<T, 4>>>,
       detail::EnableGetMemberByIndex<Computable<Vector<T, 4>>>,
       detail::EnableSubscriptAccess<Computable<Vector<T, 4>>> {
+    using this_type = Vector<T, 4>;
     OC_COMPUTABLE_COMMON(Computable<Vector<T, 4>>)
+    OC_MAKE_ASSIGNMENT_FUNC
+
 public:
     Var<T> x{Function::current()->swizzle(Type::of<T>(), expression(), 0, 1)};
     Var<T> y{Function::current()->swizzle(Type::of<T>(), expression(), 1, 1)};
@@ -375,18 +393,34 @@ public:
 #include "swizzle_inl/swizzle_4.inl.h"
 };
 
+template<size_t N>
+struct Computable<Matrix<N>>
+    : detail::EnableGetMemberByIndex<Computable<Matrix<N>>>,
+      detail::EnableSubscriptAccess<Computable<Matrix<N>>> {
+    OC_COMPUTABLE_COMMON(Computable<Matrix<N>>)
+    using this_type = Matrix<N>;
+    OC_MAKE_ASSIGNMENT_FUNC
+};
+
+
 template<typename T, size_t N>
 struct Computable<std::array<T, N>>
     : detail::EnableSubscriptAccess<Computable<std::array<T, N>>>,
       detail::EnableGetMemberByIndex<Computable<std::array<T, N>>> {
+    using this_type = std::array<T, N>;
     OC_COMPUTABLE_COMMON(Computable<std::array<T, N>>)
+public:
+    void assignment(const this_type &t) {  }
 };
 
 template<typename T, size_t N>
 struct Computable<T[N]>
     : detail::EnableSubscriptAccess<Computable<T[N]>>,
       detail::EnableGetMemberByIndex<Computable<T[N]>> {
+    using this_type = T[N];
     OC_COMPUTABLE_COMMON(Computable<T[N]>)
+public:
+    void assignment(const this_type &t) {  }
 };
 
 template<typename T>
@@ -404,12 +438,6 @@ struct Computable<Texture>
     OC_COMPUTABLE_COMMON(Computable<Texture>)
 };
 
-template<size_t N>
-struct Computable<Matrix<N>>
-    : detail::EnableGetMemberByIndex<Computable<Matrix<N>>>,
-      detail::EnableSubscriptAccess<Computable<Matrix<N>>> {
-    OC_COMPUTABLE_COMMON(Computable<Matrix<N>>)
-};
 
 template<>
 struct Computable<Accel> {
@@ -604,19 +632,29 @@ public:
                                                                                       expression(),                          \
                                                                                       ocarina::struct_member_tuple<this_type>::member_index(#m))};
 
-#define OC_MAKE_COMPUTABLE_BODY(S, ...)           \
-    namespace ocarina {                           \
-    namespace detail {                            \
-    template<>                                    \
-    struct Computable<S> {                        \
-    public:                                       \
-        using this_type = S;                      \
-        static constexpr auto cname = #S;         \
-        OC_COMPUTABLE_COMMON(S)                   \
-    public:                                       \
-        MAP(OC_MAKE_STRUCT_MEMBER, ##__VA_ARGS__) \
-    };                                            \
-    }                                             \
+#define OC_MAKE_MEMBER_ASSIGNMENT(m) \
+    m.assignment(t.m);
+
+#define OC_MAKE_COMPUTABLE_BODY(S, ...)                   \
+    namespace ocarina {                                   \
+    namespace detail {                                    \
+    template<>                                            \
+    struct Computable<S> {                                \
+    public:                                               \
+        using this_type = S;                              \
+        static constexpr auto cname = #S;                 \
+        OC_COMPUTABLE_COMMON(S)                           \
+    public:                                               \
+        void                                              \
+        assignment(const this_type &t) {                  \
+            MAP(OC_MAKE_MEMBER_ASSIGNMENT, ##__VA_ARGS__) \
+        }                                                 \
+                                                          \
+                                                          \
+    public:                                               \
+        MAP(OC_MAKE_STRUCT_MEMBER, ##__VA_ARGS__)         \
+    };                                                    \
+    }                                                     \
     }
 }// namespace detail
 
