@@ -18,12 +18,13 @@ namespace ocarina {
 
 static constexpr auto optix_include = OC_STRINGIFY(OPTIX_INCLUDE);
 
-CUDACompiler::CUDACompiler(CUDADevice *device, const Function &f)
-    : _device(device), _function(f) {
-    f.set_raytracing(true);
-}
+CUDACompiler::CUDACompiler(CUDADevice *device)
+    : _device(device) {}
 
-ocarina::string CUDACompiler::compile(int sm) const noexcept {
+ocarina::string CUDACompiler::compile(const Function &function, int sm) const noexcept {
+
+    function.set_raytracing(true);
+
     int ver_major = 0;
     int ver_minor = 0;
     OC_NVRTC_CHECK(nvrtcVersion(&ver_major, &ver_minor));
@@ -50,7 +51,7 @@ ocarina::string CUDACompiler::compile(int sm) const noexcept {
         "-dw",
         "-w"};
     ocarina::vector<string> includes;
-    if (_function.is_raytracing()) {
+    if (function.is_raytracing()) {
         includes.push_back(ocarina::format("-I {}", optix_include));
         compile_option.push_back(includes.back().c_str());
         header_names.push_back("optix_device_header.h");
@@ -90,9 +91,7 @@ ocarina::string CUDACompiler::compile(int sm) const noexcept {
         return ptx;
     };
 
-    uint64_t final_hash = hash64(_function.hash(), ext_hash);
-
-    string fn = detail::func_name(final_hash);
+    string fn = function.func_name(ext_hash);
 
     ocarina::string ptx_fn = fn + ".ptx";
     string cu_fn = fn + ".cu";
@@ -101,7 +100,7 @@ ocarina::string CUDACompiler::compile(int sm) const noexcept {
     if (!context->is_exist_cache(ptx_fn)) {
         if (!context->is_exist_cache(cu_fn)) {
             CUDACodegen codegen{Env::code_obfuscation()};
-            codegen.emit(_function);
+            codegen.emit(function);
             const ocarina::string &cu = codegen.scratch().c_str();
             //            cout << cu << endl;
             context->write_global_cache(cu_fn, cu);
@@ -117,6 +116,7 @@ ocarina::string CUDACompiler::compile(int sm) const noexcept {
         OC_INFO_FORMAT("find ptx file {}", ptx_fn);
         ptx = context->read_global_cache(ptx_fn);
     }
+//    function.set_raytracing(false);
     return ptx;
 }
 

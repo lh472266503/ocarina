@@ -330,15 +330,16 @@ ocarina::span<const Variable> Function::builtin_vars() const noexcept {
     return _builtin_vars;
 }
 
-ocarina::string Function::func_name() const noexcept {
+ocarina::string Function::func_name(uint64_t ext_hash) const noexcept {
+    uint64_t final_hash = ext_hash == 0 ? hash() : hash64(hash(), ext_hash);
     if (is_kernel()) {
         if (is_raytracing()) {
-            return detail::raygen_name(hash());
+            return detail::raygen_name(final_hash);
         } else {
-            return detail::kernel_name(hash());
+            return detail::kernel_name(final_hash);
         }
     } else {
-        return detail::func_name(hash());
+        return detail::func_name(final_hash);
     }
 }
 

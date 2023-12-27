@@ -290,7 +290,7 @@ public:
     }
 
     [[nodiscard]] bool has_configure() const noexcept { return all(block_dim() != 0u) || all(grid_dim() != 0u); }
-    [[nodiscard]] ocarina::string func_name() const noexcept;
+    [[nodiscard]] ocarina::string func_name(uint64_t ext_hash = 0u) const noexcept;
     void assign(const Expression *lhs, const Expression *rhs) noexcept;
     void return_(const Expression *expression) noexcept;
     [[nodiscard]] const RefExpr *block_idx() noexcept;

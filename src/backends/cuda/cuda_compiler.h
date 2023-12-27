@@ -15,11 +15,10 @@ class Function;
 class CUDACompiler {
 private:
     CUDADevice *_device;
-    const Function &_function;
 
 public:
-    CUDACompiler(CUDADevice *device, const Function &f);
-    [[nodiscard]] ocarina::string compile(int sm) const noexcept;
+    CUDACompiler(CUDADevice *device);
+    [[nodiscard]] ocarina::string compile(const Function &function, int sm) const noexcept;
 };
 
 }// namespace ocarina
