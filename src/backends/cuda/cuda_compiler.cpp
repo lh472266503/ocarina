@@ -61,6 +61,8 @@ ocarina::string CUDACompiler::compile(int sm) const noexcept {
         compile_option.push_back(includes.back().c_str());
     }
 
+    uint64_t ext_hash = hash64(hash64_list(compile_option), hash64_list(header_sources));
+
     auto compile = [&](const string &cu, const string &fn, int sm) -> string {
         TIMER_TAG(compile, "compile " + fn);
         nvrtcProgram program{};
@@ -88,8 +90,12 @@ ocarina::string CUDACompiler::compile(int sm) const noexcept {
         return ptx;
     };
 
-    ocarina::string ptx_fn = _function.func_name() + ".ptx";
-    string cu_fn = _function.func_name() + ".cu";
+    uint64_t final_hash = hash64(_function.hash(), ext_hash);
+
+    string fn = detail::func_name(final_hash);
+
+    ocarina::string ptx_fn = fn + ".ptx";
+    string cu_fn = fn + ".cu";
     ocarina::string ptx;
     Context *context = _device->context();
     if (!context->is_exist_cache(ptx_fn)) {
