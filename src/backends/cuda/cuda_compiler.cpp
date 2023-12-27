@@ -116,7 +116,6 @@ ocarina::string CUDACompiler::compile(const Function &function, int sm) const no
         OC_INFO_FORMAT("find ptx file {}", ptx_fn);
         ptx = context->read_global_cache(ptx_fn);
     }
-//    function.set_raytracing(false);
     return ptx;
 }
 
