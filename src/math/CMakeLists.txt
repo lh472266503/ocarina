@@ -8,4 +8,4 @@ set_target_properties(ocarina-math PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
         WINDOWS_EXPORT_ALL_SYMBOLS ON)
 target_compile_definitions(ocarina-math PRIVATE OC_MATH_DLL=1)
-target_link_libraries(ocarina-math PUBLIC ocarina-dsl ocarina-ext)
+target_link_libraries(ocarina-math PUBLIC  ocarina-ext)
