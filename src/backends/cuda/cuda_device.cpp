@@ -98,7 +98,7 @@ handle_ty CUDADevice::create_texture(uint3 res, PixelStorage pixel_storage,
 
 handle_ty CUDADevice::create_shader(const Function &function) noexcept {
     CUDACompiler compiler(this, function);
-    ocarina::string ptx = compiler.obtain_ptx(_compute_capability);
+    ocarina::string ptx = compiler.compile(_compute_capability);
 
     auto ptr = use_context([&] {
         auto shader = CUDAShader::create(this, ptx, function);

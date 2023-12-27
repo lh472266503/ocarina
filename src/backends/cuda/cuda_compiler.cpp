@@ -23,9 +23,7 @@ CUDACompiler::CUDACompiler(CUDADevice *device, const Function &f)
     f.set_raytracing(true);
 }
 
-ocarina::string CUDACompiler::compile(const string &cu, const string &fn, int sm) const noexcept {
-    TIMER_TAG(compile, "compile " + fn);
-    nvrtcProgram program{};
+ocarina::string CUDACompiler::compile(int sm) const noexcept {
     int ver_major = 0;
     int ver_minor = 0;
     OC_NVRTC_CHECK(nvrtcVersion(&ver_major, &ver_minor));
@@ -63,31 +61,33 @@ ocarina::string CUDACompiler::compile(const string &cu, const string &fn, int sm
         compile_option.push_back(includes.back().c_str());
     }
 
-    OC_NVRTC_CHECK(nvrtcCreateProgram(&program, cu.c_str(), fn.c_str(),
-                                      header_names.size(), header_sources.data(),
-                                      header_names.data()));
-    const nvrtcResult compile_res = nvrtcCompileProgram(program, compile_option.size(), compile_option.data());
-    size_t log_size = 0;
-    OC_NVRTC_CHECK(nvrtcGetProgramLogSize(program, &log_size));
-    string log;
-    log.resize(log_size);
-    if (log_size > 1) {
-        OC_NVRTC_CHECK(nvrtcGetProgramLog(program, log.data()));
-    }
-    if (compile_res != NVRTC_SUCCESS) {
-        cout << log << endl;
-        std::abort();
-    }
-    size_t ptx_size = 0;
-    ocarina::string ptx;
-    OC_NVRTC_CHECK(nvrtcGetPTXSize(program, &ptx_size));
-    ptx.resize(ptx_size);
-    OC_NVRTC_CHECK(nvrtcGetPTX(program, ptx.data()));
-    OC_NVRTC_CHECK(nvrtcDestroyProgram(&program));
-    return ptx;
-}
+    auto compile = [&](const string &cu, const string &fn, int sm) -> string {
+        TIMER_TAG(compile, "compile " + fn);
+        nvrtcProgram program{};
+        OC_NVRTC_CHECK(nvrtcCreateProgram(&program, cu.c_str(), fn.c_str(),
+                                          header_names.size(), header_sources.data(),
+                                          header_names.data()));
+        const nvrtcResult compile_res = nvrtcCompileProgram(program, compile_option.size(), compile_option.data());
+        size_t log_size = 0;
+        OC_NVRTC_CHECK(nvrtcGetProgramLogSize(program, &log_size));
+        string log;
+        log.resize(log_size);
+        if (log_size > 1) {
+            OC_NVRTC_CHECK(nvrtcGetProgramLog(program, log.data()));
+        }
+        if (compile_res != NVRTC_SUCCESS) {
+            cout << log << endl;
+            std::abort();
+        }
+        size_t ptx_size = 0;
+        ocarina::string ptx;
+        OC_NVRTC_CHECK(nvrtcGetPTXSize(program, &ptx_size));
+        ptx.resize(ptx_size);
+        OC_NVRTC_CHECK(nvrtcGetPTX(program, ptx.data()));
+        OC_NVRTC_CHECK(nvrtcDestroyProgram(&program));
+        return ptx;
+    };
 
-ocarina::string CUDACompiler::obtain_ptx(int sm) const noexcept {
     ocarina::string ptx_fn = _function.func_name() + ".ptx";
     string cu_fn = _function.func_name() + ".cu";
     ocarina::string ptx;
