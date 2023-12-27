@@ -48,7 +48,7 @@ public:
     template<typename Derive>
     requires std::is_base_of_v<element_ty, Derive>
     Derive *link(uint64_t hash, UP<Derive> elm) noexcept {
-        auto [iter, first] = _tags.try_emplace(hash,static_cast<uint>(Super::size()));
+        auto [iter, first] = _tags.try_emplace(hash, static_cast<uint>(Super::size()));
         _tag = _tags[hash];
         uint index = _tags[hash];
         Derive *ret = nullptr;
@@ -78,12 +78,15 @@ public:
     template<typename Func>
     void dispatch(Func &&func) const noexcept {
         comment(ocarina::format("PolyEvaluator dispatch {}, case num = {}", typeid(T).name(), Super::size()));
+        auto index = detail::correct_index(_tag, static_cast<uint>(Super::size()),
+                                           ocarina::format("PolyEvaluator dispatch {}", typeid(*this).name()),
+                                           traceback_string(1));
         if (Super::size() == 1) {
             comment(typeid(*Super::at(0u)).name());
             func(raw_ptr(Super::at(0u)));
             return;
         }
-        switch_(_tag, [&] {
+        switch_(index, [&] {
             for (int i = 0; i < Super::size(); ++i) {
                 comment(typeid(*Super::at(i)).name());
                 case_(i, [&] {func(raw_ptr(Super::at(i)));break_(); });
@@ -95,12 +98,15 @@ public:
     template<typename Func>
     void dispatch(Func &&func) noexcept {
         comment(ocarina::format("PolyEvaluator dispatch {}, case num = {}", typeid(T).name(), Super::size()));
+        auto index = detail::correct_index(_tag, static_cast<uint>(Super::size()),
+                                           ocarina::format("PolyEvaluator dispatch {}", typeid(*this).name()),
+                                           traceback_string(1));
         if (Super::size() == 1) {
             comment(typeid(*Super::at(0u)).name());
             func(raw_ptr(Super::at(0u)));
             return;
         }
-        switch_(_tag, [&] {
+        switch_(index, [&] {
             for (int i = 0; i < Super::size(); ++i) {
                 comment(typeid(*Super::at(i)).name());
                 case_(i, [&] {func(raw_ptr(Super::at(i)));break_(); });
@@ -244,7 +250,7 @@ protected:
 public:
     explicit Polymorphic(PolymorphicMode mode = EInstance)
         : _mode(mode) {}
-    
+
     void push_back(T arg) noexcept {
         _type_mgr.add_object(arg);
         Super::push_back(arg);
@@ -260,13 +266,13 @@ public:
         _type_mgr.clear();
     }
 
-    [[nodiscard]] size_t all_instance_num() const noexcept { return Super::size(); }
+    [[nodiscard]] uint all_instance_num() const noexcept { return Super::size(); }
     [[nodiscard]] uint instance_num(const ptr_type *object) const noexcept {
         uint64_t hash_code = object->type_hash();
         return _type_mgr.type_map.at(hash_code).objects.size();
     }
-    [[nodiscard]] size_t type_num() const noexcept { return _type_mgr.size(); }
-    [[nodiscard]] size_t instance_num(uint type_idx) const noexcept {
+    [[nodiscard]] uint type_num() const noexcept { return _type_mgr.size(); }
+    [[nodiscard]] uint instance_num(uint type_idx) const noexcept {
         uint64_t hash_code = _type_mgr.type_hash(type_idx);
         return _type_mgr.type_map.at(hash_code).objects.size();
     }
@@ -391,10 +397,13 @@ public:
 
     template<typename Index>
     requires is_integral_expr_v<Index>
-    void dispatch_instance(Index &&index, const std::function<void(const ptr_type *)> &func) const noexcept {
+    void dispatch_instance(Index index, const std::function<void(const ptr_type *)> &func) const noexcept {
         if (Super::empty()) [[unlikely]] {
             return;
         }
+        Uint corrected = detail::correct_index(index, all_instance_num(),
+                                               ocarina::format("dispatch_instance {}", typeid(*this).name()),
+                                               traceback_string(1));
         comment(ocarina::format("const dispatch_instance, case num = {}", Super::size()));
         comment(typeid(*this).name());
         if (Super::size() == 1) {
@@ -402,7 +411,7 @@ public:
             func(raw_ptr(Super::at(0u)));
             return;
         }
-        switch_(OC_FORWARD(index), [&] {
+        switch_(corrected, [&] {
             for (int i = 0; i < Super::size(); ++i) {
                 comment(typeid(*Super::at(i)).name());
                 case_(i, [&] {func(raw_ptr(Super::at(i)));break_(); });
@@ -413,10 +422,13 @@ public:
 
     template<typename Index>
     requires is_integral_expr_v<Index>
-    void dispatch_representative(Index &&index, const std::function<void(const ptr_type *)> &func) const noexcept {
+    void dispatch_representative(Index index, const std::function<void(const ptr_type *)> &func) const noexcept {
         if (_type_mgr.empty()) [[unlikely]] {
             return;
         }
+        Uint corrected = detail::correct_index(index, type_num(),
+                                               ocarina::format("dispatch_representative {}", typeid(*this).name()),
+                                               traceback_string(1));
         comment(ocarina::format("const dispatch_representative, case num = {}", type_num()));
         comment(typeid(*this).name());
         if (_type_mgr.size() == 1) {
@@ -425,7 +437,7 @@ public:
             func(elm);
             return;
         }
-        switch_(OC_FORWARD(index), [&] {
+        switch_(corrected, [&] {
             _type_mgr.for_each_representative([&](ptr_type *elm, uint i) {
                 comment(typeid(*elm).name());
                 case_(i, [&] {
