@@ -21,18 +21,32 @@ public:
         EDGE,
         REPEAT,
         MIRROR,
-        ZERO
+        CLAMP
     };
+
 private:
-    Filter _u_filter{Filter::POINT};
-    Filter _v_filter{Filter::POINT};
-    Filter _w_filter{Filter::POINT};
+    Filter _filter{Filter::POINT};
     Address _u_address{Address::EDGE};
     Address _v_address{Address::EDGE};
     Address _w_address{Address::EDGE};
 
 public:
     constexpr TextureSampler() noexcept = default;
+    constexpr TextureSampler(Filter filter, Address address) noexcept
+        : _filter{filter},
+          _u_address{address},
+          _v_address{address},
+          _w_address{address} {}
+    constexpr TextureSampler(Filter filter, Address u_address, Address v_address, Address w_address) noexcept
+        : _filter{filter},
+          _u_address{u_address},
+          _v_address{v_address},
+          _w_address{w_address} {}
+    constexpr TextureSampler(Filter filter, Address u_address, Address v_address) noexcept
+        : _filter{filter},
+          _u_address{u_address},
+          _v_address{v_address},
+          _w_address{v_address} {}
 };
 
-}
+}// namespace ocarina
