@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "dynamic_module.h"
+#include "core/dynamic_module.h"
 #include "device.h"
 #include "core/platform.h"
 

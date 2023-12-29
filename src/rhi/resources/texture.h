@@ -7,6 +7,7 @@
 #include "core/header.h"
 #include "resource.h"
 #include "rhi/command.h"
+#include "texture_sampler.h"
 
 namespace ocarina {
 
