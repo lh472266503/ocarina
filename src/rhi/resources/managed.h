@@ -21,13 +21,8 @@ public:
 
 public:
     Managed() = default;
-    Managed(Device::Impl *device, size_t size)
-        : device_ty(device, size) {
-        host_ty::reserve(size);
-    }
-
-    Managed(Device::Impl *device, size_t size, handle_ty stream)
-        : device_ty(device, size, stream) {
+    Managed(Device::Impl *device, size_t size, const string &desc = "")
+        : device_ty(device, size, desc) {
         host_ty::reserve(size);
     }
 

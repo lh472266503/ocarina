@@ -74,7 +74,7 @@ private:
 public:
     void init(Device &device, size_t capacity = 16_mb) {
         capacity /= sizeof(uint);
-        _buffer.reset_all(device, capacity);
+        _buffer.reset_all(device, capacity, "Printer::_buffer");
         reset();
     }
 

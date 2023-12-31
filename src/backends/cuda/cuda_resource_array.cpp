@@ -8,8 +8,8 @@
 namespace ocarina {
 
 CUDAResourceArray::CUDAResourceArray(CUDADevice *device)
-    : _device(device), _buffers(device, slot_size),
-      _textures(device, slot_size) {
+    : _device(device), _buffers(device, slot_size, "CUDAResourceArray::_buffers"),
+      _textures(device, slot_size, "CUDAResourceArray::_textures") {
     _slot_soa.buffer_slot = _buffers.head();
     _slot_soa.tex_slot = _textures.head();
 }

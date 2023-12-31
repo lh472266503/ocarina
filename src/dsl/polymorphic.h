@@ -353,7 +353,8 @@ public:
                     for (ptr_type *object : type_data.objects) {
                         object->encode(type_data.data_set);
                     }
-                    type_data.data_set.reset_device_buffer_immediately(device);
+                    auto desc = ocarina::format("{}::type_buffer", type_data.class_name.c_str());
+                    type_data.data_set.reset_device_buffer_immediately(device,desc);
                     type_data.data_set.register_self();
                     if (!type_data.data_set.empty()) {
                         type_data.data_set.upload_immediately();

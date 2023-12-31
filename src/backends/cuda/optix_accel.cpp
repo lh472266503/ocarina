@@ -68,7 +68,7 @@ void OptixAccel::build_bvh(CUDACommandVisitor *visitor) noexcept {
 
         auto ias_buffer = Buffer<std::byte>(_device, ias_buffer_sizes.outputSizeInBytes, "TLAS buffer");
         auto temp_buffer = Buffer<std::byte>(_device, ias_buffer_sizes.tempSizeInBytes, "TLAS temp buffer");
-        Buffer compact_size_buffer = Buffer<uint64_t>(_device, 1);
+        Buffer compact_size_buffer = Buffer<uint64_t>(_device, 1, "OptixAccel::compact_size_buffer");
         OptixAccelEmitDesc emit_desc;
         emit_desc.type = OPTIX_PROPERTY_TYPE_COMPACTED_SIZE;
         emit_desc.result = compact_size_buffer.handle();

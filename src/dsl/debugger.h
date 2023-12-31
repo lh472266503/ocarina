@@ -42,7 +42,7 @@ private:
 
 public:
     void reset() noexcept { _data[0] = DebugData{}; }
-    void init(Device &device) noexcept { _data.reset_all(device, 1); }
+    void init(Device &device) noexcept { _data.reset_all(device, 1, "DebugData::_data"); }
     [[nodiscard]] auto &host_data() const noexcept { return _data.host_buffer()[0]; }
     [[nodiscard]] auto &host_data() noexcept { return _data.host_buffer()[0]; }
     [[nodiscard]] Command *upload(bool async = true) const noexcept { return _data.upload(async); }

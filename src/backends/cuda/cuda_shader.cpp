@@ -180,7 +180,7 @@ public:
     }
 
     void build_sbt(ProgramGroupTable program_group_table) {
-        _sbt_records = Buffer<SBTRecord>(_device, 4);
+        _sbt_records = Buffer<SBTRecord>(_device, 4, "OptixShader::_sbt_records");
         SBTRecord sbt[4] = {};
         OC_OPTIX_CHECK(optixSbtRecordPackHeader(program_group_table.raygen_group, &sbt[0]));
         OC_OPTIX_CHECK(optixSbtRecordPackHeader(program_group_table.hit_closest_group, &sbt[1]));
