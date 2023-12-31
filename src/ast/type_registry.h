@@ -19,6 +19,12 @@ class BufferView;
 
 class Texture;
 
+template<typename T>
+class RTexture;
+
+template<typename T>
+class RWTexture;
+
 class Accel;
 
 template<typename T>
@@ -168,6 +174,27 @@ struct TypeDesc<Texture> {
         return description();
     }
 };
+
+template<typename T>
+struct TypeDesc<RTexture<T>> {
+    static ocarina::string_view description() noexcept {
+        return "rtexture";
+    }
+    static ocarina::string_view name() noexcept {
+        return description();
+    }
+};
+
+template<typename T>
+struct TypeDesc<RWTexture<T>> {
+    static ocarina::string_view description() noexcept {
+        return "rwtexture";
+    }
+    static ocarina::string_view name() noexcept {
+        return description();
+    }
+};
+
 
 template<>
 struct TypeDesc<Accel> {

@@ -24,6 +24,9 @@ namespace detail {
 }// namespace detail
 
 class Texture : public RHIResource {
+private:
+    uint _channel_num;
+
 public:
     class Impl {
     public:
@@ -47,13 +50,16 @@ public:
                      const string &desc = "")
         : RHIResource(device, Tag::TEXTURE,
                       device->create_texture(res, pixel_storage,
-                                             detail::compute_mip_level_num(res, level_num), desc)) {}
+                                             detail::compute_mip_level_num(res, level_num), desc)),
+          _channel_num(ocarina::channel_num(pixel_storage)) {}
+
+    OC_MAKE_MEMBER_GETTER(channel_num, )
 
     /// for dsl
     [[nodiscard]] const Expression *expression() const noexcept override {
         const CapturedVar &captured_var = Function::current()->get_captured_var(Type::of<decltype(*this)>(),
-                                                                               Variable::Tag::TEXTURE,
-                                                                               memory_block());
+                                                                                Variable::Tag::TEXTURE,
+                                                                                memory_block());
         return captured_var.expression();
     }
 
