@@ -33,7 +33,8 @@ string MemoryStats::buffer_detail_info() const noexcept {
     string ret;
     for (const auto &item : _buffer_map) {
         const BufferData &data = item.second;
-        ret += ocarina::format("size {}, block {}\n", bytes_string(data.size), data.name);
+        double percent = double(data.size) / _buffer_size;
+        ret += ocarina::format("size {}, percent {:.2f} %, block {}\n", bytes_string(data.size),percent * 100, data.name);
     }
     return ret;
 }
