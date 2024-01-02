@@ -103,13 +103,17 @@ public:
     }
 
     template<size_t N>
-    [[nodiscard]] Var<Vector<T, N>> as_vec() const noexcept {
+    [[nodiscard]] auto as_vec() const noexcept {
         OC_ASSERT(N <= _size);
-        Var<Vector<T, N>> ret;
-        for (int i = 0; i < N; ++i) {
-            ret[i] = (*this)[i];
+        if constexpr (N == 1) {
+            return as_scalar();
+        } else {
+            Var<Vector<T, N>> ret;
+            for (int i = 0; i < N; ++i) {
+                ret[i] = (*this)[i];
+            }
+            return ret;
         }
-        return ret;
     }
 
     [[nodiscard]] Array<T> sub(uint offset, uint num) const noexcept {
