@@ -60,6 +60,7 @@ struct EnableSubscriptAccess {
         const SubscriptExpr *expr = Function::current()->subscript(Type::of<element_type>(),
                                                                    static_cast<const T *>(this)->expression(),
                                                                    OC_EXPR(index));
+        expr->mark(Usage::READ);
         return eval<element_type>(expr);
     }
 
@@ -70,6 +71,7 @@ struct EnableSubscriptAccess {
         const SubscriptExpr *expr = f->subscript(Type::of<element_type>(),
                                                  static_cast<const T *>(this)->expression(),
                                                  OC_EXPR(index));
+        expr->mark(Usage::WRITE);
         Var<element_type> *ret = f->template create_temp_obj<Var<element_type>>(expr);
         return *ret;
     }
@@ -144,6 +146,7 @@ struct EnableTextureReadAndWrite {
         const CallExpr *expr = Function::current()->call_builtin(Type::of<Output>(), CallOp::TEX_READ,
                                                                  {texture->expression(), OC_EXPR(x), OC_EXPR(y), OC_EXPR(z)},
                                                                  {Type::of<Output>()});
+        texture->expression()->mark(Usage::READ);
         return eval<Output>(expr);
     }
 
@@ -172,6 +175,7 @@ struct EnableTextureReadAndWrite {
         const CallExpr *expr = Function::current()->call_builtin(Type::of<uchar4>(), CallOp::TEX_WRITE,
                                                                  {texture->expression(),
                                                                   OC_EXPR(elm), OC_EXPR(x), OC_EXPR(y)});
+        texture->expression()->mark(Usage::WRITE);
         Function::current()->expr_statement(expr);
     }
 
@@ -438,6 +442,13 @@ struct Computable<Texture>
     : detail::EnableTextureSample<Computable<Texture>>,
       detail::EnableTextureReadAndWrite<Computable<Texture>> {
     OC_COMPUTABLE_COMMON(Computable<Texture>)
+};
+
+template<typename T>
+struct Computable<RWTexture<T>>
+    : detail::EnableTextureSample<Computable<RWTexture<T>>>,
+      detail::EnableTextureReadAndWrite<Computable<RWTexture<T>>> {
+    OC_COMPUTABLE_COMMON(Computable<RWTexture<T>>)
 };
 
 

@@ -375,6 +375,9 @@ class Accel;
 class ResourceArray;
 
 template<typename T>
+class RWTexture;
+
+template<typename T>
 using is_valid_buffer_element = std::disjunction<is_simple_type<T>, is_valid_dsl_type<T>>;
 
 template<typename T>

@@ -59,7 +59,6 @@ private:
     Tag _tag;
 
 protected:
-    mutable Usage _usage{Usage::NONE};
     virtual void _mark(Usage usage) const noexcept {};
 
 public:
@@ -68,7 +67,6 @@ public:
     [[nodiscard]] auto type() const noexcept { return _type; }
     [[nodiscard]] const Function *context() const noexcept { return _context; }
     void set_context(const Function *f) noexcept { _context = f; }
-    [[nodiscard]] auto usage() const noexcept { return _usage; }
     [[nodiscard]] auto tag() const noexcept { return _tag; }
     [[nodiscard]] bool is_ref() const noexcept { return tag() == Tag::REF; }
     [[nodiscard]] bool is_arithmetic() const noexcept {

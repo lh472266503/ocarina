@@ -280,6 +280,7 @@ Array<float> EnableTextureSample<T>::sample(uint channel_num, const U &u, const 
                                                               OC_EXPR(u),
                                                               OC_EXPR(v)},
                                                              {channel_num});
+    texture->expression()->mark(Usage::READ);
     return eval_array(Array<float>(channel_num, expr));
 }
 
@@ -296,6 +297,7 @@ Array<float> EnableTextureSample<T>::sample(uint channel_num, const U &u, const 
                                                               OC_EXPR(v),
                                                               OC_EXPR(w)},
                                                              {channel_num});
+    texture->expression()->mark(Usage::READ);
     return eval_array(Array<float>(channel_num, expr));
 }
 
