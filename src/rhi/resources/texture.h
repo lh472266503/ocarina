@@ -24,7 +24,7 @@ namespace detail {
 }// namespace detail
 
 class Texture : public RHIResource {
-private:
+protected:
     uint _channel_num;
 
 public:
@@ -153,6 +153,24 @@ public:
 
     void download_immediately(void *data) const noexcept {
         download_sync(data)->accept(*_device->command_visitor());
+    }
+};
+
+template<typename T>
+class RWTexture : public Texture {
+public:
+    using Super = Texture;
+
+public:
+    RWTexture() = default;
+    explicit RWTexture(Device::Impl *device, uint3 res,
+                       PixelStorage pixel_storage, uint level_num = 1u,
+                       const string &desc = "")
+        : Texture(device, res, pixel_storage, level_num, desc) {}
+
+    template<typename ...Args>
+    [[nodiscard]] auto sample(Args &&...args) const noexcept {
+        return sample(_channel_num, OC_FORWARD(args)...);
     }
 };
 
