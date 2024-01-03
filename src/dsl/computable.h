@@ -84,6 +84,7 @@ struct EnableReadAndWrite {
         const SubscriptExpr *expr = Function::current()->subscript(Type::of<element_type>(),
                                                                    static_cast<const T *>(this)->expression(),
                                                                    {OC_EXPR(index)...});
+        expr->mark(Usage::READ);
         return eval<element_type>(expr);
     }
 
@@ -105,6 +106,7 @@ struct EnableReadAndWrite {
         const SubscriptExpr *expr = Function::current()->subscript(Type::of<element_type>(),
                                                                    static_cast<const T *>(this)->expression(),
                                                                    OC_EXPR(index));
+        expr->mark(Usage::WRITE);
         assign(expr, OC_FORWARD(elm));
     }
 

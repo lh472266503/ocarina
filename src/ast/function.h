@@ -258,7 +258,12 @@ public:
     }
     void mark_variable_usage(uint uid, Usage usage) noexcept {
         OC_ASSERT(uid < _variable_usages.size());
-        _variable_usages[uid] = usage;
+        auto old_usage = to_underlying(_variable_usages[uid]);
+        auto new_usage = to_underlying(usage);
+        auto final_usage = old_usage | new_usage;
+        if (final_usage != old_usage) {
+            _variable_usages[uid] = static_cast<Usage>(final_usage);
+        }
     }
     template<typename Func>
     static auto define_kernel(Func &&func) noexcept {

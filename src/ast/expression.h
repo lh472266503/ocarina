@@ -37,7 +37,6 @@ struct OC_AST_API ExprVisitor {
     virtual void visit(const CastExpr *) = 0;
 };
 
-
 class OC_AST_API Expression : public concepts::Noncopyable, public Hashable {
 public:
     enum struct Tag : uint32_t {
@@ -77,10 +76,7 @@ public:
     }
     virtual void accept(ExprVisitor &) const = 0;
     void mark(Usage usage) const noexcept {
-        if (auto a = to_underlying(_usage), u = a | to_underlying(usage); a != u) {
-            _usage = static_cast<Usage>(u);
-            _mark(usage);
-        }
+        _mark(usage);
     }
 };
 
@@ -159,6 +155,9 @@ private:
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+    void _mark(ocarina::Usage usage) const noexcept override {
+        _range->mark(usage);
+    }
 
 public:
     SubscriptExpr(const Type *type, const Expression *range, const Expression *index)
@@ -256,7 +255,9 @@ private:
     uint16_t _swizzle_size{0};
 
 private:
-    void _mark(Usage) const noexcept override {}
+    void _mark(Usage usage) const noexcept override {
+        _parent->mark(usage);
+    }
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:

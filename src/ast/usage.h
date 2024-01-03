@@ -10,8 +10,8 @@ namespace ocarina {
 
 enum struct Usage : uint32_t {
     NONE = 0u,
-    READ = 0x01u,
-    WRITE = 0x02u,
+    READ = 1 << 0,
+    WRITE = 1 << 1,
     READ_WRITE = READ | WRITE
 };
 

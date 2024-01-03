@@ -86,6 +86,8 @@ void test_compute_shader(Device &device, Stream &stream) {
         $info("triple  index {} : i = {}, j = {}, k = {},  sum: {} ", dispatch_id(), t.i, t.j, t.k, t->sum());
 
         $info("vert from capture {} {} {}", vert.read(dispatch_id()));
+
+        vert.write(dispatch_id(), vert.read(dispatch_id()));
         $info("vert from capture resource array {} {} {}", resource_array.buffer<float3>(0).read(Var(10000)));
         $info("vert from ra {} {} {}", ra.buffer<float3>(v_idx).read(dispatch_id()));
 
@@ -326,8 +328,8 @@ int main(int argc, char *argv[]) {
 
     /// create rtx context if need
     device.init_rtx();
-    //    test_compute_shader(device, stream);
-    test_lambda(device, stream);
+        test_compute_shader(device, stream);
+//    test_lambda(device, stream);
 
     //    test_poly();
     return 0;
