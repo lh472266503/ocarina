@@ -20,7 +20,7 @@ public:
             case Tag::BUFFER: return sizeof(handle_ty);
             case Tag::ACCEL: return sizeof(handle_ty);
             case Tag::TEXTURE: return sizeof(OCTexture);
-            case Tag::RESOURCE_ARRAY: return sizeof(SlotSOA);
+            case Tag::BINDLESS_ARRAY: return sizeof(SlotSOA);
             default:
                 return 0;
         }
@@ -36,7 +36,7 @@ public:
             case Tag::BUFFER: return alignof(handle_ty);
             case Tag::ACCEL: return alignof(handle_ty);
             case Tag::TEXTURE: return alignof(OCTexture);
-            case Tag::RESOURCE_ARRAY: return alignof(SlotSOA);
+            case Tag::BINDLESS_ARRAY: return alignof(SlotSOA);
             default:
                 return 0;
         }

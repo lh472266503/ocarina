@@ -497,14 +497,14 @@ public:
         if constexpr (is_dsl_v<Index>) {
             index = detail::correct_index(index, size(), typeid(*this).name(), traceback_string());
         }
-        const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::RESOURCE_ARRAY_BUFFER_READ,
+        const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::BINDLESS_ARRAY_BUFFER_READ,
                                                                  {_bindless_array, _index, OC_EXPR(index)});
         return eval<T>(expr);
     }
 
     template<typename Size = uint>
     [[nodiscard]] Var<Size> size_in_byte() const noexcept {
-        const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::RESOURCE_ARRAY_BUFFER_SIZE,
+        const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::BINDLESS_ARRAY_BUFFER_SIZE,
                                                                  {_bindless_array, _index});
         return eval<Size>(expr);
     }
@@ -521,7 +521,7 @@ public:
         if constexpr (is_dsl_v<Index>) {
             index = detail::correct_index(index, size(), typeid(*this).name(), traceback_string());
         }
-        const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::RESOURCE_ARRAY_BUFFER_WRITE,
+        const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::BINDLESS_ARRAY_BUFFER_WRITE,
                                                                  {_bindless_array, _index, OC_EXPR(index), OC_EXPR(elm)});
         Function::current()->expr_statement(expr);
     }
@@ -539,14 +539,14 @@ public:
     template<typename T, typename Offset>
     requires concepts::integral<expr_value_t<Offset>>
     [[nodiscard]] Var<T> read(Offset &&offset) const noexcept {
-        const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::RESOURCE_ARRAY_BYTE_BUFFER_READ,
+        const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::BINDLESS_ARRAY_BYTE_BUFFER_READ,
                                                                  {_bindless_array, _index, OC_EXPR(offset)});
         return eval<T>(expr);
     }
 
     template<typename T = float, typename Size = uint>
     [[nodiscard]] Var<Size> size_in_byte() const noexcept {
-        const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::RESOURCE_ARRAY_BUFFER_SIZE,
+        const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::BINDLESS_ARRAY_BUFFER_SIZE,
                                                                  {_bindless_array, _index});
         return eval<Size>(expr);
     }

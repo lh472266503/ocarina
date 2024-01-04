@@ -325,7 +325,7 @@ template<typename T, typename Offset>
         offset = detail::correct_index(offset, this->size_in_byte(), typeid(*this).name(), traceback_string());
     }
     const CallExpr *expr = Function::current()->call_builtin(Array<T>::type(size),
-                                                             CallOp::RESOURCE_ARRAY_BYTE_BUFFER_READ,
+                                                             CallOp::BINDLESS_ARRAY_BYTE_BUFFER_READ,
                                                              {_bindless_array, _index, OC_EXPR(offset)});
     return detail::eval_array(Array<T>(size, expr));
 }
@@ -335,7 +335,7 @@ requires(is_all_floating_point_expr_v<U, V>)
 Array<float> BindlessArrayTexture::sample(uint channel_num, const U &u, const V &v)
     const noexcept {
     const CallExpr *expr = Function::current()->call_builtin(Array<float>::type(channel_num),
-                                                             CallOp::RESOURCE_ARRAY_TEX_SAMPLE,
+                                                             CallOp::BINDLESS_ARRAY_TEX_SAMPLE,
                                                              {_bindless_array, _index, OC_EXPR(u), OC_EXPR(v)},
                                                              {channel_num});
     return detail::eval_array(Array<float>(channel_num, expr));
@@ -346,7 +346,7 @@ requires(is_all_floating_point_expr_v<U, V, W>)
 Array<float> BindlessArrayTexture::sample(uint channel_num, const U &u, const V &v, const W &w)
     const noexcept {
     const CallExpr *expr = Function::current()->call_builtin(Array<float>::type(channel_num),
-                                                             CallOp::RESOURCE_ARRAY_TEX_SAMPLE,
+                                                             CallOp::BINDLESS_ARRAY_TEX_SAMPLE,
                                                              {_bindless_array, _index, OC_EXPR(u), OC_EXPR(v), OC_EXPR(w)},
                                                              {channel_num});
     return detail::eval_array(Array<float>(channel_num, expr));

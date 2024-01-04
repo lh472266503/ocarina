@@ -91,21 +91,21 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         case CallOp::ATOMIC_EXCH: OC_GEN_FUNC_NAME(atomicExch); break;
         case CallOp::ATOMIC_ADD: OC_GEN_FUNC_NAME(atomicAdd); break;
         case CallOp::ATOMIC_SUB: OC_GEN_FUNC_NAME(atomicSub); break;
-        case CallOp::RESOURCE_ARRAY_BUFFER_WRITE: OC_GEN_FUNC_NAME(bindless_array_buffer_write); break;
-        case CallOp::RESOURCE_ARRAY_BUFFER_SIZE: OC_GEN_FUNC_NAME(bindless_array_buffer_size); break;
-        case CallOp::RESOURCE_ARRAY_BYTE_BUFFER_READ: {
+        case CallOp::BINDLESS_ARRAY_BUFFER_WRITE: OC_GEN_FUNC_NAME(bindless_array_buffer_write); break;
+        case CallOp::BINDLESS_ARRAY_BUFFER_SIZE: OC_GEN_FUNC_NAME(bindless_array_buffer_size); break;
+        case CallOp::BINDLESS_ARRAY_BYTE_BUFFER_READ: {
             current_scratch() << "oc_bindless_array_byte_buffer_read<";
             _emit_type_name(expr->type());
             current_scratch() << ">";
             break;
         }
-        case CallOp::RESOURCE_ARRAY_BUFFER_READ: {
+        case CallOp::BINDLESS_ARRAY_BUFFER_READ: {
             current_scratch() << "oc_bindless_array_buffer_read<";
             _emit_type_name(expr->type());
             current_scratch() << ">";
             break;
         }
-        case CallOp::RESOURCE_ARRAY_TEX_SAMPLE: {
+        case CallOp::BINDLESS_ARRAY_TEX_SAMPLE: {
             auto t_args = expr->template_args();
             uint N = std::get<uint>(t_args[0]);
             current_scratch() << "oc_bindless_array_tex_sample<" << N << ">";
@@ -368,8 +368,8 @@ void CUDACodegen::_emit_type_name(const Type *type) noexcept {
             case Type::Tag::TEXTURE:
                 current_scratch() << "OCTexture";
                 break;
-            case Type::Tag::RESOURCE_ARRAY:
-                current_scratch() << "OCResourceArray";
+            case Type::Tag::BINDLESS_ARRAY:
+                current_scratch() << "OCBindlessArray";
                 break;
             case Type::Tag::ACCEL:
                 current_scratch() << "OptixTraversableHandle";

@@ -20,7 +20,7 @@ void RHIResource::_destroy() {
         case Tag::SHADER: _device->destroy_shader(_handle); break;
         case Tag::MESH: _device->destroy_mesh(_handle); break;
         case Tag::ACCEL: _device->destroy_accel(_handle); break;
-        case Tag::RESOURCE_ARRAY: _device->destroy_bindless_array(_handle); break;
+        case Tag::BINDLESS_ARRAY: _device->destroy_bindless_array(_handle); break;
     }
     _handle = 0;
 }

@@ -10,7 +10,7 @@
 namespace ocarina {
 
 BindlessArray::BindlessArray(Device::Impl *device)
-    : RHIResource(device, Tag::RESOURCE_ARRAY,
+    : RHIResource(device, Tag::BINDLESS_ARRAY,
                   device->create_bindless_array()) {}
 
 size_t BindlessArray::emplace(const Texture &texture) noexcept {

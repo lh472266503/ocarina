@@ -11,7 +11,7 @@
 
 namespace ocarina {
 class CUDADevice;
-class CUDAResourceArray : public BindlessArray::Impl {
+class CUDABindlessArray : public BindlessArray::Impl {
 
 private:
     SlotSOA _slot_soa{};
@@ -20,7 +20,7 @@ private:
     Managed<CUtexObject> _textures;
 
 public:
-    explicit CUDAResourceArray(CUDADevice *device);
+    explicit CUDABindlessArray(CUDADevice *device);
 
     /// for device side structure
     [[nodiscard]] const void *handle_ptr() const noexcept override {

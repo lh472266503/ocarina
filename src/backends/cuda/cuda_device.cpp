@@ -118,12 +118,12 @@ void CUDADevice::destroy_mesh(handle_ty handle) noexcept {
 }
 
 handle_ty CUDADevice::create_bindless_array() noexcept {
-    auto ret = new_with_allocator<CUDAResourceArray>(this);
+    auto ret = new_with_allocator<CUDABindlessArray>(this);
     return reinterpret_cast<handle_ty>(ret);
 }
 
 void CUDADevice::destroy_bindless_array(handle_ty handle) noexcept {
-    ocarina::delete_with_allocator(reinterpret_cast<CUDAResourceArray *>(handle));
+    ocarina::delete_with_allocator(reinterpret_cast<CUDABindlessArray *>(handle));
 }
 
 void CUDADevice::destroy_buffer(handle_ty handle) noexcept {

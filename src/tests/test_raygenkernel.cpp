@@ -183,7 +183,7 @@ int main(int argc, char *argv[]) {
     auto ll = lerp(t, aaa, bb);
 
     Kernel kernel = [&](
-                        ResourceArrayVar ba) {
+                        BindlessArrayVar ba) {
         //        t_buffer.atomic()
         //        managed.device().atomic(1).fetch_sub(2);
         //        Var<Ray> r = make_ray(Var(float3(0, 0.1, -5)), float3(1.6f, 0, 1));

@@ -17,7 +17,7 @@ public:
     enum Tag : uint8_t {
         BUFFER,
         TEXTURE,
-        RESOURCE_ARRAY,
+        BINDLESS_ARRAY,
         STREAM,
         SHADER,
         MESH,

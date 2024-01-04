@@ -251,7 +251,7 @@ void TypeRegistry::parse_struct(Type *type, string_view desc) noexcept {
 }
 
 void TypeRegistry::parse_bindless_array(Type *type, ocarina::string_view desc) noexcept {
-    type->_tag = Type::Tag::RESOURCE_ARRAY;
+    type->_tag = Type::Tag::BINDLESS_ARRAY;
     type->_alignment = alignof(SlotSOA);
 }
 

@@ -92,7 +92,7 @@ using BufferVar = Var<Buffer<T>>;
 
 using TextureVar = Var<Texture>;
 
-using ResourceArrayVar = Var<BindlessArray>;
+using BindlessArrayVar = Var<BindlessArray>;
 
 #define OC_MAKE_DSL_TYPE_IMPL(dsl_type, type, dim) \
     using dsl_type##dim = Var<type##dim>;
