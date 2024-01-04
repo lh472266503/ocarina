@@ -190,7 +190,7 @@ auto create(Func &&func, ocarina::index_sequence<i...>) {
 }
 }// namespace detail
 
-class FuncWrapper : public concepts::Noncopyable {
+class FuncWrapper {
 protected:
     mutable ocarina::shared_ptr<Function> _function;
     FuncWrapper() = default;
