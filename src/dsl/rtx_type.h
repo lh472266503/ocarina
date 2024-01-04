@@ -31,7 +31,7 @@ OC_STRUCT(ocarina::Hit, inst_id, prim_id, bary){
         return !is_miss();
     }
     template<typename... Args>
-    [[nodiscard]] auto lerp(Args &&...args) const noexcept {
+    [[nodiscard]] auto triangle_lerp(Args &&...args) const noexcept {
         return ocarina::triangle_lerp(bary, OC_FORWARD(args)...);
     }
 };
