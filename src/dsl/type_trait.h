@@ -372,7 +372,7 @@ class BufferView;
 
 class Texture;
 class Accel;
-class ResourceArray;
+class BindlessArray;
 
 template<typename T>
 class RWTexture;
@@ -462,7 +462,7 @@ template<typename T>
 struct is_resource_array_impl : std::false_type {};
 
 template<>
-struct is_resource_array_impl<ResourceArray> : std::true_type {};
+struct is_resource_array_impl<BindlessArray> : std::true_type {};
 }// namespace detail
 
 template<typename T>

@@ -480,7 +480,7 @@ public:
 }// namespace detail
 
 template<typename T>
-class ResourceArrayBuffer {
+class BindlessArrayBuffer {
     static_assert(is_valid_buffer_element_v<T>);
 
 private:
@@ -488,7 +488,7 @@ private:
     const Expression *_index{nullptr};
 
 public:
-    ResourceArrayBuffer(const Expression *array, const Expression *index) noexcept
+    BindlessArrayBuffer(const Expression *array, const Expression *index) noexcept
         : _resource_array{array}, _index{index} {}
 
     template<typename Index>
@@ -527,13 +527,13 @@ public:
     }
 };
 
-class ResourceArrayByteBuffer {
+class BindlessArrayByteBuffer {
 private:
     const Expression *_resource_array{nullptr};
     const Expression *_index{nullptr};
 
 public:
-    ResourceArrayByteBuffer(const Expression *array, const Expression *index) noexcept
+    BindlessArrayByteBuffer(const Expression *array, const Expression *index) noexcept
         : _resource_array{array}, _index{index} {}
 
     template<typename T, typename Offset>
@@ -561,13 +561,13 @@ public:
     [[nodiscard]] Array<T> read_dynamic_array(uint size, Offset &&offset) const noexcept;// implement in dsl/array.h
 };
 
-class ResourceArrayTexture {
+class BindlessArrayTexture {
 private:
     const Expression *_resource_array{nullptr};
     const Expression *_index{nullptr};
 
 public:
-    ResourceArrayTexture(const Expression *array, const Expression *index) noexcept
+    BindlessArrayTexture(const Expression *array, const Expression *index) noexcept
         : _resource_array{array}, _index{index} {}
 
     template<typename U, typename V, typename W>
@@ -593,11 +593,11 @@ public:
 
 namespace detail {
 template<>
-struct Computable<ResourceArray> {
+struct Computable<BindlessArray> {
 public:
     template<typename T, typename Index>
     requires concepts::integral<expr_value_t<Index>>
-    [[nodiscard]] ResourceArrayBuffer<T> buffer(Index index, const string &desc = "",
+    [[nodiscard]] BindlessArrayBuffer<T> buffer(Index index, const string &desc = "",
                                                 uint buffer_num = 0) const noexcept {
         if (buffer_num != 0) {
             if constexpr (is_integral_v<Index>) {
@@ -606,12 +606,12 @@ public:
                 index = correct_index(index, buffer_num, desc, traceback_string(1));
             }
         }
-        return ResourceArrayBuffer<T>(expression(), OC_EXPR(index));
+        return BindlessArrayBuffer<T>(expression(), OC_EXPR(index));
     }
 
     template<typename Index>
     requires concepts::integral<expr_value_t<Index>>
-    [[nodiscard]] ResourceArrayTexture tex(Index index, const string &desc = "",
+    [[nodiscard]] BindlessArrayTexture tex(Index index, const string &desc = "",
                                            uint tex_num = 0) const noexcept {
         if (tex_num != 0) {
             if constexpr (is_integral_v<Index>) {
@@ -620,12 +620,12 @@ public:
                 index = correct_index(index, tex_num, desc, traceback_string(1));
             }
         }
-        return ResourceArrayTexture(expression(), OC_EXPR(index));
+        return BindlessArrayTexture(expression(), OC_EXPR(index));
     }
 
     template<typename Index>
     requires concepts::integral<expr_value_t<Index>>
-    [[nodiscard]] ResourceArrayByteBuffer byte_buffer(Index index, const string &desc = "",
+    [[nodiscard]] BindlessArrayByteBuffer byte_buffer(Index index, const string &desc = "",
                                                       uint buffer_num = 0) const noexcept {
         if (buffer_num != 0) {
             if constexpr (is_integral_v<Index>) {
@@ -634,10 +634,10 @@ public:
                 index = correct_index(index, buffer_num, desc, traceback_string(1));
             }
         }
-        return ResourceArrayByteBuffer(expression(), OC_EXPR(index));
+        return BindlessArrayByteBuffer(expression(), OC_EXPR(index));
     }
 
-    OC_COMPUTABLE_COMMON(Computable<ResourceArray>)
+    OC_COMPUTABLE_COMMON(Computable<BindlessArray>)
 };
 
 #define OC_MAKE_STRUCT_MEMBER(m)                                                                                             \

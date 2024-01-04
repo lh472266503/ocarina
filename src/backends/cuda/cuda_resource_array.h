@@ -6,12 +6,12 @@
 
 #include "core/stl.h"
 #include "rhi/resources/managed.h"
-#include "rhi/resources/resource_array.h"
+#include "rhi/resources/bindless_array.h"
 #include <cuda.h>
 
 namespace ocarina {
 class CUDADevice;
-class CUDAResourceArray : public ResourceArray::Impl {
+class CUDAResourceArray : public BindlessArray::Impl {
 
 private:
     SlotSOA _slot_soa{};

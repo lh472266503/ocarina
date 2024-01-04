@@ -11,7 +11,7 @@ void ArgumentList::_encode_texture(const Texture &texture) noexcept {
     push_memory_block(texture.memory_block());
 }
 
-void ArgumentList::_encode_resource_array(const ResourceArray &resource_array) noexcept {
+void ArgumentList::_encode_resource_array(const BindlessArray &resource_array) noexcept {
     push_memory_block(resource_array.memory_block());
 }
 

@@ -213,9 +213,9 @@ struct TypeDesc<ocarina::tuple<T...>> {
 };
 
 template<>
-struct TypeDesc<ResourceArray> {
+struct TypeDesc<BindlessArray> {
     static ocarina::string_view description() noexcept {
-        return "resourceArray";
+        return "bindlessArray";
     }
     static ocarina::string_view name() noexcept {
         return description();

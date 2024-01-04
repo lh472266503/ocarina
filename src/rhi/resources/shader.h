@@ -7,7 +7,7 @@
 #include "rhi/device.h"
 #include "buffer.h"
 #include "rhi/rtx/accel.h"
-#include "rhi/resources/resource_array.h"
+#include "rhi/resources/bindless_array.h"
 #include "stream.h"
 #include "rhi/command.h"
 #include "core/concepts.h"
@@ -32,8 +32,8 @@ struct prototype_to_shader_invocation<Texture> {
 };
 
 template<>
-struct prototype_to_shader_invocation<ResourceArray> {
-    using type = const ResourceArray &;
+struct prototype_to_shader_invocation<BindlessArray> {
+    using type = const BindlessArray &;
 };
 
 }// namespace detail
@@ -68,7 +68,7 @@ private:
     }
 
     void _encode_texture(const Texture &texture) noexcept;
-    void _encode_resource_array(const ResourceArray &resource_array) noexcept;
+    void _encode_resource_array(const BindlessArray &resource_array) noexcept;
     void _encode_accel(const Accel &accel) noexcept {
         push_memory_block(accel.memory_block());
     }

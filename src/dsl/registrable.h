@@ -15,17 +15,17 @@ class Registrable : public Serializable<serialize_element_ty> {
 protected:
     Serial<uint> _index{InvalidUI32};
     Serial<uint> _length{InvalidUI32};
-    ResourceArray *_resource_array{};
+    BindlessArray *_resource_array{};
 
 public:
     Registrable() = default;
-    explicit Registrable(ResourceArray *resource_array)
+    explicit Registrable(BindlessArray *resource_array)
         : _resource_array(resource_array) {}
     OC_SERIALIZABLE_FUNC(Serializable<serialize_element_ty>, _index, _length)
-    void set_resource_array(ResourceArray &resource_array) noexcept {
+    void set_resource_array(BindlessArray &resource_array) noexcept {
         _resource_array = &resource_array;
     }
-    [[nodiscard]] ResourceArray *resource_array() const noexcept {
+    [[nodiscard]] BindlessArray *resource_array() const noexcept {
         return _resource_array;
     }
     [[nodiscard]] bool has_registered() const noexcept { return _index.hv() != InvalidUI32; }
@@ -49,7 +49,7 @@ public:
     using Super = Buffer<T>;
 
 public:
-    explicit RegistrableBuffer(ResourceArray &resource_array)
+    explicit RegistrableBuffer(BindlessArray &resource_array)
         : Super(), Registrable(&resource_array) {}
 
     RegistrableBuffer() = default;
@@ -90,7 +90,7 @@ public:
 
 public:
     RegistrableManaged() = default;
-    explicit RegistrableManaged(ResourceArray &resource_array) : Registrable(&resource_array) {}
+    explicit RegistrableManaged(BindlessArray &resource_array) : Registrable(&resource_array) {}
     void register_self() noexcept {
         if (has_registered()) {
             _resource_array->set_buffer(_index.hv(), Super::device_buffer());

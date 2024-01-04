@@ -320,7 +320,7 @@ Array<float> EnableTextureSample<T>::sample(uint channel_num, const UV &uv)
 }// namespace detail
 
 template<typename T, typename Offset>
-[[nodiscard]] Array<T> ResourceArrayByteBuffer::read_dynamic_array(uint size, Offset &&offset) const noexcept {
+[[nodiscard]] Array<T> BindlessArrayByteBuffer::read_dynamic_array(uint size, Offset &&offset) const noexcept {
     if constexpr (is_dsl_v<Offset>) {
         offset = detail::correct_index(offset, this->size_in_byte(), typeid(*this).name(), traceback_string());
     }
@@ -332,7 +332,7 @@ template<typename T, typename Offset>
 
 template<typename U, typename V>
 requires(is_all_floating_point_expr_v<U, V>)
-Array<float> ResourceArrayTexture::sample(uint channel_num, const U &u, const V &v)
+Array<float> BindlessArrayTexture::sample(uint channel_num, const U &u, const V &v)
     const noexcept {
     const CallExpr *expr = Function::current()->call_builtin(Array<float>::type(channel_num),
                                                              CallOp::RESOURCE_ARRAY_TEX_SAMPLE,
@@ -343,7 +343,7 @@ Array<float> ResourceArrayTexture::sample(uint channel_num, const U &u, const V 
 
 template<typename U, typename V, typename W>
 requires(is_all_floating_point_expr_v<U, V, W>)
-Array<float> ResourceArrayTexture::sample(uint channel_num, const U &u, const V &v, const W &w)
+Array<float> BindlessArrayTexture::sample(uint channel_num, const U &u, const V &v, const W &w)
     const noexcept {
     const CallExpr *expr = Function::current()->call_builtin(Array<float>::type(channel_num),
                                                              CallOp::RESOURCE_ARRAY_TEX_SAMPLE,
@@ -354,14 +354,14 @@ Array<float> ResourceArrayTexture::sample(uint channel_num, const U &u, const V 
 
 template<typename UVW>
 requires(is_float_vector3_v<expr_value_t<UVW>>)
-Array<float> ResourceArrayTexture::sample(uint channel_num, const UVW &uvw)
+Array<float> BindlessArrayTexture::sample(uint channel_num, const UVW &uvw)
     const noexcept {
     return sample(channel_num, uvw.x, uvw.y, uvw.z);
 }
 
 template<typename UV>
 requires(is_float_vector2_v<expr_value_t<UV>>)
-Array<float> ResourceArrayTexture::sample(uint channel_num, const UV &uv)
+Array<float> BindlessArrayTexture::sample(uint channel_num, const UV &uv)
     const noexcept {
     return sample(channel_num, uv.x, uv.y);
 }

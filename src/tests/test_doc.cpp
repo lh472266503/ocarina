@@ -66,7 +66,7 @@ void test_compute_shader(Device &device, Stream &stream) {
     Buffer tri = device.create_buffer<Triple>(triangles.size());
 
     /// used for store the handle of texture or buffer
-    ResourceArray resource_array = device.create_resource_array();
+    BindlessArray resource_array = device.create_resource_array();
     uint v_idx = resource_array.emplace(vert);
     uint t_idx = resource_array.emplace(tri);
 
@@ -77,7 +77,7 @@ void test_compute_shader(Device &device, Stream &stream) {
     stream << vert.upload(vertices.data())
            << tri.upload(triangles.data());
 
-    Kernel kernel = [&](Var<Triple> triple, BufferVar<Triple> triangle, Var<ResourceArray> ra) {
+    Kernel kernel = [&](Var<Triple> triple, BufferVar<Triple> triangle, Var<BindlessArray> ra) {
         $info("triple   {} {} {}", triple.i, triple.j, triple.k);
 
         Var t = triangle.read(dispatch_id());
@@ -160,7 +160,7 @@ void test_lambda(Device &device, Stream &stream) {
     Buffer<float3> vert = device.create_buffer<float3>(vertices.size());
     Buffer tri = device.create_buffer<Triple>(triangles.size());
 
-    ResourceArray resource_array = device.create_resource_array();
+    BindlessArray resource_array = device.create_resource_array();
     uint v_idx = resource_array.emplace(vert);
     stream << resource_array->upload_buffer_handles() << synchronize();
     stream << vert.upload(vertices.data())

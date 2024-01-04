@@ -7,7 +7,7 @@
 #include "resource.h"
 #include "rhi/command.h"
 #include "rhi/stats.h"
-#include "resource_array.h"
+#include "bindless_array.h"
 
 namespace ocarina {
 

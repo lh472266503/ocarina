@@ -21,7 +21,7 @@ class Buffer;
 template<typename T>
 class Managed;
 
-class ResourceArray;
+class BindlessArray;
 
 template<typename T>
 class Shader;
@@ -107,7 +107,7 @@ public:
                                    AccelGeomTag geom_tag = AccelGeomTag::DISABLE_ANYHIT) noexcept;// implement in mesh.h
     [[nodiscard]] Stream create_stream() noexcept;
     [[nodiscard]] Accel create_accel() noexcept;
-    [[nodiscard]] ResourceArray create_resource_array() noexcept;
+    [[nodiscard]] BindlessArray create_resource_array() noexcept;
     void init_rtx() noexcept { _impl->init_rtx(); }
     [[nodiscard]] Texture create_texture(uint3 res, PixelStorage storage, const string &desc = "") noexcept;
     [[nodiscard]] Texture create_texture(uint2 res, PixelStorage storage, const string &desc = "") noexcept;

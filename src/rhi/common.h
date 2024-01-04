@@ -11,7 +11,7 @@
 #include "resources/shader.h"
 #include "resources/buffer.h"
 #include "resources/texture.h"
-#include "resources/resource_array.h"
+#include "resources/bindless_array.h"
 #include "rhi/resources/managed.h"
 #include "ocarina/src/core/dynamic_module.h"
 #include "rtx/mesh.h"

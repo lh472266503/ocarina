@@ -343,7 +343,7 @@ public:
         return InvalidUI32;
     }
 
-    void prepare(ResourceArray &resource_array, Device &device) noexcept {
+    void prepare(BindlessArray &resource_array, Device &device) noexcept {
         switch (_mode) {
             case EInstance: break;
             case EType: {
