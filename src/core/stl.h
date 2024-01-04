@@ -111,6 +111,7 @@ using std::cout;
 using std::endl;
 
 // ptr
+using eastl::move_only_function;
 using std::const_pointer_cast;
 using std::dynamic_pointer_cast;
 using std::enable_shared_from_this;
@@ -124,7 +125,7 @@ using std::unique_ptr;
 using std::weak_ptr;
 
 template<typename To, typename From>
-std::unique_ptr<To> dynamic_unique_pointer_cast(std::unique_ptr<From> &&from) {
+[[nodiscard]] std::unique_ptr<To> dynamic_unique_pointer_cast(std::unique_ptr<From> &&from) {
     if (To *casted = dynamic_cast<To *>(from.get())) {
         from.release();
         return std::unique_ptr<To>(casted);
