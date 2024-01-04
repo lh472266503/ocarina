@@ -6,6 +6,8 @@
 
 #include "core/stl.h"
 #include "buffer.h"
+#include "texture.h"
+#include "util/image_io.h"
 
 namespace ocarina {
 
@@ -105,6 +107,24 @@ public:
 
     [[nodiscard]] BufferDownloadCommand *download_sync() noexcept {
         return device_ty::download_sync(host_ty::data());
+    }
+};
+
+//todo
+class ManagedTexture : public Texture, public ImageIO {
+public:
+    using host_ty = ocarina::ImageIO;
+    using device_ty = ocarina::Texture;
+
+public:
+    ManagedTexture() = default;
+
+    void upload_immediately() const noexcept {
+
+    }
+
+    void download_immediately() noexcept {
+
     }
 };
 

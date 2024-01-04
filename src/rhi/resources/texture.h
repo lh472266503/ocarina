@@ -55,6 +55,11 @@ public:
 
     OC_MAKE_MEMBER_GETTER(channel_num, )
 
+    [[nodiscard]] uint pixel_num() const noexcept {
+        uint3 res = impl()->resolution();
+        return res.x * res.y * res.z;
+    }
+
     /// for dsl
     [[nodiscard]] const Expression *expression() const noexcept override {
         const CapturedVar &captured_var = Function::current()->get_captured_var(Type::of<decltype(*this)>(),
@@ -160,6 +165,7 @@ template<typename T>
 class RWTexture : public Texture {
 public:
     using Super = Texture;
+    static constexpr auto Dim = vector_dimension_v<T>;
 
 public:
     RWTexture() = default;
@@ -168,9 +174,14 @@ public:
                        const string &desc = "")
         : Texture(device, res, pixel_storage, level_num, desc) {}
 
-    template<typename ...Args>
+    template<typename... Args>
     [[nodiscard]] auto sample(Args &&...args) const noexcept {
-        return sample(_channel_num, OC_FORWARD(args)...);
+        return Super::sample(_channel_num, OC_FORWARD(args)...).template as_vec<Dim>();
+    }
+
+    template<typename... Args>
+    [[nodiscard]] auto read(Args &&...args) const noexcept {
+        return Super::read<T>(OC_FORWARD(args)...);
     }
 };
 

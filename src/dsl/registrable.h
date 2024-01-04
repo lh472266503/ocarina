@@ -143,4 +143,30 @@ public:
     }
 };
 
+//todo
+class RegistrableTexture : public Texture, public Registrable {
+public:
+    RegistrableTexture() = default;
+    explicit RegistrableTexture(BindlessArray &bindless_array) : Registrable(&bindless_array) {}
+    void register_self() noexcept {
+        if (has_registered()) {
+            _bindless_array->set_texture(_index.hv(), *this);
+        } else {
+            _index = _bindless_array->emplace(*this);
+        }
+        _length = 0;
+    }
+
+    void unregister() noexcept {
+        if (has_registered()) {
+            (*_bindless_array)->remove_texture(_index.hv());
+            _index = InvalidUI32;
+        }
+    }
+
+    void emplace(Texture &&texture) {
+        
+    }
+};
+
 }// namespace ocarina
