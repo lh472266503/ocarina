@@ -66,13 +66,13 @@ void test_compute_shader(Device &device, Stream &stream) {
     Buffer tri = device.create_buffer<Triple>(triangles.size());
 
     /// used for store the handle of texture or buffer
-    BindlessArray resource_array = device.create_resource_array();
-    uint v_idx = resource_array.emplace(vert);
-    uint t_idx = resource_array.emplace(tri);
+    BindlessArray bindless_array = device.create_bindless_array();
+    uint v_idx = bindless_array.emplace(vert);
+    uint t_idx = bindless_array.emplace(tri);
 
     /// upload buffer and texture handle to device memory
-    stream << resource_array->upload_buffer_handles() << synchronize();
-    stream << resource_array->upload_texture_handles() << synchronize();
+    stream << bindless_array->upload_buffer_handles() << synchronize();
+    stream << bindless_array->upload_texture_handles() << synchronize();
 
     stream << vert.upload(vertices.data())
            << tri.upload(triangles.data());
@@ -88,7 +88,7 @@ void test_compute_shader(Device &device, Stream &stream) {
         $info("vert from capture {} {} {}", vert.read(dispatch_id()));
 
         vert.write(dispatch_id(), vert.read(dispatch_id()));
-        $info("vert from capture resource array {} {} {}", resource_array.buffer<float3>(0).read(Var(10000)));
+        $info("vert from capture resource array {} {} {}", bindless_array.buffer<float3>(0).read(Var(10000)));
         $info("vert from ra {} {} {}", ra.buffer<float3>(v_idx).read(dispatch_id()));
 
         $switch(dispatch_id()) {
@@ -144,7 +144,7 @@ void test_compute_shader(Device &device, Stream &stream) {
     Env::debugger().set_upper(make_uint2(1));
     auto shader = device.compile(kernel, "test desc");
     stream << Env::debugger().upload();
-    stream << shader(triple1, tri, resource_array).dispatch(1)
+    stream << shader(triple1, tri, bindless_array).dispatch(1)
            /// explict retrieve log
            << Env::printer().retrieve()
            << synchronize() << commit();
@@ -160,9 +160,9 @@ void test_lambda(Device &device, Stream &stream) {
     Buffer<float3> vert = device.create_buffer<float3>(vertices.size());
     Buffer tri = device.create_buffer<Triple>(triangles.size());
 
-    BindlessArray resource_array = device.create_resource_array();
-    uint v_idx = resource_array.emplace(vert);
-    stream << resource_array->upload_buffer_handles() << synchronize();
+    BindlessArray bindless_array = device.create_bindless_array();
+    uint v_idx = bindless_array.emplace(vert);
+    stream << bindless_array->upload_buffer_handles() << synchronize();
     stream << vert.upload(vertices.data())
            << tri.upload(triangles.data());
 

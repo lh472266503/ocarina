@@ -68,8 +68,8 @@ int main(int argc, char *argv[]) {
     t.f = make_float3x3(56.1f);
     t.data.f = 106;
     t.data.f4 = make_float4(199.f);
-    BindlessArray ra = device.create_resource_array();
-    t.mw.set_resource_array(ra);
+    BindlessArray ra = device.create_bindless_array();
+    t.mw.set_bindless_array(ra);
     t.mw.register_self();
     t.mw.push_back(9.98);
     t.mw.push_back(9.98);

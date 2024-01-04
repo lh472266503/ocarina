@@ -15,18 +15,18 @@ class Registrable : public Serializable<serialize_element_ty> {
 protected:
     Serial<uint> _index{InvalidUI32};
     Serial<uint> _length{InvalidUI32};
-    BindlessArray *_resource_array{};
+    BindlessArray *_bindless_array{};
 
 public:
     Registrable() = default;
-    explicit Registrable(BindlessArray *resource_array)
-        : _resource_array(resource_array) {}
+    explicit Registrable(BindlessArray *bindless_array)
+        : _bindless_array(bindless_array) {}
     OC_SERIALIZABLE_FUNC(Serializable<serialize_element_ty>, _index, _length)
-    void set_resource_array(BindlessArray &resource_array) noexcept {
-        _resource_array = &resource_array;
+    void set_bindless_array(BindlessArray &bindless_array) noexcept {
+        _bindless_array = &bindless_array;
     }
-    [[nodiscard]] BindlessArray *resource_array() const noexcept {
-        return _resource_array;
+    [[nodiscard]] BindlessArray *bindless_array() const noexcept {
+        return _bindless_array;
     }
     [[nodiscard]] bool has_registered() const noexcept { return _index.hv() != InvalidUI32; }
     [[nodiscard]] const Serial<uint> &index() const noexcept { return _index; }
@@ -38,7 +38,7 @@ protected:
     OC_NODISCARD auto _read(Index &&index) const noexcept {
         Uint buffer_index = *_index;
         Uint access_index = OC_FORWARD(index);
-        return _resource_array->buffer<T>(buffer_index).read(access_index);
+        return _bindless_array->buffer<T>(buffer_index).read(access_index);
     }
 };
 
@@ -49,12 +49,12 @@ public:
     using Super = Buffer<T>;
 
 public:
-    explicit RegistrableBuffer(BindlessArray &resource_array)
-        : Super(), Registrable(&resource_array) {}
+    explicit RegistrableBuffer(BindlessArray &bindless_array)
+        : Super(), Registrable(&bindless_array) {}
 
     RegistrableBuffer() = default;
     void register_self() noexcept {
-        _index = _resource_array->emplace(super());
+        _index = _bindless_array->emplace(super());
         _length = [&]() {
             return static_cast<uint>(Super::size());
         };
@@ -77,7 +77,7 @@ public:
         if (!has_registered()) {
             Super::write(OC_FORWARD(index), OC_FORWARD(elm));
         } else {
-            _resource_array->buffer<T>(*_index).write(OC_FORWARD(index), OC_FORWARD(elm));
+            _bindless_array->buffer<T>(*_index).write(OC_FORWARD(index), OC_FORWARD(elm));
         }
     }
 };
@@ -90,12 +90,12 @@ public:
 
 public:
     RegistrableManaged() = default;
-    explicit RegistrableManaged(BindlessArray &resource_array) : Registrable(&resource_array) {}
+    explicit RegistrableManaged(BindlessArray &bindless_array) : Registrable(&bindless_array) {}
     void register_self() noexcept {
         if (has_registered()) {
-            _resource_array->set_buffer(_index.hv(), Super::device_buffer());
+            _bindless_array->set_buffer(_index.hv(), Super::device_buffer());
         } else {
-            _index = _resource_array->emplace(Super::device_buffer());
+            _index = _bindless_array->emplace(Super::device_buffer());
         }
         _length = [&]() {
             return static_cast<uint>(Super::device_buffer().size());
@@ -104,7 +104,7 @@ public:
 
     void unregister() noexcept {
         if (has_registered()) {
-            (*_resource_array)->remove_buffer(_index.hv());
+            (*_bindless_array)->remove_buffer(_index.hv());
             _index = InvalidUI32;
         }
     }
@@ -122,14 +122,14 @@ public:
     requires is_integral_expr_v<Offset>
     OC_NODISCARD auto byte_read(Offset &&offset) const noexcept {
         OC_ASSERT(has_registered());
-        return _resource_array->byte_buffer(*_index).template read<Target>(OC_FORWARD(offset));
+        return _bindless_array->byte_buffer(*_index).template read<Target>(OC_FORWARD(offset));
     }
 
     template<typename Elm, typename Offset>
     requires is_integral_expr_v<Offset>
     [[nodiscard]] Array<Elm> read_dynamic_array(uint size, Offset &&offset) const noexcept {
         OC_ASSERT(has_registered());
-        return _resource_array->byte_buffer(*_index).template read_dynamic_array<Elm>(size, OC_FORWARD(offset));
+        return _bindless_array->byte_buffer(*_index).template read_dynamic_array<Elm>(size, OC_FORWARD(offset));
     }
 
     template<typename Index, typename Val>
@@ -138,7 +138,7 @@ public:
         if (!has_registered()) {
             Super::write(OC_FORWARD(index), OC_FORWARD(elm));
         } else {
-            _resource_array->buffer<T>(*_index).write(OC_FORWARD(index), OC_FORWARD(elm));
+            _bindless_array->buffer<T>(*_index).write(OC_FORWARD(index), OC_FORWARD(elm));
         }
     }
 };

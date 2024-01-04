@@ -166,32 +166,32 @@ __device__ oc_array<float, N> oc_tex_sample_float(OCTexture obj, oc_float u, oc_
 }
 
 template<typename T>
-__device__ T oc_resource_array_buffer_read(OCResourceArray resource_array, oc_uint buffer_index, oc_uint index) noexcept {
-    const T *buffer = reinterpret_cast<T *>(resource_array.buffer_slot[buffer_index].head);
+__device__ T oc_bindless_array_buffer_read(OCResourceArray bindless_array, oc_uint buffer_index, oc_uint index) noexcept {
+    const T *buffer = reinterpret_cast<T *>(bindless_array.buffer_slot[buffer_index].head);
     return buffer[index];
 }
 
-__device__ oc_uint oc_resource_array_buffer_size(OCResourceArray resource_array, oc_uint buffer_index) noexcept {
-    return resource_array.buffer_slot[buffer_index].size_in_byte;
+__device__ oc_uint oc_bindless_array_buffer_size(OCResourceArray bindless_array, oc_uint buffer_index) noexcept {
+    return bindless_array.buffer_slot[buffer_index].size_in_byte;
 }
 
 template<typename T>
-__device__ T oc_resource_array_byte_buffer_read(OCResourceArray resource_array, oc_uint buffer_index, oc_uint offset) noexcept {
-    const char *buffer = reinterpret_cast<char *>(resource_array.buffer_slot[buffer_index].head);
+__device__ T oc_bindless_array_byte_buffer_read(OCResourceArray bindless_array, oc_uint buffer_index, oc_uint offset) noexcept {
+    const char *buffer = reinterpret_cast<char *>(bindless_array.buffer_slot[buffer_index].head);
     return *reinterpret_cast<const T *>(&buffer[offset]);
 }
 
 template<typename T>
-__device__ void oc_resource_array_buffer_write(OCResourceArray resource_array, oc_uint buffer_index,
+__device__ void oc_bindless_array_buffer_write(OCResourceArray bindless_array, oc_uint buffer_index,
                                                oc_uint index, const T &val) noexcept {
-    T *buffer = reinterpret_cast<T *>(resource_array.buffer_slot[buffer_index].head);
+    T *buffer = reinterpret_cast<T *>(bindless_array.buffer_slot[buffer_index].head);
     buffer[index] = val;
 }
 
 template<typename T>
-__device__ T oc_resource_array_tex_sample(OCResourceArray resource_array, oc_uint tex_index,
+__device__ T oc_bindless_array_tex_sample(OCResourceArray bindless_array, oc_uint tex_index,
                                           oc_float u, oc_float v, oc_float w = 0.f) noexcept {
-    cudaTextureObject_t texture = resource_array.tex_slot[tex_index];
+    cudaTextureObject_t texture = bindless_array.tex_slot[tex_index];
     if constexpr (oc_is_same_v<T, oc_float>) {
         float ret = tex3D<float>(texture, u, v, w);
         return ret;
@@ -206,9 +206,9 @@ __device__ T oc_resource_array_tex_sample(OCResourceArray resource_array, oc_uin
 }
 
 template<oc_uint N>
-__device__ oc_array<float, N> oc_resource_array_tex_sample(OCResourceArray resource_array, oc_uint tex_index,
+__device__ oc_array<float, N> oc_bindless_array_tex_sample(OCResourceArray bindless_array, oc_uint tex_index,
                                                            oc_float u, oc_float v, oc_float w = 0.f) noexcept {
-    cudaTextureObject_t texture = resource_array.tex_slot[tex_index];
+    cudaTextureObject_t texture = bindless_array.tex_slot[tex_index];
     return _oc_tex_sample_float<N>(texture, u, v, w);
 }
 

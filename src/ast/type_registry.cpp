@@ -180,8 +180,8 @@ const Type *TypeRegistry::parse_type(ocarina::string_view desc, uint64_t ext_has
         parse_texture(type.get(), desc);
     } else if (desc.starts_with("accel")) {
         parse_accel(type.get(), desc);
-    } else if (desc.starts_with("resourceArray")) {
-        parse_resource_array(type.get(), desc);
+    } else if (desc.starts_with("bindlessArray")) {
+        parse_bindless_array(type.get(), desc);
     } else {
         OC_ERROR("invalid data type ", desc);
     }
@@ -250,7 +250,7 @@ void TypeRegistry::parse_struct(Type *type, string_view desc) noexcept {
     type->_size = mem_offset(size, type->alignment());
 }
 
-void TypeRegistry::parse_resource_array(Type *type, ocarina::string_view desc) noexcept {
+void TypeRegistry::parse_bindless_array(Type *type, ocarina::string_view desc) noexcept {
     type->_tag = Type::Tag::RESOURCE_ARRAY;
     type->_alignment = alignof(SlotSOA);
 }

@@ -58,8 +58,8 @@ public:
         virtual void destroy_stream(handle_ty handle) noexcept = 0;
         [[nodiscard]] virtual handle_ty create_mesh(const MeshParams &params) noexcept = 0;
         virtual void destroy_mesh(handle_ty handle) noexcept = 0;
-        [[nodiscard]] virtual handle_ty create_resource_array() noexcept = 0;
-        virtual void destroy_resource_array(handle_ty handle) noexcept = 0;
+        [[nodiscard]] virtual handle_ty create_bindless_array() noexcept = 0;
+        virtual void destroy_bindless_array(handle_ty handle) noexcept = 0;
         [[nodiscard]] Context *context() noexcept { return _context; }
         virtual void init_rtx() noexcept = 0;
         [[nodiscard]] virtual CommandVisitor *command_visitor() noexcept = 0;
@@ -107,7 +107,7 @@ public:
                                    AccelGeomTag geom_tag = AccelGeomTag::DISABLE_ANYHIT) noexcept;// implement in mesh.h
     [[nodiscard]] Stream create_stream() noexcept;
     [[nodiscard]] Accel create_accel() noexcept;
-    [[nodiscard]] BindlessArray create_resource_array() noexcept;
+    [[nodiscard]] BindlessArray create_bindless_array() noexcept;
     void init_rtx() noexcept { _impl->init_rtx(); }
     [[nodiscard]] Texture create_texture(uint3 res, PixelStorage storage, const string &desc = "") noexcept;
     [[nodiscard]] Texture create_texture(uint2 res, PixelStorage storage, const string &desc = "") noexcept;

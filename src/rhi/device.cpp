@@ -18,7 +18,7 @@ Accel Device::create_accel() noexcept {
     return _create<Accel>();
 }
 
-BindlessArray Device::create_resource_array() noexcept {
+BindlessArray Device::create_bindless_array() noexcept {
     return _create<BindlessArray>();
 }
 

@@ -343,12 +343,12 @@ public:
         return InvalidUI32;
     }
 
-    void prepare(BindlessArray &resource_array, Device &device) noexcept {
+    void prepare(BindlessArray &bindless_array, Device &device) noexcept {
         switch (_mode) {
             case EInstance: break;
             case EType: {
                 _type_mgr.for_each_type([&](TypeData &type_data) {
-                    type_data.data_set.set_resource_array(resource_array);
+                    type_data.data_set.set_bindless_array(bindless_array);
                     type_data.data_set.reserve(type_data.objects.size() * type_data.objects[0]->element_num());
                     for (ptr_type *object : type_data.objects) {
                         object->encode(type_data.data_set);

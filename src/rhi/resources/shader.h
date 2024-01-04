@@ -68,7 +68,7 @@ private:
     }
 
     void _encode_texture(const Texture &texture) noexcept;
-    void _encode_resource_array(const BindlessArray &resource_array) noexcept;
+    void _encode_bindless_array(const BindlessArray &bindless_array) noexcept;
     void _encode_accel(const Accel &accel) noexcept {
         push_memory_block(accel.memory_block());
     }
@@ -109,8 +109,8 @@ public:
             _encode_texture(OC_FORWARD(arg));
         } else if constexpr (is_accel_v<T>) {
             _encode_accel(OC_FORWARD(arg));
-        } else if constexpr (is_resource_array_v<T>) {
-            _encode_resource_array(OC_FORWARD(arg));
+        } else if constexpr (is_bindless_array_v<T>) {
+            _encode_bindless_array(OC_FORWARD(arg));
         } else {
             _encode_pod_type(OC_FORWARD(arg));
         }

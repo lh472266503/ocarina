@@ -11,8 +11,8 @@ void ArgumentList::_encode_texture(const Texture &texture) noexcept {
     push_memory_block(texture.memory_block());
 }
 
-void ArgumentList::_encode_resource_array(const BindlessArray &resource_array) noexcept {
-    push_memory_block(resource_array.memory_block());
+void ArgumentList::_encode_bindless_array(const BindlessArray &bindless_array) noexcept {
+    push_memory_block(bindless_array.memory_block());
 }
 
 }// namespace ocarina

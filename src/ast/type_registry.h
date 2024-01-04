@@ -338,7 +338,7 @@ private:
     void parse_texture(Type *type, ocarina::string_view desc) noexcept;
     void parse_accel(Type *type, ocarina::string_view desc) noexcept;
     void parse_struct(Type *type, ocarina::string_view desc) noexcept;
-    void parse_resource_array(Type *type, ocarina::string_view desc) noexcept;
+    void parse_bindless_array(Type *type, ocarina::string_view desc) noexcept;
 
 public:
     TypeRegistry &operator=(const TypeRegistry &) = delete;

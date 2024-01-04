@@ -7,7 +7,7 @@
 #include "cuda_texture.h"
 #include "cuda_shader.h"
 #include "cuda_mesh.h"
-#include "cuda_resource_array.h"
+#include "cuda_bindless_array.h"
 #include "rhi/context.h"
 #include <optix_stubs.h>
 #include <optix_function_table_definition.h>
@@ -117,12 +117,12 @@ void CUDADevice::destroy_mesh(handle_ty handle) noexcept {
     ocarina::delete_with_allocator(reinterpret_cast<CUDAMesh *>(handle));
 }
 
-handle_ty CUDADevice::create_resource_array() noexcept {
+handle_ty CUDADevice::create_bindless_array() noexcept {
     auto ret = new_with_allocator<CUDAResourceArray>(this);
     return reinterpret_cast<handle_ty>(ret);
 }
 
-void CUDADevice::destroy_resource_array(handle_ty handle) noexcept {
+void CUDADevice::destroy_bindless_array(handle_ty handle) noexcept {
     ocarina::delete_with_allocator(reinterpret_cast<CUDAResourceArray *>(handle));
 }
 

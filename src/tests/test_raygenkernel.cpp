@@ -143,7 +143,7 @@ int main(int argc, char *argv[]) {
     managed.upload_immediately();
     RHIMesh cube = device.create_mesh(vert.device_buffer(), t_buffer);
 
-    BindlessArray bindless_array = device.create_resource_array();
+    BindlessArray bindless_array = device.create_bindless_array();
 
     auto r1 = bindless_array.emplace(v_buffer.view(1));
     auto r2 = bindless_array.emplace(v_buffer);

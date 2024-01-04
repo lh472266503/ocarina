@@ -2,7 +2,7 @@
 // Created by Zero on 12/01/2023.
 //
 
-#include "cuda_resource_array.h"
+#include "cuda_bindless_array.h"
 #include "cuda_device.h"
 
 namespace ocarina {

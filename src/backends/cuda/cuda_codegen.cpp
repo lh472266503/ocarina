@@ -91,16 +91,16 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         case CallOp::ATOMIC_EXCH: OC_GEN_FUNC_NAME(atomicExch); break;
         case CallOp::ATOMIC_ADD: OC_GEN_FUNC_NAME(atomicAdd); break;
         case CallOp::ATOMIC_SUB: OC_GEN_FUNC_NAME(atomicSub); break;
-        case CallOp::RESOURCE_ARRAY_BUFFER_WRITE: OC_GEN_FUNC_NAME(resource_array_buffer_write); break;
-        case CallOp::RESOURCE_ARRAY_BUFFER_SIZE: OC_GEN_FUNC_NAME(resource_array_buffer_size); break;
+        case CallOp::RESOURCE_ARRAY_BUFFER_WRITE: OC_GEN_FUNC_NAME(bindless_array_buffer_write); break;
+        case CallOp::RESOURCE_ARRAY_BUFFER_SIZE: OC_GEN_FUNC_NAME(bindless_array_buffer_size); break;
         case CallOp::RESOURCE_ARRAY_BYTE_BUFFER_READ: {
-            current_scratch() << "oc_resource_array_byte_buffer_read<";
+            current_scratch() << "oc_bindless_array_byte_buffer_read<";
             _emit_type_name(expr->type());
             current_scratch() << ">";
             break;
         }
         case CallOp::RESOURCE_ARRAY_BUFFER_READ: {
-            current_scratch() << "oc_resource_array_buffer_read<";
+            current_scratch() << "oc_bindless_array_buffer_read<";
             _emit_type_name(expr->type());
             current_scratch() << ">";
             break;
@@ -108,7 +108,7 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         case CallOp::RESOURCE_ARRAY_TEX_SAMPLE: {
             auto t_args = expr->template_args();
             uint N = std::get<uint>(t_args[0]);
-            current_scratch() << "oc_resource_array_tex_sample<" << N << ">";
+            current_scratch() << "oc_bindless_array_tex_sample<" << N << ">";
             break;
         }
         case CallOp::UNREACHABLE: current_scratch() << "__builtin_unreachable"; break;

@@ -11,7 +11,7 @@ namespace ocarina {
 
 BindlessArray::BindlessArray(Device::Impl *device)
     : RHIResource(device, Tag::RESOURCE_ARRAY,
-                  device->create_resource_array()) {}
+                  device->create_bindless_array()) {}
 
 size_t BindlessArray::emplace(const Texture &texture) noexcept {
     return impl()->emplace_texture(texture.tex_handle());

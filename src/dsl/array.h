@@ -326,7 +326,7 @@ template<typename T, typename Offset>
     }
     const CallExpr *expr = Function::current()->call_builtin(Array<T>::type(size),
                                                              CallOp::RESOURCE_ARRAY_BYTE_BUFFER_READ,
-                                                             {_resource_array, _index, OC_EXPR(offset)});
+                                                             {_bindless_array, _index, OC_EXPR(offset)});
     return detail::eval_array(Array<T>(size, expr));
 }
 
@@ -336,7 +336,7 @@ Array<float> BindlessArrayTexture::sample(uint channel_num, const U &u, const V 
     const noexcept {
     const CallExpr *expr = Function::current()->call_builtin(Array<float>::type(channel_num),
                                                              CallOp::RESOURCE_ARRAY_TEX_SAMPLE,
-                                                             {_resource_array, _index, OC_EXPR(u), OC_EXPR(v)},
+                                                             {_bindless_array, _index, OC_EXPR(u), OC_EXPR(v)},
                                                              {channel_num});
     return detail::eval_array(Array<float>(channel_num, expr));
 }
@@ -347,7 +347,7 @@ Array<float> BindlessArrayTexture::sample(uint channel_num, const U &u, const V 
     const noexcept {
     const CallExpr *expr = Function::current()->call_builtin(Array<float>::type(channel_num),
                                                              CallOp::RESOURCE_ARRAY_TEX_SAMPLE,
-                                                             {_resource_array, _index, OC_EXPR(u), OC_EXPR(v), OC_EXPR(w)},
+                                                             {_bindless_array, _index, OC_EXPR(u), OC_EXPR(v), OC_EXPR(w)},
                                                              {channel_num});
     return detail::eval_array(Array<float>(channel_num, expr));
 }
