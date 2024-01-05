@@ -130,7 +130,6 @@ requires is_all_floating_point_expr_v<T, U>
     return abs(t - u) < epsilon;
 }
 
-
 template<typename T>
 [[nodiscard]] auto saturate(const T &f) { return min(1.f, max(0.f, f)); }
 
@@ -241,7 +240,7 @@ MAKE_VECTOR_BINARY_FUNC(atan2)
 #undef MAKE_VECTOR_BINARY_FUNC
 
 template<int n, typename T, typename ret_type = condition_t<expr_value_t<T>, T>>
-requires OC_MULTIPLY_CHECK(T, T)
+requires requires(T a, T b) { a * b; }
 OC_NODISCARD constexpr ret_type Pow(const T &v) {
     if constexpr (n < 0) {
         return 1.f / Pow<-n>(v);
@@ -454,6 +453,12 @@ OC_NODISCARD auto has_inf(const T &v) noexcept {
 template<typename T>
 [[nodiscard]] constexpr auto invalid(const T &t) noexcept {
     return isinf(t) || isnan(t);
+}
+
+template<typename T>
+requires is_scalar_v<expr_value_t<T>>
+[[nodiscard]] T zero_if_nan(T &&t) noexcept {
+    return ocarina::select(ocarina::isnan(t), T(0), t);
 }
 
 template<typename T>
