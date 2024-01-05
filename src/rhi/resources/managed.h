@@ -110,7 +110,7 @@ public:
     }
 };
 
-//todo
+
 class ManagedTexture : public Texture, public ImageIO {
 public:
     using host_ty = ocarina::ImageIO;
@@ -120,11 +120,19 @@ public:
     ManagedTexture() = default;
 
     void upload_immediately() const noexcept {
-
+        device_ty::upload_immediately(pixel_ptr());
     }
 
     void download_immediately() noexcept {
+        device_ty::download_immediately(pixel_ptr());
+    }
 
+    [[nodiscard]] TextureUploadCommand *upload(bool async = true) const noexcept {
+        return device_ty ::upload(pixel_ptr(), async);
+    }
+
+    [[nodiscard]] TextureDownloadCommand *download(bool async = true) noexcept {
+        return device_ty::download(pixel_ptr(), async);
     }
 };
 

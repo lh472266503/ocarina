@@ -144,7 +144,7 @@ public:
 };
 
 //todo
-class RegistrableTexture : public Texture, public Registrable {
+class RegistrableTexture : public ManagedTexture, public Registrable {
 public:
     RegistrableTexture() = default;
     explicit RegistrableTexture(BindlessArray &bindless_array) : Registrable(&bindless_array) {}
@@ -162,10 +162,6 @@ public:
             (*_bindless_array)->remove_texture(_index.hv());
             _index = InvalidUI32;
         }
-    }
-
-    void emplace(Texture &&texture) {
-        
     }
 };
 

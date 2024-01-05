@@ -46,6 +46,8 @@ public:
     static ImageIO load_other(const fs::path &fn, ColorSpace color_space,
                               float3 scale = make_float3(1.f));
 
+    void clear() noexcept { _pixel.reset(); }
+
     template<typename Func>
     void for_each_pixel(Func func) const {
         auto p = _pixel.get();
@@ -70,9 +72,9 @@ public:
     void convert_to_8bit_image();
     void convert_to_32bit_image();
     static std::pair<PixelStorage, const std::byte *> convert_to_32bit(PixelStorage pixel_format,
-                                                                      const std::byte *ptr, uint2 res);
+                                                                       const std::byte *ptr, uint2 res);
     static std::pair<PixelStorage, const std::byte *> convert_to_8bit(PixelStorage pixel_format,
-                                                                     const std::byte *ptr, uint2 res);
+                                                                      const std::byte *ptr, uint2 res);
     static void save_image(const fs::path &fn, PixelStorage pixel_format,
                            uint2 res, const void *ptr);
     static void save_exr(const fs::path &fn, PixelStorage pixel_format,
