@@ -456,12 +456,6 @@ template<typename T>
 }
 
 template<typename T>
-requires is_scalar_v<expr_value_t<T>>
-[[nodiscard]] T zero_if_nan(T &&t) noexcept {
-    return ocarina::select(ocarina::isnan(t), T(0), t);
-}
-
-template<typename T>
 [[nodiscard]] constexpr auto has_invalid(const T &t) noexcept {
     return has_nan(t) || has_inf(t);
 }

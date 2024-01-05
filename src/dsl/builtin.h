@@ -502,6 +502,12 @@ OC_MAKE_MATRIX(4)
 
 #undef OC_MAKE_MATRIX
 
+template<typename T>
+requires is_scalar_v<expr_value_t<T>>
+[[nodiscard]] T zero_if_nan(T &&t) noexcept {
+    return ocarina::select(ocarina::isnan(t), T(0), t);
+}
+
 template<typename Org, typename Dir>
 requires(is_all_float_vector3_v<expr_value_t<Org>, expr_value_t<Dir>> && any_dsl_v<Org, Dir>)
 OC_NODISCARD Var<Ray> make_ray(const Org &org, const Dir &dir) noexcept {
