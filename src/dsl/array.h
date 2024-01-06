@@ -151,7 +151,7 @@ public:
         return *this;
     }
 
-    void assignment(const vector<T>& rhs ) {
+    void assignment(const vector<T> &rhs) {
         auto tmp = Array<T>::create(rhs);
         *this = tmp;
     }
@@ -248,8 +248,9 @@ public:
         _count = 0;
     }
     template<typename F>
-    void for_each(F &&f) const noexcept {
-        $for(i, _count) {
+    void for_each(F &&f, Uint start = 0u, Int end = 0) const noexcept {
+        Uint _end = _count + end;
+        $for(i, start, _end) {
             if constexpr (std::invocable<F, Var<T>>) {
                 f((*this)[i]);
             } else {
