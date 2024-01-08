@@ -249,6 +249,7 @@ using std::stack;
 using std::unordered_map;
 using std::unordered_set;
 using std::vector;
+using std::array;
 
 #if 1
 // tuple
