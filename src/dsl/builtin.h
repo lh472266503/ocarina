@@ -504,13 +504,13 @@ OC_MAKE_MATRIX(4)
 
 template<typename T>
 requires is_scalar_v<expr_value_t<T>>
-[[nodiscard]] T zero_if_nan(T &&t) noexcept {
+[[nodiscard]] T zero_if_nan(T t) noexcept {
     return ocarina::select(ocarina::isnan(t), T(0), t);
 }
 
 template<typename T>
 requires is_scalar_v<expr_value_t<T>>
-[[nodiscard]] T zero_if_nan_inf(T &&t) noexcept {
+[[nodiscard]] T zero_if_nan_inf(T t) noexcept {
     return ocarina::select(ocarina::isnan(t) || ocarina::isinf(t), T(0), t);
 }
 
