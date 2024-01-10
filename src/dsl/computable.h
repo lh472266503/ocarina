@@ -408,7 +408,6 @@ struct Computable<Matrix<N>>
     OC_MAKE_ASSIGNMENT_FUNC
 };
 
-
 template<typename T, size_t N>
 struct Computable<std::array<T, N>>
     : detail::EnableSubscriptAccess<Computable<std::array<T, N>>>,
@@ -416,7 +415,11 @@ struct Computable<std::array<T, N>>
     using this_type = std::array<T, N>;
     OC_COMPUTABLE_COMMON(Computable<std::array<T, N>>)
 public:
-    void assignment(const this_type &t) {  }
+    void assignment(const this_type &t) {
+        for (int i = 0; i < N; ++i) {
+            (*this)[i] = t[i];
+        }
+    }
 };
 
 template<typename T, size_t N>
@@ -426,7 +429,11 @@ struct Computable<T[N]>
     using this_type = T[N];
     OC_COMPUTABLE_COMMON(Computable<T[N]>)
 public:
-    void assignment(const this_type &t) {  }
+    void assignment(const this_type &t) {
+        for (int i = 0; i < N; ++i) {
+            (*this)[i] = t[i];
+        }
+    }
 };
 
 template<typename T>
@@ -451,12 +458,11 @@ struct Computable<RWTexture<T>>
     OC_COMPUTABLE_COMMON(Computable<RWTexture<T>>)
 };
 
-
 template<>
 struct Computable<Accel> {
 public:
     [[nodiscard]] inline Var<Hit> trace_closest(const Var<Ray> &ray) const noexcept;// implement in computable.inl
-    [[nodiscard]] inline Var<bool> trace_any(const Var<Ray> &ray) const noexcept;// implement in computable.inl
+    [[nodiscard]] inline Var<bool> trace_any(const Var<Ray> &ray) const noexcept;   // implement in computable.inl
     OC_COMPUTABLE_COMMON(Computable<Accel>)
 };
 
@@ -466,7 +472,15 @@ struct Computable<ocarina::tuple<T...>> {
     OC_COMPUTABLE_COMMON(Computable<ocarina::tuple<T...>>)
 
 private:
-
+    template<uint i>
+    requires(i >= sizeof...(T))
+    void _assignment(const Tuple &t) noexcept {}
+    template<uint i = 0>
+    requires(i < sizeof...(T))
+    void _assignment(const Tuple &t) noexcept {
+        set<i>(ocarina::get<i>(t));
+        _assignment<i + 1>(t);
+    }
 
 public:
     template<size_t i>
@@ -481,7 +495,7 @@ public:
     }
 
     void assignment(const Tuple &t) {
-
+        _assignment(t);
     };
 };
 
@@ -670,7 +684,6 @@ public:
         assignment(const this_type &t) {                  \
             MAP(OC_MAKE_MEMBER_ASSIGNMENT, ##__VA_ARGS__) \
         }                                                 \
-                                                          \
                                                           \
     public:                                               \
         MAP(OC_MAKE_STRUCT_MEMBER, ##__VA_ARGS__)         \
