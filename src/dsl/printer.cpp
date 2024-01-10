@@ -14,7 +14,7 @@ void Printer::output_log(const OutputFunc &func) noexcept {
     uint offset = 0u;
     while (offset < length) {
         const uint *data = _buffer.host_buffer().data() + offset;
-        Item item = _items[data[0]];
+        Item &item = _items[data[0]];
         offset += item.size + 1;
         if (offset > length) {
             truncated = true;
