@@ -101,7 +101,6 @@ int main(int argc, char *argv[]) {
             a = a + v;
         };
         Var<Hit> hit;
-        hit->init();
         $if(hit->is_miss()){
             $comment(miss)
 
