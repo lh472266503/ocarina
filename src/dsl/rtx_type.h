@@ -21,9 +21,6 @@ struct alignas(16) Hit {
 
 // clang-format off
 OC_STRUCT(ocarina::Hit, inst_id, prim_id, bary){
-    void init(){
-        inst_id = uint(-1);
-    }
     [[nodiscard]] Bool is_miss() const noexcept {
         return eval(inst_id == uint(-1));
     }

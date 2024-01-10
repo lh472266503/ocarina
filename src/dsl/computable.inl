@@ -18,7 +18,7 @@ const noexcept {
 
 Var<Hit> Computable<Accel>::trace_closest(const Var<Ray> &ray)
 const noexcept {
-    const CallExpr *expr = Function::current()->call_builtin(Type::of<bool>(),
+    const CallExpr *expr = Function::current()->call_builtin(Type::of<Hit>(),
                                                              CallOp::TRACE_CLOSEST,
                                                              {expression(), OC_EXPR(ray)});
     return eval<Hit>(expr);
