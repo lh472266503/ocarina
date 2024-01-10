@@ -12,7 +12,7 @@
 using namespace ocarina;
 
 struct Triple {
-    uint i{5}, j{}, k{};
+    uint i{50}, j{}, k{};
     Triple(uint i, uint j, uint k) : i(i), j(j), k(k) {}
     Triple() = default;
 };
@@ -187,14 +187,18 @@ void test_lambda(Device &device, Stream &stream) {
         Float3 a;
         float3 b;
         a = b;
-//        triple = TTT();
+        triple = TTT();
+//        Float *p;
         Var aa = $outline {
             Var aa = $outline {
                 return begin * begin;
-            }
-            +end + end;
+            };
+//            p = new Float();
+//            *p = end + end;
             return aa;
         };
+
+        $info("{} ================", triple.triple.i);
 
         //        auto ld = Lambda([&] {
         //            Test test;
@@ -328,8 +332,8 @@ int main(int argc, char *argv[]) {
 
     /// create rtx context if need
     device.init_rtx();
-        test_compute_shader(device, stream);
-//    test_lambda(device, stream);
+//        test_compute_shader(device, stream);
+    test_lambda(device, stream);
 
     //    test_poly();
     return 0;

@@ -55,7 +55,7 @@ int main(int argc, char *argv[]) {
 
         Var<float3> v1 = make_float3(a), v2,v3;
         auto ret = comp(1,5);
-        Float3 ff3{6.f};
+        Float3 ff3{float3()};
 
         auto pp = Pow<5>(1 - ff3.z);
 

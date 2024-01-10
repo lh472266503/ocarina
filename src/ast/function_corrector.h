@@ -14,6 +14,8 @@ private:
 
 public:
     explicit FunctionCorrector(Function *func) : _function(func) {}
+
+    void traverse(Function &function) noexcept;
 };
 
 }// namespace ocarina
