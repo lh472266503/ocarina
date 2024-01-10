@@ -464,6 +464,10 @@ template<typename... T>
 struct Computable<ocarina::tuple<T...>> {
     using Tuple = ocarina::tuple<T...>;
     OC_COMPUTABLE_COMMON(Computable<ocarina::tuple<T...>>)
+
+private:
+
+
 public:
     template<size_t i>
     [[nodiscard]] auto get() const noexcept {
@@ -475,6 +479,10 @@ public:
         auto expr = Function::current()->member(Type::of<expr_value_t<elm_ty>>(), expression(), i);
         assign(expr, val);
     }
+
+    void assignment(const Tuple &t) {
+
+    };
 };
 
 }// namespace detail
