@@ -158,7 +158,7 @@ template<typename... Args>
 void Printer::_logs(spdlog::level::level_enum level, const string &fmt, const Args &...args) noexcept {
     auto args_tuple = detail::args_to_tuple(args...);
     auto func = [&]<size_t... i>(std::index_sequence<i...> a) {
-        return _log(level, fmt, std::get<i>(args_tuple)...);
+        _log(level, fmt, std::get<i>(args_tuple)...);
     };
     func(std::make_index_sequence<std::tuple_size_v<decltype(args_tuple)>>());
 }
