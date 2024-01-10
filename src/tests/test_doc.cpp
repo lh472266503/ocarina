@@ -26,8 +26,9 @@ OC_STRUCT(Triple, i, j, k){
 
 struct TTT {
     Triple triple;
+    int i{90};
 };
-OC_STRUCT(TTT, triple){};
+OC_STRUCT(TTT, triple,i){};
 
 auto get_cube(float x = 1, float y = 1, float z = 1) {
     x = x / 2.f;
@@ -167,7 +168,7 @@ void test_lambda(Device &device, Stream &stream) {
            << tri.upload(triangles.data());
 
     Kernel kernel = [&](Uint i) {
-        OCRay hit;
+        OCHit hit;
 
         Uint begin = 2;
         Uint end = 10;
@@ -184,10 +185,17 @@ void test_lambda(Device &device, Stream &stream) {
         //
         //       func(1,2.f, Float(7.f));
         Var<TTT> triple{};
+
+        std::array<float, 3> a3;
+
+        Var<std::array<float, 3>> va3, va4;
+
+        va3 = va4;
+
         Float3 a;
         float3 b;
         a = b;
-        triple = TTT();
+//        triple = TTT();
 //        Float *p;
         Var aa = $outline {
             Var aa = $outline {
@@ -198,7 +206,7 @@ void test_lambda(Device &device, Stream &stream) {
             return aa;
         };
 
-        $info("{} ================", triple.triple.i);
+        $info("{} ================ {}", triple.triple.i , hit.prim_id);
 
         //        auto ld = Lambda([&] {
         //            Test test;
@@ -212,7 +220,7 @@ void test_lambda(Device &device, Stream &stream) {
         //        $outline {
         //                $info("{} {} {} --===", begin,begin,begin);
         //        $info("{} === --===", end);
-        $info("{} {} --===", aa, triple.triple.i);
+//        $info("{} {} --===", aa, triple.triple.i);
         //        $info("{}  --===", begin);
         //        };
         //        Callable cb = [&](Float a) {

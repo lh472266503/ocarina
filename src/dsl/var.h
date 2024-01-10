@@ -25,7 +25,11 @@ struct Var : public Computable<T> {
     explicit Var(const ocarina::Expression *expression) noexcept
         : ocarina::detail::Computable<this_type>(expression) {}
     Var() noexcept
-        : Var(ocarina::Function::current()->local(ocarina::Type::of<this_type>())) {}
+        : Var(ocarina::Function::current()->local(ocarina::Type::of<this_type>())) {
+        if constexpr (is_struct_v<T>) {
+            Computable<T>::assignment(T{});
+        }
+    }
     Var(Var &&another) noexcept
         : Var(ocarina::detail::extract_expression(std::forward<decltype(another)>(another))) {}
     Var(const Var &another) noexcept
