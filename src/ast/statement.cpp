@@ -20,11 +20,6 @@ uint64_t ExprStmt::_compute_hash() const noexcept {
     return hash64(_expression == nullptr ? 0ull : _expression->hash());
 }
 
-AssignStmt::AssignStmt(const ocarina::Expression *lhs, const ocarina::Expression *rhs)
-    : Statement(Tag::ASSIGN), _lhs(dynamic_cast<const RefExpr *>(lhs)), _rhs(rhs) {
-    OC_ASSERT(_lhs != nullptr);
-}
-
 uint64_t AssignStmt::_compute_hash() const noexcept {
     auto hl = _lhs->hash();
     auto hr = _rhs->hash();

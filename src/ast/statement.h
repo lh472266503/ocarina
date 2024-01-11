@@ -155,14 +155,15 @@ public:
 
 class OC_AST_API AssignStmt : public Statement {
 private:
-    const RefExpr *_lhs{nullptr};
+    const Expression *_lhs{nullptr};
     const Expression *_rhs{nullptr};
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
-    explicit AssignStmt(const Expression *lhs, const Expression *rhs);
+    explicit AssignStmt(const Expression *lhs, const Expression *rhs)
+        : Statement(Tag::ASSIGN), _lhs(lhs), _rhs(rhs) {}
     [[nodiscard]] auto lhs() const noexcept { return _lhs; }
     [[nodiscard]] auto rhs() const noexcept { return _rhs; }
     OC_MAKE_STATEMENT_ACCEPT_VISITOR
