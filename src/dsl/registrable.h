@@ -53,11 +53,18 @@ public:
         : Super(), Registrable(&bindless_array) {}
 
     RegistrableBuffer() = default;
-    void register_self() noexcept {
-        _index = _bindless_array->emplace(super());
-        _length = [&]() {
-            return static_cast<uint>(Super::size());
+
+    void register_self(size_t offset = 0, size_t size = 0) noexcept {
+        BufferView<T> buffer_view = super().view(offset, size);
+        _index = _bindless_array->emplace(buffer_view);
+        _length = [=]() {
+            return static_cast<uint>(buffer_view.size());
         };
+    }
+
+    uint register_view(size_t offset, size_t size = 0) {
+        BufferView<T> buffer_view = super().view(offset, size);
+        return _bindless_array->emplace(buffer_view);
     }
 
     [[nodiscard]] Super &super() noexcept { return *this; }
