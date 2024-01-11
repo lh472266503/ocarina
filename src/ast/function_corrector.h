@@ -13,6 +13,11 @@ private:
     Function *_function{};
 
 public:
+
+    class ASTVisitor : public ExprVisitor, public StmtVisitor {
+
+    };
+
     explicit FunctionCorrector(Function *func) : _function(func) {}
 
     void traverse(Function &function) noexcept;

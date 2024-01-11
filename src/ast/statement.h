@@ -28,6 +28,7 @@ class ForStmt;
 class PrintStmt;
 
 class Expression;
+class RefExpr;
 class LiteralExpr;
 
 struct StmtVisitor {
@@ -154,15 +155,14 @@ public:
 
 class OC_AST_API AssignStmt : public Statement {
 private:
-    const Expression *_lhs{nullptr};
+    const RefExpr *_lhs{nullptr};
     const Expression *_rhs{nullptr};
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
-    explicit AssignStmt(const Expression *lhs, const Expression *rhs)
-        : Statement(Tag::ASSIGN), _lhs(lhs), _rhs(rhs) {}
+    explicit AssignStmt(const Expression *lhs, const Expression *rhs);
     [[nodiscard]] auto lhs() const noexcept { return _lhs; }
     [[nodiscard]] auto rhs() const noexcept { return _rhs; }
     OC_MAKE_STATEMENT_ACCEPT_VISITOR
@@ -220,15 +220,14 @@ public:
 
 class OC_AST_API SwitchCaseStmt : public Statement {
 private:
-    const Expression *_expr;
+    const LiteralExpr *_expr;
     ScopeStmt _body;
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
-    explicit SwitchCaseStmt(const Expression *expression)
-        : Statement(Tag::SWITCH_CASE), _expr(expression) {}
+    explicit SwitchCaseStmt(const Expression *expression);
     [[nodiscard]] auto expression() const noexcept { return _expr; }
     [[nodiscard]] auto body() const noexcept { return &_body; }
     [[nodiscard]] auto body() noexcept { return &_body; }

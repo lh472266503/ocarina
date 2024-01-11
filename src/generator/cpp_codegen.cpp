@@ -291,6 +291,7 @@ void CppCodegen::visit(const CallExpr *expr) noexcept {
             current_scratch() << ")";
             break;
         }
+        default: break;
     }
 }
 
@@ -422,6 +423,7 @@ void CppCodegen::_emit_type_name(const Type *type) noexcept {
             case Type::Tag::BINDLESS_ARRAY: break;
             case Type::Tag::ACCEL: break;
             case Type::Tag::NONE: break;
+            default: break;
         }
     }
 }

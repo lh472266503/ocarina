@@ -19,6 +19,12 @@ uint64_t ReturnStmt::_compute_hash() const noexcept {
 uint64_t ExprStmt::_compute_hash() const noexcept {
     return hash64(_expression == nullptr ? 0ull : _expression->hash());
 }
+
+AssignStmt::AssignStmt(const ocarina::Expression *lhs, const ocarina::Expression *rhs)
+    : Statement(Tag::ASSIGN), _lhs(dynamic_cast<const RefExpr *>(lhs)), _rhs(rhs) {
+    OC_ASSERT(_lhs != nullptr);
+}
+
 uint64_t AssignStmt::_compute_hash() const noexcept {
     auto hl = _lhs->hash();
     auto hr = _rhs->hash();
@@ -27,7 +33,7 @@ uint64_t AssignStmt::_compute_hash() const noexcept {
 uint64_t IfStmt::_compute_hash() const noexcept {
     auto ret = _condition->hash();
     ret = hash64(ret, true_branch()->hash());
-    return hash64(ret, false_branch()->hash());;
+    return hash64(ret, false_branch()->hash());
 }
 uint64_t CommentStmt::_compute_hash() const noexcept {
     return hash64(_string);
@@ -36,6 +42,12 @@ uint64_t CommentStmt::_compute_hash() const noexcept {
 uint64_t SwitchStmt::_compute_hash() const noexcept {
     auto ret = _expression->hash();
     return hash64(ret, _body.hash());
+}
+
+SwitchCaseStmt::SwitchCaseStmt(const ocarina::Expression *expression)
+    : Statement(Tag::SWITCH_CASE),
+      _expr(dynamic_cast<const LiteralExpr *>(expression)) {
+    OC_ASSERT(_expr != nullptr);
 }
 
 uint64_t SwitchCaseStmt::_compute_hash() const noexcept {
