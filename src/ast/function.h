@@ -270,6 +270,7 @@ public:
     template<typename Func>
     static shared_ptr<Function> define_kernel(Func &&func) noexcept {
         shared_ptr<Function> function = _define(Tag::KERNEL, std::forward<Func>(func));
+        function->correct();
         return function;
     }
     explicit Function(Tag tag) noexcept;

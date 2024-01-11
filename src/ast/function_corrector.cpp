@@ -6,7 +6,14 @@
 
 namespace ocarina {
 
+void FunctionCorrector::visit(const ScopeStmt *scope) {
+    for (const Statement *stmt : scope->statements()) {
+        stmt->accept(*this);
+    }
+}
+
 void FunctionCorrector::traverse(Function &function) noexcept {
+    visit(function.body());
 }
 
 void FunctionCorrector::apply() noexcept {
