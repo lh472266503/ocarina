@@ -13,7 +13,7 @@
 #include "resources/texture.h"
 #include "resources/bindless_array.h"
 #include "rhi/resources/managed.h"
-#include "ocarina/src/core/dynamic_module.h"
+#include "core/dynamic_module.h"
 #include "rtx/mesh.h"
 #include "rtx/accel.h"
 #include "context.h"
