@@ -5,6 +5,7 @@
 #include "function.h"
 #include "type_registry.h"
 #include "generator/codegen.h"
+#include "function_corrector.h"
 
 namespace ocarina {
 
@@ -24,6 +25,10 @@ void Function::StructureSet::add(const ocarina::Type *type) noexcept {
 ocarina::vector<Function *> &Function::_function_stack() noexcept {
     static ocarina::vector<Function *> ret;
     return ret;
+}
+
+void Function::correct() noexcept {
+    FunctionCorrector(this).apply();
 }
 
 Function::~Function() {

@@ -93,13 +93,15 @@ private:
     [[nodiscard]] const Expression *create_captured_argument(const Expression *expression) noexcept;
 
     template<typename Func>
-    static auto _define(Function::Tag tag, Func &&func) noexcept {
-        auto ret = ocarina::make_unique<Function>(tag);
+    static shared_ptr<Function> _define(Function::Tag tag, Func &&func) noexcept {
+        shared_ptr<Function> ret = ocarina::make_shared<Function>(tag);
         _push(ret.get());
         ret->with(ret->body(), std::forward<Func>(func));
         _pop(ret.get());
         return ret;
     }
+
+    void correct() noexcept;
 
     template<std::size_t i = 0, typename... Args>
     requires(i >= sizeof...(Args))
@@ -266,8 +268,8 @@ public:
         }
     }
     template<typename Func>
-    static auto define_kernel(Func &&func) noexcept {
-        auto function = _define(Tag::KERNEL, std::forward<Func>(func));
+    static shared_ptr<Function> define_kernel(Func &&func) noexcept {
+        shared_ptr<Function> function = _define(Tag::KERNEL, std::forward<Func>(func));
         return function;
     }
     explicit Function(Tag tag) noexcept;
