@@ -95,10 +95,7 @@ const RefExpr *Function::_builtin(Variable::Tag tag, const Type *type) noexcept 
 }
 
 const Function *Function::add_used_function(SP<const Function> func) noexcept {
-    if (_used_custom_func.contains(func->hash())) {
-        return _used_custom_func.at(func->hash()).get();
-    }
-    _used_custom_func.insert(make_pair(func->hash(), func));
+    _used_custom_func.push_back(func);
     return func.get();
 }
 

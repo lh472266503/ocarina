@@ -77,7 +77,7 @@ private:
     ocarina::vector<ocarina::pair<std::byte *, size_t>> _temp_memory;
     ScopeStmt _body{true};
     Tag _tag{Tag::CALLABLE};
-    ocarina::map<uint64_t, SP<const Function>> _used_custom_func;
+    ocarina::vector<SP<const Function>> _used_custom_func;
     StructureSet _used_struct;
     mutable bool _raytracing{false};
     mutable uint3 _block_dim{make_uint3(0)};
@@ -210,7 +210,7 @@ public:
     [[nodiscard]] auto used_custom_func() const noexcept { return _used_custom_func; }
     template<typename Visitor>
     void for_each_custom_func(Visitor &&visitor) const noexcept {
-        for (const auto &[_, f] : _used_custom_func) {
+        for (const auto & f : _used_custom_func) {
             visitor(f.get());
         }
     }
