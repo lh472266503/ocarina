@@ -22,7 +22,6 @@ private:
 
 public:
     void visit(const AssignStmt *stmt) override;
-    void visit(const BinaryExpr *stmt) override;
     void visit(const BreakStmt *stmt) override {}
     void visit(const CommentStmt *stmt) override {}
     void visit(const ContinueStmt *stmt) override {}
@@ -37,16 +36,19 @@ public:
     void visit(const SwitchDefaultStmt *stmt) override;
     void visit(const PrintStmt *stmt) override {}
 
-    void visit(const CallExpr *expr) override {}
-    void visit(const CastExpr *expr) override {}
-    void visit(const ConditionalExpr *expr) override {}
+    void visit(const BinaryExpr *expr) override;
+    void visit(const CallExpr *expr) override;
+    void visit(const CastExpr *expr) override;
+    void visit(const ConditionalExpr *expr) override;
     void visit(const LiteralExpr *expr) override {}
-    void visit(const MemberExpr *expr) override {}
+    void visit(const MemberExpr *expr) override;
     void visit(const RefExpr *expr) override {}
-    void visit(const SubscriptExpr *expr) override {}
-    void visit(const UnaryExpr *expr) override {}
+    void visit(const SubscriptExpr *expr) override;
+    void visit(const UnaryExpr *expr) override;
 
     explicit FunctionCorrector() = default;
+    void process_ref_expr(const Expression *&expression) noexcept;
+    void visit_expr(const ocarina::Expression *const &expression) noexcept;
     void apply(Function *function) noexcept;
     void traverse(Function &function) noexcept;
 };
