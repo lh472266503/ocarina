@@ -87,7 +87,9 @@ void FunctionCorrector::visit(const CallExpr *expr) {
     for (const Expression *const &arg : expr->_arguments) {
         visit_expr(arg);
     }
-    apply(const_cast<Function *>(expr->_function));
+    if (expr->_function) {
+        apply(const_cast<Function *>(expr->_function));
+    }
 }
 
 void FunctionCorrector::visit(const CastExpr *expr) {
