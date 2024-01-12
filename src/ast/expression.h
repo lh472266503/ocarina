@@ -78,7 +78,8 @@ public:
     }
 };
 
-#define OC_MAKE_EXPRESSION_ACCEPT_VISITOR \
+#define OC_MAKE_EXPRESSION_COMMON   \
+    friend class FunctionCorrector; \
     void accept(ExprVisitor &visitor) const override { visitor.visit(this); }
 
 class OC_AST_API UnaryExpr : public Expression {
@@ -94,7 +95,7 @@ public:
         : Expression(Tag::UNARY, type), _op(op), _operand(expression) {}
     [[nodiscard]] auto operand() const noexcept { return _operand; }
     [[nodiscard]] auto op() const noexcept { return _op; }
-    OC_MAKE_EXPRESSION_ACCEPT_VISITOR
+    OC_MAKE_EXPRESSION_COMMON
 };
 
 class OC_AST_API BinaryExpr : public Expression {
@@ -115,7 +116,7 @@ public:
     [[nodiscard]] auto lhs() const noexcept { return _lhs; }
     [[nodiscard]] auto rhs() const noexcept { return _rhs; }
     [[nodiscard]] auto op() const noexcept { return _op; }
-    OC_MAKE_EXPRESSION_ACCEPT_VISITOR
+    OC_MAKE_EXPRESSION_COMMON
 };
 
 class OC_AST_API ConditionalExpr : public Expression {
@@ -140,7 +141,7 @@ public:
     [[nodiscard]] const Expression *pred() const noexcept { return _pred; }
     [[nodiscard]] const Expression *true_() const noexcept { return _true; }
     [[nodiscard]] const Expression *false_() const noexcept { return _false; }
-    OC_MAKE_EXPRESSION_ACCEPT_VISITOR
+    OC_MAKE_EXPRESSION_COMMON
 };
 
 class OC_AST_API SubscriptExpr : public Expression {
@@ -184,7 +185,7 @@ public:
 
     [[nodiscard]] const Expression *range() const noexcept { return _range; }
     [[nodiscard]] const Expression *index(int i) const noexcept { return _indexes.at(i); }
-    OC_MAKE_EXPRESSION_ACCEPT_VISITOR
+    OC_MAKE_EXPRESSION_COMMON
 };
 
 class OC_AST_API LiteralExpr : public Expression {
@@ -201,7 +202,7 @@ public:
     LiteralExpr(const Type *type, value_type value)
         : Expression(Tag::LITERAL, type), _value(value) {}
     [[nodiscard]] decltype(auto) value() const noexcept { return _value; }
-    OC_MAKE_EXPRESSION_ACCEPT_VISITOR
+    OC_MAKE_EXPRESSION_COMMON
 };
 
 class OC_AST_API RefExpr : public Expression {
@@ -218,7 +219,7 @@ public:
     explicit RefExpr(const Variable &v) noexcept
         : Expression(Tag::REF, v.type()), _variable(v) {}
     [[nodiscard]] auto variable() const noexcept { return _variable; }
-    OC_MAKE_EXPRESSION_ACCEPT_VISITOR
+    OC_MAKE_EXPRESSION_COMMON
 };
 
 class OC_AST_API CastExpr : public Expression {
@@ -243,7 +244,7 @@ public:
     [[nodiscard]] const Expression *expression() const noexcept {
         return _expression;
     }
-    OC_MAKE_EXPRESSION_ACCEPT_VISITOR
+    OC_MAKE_EXPRESSION_COMMON
 };
 
 class OC_AST_API MemberExpr : public Expression {
@@ -266,7 +267,7 @@ public:
     [[nodiscard]] int swizzle_size() const noexcept { return _swizzle_size; }
     [[nodiscard]] int swizzle_index(int idx) const noexcept;
     [[nodiscard]] const Expression *parent() const noexcept { return _parent; }
-    OC_MAKE_EXPRESSION_ACCEPT_VISITOR
+    OC_MAKE_EXPRESSION_COMMON
 };
 
 class OC_AST_API CallExpr : public Expression {
@@ -298,9 +299,9 @@ public:
     [[nodiscard]] ocarina::span<const Template> template_args() const noexcept { return _template_args; }
     [[nodiscard]] auto call_op() const noexcept { return _call_op; }
     [[nodiscard]] auto function() const noexcept { return _function; }
-    OC_MAKE_EXPRESSION_ACCEPT_VISITOR
+    OC_MAKE_EXPRESSION_COMMON
 };
 
-#undef OC_MAKE_EXPRESSION_ACCEPT_VISITOR
+#undef OC_MAKE_EXPRESSION_COMMON
 
 }// namespace ocarina
