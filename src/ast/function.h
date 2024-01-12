@@ -86,7 +86,7 @@ private:
     friend class FunctionCorrector;
 
 private:
-    static ocarina::vector<Function *> &_function_stack() noexcept;
+    static ocarina::stack<Function *> &_function_stack() noexcept;
     static void _push(Function *f);
     static void _pop(Function *f);
     [[nodiscard]] uint _next_variable_uid() noexcept;

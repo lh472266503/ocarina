@@ -10,8 +10,9 @@ void FunctionCorrector::traverse(Function &function) noexcept {
     visit(function.body());
 }
 
-void FunctionCorrector::apply() noexcept {
-    traverse(*_function);
+void FunctionCorrector::apply(Function *function) noexcept {
+    push(function);
+    traverse(*top());
 }
 
 void FunctionCorrector::visit(const ScopeStmt *scope) {

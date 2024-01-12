@@ -10,10 +10,15 @@ namespace ocarina {
 
 class FunctionCorrector : public ExprVisitor, public StmtVisitor {
 private:
-    Function *_function{};
+    ocarina::stack<Function *> _function_tack;
 
     /// key: old expression, value: new expression
     std::map<const Expression *, const Expression *> _expr_map;
+
+private:
+    [[nodiscard]] Function *top() noexcept { return _function_tack.top(); }
+    template<typename Arg>
+    void push(Arg &&arg) noexcept { _function_tack.push(OC_FORWARD(arg)); }
 
 public:
     void visit(const AssignStmt *stmt) override;
@@ -41,8 +46,8 @@ public:
     void visit(const SubscriptExpr *expr) override {}
     void visit(const UnaryExpr *expr) override {}
 
-    explicit FunctionCorrector(Function *func) : _function(func) {}
-    void apply() noexcept;
+    explicit FunctionCorrector() = default;
+    void apply(Function *function) noexcept;
     void traverse(Function &function) noexcept;
 };
 
