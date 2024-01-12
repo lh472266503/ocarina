@@ -48,10 +48,11 @@ struct StmtVisitor {
     virtual void visit(const PrintStmt *) = 0;
 };
 
-#define OC_MAKE_STATEMENT_ACCEPT_VISITOR \
+#define OC_MAKE_STATEMENT_COMMON    \
+    friend class FunctionCorrector; \
     void accept(StmtVisitor &visitor) const override { visitor.visit(this); }
 
-class OC_AST_API Statement : public concepts::Noncopyable , public Hashable {
+class OC_AST_API Statement : public concepts::Noncopyable, public Hashable {
 public:
     enum struct Tag : uint32_t {
         SCOPE,
@@ -100,7 +101,7 @@ public:
     [[nodiscard]] auto size() const noexcept { return _statements.size(); }
     void add_stmt(const Statement *stmt) noexcept { _statements.push_back(stmt); }
     void add_var(const Variable &variable) noexcept { _local_vars.push_back(variable); }
-    OC_MAKE_STATEMENT_ACCEPT_VISITOR
+    OC_MAKE_STATEMENT_COMMON
 };
 
 class OC_AST_API BreakStmt : public Statement {
@@ -111,7 +112,7 @@ private:
 
 public:
     BreakStmt() noexcept : Statement{Tag::BREAK} {}
-    OC_MAKE_STATEMENT_ACCEPT_VISITOR
+    OC_MAKE_STATEMENT_COMMON
 };
 
 class OC_AST_API ContinueStmt : public Statement {
@@ -122,7 +123,7 @@ private:
 
 public:
     ContinueStmt() noexcept : Statement(Tag::CONTINUE) {}
-    OC_MAKE_STATEMENT_ACCEPT_VISITOR
+    OC_MAKE_STATEMENT_COMMON
 };
 
 class OC_AST_API ReturnStmt : public Statement {
@@ -136,7 +137,7 @@ public:
     explicit ReturnStmt(const Expression *expr = nullptr) noexcept
         : Statement(Tag::RETURN), _expression(expr) {}
     [[nodiscard]] const Expression *expression() const noexcept { return _expression; }
-    OC_MAKE_STATEMENT_ACCEPT_VISITOR
+    OC_MAKE_STATEMENT_COMMON
 };
 
 class OC_AST_API ExprStmt : public Statement {
@@ -150,7 +151,7 @@ public:
     explicit ExprStmt(const Expression *expr = nullptr) noexcept
         : Statement(Tag::EXPR), _expression(expr) {}
     const Expression *expression() const { return _expression; }
-    OC_MAKE_STATEMENT_ACCEPT_VISITOR
+    OC_MAKE_STATEMENT_COMMON
 };
 
 class OC_AST_API AssignStmt : public Statement {
@@ -166,7 +167,7 @@ public:
         : Statement(Tag::ASSIGN), _lhs(lhs), _rhs(rhs) {}
     [[nodiscard]] auto lhs() const noexcept { return _lhs; }
     [[nodiscard]] auto rhs() const noexcept { return _rhs; }
-    OC_MAKE_STATEMENT_ACCEPT_VISITOR
+    OC_MAKE_STATEMENT_COMMON
 };
 
 class OC_AST_API IfStmt : public Statement {
@@ -185,7 +186,7 @@ public:
     [[nodiscard]] const ScopeStmt *false_branch() const noexcept { return &_false_branch; }
     [[nodiscard]] ScopeStmt *true_branch() noexcept { return &_true_branch; }
     [[nodiscard]] ScopeStmt *false_branch() noexcept { return &_false_branch; }
-    OC_MAKE_STATEMENT_ACCEPT_VISITOR
+    OC_MAKE_STATEMENT_COMMON
 };
 
 class OC_AST_API CommentStmt : public Statement {
@@ -199,7 +200,7 @@ public:
     explicit CommentStmt(const std::string &str)
         : Statement(Tag::COMMENT), _string(str) {}
     [[nodiscard]] std::string string() const noexcept { return _string; }
-    OC_MAKE_STATEMENT_ACCEPT_VISITOR
+    OC_MAKE_STATEMENT_COMMON
 };
 
 class OC_AST_API SwitchStmt : public Statement {
@@ -216,7 +217,7 @@ public:
     [[nodiscard]] auto expression() const noexcept { return _expression; }
     [[nodiscard]] auto body() const noexcept { return &_body; }
     [[nodiscard]] auto body() noexcept { return &_body; }
-    OC_MAKE_STATEMENT_ACCEPT_VISITOR
+    OC_MAKE_STATEMENT_COMMON
 };
 
 class OC_AST_API SwitchCaseStmt : public Statement {
@@ -232,7 +233,7 @@ public:
     [[nodiscard]] auto expression() const noexcept { return _expr; }
     [[nodiscard]] auto body() const noexcept { return &_body; }
     [[nodiscard]] auto body() noexcept { return &_body; }
-    OC_MAKE_STATEMENT_ACCEPT_VISITOR
+    OC_MAKE_STATEMENT_COMMON
 };
 
 class OC_AST_API SwitchDefaultStmt : public Statement {
@@ -246,7 +247,7 @@ public:
     SwitchDefaultStmt() : Statement(Tag::SWITCH_DEFAULT) {}
     [[nodiscard]] auto body() const noexcept { return &_body; }
     [[nodiscard]] auto body() noexcept { return &_body; }
-    OC_MAKE_STATEMENT_ACCEPT_VISITOR
+    OC_MAKE_STATEMENT_COMMON
 };
 
 class OC_AST_API ForStmt : public Statement {
@@ -267,7 +268,7 @@ public:
     [[nodiscard]] auto step() const noexcept { return _step; }
     [[nodiscard]] auto body() const noexcept { return &_body; }
     [[nodiscard]] auto body() noexcept { return &_body; }
-    OC_MAKE_STATEMENT_ACCEPT_VISITOR
+    OC_MAKE_STATEMENT_COMMON
 };
 
 class OC_AST_API LoopStmt : public Statement {
@@ -281,7 +282,7 @@ public:
     LoopStmt() : Statement(Tag::LOOP) {}
     [[nodiscard]] auto body() const noexcept { return &_body; }
     [[nodiscard]] auto body() noexcept { return &_body; }
-    OC_MAKE_STATEMENT_ACCEPT_VISITOR
+    OC_MAKE_STATEMENT_COMMON
 };
 
 class OC_AST_API PrintStmt : public Statement {
@@ -297,7 +298,7 @@ public:
         : Statement(Tag::PRINT), _fmt(fmt), _args(args) {}
     [[nodiscard]] ocarina::string fmt() const noexcept { return _fmt; }
     [[nodiscard]] span<const Expression *const> args() const noexcept { return _args; }
-    OC_MAKE_STATEMENT_ACCEPT_VISITOR
+    OC_MAKE_STATEMENT_COMMON
 };
 
 }// namespace ocarina
