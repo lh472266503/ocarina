@@ -191,7 +191,7 @@ MAKE_VECTOR_UNARY_FUNC(copysign)
 
 #define MAKE_VECTOR_BINARY_FUNC(func)                                                 \
     template<typename T>                                                              \
-    requires is_vector_v<expr_value_t<T>>                                             \
+    requires is_vector_v<T>                                                           \
     OC_NODISCARD auto                                                                 \
     func(const T &v, const T &u) noexcept {                                           \
         static constexpr auto N = vector_dimension_v<T>;                              \
@@ -240,7 +240,7 @@ MAKE_VECTOR_BINARY_FUNC(atan2)
 #undef MAKE_VECTOR_BINARY_FUNC
 
 template<int n, typename T, typename ret_type = condition_t<expr_value_t<T>, T>>
-requires requires(T a, T b) { a * b; }
+requires requires(T a, T b) { a *b; }
 OC_NODISCARD constexpr ret_type Pow(const T &v) {
     if constexpr (n < 0) {
         return 1.f / Pow<-n>(v);
