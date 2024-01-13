@@ -11,17 +11,35 @@ void FunctionCorrector::traverse(Function &function) noexcept {
 }
 
 void FunctionCorrector::apply(Function *function) noexcept {
-    push(function);
-    traverse(*top());
+    _function_tack.push_back(function);
+    traverse(*_function_tack.back());
+    _function_tack.pop_back();
 }
 
 void FunctionCorrector::process_ref_expr(const Expression *&expression) noexcept {
-    if (expression->context() == top()) {
+    if (expression->context() == _function_tack.back()) {
         return;
+    } else if (is_from_exterior(expression)) {
+        capture_exterior(expression);
+    } else {
+        leak_from_interior(expression);
     }
 }
 
-void FunctionCorrector::visit_expr(const ocarina::Expression *const &expression) noexcept {
+bool FunctionCorrector::is_from_exterior(const Expression *expression) noexcept {
+    return std::find(_function_tack.begin(), _function_tack.end(),
+                     expression->context()) == _function_tack.end();
+}
+
+void FunctionCorrector::capture_exterior(const Expression *const &expression) noexcept {
+
+}
+
+void FunctionCorrector::leak_from_interior(const Expression *const &expression) noexcept {
+    
+}
+
+void FunctionCorrector::visit_expr(const Expression *const &expression) noexcept {
     if (expression->is_ref()) {
         process_ref_expr((const Expression *&)expression);
     } else {

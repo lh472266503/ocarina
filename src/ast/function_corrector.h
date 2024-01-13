@@ -10,17 +10,9 @@ namespace ocarina {
 
 class FunctionCorrector : public ExprVisitor, public StmtVisitor {
 private:
-    ocarina::stack<Function *> _function_tack;
-
-    /// key: old expression, value: new expression
-    std::map<const Expression *, const Expression *> _expr_map;
+    ocarina::deque<Function *> _function_tack;
 
 private:
-    [[nodiscard]] Function *top() noexcept { return _function_tack.top(); }
-    template<typename Arg>
-    void push(Arg &&arg) noexcept { _function_tack.push(OC_FORWARD(arg)); }
-
-public:
     void visit(const AssignStmt *stmt) override;
     void visit(const BreakStmt *stmt) override {}
     void visit(const CommentStmt *stmt) override {}
@@ -46,11 +38,18 @@ public:
     void visit(const SubscriptExpr *expr) override;
     void visit(const UnaryExpr *expr) override;
 
-    explicit FunctionCorrector() = default;
-    void process_ref_expr(const Expression *&expression) noexcept;
-    void visit_expr(const ocarina::Expression *const &expression) noexcept;
-    void apply(Function *function) noexcept;
     void traverse(Function &function) noexcept;
+    void process_ref_expr(const Expression *&expression) noexcept;
+    void visit_expr(const Expression *const &expression) noexcept;
+
+    [[nodiscard]] bool is_from_exterior(const Expression *expression) noexcept;
+    void capture_exterior(const Expression *const &expression) noexcept;
+
+    void leak_from_interior(const Expression *const &expression) noexcept;
+
+public:
+    explicit FunctionCorrector() = default;
+    void apply(Function *function) noexcept;
 };
 
 }// namespace ocarina
