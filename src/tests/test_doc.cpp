@@ -198,16 +198,16 @@ void test_lambda(Device &device, Stream &stream) {
 //        triple = TTT();
         Float *p;
         Float aa = $outline {
-//            Var aa = $outline {
-//                return begin * begin;
-//            };
-            p = new Float();
+            Var aa = $outline {
+                return begin * begin;
+            };
+//            p = new Float();
 //            *p = end + end;
-            return 1.f;
+            return aa;
         };
-        *p = 1.f;
+//        *p = 1.f;
 
-//        $info("{} ================ {}", triple.triple.i , *p);
+//        $info("{} ================ {}", triple.triple.i , aa);
 
         //        auto ld = Lambda([&] {
         //            Test test;
