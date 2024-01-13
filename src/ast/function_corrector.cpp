@@ -28,7 +28,7 @@ void FunctionCorrector::process_ref_expr(const Expression *&expression) noexcept
 
 bool FunctionCorrector::is_from_exterior(const Expression *expression) noexcept {
     return std::find(_function_tack.begin(), _function_tack.end(),
-                     expression->context()) == _function_tack.end();
+                     expression->context()) != _function_tack.end();
 }
 
 void FunctionCorrector::capture_exterior(const Expression *const &expression) noexcept {
