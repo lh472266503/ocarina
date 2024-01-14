@@ -103,7 +103,7 @@ private:
 
     void correct() noexcept;
     [[nodiscard]] uint exterior_expr_index(const Expression *expression) const noexcept;
-    void process_exterior_expression(const Expression *&expression) noexcept;
+    [[nodiscard]] const Expression *replace_exterior_expression(const Expression *expression) noexcept;
     void process_expression(const Expression *&expression) noexcept;
 
     template<std::size_t i = 0, typename... Args>

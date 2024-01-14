@@ -32,7 +32,7 @@ bool FunctionCorrector::is_from_exterior(const Expression *expression) noexcept 
 }
 
 void FunctionCorrector::capture_exterior(const Expression *&expression) noexcept {
-    cur_func()->process_exterior_expression(expression);
+    expression = cur_func()->replace_exterior_expression(expression);
 }
 
 void FunctionCorrector::leak_from_interior(const Expression *&expression) noexcept {
@@ -107,6 +107,14 @@ void FunctionCorrector::visit(const CallExpr *expr) {
     if (expr->_function) {
         apply(const_cast<Function *>(expr->_function));
     }
+    CallExpr *call_expr = const_cast<CallExpr*>(expr);
+    expr->_function->for_each_exterior_expr([&](const Expression *expression) {
+        auto e = expression;
+        if (expression->context() != cur_func()) {
+            e = cur_func()->replace_exterior_expression(expression);
+        }
+        call_expr->_arguments.push_back(e);
+    });
 }
 
 void FunctionCorrector::visit(const CastExpr *expr) {
