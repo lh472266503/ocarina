@@ -12,7 +12,7 @@ void FunctionCorrector::traverse(Function &function) noexcept {
 
 void FunctionCorrector::apply(Function *function) noexcept {
     _function_tack.push_back(function);
-    traverse(*cur_func());
+//    traverse(*cur_func());
     _function_tack.pop_back();
 }
 
@@ -106,15 +106,15 @@ void FunctionCorrector::visit(const CallExpr *expr) {
     }
     if (expr->_function) {
         apply(const_cast<Function *>(expr->_function));
+        CallExpr *call_expr = const_cast<CallExpr*>(expr);
+        call_expr->_function->for_each_exterior_expr([&](const Expression *expression) {
+            auto e = expression;
+            if (expression->context() != cur_func()) {
+                e = cur_func()->replace_exterior_expression(expression);
+            }
+            call_expr->_arguments.push_back(e);
+        });
     }
-    CallExpr *call_expr = const_cast<CallExpr*>(expr);
-    expr->_function->for_each_exterior_expr([&](const Expression *expression) {
-        auto e = expression;
-        if (expression->context() != cur_func()) {
-            e = cur_func()->replace_exterior_expression(expression);
-        }
-        call_expr->_arguments.push_back(e);
-    });
 }
 
 void FunctionCorrector::visit(const CastExpr *expr) {

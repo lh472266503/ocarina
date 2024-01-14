@@ -7,6 +7,7 @@
 #include "dsl/dsl.h"
 #include "rhi/common.h"
 #include "math/base.h"
+#include "base/scattering/interaction.h"
 #include "core/platform.h"
 
 using namespace ocarina;
@@ -197,13 +198,15 @@ void test_lambda(Device &device, Stream &stream) {
         a = b;
 //        triple = TTT();
         Float *p;
+        Test tt;
+
         Float aa = $outline {
             Var aa = $outline {
                 return begin * begin;
             };
 //            p = new Float();
 //            *p = end + end;
-            return aa;
+            return aa + tt.a;
         };
 //        *p = 1.f;
 
