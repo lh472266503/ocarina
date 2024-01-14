@@ -117,13 +117,6 @@ private:
             return expression && (expression->context() != this);
         };
 
-        auto exterior_expr_index = [&](const Expression *expr) {
-            return std::find(_exterior_expressions.begin(),
-                             _exterior_expressions.end(),
-                             expr) -
-                   _exterior_expressions.begin();
-        };
-
         auto process_expression = [&](const Expression *&expression) {
             if (!is_exterior(expression)) {
                 return;
@@ -205,12 +198,19 @@ private:
     };
 
 public:
+    [[nodiscard]] uint exterior_expr_index(const Expression *expression) const noexcept {
+        return std::find(_exterior_expressions.begin(),
+                         _exterior_expressions.end(),
+                         expression) -
+               _exterior_expressions.begin();
+    }
+
     void set_description(string desc) const noexcept { _description = ocarina::move(desc); }
     [[nodiscard]] string &description() const noexcept { return _description; }
     [[nodiscard]] auto used_custom_func() const noexcept { return _used_custom_func; }
     template<typename Visitor>
     void for_each_custom_func(Visitor &&visitor) const noexcept {
-        for (const auto & f : _used_custom_func) {
+        for (const auto &f : _used_custom_func) {
             visitor(f.get());
         }
     }
