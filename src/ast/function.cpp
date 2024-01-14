@@ -48,7 +48,17 @@ void Function::mark_variable_usage(ocarina::uint uid, ocarina::Usage usage) noex
     }
 }
 
-void Function::process_exterior_expression(const ocarina::Expression *&expression) noexcept {
+void Function::process_expression(const Expression *&expression) noexcept {
+    auto is_exterior = [&](const Expression *expression) {
+        return expression && (expression->context() != this);
+    };
+    if (!is_exterior(expression)) {
+        return;
+    }
+    process_exterior_expression(expression);
+}
+
+void Function::process_exterior_expression(const Expression *&expression) noexcept {
     int index = exterior_expr_index(expression);
     if (index == _exterior_expressions.size()) {
         _exterior_expressions.push_back(expression);

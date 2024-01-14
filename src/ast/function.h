@@ -104,6 +104,7 @@ private:
     void correct() noexcept;
     [[nodiscard]] uint exterior_expr_index(const Expression *expression) const noexcept;
     void process_exterior_expression(const Expression *&expression) noexcept;
+    void process_expression(const Expression *&expression) noexcept;
 
     template<std::size_t i = 0, typename... Args>
     requires(i >= sizeof...(Args))
@@ -114,17 +115,6 @@ private:
         using element_ty = std::tuple_element_t<i, std::tuple<Args...>>;
         using raw_type = typename std::remove_pointer_t<std::remove_cvref_t<element_ty>>;
         auto &arg = std::get<i>(tuple);
-
-        auto is_exterior = [&](const Expression *expression) {
-            return expression && (expression->context() != this);
-        };
-
-        auto process_expression = [&](const Expression *&expression) {
-            if (!is_exterior(expression)) {
-                return;
-            }
-            process_exterior_expression(expression);
-        };
 
         if constexpr (std::is_same_v<std::remove_cvref_t<raw_type>, Expression>) {
             process_expression(arg);

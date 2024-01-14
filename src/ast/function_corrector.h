@@ -38,14 +38,16 @@ private:
     void visit(const SubscriptExpr *expr) override;
     void visit(const UnaryExpr *expr) override;
 
+    [[nodiscard]] Function *cur_func() noexcept { return _function_tack.back(); }
+
     void traverse(Function &function) noexcept;
     void process_ref_expr(const Expression *&expression) noexcept;
     void visit_expr(const Expression *const &expression) noexcept;
 
     [[nodiscard]] bool is_from_exterior(const Expression *expression) noexcept;
-    void capture_exterior(const Expression *const &expression) noexcept;
+    void capture_exterior(const Expression *&expression) noexcept;
 
-    void leak_from_interior(const Expression *const &expression) noexcept;
+    void leak_from_interior(const Expression *&expression) noexcept;
 
 public:
     explicit FunctionCorrector() = default;
