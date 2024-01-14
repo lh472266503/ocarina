@@ -38,6 +38,16 @@ uint Function::exterior_expr_index(const ocarina::Expression *expression) const 
            _exterior_expressions.begin();
 }
 
+void Function::mark_variable_usage(ocarina::uint uid, ocarina::Usage usage) noexcept {
+    OC_ASSERT(uid < _variable_usages.size());
+    auto old_usage = to_underlying(_variable_usages[uid]);
+    auto new_usage = to_underlying(usage);
+    auto final_usage = old_usage | new_usage;
+    if (final_usage != old_usage) {
+        _variable_usages[uid] = static_cast<Usage>(final_usage);
+    }
+}
+
 void Function::process_exterior_expression(const ocarina::Expression *&expression) noexcept {
     int index = exterior_expr_index(expression);
     if (index == _exterior_expressions.size()) {

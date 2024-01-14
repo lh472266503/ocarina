@@ -247,15 +247,7 @@ public:
         ScopeGuard guard(_scope_stack, scope);
         return func();
     }
-    void mark_variable_usage(uint uid, Usage usage) noexcept {
-        OC_ASSERT(uid < _variable_usages.size());
-        auto old_usage = to_underlying(_variable_usages[uid]);
-        auto new_usage = to_underlying(usage);
-        auto final_usage = old_usage | new_usage;
-        if (final_usage != old_usage) {
-            _variable_usages[uid] = static_cast<Usage>(final_usage);
-        }
-    }
+    void mark_variable_usage(uint uid, Usage usage) noexcept;
     template<typename Func>
     static shared_ptr<Function> define_kernel(Func &&func) noexcept {
         shared_ptr<Function> function = _define(Tag::KERNEL, std::forward<Func>(func));
