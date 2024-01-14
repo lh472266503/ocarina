@@ -31,6 +31,23 @@ void Function::correct() noexcept {
     FunctionCorrector().apply(this);
 }
 
+uint Function::exterior_expr_index(const ocarina::Expression *expression) const noexcept {
+    return std::find(_exterior_expressions.begin(),
+                     _exterior_expressions.end(),
+                     expression) -
+           _exterior_expressions.begin();
+}
+
+void Function::process_exterior_expression(const ocarina::Expression *&expression) noexcept {
+    int index = exterior_expr_index(expression);
+    if (index == _exterior_expressions.size()) {
+        _exterior_expressions.push_back(expression);
+        expression = create_captured_argument(expression);
+    } else {
+        expression = _ref(_captured_arguments.at(index));
+    }
+}
+
 Function::~Function() {
     for (auto &mem : _temp_memory) {
         delete_with_allocator(mem.first);

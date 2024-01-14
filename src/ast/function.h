@@ -102,6 +102,8 @@ private:
     }
 
     void correct() noexcept;
+    [[nodiscard]] uint exterior_expr_index(const Expression *expression) const noexcept;
+    void process_exterior_expression(const Expression *&expression) noexcept;
 
     template<std::size_t i = 0, typename... Args>
     requires(i >= sizeof...(Args))
@@ -121,13 +123,7 @@ private:
             if (!is_exterior(expression)) {
                 return;
             }
-            int index = exterior_expr_index(expression);
-            if (index == _exterior_expressions.size()) {
-                _exterior_expressions.push_back(expression);
-                expression = create_captured_argument(expression);
-            } else {
-                expression = _ref(_captured_arguments.at(index));
-            }
+            process_exterior_expression(expression);
         };
 
         if constexpr (std::is_same_v<std::remove_cvref_t<raw_type>, Expression>) {
@@ -198,13 +194,6 @@ private:
     };
 
 public:
-    [[nodiscard]] uint exterior_expr_index(const Expression *expression) const noexcept {
-        return std::find(_exterior_expressions.begin(),
-                         _exterior_expressions.end(),
-                         expression) -
-               _exterior_expressions.begin();
-    }
-
     void set_description(string desc) const noexcept { _description = ocarina::move(desc); }
     [[nodiscard]] string &description() const noexcept { return _description; }
     [[nodiscard]] auto used_custom_func() const noexcept { return _used_custom_func; }
