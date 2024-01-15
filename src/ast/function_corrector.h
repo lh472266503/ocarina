@@ -42,6 +42,7 @@ private:
 
     void traverse(Function &function) noexcept;
     void process_ref_expr(const Expression *&expression) noexcept;
+    void process_member_expr(const Expression *&expression) noexcept;
     void visit_expr(const Expression *const &expression) noexcept;
 
     [[nodiscard]] bool is_from_exterior(const Expression *expression) noexcept;

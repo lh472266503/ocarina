@@ -26,6 +26,16 @@ void FunctionCorrector::process_ref_expr(const Expression *&expression) noexcept
     }
 }
 
+void FunctionCorrector::process_member_expr(const Expression *&expression) noexcept {
+    if (expression->context() == cur_func()) {
+        return;
+    } else if (is_from_exterior(expression)) {
+        capture_exterior(expression);
+    } else {
+        leak_from_interior(expression);
+    }
+}
+
 bool FunctionCorrector::is_from_exterior(const Expression *expression) noexcept {
     return std::find(_function_tack.begin(), _function_tack.end(),
                      expression->context()) != _function_tack.end();
@@ -41,6 +51,8 @@ void FunctionCorrector::leak_from_interior(const Expression *&expression) noexce
 void FunctionCorrector::visit_expr(const Expression *const &expression) noexcept {
     if (expression->is_ref()) {
         process_ref_expr((const Expression *&)expression);
+    } else if(expression->is_member()) {
+        process_member_expr((const Expression *&)expression);
     } else {
         expression->accept(*this);
     }

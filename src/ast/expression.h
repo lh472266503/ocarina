@@ -69,6 +69,7 @@ public:
     void set_context(const Function *f) noexcept { _context = f; }
     [[nodiscard]] auto tag() const noexcept { return _tag; }
     [[nodiscard]] bool is_ref() const noexcept { return tag() == Tag::REF; }
+    [[nodiscard]] bool is_member() const noexcept { return tag() == Tag::MEMBER; }
     [[nodiscard]] bool is_arithmetic() const noexcept {
         return tag() == Tag::BINARY || tag() == Tag::UNARY;
     }

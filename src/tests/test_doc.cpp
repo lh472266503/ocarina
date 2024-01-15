@@ -202,11 +202,12 @@ void test_lambda(Device &device, Stream &stream) {
 
         Float aa = $outline {
             Var aa = $outline {
-                return begin * begin;
+                return 1;
             };
 //            p = new Float();
 //            *p = end + end;
-            return aa + tt.a;
+            Var ret = 1 + hit.prim_id;
+            return ret;
         };
 //        *p = 1.f;
 
