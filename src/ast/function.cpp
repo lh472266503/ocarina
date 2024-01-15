@@ -363,12 +363,6 @@ ocarina::span<const Variable> Function::captured_arguments() const noexcept {
     return _captured_arguments;
 }
 
-vector<Variable> Function::all_arguments() const noexcept {
-    vector<Variable> ret = _arguments;
-    append(ret, _captured_arguments);
-    return ret;
-}
-
 ocarina::span<const Variable> Function::builtin_vars() const noexcept {
     return _builtin_vars;
 }
