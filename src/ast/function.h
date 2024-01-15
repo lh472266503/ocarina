@@ -309,6 +309,7 @@ public:
     [[nodiscard]] const ScopeStmt *body() const noexcept;
     [[nodiscard]] ScopeStmt *body() noexcept;
     [[nodiscard]] ocarina::span<const Variable> arguments() const noexcept;
+    [[nodiscard]] ocarina::span<const Variable> captured_arguments() const noexcept;
     [[nodiscard]] vector<Variable> all_arguments() const noexcept;
     [[nodiscard]] ocarina::span<const Variable> builtin_vars() const noexcept;
     [[nodiscard]] constexpr Tag tag() const noexcept { return _tag; }
