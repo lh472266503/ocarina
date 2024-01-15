@@ -171,8 +171,8 @@ void test_lambda(Device &device, Stream &stream) {
     Kernel kernel = [&](Uint i) {
 //        OCHit hit;
 //
-//        Uint begin = 2;
-//        Uint end = 10;
+        Uint begin = 2;
+        Uint end = 10;
 //        //        Uint end1 = 10;
 //        //        Uint end2 = 10;
 //        //        Uint end3 = 10;
@@ -197,27 +197,20 @@ void test_lambda(Device &device, Stream &stream) {
 //        float3 b;
 //        a = b;
 ////        triple = TTT();
-//        Float *p;
+        Float *p;
 //        Test tt;
-        Float aa = 5;
-        Float bb;
-        Callable cb = [&](Float a) {
-            bb = a + aa;
-            $info("{} ================ ", bb);
-        };
-        cb(aa);
 
-//        Float aa = $outline {
-//            Var aa = $outline {
-//                return end + end;
-//            };
-////            p = new Float();
-////            *p = end + end;
-//            return aa;
-//        };
+        Float aa = $outline {
+            Var aa = $outline {
+                return end + end;
+            };
+            p = new Float();
+            *p = end + end;
+            return aa;
+        };
 //        *p = 1.f;
 
-
+        $info("{} -------------", *p);
 
         //        auto ld = Lambda([&] {
         //            Test test;
