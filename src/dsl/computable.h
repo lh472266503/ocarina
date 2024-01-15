@@ -170,7 +170,7 @@ struct EnableTextureReadAndWrite {
     requires(is_all_integral_expr_v<X, Y> &&
              (is_uchar_element_expr_v<Val> ||
               is_float_element_expr_v<Val>))
-    void write(const X &x, const Y &y, const Val &elm) noexcept {
+    void write(const Val &elm, const X &x, const Y &y) noexcept {
         const T *texture = static_cast<const T *>(this);
         const CallExpr *expr = Function::current()->call_builtin(nullptr, CallOp::TEX_WRITE,
                                                                  {texture->expression(),
@@ -183,7 +183,7 @@ struct EnableTextureReadAndWrite {
     requires(is_all_integral_expr_v<X, Y, Z> &&
              (is_uchar_element_expr_v<Val> ||
               is_float_element_expr_v<Val>))
-    void write(const X &x, const Y &y, const Z &z, const Val &elm) noexcept {
+    void write(const Val &elm, const X &x, const Y &y, const Z &z) noexcept {
         const T *texture = static_cast<const T *>(this);
         const CallExpr *expr = Function::current()->call_builtin(nullptr, CallOp::TEX_WRITE,
                                                                  {texture->expression(),
@@ -193,14 +193,14 @@ struct EnableTextureReadAndWrite {
 
     template<typename XYZ, typename Val>
     requires(is_uint_vector3_v<expr_value_t<XYZ>>)
-    void write(const XYZ &xyz, const Val &elm) noexcept {
-        write(xyz.x, xyz.y, xyz.z, elm);
+    void write(const Val &elm, const XYZ &xyz) noexcept {
+        write(elm, xyz.x, xyz.y, xyz.z);
     }
 
     template<typename XY, typename Val>
     requires(is_uint_vector2_v<expr_value_t<XY>>)
-    void write(const XY &xy, const Val &elm) noexcept {
-        write(xy.x, xy.y, elm);
+    void write(const Val &elm, const XY &xy) noexcept {
+        write(elm, xy.x, xy.y);
     }
 };
 

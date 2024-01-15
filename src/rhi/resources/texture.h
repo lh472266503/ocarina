@@ -109,14 +109,14 @@ public:
     template<typename X, typename Y, typename Val>
     requires(is_all_integral_expr_v<X, Y> &&
              (is_uchar_element_expr_v<Val> || is_float_element_expr_v<Val>))
-    void write(const X &x, const Y &y, const Val &elm) noexcept {
-        make_expr<Texture>(expression()).write(x, y, elm);
+    void write(const Val &elm, const X &x, const Y &y) noexcept {
+        make_expr<Texture>(expression()).write(elm, x, y);
     }
 
     template<typename XY, typename Val>
     requires(is_uint_vector2_v<expr_value_t<XY>>)
-    void write(const XY &xy, const Val &elm) noexcept {
-        write(xy.x, xy.y, elm);
+    void write(const Val &elm, const XY &xy) noexcept {
+        write(elm, xy.x, xy.y);
     }
 
     [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }

@@ -20,8 +20,8 @@ int main(int argc, char *argv[]) {
 //    context.clear_cache();
     Device device = context.create_device("cuda");
     Stream stream = device.create_stream();
-    auto path1 = R"(D:\work\renderer\Vision\gallery\cbox-sss.png)";
-    auto path2 = R"(D:\work\renderer\Vision\gallery\cbox-sss.jpg)";
+    auto path1 = R"(D:\work\engine\Vision\gallery\cbox-sss.png)";
+    auto path2 = R"(D:\work\engine\Vision\gallery\cbox-sss.jpg)";
     auto image_io = ImageIO::load(path1, LINEAR);
 
     auto image = device.create_texture(image_io.resolution(), image_io.pixel_storage());
@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
             };
         };
         var /= count.cast<float>();
-        image_out.write(dispatch_idx().xy(), var);
+        image_out.write(var,dispatch_idx().xy());
     };
     kernel.function()->set_raytracing(true);
 //    kernel.function()->set_raytracing(false);
