@@ -21,17 +21,10 @@ void BindlessArray::set_texture(ocarina::handle_ty index, const ocarina::Texture
     impl()->set_texture(index, texture.tex_handle());
 }
 
-CommandList BindlessArray::upload_handles_sync() noexcept {
+CommandList BindlessArray::upload_handles(bool async) noexcept {
     CommandList ret;
-    ret.push_back(impl()->upload_buffer_handles_sync());
-    ret.push_back(impl()->upload_texture_handles_sync());
-    return ret;
-}
-
-CommandList BindlessArray::upload_handles() noexcept {
-    CommandList ret;
-    ret.push_back(impl()->upload_buffer_handles());
-    ret.push_back(impl()->upload_texture_handles());
+    ret.push_back(impl()->upload_buffer_handles(async));
+    ret.push_back(impl()->upload_texture_handles(async));
     return ret;
 }
 

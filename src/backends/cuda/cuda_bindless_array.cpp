@@ -85,19 +85,12 @@ size_t CUDABindlessArray::texture_num() const noexcept {
     return _textures.host_buffer().size();
 }
 
-BufferUploadCommand *CUDABindlessArray::upload_texture_handles() const noexcept {
-    return _textures.upload();
+BufferUploadCommand *CUDABindlessArray::upload_texture_handles(bool async) const noexcept {
+    return _textures.upload(async);
 }
 
-BufferUploadCommand *CUDABindlessArray::upload_buffer_handles() const noexcept {
-    return _buffers.upload();
+BufferUploadCommand *CUDABindlessArray::upload_buffer_handles(bool async) const noexcept {
+    return _buffers.upload(async);
 }
 
-BufferUploadCommand *CUDABindlessArray::upload_buffer_handles_sync() const noexcept {
-    return _buffers.upload_sync();
-}
-
-BufferUploadCommand *CUDABindlessArray::upload_texture_handles_sync() const noexcept {
-    return _textures.upload_sync();
-}
 }// namespace ocarina

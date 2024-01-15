@@ -84,7 +84,7 @@ int main(int argc, char *argv[]) {
     vv.upload_immediately();
     vv.register_self();
     ra.prepare_slotSOA(device);
-    stream << ra->upload_buffer_handles() << synchronize();
+    stream << ra->upload_buffer_handles(true) << synchronize();
 
 
 

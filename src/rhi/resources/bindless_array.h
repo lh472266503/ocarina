@@ -24,10 +24,8 @@ public:
         virtual void remove_texture(handle_ty index) noexcept = 0;
         virtual void set_buffer(handle_ty index, handle_ty handle, size_t size_in_byte) noexcept = 0;
         virtual void set_texture(handle_ty index, handle_ty handle) noexcept = 0;
-        [[nodiscard]] virtual BufferUploadCommand *upload_buffer_handles() const noexcept = 0;
-        [[nodiscard]] virtual BufferUploadCommand *upload_texture_handles() const noexcept = 0;
-        [[nodiscard]] virtual BufferUploadCommand *upload_buffer_handles_sync() const noexcept = 0;
-        [[nodiscard]] virtual BufferUploadCommand *upload_texture_handles_sync() const noexcept = 0;
+        [[nodiscard]] virtual BufferUploadCommand *upload_buffer_handles(bool async) const noexcept = 0;
+        [[nodiscard]] virtual BufferUploadCommand *upload_texture_handles(bool async) const noexcept = 0;
         virtual void prepare_slotSOA(Device &device) noexcept = 0;
         virtual CommandList update_slotSOA(bool async) noexcept = 0;
         [[nodiscard]] virtual size_t buffer_num() const noexcept = 0;
@@ -77,8 +75,7 @@ public:
     void set_texture(handle_ty index, const Texture &texture) noexcept;
     [[nodiscard]] uint buffer_num() const noexcept;
     [[nodiscard]] uint texture_num() const noexcept;
-    [[nodiscard]] CommandList upload_handles() noexcept;
-    [[nodiscard]] CommandList upload_handles_sync() noexcept;
+    [[nodiscard]] CommandList upload_handles(bool async = true) noexcept;
 
     /// for dsl
     [[nodiscard]] const Expression *expression() const noexcept override {

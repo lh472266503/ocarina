@@ -155,8 +155,8 @@ int main(int argc, char *argv[]) {
     stream << t_buffer.upload_sync(triangle.data());
 
     bindless_array.prepare_slotSOA(device);
-    stream << bindless_array->upload_buffer_handles() << synchronize();
-    stream << bindless_array->upload_texture_handles() << synchronize();
+    stream << bindless_array->upload_buffer_handles(true) << synchronize();
+    stream << bindless_array->upload_texture_handles(true) << synchronize();
 
     stream << cube.build_bvh();
 

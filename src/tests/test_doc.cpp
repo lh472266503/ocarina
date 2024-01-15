@@ -73,8 +73,8 @@ void test_compute_shader(Device &device, Stream &stream) {
     uint t_idx = bindless_array.emplace(tri);
 
     /// upload buffer and texture handle to device memory
-    stream << bindless_array->upload_buffer_handles() << synchronize();
-    stream << bindless_array->upload_texture_handles() << synchronize();
+    stream << bindless_array->upload_buffer_handles(true) << synchronize();
+    stream << bindless_array->upload_texture_handles(true) << synchronize();
 
     stream << vert.upload(vertices.data())
            << tri.upload(triangles.data());
@@ -164,7 +164,7 @@ void test_lambda(Device &device, Stream &stream) {
 
     BindlessArray bindless_array = device.create_bindless_array();
     uint v_idx = bindless_array.emplace(vert);
-    stream << bindless_array->upload_buffer_handles() << synchronize();
+    stream << bindless_array->upload_buffer_handles(true) << synchronize();
     stream << vert.upload(vertices.data())
            << tri.upload(triangles.data());
 

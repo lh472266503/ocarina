@@ -183,6 +183,11 @@ public:
     [[nodiscard]] auto read(Args &&...args) const noexcept {
         return Super::read<T>(OC_FORWARD(args)...);
     }
+
+    template<typename... Args>
+    void write(T &&elm, Args &&...args) noexcept {
+        Super::write(elm, OC_FORWARD(args)...);
+    }
 };
 
 }// namespace ocarina

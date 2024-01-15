@@ -40,10 +40,8 @@ public:
     void set_texture(ocarina::handle_ty index, ocarina::handle_ty handle) noexcept override;
     [[nodiscard]] size_t buffer_num() const noexcept override;
     [[nodiscard]] size_t texture_num() const noexcept override;
-    [[nodiscard]] BufferUploadCommand *upload_buffer_handles() const noexcept override;
-    [[nodiscard]] BufferUploadCommand *upload_texture_handles() const noexcept override;
-    [[nodiscard]] BufferUploadCommand *upload_buffer_handles_sync() const noexcept override;
-    [[nodiscard]] BufferUploadCommand *upload_texture_handles_sync() const noexcept override;
+    [[nodiscard]] BufferUploadCommand *upload_buffer_handles(bool async) const noexcept override;
+    [[nodiscard]] BufferUploadCommand *upload_texture_handles(bool async) const noexcept override;
 };
 
 }// namespace ocarina
