@@ -199,7 +199,13 @@ void test_lambda(Device &device, Stream &stream) {
 ////        triple = TTT();
 //        Float *p;
 //        Test tt;
-        Float aa;
+        Float aa = 5;
+        Float bb;
+        Callable cb = [&](Float a) {
+            bb = a + aa;
+            $info("{} ================ ", bb);
+        };
+        cb(aa);
 
 //        Float aa = $outline {
 //            Var aa = $outline {
@@ -211,7 +217,7 @@ void test_lambda(Device &device, Stream &stream) {
 //        };
 //        *p = 1.f;
 
-        $info("{} ================ ", aa);
+
 
         //        auto ld = Lambda([&] {
         //            Test test;

@@ -28,7 +28,7 @@ ocarina::stack<Function *> &Function::_function_stack() noexcept {
 }
 
 void Function::correct() noexcept {
-    FunctionCorrector().apply(this);
+//    FunctionCorrector().apply(this);
 }
 
 uint Function::exterior_expr_index(const ocarina::Expression *expression) const noexcept {

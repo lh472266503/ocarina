@@ -12,7 +12,7 @@ void FunctionCorrector::traverse(Function &function) noexcept {
 
 void FunctionCorrector::apply(Function *function) noexcept {
     _function_tack.push_back(function);
-//    traverse(*cur_func());
+    traverse(*cur_func());
     _function_tack.pop_back();
 }
 
