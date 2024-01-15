@@ -110,7 +110,6 @@ public:
     }
 };
 
-
 class ManagedTexture : public Texture, public ImageIO {
 public:
     using host_ty = ocarina::ImageIO;
@@ -118,6 +117,16 @@ public:
 
 public:
     ManagedTexture() = default;
+
+    [[nodiscard]] device_ty &device_tex() noexcept { return *this; }
+    [[nodiscard]] const device_ty &device_tex() const noexcept { return *this; }
+    [[nodiscard]] host_ty &host_tex() noexcept { return *this; }
+    [[nodiscard]] const host_ty &host_tex() const noexcept { return *this; }
+
+    void allocate_on_device(Device &device) noexcept {
+        device_tex() = device.create_texture(ImageIO::resolution(),
+                                             ImageIO::pixel_storage());
+    }
 
     void upload_immediately() const noexcept {
         device_ty::upload_immediately(pixel_ptr());
