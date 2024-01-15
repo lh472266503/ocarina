@@ -150,7 +150,6 @@ public:
     }
 };
 
-//todo
 class RegistrableTexture : public ManagedTexture, public Registrable {
 public:
     RegistrableTexture() = default;
@@ -169,6 +168,25 @@ public:
             (*_bindless_array)->remove_texture(_index.hv());
             _index = InvalidUI32;
         }
+    }
+
+    template<typename ...Args>
+    OC_NODISCARD auto sample(uint channel_num, Args &&...args) const noexcept {
+        if (has_registered()) {
+            return _bindless_array->tex(*_index).sample(channel_num, OC_FORWARD(args)...);
+        } else {
+            return Texture::sample(channel_num, OC_FORWARD(args)...);
+        }
+    }
+
+    template<typename Target, typename ...Args>
+    OC_NODISCARD auto read(Args &&...args) const noexcept {
+        return Texture::read<Target>(OC_FORWARD(args)...);
+    }
+
+    template<typename ...Args>
+    OC_NODISCARD auto write(Args &&...args) noexcept {
+        return Texture::write(OC_FORWARD(args)...);
     }
 };
 
