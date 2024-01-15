@@ -28,7 +28,7 @@ ocarina::stack<Function *> &Function::_function_stack() noexcept {
 }
 
 void Function::correct() noexcept {
-    //    FunctionCorrector().apply(this);
+    FunctionCorrector().apply(this);
 }
 
 uint Function::exterior_expr_index(const ocarina::Expression *expression) const noexcept {
@@ -55,7 +55,7 @@ void Function::process_expression(const Expression *&expression) noexcept {
     if (!is_exterior(expression)) {
         return;
     }
-    expression = replace_exterior_expression(expression);
+//    expression = replace_exterior_expression(expression);
 }
 
 const Expression *Function::replace_exterior_expression(const Expression *expression) noexcept {

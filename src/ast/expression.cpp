@@ -8,8 +8,7 @@
 namespace ocarina {
 
 void RefExpr::_mark(Usage usage) const noexcept {
-    Function::current()->mark_variable_usage(
-        _variable.uid(), usage);
+    const_cast<Function *>(context())->mark_variable_usage(_variable.uid(), usage);
 }
 
 uint64_t RefExpr::_compute_hash() const noexcept {
