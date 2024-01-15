@@ -35,7 +35,32 @@ void FunctionCorrector::capture_exterior(const Expression *&expression) noexcept
     expression = cur_func()->replace_exterior_expression(expression);
 }
 
+bool FunctionCorrector::DFS_traverse(const Function *function, const Function *target,
+                                     vector<const Function *> *path) noexcept {
+    path->push_back(function);
+    auto used_func = function->used_custom_func();
+    if (function == target) {
+        return true;
+    }
+    for (const auto &f : used_func) {
+        if (DFS_traverse(f.get(), target, path)) {
+            return true;
+        }
+    }
+    path->pop_back();
+    return false;
+}
+
+vector<const Function *> FunctionCorrector::find_invoke_path(Function *function,
+                                                             const Function *target) noexcept {
+    vector<const Function *> path;
+    DFS_traverse(function, target, &path);
+    return path;
+}
+
 void FunctionCorrector::leak_from_interior(const Expression *&expression) noexcept {
+    Function *function = cur_func();
+    vector<const Function *> path = find_invoke_path(function, expression->context());
 }
 
 void FunctionCorrector::visit_expr(const Expression *const &expression) noexcept {

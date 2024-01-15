@@ -200,12 +200,16 @@ void test_lambda(Device &device, Stream &stream) {
         Float *p;
 //        Test tt;
 
+        Float bb = $outline {
+            return 1.f;
+        };
+
         Float aa = $outline {
             Var aa = $outline {
+                p = new Float();
+                *p = end + end;
                 return end + end;
             };
-            p = new Float();
-            *p = end + end;
             return aa;
         };
 //        *p = 1.f;
