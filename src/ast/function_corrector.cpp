@@ -39,6 +39,9 @@ void FunctionCorrector::leak_from_interior(const Expression *&expression) noexce
 }
 
 void FunctionCorrector::visit_expr(const Expression *const &expression) noexcept {
+    if (expression == nullptr) {
+        return;
+    }
     if (expression->is_ref()) {
         process_ref_expr((const Expression *&)expression);
     } else if(expression->is_member()) {
