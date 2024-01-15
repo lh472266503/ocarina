@@ -169,49 +169,49 @@ void test_lambda(Device &device, Stream &stream) {
            << tri.upload(triangles.data());
 
     Kernel kernel = [&](Uint i) {
-        OCHit hit;
+//        OCHit hit;
+//
+//        Uint begin = 2;
+//        Uint end = 10;
+//        //        Uint end1 = 10;
+//        //        Uint end2 = 10;
+//        //        Uint end3 = 10;
+//        //        Uint end4 = 10;
+//        //        Uint end6 = 10;
+//
+//        //        Lambda func = [&](int i, float z, Float a) {
+//        //            $info("{}    {}   {}     ---------", i,z, a);
+//        ////            return a;
+//        //        };
+//        //
+//        //       func(1,2.f, Float(7.f));
+//        Var<TTT> triple{};
+//
+//        std::array<float, 3> a3;
+//
+//        Var<std::array<float, 3>> va3, va4;
+//
+//        va3 = va4;
+//
+//        Float3 a;
+//        float3 b;
+//        a = b;
+////        triple = TTT();
+//        Float *p;
+//        Test tt;
+        Float aa;
 
-        Uint begin = 2;
-        Uint end = 10;
-        //        Uint end1 = 10;
-        //        Uint end2 = 10;
-        //        Uint end3 = 10;
-        //        Uint end4 = 10;
-        //        Uint end6 = 10;
-
-        //        Lambda func = [&](int i, float z, Float a) {
-        //            $info("{}    {}   {}     ---------", i,z, a);
-        ////            return a;
-        //        };
-        //
-        //       func(1,2.f, Float(7.f));
-        Var<TTT> triple{};
-
-        std::array<float, 3> a3;
-
-        Var<std::array<float, 3>> va3, va4;
-
-        va3 = va4;
-
-        Float3 a;
-        float3 b;
-        a = b;
-//        triple = TTT();
-        Float *p;
-        Test tt;
-
-        Float aa = $outline {
-            Var aa = $outline {
-                return 1;
-            };
-//            p = new Float();
-//            *p = end + end;
-            Var ret = 1 + hit.prim_id;
-            return ret;
-        };
+//        Float aa = $outline {
+//            Var aa = $outline {
+//                return end + end;
+//            };
+////            p = new Float();
+////            *p = end + end;
+//            return aa;
+//        };
 //        *p = 1.f;
 
-//        $info("{} ================ {}", triple.triple.i , aa);
+        $info("{} ================ ", aa);
 
         //        auto ld = Lambda([&] {
         //            Test test;

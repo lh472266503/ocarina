@@ -103,24 +103,19 @@ void FunctionCorrector::visit(const BinaryExpr *expr) {
     visit_expr(expr->_rhs);
 }
 
-void FunctionCorrector::visit(const CallExpr *expr) {
+void FunctionCorrector::visit(const CallExpr *const_expr) {
+    CallExpr *expr = const_cast<CallExpr*>(const_expr);
     for (const Expression *const &arg : expr->_arguments) {
         visit_expr(arg);
     }
     if (expr->_function) {
         apply(const_cast<Function *>(expr->_function));
-        CallExpr *call_expr = const_cast<CallExpr*>(expr);
-        call_expr->_function->for_each_exterior_expr([&](const Expression *expression) {
-            auto e = expression;
+        expr->_function->for_each_exterior_expr([&](const Expression *expression) {
             if (expression->context() != cur_func()) {
-                e = cur_func()->replace_exterior_expression(expression);
+                expression = cur_func()->replace_exterior_expression(expression);
             }
-            call_expr->_arguments.push_back(e);
+            expr->_arguments.push_back(expression);
         });
-        if (expr->_function->description() == "Geometry::compute_surface_interaction") {
-            int i = 0;
-        }
-        int i = 0;
     }
 }
 
