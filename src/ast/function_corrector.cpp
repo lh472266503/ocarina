@@ -26,16 +26,6 @@ void FunctionCorrector::process_ref_expr(const Expression *&expression) noexcept
     }
 }
 
-void FunctionCorrector::process_member_expr(const Expression *&expression) noexcept {
-    if (expression->context() == cur_func()) {
-        return;
-    } else if (is_from_exterior(expression)) {
-        capture_exterior(expression);
-    } else {
-        leak_from_interior(expression);
-    }
-}
-
 bool FunctionCorrector::is_from_exterior(const Expression *expression) noexcept {
     return std::find(_function_tack.begin(), _function_tack.end(),
                      expression->context()) != _function_tack.end();
@@ -52,7 +42,7 @@ void FunctionCorrector::visit_expr(const Expression *const &expression) noexcept
     if (expression->is_ref()) {
         process_ref_expr((const Expression *&)expression);
     } else if(expression->is_member()) {
-        process_member_expr((const Expression *&)expression);
+        process_ref_expr((const Expression *&)expression);
     } else {
         expression->accept(*this);
     }
@@ -77,6 +67,7 @@ void FunctionCorrector::visit(const ForStmt *stmt) {
     visit_expr(stmt->_var);
     visit_expr(stmt->_condition);
     visit_expr(stmt->_step);
+    stmt->body()->accept(*this);
 }
 
 void FunctionCorrector::visit(const IfStmt *stmt) {
@@ -126,6 +117,10 @@ void FunctionCorrector::visit(const CallExpr *expr) {
             }
             call_expr->_arguments.push_back(e);
         });
+        if (expr->_function->description() == "Geometry::compute_surface_interaction") {
+            int i = 0;
+        }
+        int i = 0;
     }
 }
 

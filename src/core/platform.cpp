@@ -7,6 +7,7 @@
 #include <dbghelp.h>
 #include "fmt/format.h"
 #include "core/logging.h"
+#include "util.h"
 
 namespace ocarina {
 
@@ -29,6 +30,7 @@ namespace detail {
 
 void *dynamic_module_load(const fs::path &path) noexcept {
     auto path_string = path.string();
+    TIMER_TAG(dynamic_module_load, "load module: "+path.string())
     auto module = LoadLibraryA(path_string.c_str());
     if (module == nullptr) [[unlikely]] {
         OC_ERROR_FORMAT(
