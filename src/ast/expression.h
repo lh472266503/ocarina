@@ -212,9 +212,7 @@ private:
 
 private:
     void _mark(Usage usage) const noexcept override;
-    uint64_t _compute_hash() const noexcept override {
-        return _variable.hash();
-    }
+    uint64_t _compute_hash() const noexcept override;
 
 public:
     explicit RefExpr(const Variable &v) noexcept

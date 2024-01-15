@@ -12,9 +12,15 @@ void RefExpr::_mark(Usage usage) const noexcept {
         _variable.uid(), usage);
 }
 
+uint64_t RefExpr::_compute_hash() const noexcept {
+    Usage usage = context()->variable_usage(_variable.uid());
+    return hash64(_variable.hash(), to_underlying(usage));
+}
+
 uint64_t LiteralExpr::_compute_hash() const noexcept {
     return ocarina::visit([&](auto &&arg) { return hash64(OC_FORWARD(arg)); }, _value);
 }
+
 uint64_t SubscriptExpr::_compute_hash() const noexcept {
     uint64_t ret = _range->hash();
     for_each_index([&](const Expression *index) {

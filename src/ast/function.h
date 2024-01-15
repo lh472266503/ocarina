@@ -200,9 +200,8 @@ public:
             visitor(type);
         }
     }
-    void add_used_structure(const Type *type) noexcept {
-        _used_struct.add(type);
-    }
+    void add_used_structure(const Type *type) noexcept { _used_struct.add(type); }
+    [[nodiscard]] Usage variable_usage(uint uid) const noexcept;
     const CapturedVar &get_captured_var(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept;
     const CapturedVar &add_captured_var(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept;
     [[nodiscard]] bool has_captured_var(const void *handle) const noexcept;

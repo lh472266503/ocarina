@@ -28,7 +28,7 @@ ocarina::stack<Function *> &Function::_function_stack() noexcept {
 }
 
 void Function::correct() noexcept {
-//    FunctionCorrector().apply(this);
+    //    FunctionCorrector().apply(this);
 }
 
 uint Function::exterior_expr_index(const ocarina::Expression *expression) const noexcept {
@@ -91,6 +91,11 @@ uint Function::_next_variable_uid() noexcept {
     auto ret = _variable_usages.size();
     _variable_usages.push_back(Usage::NONE);
     return ret;
+}
+
+Usage Function::variable_usage(uint uid) const noexcept {
+    OC_ASSERT(uid < _variable_usages.size());
+    return _variable_usages[uid];
 }
 
 const Expression *Function::create_captured_argument(const Expression *expression) noexcept {
