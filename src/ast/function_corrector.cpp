@@ -43,9 +43,9 @@ void FunctionCorrector::visit_expr(const Expression *const &expression) noexcept
         return;
     }
     if (expression->is_ref()) {
-        process_ref_expr((const Expression *&)expression);
-    } else if(expression->is_member()) {
-        process_ref_expr((const Expression *&)expression);
+        process_ref_expr(const_cast<const Expression *&>(expression));
+    } else if (expression->is_member()) {
+        process_ref_expr(const_cast<const Expression *&>(expression));
     } else {
         expression->accept(*this);
     }
@@ -107,7 +107,7 @@ void FunctionCorrector::visit(const BinaryExpr *expr) {
 }
 
 void FunctionCorrector::visit(const CallExpr *const_expr) {
-    CallExpr *expr = const_cast<CallExpr*>(const_expr);
+    CallExpr *expr = const_cast<CallExpr *>(const_expr);
     for (const Expression *const &arg : expr->_arguments) {
         visit_expr(arg);
     }
