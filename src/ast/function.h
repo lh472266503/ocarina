@@ -104,32 +104,6 @@ private:
     void correct() noexcept;
     [[nodiscard]] uint exterior_expr_index(const Expression *expression) const noexcept;
     [[nodiscard]] const Expression *replace_exterior_expression(const Expression *expression) noexcept;
-    void process_expression(const Expression *&expression) noexcept;
-
-    template<std::size_t i = 0, typename... Args>
-    requires(i >= sizeof...(Args))
-    void traverse_tuple(std::tuple<Args...> &) noexcept {}
-    template<std::size_t i = 0, typename... Args>
-    requires(i < sizeof...(Args))
-    void traverse_tuple(std::tuple<Args...> &tuple) noexcept {
-        using element_ty = std::tuple_element_t<i, std::tuple<Args...>>;
-        using raw_type = typename std::remove_pointer_t<std::remove_cvref_t<element_ty>>;
-        auto &arg = std::get<i>(tuple);
-
-        if constexpr (std::is_same_v<std::remove_cvref_t<raw_type>, Expression>) {
-            process_expression(arg);
-        } else if constexpr (is_std_vector_v<element_ty>) {
-            using vec_element_ty = element_t<element_ty>;
-            using raw_element_type = typename std::remove_pointer_t<std::remove_cvref_t<vec_element_ty>>;
-            if constexpr (std::is_same_v<std::remove_cvref_t<raw_element_type>, Expression>) {
-                for (int j = 0; j < arg.size(); ++j) {
-                    auto &expression = const_cast<const Expression *&>(arg[j]);
-                    process_expression(expression);
-                }
-            }
-        }
-        traverse_tuple<i + 1>(tuple);
-    }
 
     template<typename Expr, typename Tuple, size_t... i>
     [[nodiscard]] auto _create_expression(Tuple &&tuple, std::index_sequence<i...>) {
@@ -144,7 +118,6 @@ private:
     [[nodiscard]] auto create_expression(Args &&...args) {
         using Tuple = std::tuple<std::remove_reference_t<Args>...>;
         Tuple tuple = Tuple{OC_FORWARD(args)...};
-        traverse_tuple(tuple);
         return _create_expression<Expr>(OC_FORWARD(tuple), std::index_sequence_for<Args...>());
     }
     [[nodiscard]] const RefExpr *_ref(const Variable &variable) noexcept;
@@ -164,7 +137,6 @@ private:
     auto create_statement(Args &&...args) {
         using Tuple = std::tuple<std::remove_reference_t<Args>...>;
         Tuple tuple = Tuple{OC_FORWARD(args)...};
-        traverse_tuple(tuple);
         return _create_statement<Stmt>(OC_FORWARD(tuple), std::index_sequence_for<Args...>());
     }
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;

@@ -248,10 +248,6 @@ public:
             arguments.push_back(var->expression());
         });
 
-        _function->for_each_exterior_expr([&](const Expression *expr) {
-            arguments.push_back(expr);
-        });
-
         const CallExpr *expr = Function::current()->call(Type::of<Ret>(), _function, arguments);
         comment(ocarina::format("call function {}", function()->description()));
         if constexpr (!std::is_same_v<std::remove_cvref_t<Ret>, void>) {
