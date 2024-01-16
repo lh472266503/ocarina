@@ -31,13 +31,6 @@ void Function::correct() noexcept {
     FunctionCorrector().apply(this);
 }
 
-uint Function::exterior_expr_index(const ocarina::Expression *expression) const noexcept {
-    return std::find(_exterior_expressions.begin(),
-                     _exterior_expressions.end(),
-                     expression) -
-           _exterior_expressions.begin();
-}
-
 void Function::mark_variable_usage(ocarina::uint uid, ocarina::Usage usage) noexcept {
     OC_ASSERT(uid < _variable_usages.size());
     auto old_usage = to_underlying(_variable_usages[uid]);
@@ -48,6 +41,22 @@ void Function::mark_variable_usage(ocarina::uint uid, ocarina::Usage usage) noex
     }
 }
 
+namespace detail {
+template<typename T, typename Elm>
+requires concepts::iterable<T>
+[[nodiscard]] uint find_index(T &&t, Elm &&elm) {
+    return std::find(OC_FORWARD(t).begin(),
+                     OC_FORWARD(t).end(),
+                     elm) -
+           OC_FORWARD(t).begin();
+}
+
+}// namespace detail
+
+uint Function::exterior_expr_index(const ocarina::Expression *expression) const noexcept {
+    return detail::find_index(_exterior_expressions, expression);
+}
+
 const Expression *Function::replace_exterior_expression(const Expression *expression) noexcept {
     int index = exterior_expr_index(expression);
     if (index == _exterior_expressions.size()) {
@@ -55,6 +64,20 @@ const Expression *Function::replace_exterior_expression(const Expression *expres
         return create_captured_argument(expression);
     } else {
         return _ref(_captured_arguments.at(index));
+    }
+}
+
+uint Function::output_expr_index(const Expression *expression) const noexcept {
+    return detail::find_index(_output_expressions, expression);
+}
+
+const Expression *Function::replace_output_expression(const Expression *expression) noexcept {
+    int index = output_expr_index(expression);
+    if (index == _output_expressions.size()) {
+        _output_expressions.push_back(expression);
+        return create_output_argument(expression);
+    } else {
+        return _ref(_output_arguments.at(index));
     }
 }
 

@@ -106,7 +106,8 @@ private:
     void correct() noexcept;
     [[nodiscard]] uint exterior_expr_index(const Expression *expression) const noexcept;
     [[nodiscard]] const Expression *replace_exterior_expression(const Expression *expression) noexcept;
-
+    [[nodiscard]] uint output_expr_index(const Expression *expression) const noexcept;
+    [[nodiscard]] const Expression *replace_output_expression(const Expression *expression) noexcept;
     template<typename Expr, typename Tuple, size_t... i>
     [[nodiscard]] auto _create_expression(Tuple &&tuple, std::index_sequence<i...>) {
         auto expr = ocarina::make_unique<Expr>(std::get<i>(OC_FORWARD(tuple))...);
