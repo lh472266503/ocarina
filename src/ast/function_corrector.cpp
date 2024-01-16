@@ -35,8 +35,9 @@ void FunctionCorrector::capture_exterior(const Expression *&expression) noexcept
     expression = cur_func()->replace_exterior_expression(expression);
 }
 
-bool FunctionCorrector::DFS_traverse(const Function *function, const Function *target,
-                                     vector<const Function *> *path) noexcept {
+namespace detail {
+bool DFS_traverse(const Function *function, const Function *target,
+                  vector<const Function *> *path) noexcept {
     path->push_back(function);
     auto used_func = function->used_custom_func();
     if (function == target) {
@@ -51,16 +52,17 @@ bool FunctionCorrector::DFS_traverse(const Function *function, const Function *t
     return false;
 }
 
-vector<const Function *> FunctionCorrector::find_invoke_path(Function *function,
-                                                             const Function *target) noexcept {
+vector<const Function *> find_invoke_path(Function *function,
+                                          const Function *target) noexcept {
     vector<const Function *> path;
-    DFS_traverse(function, target, &path);
+    detail::DFS_traverse(function, target, &path);
     return path;
 }
+}// namespace detail
 
 void FunctionCorrector::leak_from_interior(const Expression *&expression) noexcept {
     Function *function = cur_func();
-    vector<const Function *> path = find_invoke_path(function, expression->context());
+    vector<const Function *> path = detail::find_invoke_path(function, expression->context());
 }
 
 void FunctionCorrector::visit_expr(const Expression *const &expression) noexcept {

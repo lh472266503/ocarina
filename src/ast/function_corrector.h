@@ -40,11 +40,6 @@ private:
 
     [[nodiscard]] Function *cur_func() noexcept { return _function_tack.back(); }
 
-    bool DFS_traverse(const Function *function, const Function *target,
-                      vector<const Function *> *path) noexcept;
-    [[nodiscard]] vector<const Function *> find_invoke_path(Function *function,
-                                                            const Function *target) noexcept;
-
     void traverse(Function &function) noexcept;
     void process_ref_expr(const Expression *&expression) noexcept;
     void visit_expr(const Expression *const &expression) noexcept;
