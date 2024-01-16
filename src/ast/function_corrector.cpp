@@ -22,7 +22,7 @@ void FunctionCorrector::process_ref_expr(const Expression *&expression) noexcept
     } else if (is_from_exterior(expression)) {
         capture_exterior(expression);
     } else {
-        leak_from_interior(expression);
+        output_from_interior(expression);
     }
 }
 
@@ -60,9 +60,17 @@ vector<const Function *> find_invoke_path(Function *function,
 }
 }// namespace detail
 
-void FunctionCorrector::leak_from_interior(const Expression *&expression) noexcept {
+void FunctionCorrector::output_from_interior(const Expression *&expression) noexcept {
     Function *function = cur_func();
-    vector<const Function *> path = detail::find_invoke_path(function, expression->context());
+    Function *context = const_cast<Function *>(expression->context());
+    vector<const Function *> path = detail::find_invoke_path(function, context);
+
+    /// Appends an output parameter
+    auto process_target = [&](Function *target) {
+
+    };
+
+    process_target(context);
 }
 
 void FunctionCorrector::visit_expr(const Expression *const &expression) noexcept {

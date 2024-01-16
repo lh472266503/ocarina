@@ -94,6 +94,12 @@ const Expression *Function::create_captured_argument(const Expression *expressio
     return _ref(variable);
 }
 
+const Expression *Function::create_output_argument(const Expression *expression) noexcept {
+    Variable variable(expression->type(), Variable::Tag::REFERENCE, _next_variable_uid());
+    _output_arguments.push_back(variable);
+    return _ref(variable);
+}
+
 void Function::return_(const Expression *expression) noexcept {
     if (expression) {
         _ret = expression->type();
@@ -392,6 +398,9 @@ uint64_t Function::_compute_hash() const noexcept {
         ret = hash64(ret, v.hash());
     }
     for (const CapturedVar &v : _captured_vars) {
+        ret = hash64(ret, v.hash());
+    }
+    for (const Variable &v : _output_arguments) {
         ret = hash64(ret, v.hash());
     }
     ret = hash64(ret, _body.hash());

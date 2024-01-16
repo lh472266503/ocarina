@@ -65,6 +65,7 @@ private:
     const Type *_ret{nullptr};
     ocarina::vector<ocarina::unique_ptr<Expression>> _all_expressions;
     ocarina::vector<const Expression *> _exterior_expressions;
+    ocarina::vector<const Expression *> _output_expressions;
     ocarina::vector<ocarina::unique_ptr<Statement>> _all_statements;
     ocarina::vector<Variable> _arguments;
     ocarina::vector<Variable> _captured_arguments;
@@ -91,6 +92,7 @@ private:
     static void _pop(Function *f);
     [[nodiscard]] uint _next_variable_uid() noexcept;
     [[nodiscard]] const Expression *create_captured_argument(const Expression *expression) noexcept;
+    [[nodiscard]] const Expression *create_output_argument(const Expression *expression) noexcept;
 
     template<typename Func>
     static shared_ptr<Function> _define(Function::Tag tag, Func &&func) noexcept {

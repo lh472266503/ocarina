@@ -47,7 +47,7 @@ private:
     [[nodiscard]] bool is_from_exterior(const Expression *expression) noexcept;
     void capture_exterior(const Expression *&expression) noexcept;
 
-    void leak_from_interior(const Expression *&expression) noexcept;
+    void output_from_interior(const Expression *&expression) noexcept;
 
 public:
     explicit FunctionCorrector() = default;
