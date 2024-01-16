@@ -38,31 +38,40 @@ public:
     [[nodiscard]] static bool is_printer_enabled() noexcept { return printer().enabled(); }
     template<typename T>
     requires is_scalar_expr_v<T> || is_vector_expr_v<T>
-    [[nodiscard]] T zero_if_nan_inf(T &&value) const noexcept {
+    [[nodiscard]] T zero_if_nan_inf(T value) const noexcept {
         if (!valid_check()) {
-            return OC_FORWARD(value);
+            return value;
         }
+        T ret = value;
         string tb = traceback_string(-1);
         if constexpr (is_scalar_expr_v<T>) {
             string content = ocarina::format("traceback is {}", tb.c_str());
             if_(ocarina::isnan(value) || ocarina::isinf(value), [&] {
                 $err_with_location("invalid value : {} \n" + content, value);
+                ret = 0.f;
             });
+            return ret;
         } else if constexpr (is_vector2_expr_v<T>) {
             string content = ocarina::format("traceback is {}", tb.c_str());
             if_(ocarina::has_nan(value) || ocarina::has_inf(value), [&] {
                 $err_with_location("invalid value : ({}, {}) \n" + content, value);
+                ret = make_float2(0.f);
             });
+            return ret;
         } else if constexpr (is_vector3_expr_v<T>) {
             string content = ocarina::format("traceback is {}", tb.c_str());
             if_(ocarina::has_nan(value) || ocarina::has_inf(value), [&] {
                 $err_with_location("invalid value : ({}, {}, {}) \n" + content, value);
+                ret = make_float3(0.f);
             });
+            return ret;
         } else if constexpr (is_vector4_expr_v<T>) {
             string content = ocarina::format("traceback is {}", tb.c_str());
             if_(ocarina::has_nan(value) || ocarina::has_inf(value), [&] {
                 $err_with_location("invalid value : ({}, {}, {}, {}) \n" + content, value);
+                ret = make_float4(0.f);
             });
+            return ret;
         }
     }
     static void set_printer_enabled(bool enabled) noexcept { printer().set_enabled(enabled); }
