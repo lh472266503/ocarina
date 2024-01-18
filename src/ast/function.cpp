@@ -71,13 +71,14 @@ uint Function::output_expr_index(const Expression *expression) const noexcept {
     return detail::find_index(_output_expressions, expression);
 }
 
-const Expression *Function::replace_output_expression(const Expression *expression) noexcept {
+void Function::append_output_argument(const ocarina::Expression *expression) noexcept {
     int index = output_expr_index(expression);
     if (index == _output_expressions.size()) {
         _output_expressions.push_back(expression);
-        return create_output_argument(expression);
-    } else {
-        return _ref(_output_arguments.at(index));
+        const Expression *output_argument = create_output_argument(expression);
+        with(body(), [&] {
+            assign(output_argument, expression);
+        });
     }
 }
 
@@ -385,6 +386,10 @@ ocarina::span<const Variable> Function::arguments() const noexcept {
 
 ocarina::span<const Variable> Function::captured_arguments() const noexcept {
     return _captured_arguments;
+}
+
+ocarina::span<const Variable> Function::output_arguments() const noexcept {
+    return _output_arguments;
 }
 
 ocarina::span<const Variable> Function::builtin_vars() const noexcept {

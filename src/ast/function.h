@@ -109,7 +109,7 @@ private:
     [[nodiscard]] uint exterior_expr_index(const Expression *expression) const noexcept;
     [[nodiscard]] const Expression *replace_exterior_expression(const Expression *expression) noexcept;
     [[nodiscard]] uint output_expr_index(const Expression *expression) const noexcept;
-    [[nodiscard]] const Expression *replace_output_expression(const Expression *expression) noexcept;
+    void append_output_argument(const Expression *expression) noexcept;
     template<typename Expr, typename Tuple, size_t... i>
     [[nodiscard]] auto _create_expression(Tuple &&tuple, std::index_sequence<i...>) {
         auto expr = ocarina::make_unique<Expr>(std::get<i>(OC_FORWARD(tuple))...);
@@ -288,6 +288,7 @@ public:
     [[nodiscard]] ScopeStmt *body() noexcept;
     [[nodiscard]] ocarina::span<const Variable> arguments() const noexcept;
     [[nodiscard]] ocarina::span<const Variable> captured_arguments() const noexcept;
+    [[nodiscard]] ocarina::span<const Variable> output_arguments() const noexcept;
     [[nodiscard]] ocarina::span<const Variable> builtin_vars() const noexcept;
     [[nodiscard]] constexpr Tag tag() const noexcept { return _tag; }
     [[nodiscard]] constexpr bool is_callable() const noexcept { return _tag == Tag::CALLABLE; }

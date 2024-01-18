@@ -65,11 +65,14 @@ void FunctionCorrector::output_from_interior(const Expression *&expression) noex
     Function *context = const_cast<Function *>(expression->context());
     vector<const Function *> path = detail::find_invoke_path(function, context);
 
-    /// Appends an output parameter
-    auto process_target = [&](Function *target) {
-        
-    };
-    process_target(context);
+    std::reverse(path.begin(), path.end());
+
+    for (int i = 0; i < path.size() - 1; ++i) {
+        Function *func = const_cast<Function *>(path[i]);
+        func->append_output_argument(expression);
+        Function *invoker = const_cast<Function *>(path[i + 1]);
+    }
+
 }
 
 void FunctionCorrector::visit_expr(const Expression *const &expression) noexcept {
