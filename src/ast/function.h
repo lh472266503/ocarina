@@ -18,6 +18,7 @@ namespace ocarina {
 class Statement;
 class ScopeStmt;
 class RefExpr;
+class CallExpr;
 class IfStmt;
 
 class CapturedVar : public Hashable {
@@ -63,6 +64,7 @@ public:
 private:
     mutable string _description{};
     const Type *_ret{nullptr};
+    const CallExpr *_call_expr{nullptr};
     ocarina::vector<ocarina::unique_ptr<Expression>> _all_expressions;
     ocarina::vector<const Expression *> _exterior_expressions;
     ocarina::vector<const Expression *> _output_expressions;
@@ -159,6 +161,8 @@ private:
     };
 
 public:
+    void set_call_expression(const CallExpr *call_expr) noexcept { _call_expr = call_expr; }
+    [[nodiscard]] const CallExpr *call_expr() const noexcept { return _call_expr; }
     void set_description(string desc) const noexcept { _description = ocarina::move(desc); }
     [[nodiscard]] string &description() const noexcept { return _description; }
     [[nodiscard]] ocarina::span<SP<const Function> const> used_custom_func() const noexcept { return _used_custom_func; }

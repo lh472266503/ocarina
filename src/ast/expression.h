@@ -285,10 +285,7 @@ private:
 
 public:
     CallExpr(const Type *type, const Function *func,
-             ocarina::vector<const Expression *> &&args)
-        : Expression(Tag::CALL, type),
-          _function(func),
-          _arguments(std::move(args)) {}
+             ocarina::vector<const Expression *> &&args);
     CallExpr(const Type *type, CallOp op,
              ocarina::vector<const Expression *> &&args,
              ocarina::vector<Template> &&t_args = {})

@@ -67,9 +67,8 @@ void FunctionCorrector::output_from_interior(const Expression *&expression) noex
 
     /// Appends an output parameter
     auto process_target = [&](Function *target) {
-
+        
     };
-
     process_target(context);
 }
 

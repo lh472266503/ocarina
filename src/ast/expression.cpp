@@ -57,6 +57,14 @@ uint64_t MemberExpr::_compute_hash() const noexcept {
     return hash64(hash64(_member_index, _swizzle_size), _parent->hash());
 }
 
+CallExpr::CallExpr(const Type *type, const Function *func,
+                   vector<const Expression *> &&args)
+    : Expression(Tag::CALL, type),
+      _function(func),
+      _arguments(std::move(args)) {
+    const_cast<Function *>(_function)->set_call_expression(this);
+}
+
 uint64_t CallExpr::_compute_hash() const noexcept {
     uint64_t ret = _function ? _function->hash() : Hash64::default_seed;
     ret = hash64(_call_op, ret);
