@@ -50,7 +50,7 @@ void FunctionCorrector::output_from_interior(const Expression *&expression) noex
         const RefExpr *ref_expr = nullptr;
         if (invoker == cur_func()) {
             // add a local variable
-            if (!invoker->has_mapped(expression)) {
+            if (!invoker->contain_invoked_func_expr(expression)) {
                 ref_expr = invoker->mapping_local_variable(expression);
                 call_expr->append_argument(ref_expr);
             } else {
@@ -60,7 +60,7 @@ void FunctionCorrector::output_from_interior(const Expression *&expression) noex
             break;
         } else {
             // add a reference output argument
-            if (!invoker->has_mapped(expression)) {
+            if (!invoker->has_mapped_output_argument(expression)) {
                 ref_expr = invoker->mapping_output_argument(expression);
                 call_expr->append_argument(ref_expr);
             }

@@ -75,6 +75,10 @@ const RefExpr *Function::mapping_captured_argument(const Expression *exterior_ex
     return _ref(_captured_arguments.at(index));
 }
 
+bool Function::has_mapped_output_argument(const Expression *expression) const noexcept {
+    return output_expr_index(expression) < _output_expressions.size();
+}
+
 const RefExpr *Function::mapping_output_argument(const Expression *expression) noexcept {
     int index = output_expr_index(expression);
     if (index == _output_expressions.size()) {
@@ -95,7 +99,7 @@ void Function::append_output_argument(const Expression *expression) noexcept {
     }
 }
 
-bool Function::has_mapped(const Expression *invoked_func_expr) const noexcept {
+bool Function::contain_invoked_func_expr(const Expression *invoked_func_expr) const noexcept {
     return invoked_function_expr_index(invoked_func_expr) < _invoked_function_expressions.size();
 }
 

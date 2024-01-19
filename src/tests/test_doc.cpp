@@ -217,7 +217,7 @@ void test_lambda(Device &device, Stream &stream) {
         };
 //        *p = 1.f;
 
-        $info("{} -----{}   --------", *p, *p);
+        $info("{} -----{}   -------  {}   -", *p, *p, *p1);
 
         //        auto ld = Lambda([&] {
         //            Test test;

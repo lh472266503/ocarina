@@ -121,7 +121,8 @@ private:
     [[nodiscard]] uint invoked_function_expr_index(const Expression *expression) const noexcept;
     void append_output_argument(const Expression *expression) noexcept;
     [[nodiscard]] const RefExpr *mapping_local_variable(const Expression *expression) noexcept;
-    [[nodiscard]] bool has_mapped(const Expression *invoked_func_expr) const noexcept;
+    [[nodiscard]] bool contain_invoked_func_expr(const Expression *invoked_func_expr) const noexcept;
+    [[nodiscard]] bool has_mapped_output_argument(const Expression *expression) const noexcept;
     template<typename Expr, typename Tuple, size_t... i>
     [[nodiscard]] auto _create_expression(Tuple &&tuple, std::index_sequence<i...>) {
         auto expr = ocarina::make_unique<Expr>(std::get<i>(OC_FORWARD(tuple))...);
