@@ -75,24 +75,24 @@ const RefExpr *Function::mapping_captured_argument(const Expression *exterior_ex
     return _ref(_captured_arguments.at(index));
 }
 
-void Function::append_output_argument(const Expression *expression) noexcept {
+const RefExpr *Function::mapping_output_argument(const Expression *expression) noexcept {
     int index = output_expr_index(expression);
     if (index == _output_expressions.size()) {
         _output_expressions.push_back(expression);
-        const Expression *output_argument = create_output_argument(expression);
+        Variable variable(expression->type(), Variable::Tag::REFERENCE, _next_variable_uid());
+        _output_arguments.push_back(variable);
+    }
+    return _ref(_output_arguments.at(index));
+}
+
+void Function::append_output_argument(const Expression *expression) noexcept {
+    int index = output_expr_index(expression);
+    if (index == _output_expressions.size()) {
+        const Expression *output_argument = mapping_output_argument(expression);
         with(body(), [&] {
             assign(output_argument, expression);
         });
     }
-}
-
-const RefExpr *Function::mapping_output_variable(const Expression *expression) noexcept {
-    int index = output_expr_index(expression);
-    if (index == _output_expressions.size()) {
-        _output_expressions.push_back(expression);
-    }
-
-    return nullptr;
 }
 
 const RefExpr *Function::mapping_local_variable(const Expression *expression) noexcept {
@@ -132,12 +132,6 @@ uint Function::_next_variable_uid() noexcept {
 Usage Function::variable_usage(uint uid) const noexcept {
     OC_ASSERT(uid < _variable_usages.size());
     return _variable_usages[uid];
-}
-
-const RefExpr *Function::create_output_argument(const Expression *expression) noexcept {
-    Variable variable(expression->type(), Variable::Tag::REFERENCE, _next_variable_uid());
-    _output_arguments.push_back(variable);
-    return _ref(variable);
 }
 
 void Function::return_(const Expression *expression) noexcept {

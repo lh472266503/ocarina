@@ -55,7 +55,7 @@ void FunctionCorrector::output_from_interior(const Expression *&expression) noex
             break;
         } else {
             // add a reference output argument
-            ref_expr = invoker->mapping_output_variable(expression);
+            ref_expr = invoker->mapping_output_argument(expression);
             call_expr->append_argument(ref_expr);
         }
         invoked_func = invoker;

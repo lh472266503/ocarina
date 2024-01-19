@@ -103,7 +103,7 @@ private:
     static void _push(Function *f);
     static void _pop(Function *f);
     [[nodiscard]] uint _next_variable_uid() noexcept;
-    [[nodiscard]] const RefExpr *create_output_argument(const Expression *expression) noexcept;
+    [[nodiscard]] const RefExpr *mapping_output_argument(const Expression *expression) noexcept;
 
     template<typename Func>
     static shared_ptr<Function> _define(Function::Tag tag, Func &&func) noexcept {
@@ -120,7 +120,6 @@ private:
     [[nodiscard]] uint output_expr_index(const Expression *expression) const noexcept;
     [[nodiscard]] uint invoked_function_expr_index(const Expression *expression) const noexcept;
     void append_output_argument(const Expression *expression) noexcept;
-    [[nodiscard]] const RefExpr *mapping_output_variable(const Expression *expression) noexcept;
     [[nodiscard]] const RefExpr *mapping_local_variable(const Expression *expression) noexcept;
     template<typename Expr, typename Tuple, size_t... i>
     [[nodiscard]] auto _create_expression(Tuple &&tuple, std::index_sequence<i...>) {
