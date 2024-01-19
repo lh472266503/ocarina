@@ -88,11 +88,11 @@ void Function::append_output_argument(const ocarina::Expression *expression) noe
 
 const RefExpr *Function::mapping_local_variable(const Expression *expression) noexcept {
     uint index = invoked_function_expr_index(expression);
-//    if (index == _invoked_function_expressions.size()) {
-        Variable variable(expression->type(), Variable::Tag::LOCAL, _next_variable_uid());
-        return _ref(variable);
-//    }
-
+    if (index == _invoked_function_expressions.size()) {
+        Variable variable = Variable(expression->type(), Variable::Tag::LOCAL, _next_variable_uid());
+        _from_invoked_variables.push_back(variable);
+    }
+    return _ref(_from_invoked_variables[index]);
 }
 
 Function::~Function() {

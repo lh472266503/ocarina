@@ -66,14 +66,22 @@ private:
     const Type *_ret{nullptr};
     const CallExpr *_call_expr{nullptr};
     ocarina::vector<ocarina::unique_ptr<Expression>> _all_expressions;
+
+    /// exterior expression captured by current function
     ocarina::vector<const Expression *> _exterior_expressions;
+    ocarina::vector<Variable> _captured_arguments;
+
+    /// expression output to invoker of current function
     ocarina::vector<const Expression *> _output_expressions;
+    ocarina::vector<Variable> _output_arguments;
+
     /// expressions from variable of interior invoked function
     ocarina::vector<const Expression *> _invoked_function_expressions;
+    ocarina::vector<Variable> _from_invoked_variables;
+
     ocarina::vector<ocarina::unique_ptr<Statement>> _all_statements;
     ocarina::vector<Variable> _arguments;
-    ocarina::vector<Variable> _captured_arguments;
-    ocarina::vector<Variable> _output_arguments;
+
     ocarina::vector<CapturedVar> _captured_vars;
     ocarina::vector<Variable> _builtin_vars;
     ocarina::vector<Usage> _variable_usages;
