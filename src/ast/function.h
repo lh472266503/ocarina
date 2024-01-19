@@ -71,6 +71,10 @@ private:
     ocarina::vector<const Expression *> _exterior_expressions;
     ocarina::vector<Variable> _captured_arguments;
 
+    /// expression of invoked function
+    ocarina::vector<const Expression *> _invoked_function_expr;
+    ocarina::map<const Expression *, const RefExpr *> _output_argument_map;
+    ocarina::map<const Expression *, const RefExpr *> _local_map;
     /// output to invoker of current function
     ocarina::vector<Variable> _output_arguments;
 
@@ -98,7 +102,6 @@ private:
     static void _push(Function *f);
     static void _pop(Function *f);
     [[nodiscard]] uint _next_variable_uid() noexcept;
-    [[nodiscard]] const RefExpr *mapping_output_argument(const Expression *expression) noexcept;
 
     template<typename Func>
     static shared_ptr<Function> _define(Function::Tag tag, Func &&func) noexcept {
@@ -112,12 +115,8 @@ private:
     void correct() noexcept;
     [[nodiscard]] uint exterior_expr_index(const Expression *expression) const noexcept;
     [[nodiscard]] const RefExpr *mapping_captured_argument(const Expression *exterior_expr) noexcept;
-    [[nodiscard]] uint output_expr_index(const Expression *expression) const noexcept;
-    [[nodiscard]] uint invoked_function_expr_index(const Expression *expression) const noexcept;
-    void append_output_argument(const Expression *expression) noexcept;
-    [[nodiscard]] const RefExpr *mapping_local_variable(const Expression *expression) noexcept;
-    [[nodiscard]] bool contain_invoked_func_expr(const Expression *invoked_func_expr) const noexcept;
-    [[nodiscard]] bool has_mapped_output_argument(const Expression *expression) const noexcept;
+    [[nodiscard]] const RefExpr *mapping_local_variable(const Expression *invoked_func_expr) noexcept;
+    [[nodiscard]] const RefExpr *mapping_output_argument(const Expression *invoked_func_expr) noexcept;
     template<typename Expr, typename Tuple, size_t... i>
     [[nodiscard]] auto _create_expression(Tuple &&tuple, std::index_sequence<i...>) {
         auto expr = ocarina::make_unique<Expr>(std::get<i>(OC_FORWARD(tuple))...);

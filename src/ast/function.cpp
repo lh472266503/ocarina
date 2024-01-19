@@ -67,6 +67,24 @@ const RefExpr *Function::mapping_captured_argument(const Expression *exterior_ex
     return _ref(_captured_arguments.at(index));
 }
 
+const RefExpr *Function::mapping_local_variable(const Expression *invoked_func_expr) noexcept {
+    if (!_local_map.contains(invoked_func_expr)) {
+        Variable variable(invoked_func_expr->type(), Variable::Tag::REFERENCE, _next_variable_uid());
+        const RefExpr *ref_expr = _ref(variable);
+        _local_map.insert(make_pair(invoked_func_expr, ref_expr));
+    }
+    return _local_map.at(invoked_func_expr);
+}
+
+const RefExpr *Function::mapping_output_argument(const Expression *invoked_func_expr) noexcept {
+    if (!_output_argument_map.contains(invoked_func_expr)) {
+        Variable variable(invoked_func_expr->type(), Variable::Tag::REFERENCE, _next_variable_uid());
+        const RefExpr *ref_expr = _ref(variable);
+        _output_argument_map.insert(make_pair(invoked_func_expr, ref_expr));
+    }
+    return _output_argument_map.at(invoked_func_expr);
+}
+
 Function::~Function() {
     for (auto &mem : _temp_memory) {
         delete_with_allocator(mem.first);
