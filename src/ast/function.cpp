@@ -68,11 +68,11 @@ uint Function::invoked_function_expr_index(const ocarina::Expression *expression
 const RefExpr *Function::mapping_captured_argument(const Expression *exterior_expr) noexcept {
     int index = exterior_expr_index(exterior_expr);
     if (index == _exterior_expressions.size()) {
+        Variable variable(exterior_expr->type(), Variable::Tag::REFERENCE, _next_variable_uid());
         _exterior_expressions.push_back(exterior_expr);
-        return create_captured_argument(exterior_expr);
-    } else {
-        return _ref(_captured_arguments.at(index));
+        _captured_arguments.push_back(variable);
     }
+    return _ref(_captured_arguments.at(index));
 }
 
 void Function::append_output_argument(const ocarina::Expression *expression) noexcept {
@@ -123,12 +123,6 @@ uint Function::_next_variable_uid() noexcept {
 Usage Function::variable_usage(uint uid) const noexcept {
     OC_ASSERT(uid < _variable_usages.size());
     return _variable_usages[uid];
-}
-
-const RefExpr *Function::create_captured_argument(const Expression *expression) noexcept {
-    Variable variable(expression->type(), Variable::Tag::REFERENCE, _next_variable_uid());
-    _captured_arguments.push_back(variable);
-    return _ref(variable);
 }
 
 const RefExpr *Function::create_output_argument(const Expression *expression) noexcept {

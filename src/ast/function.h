@@ -103,7 +103,6 @@ private:
     static void _push(Function *f);
     static void _pop(Function *f);
     [[nodiscard]] uint _next_variable_uid() noexcept;
-    [[nodiscard]] const RefExpr *create_captured_argument(const Expression *expression) noexcept;
     [[nodiscard]] const RefExpr *create_output_argument(const Expression *expression) noexcept;
 
     template<typename Func>
