@@ -117,7 +117,7 @@ private:
 
     void correct() noexcept;
     [[nodiscard]] uint exterior_expr_index(const Expression *expression) const noexcept;
-    [[nodiscard]] const RefExpr *replace_exterior_expression(const Expression *expression) noexcept;
+    [[nodiscard]] const RefExpr *mapping_captured_argument(const Expression *exterior_expr) noexcept;
     [[nodiscard]] uint output_expr_index(const Expression *expression) const noexcept;
     [[nodiscard]] uint invoked_function_expr_index(const Expression *expression) const noexcept;
     void append_output_argument(const Expression *expression) noexcept;

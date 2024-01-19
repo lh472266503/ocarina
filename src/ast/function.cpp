@@ -65,11 +65,11 @@ uint Function::invoked_function_expr_index(const ocarina::Expression *expression
     return detail::find_index(_invoked_function_expressions, expression);
 }
 
-const RefExpr *Function::replace_exterior_expression(const Expression *expression) noexcept {
-    int index = exterior_expr_index(expression);
+const RefExpr *Function::mapping_captured_argument(const Expression *exterior_expr) noexcept {
+    int index = exterior_expr_index(exterior_expr);
     if (index == _exterior_expressions.size()) {
-        _exterior_expressions.push_back(expression);
-        return create_captured_argument(expression);
+        _exterior_expressions.push_back(exterior_expr);
+        return create_captured_argument(exterior_expr);
     } else {
         return _ref(_captured_arguments.at(index));
     }
