@@ -57,14 +57,6 @@ uint Function::exterior_expr_index(const ocarina::Expression *expression) const 
     return detail::find_index(_exterior_expressions, expression);
 }
 
-uint Function::output_expr_index(const Expression *expression) const noexcept {
-    return detail::find_index(_output_expressions, expression);
-}
-
-uint Function::invoked_function_expr_index(const ocarina::Expression *expression) const noexcept {
-    return detail::find_index(_invoked_function_expressions, expression);
-}
-
 const RefExpr *Function::mapping_captured_argument(const Expression *exterior_expr) noexcept {
     int index = exterior_expr_index(exterior_expr);
     if (index == _exterior_expressions.size()) {
@@ -73,45 +65,6 @@ const RefExpr *Function::mapping_captured_argument(const Expression *exterior_ex
         _captured_arguments.push_back(variable);
     }
     return _ref(_captured_arguments.at(index));
-}
-
-bool Function::has_mapped_output_argument(const Expression *expression) const noexcept {
-    return output_expr_index(expression) < _output_expressions.size();
-}
-
-const RefExpr *Function::mapping_output_argument(const Expression *expression) noexcept {
-    int index = output_expr_index(expression);
-    if (index == _output_expressions.size()) {
-        _output_expressions.push_back(expression);
-        Variable variable(expression->type(), Variable::Tag::REFERENCE, _next_variable_uid());
-        _output_arguments.push_back(variable);
-    }
-    return _ref(_output_arguments.at(index));
-}
-
-void Function::append_output_argument(const Expression *expression) noexcept {
-    int index = output_expr_index(expression);
-    if (index == _output_expressions.size()) {
-        const Expression *output_argument = mapping_output_argument(expression);
-        with(body(), [&] {
-            assign(output_argument, expression);
-        });
-    }
-}
-
-bool Function::contain_invoked_func_expr(const Expression *invoked_func_expr) const noexcept {
-    return invoked_function_expr_index(invoked_func_expr) < _invoked_function_expressions.size();
-}
-
-const RefExpr *Function::mapping_local_variable(const Expression *expression) noexcept {
-    uint index = invoked_function_expr_index(expression);
-    if (index == _invoked_function_expressions.size()) {
-        Variable variable = Variable(expression->type(), Variable::Tag::LOCAL, _next_variable_uid());
-        _invoked_function_expressions.push_back(expression);
-        _from_invoked_variables.push_back(variable);
-        body()->add_var(variable);
-    }
-    return _ref(_from_invoked_variables[index]);
 }
 
 Function::~Function() {

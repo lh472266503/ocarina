@@ -64,7 +64,7 @@ void FunctionCorrector::output_from_interior(const Expression *&expression) noex
     auto context = const_cast<Function *>(expression->context());
     Function *invoked_func = context;
     vector<const Function *> path = detail::find_invoke_path(cur_func(), context);
-    invoked_func->append_output_argument(expression);
+
     while (true) {
 
         CallExpr *call_expr = const_cast<CallExpr *>(invoked_func->call_expr());
@@ -73,20 +73,11 @@ void FunctionCorrector::output_from_interior(const Expression *&expression) noex
         const RefExpr *ref_expr = nullptr;
         if (invoker == cur_func()) {
             // add a local variable
-            if (!invoker->contain_invoked_func_expr(expression)) {
-                ref_expr = invoker->mapping_local_variable(expression);
-                call_expr->append_argument(ref_expr);
-            } else {
-                ref_expr = invoker->mapping_local_variable(expression);
-            }
-            expression = ref_expr;
+
             break;
         } else {
             // add a reference output argument
-            if (!invoker->has_mapped_output_argument(expression)) {
-                ref_expr = invoker->mapping_output_argument(expression);
-                call_expr->append_argument(ref_expr);
-            }
+
         }
         invoked_func = invoker;
     }

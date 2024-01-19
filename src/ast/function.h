@@ -71,13 +71,8 @@ private:
     ocarina::vector<const Expression *> _exterior_expressions;
     ocarina::vector<Variable> _captured_arguments;
 
-    /// expression output to invoker of current function
-    ocarina::vector<const Expression *> _output_expressions;
+    /// output to invoker of current function
     ocarina::vector<Variable> _output_arguments;
-
-    /// expressions from variable of interior invoked function
-    ocarina::vector<const Expression *> _invoked_function_expressions;
-    ocarina::vector<Variable> _from_invoked_variables;
 
     ocarina::vector<ocarina::unique_ptr<Statement>> _all_statements;
     ocarina::vector<Variable> _arguments;
