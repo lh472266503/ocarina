@@ -68,6 +68,8 @@ private:
     ocarina::vector<ocarina::unique_ptr<Expression>> _all_expressions;
     ocarina::vector<const Expression *> _exterior_expressions;
     ocarina::vector<const Expression *> _output_expressions;
+    /// expressions from variable of interior invoked function
+    ocarina::vector<const Expression *> _invoked_function_expressions;
     ocarina::vector<ocarina::unique_ptr<Statement>> _all_statements;
     ocarina::vector<Variable> _arguments;
     ocarina::vector<Variable> _captured_arguments;
@@ -93,8 +95,8 @@ private:
     static void _push(Function *f);
     static void _pop(Function *f);
     [[nodiscard]] uint _next_variable_uid() noexcept;
-    [[nodiscard]] const Expression *create_captured_argument(const Expression *expression) noexcept;
-    [[nodiscard]] const Expression *create_output_argument(const Expression *expression) noexcept;
+    [[nodiscard]] const RefExpr *create_captured_argument(const Expression *expression) noexcept;
+    [[nodiscard]] const RefExpr *create_output_argument(const Expression *expression) noexcept;
 
     template<typename Func>
     static shared_ptr<Function> _define(Function::Tag tag, Func &&func) noexcept {
@@ -107,10 +109,11 @@ private:
 
     void correct() noexcept;
     [[nodiscard]] uint exterior_expr_index(const Expression *expression) const noexcept;
-    [[nodiscard]] const Expression *replace_exterior_expression(const Expression *expression) noexcept;
+    [[nodiscard]] const RefExpr *replace_exterior_expression(const Expression *expression) noexcept;
     [[nodiscard]] uint output_expr_index(const Expression *expression) const noexcept;
+    [[nodiscard]] uint invoked_function_expr_index(const Expression *expression) const noexcept;
     void append_output_argument(const Expression *expression) noexcept;
-    [[nodiscard]] const RefExpr *append_local_variable(const Type *type) noexcept;
+    [[nodiscard]] const RefExpr *mapping_local_variable(const Expression *expression) noexcept;
     template<typename Expr, typename Tuple, size_t... i>
     [[nodiscard]] auto _create_expression(Tuple &&tuple, std::index_sequence<i...>) {
         auto expr = ocarina::make_unique<Expr>(std::get<i>(OC_FORWARD(tuple))...);

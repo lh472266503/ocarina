@@ -57,7 +57,15 @@ uint Function::exterior_expr_index(const ocarina::Expression *expression) const 
     return detail::find_index(_exterior_expressions, expression);
 }
 
-const Expression *Function::replace_exterior_expression(const Expression *expression) noexcept {
+uint Function::output_expr_index(const Expression *expression) const noexcept {
+    return detail::find_index(_output_expressions, expression);
+}
+
+uint Function::invoked_function_expr_index(const ocarina::Expression *expression) const noexcept {
+    return detail::find_index(_invoked_function_expressions, expression);
+}
+
+const RefExpr *Function::replace_exterior_expression(const Expression *expression) noexcept {
     int index = exterior_expr_index(expression);
     if (index == _exterior_expressions.size()) {
         _exterior_expressions.push_back(expression);
@@ -65,10 +73,6 @@ const Expression *Function::replace_exterior_expression(const Expression *expres
     } else {
         return _ref(_captured_arguments.at(index));
     }
-}
-
-uint Function::output_expr_index(const Expression *expression) const noexcept {
-    return detail::find_index(_output_expressions, expression);
 }
 
 void Function::append_output_argument(const ocarina::Expression *expression) noexcept {
@@ -82,9 +86,13 @@ void Function::append_output_argument(const ocarina::Expression *expression) noe
     }
 }
 
-const RefExpr *Function::append_local_variable(const Type *type) noexcept {
-    Variable variable(type, Variable::Tag::LOCAL, _next_variable_uid());
-    return _ref(variable);
+const RefExpr *Function::mapping_local_variable(const Expression *expression) noexcept {
+    uint index = invoked_function_expr_index(expression);
+//    if (index == _invoked_function_expressions.size()) {
+        Variable variable(expression->type(), Variable::Tag::LOCAL, _next_variable_uid());
+        return _ref(variable);
+//    }
+
 }
 
 Function::~Function() {
@@ -117,13 +125,13 @@ Usage Function::variable_usage(uint uid) const noexcept {
     return _variable_usages[uid];
 }
 
-const Expression *Function::create_captured_argument(const Expression *expression) noexcept {
+const RefExpr *Function::create_captured_argument(const Expression *expression) noexcept {
     Variable variable(expression->type(), Variable::Tag::REFERENCE, _next_variable_uid());
     _captured_arguments.push_back(variable);
     return _ref(variable);
 }
 
-const Expression *Function::create_output_argument(const Expression *expression) noexcept {
+const RefExpr *Function::create_output_argument(const Expression *expression) noexcept {
     Variable variable(expression->type(), Variable::Tag::REFERENCE, _next_variable_uid());
     _output_arguments.push_back(variable);
     return _ref(variable);
