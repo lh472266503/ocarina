@@ -75,7 +75,7 @@ const RefExpr *Function::mapping_captured_argument(const Expression *exterior_ex
     return _ref(_captured_arguments.at(index));
 }
 
-void Function::append_output_argument(const ocarina::Expression *expression) noexcept {
+void Function::append_output_argument(const Expression *expression) noexcept {
     int index = output_expr_index(expression);
     if (index == _output_expressions.size()) {
         _output_expressions.push_back(expression);
@@ -84,6 +84,15 @@ void Function::append_output_argument(const ocarina::Expression *expression) noe
             assign(output_argument, expression);
         });
     }
+}
+
+const RefExpr *Function::mapping_output_variable(const Expression *expression) noexcept {
+    int index = output_expr_index(expression);
+    if (index == _output_expressions.size()) {
+        _output_expressions.push_back(expression);
+    }
+
+    return nullptr;
 }
 
 const RefExpr *Function::mapping_local_variable(const Expression *expression) noexcept {

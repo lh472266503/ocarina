@@ -293,6 +293,7 @@ public:
           _arguments(std::move(args)), _template_args(std::move(t_args)) {}
     [[nodiscard]] ocarina::span<const Expression *const> arguments() const noexcept { return _arguments; }
     [[nodiscard]] ocarina::span<const Template> template_args() const noexcept { return _template_args; }
+    void append_argument(const RefExpr *expression) noexcept { _arguments.push_back(expression); }
     [[nodiscard]] auto call_op() const noexcept { return _call_op; }
     [[nodiscard]] auto function() const noexcept { return _function; }
     OC_MAKE_EXPRESSION_COMMON
