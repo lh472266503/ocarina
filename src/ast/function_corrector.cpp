@@ -31,6 +31,31 @@ bool FunctionCorrector::is_from_exterior(const Expression *expression) noexcept 
                      expression->context()) != _function_tack.end();
 }
 
+namespace detail {
+bool DFS_traverse(const Function *function, const Function *target,
+                  vector<const Function *> *path) noexcept {
+    path->push_back(function);
+    auto used_func = function->used_custom_func();
+    if (function == target) {
+        return true;
+    }
+    for (const auto &f : used_func) {
+        if (DFS_traverse(f.get(), target, path)) {
+            return true;
+        }
+    }
+    path->pop_back();
+    return false;
+}
+
+vector<const Function *> find_invoke_path(Function *function,
+                                          const Function *target) noexcept {
+    vector<const Function *> path;
+    detail::DFS_traverse(function, target, &path);
+    return path;
+}
+}// namespace detail
+
 void FunctionCorrector::capture_exterior(const Expression *&expression) noexcept {
     expression = cur_func()->mapping_captured_argument(expression);
 }
@@ -38,6 +63,7 @@ void FunctionCorrector::capture_exterior(const Expression *&expression) noexcept
 void FunctionCorrector::output_from_interior(const Expression *&expression) noexcept {
     auto context = const_cast<Function *>(expression->context());
     Function *invoked_func = context;
+    vector<const Function *> path = detail::find_invoke_path(cur_func(), context);
     invoked_func->append_output_argument(expression);
     while (true) {
 
