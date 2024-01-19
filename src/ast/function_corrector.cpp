@@ -35,44 +35,23 @@ void FunctionCorrector::capture_exterior(const Expression *&expression) noexcept
     expression = cur_func()->replace_exterior_expression(expression);
 }
 
-namespace detail {
-bool DFS_traverse(const Function *function, const Function *target,
-                  vector<const Function *> *path) noexcept {
-    path->push_back(function);
-    auto used_func = function->used_custom_func();
-    if (function == target) {
-        return true;
-    }
-    for (const auto &f : used_func) {
-        if (DFS_traverse(f.get(), target, path)) {
-            return true;
-        }
-    }
-    path->pop_back();
-    return false;
-}
-
-vector<const Function *> find_invoke_path(Function *function,
-                                          const Function *target) noexcept {
-    vector<const Function *> path;
-    detail::DFS_traverse(function, target, &path);
-    return path;
-}
-}// namespace detail
-
 void FunctionCorrector::output_from_interior(const Expression *&expression) noexcept {
-    Function *function = cur_func();
-    Function *context = const_cast<Function *>(expression->context());
-    vector<const Function *> path = detail::find_invoke_path(function, context);
-
-    std::reverse(path.begin(), path.end());
-
-    for (int i = 0; i < path.size() - 1; ++i) {
-        Function *func = const_cast<Function *>(path[i]);
+    auto context = const_cast<Function *>(expression->context());
+    Function *func = context;
+    while(true) {
         func->append_output_argument(expression);
-        Function *invoker = const_cast<Function *>(path[i + 1]);
-    }
 
+        CallExpr *call_expr = const_cast<CallExpr *>(func->call_expr());
+        Function *invoker = const_cast<Function *>(call_expr->context());
+
+        if (invoker == cur_func()) {
+
+            break;
+        } else {
+
+        }
+        func = invoker;
+    }
 }
 
 void FunctionCorrector::visit_expr(const Expression *const &expression) noexcept {
