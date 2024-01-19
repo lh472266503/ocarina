@@ -21,7 +21,7 @@ class RefExpr;
 class CallExpr;
 class IfStmt;
 
-class CapturedVar : public Hashable {
+class CapturedResource : public Hashable {
 private:
     const Type *_type;
     const RefExpr *_expr{nullptr};
@@ -33,7 +33,7 @@ private:
     }
 
 public:
-    CapturedVar(const RefExpr *expr, const Type *type, MemoryBlock block)
+    CapturedResource(const RefExpr *expr, const Type *type, MemoryBlock block)
         : _type(type), _block(block), _expr(expr) {}
 
     [[nodiscard]] const Type *type() const noexcept { return _type; }
@@ -85,7 +85,7 @@ private:
     ocarina::vector<ocarina::unique_ptr<Statement>> _all_statements;
     ocarina::vector<Variable> _arguments;
 
-    ocarina::vector<CapturedVar> _captured_vars;
+    ocarina::vector<CapturedResource> _captured_vars;
     ocarina::vector<Variable> _builtin_vars;
     ocarina::vector<Usage> _variable_usages;
     ocarina::vector<ScopeStmt *> _scope_stack;
@@ -193,14 +193,14 @@ public:
     }
     void add_used_structure(const Type *type) noexcept { _used_struct.add(type); }
     [[nodiscard]] Usage variable_usage(uint uid) const noexcept;
-    const CapturedVar &get_captured_var(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept;
-    const CapturedVar &add_captured_var(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept;
+    const CapturedResource &get_captured_var(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept;
+    const CapturedResource &add_captured_var(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept;
     [[nodiscard]] bool has_captured_var(const void *handle) const noexcept;
     [[nodiscard]] auto &captured_vars() const noexcept { return _captured_vars; }
-    [[nodiscard]] const CapturedVar *get_captured_var_by_handle(const void *handle) const noexcept;
+    [[nodiscard]] const CapturedResource *get_captured_var_by_handle(const void *handle) const noexcept;
     template<typename Visitor>
     void for_each_captured_var(Visitor &&visitor) const noexcept {
-        for (const CapturedVar &var : _captured_vars) {
+        for (const CapturedResource &var : _captured_vars) {
             visitor(var);
         }
     }

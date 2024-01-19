@@ -281,7 +281,7 @@ const CallExpr *Function::call_builtin(const Type *type, CallOp op,
     return create_expression<CallExpr>(type, op, std::move(args), std::move(t_args));
 }
 
-const CapturedVar &Function::get_captured_var(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept {
+const CapturedResource &Function::get_captured_var(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept {
     if (auto iter = std::find_if(_captured_vars.begin(),
                                  _captured_vars.end(),
                                  [&](auto v) {
@@ -295,7 +295,7 @@ const CapturedVar &Function::get_captured_var(const Type *type, Variable::Tag ta
     return _captured_vars.back();
 }
 
-const CapturedVar &Function::add_captured_var(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept {
+const CapturedResource &Function::add_captured_var(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept {
     const RefExpr *expr = _ref(Variable(type, tag, _next_variable_uid(), nullptr, "cap_res"));
     _captured_vars.emplace_back(expr, type, block);
     return _captured_vars.back();
@@ -311,16 +311,16 @@ bool Function::has_captured_var(const void *handle) const noexcept {
 }
 
 void Function::update_captured_vars(const Function *func) noexcept {
-    func->for_each_captured_var([&](const CapturedVar &var) {
+    func->for_each_captured_var([&](const CapturedResource &var) {
         if (!has_captured_var(var.handle_ptr())) {
             add_captured_var(var.type(), var.expression()->variable().tag(), var.block());
         }
     });
 }
 
-const CapturedVar *Function::get_captured_var_by_handle(const void *handle) const noexcept {
-    const CapturedVar *var = nullptr;
-    for (const CapturedVar &v : _captured_vars) {
+const CapturedResource *Function::get_captured_var_by_handle(const void *handle) const noexcept {
+    const CapturedResource *var = nullptr;
+    for (const CapturedResource &v : _captured_vars) {
         if (v.handle_ptr() == handle) {
             var = &v;
             break;
@@ -429,7 +429,7 @@ uint64_t Function::_compute_hash() const noexcept {
     for (const Variable &v : _builtin_vars) {
         ret = hash64(ret, v.hash());
     }
-    for (const CapturedVar &v : _captured_vars) {
+    for (const CapturedResource &v : _captured_vars) {
         ret = hash64(ret, v.hash());
     }
     for (const Variable &v : _output_arguments) {

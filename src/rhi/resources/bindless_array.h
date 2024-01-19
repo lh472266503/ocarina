@@ -79,7 +79,7 @@ public:
 
     /// for dsl
     [[nodiscard]] const Expression *expression() const noexcept override {
-        const CapturedVar &captured_var = Function::current()->get_captured_var(Type::of<decltype(*this)>(),
+        const CapturedResource &captured_var = Function::current()->get_captured_var(Type::of<decltype(*this)>(),
                                                                                Variable::Tag::BINDLESS_ARRAY,
                                                                                memory_block());
         return captured_var.expression();
