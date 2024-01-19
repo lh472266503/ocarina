@@ -60,7 +60,7 @@ uint Function::exterior_expr_index(const ocarina::Expression *expression) const 
 const RefExpr *Function::mapping_captured_argument(const Expression *exterior_expr) noexcept {
     int index = exterior_expr_index(exterior_expr);
     if (index == _exterior_expressions.size()) {
-        Variable variable(exterior_expr->type(), Variable::Tag::REFERENCE, _next_variable_uid());
+        Variable variable(exterior_expr->type(), Variable::Tag::REFERENCE, _next_variable_uid(), nullptr, "cap_arg");
         _exterior_expressions.push_back(exterior_expr);
         _captured_arguments.push_back(variable);
     }
@@ -83,6 +83,19 @@ const RefExpr *Function::mapping_output_argument(const Expression *invoked_func_
         _output_argument_map.insert(make_pair(invoked_func_expr, ref_expr));
     }
     return _output_argument_map.at(invoked_func_expr);
+}
+
+void Function::append_output_argument(const Expression *expression) noexcept {
+    uint index = detail::find_index(_output_expressions, expression);
+    if (index < _output_arguments.size()) {
+        return;
+    }
+    with(body(), [&] {
+        Variable variable(expression->type(), Variable::Tag::REFERENCE, _next_variable_uid(), nullptr, "output");
+        _output_arguments.push_back(variable);
+        const RefExpr *ref_expr = _ref(variable);
+        assign(ref_expr, expression);
+    });
 }
 
 Function::~Function() {
@@ -198,7 +211,7 @@ const RefExpr *Function::argument(const Type *type) noexcept {
 }
 
 const RefExpr *Function::reference_argument(const Type *type) noexcept {
-    Variable variable(type, Variable::Tag::REFERENCE, _next_variable_uid());
+    Variable variable(type, Variable::Tag::REFERENCE, _next_variable_uid(), nullptr, "ref_arg");
     _arguments.push_back(variable);
     return _ref(variable);
 }
@@ -283,7 +296,7 @@ const CapturedVar &Function::get_captured_var(const Type *type, Variable::Tag ta
 }
 
 const CapturedVar &Function::add_captured_var(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept {
-    const RefExpr *expr = _ref(Variable(type, tag, _next_variable_uid()));
+    const RefExpr *expr = _ref(Variable(type, tag, _next_variable_uid(), nullptr, "cap_res"));
     _captured_vars.emplace_back(expr, type, block);
     return _captured_vars.back();
 }

@@ -65,6 +65,8 @@ void FunctionCorrector::output_from_interior(const Expression *&expression) noex
     Function *invoked_func = context;
     vector<const Function *> path = detail::find_invoke_path(cur_func(), context);
 
+    context->append_output_argument(expression);
+
     while (true) {
 
         CallExpr *call_expr = const_cast<CallExpr *>(invoked_func->call_expr());

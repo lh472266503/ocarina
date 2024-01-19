@@ -41,6 +41,7 @@ private:
     uint32_t _uid{};
     Tag _tag;
     const char *_name{};
+    const char *_suffix{};
     [[nodiscard]] uint64_t _compute_hash() const noexcept override {
         auto u0 = static_cast<uint64_t>(_uid);
         auto u1 = static_cast<uint64_t>(_tag);
@@ -50,8 +51,8 @@ private:
 
 public:
     Variable() noexcept = default;
-    Variable(const Type *type, Tag tag, uint uid, const char *name = nullptr) noexcept
-        : _type(type), _tag(tag), _uid(uid), _name(name) {}
+    Variable(const Type *type, Tag tag, uint uid, const char *name = nullptr, const char *suffix = nullptr) noexcept
+        : _type(type), _tag(tag), _uid(uid), _name(name),_suffix(suffix) {}
     [[nodiscard]] constexpr const Type *type() const noexcept { return _type; }
     [[nodiscard]] constexpr Tag tag() const noexcept { return _tag; }
     [[nodiscard]] constexpr uint uid() const noexcept { return _uid; }
