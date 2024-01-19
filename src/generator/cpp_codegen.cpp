@@ -470,7 +470,7 @@ void CppCodegen::_emit_arguments(const Function &f) noexcept {
         _emit_variable_define(v);
         current_scratch() << ",";
     }
-    for (const auto &var : f.captured_vars()) {
+    for (const auto &var : f.captured_resources()) {
         _emit_variable_define(var.expression()->variable());
         current_scratch() << ",";
     }
@@ -478,7 +478,7 @@ void CppCodegen::_emit_arguments(const Function &f) noexcept {
         Variable dispatch_dim(Type::of<uint3>(), Variable::Tag::LOCAL, -1, "d_dim");
         _emit_variable_define(dispatch_dim);
     } else {
-        if (f.arguments().size() + f.captured_vars().size() > 0) {
+        if (f.arguments().size() + f.captured_resources().size() > 0) {
             current_scratch().pop_back();
         }
     }

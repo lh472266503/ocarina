@@ -281,46 +281,46 @@ const CallExpr *Function::call_builtin(const Type *type, CallOp op,
     return create_expression<CallExpr>(type, op, std::move(args), std::move(t_args));
 }
 
-const CapturedResource &Function::get_captured_var(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept {
-    if (auto iter = std::find_if(_captured_vars.begin(),
-                                 _captured_vars.end(),
+const CapturedResource &Function::get_captured_resource(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept {
+    if (auto iter = std::find_if(_captured_resources.begin(),
+                                 _captured_resources.end(),
                                  [&](auto v) {
                                      return v.handle_ptr() == block.address;
                                  });
-        iter != _captured_vars.end()) {
+        iter != _captured_resources.end()) {
         return *iter;
     }
     const RefExpr *expr = _ref(Variable(type, tag, _next_variable_uid()));
-    _captured_vars.emplace_back(expr, type, block);
-    return _captured_vars.back();
+    _captured_resources.emplace_back(expr, type, block);
+    return _captured_resources.back();
 }
 
-const CapturedResource &Function::add_captured_var(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept {
+const CapturedResource &Function::add_captured_resource(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept {
     const RefExpr *expr = _ref(Variable(type, tag, _next_variable_uid(), nullptr, "cap_res"));
-    _captured_vars.emplace_back(expr, type, block);
-    return _captured_vars.back();
+    _captured_resources.emplace_back(expr, type, block);
+    return _captured_resources.back();
 }
 
-bool Function::has_captured_var(const void *handle) const noexcept {
-    bool ret = std::find_if(_captured_vars.begin(),
-                            _captured_vars.end(),
+bool Function::has_captured_resource(const void *handle) const noexcept {
+    bool ret = std::find_if(_captured_resources.begin(),
+                            _captured_resources.end(),
                             [&](auto v) {
                                 return v.handle_ptr() == handle;
-                            }) != _captured_vars.end();
+                            }) != _captured_resources.end();
     return ret;
 }
 
-void Function::update_captured_vars(const Function *func) noexcept {
-    func->for_each_captured_var([&](const CapturedResource &var) {
-        if (!has_captured_var(var.handle_ptr())) {
-            add_captured_var(var.type(), var.expression()->variable().tag(), var.block());
+void Function::update_captured_resources(const Function *func) noexcept {
+    func->for_each_captured_resource([&](const CapturedResource &var) {
+        if (!has_captured_resource(var.handle_ptr())) {
+            add_captured_resource(var.type(), var.expression()->variable().tag(), var.block());
         }
     });
 }
 
-const CapturedResource *Function::get_captured_var_by_handle(const void *handle) const noexcept {
+const CapturedResource *Function::get_captured_resource_by_handle(const void *handle) const noexcept {
     const CapturedResource *var = nullptr;
-    for (const CapturedResource &v : _captured_vars) {
+    for (const CapturedResource &v : _captured_resources) {
         if (v.handle_ptr() == handle) {
             var = &v;
             break;
@@ -429,7 +429,7 @@ uint64_t Function::_compute_hash() const noexcept {
     for (const Variable &v : _builtin_vars) {
         ret = hash64(ret, v.hash());
     }
-    for (const CapturedResource &v : _captured_vars) {
+    for (const CapturedResource &v : _captured_resources) {
         ret = hash64(ret, v.hash());
     }
     for (const Variable &v : _output_arguments) {

@@ -240,11 +240,11 @@ public:
           }))) {}
 
     auto operator()(prototype_to_callable_invocation_t<Args>... args) const noexcept {
-        Function::current()->update_captured_vars(_function.get());
+        Function::current()->update_captured_resources(_function.get());
         vector<const Expression *> arguments{(OC_EXPR(args))...};
 
-        _function->for_each_captured_var([&](const CapturedResource &captured_var) {
-            const CapturedResource *var = Function::current()->get_captured_var_by_handle(captured_var.handle_ptr());
+        _function->for_each_captured_resource([&](const CapturedResource &captured_resource) {
+            const CapturedResource *var = Function::current()->get_captured_resource_by_handle(captured_resource.handle_ptr());
             arguments.push_back(var->expression());
         });
 

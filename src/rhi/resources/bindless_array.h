@@ -79,10 +79,10 @@ public:
 
     /// for dsl
     [[nodiscard]] const Expression *expression() const noexcept override {
-        const CapturedResource &captured_var = Function::current()->get_captured_var(Type::of<decltype(*this)>(),
+        const CapturedResource &captured_resource = Function::current()->get_captured_resource(Type::of<decltype(*this)>(),
                                                                                Variable::Tag::BINDLESS_ARRAY,
                                                                                memory_block());
-        return captured_var.expression();
+        return captured_resource.expression();
     }
 
     template<typename Index>

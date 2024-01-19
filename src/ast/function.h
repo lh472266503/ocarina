@@ -85,7 +85,7 @@ private:
     ocarina::vector<ocarina::unique_ptr<Statement>> _all_statements;
     ocarina::vector<Variable> _arguments;
 
-    ocarina::vector<CapturedResource> _captured_vars;
+    ocarina::vector<CapturedResource> _captured_resources;
     ocarina::vector<Variable> _builtin_vars;
     ocarina::vector<Usage> _variable_usages;
     ocarina::vector<ScopeStmt *> _scope_stack;
@@ -193,14 +193,14 @@ public:
     }
     void add_used_structure(const Type *type) noexcept { _used_struct.add(type); }
     [[nodiscard]] Usage variable_usage(uint uid) const noexcept;
-    const CapturedResource &get_captured_var(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept;
-    const CapturedResource &add_captured_var(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept;
-    [[nodiscard]] bool has_captured_var(const void *handle) const noexcept;
-    [[nodiscard]] auto &captured_vars() const noexcept { return _captured_vars; }
-    [[nodiscard]] const CapturedResource *get_captured_var_by_handle(const void *handle) const noexcept;
+    const CapturedResource &get_captured_resource(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept;
+    const CapturedResource &add_captured_resource(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept;
+    [[nodiscard]] bool has_captured_resource(const void *handle) const noexcept;
+    [[nodiscard]] auto &captured_resources() const noexcept { return _captured_resources; }
+    [[nodiscard]] const CapturedResource *get_captured_resource_by_handle(const void *handle) const noexcept;
     template<typename Visitor>
-    void for_each_captured_var(Visitor &&visitor) const noexcept {
-        for (const CapturedResource &var : _captured_vars) {
+    void for_each_captured_resource(Visitor &&visitor) const noexcept {
+        for (const CapturedResource &var : _captured_resources) {
             visitor(var);
         }
     }
@@ -210,7 +210,7 @@ public:
             func(expr);
         }
     }
-    void update_captured_vars(const Function *func) noexcept;
+    void update_captured_resources(const Function *func) noexcept;
     [[nodiscard]] static Function *current() noexcept;
     template<typename Func>
     static auto define_callable(Func &&func) noexcept {
