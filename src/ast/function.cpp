@@ -95,11 +95,17 @@ void Function::append_output_argument(const Expression *expression) noexcept {
     }
 }
 
+bool Function::has_mapped(const Expression *invoked_func_expr) const noexcept {
+    return invoked_function_expr_index(invoked_func_expr) < _invoked_function_expressions.size();
+}
+
 const RefExpr *Function::mapping_local_variable(const Expression *expression) noexcept {
     uint index = invoked_function_expr_index(expression);
     if (index == _invoked_function_expressions.size()) {
         Variable variable = Variable(expression->type(), Variable::Tag::LOCAL, _next_variable_uid());
+        _invoked_function_expressions.push_back(expression);
         _from_invoked_variables.push_back(variable);
+        body()->add_var(variable);
     }
     return _ref(_from_invoked_variables[index]);
 }

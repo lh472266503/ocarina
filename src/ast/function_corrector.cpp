@@ -38,7 +38,7 @@ void FunctionCorrector::capture_exterior(const Expression *&expression) noexcept
 void FunctionCorrector::output_from_interior(const Expression *&expression) noexcept {
     auto context = const_cast<Function *>(expression->context());
     Function *invoked_func = context;
-    while(true) {
+    while (true) {
 
         CallExpr *call_expr = const_cast<CallExpr *>(invoked_func->call_expr());
         Function *invoker = const_cast<Function *>(call_expr->context());
@@ -50,13 +50,20 @@ void FunctionCorrector::output_from_interior(const Expression *&expression) noex
         const RefExpr *ref_expr = nullptr;
         if (invoker == cur_func()) {
             // add a local variable
-            ref_expr = invoker->mapping_local_variable(expression);
+            if (!invoker->has_mapped(expression)) {
+                ref_expr = invoker->mapping_local_variable(expression);
+                call_expr->append_argument(ref_expr);
+            } else {
+                ref_expr = invoker->mapping_local_variable(expression);
+            }
             expression = ref_expr;
             break;
         } else {
             // add a reference output argument
-            ref_expr = invoker->mapping_output_argument(expression);
-            call_expr->append_argument(ref_expr);
+            if (!invoker->has_mapped(expression)) {
+                ref_expr = invoker->mapping_output_argument(expression);
+                call_expr->append_argument(ref_expr);
+            }
         }
         invoked_func = invoker;
     }
