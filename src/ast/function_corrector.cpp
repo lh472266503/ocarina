@@ -148,7 +148,7 @@ void FunctionCorrector::visit(const CallExpr *const_expr) {
             if (expression->context() != cur_func()) {
                 expression = cur_func()->mapping_captured_argument(expression);
             }
-            expr->_arguments.push_back(expression);
+            expr->append_argument(expression);
         });
     }
 }

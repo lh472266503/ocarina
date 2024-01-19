@@ -65,6 +65,10 @@ CallExpr::CallExpr(const Type *type, const Function *func,
     const_cast<Function *>(_function)->set_call_expression(this);
 }
 
+void CallExpr::append_argument(const Expression *expression) noexcept {
+    _arguments.push_back(expression);
+}
+
 uint64_t CallExpr::_compute_hash() const noexcept {
     uint64_t ret = _function ? _function->hash() : Hash64::default_seed;
     ret = hash64(_call_op, ret);

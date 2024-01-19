@@ -22,14 +22,15 @@ struct Triple {
 OC_STRUCT(Triple, i, j, k){
     [[nodiscard]] Uint sum() const noexcept {
         return i + j + k;
-    }
-};
+}
+}
+;
 
 struct TTT {
     Triple triple;
     int i{90};
 };
-OC_STRUCT(TTT, triple,i){};
+OC_STRUCT(TTT, triple, i){};
 
 auto get_cube(float x = 1, float y = 1, float z = 1) {
     x = x / 2.f;
@@ -169,37 +170,12 @@ void test_lambda(Device &device, Stream &stream) {
            << tri.upload(triangles.data());
 
     Kernel kernel = [&](Uint i) {
-//        OCHit hit;
-//
+
         Uint begin = 2;
         Uint end = 10;
-//        //        Uint end1 = 10;
-//        //        Uint end2 = 10;
-//        //        Uint end3 = 10;
-//        //        Uint end4 = 10;
-//        //        Uint end6 = 10;
-//
-//        //        Lambda func = [&](int i, float z, Float a) {
-//        //            $info("{}    {}   {}     ---------", i,z, a);
-//        ////            return a;
-//        //        };
-//        //
-//        //       func(1,2.f, Float(7.f));
-//        Var<TTT> triple{};
-//
-//        std::array<float, 3> a3;
-//
-//        Var<std::array<float, 3>> va3, va4;
-//
-//        va3 = va4;
-//
-//        Float3 a;
-//        float3 b;
-//        a = b;
-////        triple = TTT();
+
         Float *p;
         Float *p1;
-//        Test tt;
 
         Float bb = $outline {
             return 1.f;
@@ -208,49 +184,17 @@ void test_lambda(Device &device, Stream &stream) {
         Float aa = $outline {
             Var aa = $outline {
                 p = new Float();
-                p1 = new Float();
                 *p = end + end;
+                p1 = new Float();
                 *p1 = begin + end;
                 return end + end;
             };
-            return aa;
+            return aa + *p;
         };
-//        *p = 1.f;
+        //        *p = 1.f;
 
-        $info("{} -----{}   -------  {}   -", *p, *p, *p1);
+        $info("{} -----{}   -------  {}   {}-", *p, *p, *p1, aa);
 
-        //        auto ld = Lambda([&] {
-        //            Test test;
-        //            test.a = begin * 2;
-        //            return test;
-        //        });
-
-        //        auto aa = ld();
-        //        Uint b = aa + 2;
-
-        //        $outline {
-        //                $info("{} {} {} --===", begin,begin,begin);
-        //        $info("{} === --===", end);
-//        $info("{} {} --===", aa, triple.triple.i);
-        //        $info("{}  --===", begin);
-        //        };
-        //        Callable cb = [&](Float a) {
-        //            a = a + end6;
-        //            auto c = end6;
-        //
-        //            Callable cb2 = [&](Uint& b) {
-        //                b = begin + b;
-        //                Var v = vert.read(1);
-        //                $info("{}         ---------", v.x);
-        //                return b;
-        //            };
-        //
-        //            cb2(end6);
-        //
-        //            int i = 0;
-        //        };
-        //
-        //        cb(Float(1.f));
     };
     Shader shader = device.compile(kernel);
 
@@ -351,7 +295,7 @@ int main(int argc, char *argv[]) {
 
     /// create rtx context if need
     device.init_rtx();
-//        test_compute_shader(device, stream);
+    //        test_compute_shader(device, stream);
     test_lambda(device, stream);
 
     //    test_poly();
