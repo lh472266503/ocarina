@@ -82,6 +82,11 @@ void Function::append_output_argument(const ocarina::Expression *expression) noe
     }
 }
 
+const RefExpr *Function::append_local_variable(const Type *type) noexcept {
+    Variable variable(type, Variable::Tag::LOCAL, _next_variable_uid());
+    return _ref(variable);
+}
+
 Function::~Function() {
     for (auto &mem : _temp_memory) {
         delete_with_allocator(mem.first);

@@ -42,10 +42,13 @@ void FunctionCorrector::output_from_interior(const Expression *&expression) noex
 
         CallExpr *call_expr = const_cast<CallExpr *>(invoked_func->call_expr());
         Function *invoker = const_cast<Function *>(call_expr->context());
+        const RefExpr *ref_expr = nullptr;
         if (invoker == cur_func()) {
-
+            // add a local variable
+            ref_expr = invoker->append_local_variable(expression->type());
             break;
         } else {
+            // add a reference output argument
 
         }
         invoked_func = invoker;
