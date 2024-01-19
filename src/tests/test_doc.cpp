@@ -170,30 +170,25 @@ void test_lambda(Device &device, Stream &stream) {
            << tri.upload(triangles.data());
 
     Kernel kernel = [&](Uint i) {
-
         Uint begin = 2;
         Uint end = 10;
 
         Float *p;
         Float *p1;
 
-        Float bb = $outline {
-            return 1.f;
-        };
-
         Float aa = $outline {
-//            Var aa = $outline {
-                p = new Float();
-                *p = end + end;
+            Var aa = $outline {
+//                p = new Float();
+//                *p = end + end;
 //                p1 = new Float();
 //                *p1 = begin + end;
-//                return end + end;
-//            };
+                return end + end;
+            };
             return aa ;
         };
         //        *p = 1.f;
 
-        $info("{} ------",  *p);
+        $info("{} ------",  aa);
 
     };
     Shader shader = device.compile(kernel);
