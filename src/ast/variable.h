@@ -42,12 +42,7 @@ private:
     Tag _tag;
     const char *_name{};
     const char *_suffix{};
-    [[nodiscard]] uint64_t _compute_hash() const noexcept override {
-        auto u0 = static_cast<uint64_t>(_uid);
-        auto u1 = static_cast<uint64_t>(_tag);
-        using namespace std::string_view_literals;
-        return hash64(u0 | (u1 << 32u), type()->hash());
-    }
+    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
     Variable() noexcept = default;

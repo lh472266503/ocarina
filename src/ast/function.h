@@ -70,6 +70,8 @@ private:
     /// exterior expression captured by current function
     ocarina::vector<const Expression *> _exterior_expressions;
     ocarina::vector<Variable> _output_arguments;
+    /// key : exterior expression , value : expression belong current function
+    ocarina::map<const Expression *, const RefExpr *> _expr_map;
 
     ocarina::vector<ocarina::unique_ptr<Statement>> _all_statements;
     ocarina::vector<Variable> _arguments;
