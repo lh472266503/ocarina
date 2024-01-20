@@ -80,7 +80,10 @@ private:
     ocarina::vector<Variable> _output_arguments;
 
     /// key : expression from other function , value : expression belong current function
-    ocarina::map<const Expression *, const RefExpr *> _expr_map;
+    ocarina::map<const Expression *, const RefExpr *> _outer_to_inner;
+
+    /// key : local expression from current function, value : output argument
+    ocarina::map<const Expression *, const RefExpr *> _inner_to_output;
 
     ocarina::vector<Variable> _arguments;
     ocarina::vector<CapturedResource> _captured_resources;

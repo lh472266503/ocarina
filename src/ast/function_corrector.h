@@ -45,9 +45,9 @@ private:
     void visit_expr(const Expression *const &expression) noexcept;
 
     [[nodiscard]] bool is_from_exterior(const Expression *expression) noexcept;
-    void capture_exterior(const Expression *&expression) noexcept;
+    void capture_from_invoker(const Expression *&expression) noexcept;
 
-    void output_from_interior(const Expression *&expression) noexcept;
+    void output_from_invoked(const Expression *&expression) noexcept;
 
 public:
     explicit FunctionCorrector() = default;

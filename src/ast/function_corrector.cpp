@@ -20,9 +20,9 @@ void FunctionCorrector::process_ref_expr(const Expression *&expression) noexcept
     if (expression->context() == cur_func()) {
         return;
     } else if (is_from_exterior(expression)) {
-        capture_exterior(expression);
+        capture_from_invoker(expression);
     } else {
-        output_from_interior(expression);
+        output_from_invoked(expression);
     }
 }
 
@@ -56,14 +56,16 @@ vector<const Function *> find_invoke_path(Function *function,
 }
 }// namespace detail
 
-void FunctionCorrector::capture_exterior(const Expression *&expression) noexcept {
+void FunctionCorrector::capture_from_invoker(const Expression *&expression) noexcept {
     expression = cur_func()->mapping_output_argument(expression);
 }
 
-void FunctionCorrector::output_from_interior(const Expression *&expression) noexcept {
+void FunctionCorrector::output_from_invoked(const Expression *&expression) noexcept {
     auto context = const_cast<Function *>(expression->context());
     Function *invoked_func = context;
     vector<const Function *> path = detail::find_invoke_path(cur_func(), context);
+
+    context->append_output_argument(expression);
 
     while (true) {
 
