@@ -62,26 +62,26 @@ void FunctionCorrector::capture_from_invoker(const Expression *&expression) noex
 
 void FunctionCorrector::output_from_invoked(const Expression *&expression) noexcept {
     auto context = const_cast<Function *>(expression->context());
-    Function *invoked_func = context;
+    Function *invoked = context;
     vector<const Function *> path = detail::find_invoke_path(cur_func(), context);
 
     context->append_output_argument(expression);
 
     while (true) {
 
-        CallExpr *call_expr = const_cast<CallExpr *>(invoked_func->call_expr());
+        CallExpr *call_expr = const_cast<CallExpr *>(invoked->call_expr());
         Function *invoker = const_cast<Function *>(call_expr->context());
 
         const RefExpr *ref_expr = nullptr;
         if (invoker == cur_func()) {
             // add a local variable
-
+            ref_expr = invoker->mapping_local_variable(expression, call_expr);
             break;
         } else {
             // add a reference output argument
 
         }
-        invoked_func = invoker;
+        invoked = invoker;
     }
 }
 
