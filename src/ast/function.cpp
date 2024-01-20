@@ -77,7 +77,7 @@ const RefExpr *Function::mapping_local_variable(const Expression *invoked_func_e
 }
 
 const RefExpr *Function::mapping_output_argument(const Expression *invoked_func_expr, CallExpr *call_expr) noexcept {
-    if (_outer_to_local.contains(invoked_func_expr)) {
+    if (_outer_to_local.contains(invoked_func_expr) && !_outer_to_argument.contains(invoked_func_expr)) {
         Variable variable(invoked_func_expr->type(), Variable::Tag::REFERENCE, _next_variable_uid(), nullptr, "pass");
         const RefExpr *ref_expr = _ref(variable);
         _appended_arguments.push_back(variable);

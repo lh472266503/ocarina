@@ -81,7 +81,6 @@ void FunctionCorrector::output_from_invoked(const Expression *&expression) noexc
         } else {
             // add a reference output argument
             ref_expr = invoker->mapping_output_argument(expression, call_expr);
-//            expression = ref_expr;
         }
         invoked = invoker;
     }
