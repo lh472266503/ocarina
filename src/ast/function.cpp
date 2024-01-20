@@ -67,37 +67,6 @@ const RefExpr *Function::mapping_captured_argument(const Expression *exterior_ex
     return _ref(_captured_arguments.at(index));
 }
 
-const RefExpr *Function::mapping_local_variable(const Expression *invoked_func_expr) noexcept {
-    if (!_local_map.contains(invoked_func_expr)) {
-        Variable variable(invoked_func_expr->type(), Variable::Tag::REFERENCE, _next_variable_uid());
-        const RefExpr *ref_expr = _ref(variable);
-        _local_map.insert(make_pair(invoked_func_expr, ref_expr));
-    }
-    return _local_map.at(invoked_func_expr);
-}
-
-const RefExpr *Function::mapping_output_argument(const Expression *invoked_func_expr) noexcept {
-    if (!_output_argument_map.contains(invoked_func_expr)) {
-        Variable variable(invoked_func_expr->type(), Variable::Tag::REFERENCE, _next_variable_uid());
-        const RefExpr *ref_expr = _ref(variable);
-        _output_argument_map.insert(make_pair(invoked_func_expr, ref_expr));
-    }
-    return _output_argument_map.at(invoked_func_expr);
-}
-
-void Function::append_output_argument(const Expression *expression) noexcept {
-    uint index = detail::find_index(_output_expressions, expression);
-    if (index < _output_arguments.size()) {
-        return;
-    }
-    with(body(), [&] {
-        Variable variable(expression->type(), Variable::Tag::REFERENCE, _next_variable_uid(), nullptr, "output");
-        _output_arguments.push_back(variable);
-        const RefExpr *ref_expr = _ref(variable);
-        assign(ref_expr, expression);
-    });
-}
-
 Function::~Function() {
     for (auto &mem : _temp_memory) {
         delete_with_allocator(mem.first);
@@ -392,10 +361,6 @@ ocarina::span<const Variable> Function::captured_arguments() const noexcept {
     return _captured_arguments;
 }
 
-ocarina::span<const Variable> Function::output_arguments() const noexcept {
-    return _output_arguments;
-}
-
 ocarina::span<const Variable> Function::builtin_vars() const noexcept {
     return _builtin_vars;
 }
@@ -430,9 +395,6 @@ uint64_t Function::_compute_hash() const noexcept {
         ret = hash64(ret, v.hash());
     }
     for (const CapturedResource &v : _captured_resources) {
-        ret = hash64(ret, v.hash());
-    }
-    for (const Variable &v : _output_arguments) {
         ret = hash64(ret, v.hash());
     }
     ret = hash64(ret, _body.hash());
