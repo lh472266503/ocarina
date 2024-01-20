@@ -158,7 +158,7 @@ void FunctionCorrector::visit(const CallExpr *const_expr) {
     }
     if (expr->_function) {
         apply(const_cast<Function *>(expr->_function));
-        expr->_function->for_each_exterior_expr([&](const Expression *expression) {
+        expr->_function->for_each_invoker_expr([&](const Expression *expression) {
             visit_expr(expression);
             expr->append_argument(expression);
         });

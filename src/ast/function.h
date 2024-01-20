@@ -68,9 +68,10 @@ private:
     ocarina::vector<ocarina::unique_ptr<Expression>> _all_expressions;
 
     /// exterior expression captured by current function
-    ocarina::vector<const Expression *> _exterior_expressions;
+    ocarina::vector<const Expression *> _expr_from_invoker;
+    ocarina::vector<const Expression *> _expr_from_invoked;
     ocarina::vector<Variable> _output_arguments;
-    /// key : exterior expression , value : expression belong current function
+    /// key : expression from other function , value : expression belong current function
     ocarina::map<const Expression *, const RefExpr *> _expr_map;
 
     ocarina::vector<ocarina::unique_ptr<Statement>> _all_statements;
@@ -195,8 +196,8 @@ public:
         }
     }
     template<typename F>
-    void for_each_exterior_expr(F &&func) const noexcept {
-        for (const Expression *expr : _exterior_expressions) {
+    void for_each_invoker_expr(F &&func) const noexcept {
+        for (const Expression *expr : _expr_from_invoker) {
             func(expr);
         }
     }

@@ -54,14 +54,14 @@ requires concepts::iterable<T>
 }// namespace detail
 
 uint Function::exterior_expr_index(const ocarina::Expression *expression) const noexcept {
-    return detail::find_index(_exterior_expressions, expression);
+    return detail::find_index(_expr_from_invoker, expression);
 }
 
 const RefExpr *Function::mapping_output_argument(const Expression *exterior_expr) noexcept {
     int index = exterior_expr_index(exterior_expr);
-    if (index == _exterior_expressions.size()) {
+    if (index == _expr_from_invoker.size()) {
         Variable variable(exterior_expr->type(), Variable::Tag::REFERENCE, _next_variable_uid(), nullptr, "output");
-        _exterior_expressions.push_back(exterior_expr);
+        _expr_from_invoker.push_back(exterior_expr);
         _output_arguments.push_back(variable);
     }
     return _ref(_output_arguments.at(index));
