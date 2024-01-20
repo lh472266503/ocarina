@@ -62,21 +62,27 @@ public:
     };
 
 private:
+    ocarina::vector<ocarina::unique_ptr<Expression>> _all_expressions;
+    ocarina::vector<ocarina::unique_ptr<Statement>> _all_statements;
+
+private:
     mutable string _description{};
     const Type *_ret{nullptr};
     const CallExpr *_call_expr{nullptr};
-    ocarina::vector<ocarina::unique_ptr<Expression>> _all_expressions;
 
-    /// exterior expression captured by current function
+    /// The expression of the function that calls the current function
     ocarina::vector<const Expression *> _expr_from_invoker;
+
+    /// The expression of the function invoked by the current function
     ocarina::vector<const Expression *> _expr_from_invoked;
+
+    /// appended argument for output
     ocarina::vector<Variable> _output_arguments;
+
     /// key : expression from other function , value : expression belong current function
     ocarina::map<const Expression *, const RefExpr *> _expr_map;
 
-    ocarina::vector<ocarina::unique_ptr<Statement>> _all_statements;
     ocarina::vector<Variable> _arguments;
-
     ocarina::vector<CapturedResource> _captured_resources;
     ocarina::vector<Variable> _builtin_vars;
     ocarina::vector<Usage> _variable_usages;
