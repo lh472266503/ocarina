@@ -69,18 +69,7 @@ private:
 
     /// exterior expression captured by current function
     ocarina::vector<const Expression *> _exterior_expressions;
-    ocarina::vector<Variable> _captured_arguments;
-
-//    /// expression of invoked function
-//    ocarina::vector<const Expression *> _invoked_function_expr;
-//    ocarina::map<const Expression *, const RefExpr *> _output_argument_map;
-//    ocarina::map<const Expression *, const RefExpr *> _local_map;
-
-//    /// output to invoker of current function
-//    ocarina::vector<Variable> _output_arguments;
-
-    /// output to invoker of current function
-//    ocarina::vector<const Expression *> _output_expressions;
+    ocarina::vector<Variable> _output_arguments;
 
     ocarina::vector<ocarina::unique_ptr<Statement>> _all_statements;
     ocarina::vector<Variable> _arguments;
@@ -118,9 +107,8 @@ private:
 
     void correct() noexcept;
     [[nodiscard]] uint exterior_expr_index(const Expression *expression) const noexcept;
-    [[nodiscard]] const RefExpr *mapping_captured_argument(const Expression *exterior_expr) noexcept;
+    [[nodiscard]] const RefExpr *mapping_output_argument(const Expression *exterior_expr) noexcept;
     [[nodiscard]] const RefExpr *mapping_local_variable(const Expression *invoked_func_expr) noexcept;
-    [[nodiscard]] const RefExpr *mapping_output_argument(const Expression *invoked_func_expr) noexcept;
     void append_output_argument(const Expression *expression) noexcept;
     template<typename Expr, typename Tuple, size_t... i>
     [[nodiscard]] auto _create_expression(Tuple &&tuple, std::index_sequence<i...>) {
@@ -299,7 +287,7 @@ public:
     [[nodiscard]] const ScopeStmt *body() const noexcept;
     [[nodiscard]] ScopeStmt *body() noexcept;
     [[nodiscard]] ocarina::span<const Variable> arguments() const noexcept;
-    [[nodiscard]] ocarina::span<const Variable> captured_arguments() const noexcept;
+    [[nodiscard]] ocarina::span<const Variable> output_arguments() const noexcept;
     [[nodiscard]] ocarina::span<const Variable> builtin_vars() const noexcept;
     [[nodiscard]] constexpr Tag tag() const noexcept { return _tag; }
     [[nodiscard]] constexpr bool is_callable() const noexcept { return _tag == Tag::CALLABLE; }

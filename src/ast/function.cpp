@@ -57,14 +57,14 @@ uint Function::exterior_expr_index(const ocarina::Expression *expression) const 
     return detail::find_index(_exterior_expressions, expression);
 }
 
-const RefExpr *Function::mapping_captured_argument(const Expression *exterior_expr) noexcept {
+const RefExpr *Function::mapping_output_argument(const Expression *exterior_expr) noexcept {
     int index = exterior_expr_index(exterior_expr);
     if (index == _exterior_expressions.size()) {
         Variable variable(exterior_expr->type(), Variable::Tag::REFERENCE, _next_variable_uid(), nullptr, "cap_arg");
         _exterior_expressions.push_back(exterior_expr);
-        _captured_arguments.push_back(variable);
+        _output_arguments.push_back(variable);
     }
-    return _ref(_captured_arguments.at(index));
+    return _ref(_output_arguments.at(index));
 }
 
 Function::~Function() {
@@ -357,8 +357,8 @@ ocarina::span<const Variable> Function::arguments() const noexcept {
     return _arguments;
 }
 
-ocarina::span<const Variable> Function::captured_arguments() const noexcept {
-    return _captured_arguments;
+ocarina::span<const Variable> Function::output_arguments() const noexcept {
+    return _output_arguments;
 }
 
 ocarina::span<const Variable> Function::builtin_vars() const noexcept {
@@ -388,7 +388,7 @@ uint64_t Function::_compute_hash() const noexcept {
     for (const Variable &v : _arguments) {
         ret = hash64(ret, v.hash());
     }
-    for (const Variable &v : _captured_arguments) {
+    for (const Variable &v : _output_arguments) {
         ret = hash64(ret, v.hash());
     }
     for (const Variable &v : _builtin_vars) {

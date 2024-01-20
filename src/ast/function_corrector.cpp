@@ -57,7 +57,7 @@ vector<const Function *> find_invoke_path(Function *function,
 }// namespace detail
 
 void FunctionCorrector::capture_exterior(const Expression *&expression) noexcept {
-    expression = cur_func()->mapping_captured_argument(expression);
+    expression = cur_func()->mapping_output_argument(expression);
 }
 
 void FunctionCorrector::output_from_interior(const Expression *&expression) noexcept {
