@@ -53,15 +53,15 @@ requires concepts::iterable<T>
 
 }// namespace detail
 
-uint Function::exterior_expr_index(const ocarina::Expression *expression) const noexcept {
+uint Function::outer_expr_index(const ocarina::Expression *expression) const noexcept {
     return detail::find_index(_expr_from_invoker, expression);
 }
 
-const RefExpr *Function::mapping_appended_argument(const Expression *exterior_expr) noexcept {
-    int index = exterior_expr_index(exterior_expr);
+const RefExpr *Function::mapping_captured_argument(const Expression *outer_expr) noexcept {
+    int index = outer_expr_index(outer_expr);
     if (index == _expr_from_invoker.size()) {
-        Variable variable(exterior_expr->type(), Variable::Tag::REFERENCE, _next_variable_uid(), nullptr, "append");
-        _expr_from_invoker.push_back(exterior_expr);
+        Variable variable(outer_expr->type(), Variable::Tag::REFERENCE, _next_variable_uid(), nullptr, "outer");
+        _expr_from_invoker.push_back(outer_expr);
         _appended_arguments.push_back(variable);
     }
     return _ref(_appended_arguments.at(index));
@@ -71,11 +71,12 @@ const RefExpr *Function::mapping_local_variable(const Expression *invoked_func_e
     return nullptr;
 }
 
-void Function::append_appended_argument(const Expression *expression) noexcept {
-    if (_inner_to_output.contains(expression)) {
+void Function::append_output_argument(const Expression *expression) noexcept {
+    if (_local_to_output.contains(expression)) {
         return;
     }
-
+    Variable variable(expression->type(), Variable::Tag::REFERENCE, _next_variable_uid(), nullptr, "output");
+    _local_to_output.insert(make_pair(expression, _ref(variable)));
 }
 
 Function::~Function() {
@@ -191,7 +192,7 @@ const RefExpr *Function::argument(const Type *type) noexcept {
 }
 
 const RefExpr *Function::reference_argument(const Type *type) noexcept {
-    Variable variable(type, Variable::Tag::REFERENCE, _next_variable_uid(), nullptr, "ref_arg");
+    Variable variable(type, Variable::Tag::REFERENCE, _next_variable_uid(), nullptr, "ref");
     _arguments.push_back(variable);
     return _ref(variable);
 }
