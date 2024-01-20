@@ -179,10 +179,10 @@ void test_lambda(Device &device, Stream &stream) {
         Float aa = $outline {
             Var aa = $outline {
                 p = new Float();
-                *p = end + begin;
+                *p = 15;
 //                p1 = new Float();
 //                *p1 = begin + end;
-                return end + end;
+                return 20;
             };
             return aa + *p;
         };
