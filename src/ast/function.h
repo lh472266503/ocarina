@@ -77,7 +77,7 @@ private:
     ocarina::vector<const Expression *> _expr_from_invoked;
 
     /// appended argument for output
-    ocarina::vector<Variable> _output_arguments;
+    ocarina::vector<Variable> _appended_arguments;
 
     /// key : expression from other function , value : expression belong current function
     ocarina::map<const Expression *, const RefExpr *> _outer_to_inner;
@@ -119,9 +119,9 @@ private:
 
     void correct() noexcept;
     [[nodiscard]] uint exterior_expr_index(const Expression *expression) const noexcept;
-    [[nodiscard]] const RefExpr *mapping_output_argument(const Expression *exterior_expr) noexcept;
+    [[nodiscard]] const RefExpr *mapping_appended_argument(const Expression *exterior_expr) noexcept;
     [[nodiscard]] const RefExpr *mapping_local_variable(const Expression *invoked_func_expr) noexcept;
-    void append_output_argument(const Expression *expression) noexcept;
+    void append_appended_argument(const Expression *expression) noexcept;
     template<typename Expr, typename Tuple, size_t... i>
     [[nodiscard]] auto _create_expression(Tuple &&tuple, std::index_sequence<i...>) {
         auto expr = ocarina::make_unique<Expr>(std::get<i>(OC_FORWARD(tuple))...);
@@ -299,7 +299,7 @@ public:
     [[nodiscard]] const ScopeStmt *body() const noexcept;
     [[nodiscard]] ScopeStmt *body() noexcept;
     [[nodiscard]] ocarina::span<const Variable> arguments() const noexcept;
-    [[nodiscard]] ocarina::span<const Variable> output_arguments() const noexcept;
+    [[nodiscard]] ocarina::span<const Variable> appended_arguments() const noexcept;
     [[nodiscard]] ocarina::span<const Variable> builtin_vars() const noexcept;
     [[nodiscard]] constexpr Tag tag() const noexcept { return _tag; }
     [[nodiscard]] constexpr bool is_callable() const noexcept { return _tag == Tag::CALLABLE; }

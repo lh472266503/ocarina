@@ -57,21 +57,21 @@ uint Function::exterior_expr_index(const ocarina::Expression *expression) const 
     return detail::find_index(_expr_from_invoker, expression);
 }
 
-const RefExpr *Function::mapping_output_argument(const Expression *exterior_expr) noexcept {
+const RefExpr *Function::mapping_appended_argument(const Expression *exterior_expr) noexcept {
     int index = exterior_expr_index(exterior_expr);
     if (index == _expr_from_invoker.size()) {
         Variable variable(exterior_expr->type(), Variable::Tag::REFERENCE, _next_variable_uid(), nullptr, "append");
         _expr_from_invoker.push_back(exterior_expr);
-        _output_arguments.push_back(variable);
+        _appended_arguments.push_back(variable);
     }
-    return _ref(_output_arguments.at(index));
+    return _ref(_appended_arguments.at(index));
 }
 
 const RefExpr *Function::mapping_local_variable(const Expression *invoked_func_expr) noexcept {
     return nullptr;
 }
 
-void Function::append_output_argument(const Expression *expression) noexcept {
+void Function::append_appended_argument(const Expression *expression) noexcept {
     if (_inner_to_output.contains(expression)) {
         return;
     }
@@ -368,8 +368,8 @@ ocarina::span<const Variable> Function::arguments() const noexcept {
     return _arguments;
 }
 
-ocarina::span<const Variable> Function::output_arguments() const noexcept {
-    return _output_arguments;
+ocarina::span<const Variable> Function::appended_arguments() const noexcept {
+    return _appended_arguments;
 }
 
 ocarina::span<const Variable> Function::builtin_vars() const noexcept {
@@ -399,7 +399,7 @@ uint64_t Function::_compute_hash() const noexcept {
     for (const Variable &v : _arguments) {
         ret = hash64(ret, v.hash());
     }
-    for (const Variable &v : _output_arguments) {
+    for (const Variable &v : _appended_arguments) {
         ret = hash64(ret, v.hash());
     }
     for (const Variable &v : _builtin_vars) {

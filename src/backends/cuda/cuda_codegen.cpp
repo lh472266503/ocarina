@@ -327,7 +327,7 @@ void CUDACodegen::_emit_arguments(const Function &f) noexcept {
             _emit_variable_define(var.expression()->variable());
             current_scratch() << ",";
         }
-        for (const auto &v : f.output_arguments()) {
+        for (const auto &v : f.appended_arguments()) {
             _emit_variable_define(v);
             current_scratch() << ",";
         }

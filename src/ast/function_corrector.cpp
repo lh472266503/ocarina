@@ -57,7 +57,7 @@ vector<const Function *> find_invoke_path(Function *function,
 }// namespace detail
 
 void FunctionCorrector::capture_from_invoker(const Expression *&expression) noexcept {
-    expression = cur_func()->mapping_output_argument(expression);
+    expression = cur_func()->mapping_appended_argument(expression);
 }
 
 void FunctionCorrector::output_from_invoked(const Expression *&expression) noexcept {
@@ -65,7 +65,7 @@ void FunctionCorrector::output_from_invoked(const Expression *&expression) noexc
     Function *invoked_func = context;
     vector<const Function *> path = detail::find_invoke_path(cur_func(), context);
 
-    context->append_output_argument(expression);
+    context->append_appended_argument(expression);
 
     while (true) {
 
