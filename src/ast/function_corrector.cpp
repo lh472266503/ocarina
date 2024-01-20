@@ -76,10 +76,12 @@ void FunctionCorrector::output_from_invoked(const Expression *&expression) noexc
         if (invoker == cur_func()) {
             // add a local variable
             ref_expr = invoker->mapping_local_variable(expression, call_expr);
+            expression = ref_expr;
             break;
         } else {
             // add a reference output argument
-
+            ref_expr = invoker->mapping_output_argument(expression, call_expr);
+//            expression = ref_expr;
         }
         invoked = invoker;
     }
