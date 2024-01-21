@@ -6,31 +6,6 @@
 
 namespace ocarina {
 
-void FunctionCorrector::traverse(Function &function) noexcept {
-    visit(function.body());
-}
-
-void FunctionCorrector::apply(Function *function) noexcept {
-    _function_stack.push_back(function);
-    traverse(*cur_func());
-    _function_stack.pop_back();
-}
-
-void FunctionCorrector::process_ref_expr(const Expression *&expression) noexcept {
-    if (expression->context() == cur_func()) {
-        return;
-    } else if (is_from_exterior(expression)) {
-        capture_from_invoker(expression);
-    } else {
-        output_from_invoked(expression);
-    }
-}
-
-bool FunctionCorrector::is_from_exterior(const Expression *expression) noexcept {
-    return std::find(_function_stack.begin(), _function_stack.end(),
-                     expression->context()) != _function_stack.end();
-}
-
 namespace detail {
 bool DFS_traverse(const Function *function, const Function *target,
                   vector<const Function *> *path) noexcept {
@@ -56,8 +31,66 @@ vector<const Function *> find_invoke_path(Function *function,
 }
 }// namespace detail
 
+void FunctionCorrector::traverse(Function &function) noexcept {
+    visit(function.body());
+}
+
+void FunctionCorrector::apply(Function *function) noexcept {
+    _function_stack.push_back(function);
+    traverse(*cur_func());
+    _function_stack.pop_back();
+}
+
+bool FunctionCorrector::is_from_exterior(const Expression *expression) noexcept {
+    return std::find(_function_stack.begin(), _function_stack.end(),
+                     expression->context()) != _function_stack.end();
+}
+
+void FunctionCorrector::process_ref_expr(const Expression *&expression) noexcept {
+    if (expression->context() == cur_func()) {
+        return;
+    } else if (is_from_exterior(expression)) {
+        capture_from_invoker(expression);
+    } else {
+        output_from_invoked(expression);
+    }
+}
+
+void FunctionCorrector::visit_expr(const Expression *const &expression) noexcept {
+    if (expression == nullptr) {
+        return;
+    }
+    if (expression->is_ref()) {
+        process_ref_expr(const_cast<const Expression *&>(expression));
+    } else if (expression->is_member()) {
+        process_ref_expr(const_cast<const Expression *&>(expression));
+    } else {
+        expression->accept(*this);
+    }
+}
+
 void FunctionCorrector::capture_from_invoker(const Expression *&expression) noexcept {
-    expression = cur_func()->mapping_captured_argument(expression);
+    bool contain;
+    const Expression *old_expr = expression;
+    expression = cur_func()->mapping_captured_argument(expression, &contain);
+    if (contain) {
+        return;
+    }
+    CallExpr *call_expr = const_cast<CallExpr *>(cur_func()->call_expr());
+}
+
+void FunctionCorrector::visit(const CallExpr *const_expr) {
+    CallExpr *expr = const_cast<CallExpr *>(const_expr);
+    for (const Expression *const &arg : expr->_arguments) {
+        visit_expr(arg);
+    }
+    if (expr->_function) {
+        apply(const_cast<Function *>(expr->_function));
+        expr->_function->for_each_invoker_expr([&](const Expression *expression) {
+            visit_expr(expression);
+            expr->append_argument(expression);
+        });
+    }
 }
 
 void FunctionCorrector::output_from_invoked(const Expression *&expression) noexcept {
@@ -73,29 +106,18 @@ void FunctionCorrector::output_from_invoked(const Expression *&expression) noexc
         Function *invoker = const_cast<Function *>(call_expr->context());
 
         const RefExpr *ref_expr = nullptr;
-        if (invoker == cur_func()) {
+        if (invoker == kernel()) {
             // add a local variable
             ref_expr = invoker->mapping_local_variable(expression, call_expr);
             expression = ref_expr;
             break;
+        } else if (invoker == cur_func()) {
+            int i = 0;
         } else {
             // add a reference output argument
             ref_expr = invoker->mapping_output_argument(expression, call_expr);
         }
         invoked = invoker;
-    }
-}
-
-void FunctionCorrector::visit_expr(const Expression *const &expression) noexcept {
-    if (expression == nullptr) {
-        return;
-    }
-    if (expression->is_ref()) {
-        process_ref_expr(const_cast<const Expression *&>(expression));
-    } else if (expression->is_member()) {
-        process_ref_expr(const_cast<const Expression *&>(expression));
-    } else {
-        expression->accept(*this);
     }
 }
 
@@ -152,20 +174,6 @@ void FunctionCorrector::visit(const SwitchDefaultStmt *stmt) {
 void FunctionCorrector::visit(const BinaryExpr *expr) {
     visit_expr(expr->_lhs);
     visit_expr(expr->_rhs);
-}
-
-void FunctionCorrector::visit(const CallExpr *const_expr) {
-    CallExpr *expr = const_cast<CallExpr *>(const_expr);
-    for (const Expression *const &arg : expr->_arguments) {
-        visit_expr(arg);
-    }
-    if (expr->_function) {
-        apply(const_cast<Function *>(expr->_function));
-        expr->_function->for_each_invoker_expr([&](const Expression *expression) {
-            visit_expr(expression);
-            expr->append_argument(expression);
-        });
-    }
 }
 
 void FunctionCorrector::visit(const CastExpr *expr) {

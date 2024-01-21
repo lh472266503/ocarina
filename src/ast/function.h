@@ -122,7 +122,7 @@ private:
 
     void correct() noexcept;
     [[nodiscard]] uint outer_expr_index(const ocarina::Expression *expression) const noexcept;
-    [[nodiscard]] const RefExpr *mapping_captured_argument(const Expression *outer_expr) noexcept;
+    [[nodiscard]] const RefExpr *mapping_captured_argument(const Expression *outer_expr, bool *contain) noexcept;
     [[nodiscard]] const RefExpr *mapping_local_variable(const Expression *invoked_func_expr, CallExpr *call_expr) noexcept;
     [[nodiscard]] const RefExpr *mapping_output_argument(const Expression *invoked_func_expr, CallExpr *call_expr) noexcept;
     void append_output_argument(const Expression *expression) noexcept;

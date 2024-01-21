@@ -57,12 +57,15 @@ uint Function::outer_expr_index(const ocarina::Expression *expression) const noe
     return detail::find_index(_expr_from_invoker, expression);
 }
 
-const RefExpr *Function::mapping_captured_argument(const Expression *outer_expr) noexcept {
+const RefExpr *Function::mapping_captured_argument(const Expression *outer_expr, bool *contain) noexcept {
     int index = outer_expr_index(outer_expr);
     if (index == _expr_from_invoker.size()) {
         Variable variable(outer_expr->type(), Variable::Tag::REFERENCE, _next_variable_uid(), nullptr, "outer");
         _expr_from_invoker.push_back(outer_expr);
         _appended_arguments.push_back(variable);
+        *contain = false;
+    } else {
+        *contain = true;
     }
     return _ref(_appended_arguments.at(index));
 }
