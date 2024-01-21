@@ -97,25 +97,32 @@ void FunctionCorrector::output_from_invoked(const Expression *&expression, Funct
     Function *invoked = context;
     vector<const Function *> path = detail::find_invoke_path(cur_func, context);
 
-    bool contain;
+    bool ctx_contain;
     const RefExpr *ref_expr = nullptr;
 
-    context->append_output_argument(expression, &contain);
+    context->append_output_argument(expression, &ctx_contain);
 
     while (true) {
+
+        bool contain;
 
         CallExpr *call_expr = const_cast<CallExpr *>(invoked->call_expr());
         Function *invoker = const_cast<Function *>(call_expr->context());
 
         if (invoker == kernel()) {
             /// add local variable
-            break;
-        } else if (invoker == cur_func) {
-            /// use variable and passthrough argument
+
             break;
         } else {
             /// add passthrough argument
-            break;
+            ref_expr = invoker->mapping_output_argument(expression, &contain);
+        }
+        if (invoker == cur_func) {
+            /// using output argument
+            
+        }
+        if (!contain) {
+            call_expr->append_argument(ref_expr);
         }
         invoked = invoker;
     }
