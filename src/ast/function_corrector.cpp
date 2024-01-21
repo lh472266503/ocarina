@@ -46,37 +46,38 @@ bool FunctionCorrector::is_from_exterior(const Expression *expression) noexcept 
                      expression->context()) != _function_stack.end();
 }
 
-void FunctionCorrector::process_ref_expr(const Expression *&expression) noexcept {
+void FunctionCorrector::process_ref_expr(const Expression *&expression, Function *func) noexcept {
     if (expression->context() == cur_func()) {
         return;
     } else if (is_from_exterior(expression)) {
-        capture_from_invoker(expression);
+        capture_from_invoker(expression, func);
     } else {
-        output_from_invoked(expression);
+        output_from_invoked(expression, func);
     }
 }
 
-void FunctionCorrector::visit_expr(const Expression *const &expression) noexcept {
+void FunctionCorrector::visit_expr(const Expression *const &expression, Function *func) noexcept {
+    func = func == nullptr ? cur_func() : func;
     if (expression == nullptr) {
         return;
     }
     if (expression->is_ref()) {
-        process_ref_expr(const_cast<const Expression *&>(expression));
+        process_ref_expr(const_cast<const Expression *&>(expression), func);
     } else if (expression->is_member()) {
-        process_ref_expr(const_cast<const Expression *&>(expression));
+        process_ref_expr(const_cast<const Expression *&>(expression), func);
     } else {
         expression->accept(*this);
     }
 }
 
-void FunctionCorrector::capture_from_invoker(const Expression *&expression) noexcept {
+void FunctionCorrector::capture_from_invoker(const Expression *&expression, Function *func) noexcept {
     bool contain;
     const Expression *old_expr = expression;
-    expression = cur_func()->mapping_captured_argument(expression, &contain);
+    expression = func->mapping_captured_argument(expression, &contain);
     if (contain) {
         return;
     }
-    CallExpr *call_expr = const_cast<CallExpr *>(cur_func()->call_expr());
+    CallExpr *call_expr = const_cast<CallExpr *>(func->call_expr());
 }
 
 void FunctionCorrector::visit(const CallExpr *const_expr) {
@@ -93,7 +94,7 @@ void FunctionCorrector::visit(const CallExpr *const_expr) {
     }
 }
 
-void FunctionCorrector::output_from_invoked(const Expression *&expression) noexcept {
+void FunctionCorrector::output_from_invoked(const Expression *&expression, Function *func) noexcept {
     auto context = const_cast<Function *>(expression->context());
     Function *invoked = context;
     vector<const Function *> path = detail::find_invoke_path(cur_func(), context);

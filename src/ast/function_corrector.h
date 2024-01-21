@@ -42,13 +42,13 @@ private:
     [[nodiscard]] Function *kernel() noexcept { return _function_stack.front(); }
 
     void traverse(Function &function) noexcept;
-    void process_ref_expr(const Expression *&expression) noexcept;
-    void visit_expr(const Expression *const &expression) noexcept;
+    void process_ref_expr(const Expression *&expression, Function *func) noexcept;
+    void visit_expr(const Expression *const &expression, Function *func = nullptr) noexcept;
 
     [[nodiscard]] bool is_from_exterior(const Expression *expression) noexcept;
-    void capture_from_invoker(const Expression *&expression) noexcept;
+    void capture_from_invoker(const Expression *&expression, Function *func) noexcept;
 
-    void output_from_invoked(const Expression *&expression) noexcept;
+    void output_from_invoked(const Expression *&expression, Function *func) noexcept;
 
 public:
     explicit FunctionCorrector() = default;
