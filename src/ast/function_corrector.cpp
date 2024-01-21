@@ -78,10 +78,8 @@ void FunctionCorrector::capture_from_invoker(const Expression *&expression, Func
         return;
     }
     CallExpr *call_expr = const_cast<CallExpr *>(cur_func->call_expr());
-    if (call_expr) {
-        visit_expr(old_expr, const_cast<Function *>(call_expr->context()));
-        call_expr->append_argument(old_expr);
-    }
+    visit_expr(old_expr, const_cast<Function *>(call_expr->context()));
+    call_expr->append_argument(old_expr);
 }
 
 void FunctionCorrector::visit(const CallExpr *const_expr) {

@@ -170,19 +170,20 @@ void test_lambda(Device &device, Stream &stream) {
            << tri.upload(triangles.data());
 
     Kernel kernel = [&](Uint i) {
-        Uint begin = 2;
-        Uint end = 10;
+
 
         Float *p;
         Float *p1;
-
+        Uint begin = 2;
+        Uint end = 10;
         $outline {
+
 //            Var aa = $outline {
                 $outline{
 //                    p = new Float();
 //                    *p = 15;
                     end = 15;
-                    begin = 26;
+//                    begin = 26;
 //                    return 20;
                 };
 //                return x + *p;
@@ -193,7 +194,7 @@ void test_lambda(Device &device, Stream &stream) {
 //            return c + *p + c;
         };
 
-        $info("{} {}",  end, begin);
+//        $info("{} {}",  end, begin);
 
 //        Float bb = $outline {
 //            return *p;
