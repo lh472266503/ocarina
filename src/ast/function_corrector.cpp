@@ -37,7 +37,7 @@ void FunctionCorrector::traverse(Function &function) noexcept {
 
 void FunctionCorrector::apply(Function *function) noexcept {
     _function_stack.push_back(function);
-    traverse(*cur_func());
+    traverse(*current_function());
     _function_stack.pop_back();
 }
 
@@ -47,7 +47,7 @@ bool FunctionCorrector::is_from_exterior(const Expression *expression) noexcept 
 }
 
 void FunctionCorrector::process_ref_expr(const Expression *&expression, Function *func) noexcept {
-    if (expression->context() == cur_func()) {
+    if (expression->context() == func) {
         return;
     } else if (is_from_exterior(expression)) {
         capture_from_invoker(expression, func);
@@ -57,7 +57,7 @@ void FunctionCorrector::process_ref_expr(const Expression *&expression, Function
 }
 
 void FunctionCorrector::visit_expr(const Expression *const &expression, Function *func) noexcept {
-    func = func == nullptr ? cur_func() : func;
+    func = func == nullptr ? current_function() : func;
     if (expression == nullptr) {
         return;
     }
@@ -78,6 +78,10 @@ void FunctionCorrector::capture_from_invoker(const Expression *&expression, Func
         return;
     }
     CallExpr *call_expr = const_cast<CallExpr *>(func->call_expr());
+    if (call_expr) {
+        visit_expr(old_expr, const_cast<Function *>(call_expr->context()));
+        call_expr->append_argument(old_expr);
+    }
 }
 
 void FunctionCorrector::visit(const CallExpr *const_expr) {
@@ -87,17 +91,13 @@ void FunctionCorrector::visit(const CallExpr *const_expr) {
     }
     if (expr->_function) {
         apply(const_cast<Function *>(expr->_function));
-        expr->_function->for_each_invoker_expr([&](const Expression *expression) {
-            visit_expr(expression);
-            expr->append_argument(expression);
-        });
     }
 }
 
 void FunctionCorrector::output_from_invoked(const Expression *&expression, Function *func) noexcept {
     auto context = const_cast<Function *>(expression->context());
     Function *invoked = context;
-    vector<const Function *> path = detail::find_invoke_path(cur_func(), context);
+    vector<const Function *> path = detail::find_invoke_path(current_function(), context);
 
     context->append_output_argument(expression);
 
@@ -112,7 +112,7 @@ void FunctionCorrector::output_from_invoked(const Expression *&expression, Funct
             ref_expr = invoker->mapping_local_variable(expression, call_expr);
             expression = ref_expr;
             break;
-        } else if (invoker == cur_func()) {
+        } else if (invoker == current_function()) {
             int i = 0;
         } else {
             // add a reference output argument

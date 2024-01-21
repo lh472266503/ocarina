@@ -38,7 +38,7 @@ private:
     void visit(const SubscriptExpr *expr) override;
     void visit(const UnaryExpr *expr) override;
 
-    [[nodiscard]] Function *cur_func() noexcept { return _function_stack.back(); }
+    [[nodiscard]] Function *current_function() noexcept { return _function_stack.back(); }
     [[nodiscard]] Function *kernel() noexcept { return _function_stack.front(); }
 
     void traverse(Function &function) noexcept;
