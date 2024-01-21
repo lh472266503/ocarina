@@ -70,40 +70,35 @@ const RefExpr *Function::mapping_captured_argument(const Expression *outer_expr,
     return _ref(_appended_arguments.at(index));
 }
 
-const RefExpr *Function::mapping_local_variable(const Expression *invoked_func_expr, CallExpr *call_expr) noexcept {
+const RefExpr *Function::mapping_local_variable(const Expression *invoked_func_expr, bool *contain) noexcept {
     if (!_outer_to_local.contains(invoked_func_expr)) {
         const RefExpr *ref_expr = local(invoked_func_expr->type());
-        call_expr->append_argument(ref_expr);
         _outer_to_local.insert(make_pair(invoked_func_expr, ref_expr));
+        *contain = false;
+    } else {
+        *contain = true;
     }
     return _outer_to_local.at(invoked_func_expr);
 }
 
-const RefExpr *Function::mapping_output_argument(const Expression *invoked_func_expr, CallExpr *call_expr) noexcept {
-    if (_outer_to_local.contains(invoked_func_expr) && !_outer_to_argument.contains(invoked_func_expr)) {
-        Variable variable(invoked_func_expr->type(), Variable::Tag::REFERENCE, _next_variable_uid(), nullptr, "pass");
-        const RefExpr *ref_expr = _ref(variable);
-        _appended_arguments.push_back(variable);
-        _outer_to_argument.insert(make_pair(invoked_func_expr, ref_expr));
-
-        with(body(), [&] {
-            assign(ref_expr, _outer_to_local.at(invoked_func_expr));
-        });
-    }
+const RefExpr *Function::mapping_output_argument(const Expression *invoked_func_expr, bool *contain) noexcept {
     if (!_outer_to_argument.contains(invoked_func_expr)) {
         Variable variable(invoked_func_expr->type(), Variable::Tag::REFERENCE, _next_variable_uid(), nullptr, "pass");
         const RefExpr *ref_expr = _ref(variable);
-        call_expr->append_argument(ref_expr);
-        _appended_arguments.push_back(variable);
         _outer_to_argument.insert(make_pair(invoked_func_expr, ref_expr));
+        *contain = false;
+    } else {
+        *contain = true;
     }
     return _outer_to_argument.at(invoked_func_expr);
 }
 
-void Function::append_output_argument(const Expression *expression) noexcept {
+void Function::append_output_argument(const Expression *expression,bool *contain) noexcept {
     if (_local_to_output.contains(expression)) {
+        *contain = true;
         return;
     }
+    *contain = false;
     Variable variable(expression->type(), Variable::Tag::REFERENCE, _next_variable_uid(), nullptr, "output");
     _appended_arguments.push_back(variable);
     const RefExpr *ref_expr = _ref(variable);

@@ -73,16 +73,15 @@ private:
     /// The expression of the function that calls the current function
     ocarina::vector<const Expression *> _expr_from_invoker;
 
-    /// The expression of the function invoked by the current function
-    ocarina::vector<const Expression *> _expr_from_invoked;
-
     /// appended argument for output
     ocarina::vector<Variable> _appended_arguments;
 
     /// key : expression from other function , value : expression belong current function
+    /// use for kernel
     ocarina::map<const Expression *, const RefExpr *> _outer_to_local;
 
     /// key : expression from other function , value : output argument of current function
+    /// use for callable
     ocarina::map<const Expression *, const RefExpr *> _outer_to_argument;
 
     /// key : local expression from current function, value : output argument
@@ -122,10 +121,12 @@ private:
 
     void correct() noexcept;
     [[nodiscard]] uint outer_expr_index(const ocarina::Expression *expression) const noexcept;
+    /// used to capture variable from invoker
     [[nodiscard]] const RefExpr *mapping_captured_argument(const Expression *outer_expr, bool *contain) noexcept;
-    [[nodiscard]] const RefExpr *mapping_local_variable(const Expression *invoked_func_expr, CallExpr *call_expr) noexcept;
-    [[nodiscard]] const RefExpr *mapping_output_argument(const Expression *invoked_func_expr, CallExpr *call_expr) noexcept;
-    void append_output_argument(const Expression *expression) noexcept;
+    ///
+    [[nodiscard]] const RefExpr *mapping_local_variable(const Expression *invoked_func_expr, bool *contain) noexcept;
+    [[nodiscard]] const RefExpr *mapping_output_argument(const Expression *invoked_func_expr, bool *contain) noexcept;
+    void append_output_argument(const Expression *expression,bool *contain) noexcept;
     template<typename Expr, typename Tuple, size_t... i>
     [[nodiscard]] auto _create_expression(Tuple &&tuple, std::index_sequence<i...>) {
         auto expr = ocarina::make_unique<Expr>(std::get<i>(OC_FORWARD(tuple))...);

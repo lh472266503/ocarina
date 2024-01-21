@@ -174,21 +174,21 @@ void test_lambda(Device &device, Stream &stream) {
 
         Float *p;
         Float *p1;
-        Uint begin = 2;
-        Uint end = 10;
+//        Uint begin = 2;
+//        Uint end = 10;
         $outline {
 
 //            Var aa = $outline {
                 $outline{
-//                    p = new Float();
-//                    *p = 15;
-                    end = 15;
+                    p = new Float();
+                    *p = 15;
+//                    end = 15;
 //                    begin = 26;
 //                    return 20;
                 };
 //                return x + *p;
 //            };
-//            auto c  = *p;
+            auto c  = *p;
 
 //            $info("{} ------",  *p);
 //            return c + *p + c;
