@@ -46,38 +46,38 @@ bool FunctionCorrector::is_from_exterior(const Expression *expression) noexcept 
                      expression->context()) != _function_stack.end();
 }
 
-void FunctionCorrector::process_ref_expr(const Expression *&expression, Function *func) noexcept {
-    if (expression->context() == func) {
+void FunctionCorrector::process_ref_expr(const Expression *&expression, Function *cur_func) noexcept {
+    if (expression->context() == cur_func) {
         return;
     } else if (is_from_exterior(expression)) {
-        capture_from_invoker(expression, func);
+        capture_from_invoker(expression, cur_func);
     } else {
-        output_from_invoked(expression, func);
+        output_from_invoked(expression, cur_func);
     }
 }
 
-void FunctionCorrector::visit_expr(const Expression *const &expression, Function *func) noexcept {
-    func = func == nullptr ? current_function() : func;
+void FunctionCorrector::visit_expr(const Expression *const &expression, Function *cur_func) noexcept {
+    cur_func = cur_func == nullptr ? current_function() : cur_func;
     if (expression == nullptr) {
         return;
     }
     if (expression->is_ref()) {
-        process_ref_expr(const_cast<const Expression *&>(expression), func);
+        process_ref_expr(const_cast<const Expression *&>(expression), cur_func);
     } else if (expression->is_member()) {
-        process_ref_expr(const_cast<const Expression *&>(expression), func);
+        process_ref_expr(const_cast<const Expression *&>(expression), cur_func);
     } else {
         expression->accept(*this);
     }
 }
 
-void FunctionCorrector::capture_from_invoker(const Expression *&expression, Function *func) noexcept {
+void FunctionCorrector::capture_from_invoker(const Expression *&expression, Function *cur_func) noexcept {
     bool contain;
     const Expression *old_expr = expression;
-    expression = func->mapping_captured_argument(expression, &contain);
+    expression = cur_func->mapping_captured_argument(expression, &contain);
     if (contain) {
         return;
     }
-    CallExpr *call_expr = const_cast<CallExpr *>(func->call_expr());
+    CallExpr *call_expr = const_cast<CallExpr *>(cur_func->call_expr());
     if (call_expr) {
         visit_expr(old_expr, const_cast<Function *>(call_expr->context()));
         call_expr->append_argument(old_expr);
@@ -94,7 +94,7 @@ void FunctionCorrector::visit(const CallExpr *const_expr) {
     }
 }
 
-void FunctionCorrector::output_from_invoked(const Expression *&expression, Function *func) noexcept {
+void FunctionCorrector::output_from_invoked(const Expression *&expression, Function *cur_func) noexcept {
     auto context = const_cast<Function *>(expression->context());
     Function *invoked = context;
     vector<const Function *> path = detail::find_invoke_path(current_function(), context);
