@@ -10,7 +10,7 @@ namespace ocarina {
 
 class FunctionCorrector : public ExprVisitor, public StmtVisitor {
 private:
-    ocarina::deque<Function *> _function_tack;
+    ocarina::deque<Function *> _function_stack;
 
 private:
     void visit(const AssignStmt *stmt) override;
@@ -38,7 +38,8 @@ private:
     void visit(const SubscriptExpr *expr) override;
     void visit(const UnaryExpr *expr) override;
 
-    [[nodiscard]] Function *cur_func() noexcept { return _function_tack.back(); }
+    [[nodiscard]] Function *cur_func() noexcept { return _function_stack.back(); }
+    [[nodiscard]] Function *kernel() noexcept { return _function_stack.front(); }
 
     void traverse(Function &function) noexcept;
     void process_ref_expr(const Expression *&expression) noexcept;

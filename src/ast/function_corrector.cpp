@@ -11,9 +11,9 @@ void FunctionCorrector::traverse(Function &function) noexcept {
 }
 
 void FunctionCorrector::apply(Function *function) noexcept {
-    _function_tack.push_back(function);
+    _function_stack.push_back(function);
     traverse(*cur_func());
-    _function_tack.pop_back();
+    _function_stack.pop_back();
 }
 
 void FunctionCorrector::process_ref_expr(const Expression *&expression) noexcept {
@@ -27,8 +27,8 @@ void FunctionCorrector::process_ref_expr(const Expression *&expression) noexcept
 }
 
 bool FunctionCorrector::is_from_exterior(const Expression *expression) noexcept {
-    return std::find(_function_tack.begin(), _function_tack.end(),
-                     expression->context()) != _function_tack.end();
+    return std::find(_function_stack.begin(), _function_stack.end(),
+                     expression->context()) != _function_stack.end();
 }
 
 namespace detail {
