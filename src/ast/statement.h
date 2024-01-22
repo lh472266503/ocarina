@@ -4,11 +4,7 @@
 
 #pragma once
 
-#include "core/header.h"
-#include "core/concepts.h"
-#include "core/stl.h"
-#include "core/hash.h"
-#include "variable.h"
+#include "ast_node.h"
 
 namespace ocarina {
 
@@ -52,7 +48,7 @@ struct StmtVisitor {
     friend class FunctionCorrector; \
     void accept(StmtVisitor &visitor) const override { visitor.visit(this); }
 
-class OC_AST_API Statement : public concepts::Noncopyable, public Hashable {
+class OC_AST_API Statement : public ASTNode, public concepts::Noncopyable, public Hashable {
 public:
     enum struct Tag : uint32_t {
         SCOPE,

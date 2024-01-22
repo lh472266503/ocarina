@@ -4,12 +4,7 @@
 
 #pragma once
 
-#include "core/stl.h"
-#include "type.h"
-#include "core/concepts.h"
-#include "usage.h"
-#include "variable.h"
-#include "op.h"
+#include "ast_node.h"
 
 namespace ocarina {
 
@@ -37,7 +32,7 @@ struct OC_AST_API ExprVisitor {
     virtual void visit(const CastExpr *) = 0;
 };
 
-class OC_AST_API Expression : public concepts::Noncopyable, public Hashable {
+class OC_AST_API Expression : public ASTNode, public concepts::Noncopyable, public Hashable {
 public:
     enum struct Tag : uint32_t {
         UNARY,
@@ -55,7 +50,6 @@ public:
 
 private:
     const Type *_type;
-    const Function *_context{};
     Tag _tag;
 
 protected:
@@ -65,8 +59,6 @@ public:
     explicit Expression(Tag tag, const Type *type) noexcept : _type{type}, _tag{tag} {}
     virtual ~Expression() noexcept = default;
     [[nodiscard]] auto type() const noexcept { return _type; }
-    [[nodiscard]] const Function *context() const noexcept { return _context; }
-    void set_context(const Function *f) noexcept { _context = f; }
     [[nodiscard]] auto tag() const noexcept { return _tag; }
     [[nodiscard]] bool is_ref() const noexcept { return tag() == Tag::REF; }
     [[nodiscard]] bool is_member() const noexcept { return tag() == Tag::MEMBER; }
