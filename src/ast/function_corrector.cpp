@@ -38,7 +38,7 @@ void FunctionCorrector::traverse(Function &function) noexcept {
 void FunctionCorrector::apply(Function *function) noexcept {
     _function_stack.push_back(function);
     traverse(*current_function());
-    function->check_context();
+    //        function->check_context();
     _function_stack.pop_back();
 }
 
@@ -99,34 +99,47 @@ void FunctionCorrector::output_from_invoked(const Expression *&expression, Funct
     vector<const Function *> path = detail::find_invoke_path(cur_func, context);
 
     bool ctx_contain;
-    const RefExpr *ref_expr = nullptr;
-
     context->append_output_argument(expression, &ctx_contain);
+
+    const RefExpr *kernel_local = kernel()->outer_to_local(expression);
+
+    if (kernel_local) {
+        expression = kernel_local;
+        visit_expr(expression, cur_func);
+        return;
+    }
+
+    const Expression *org_expr = expression;
 
     while (true) {
 
         bool contain;
+        const RefExpr *ref_expr = nullptr;
 
         CallExpr *call_expr = const_cast<CallExpr *>(invoked->call_expr());
         Function *invoker = const_cast<Function *>(call_expr->context());
 
         if (invoker == kernel()) {
             /// add local variable
-            ref_expr = invoker->mapping_local_variable(expression, &contain);
+            ref_expr = invoker->mapping_local_variable(org_expr, &contain);
             if (!contain) {
                 call_expr->append_argument(ref_expr);
+            }
+            if (invoker == cur_func) {
+                /// using local variable
+                expression = ref_expr;
             }
             break;
         } else {
             /// add passthrough argument
-            ref_expr = invoker->mapping_output_argument(expression, &contain);
-        }
-        if (invoker == cur_func) {
-            /// using output argument
-            expression = ref_expr;
-        }
-        if (!contain) {
-            call_expr->append_argument(ref_expr);
+            ref_expr = invoker->mapping_output_argument(org_expr, &contain);
+            if (invoker == cur_func) {
+                /// using output argument
+                expression = ref_expr;
+            }
+            if (!contain) {
+                call_expr->append_argument(ref_expr);
+            }
         }
         invoked = invoker;
     }

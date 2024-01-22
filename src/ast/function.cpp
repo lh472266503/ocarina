@@ -81,6 +81,13 @@ const RefExpr *Function::mapping_local_variable(const Expression *invoked_func_e
     return _outer_to_local.at(invoked_func_expr);
 }
 
+const RefExpr *Function::outer_to_local(const Expression *invoked_func_expr) noexcept {
+    if (!_outer_to_local.contains(invoked_func_expr)) {
+        return nullptr;
+    }
+    return _outer_to_local.at(invoked_func_expr);
+}
+
 const RefExpr *Function::mapping_output_argument(const Expression *invoked_func_expr, bool *contain) noexcept {
     if (!_outer_to_argument.contains(invoked_func_expr)) {
         Variable variable(invoked_func_expr->type(), Variable::Tag::REFERENCE, _next_variable_uid(), nullptr, "pass");

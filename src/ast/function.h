@@ -123,8 +123,8 @@ private:
     [[nodiscard]] uint outer_expr_index(const ocarina::Expression *expression) const noexcept;
     /// used to capture variable from invoker
     [[nodiscard]] const RefExpr *mapping_captured_argument(const Expression *outer_expr, bool *contain) noexcept;
-    ///
     [[nodiscard]] const RefExpr *mapping_local_variable(const Expression *invoked_func_expr, bool *contain) noexcept;
+    [[nodiscard]] const RefExpr *outer_to_local(const Expression *invoked_func_expr) noexcept;
     [[nodiscard]] const RefExpr *mapping_output_argument(const Expression *invoked_func_expr, bool *contain) noexcept;
     void append_output_argument(const Expression *expression,bool *contain) noexcept;
     template<typename Expr, typename Tuple, size_t... i>
