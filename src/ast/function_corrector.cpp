@@ -6,31 +6,6 @@
 
 namespace ocarina {
 
-namespace detail {
-bool DFS_traverse(const Function *function, const Function *target,
-                  vector<const Function *> *path) noexcept {
-    path->push_back(function);
-    auto used_func = function->used_custom_func();
-    if (function == target) {
-        return true;
-    }
-    for (const auto &f : used_func) {
-        if (DFS_traverse(f.get(), target, path)) {
-            return true;
-        }
-    }
-    path->pop_back();
-    return false;
-}
-
-vector<const Function *> find_invoke_path(Function *function,
-                                          const Function *target) noexcept {
-    vector<const Function *> path;
-    detail::DFS_traverse(function, target, &path);
-    return path;
-}
-}// namespace detail
-
 void FunctionCorrector::traverse(Function &function) noexcept {
     visit(function.body());
 }
@@ -38,7 +13,8 @@ void FunctionCorrector::traverse(Function &function) noexcept {
 void FunctionCorrector::apply(Function *function) noexcept {
     _function_stack.push_back(function);
     traverse(*current_function());
-    function->check_context();
+    bool valid = function->check_context();
+    OC_INFO_FORMAT("FunctionCorrector info: valid is {}  function {}", valid, function->description().c_str());
     _function_stack.pop_back();
 }
 

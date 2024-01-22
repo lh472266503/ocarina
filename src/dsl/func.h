@@ -297,14 +297,14 @@ public:
             detail::callable_wrap([&] {
                 _func(OC_FORWARD(args)...);
             },
-                            _desc);
+                                  _desc);
         } else {
-            ret_type ret;
+            optional<ret_type> ret;
             detail::callable_wrap([&] {
-                ret = _func(OC_FORWARD(args)...);
+                ret.emplace(_func(OC_FORWARD(args)...));
             },
-                            _desc);
-            return ret;
+                                  _desc);
+            return ret.value();
         }
     }
 };
