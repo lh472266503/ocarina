@@ -72,10 +72,7 @@ void FunctionCorrector::visit(const CallExpr *const_expr) {
 void FunctionCorrector::output_from_invoked(const Expression *&expression, Function *cur_func) noexcept {
     auto context = const_cast<Function *>(expression->context());
     Function *invoked = context;
-    const RefExpr *kernel_expr = kernel()->outer_to_local(expression);
-
     bool in_path = false;
-
     context->append_output_argument(expression, nullptr);
     const Expression *org_expr = expression;
 
@@ -104,7 +101,7 @@ void FunctionCorrector::output_from_invoked(const Expression *&expression, Funct
     if (in_path) {
         expression = cur_func->outer_to_argument(org_expr);
     } else {
-        kernel_expr = kernel()->outer_to_local(expression);
+        const RefExpr *kernel_expr = kernel()->outer_to_local(expression);
         expression = kernel_expr;
         capture_from_invoker(expression, cur_func);
     }
