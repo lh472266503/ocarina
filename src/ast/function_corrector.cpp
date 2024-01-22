@@ -37,7 +37,6 @@ void FunctionCorrector::traverse(Function &function) noexcept {
 
 void FunctionCorrector::apply(Function *function) noexcept {
     _function_stack.push_back(function);
-    OC_WARNING_FORMAT(" FunctionCorrector  {} ", function->description().c_str());
     traverse(*current_function());
     function->check_context();
     _function_stack.pop_back();
