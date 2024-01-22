@@ -171,37 +171,23 @@ void test_lambda(Device &device, Stream &stream) {
 
     Kernel kernel = [&](Uint i) {
         Float *p;
-        Float *p1;
-        //        Uint begin = 2;
-        //        Uint end = 10;
+
         $outline {
 
-            //            Var aa = $outline {
-            $outline {
-                p = new Float();
-                *p = 15;
-                //                    end = 15;
-                //                    begin = 26;
-                //                    return 20;
-            };
-            //                return x + *p;
-            //            };
-            auto c = *p;
-
-//            $info("{}     ---   ", *p);
-            //            return c + *p + c;
-        };
-//        auto c = *p;
-//        $info("{}     ---   ", c);
-        //        $info("{} {}",  end, begin);
-
-                Float bb = $outline {
-                    return *p;
+            Var aa = $outline {
+                $outline {
+                    p = new Float(15);
                 };
+                return 5;
+            };
 
-                $info("{}     ---   ", bb);
+        };
 
-        //        *p = 1.f;
+        Float bb = $outline {
+            return *p;
+        };
+
+        $info("{}     ---   ", bb);
     };
     Shader shader = device.compile(kernel);
 

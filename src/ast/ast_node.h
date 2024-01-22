@@ -5,6 +5,7 @@
 #pragma once
 
 #include "core/stl.h"
+#include "core/logging.h"
 #include "type.h"
 #include "core/concepts.h"
 #include "usage.h"
@@ -22,7 +23,9 @@ protected:
 public:
     OC_MAKE_MEMBER_GETTER_SETTER(context, )
     virtual bool check_context(const Function *ctx) const noexcept {
-        OC_ASSERT(_context == ctx);
+        if (ctx != _context) {
+            OC_WARNING("function correct warning ! {}");
+        }
         return _context == ctx;
     }
 };
