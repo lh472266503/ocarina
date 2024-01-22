@@ -86,6 +86,7 @@ private:
 public:
     UnaryExpr(const Type *type, UnaryOp op, const Expression *expression)
         : Expression(Tag::UNARY, type), _op(op), _operand(expression) {}
+    OC_MAKE_CHECK_CONTEXT(Expression, _operand)
     [[nodiscard]] auto operand() const noexcept { return _operand; }
     [[nodiscard]] auto op() const noexcept { return _op; }
     OC_MAKE_EXPRESSION_COMMON
@@ -106,6 +107,7 @@ public:
         _lhs->mark(Usage::READ);
         _rhs->mark(Usage::READ);
     }
+    OC_MAKE_CHECK_CONTEXT(Expression, _lhs, _rhs)
     [[nodiscard]] auto lhs() const noexcept { return _lhs; }
     [[nodiscard]] auto rhs() const noexcept { return _rhs; }
     [[nodiscard]] auto op() const noexcept { return _op; }
@@ -130,7 +132,7 @@ public:
         _true->mark(Usage::READ);
         _false->mark(Usage::READ);
     }
-
+    OC_MAKE_CHECK_CONTEXT(Expression, _pred, _true, _false)
     [[nodiscard]] const Expression *pred() const noexcept { return _pred; }
     [[nodiscard]] const Expression *true_() const noexcept { return _true; }
     [[nodiscard]] const Expression *false_() const noexcept { return _false; }
@@ -160,7 +162,7 @@ public:
             index->mark(Usage::READ);
         });
     }
-
+    OC_MAKE_CHECK_CONTEXT(Expression, _range, _indexes)
     SubscriptExpr(const Type *type, const Expression *range, IndexVector indexes)
         : Expression(Tag::SUBSCRIPT, type), _range(range), _indexes(ocarina::move(indexes)) {
         _range->mark(Usage::READ);
@@ -229,6 +231,7 @@ public:
         : Expression(Tag::CAST, type), _cast_op(op), _expression(expression) {
         _expression->mark(Usage::READ);
     }
+    OC_MAKE_CHECK_CONTEXT(Expression, _expression)
     [[nodiscard]] CastOp cast_op() const noexcept {
         return _cast_op;
     }
@@ -253,6 +256,7 @@ private:
 public:
     MemberExpr(const Type *type, const Expression *parent, uint16_t index, uint16_t swizzle_size)
         : Expression(Tag::MEMBER, type), _parent(parent), _member_index(index), _swizzle_size(swizzle_size) {}
+    OC_MAKE_CHECK_CONTEXT(Expression, _parent)
     [[nodiscard]] auto member_index() const noexcept { return _member_index; }
     [[nodiscard]] bool is_swizzle() const noexcept { return _swizzle_size != 0; }
     [[nodiscard]] int swizzle_size() const noexcept { return _swizzle_size; }
@@ -283,6 +287,7 @@ public:
              ocarina::vector<Template> &&t_args = {})
         : Expression(Tag::CALL, type), _call_op(op),
           _arguments(std::move(args)), _template_args(std::move(t_args)) {}
+    OC_MAKE_CHECK_CONTEXT(Expression, _arguments)
     [[nodiscard]] ocarina::span<const Expression *const> arguments() const noexcept { return _arguments; }
     [[nodiscard]] ocarina::span<const Template> template_args() const noexcept { return _template_args; }
     void append_argument(const Expression *expression) noexcept;

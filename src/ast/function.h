@@ -150,6 +150,7 @@ private:
     [[nodiscard]] auto _create_statement(Tuple &&tuple, std::index_sequence<i...>) {
         auto stmt = ocarina::make_unique<Stmt>(std::get<i>(OC_FORWARD(tuple))...);
         auto ret = stmt.get();
+        stmt->set_context(this);
         _all_statements.push_back(std::move(stmt));
         current_scope()->add_stmt(ret);
         return ret;
@@ -162,6 +163,9 @@ private:
         return _create_statement<Stmt>(OC_FORWARD(tuple), std::index_sequence_for<Args...>());
     }
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+    bool check_context() const noexcept {
+        return _body.check_context(this);
+    }
 
     class ScopeGuard {
     private:

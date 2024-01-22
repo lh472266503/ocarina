@@ -90,6 +90,9 @@ private:
 public:
     explicit ScopeStmt(bool is_func_body = false) noexcept
         : _is_func_body(is_func_body), Statement(Tag::SCOPE) {}
+    bool check_context(const Function *ctx) const noexcept override {
+        return detail::check_context((_statements), ctx);
+    }
     [[nodiscard]] ocarina::span<const Variable> local_vars() const noexcept { return _local_vars; }
     [[nodiscard]] bool is_func_body() const noexcept { return _is_func_body; }
     [[nodiscard]] ocarina::span<const Statement *const> statements() const noexcept { return _statements; }
@@ -146,6 +149,7 @@ private:
 public:
     explicit ExprStmt(const Expression *expr = nullptr) noexcept
         : Statement(Tag::EXPR), _expression(expr) {}
+    OC_MAKE_CHECK_CONTEXT(Statement, _expression)
     const Expression *expression() const { return _expression; }
     OC_MAKE_STATEMENT_COMMON
 };
@@ -161,6 +165,7 @@ private:
 public:
     explicit AssignStmt(const Expression *lhs, const Expression *rhs)
         : Statement(Tag::ASSIGN), _lhs(lhs), _rhs(rhs) {}
+    OC_MAKE_CHECK_CONTEXT(Statement, _lhs, _rhs)
     [[nodiscard]] auto lhs() const noexcept { return _lhs; }
     [[nodiscard]] auto rhs() const noexcept { return _rhs; }
     OC_MAKE_STATEMENT_COMMON
@@ -177,6 +182,7 @@ private:
 
 public:
     explicit IfStmt(const Expression *condition) : Statement(Tag::IF), _condition(condition) {}
+    OC_MAKE_CHECK_CONTEXT(Statement, _condition, _true_branch, _false_branch)
     [[nodiscard]] const Expression *condition() const noexcept { return _condition; }
     [[nodiscard]] const ScopeStmt *true_branch() const noexcept { return &_true_branch; }
     [[nodiscard]] const ScopeStmt *false_branch() const noexcept { return &_false_branch; }
@@ -210,6 +216,7 @@ private:
 public:
     explicit SwitchStmt(const Expression *expr)
         : Statement(Tag::SWITCH), _expression(expr) {}
+    OC_MAKE_CHECK_CONTEXT(Statement, _expression, _body)
     [[nodiscard]] auto expression() const noexcept { return _expression; }
     [[nodiscard]] auto body() const noexcept { return &_body; }
     [[nodiscard]] auto body() noexcept { return &_body; }
@@ -226,6 +233,7 @@ private:
 
 public:
     explicit SwitchCaseStmt(const Expression *expression);
+    OC_MAKE_CHECK_CONTEXT(Statement, _expr, _body)
     [[nodiscard]] auto expression() const noexcept { return _expr; }
     [[nodiscard]] auto body() const noexcept { return &_body; }
     [[nodiscard]] auto body() noexcept { return &_body; }
@@ -241,6 +249,7 @@ private:
 
 public:
     SwitchDefaultStmt() : Statement(Tag::SWITCH_DEFAULT) {}
+    OC_MAKE_CHECK_CONTEXT(Statement, _body)
     [[nodiscard]] auto body() const noexcept { return &_body; }
     [[nodiscard]] auto body() noexcept { return &_body; }
     OC_MAKE_STATEMENT_COMMON
@@ -259,6 +268,7 @@ private:
 public:
     ForStmt(const Expression *var, const Expression *cond, const Expression *step)
         : Statement(Tag::FOR), _var(var), _condition(cond), _step(step) {}
+    OC_MAKE_CHECK_CONTEXT(Statement, _var, _condition, _step, _body)
     [[nodiscard]] auto var() const noexcept { return _var; }
     [[nodiscard]] auto condition() const noexcept { return _condition; }
     [[nodiscard]] auto step() const noexcept { return _step; }
@@ -276,6 +286,7 @@ private:
 
 public:
     LoopStmt() : Statement(Tag::LOOP) {}
+    OC_MAKE_CHECK_CONTEXT(Statement, _body)
     [[nodiscard]] auto body() const noexcept { return &_body; }
     [[nodiscard]] auto body() noexcept { return &_body; }
     OC_MAKE_STATEMENT_COMMON
@@ -292,6 +303,7 @@ private:
 public:
     explicit PrintStmt(string fmt, const vector<const Expression *> &args)
         : Statement(Tag::PRINT), _fmt(fmt), _args(args) {}
+    OC_MAKE_CHECK_CONTEXT(Statement, _args)
     [[nodiscard]] ocarina::string fmt() const noexcept { return _fmt; }
     [[nodiscard]] span<const Expression *const> args() const noexcept { return _args; }
     OC_MAKE_STATEMENT_COMMON
