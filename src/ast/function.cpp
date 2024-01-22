@@ -86,6 +86,7 @@ const RefExpr *Function::mapping_output_argument(const Expression *invoked_func_
         Variable variable(invoked_func_expr->type(), Variable::Tag::REFERENCE, _next_variable_uid(), nullptr, "pass");
         const RefExpr *ref_expr = _ref(variable);
         _outer_to_argument.insert(make_pair(invoked_func_expr, ref_expr));
+        _appended_arguments.push_back(variable);
         *contain = false;
     } else {
         *contain = true;

@@ -111,7 +111,10 @@ void FunctionCorrector::output_from_invoked(const Expression *&expression, Funct
 
         if (invoker == kernel()) {
             /// add local variable
-
+            ref_expr = invoker->mapping_local_variable(expression, &contain);
+            if (!contain) {
+                call_expr->append_argument(ref_expr);
+            }
             break;
         } else {
             /// add passthrough argument
@@ -119,7 +122,7 @@ void FunctionCorrector::output_from_invoked(const Expression *&expression, Funct
         }
         if (invoker == cur_func) {
             /// using output argument
-            
+            expression = ref_expr;
         }
         if (!contain) {
             call_expr->append_argument(ref_expr);
