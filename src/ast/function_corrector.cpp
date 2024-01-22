@@ -97,52 +97,41 @@ void FunctionCorrector::visit(const CallExpr *const_expr) {
 void FunctionCorrector::output_from_invoked(const Expression *&expression, Function *cur_func) noexcept {
     auto context = const_cast<Function *>(expression->context());
     Function *invoked = context;
-    vector<const Function *> path = detail::find_invoke_path(cur_func, context);
+    const RefExpr *kernel_expr = kernel()->outer_to_local(expression);
 
-    bool ctx_contain;
-    context->append_output_argument(expression, &ctx_contain);
+    bool in_path = false;
 
-    const RefExpr *kernel_local = kernel()->outer_to_local(expression);
-
-    if (kernel_local) {
-        expression = kernel_local;
-        visit_expr(expression, cur_func);
-        return;
-    }
-
+    context->append_output_argument(expression, nullptr);
     const Expression *org_expr = expression;
 
     while (true) {
-
-        bool contain;
-        const RefExpr *ref_expr = nullptr;
-
+        if (invoked == cur_func) {
+            in_path = true;
+        }
         CallExpr *call_expr = const_cast<CallExpr *>(invoked->call_expr());
         Function *invoker = const_cast<Function *>(call_expr->context());
-
+        bool contain;
+        const RefExpr *ref_expr;
         if (invoker == kernel()) {
-            /// add local variable
             ref_expr = invoker->mapping_local_variable(org_expr, &contain);
             if (!contain) {
                 call_expr->append_argument(ref_expr);
             }
-            if (invoker == cur_func) {
-                /// using local variable
-                expression = ref_expr;
-            }
             break;
         } else {
-            /// add passthrough argument
             ref_expr = invoker->mapping_output_argument(org_expr, &contain);
-            if (invoker == cur_func) {
-                /// using output argument
-                expression = ref_expr;
-            }
             if (!contain) {
                 call_expr->append_argument(ref_expr);
             }
         }
         invoked = invoker;
+    }
+    if (in_path) {
+        expression = cur_func->outer_to_argument(org_expr);
+    } else {
+        kernel_expr = kernel()->outer_to_local(expression);
+        expression = kernel_expr;
+        capture_from_invoker(expression, cur_func);
     }
 }
 
