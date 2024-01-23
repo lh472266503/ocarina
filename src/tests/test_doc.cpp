@@ -168,15 +168,15 @@ void test_lambda(Device &device, Stream &stream) {
     stream << bindless_array->upload_buffer_handles(true) << synchronize();
     stream << vert.upload(vertices.data())
            << tri.upload(triangles.data());
-
     Kernel kernel = [&](Uint i) {
         Float *p;
-
+        OCHit *hit;
         $outline {
 
             Var aa = $outline {
                 $outline {
                     p = new Float(15);
+                    hit = new OCHit {};
                 };
                 return 5;
             };
@@ -184,11 +184,11 @@ void test_lambda(Device &device, Stream &stream) {
         };
 
         Float bb = $outline {
-            return *p;
+            return (*hit).inst_id;
         };
 
         $info("{}     ---   ", bb);
-        $info("{}     ---   ", *p);
+        $info("{}     ---   ", (*hit).inst_id);
     };
     Shader shader = device.compile(kernel);
 

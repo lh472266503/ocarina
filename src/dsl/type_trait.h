@@ -375,7 +375,7 @@ class Accel;
 class BindlessArray;
 
 template<typename T>
-class RWTexture;
+class Texture2D;
 
 template<typename T>
 using is_valid_buffer_element = std::disjunction<is_simple_type<T>, is_valid_dsl_type<T>>;

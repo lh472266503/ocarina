@@ -452,10 +452,10 @@ struct Computable<Texture>
 };
 
 template<typename T>
-struct Computable<RWTexture<T>>
-    : detail::EnableTextureSample<Computable<RWTexture<T>>>,
-      detail::EnableTextureReadAndWrite<Computable<RWTexture<T>>> {
-    OC_COMPUTABLE_COMMON(Computable<RWTexture<T>>)
+struct Computable<Texture2D<T>>
+    : detail::EnableTextureSample<Computable<Texture2D<T>>>,
+      detail::EnableTextureReadAndWrite<Computable<Texture2D<T>>> {
+    OC_COMPUTABLE_COMMON(Computable<Texture2D<T>>)
 };
 
 template<>

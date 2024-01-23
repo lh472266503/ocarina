@@ -162,31 +162,31 @@ public:
 };
 
 template<typename T>
-class RWTexture : public Texture {
+class Texture2D : public Texture {
 public:
     using Super = Texture;
     static constexpr auto Dim = vector_dimension_v<T>;
 
 public:
-    RWTexture() = default;
-    explicit RWTexture(Device::Impl *device, uint3 res,
+    Texture2D() = default;
+    explicit Texture2D(Device::Impl *device, uint2 res,
                        PixelStorage pixel_storage, uint level_num = 1u,
                        const string &desc = "")
-        : Texture(device, res, pixel_storage, level_num, desc) {}
+        : Texture(device, make_uint3(res, 1u), pixel_storage, level_num, desc) {}
 
     template<typename... Args>
     [[nodiscard]] auto sample(Args &&...args) const noexcept {
-        return Super::sample(_channel_num, OC_FORWARD(args)...).template as_vec<Dim>();
+        return make_expr<Texture2D<T>>(expression()).sample(_channel_num, OC_FORWARD(args)...).template as_vec<Dim>();
     }
 
     template<typename... Args>
     [[nodiscard]] auto read(Args &&...args) const noexcept {
-        return Super::read<T>(OC_FORWARD(args)...);
+        return make_expr<Texture2D<T>>(expression()).template read<T>(OC_FORWARD(args)...);
     }
 
     template<typename... Args>
     void write(T &&elm, Args &&...args) noexcept {
-        Super::write(elm, OC_FORWARD(args)...);
+        make_expr<Texture2D<T>>(expression()).write(OC_FORWARD(args)...);
     }
 };
 
