@@ -18,7 +18,7 @@ void FunctionCorrector::apply(Function *function) noexcept {
     _function_stack.pop_back();
 }
 
-bool FunctionCorrector::is_from_exterior(const Expression *expression) noexcept {
+bool FunctionCorrector::is_from_invoker(const Expression *expression) noexcept {
     return std::find(_function_stack.begin(), _function_stack.end(),
                      expression->context()) != _function_stack.end();
 }
@@ -26,7 +26,7 @@ bool FunctionCorrector::is_from_exterior(const Expression *expression) noexcept 
 void FunctionCorrector::process_ref_expr(const Expression *&expression, Function *cur_func) noexcept {
     if (expression->context() == cur_func) {
         return;
-    } else if (is_from_exterior(expression)) {
+    } else if (is_from_invoker(expression)) {
         capture_from_invoker(expression, cur_func);
     } else {
         output_from_invoked(expression, cur_func);
