@@ -180,7 +180,7 @@ void test_lambda(Device &device, Stream &stream) {
                 };
                 return 5;
             };
-
+            $info("{}     ---   ", *p);
         };
 
         Float bb = $outline {
@@ -188,6 +188,7 @@ void test_lambda(Device &device, Stream &stream) {
         };
 
         $info("{}     ---   ", bb);
+        $info("{}     ---   ", *p);
     };
     Shader shader = device.compile(kernel);
 

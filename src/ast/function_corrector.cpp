@@ -15,6 +15,7 @@ void FunctionCorrector::apply(Function *function) noexcept {
     traverse(*current_function());
     bool valid = function->check_context();
     OC_INFO_FORMAT("FunctionCorrector info: valid is {}  function {}", valid, function->description().c_str());
+    OC_ERROR_IF_NOT("FunctionCorrector error: invalid function {}", function->description().c_str());
     _function_stack.pop_back();
 }
 
@@ -72,16 +73,18 @@ void FunctionCorrector::visit(const CallExpr *const_expr) {
 void FunctionCorrector::output_from_invoked(const Expression *&expression, Function *cur_func) noexcept {
     auto context = const_cast<Function *>(expression->context());
     Function *invoked = context;
+    Function *invoker = nullptr;
     bool in_path = false;
     context->append_output_argument(expression, nullptr);
     const Expression *org_expr = expression;
 
+    /// foreach invoke path,output target variable layer by layer to the kernel (top-level function)
     while (true) {
-        if (invoked == cur_func) {
+        CallExpr *call_expr = const_cast<CallExpr *>(invoked->call_expr());
+        invoker = const_cast<Function *>(call_expr->context());
+        if (invoked == cur_func || invoker == cur_func) {
             in_path = true;
         }
-        CallExpr *call_expr = const_cast<CallExpr *>(invoked->call_expr());
-        Function *invoker = const_cast<Function *>(call_expr->context());
         bool contain;
         const RefExpr *ref_expr;
         if (invoker == kernel()) {
@@ -99,7 +102,11 @@ void FunctionCorrector::output_from_invoked(const Expression *&expression, Funct
         invoked = invoker;
     }
     if (in_path) {
-        expression = cur_func->outer_to_argument(org_expr);
+        if (cur_func == kernel()) {
+            expression = cur_func->outer_to_local(org_expr);
+        } else {
+            expression = cur_func->outer_to_argument(org_expr);
+        }
     } else {
         const RefExpr *kernel_expr = kernel()->outer_to_local(expression);
         expression = kernel_expr;
