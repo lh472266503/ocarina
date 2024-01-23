@@ -438,6 +438,7 @@ void CppCodegen::_emit_function(const Function &f) noexcept {
     _emit_arguments(f);
     _emit_body(f);
     add_generated(&f);
+    _emit_newline();
 }
 
 void CppCodegen::_emit_variable_name(Variable v) noexcept {
@@ -507,6 +508,5 @@ void CppCodegen::emit(const Function &func) noexcept {
         _emit_newline();
     }
     _emit_function(func);
-    _emit_newline();
 }
 }// namespace ocarina
