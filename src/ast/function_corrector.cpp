@@ -66,6 +66,29 @@ void FunctionCorrector::visit(const CallExpr *const_expr) {
     }
     if (expr->_function) {
         apply(const_cast<Function *>(expr->_function));
+        correct_resource_usage(expr);
+    }
+}
+
+void FunctionCorrector::correct_resource_usage(CallExpr *call_expr) noexcept {
+    vector<Usage> formal_param_usages;
+    auto invoked = const_cast<Function *>(call_expr->_function);
+    for (const Variable &variable : invoked->_arguments) {
+        Usage usage = invoked->variable_usage(variable.uid());
+        formal_param_usages.push_back(usage);
+    }
+    invoked->for_each_captured_resource([&](const CapturedResource &captured_resource) {
+        Usage usage = invoked->variable_usage(captured_resource.expression()->variable().uid());
+        formal_param_usages.push_back(usage);
+    });
+    for (const Variable &variable : invoked->_appended_arguments) {
+        Usage usage = invoked->variable_usage(variable.uid());
+        formal_param_usages.push_back(usage);
+    }
+
+    for (int i = 0; i < call_expr->_arguments.size(); ++i) {
+        const Expression *&arg = const_cast<const Expression *&>(call_expr->_arguments[i]);
+        arg->mark(formal_param_usages[i]);
     }
 }
 
@@ -179,7 +202,7 @@ void FunctionCorrector::visit(const ConditionalExpr *expr) {
 }
 
 void FunctionCorrector::visit(const MemberExpr *expr) {
-    visit_expr(expr->_parent);
+    OC_ERROR("FunctionCorrector error !");
 }
 
 void FunctionCorrector::visit(const SubscriptExpr *expr) {

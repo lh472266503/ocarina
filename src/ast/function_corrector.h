@@ -49,6 +49,8 @@ private:
     void capture_from_invoker(const Expression *&expression, Function *cur_func) noexcept;
     void output_from_invoked(const Expression *&expression, Function *cur_func) noexcept;
 
+    void correct_resource_usage(CallExpr *call_expr) noexcept;
+
 public:
     explicit FunctionCorrector() = default;
     void apply(Function *function) noexcept;

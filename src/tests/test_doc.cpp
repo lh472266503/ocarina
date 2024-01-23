@@ -180,7 +180,7 @@ void test_lambda(Device &device, Stream &stream) {
                 };
                 return 5;
             };
-            $info("{}     ---   ", *p);
+            $info("{}   {}   {}   i  ---   ", vert.read(0));
         };
 
         Float bb = $outline {

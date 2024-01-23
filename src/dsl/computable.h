@@ -136,6 +136,7 @@ struct EnableTextureReadAndWrite {
         const CallExpr *expr = Function::current()->call_builtin(Type::of<Output>(), CallOp::TEX_READ,
                                                                  {texture->expression(), OC_EXPR(x), OC_EXPR(y)},
                                                                  {Type::of<Output>()});
+        texture->expression()->mark(Usage::READ);
         return eval<Output>(expr);
     }
 
@@ -188,6 +189,7 @@ struct EnableTextureReadAndWrite {
         const CallExpr *expr = Function::current()->call_builtin(nullptr, CallOp::TEX_WRITE,
                                                                  {texture->expression(),
                                                                   OC_EXPR(elm), OC_EXPR(x), OC_EXPR(y), OC_EXPR(z)});
+        texture->expression()->mark(Usage::WRITE);
         Function::current()->expr_statement(expr);
     }
 
@@ -221,6 +223,7 @@ public:
         const Expression *expr = Function::current()->call_builtin(Type::of<T>(),
                                                                    CallOp::ATOMIC_EXCH,
                                                                    {_expression, OC_EXPR(value)});
+        expr->mark(Usage::READ_WRITE);
         return eval<T>(expr);
     }
 
@@ -228,6 +231,7 @@ public:
         const Expression *expr = Function::current()->call_builtin(Type::of<T>(),
                                                                    CallOp::ATOMIC_ADD,
                                                                    {_expression, OC_EXPR(value)});
+        expr->mark(Usage::READ_WRITE);
         return eval<T>(expr);
     }
 
@@ -235,6 +239,7 @@ public:
         const Expression *expr = Function::current()->call_builtin(Type::of<T>(),
                                                                    CallOp::ATOMIC_SUB,
                                                                    {_expression, OC_EXPR(value)});
+        expr->mark(Usage::READ_WRITE);
         return eval<T>(expr);
     }
 };
