@@ -28,6 +28,7 @@ ocarina::stack<Function *> &Function::_function_stack() noexcept {
 }
 
 void Function::correct() noexcept {
+    TIMER(FunctionCorrect)
     FunctionCorrector().apply(this);
 }
 

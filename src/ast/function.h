@@ -194,7 +194,6 @@ public:
             visitor(f.get());
         }
     }
-    [[nodiscard]] auto used_structure() const noexcept { return _used_struct; }
     template<typename Visitor>
     void for_each_structure(Visitor &&visitor) const noexcept {
         for (const auto &type : _used_struct.struct_lst) {
@@ -212,12 +211,6 @@ public:
     void for_each_captured_resource(Visitor &&visitor) const noexcept {
         for (const CapturedResource &var : _captured_resources) {
             visitor(var);
-        }
-    }
-    template<typename F>
-    void for_each_invoker_expr(F &&func) const noexcept {
-        for (const Expression *expr : _expr_from_invoker) {
-            func(expr);
         }
     }
     void update_captured_resources(const Function *func) noexcept;

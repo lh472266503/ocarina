@@ -14,8 +14,7 @@ void FunctionCorrector::apply(Function *function) noexcept {
     _function_stack.push_back(function);
     traverse(*current_function());
     bool valid = function->check_context();
-    OC_INFO_FORMAT("FunctionCorrector info: valid is {}  function {}", valid, function->description().c_str());
-    OC_ERROR_IF_NOT("FunctionCorrector error: invalid function {}", function->description().c_str());
+    OC_ERROR_IF_NOT(valid, "FunctionCorrector error: invalid function ", function->description().c_str());
     _function_stack.pop_back();
 }
 
