@@ -143,55 +143,59 @@ concept all_integral = (integral<T> && ...);
 template<typename A, typename B>
 concept different = !same<A, B>;
 
-template<typename Lhs, typename Rhs>
-concept access_able = requires(Lhs lhs, Rhs rhs) { lhs[rhs]; };
-
 template<typename T>
 concept bool_able = requires(T t) { bool(t); };
 
 template<typename T>
 concept switch_able = std::is_enum_v<T> || ocarina::is_integral_v<T>;
 
-#define OC_UNARY_CHECK(T) \
-    requires(T t) { op t; };
+#define OC_MAKE_UNARY_CHECK(concept_name, op) \
+    template<typename T>                      \
+    concept concept_name##_able = requires(T t) { +t; };
 
-#define OC_POSITIVE_CHECK(T) OC_UNARY_CHECK(+)
-#define OC_NEGATIVE_CHECK(T) OC_UNARY_CHECK(-)
-#define OC_NOT_CHECK(T) OC_UNARY_CHECK(!)
-#define OC_BIT_NOT_CHECK(T) OC_UNARY_CHECK(~)
+OC_MAKE_UNARY_CHECK(positive, +)
+OC_MAKE_UNARY_CHECK(negative, -)
+OC_MAKE_UNARY_CHECK(not, !)
+OC_MAKE_UNARY_CHECK(bit_not, ~)
 
-#define OC_BINARY_CHECK(A, B, op) \
-    requires(A a, B b) { a op b; }
+#undef OC_MAKE_UNARY_CHECK
 
-#define OC_PLUS_CHECK(A, B) OC_BINARY_CHECK(A, B, +)
-#define OC_MINUS_CHECK(A, B) OC_BINARY_CHECK(A, B, -)
-#define OC_MULTIPLY_CHECK(A, B) OC_BINARY_CHECK(A, B, *)
-#define OC_DIVIDE_CHECK(A, B) OC_BINARY_CHECK(A, B, /)
-#define OC_MODE_CHECK(A, B) OC_BINARY_CHECK(A, B, %)
-#define OC_BIT_AND_CHECK(A, B) OC_BINARY_CHECK(A, B, &)
-#define OC_BIT_OR_CHECK(A, B) OC_BINARY_CHECK(A, B, |)
-#define OC_BIT_XOR_CHECK(A, B) OC_BINARY_CHECK(A, B, ^)
-#define OC_SHIFT_LEFT_CHECK(A, B) OC_BINARY_CHECK(A, B, <<)
-#define OC_SHIFT_RIGHT_CHECK(A, B) OC_BINARY_CHECK(A, B, >>)
-#define OC_AND_CHECK(A, B) OC_BINARY_CHECK(A, B, &&)
-#define OC_OR_CHECK(A, B) OC_BINARY_CHECK(A, B, ||)
-#define OC_EQUAL_CHECK(A, B) OC_BINARY_CHECK(A, B, ==)
-#define OC_NE_CHECK(A, B) OC_BINARY_CHECK(A, B, !=)
-#define OC_LT_CHECK(A, B) OC_BINARY_CHECK(A, B, <)
-#define OC_GT_CHECK(A, B) OC_BINARY_CHECK(A, B, >)
-#define OC_LE_CHECK(A, B) OC_BINARY_CHECK(A, B, <=)
-#define OC_GE_CHECK(A, B) OC_BINARY_CHECK(A, B, >=)
-#define OC_ASSIGN_CHECK(A, B) OC_BINARY_CHECK(A, B, =)
+#define OC_MAKE_BINARY_CHECK(concept_name, op) \
+    template<typename A, typename B>      \
+    concept concept_name##_able = requires(A a, B b) { a op b; };
 
-#define OC_PLUS_ASSIGN_CHECK(A, B) OC_BINARY_CHECK(A, B, +=)
-#define OC_MINUS_ASSIGN_CHECK(A, B) OC_BINARY_CHECK(A, B, -=)
-#define OC_MULTIPLY_ASSIGN_CHECK(A, B) OC_BINARY_CHECK(A, B, *=)
-#define OC_DIVIDE_ASSIGN_CHECK(A, B) OC_BINARY_CHECK(A, B, /=)
-#define OC_MOD_ASSIGN_CHECK(A, B) OC_BINARY_CHECK(A, B, %=)
-#define OC_BIT_AND_ASSIGN_CHECK(A, B) OC_BINARY_CHECK(A, B, &=)
-#define OC_BIT_OR_ASSIGN_CHECK(A, B) OC_BINARY_CHECK(A, B, |=)
-#define OC_BIT_XOR_ASSIGN_CHECK(A, B) OC_BINARY_CHECK(A, B, ^=)
-#define OC_SHIFT_LEFT_ASSIGN_CHECK(A, B) OC_BINARY_CHECK(A, B, <<=)
-#define OC_SHIFT_RIGHT_ASSIGN_CHECK(A, B) OC_BINARY_CHECK(A, B, >>=)
+OC_MAKE_BINARY_CHECK(plus, +)
+OC_MAKE_BINARY_CHECK(minus, -)
+OC_MAKE_BINARY_CHECK(multiply, *)
+OC_MAKE_BINARY_CHECK(divide, /)
+OC_MAKE_BINARY_CHECK(mode, %)
+OC_MAKE_BINARY_CHECK(bit_and, &)
+OC_MAKE_BINARY_CHECK(bit_or, |)
+OC_MAKE_BINARY_CHECK(bit_xor, ^)
+OC_MAKE_BINARY_CHECK(shift_left, <<)
+OC_MAKE_BINARY_CHECK(shift_right, >>)
+OC_MAKE_BINARY_CHECK(and, &&)
+OC_MAKE_BINARY_CHECK(or, ||)
+OC_MAKE_BINARY_CHECK(equal, ==)
+OC_MAKE_BINARY_CHECK(NE, !=)
+OC_MAKE_BINARY_CHECK(LT, <)
+OC_MAKE_BINARY_CHECK(GT, >)
+OC_MAKE_BINARY_CHECK(LE, <=)
+OC_MAKE_BINARY_CHECK(GE, >=)
+OC_MAKE_BINARY_CHECK(assign, =)
+
+OC_MAKE_BINARY_CHECK(plus_assign, +=)
+OC_MAKE_BINARY_CHECK(minus_assgin, -=)
+OC_MAKE_BINARY_CHECK(multiply_assign, *=)
+OC_MAKE_BINARY_CHECK(divide_assgin, /=)
+OC_MAKE_BINARY_CHECK(mode_assgin, %=)
+OC_MAKE_BINARY_CHECK(bit_and_assgin, &=)
+OC_MAKE_BINARY_CHECK(bit_or_assgin, |=)
+OC_MAKE_BINARY_CHECK(bit_xor_assgin, ^=)
+OC_MAKE_BINARY_CHECK(shift_left_assgin, <<=)
+OC_MAKE_BINARY_CHECK(right_left_assgin, >>=)
+
+#undef OC_MAKE_BINARY_CHECK
+
 
 }// namespace ocarina::concepts

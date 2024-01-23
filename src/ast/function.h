@@ -187,7 +187,6 @@ public:
     [[nodiscard]] const CallExpr *call_expr() const noexcept { return _call_expr; }
     void set_description(string desc) const noexcept { _description = ocarina::move(desc); }
     [[nodiscard]] string &description() const noexcept { return _description; }
-    [[nodiscard]] ocarina::span<SP<const Function> const> used_custom_func() const noexcept { return _used_custom_func; }
     template<typename Visitor>
     void for_each_custom_func(Visitor &&visitor) const noexcept {
         for (const auto &f : _used_custom_func) {

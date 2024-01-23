@@ -18,7 +18,7 @@ inline void comment(const ocarina::string &str) noexcept {
 namespace detail {
 template<typename Lhs, typename Rhs>
 inline void assign(Lhs &&lhs, Rhs &&rhs) noexcept {
-    if constexpr (OC_ASSIGN_CHECK(expr_value_t<Lhs>, expr_value_t<Rhs>)) {
+    if constexpr (concepts::assign_able<expr_value_t<Lhs>, expr_value_t<Rhs>>) {
         Function::current()->assign(
             detail::extract_expression(std::forward<Lhs>(lhs)),
             detail::extract_expression(std::forward<Rhs>(rhs)));
@@ -26,6 +26,8 @@ inline void assign(Lhs &&lhs, Rhs &&rhs) noexcept {
         Function::current()->assign(OC_EXPR(lhs), rhs);
     } else if constexpr (std::is_pointer_v<std::remove_cvref_t<Lhs>>) {
         Function::current()->assign(lhs, OC_EXPR(rhs));
+    } else {
+        static_assert(always_false_v<Lhs, Rhs>, "invalid assignment operator !");
     }
 }
 }// namespace detail
@@ -79,10 +81,11 @@ namespace detail {
 class ScopeStmtBuilder {
 private:
     string _str{};
+
 public:
-    ScopeStmtBuilder(const string &str):_str(str) {}
+    ScopeStmtBuilder(const string &str) : _str(str) {}
     template<typename Body>
-    void operator + (Body &&body) noexcept {
+    void operator+(Body &&body) noexcept {
         comment("start " + _str);
         auto scope = Function::current()->scope();
         Function::current()->with(scope, OC_FORWARD(body));
