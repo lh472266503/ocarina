@@ -134,7 +134,7 @@ public:
         return (*this)[OC_FORWARD(index)];
     }
 
-#include "swizzle_inl/array_swizzle.inl.h"
+#include "swizzle_inl/dynamic_array_swizzle.inl.h"
 
     Array &operator=(const Array &rhs) noexcept {
         OC_ASSERT(_size == rhs._size || rhs._size == 1);

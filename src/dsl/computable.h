@@ -66,7 +66,29 @@ struct EnableSubscriptAccess {
 
     template<typename Index>
     requires concepts::integral<expr_value_t<Index>>
+    auto at(Index &&index) const noexcept {
+        const SubscriptExpr *expr = Function::current()->subscript(Type::of<element_type>(),
+                                                                   static_cast<const T *>(this)->expression(),
+                                                                   OC_EXPR(index));
+        expr->mark(Usage::READ);
+        return eval<element_type>(expr);
+    }
+
+    template<typename Index>
+    requires concepts::integral<expr_value_t<Index>>
     auto &operator[](Index &&index) noexcept {
+        auto f = Function::current();
+        const SubscriptExpr *expr = f->subscript(Type::of<element_type>(),
+                                                 static_cast<const T *>(this)->expression(),
+                                                 OC_EXPR(index));
+        expr->mark(Usage::WRITE);
+        Var<element_type> *ret = f->template create_temp_obj<Var<element_type>>(expr);
+        return *ret;
+    }
+
+    template<typename Index>
+    requires concepts::integral<expr_value_t<Index>>
+    auto at(Index &&index) noexcept {
         auto f = Function::current();
         const SubscriptExpr *expr = f->subscript(Type::of<element_type>(),
                                                  static_cast<const T *>(this)->expression(),

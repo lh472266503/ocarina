@@ -21,7 +21,7 @@ def generate(file, dim):
                     str = f"[[nodiscard]] auto {x}{y}{z}{w}() const {{ return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<T>(), expression(), 0x{i}{j}{k}{l}, 4)); }}"
                     print(str, file=file)
 
-def array_swizzle(file, dim):
+def dynamic_array_swizzle(file, dim):
     entries = ["x", "y", "z", "w"]
     for i,x in enumerate(entries):
         str = f"[[nodiscard]] Array<T> {x}() const {{ OC_ASSERT(_size > {i}); return Array<T>::create(at({i})); }}"
@@ -45,6 +45,28 @@ def array_swizzle(file, dim):
                     str = f"[[nodiscard]] Array<T> {x}{y}{z}{w}() const {{ OC_ASSERT(_size > {max(i,j,k,l)}); return Array<T>::create(at({i}), at({j}), at({k}), at({l})); }}"
                     print(str, file=file)
 
+def array_swizzle(file, dim):
+    entries = ["x", "y", "z", "w"]
+
+    print("", file=file)
+    for i,x in enumerate(entries):
+        for j,y in enumerate(entries):
+            str = f"[[nodiscard]] auto {x}{y}() const {{ return Var<Vector<T, 2>>(at({i}), at({j})) }}"
+            print(str, file=file)
+    print("", file=file)
+    for i,x in enumerate(entries):
+        for j,y in enumerate(entries):
+            for k,z in enumerate(entries):
+                str = f"[[nodiscard]] auto {x}{y}{z}() const {{ return Var<Vector<T, 3>>(at({i}), at({j}), at({k})); }}"
+                print(str, file=file)
+    print("", file=file)
+    for i,x in enumerate(entries):
+        for j,y in enumerate(entries):
+            for k,z in enumerate(entries):
+                for l,w in enumerate(entries):
+                    str = f"[[nodiscard]] auto {x}{y}{z}{w}() const {{ return Var<Vector<T, 4>>(at({i}), at({j}), at({k}), at({l})); }}"
+                    print(str, file=file)
+
 if __name__ == "__main__":
     base = dirname(realpath(__file__))
     # for i,k in enumerate(["a", "b"]):
@@ -52,6 +74,9 @@ if __name__ == "__main__":
     for dim in range(2, 5):
         with open(f"{base}/swizzle_{dim}.inl.h", "w") as file:
             generate(file, dim)
+
+    with open(f"{base}/dynamic_array_swizzle.inl.h", "w") as file:
+        dynamic_array_swizzle(file, 4)
 
     with open(f"{base}/array_swizzle.inl.h", "w") as file:
         array_swizzle(file, 4)

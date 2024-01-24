@@ -189,6 +189,7 @@ void test_lambda(Device &device, Stream &stream) {
 
         $info("{}     ---   ", bb);
         $info("{}     ---   ", (*hit).inst_id);
+        static_assert(4 > std::max({1, 2, 3, 7}));
     };
     Shader shader = device.compile(kernel);
 
