@@ -115,7 +115,7 @@ public:
     [[nodiscard]] auto compile(const Kernel<T> &kernel, const string &shader_desc = "", ShaderTag tag = CS) noexcept {
         OC_INFO_FORMAT("compile shader : {}", shader_desc.c_str());
         kernel.function()->set_description(shader_desc);
-        return _create<Shader<T>>(ocarina::move(kernel.function()), tag);
+        return _create<Shader<T>>(kernel.function(), tag);
     }
 };
 }// namespace ocarina
