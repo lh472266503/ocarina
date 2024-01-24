@@ -223,7 +223,7 @@ public:
         const Expression *expr = Function::current()->call_builtin(Type::of<T>(),
                                                                    CallOp::ATOMIC_EXCH,
                                                                    {_expression, OC_EXPR(value)});
-        expr->mark(Usage::READ_WRITE);
+        _expression->mark(Usage::READ_WRITE);
         return eval<T>(expr);
     }
 
@@ -231,7 +231,7 @@ public:
         const Expression *expr = Function::current()->call_builtin(Type::of<T>(),
                                                                    CallOp::ATOMIC_ADD,
                                                                    {_expression, OC_EXPR(value)});
-        expr->mark(Usage::READ_WRITE);
+        _expression->mark(Usage::READ_WRITE);
         return eval<T>(expr);
     }
 
@@ -239,7 +239,7 @@ public:
         const Expression *expr = Function::current()->call_builtin(Type::of<T>(),
                                                                    CallOp::ATOMIC_SUB,
                                                                    {_expression, OC_EXPR(value)});
-        expr->mark(Usage::READ_WRITE);
+        _expression->mark(Usage::READ_WRITE);
         return eval<T>(expr);
     }
 };
