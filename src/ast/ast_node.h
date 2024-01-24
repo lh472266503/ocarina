@@ -46,6 +46,9 @@ bool check_context(const T &t, const Function *ctx) {
     } else if constexpr (requires() {
                              t->check_context(ctx);
                          }) {
+        if (t == nullptr) {
+            return true;
+        }
         return t->check_context(ctx);
     } else {
         static_assert(always_false_v<T>);
