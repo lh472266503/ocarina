@@ -21,7 +21,7 @@ struct DataAccessor {
     const RegistrableManaged<U> &datas;
 
     template<typename T>
-    [[nodiscard]] Array<T> read_dynamic_array(uint size) const noexcept {
+    [[nodiscard]] DynamicArray<T> read_dynamic_array(uint size) const noexcept {
         auto ret = datas.template read_dynamic_array<T>(size, offset);
         offset += size * static_cast<uint>(sizeof(T));
         return ret;
@@ -177,7 +177,7 @@ public:
         }
     }
 
-    [[nodiscard]] auto _decode(const Array<T> &array) const noexcept {
+    [[nodiscard]] auto _decode(const DynamicArray<T> &array) const noexcept {
         if constexpr (is_scalar_v<value_ty>) {
             return as<value_ty>(array[0]);
         } else if constexpr (is_vector_v<value_ty>) {
@@ -199,7 +199,7 @@ public:
             return ret;
         } else if constexpr (is_std_vector_v<value_ty>) {
             using element_ty = value_ty::value_type;
-            Array<element_ty> ret{hv().size()};
+            DynamicArray<element_ty> ret{hv().size()};
             for (int i = 0; i < hv().size(); ++i) {
                 ret[i] = as<element_ty>(array[i]);
             }
@@ -210,7 +210,7 @@ public:
     }
 
     void decode(const DataAccessor<T> *da) const noexcept override {
-        const Array<T> array = da->template read_dynamic_array<T>(element_num());
+        const DynamicArray<T> array = da->template read_dynamic_array<T>(element_num());
         const_cast<decltype(_device_value) *>(&_device_value)->emplace(_decode(array));
     }
 };

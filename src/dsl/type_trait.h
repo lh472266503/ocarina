@@ -19,7 +19,7 @@ template<typename T>
 struct Expr;
 
 template<typename T>
-class Array;
+class DynamicArray;
 
 namespace detail {
 
@@ -96,7 +96,7 @@ struct expr_value_impl<Var<T>> {
 };
 
 template<typename T>
-struct expr_value_impl<Array<T>> {
+struct expr_value_impl<DynamicArray<T>> {
     using type = vector<T>;
 };
 
@@ -130,7 +130,7 @@ struct dsl_impl {
 
 template<typename T>
 struct dsl_impl<vector<T>> {
-    using type = Array<T>;
+    using type = DynamicArray<T>;
 };
 }// namespace detail
 
@@ -176,7 +176,7 @@ template<typename T>
 struct is_dsl_impl<Var<T>> : std::true_type {};
 
 template<typename T>
-struct is_dsl_impl<Array<T>> : std::true_type {};
+struct is_dsl_impl<DynamicArray<T>> : std::true_type {};
 
 }// namespace detail
 
@@ -228,7 +228,7 @@ template<typename T>
 struct is_dynamic_array_impl : std::false_type {};
 
 template<typename T>
-struct is_dynamic_array_impl<Array<T>> : std::true_type {};
+struct is_dynamic_array_impl<DynamicArray<T>> : std::true_type {};
 }// namespace detail
 
 template<typename T>
@@ -257,7 +257,7 @@ struct dynamic_array_element_impl {
 };
 
 template<typename T>
-struct dynamic_array_element_impl<Array<T>> {
+struct dynamic_array_element_impl<DynamicArray<T>> {
     using type = T;
 };
 

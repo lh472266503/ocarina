@@ -20,7 +20,7 @@
             auto expression = ocarina::Function::current()->unary(expr.type(),                                       \
                                                                   ocarina::UnaryOp::tag,                             \
                                                                   expr.expression());                                \
-            return ocarina::Array<element_t>(expr.size(), expression);                                               \
+            return ocarina::DynamicArray<element_t>(expr.size(), expression);                                               \
         } else {                                                                                                     \
             using Ret = std::remove_cvref_t<decltype(op std::declval<ocarina::expr_value_t<T>>())>;                  \
             return ocarina::eval<Ret>(                                                                               \
@@ -63,7 +63,7 @@ OC_MAKE_DSL_UNARY_OPERATOR(~, BIT_NOT)
                                                                                                                  \
     template<typename T, typename U,                                                                             \
              typename NormalRet = std::remove_cvref_t<decltype(std::declval<T>() op std::declval<U>())>>         \
-    [[nodiscard]] inline auto operator op(const ocarina::Array<T> &lhs, const ocarina::Array<U> &rhs) noexcept { \
+    [[nodiscard]] inline auto operator op(const ocarina::DynamicArray<T> &lhs, const ocarina::DynamicArray<U> &rhs) noexcept { \
         using namespace std::string_view_literals;                                                               \
         static constexpr bool is_logic_op = #op == "||"sv || #op == "&&"sv;                                      \
         static constexpr bool is_bit_op = #op == "|"sv || #op == "&"sv || #op == "^"sv;                          \
@@ -72,23 +72,23 @@ OC_MAKE_DSL_UNARY_OPERATOR(~, BIT_NOT)
         OC_ASSERT(lhs.size() == rhs.size() || std::min(lhs.size(), rhs.size()) == 1);                            \
         auto size = std::max(lhs.size(), rhs.size());                                                            \
         using Ret = std::conditional_t<is_bool_lhs && is_logic_op, bool, NormalRet>;                             \
-        auto expression = ocarina::Function::current()->binary(ocarina::Array<Ret>::type(size),                  \
+        auto expression = ocarina::Function::current()->binary(ocarina::DynamicArray<Ret>::type(size),                  \
                                                                ocarina::BinaryOp::tag, lhs.expression(),         \
                                                                rhs.expression());                                \
-        return ocarina::Array<Ret>(size, expression);                                                            \
+        return ocarina::DynamicArray<Ret>(size, expression);                                                            \
     }                                                                                                            \
     template<typename T, typename U>                                                                             \
     requires ocarina::is_scalar_v<ocarina::expr_value_t<U>>                                                      \
-    [[nodiscard]] inline auto operator op(const ocarina::Array<T> &lhs, U &&rhs) noexcept {                      \
-        ocarina::Array<ocarina::expr_value_t<U>> arr(1u);                                                        \
+    [[nodiscard]] inline auto operator op(const ocarina::DynamicArray<T> &lhs, U &&rhs) noexcept {                      \
+        ocarina::DynamicArray<ocarina::expr_value_t<U>> arr(1u);                                                        \
         arr[0] = OC_FORWARD(rhs);                                                                                \
         return lhs op arr;                                                                                       \
     }                                                                                                            \
                                                                                                                  \
     template<typename T, typename U>                                                                             \
     requires ocarina::is_scalar_v<ocarina::expr_value_t<T>>                                                      \
-    [[nodiscard]] inline auto operator op(T &&lhs, const ocarina::Array<U> &rhs) noexcept {                      \
-        ocarina::Array<ocarina::expr_value_t<U>> arr(1u);                                                        \
+    [[nodiscard]] inline auto operator op(T &&lhs, const ocarina::DynamicArray<U> &rhs) noexcept {                      \
+        ocarina::DynamicArray<ocarina::expr_value_t<U>> arr(1u);                                                        \
         arr[0] = OC_FORWARD(lhs);                                                                                \
         return arr op rhs;                                                                                       \
     }                                                                                                            \
@@ -142,7 +142,7 @@ OC_MAKE_DSL_BINARY_OPERATOR(>=, GREATER_EQUAL, greater_equal)
     }                                                                                         \
     template<typename T, typename U>                                                          \
     requires ocarina::is_dynamic_array_v<U> || ocarina::is_scalar_v<ocarina::expr_value_t<U>> \
-    void operator op##=(const ocarina::Array<T> &lhs, U &&rhs) noexcept {                     \
+    void operator op##=(const ocarina::DynamicArray<T> &lhs, U &&rhs) noexcept {                     \
         auto x = lhs op OC_FORWARD(rhs);                                                      \
         ocarina::Function::current()->assign(lhs.expression(), x.expression());               \
     }

@@ -13,7 +13,7 @@
 namespace ocarina {
 
 template<typename T>
-class Array : public detail::EnableSubscriptAccess<Array<T>, T> {
+class DynamicArray : public detail::EnableSubscriptAccess<DynamicArray<T>, T> {
 public:
     using element_type = T;
 
@@ -22,47 +22,47 @@ private:
     const Expression *_expression{};
 
 public:
-    Array() = default;
+    DynamicArray() = default;
 
-    explicit Array(const Expression *expression)
+    explicit DynamicArray(const Expression *expression)
         : _size(expression->type()->dimension()), _expression(expression) {}
 
-    explicit Array(size_t num, const Expression *expression = nullptr)
+    explicit DynamicArray(size_t num, const Expression *expression = nullptr)
         : _size(num),
           _expression(expression == nullptr ? Function::current()->local(type()) : expression) {}
 
     template<typename U>
     requires is_dsl_v<U> || is_basic_v<U>
-    explicit Array(size_t num, U &&u)
-        : Array(num, nullptr) {
+    explicit DynamicArray(size_t num, U &&u)
+        : DynamicArray(num, nullptr) {
         for (int i = 0; i < num; ++i) {
             (*this)[i] = u;
         }
     }
 
     template<typename U>
-    requires is_vector_v<U> && concepts::different<std::remove_cvref_t<U>, Array<T>>
-    explicit Array(U &&vec) noexcept
-        : Array(vector_expr_dimension_v<U>) {
+    requires is_vector_v<U> && concepts::different<std::remove_cvref_t<U>, DynamicArray<T>>
+    explicit DynamicArray(U &&vec) noexcept
+        : DynamicArray(vector_expr_dimension_v<U>) {
         for (int i = 0; i < size(); ++i) {
             (*this)[i] = vec[i];
         }
     }
 
-    explicit Array(const vector<T> &vec) noexcept
-        : Array(vec.size()) {
+    explicit DynamicArray(const vector<T> &vec) noexcept
+        : DynamicArray(vec.size()) {
         for (int i = 0; i < size(); ++i) {
             (*this)[i] = vec[i];
         }
     }
 
-    Array(const Array &other) noexcept
+    DynamicArray(const DynamicArray &other) noexcept
         : _size{other._size}, _expression(Function::current()->local(type())) {
         Function::current()->assign(_expression, other._expression);
     }
-    Array(Array &&) noexcept = default;
+    DynamicArray(DynamicArray &&) noexcept = default;
 
-    void reset(const Array<T> &array) noexcept {
+    void reset(const DynamicArray<T> &array) noexcept {
         _size = array.size();
         _expression = array.expression();
     }
@@ -85,8 +85,8 @@ public:
 
     template<typename U>
     requires is_array_expr_v<U> || is_std_vector_v<U>
-    static Array<T> create(U &&array) noexcept {
-        Array<T> ret{array.size()};
+    static DynamicArray<T> create(U &&array) noexcept {
+        DynamicArray<T> ret{array.size()};
         for (uint i = 0; i < ret.size(); ++i) {
             ret[i] = array[i];
         }
@@ -94,7 +94,7 @@ public:
     }
 
     template<typename... Args>
-    static Array<T> create(Args &&...args) noexcept {
+    static DynamicArray<T> create(Args &&...args) noexcept {
         return create(ocarina::array<Var<T>, sizeof...(args)>{OC_FORWARD(args)...});
     }
 
@@ -116,8 +116,8 @@ public:
         }
     }
 
-    [[nodiscard]] Array<T> sub(uint offset, uint num) const noexcept {
-        Array<T> ret{num};
+    [[nodiscard]] DynamicArray<T> sub(uint offset, uint num) const noexcept {
+        DynamicArray<T> ret{num};
         for (int i = 0; i < num; ++i) {
             ret[i] = at(i + offset);
         }
@@ -136,7 +136,7 @@ public:
 
 #include "swizzle_inl/dynamic_array_swizzle.inl.h"
 
-    Array &operator=(const Array &rhs) noexcept {
+    DynamicArray &operator=(const DynamicArray &rhs) noexcept {
         OC_ASSERT(_size == rhs._size || rhs._size == 1);
         if (&rhs == this) {
             return *this;
@@ -152,19 +152,19 @@ public:
     }
 
     void assignment(const vector<T> &rhs) {
-        auto tmp = Array<T>::create(rhs);
+        auto tmp = DynamicArray<T>::create(rhs);
         *this = tmp;
     }
 
-    Array &operator=(const Var<T> &rhs) noexcept {
+    DynamicArray &operator=(const Var<T> &rhs) noexcept {
         for (int i = 0; i < size(); ++i) {
             (*this)[i] = rhs;
         }
         return *this;
     }
 
-    Array &operator=(Array &&rhs) noexcept {
-        *this = static_cast<const Array &>(rhs);
+    DynamicArray &operator=(DynamicArray &&rhs) noexcept {
+        *this = static_cast<const DynamicArray &>(rhs);
         return *this;
     }
 
@@ -172,8 +172,8 @@ public:
     [[nodiscard]] uint size() const noexcept { return _size; }
 
     template<typename F>
-    [[nodiscard]] Array<T> map(F &&f) const noexcept {
-        Array<T> s{size()};
+    [[nodiscard]] DynamicArray<T> map(F &&f) const noexcept {
+        DynamicArray<T> s{size()};
         for (auto i = 0u; i < size(); i++) {
             if constexpr (std::invocable<F, Var<T>>) {
                 s[i] = f((*this)[i]);
@@ -224,13 +224,13 @@ public:
 };
 
 template<typename T>
-class Container : public Array<T> {
+class Container : public DynamicArray<T> {
 private:
     Uint _count{0u};
-    using Super = Array<T>;
+    using Super = DynamicArray<T>;
 
 public:
-    using Array<T>::Array;
+    using DynamicArray<T>::DynamicArray;
     void push_back(const Var<T> &t) noexcept {
         Super::operator[](_count) = t;
         _count += 1;
@@ -263,8 +263,8 @@ public:
 namespace detail {
 
 template<typename T>
-[[nodiscard]] inline Array<T> eval_array(const Array<T> &array) noexcept {
-    Array<T> ret{array.size()};
+[[nodiscard]] inline DynamicArray<T> eval_dynamic_array(const DynamicArray<T> &array) noexcept {
+    DynamicArray<T> ret{array.size()};
     ret = array;
     return ret;
 }
@@ -272,26 +272,26 @@ template<typename T>
 template<typename T>
 template<typename U, typename V>
 requires(is_all_floating_point_expr_v<U, V>)
-Array<float> EnableTextureSample<T>::sample(uint channel_num, const U &u, const V &v)
+DynamicArray<float> EnableTextureSample<T>::sample(uint channel_num, const U &u, const V &v)
     const noexcept {
     const T *texture = static_cast<const T *>(this);
-    const CallExpr *expr = Function::current()->call_builtin(Array<float>::type(channel_num),
+    const CallExpr *expr = Function::current()->call_builtin(DynamicArray<float>::type(channel_num),
                                                              CallOp::TEX_SAMPLE,
                                                              {texture->expression(),
                                                               OC_EXPR(u),
                                                               OC_EXPR(v)},
                                                              {channel_num});
     texture->expression()->mark(Usage::READ);
-    return eval_array(Array<float>(channel_num, expr));
+    return eval_dynamic_array(DynamicArray<float>(channel_num, expr));
 }
 
 template<typename T>
 template<typename U, typename V, typename W>
 requires(is_all_floating_point_expr_v<U, V, W>)
-Array<float> EnableTextureSample<T>::sample(uint channel_num, const U &u, const V &v, const W &w)
+DynamicArray<float> EnableTextureSample<T>::sample(uint channel_num, const U &u, const V &v, const W &w)
     const noexcept {
     const T *texture = static_cast<const T *>(this);
-    const CallExpr *expr = Function::current()->call_builtin(Array<float>::type(channel_num),
+    const CallExpr *expr = Function::current()->call_builtin(DynamicArray<float>::type(channel_num),
                                                              CallOp::TEX_SAMPLE,
                                                              {texture->expression(),
                                                               OC_EXPR(u),
@@ -299,13 +299,13 @@ Array<float> EnableTextureSample<T>::sample(uint channel_num, const U &u, const 
                                                               OC_EXPR(w)},
                                                              {channel_num});
     texture->expression()->mark(Usage::READ);
-    return eval_array(Array<float>(channel_num, expr));
+    return eval_dynamic_array(DynamicArray<float>(channel_num, expr));
 }
 
 template<typename T>
 template<typename UVW>
 requires(is_float_vector3_v<expr_value_t<UVW>>)
-Array<float> EnableTextureSample<T>::sample(uint channel_num, const UVW &uvw)
+DynamicArray<float> EnableTextureSample<T>::sample(uint channel_num, const UVW &uvw)
     const noexcept {
     return sample(channel_num, uvw.x, uvw.y, uvw.z);
 }
@@ -313,7 +313,7 @@ Array<float> EnableTextureSample<T>::sample(uint channel_num, const UVW &uvw)
 template<typename T>
 template<typename UV>
 requires(is_float_vector2_v<expr_value_t<UV>>)
-Array<float> EnableTextureSample<T>::sample(uint channel_num, const UV &uv)
+DynamicArray<float> EnableTextureSample<T>::sample(uint channel_num, const UV &uv)
     const noexcept {
     return sample(channel_num, uv.x, uv.y);
 }
@@ -321,48 +321,48 @@ Array<float> EnableTextureSample<T>::sample(uint channel_num, const UV &uv)
 }// namespace detail
 
 template<typename T, typename Offset>
-[[nodiscard]] Array<T> BindlessArrayByteBuffer::read_dynamic_array(uint size, Offset &&offset) const noexcept {
+[[nodiscard]] DynamicArray<T> BindlessArrayByteBuffer::read_dynamic_array(uint size, Offset &&offset) const noexcept {
     if constexpr (is_dsl_v<Offset>) {
         offset = detail::correct_index(offset, this->size_in_byte(), typeid(*this).name(), traceback_string());
     }
-    const CallExpr *expr = Function::current()->call_builtin(Array<T>::type(size),
+    const CallExpr *expr = Function::current()->call_builtin(DynamicArray<T>::type(size),
                                                              CallOp::BINDLESS_ARRAY_BYTE_BUFFER_READ,
                                                              {_bindless_array, _index, OC_EXPR(offset)});
-    return detail::eval_array(Array<T>(size, expr));
+    return detail::eval_dynamic_array(DynamicArray<T>(size, expr));
 }
 
 template<typename U, typename V>
 requires(is_all_floating_point_expr_v<U, V>)
-Array<float> BindlessArrayTexture::sample(uint channel_num, const U &u, const V &v)
+DynamicArray<float> BindlessArrayTexture::sample(uint channel_num, const U &u, const V &v)
     const noexcept {
-    const CallExpr *expr = Function::current()->call_builtin(Array<float>::type(channel_num),
+    const CallExpr *expr = Function::current()->call_builtin(DynamicArray<float>::type(channel_num),
                                                              CallOp::BINDLESS_ARRAY_TEX_SAMPLE,
                                                              {_bindless_array, _index, OC_EXPR(u), OC_EXPR(v)},
                                                              {channel_num});
-    return detail::eval_array(Array<float>(channel_num, expr));
+    return detail::eval_dynamic_array(DynamicArray<float>(channel_num, expr));
 }
 
 template<typename U, typename V, typename W>
 requires(is_all_floating_point_expr_v<U, V, W>)
-Array<float> BindlessArrayTexture::sample(uint channel_num, const U &u, const V &v, const W &w)
+DynamicArray<float> BindlessArrayTexture::sample(uint channel_num, const U &u, const V &v, const W &w)
     const noexcept {
-    const CallExpr *expr = Function::current()->call_builtin(Array<float>::type(channel_num),
+    const CallExpr *expr = Function::current()->call_builtin(DynamicArray<float>::type(channel_num),
                                                              CallOp::BINDLESS_ARRAY_TEX_SAMPLE,
                                                              {_bindless_array, _index, OC_EXPR(u), OC_EXPR(v), OC_EXPR(w)},
                                                              {channel_num});
-    return detail::eval_array(Array<float>(channel_num, expr));
+    return detail::eval_dynamic_array(DynamicArray<float>(channel_num, expr));
 }
 
 template<typename UVW>
 requires(is_float_vector3_v<expr_value_t<UVW>>)
-Array<float> BindlessArrayTexture::sample(uint channel_num, const UVW &uvw)
+DynamicArray<float> BindlessArrayTexture::sample(uint channel_num, const UVW &uvw)
     const noexcept {
     return sample(channel_num, uvw.x, uvw.y, uvw.z);
 }
 
 template<typename UV>
 requires(is_float_vector2_v<expr_value_t<UV>>)
-Array<float> BindlessArrayTexture::sample(uint channel_num, const UV &uv)
+DynamicArray<float> BindlessArrayTexture::sample(uint channel_num, const UV &uv)
     const noexcept {
     return sample(channel_num, uv.x, uv.y);
 }

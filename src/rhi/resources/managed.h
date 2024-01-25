@@ -12,7 +12,7 @@
 namespace ocarina {
 
 template<typename T>
-class Array;
+class DynamicArray;
 
 template<typename T>
 class Managed : public Buffer<T>, public ocarina::vector<T> {

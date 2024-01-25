@@ -88,19 +88,19 @@ OC_NODISCARD auto select(U &&pred, T &&t, F &&f) noexcept {
 /// used for dynamic array
 template<typename P, typename T>
 requires is_all_scalar_v<P, T>
-[[nodiscard]] Array<T> select(const Array<P> &pred, const Array<T> &t, const Array<T> &f) noexcept {
+[[nodiscard]] DynamicArray<T> select(const DynamicArray<P> &pred, const DynamicArray<T> &t, const DynamicArray<T> &f) noexcept {
     OC_ASSERT(t.size() == f.size() && t.size() == pred.size());
-    auto expr = Function::current()->call_builtin(Array<T>::type(pred.size()),
+    auto expr = Function::current()->call_builtin(DynamicArray<T>::type(pred.size()),
                                                   CallOp::SELECT, {OC_EXPR(pred), OC_EXPR(t), OC_EXPR(f)});
-    return eval_array(Array<T>(pred.size(), expr));
+    return eval_dynamic_array(DynamicArray<T>(pred.size(), expr));
 }
 
 /// used for dynamic array
 template<typename P, typename T>
 requires is_all_scalar_v<T>
-[[nodiscard]] Array<T> select(const Var<P> &pred, const Array<T> &t, const Array<T> &f) noexcept {
+[[nodiscard]] DynamicArray<T> select(const Var<P> &pred, const DynamicArray<T> &t, const DynamicArray<T> &f) noexcept {
     OC_ASSERT(t.size() == f.size());
-    Array<P> pred_arr{t.size()};
+    DynamicArray<P> pred_arr{t.size()};
     pred_arr = pred;
     return select(pred_arr, t, f);
 }
@@ -108,8 +108,8 @@ requires is_all_scalar_v<T>
 /// used for dynamic array
 template<typename P, typename T>
 requires is_all_scalar_v<T>
-[[nodiscard]] Array<T> select(const Var<P> &pred, const Var<T> &t, const Array<T> &f) noexcept {
-    Array<T> arr(f.size());
+[[nodiscard]] DynamicArray<T> select(const Var<P> &pred, const Var<T> &t, const DynamicArray<T> &f) noexcept {
+    DynamicArray<T> arr(f.size());
     arr = t;
     return select(pred, arr, f);
 }
@@ -117,8 +117,8 @@ requires is_all_scalar_v<T>
 /// used for dynamic array
 template<typename P, typename T>
 requires is_all_scalar_v<T>
-[[nodiscard]] Array<T> select(const Var<P> &pred, const T &t, const Array<T> &f) noexcept {
-    Array<T> arr(f.size());
+[[nodiscard]] DynamicArray<T> select(const Var<P> &pred, const T &t, const DynamicArray<T> &f) noexcept {
+    DynamicArray<T> arr(f.size());
     arr = t;
     return select(pred, arr, f);
 }
@@ -126,8 +126,8 @@ requires is_all_scalar_v<T>
 /// used for dynamic array
 template<typename P, typename T>
 requires is_all_scalar_v<T>
-[[nodiscard]] Array<T> select(const Var<P> &pred, const Array<T> &t, const Var<T> &f) noexcept {
-    Array<T> arr(t.size());
+[[nodiscard]] DynamicArray<T> select(const Var<P> &pred, const DynamicArray<T> &t, const Var<T> &f) noexcept {
+    DynamicArray<T> arr(t.size());
     arr = f;
     return select(pred, t, arr);
 }
@@ -135,8 +135,8 @@ requires is_all_scalar_v<T>
 /// used for dynamic array
 template<typename P, typename T>
 requires is_all_scalar_v<T>
-[[nodiscard]] Array<T> select(const Var<P> &pred, const Array<T> &t, const T &f) noexcept {
-    Array<T> arr(t.size());
+[[nodiscard]] DynamicArray<T> select(const Var<P> &pred, const DynamicArray<T> &t, const T &f) noexcept {
+    DynamicArray<T> arr(t.size());
     arr = f;
     return select(pred, t, arr);
 }
@@ -195,9 +195,9 @@ OC_NODISCARD auto sqr(const T &t) noexcept {
 #define OC_MAKE_ARRAY_UNARY_FUNC(func, tag)                                                                   \
     template<typename T>                                                                                      \
     requires is_basic_v<T>                                                                                    \
-    [[nodiscard]] Array<T> func(const Array<T> &t) noexcept {                                                 \
-        auto expr = Function::current() -> call_builtin(Array<T>::type(t.size()), CallOp::tag, {OC_EXPR(t)}); \
-        return eval_array(Array<T>(t.size(), expr));                                                          \
+    [[nodiscard]] DynamicArray<T> func(const DynamicArray<T> &t) noexcept {                                                 \
+        auto expr = Function::current() -> call_builtin(DynamicArray<T>::type(t.size()), CallOp::tag, {OC_EXPR(t)}); \
+        return eval_dynamic_array(DynamicArray<T>(t.size(), expr));                                                          \
     }
 
 OC_MAKE_ARRAY_UNARY_FUNC(abs, ABS)
@@ -296,9 +296,9 @@ void coordinate_system(const A &a, Var<float3> &b, Var<float3> &c) noexcept {
     }                                                                                                         \
     template<typename T>                                                                                      \
     requires is_basic_v<T>                                                                                    \
-    OC_NODISCARD Array<T> func(const Array<T> &t) noexcept {                                                  \
-        auto expr = Function::current() -> call_builtin(Array<T>::type(t.size()), CallOp::tag, {OC_EXPR(t)}); \
-        return eval_array(Array<T>(t.size(), expr));                                                          \
+    OC_NODISCARD DynamicArray<T> func(const DynamicArray<T> &t) noexcept {                                                  \
+        auto expr = Function::current() -> call_builtin(DynamicArray<T>::type(t.size()), CallOp::tag, {OC_EXPR(t)}); \
+        return eval_dynamic_array(DynamicArray<T>(t.size(), expr));                                                          \
     }
 
 OC_MAKE_FLOATING_BUILTIN_FUNC(exp, EXP)

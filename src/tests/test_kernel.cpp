@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
         prints("{},{},{}",v2);
         return;
         //                configure_block(1,2,1);
-        Array<uint> ua(10);
+        DynamicArray<uint> ua(10);
         ua[5] = 1u;
         Var uuu = ua[5];
         Var<int3> vec = make_int3(1,2, a.cast<int>());

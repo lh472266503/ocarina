@@ -15,7 +15,7 @@
 namespace ocarina {
 
 template<typename T>
-class Array;
+class DynamicArray;
 
 namespace detail {
 template<typename Lhs, typename Rhs>
@@ -281,22 +281,22 @@ struct EnableTextureSample {
 
     template<typename U, typename V>
     requires(is_all_floating_point_expr_v<U, V>)
-    OC_NODISCARD Array<float> sample(uint channel_num, const U &u, const V &v)
+    OC_NODISCARD DynamicArray<float> sample(uint channel_num, const U &u, const V &v)
         const noexcept;// implement in dsl/array.h
 
     template<typename U, typename V, typename W>
     requires(is_all_floating_point_expr_v<U, V, W>)
-    OC_NODISCARD Array<float> sample(uint channel_num, const U &u, const V &v, const W &w)
+    OC_NODISCARD DynamicArray<float> sample(uint channel_num, const U &u, const V &v, const W &w)
         const noexcept;// implement in dsl/array.h
 
     template<typename UVW>
     requires(is_float_vector3_v<expr_value_t<UVW>>)
-    OC_NODISCARD Array<float> sample(uint channel_num, const UVW &uvw)
+    OC_NODISCARD DynamicArray<float> sample(uint channel_num, const UVW &uvw)
         const noexcept;// implement in dsl/array.h
 
     template<typename UV>
     requires(is_float_vector2_v<expr_value_t<UV>>)
-    OC_NODISCARD Array<float> sample(uint channel_num, const UV &uv)
+    OC_NODISCARD DynamicArray<float> sample(uint channel_num, const UV &uv)
         const noexcept;// implement in dsl/array.h
 };
 
@@ -627,7 +627,7 @@ public:
     }
 
     template<typename T, typename Offset>
-    [[nodiscard]] Array<T> read_dynamic_array(uint size, Offset &&offset) const noexcept;// implement in dsl/array.h
+    [[nodiscard]] DynamicArray<T> read_dynamic_array(uint size, Offset &&offset) const noexcept;// implement in dsl/array.h
 };
 
 class BindlessArrayTexture {
@@ -641,22 +641,22 @@ public:
 
     template<typename U, typename V, typename W>
     requires(is_all_floating_point_expr_v<U, V, W>)
-    OC_NODISCARD Array<float> sample(uint channel_num, const U &u, const V &v, const W &w)
+    OC_NODISCARD DynamicArray<float> sample(uint channel_num, const U &u, const V &v, const W &w)
         const noexcept;// implement in dsl/array.h
 
     template<typename U, typename V>
     requires(is_all_floating_point_expr_v<U, V>)
-    OC_NODISCARD Array<float> sample(uint channel_num, const U &u, const V &v)
+    OC_NODISCARD DynamicArray<float> sample(uint channel_num, const U &u, const V &v)
         const noexcept;// implement in dsl/array.h
 
     template<typename UVW>
     requires(is_float_vector3_v<expr_value_t<UVW>>)
-    OC_NODISCARD Array<float> sample(uint channel_num, const UVW &uvw)
+    OC_NODISCARD DynamicArray<float> sample(uint channel_num, const UVW &uvw)
         const noexcept;// implement in dsl/array.h
 
     template<typename UV>
     requires(is_float_vector2_v<expr_value_t<UV>>)
-    OC_NODISCARD Array<float> sample(uint channel_num, const UV &uv)
+    OC_NODISCARD DynamicArray<float> sample(uint channel_num, const UV &uv)
         const noexcept;// implement in dsl/array.h
 };
 

@@ -52,9 +52,9 @@ auto get_cube(float x = 1, float y = 1, float z = 1) {
     return ocarina::make_pair(vertices, triangles);
 }
 
-auto operator-(Array<float> arr) {
+auto operator-(DynamicArray<float> arr) {
     const Expression *expr = Function::current()->unary(arr.type(), UnaryOp::NEGATIVE, arr.expression());
-    return Array<float>(arr.size(), expr);
+    return DynamicArray<float>(arr.size(), expr);
 }
 
 //template<typename... Args>
@@ -193,9 +193,9 @@ int main(int argc, char *argv[]) {
 //        auto arr = bindless_array.byte_buffer(index).read_dynamic_array<float>(3, 19 * 4);
 //        Env::printer().warn_with_location("{} {} {}, {} {} ,{} {} {}", f, arr.sub(1, 3).as_vec2(), t.i.cast<float>() + 2.4f, t.j, t.k);
 
-        Array<float> p{3};
-        Array<float> t{3};
-        Array<float> f{3};
+        DynamicArray<float> p{3};
+        DynamicArray<float> t{3};
+        DynamicArray<float> f{3};
         for (int i = 0; i < 3; ++i) {
             p[i] = 0;
             t[i] = -i;
@@ -204,9 +204,9 @@ int main(int argc, char *argv[]) {
 
         p[1] = 1;
 
-        Array<float> r = select(p, t, f);
+        DynamicArray<float> r = select(p, t, f);
 //        r = t +f;
-        Array<float3> rr{3};
+        DynamicArray<float3> rr{3};
         rr[0] = make_float3(-9);
         rr[1] = make_float3(-8);
         rr = abs(rr);
@@ -231,7 +231,7 @@ int main(int argc, char *argv[]) {
         //        printer.log_debug("--------{} {} {}", 1.5f,f.x,1.11f);
         //        print("sdfasdasdfasdsdafsdafasdfsda{} {} {}", 1.5f,f.x,1.9f);
         //        print("------adfasdfsdafasdasasfasdfasdfasdf--{} {} {}", 1.5f,f.x,1.11f);
-        //        Array<float> arr = Array<float>::create(1.f, 2.f, 3.f, 4.f);
+        //        DynamicArray<float> arr = DynamicArray<float>::create(1.f, 2.f, 3.f, 4.f);
         //        arr *= arr;
         //        prints("{} {} {} {}", arr.wzyx().as_vec4());
         //        Float3 pos = r->direction();
