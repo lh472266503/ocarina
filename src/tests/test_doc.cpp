@@ -187,7 +187,7 @@ void test_lambda(Device &device, Stream &stream) {
             return (*hit).inst_id;
         };
         Var<array<float, 3>> arr{};
-        arr.assignment(array<float,3>{1,2,3});
+        arr.set(array<float,3>{1,2,3});
         $info("{}     ---   ", bb);
         $info("{}     ---   ", (*hit).inst_id);
         $info("{} {} {}", arr.zyx());

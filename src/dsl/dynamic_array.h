@@ -151,7 +151,7 @@ public:
         return *this;
     }
 
-    void assignment(const vector<T> &rhs) {
+    void set(const vector<T> &rhs) {
         auto tmp = DynamicArray<T>::create(rhs);
         *this = tmp;
     }
