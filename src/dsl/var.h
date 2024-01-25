@@ -27,7 +27,7 @@ struct Var : public Computable<T> {
     Var() noexcept
         : Var(ocarina::Function::current()->local(ocarina::Type::of<this_type>())) {
         if constexpr (is_struct_v<T>) {
-            Computable<T>::assignment(T{});
+            Computable<T>::set(T{});
         }
     }
     Var(Var &&another) noexcept
@@ -48,7 +48,7 @@ struct Var : public Computable<T> {
     requires requires(ocarina::expr_value_t<this_type> a, ocarina::expr_value_t<Arg> b) { a = b; }
     void operator=(Arg &&arg) {
         if constexpr (is_struct_v<Arg>) {
-            Computable<T>::assignment(OC_FORWARD(arg));
+            Computable<T>::set(OC_FORWARD(arg));
         } else {
             ocarina::detail::assign(*this, std::forward<Arg>(arg));
         }

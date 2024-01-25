@@ -358,11 +358,11 @@ protected:                                                                      
     Computable(Computable &&) noexcept = default;                                       \
     Computable(const Computable &) noexcept = default;
 
-#define OC_MAKE_ASSIGNMENT_FUNC      \
-public:                              \
-    void                             \
-    assignment(const this_type &t) { \
-        assign(*this, t);            \
+#define OC_MAKE_ASSIGNMENT_FUNC \
+public:                         \
+    void                        \
+    set(const this_type &t) {   \
+        assign(*this, t);       \
     }
 
 template<typename T>
@@ -442,12 +442,12 @@ struct Computable<ocarina::array<T, N>>
     using this_type = ocarina::array<T, N>;
     OC_COMPUTABLE_COMMON(Computable<ocarina::array<T, N>>)
 public:
-    void assignment(const this_type &t) {
+    void set(const this_type &t) {
         for (int i = 0; i < N; ++i) {
             (*this)[i] = t[i];
         }
     }
-    void assignment(const Var<Vector<T, N>> &t) {
+    void set(const Var<Vector<T, N>> &t) {
         for (int i = 0; i < N; ++i) {
             (*this)[i] = t[i];
         }
@@ -481,7 +481,7 @@ struct Computable<T[N]>
     using this_type = T[N];
     OC_COMPUTABLE_COMMON(Computable<T[N]>)
 public:
-    void assignment(const this_type &t) {
+    void set(const this_type &t) {
         for (int i = 0; i < N; ++i) {
             (*this)[i] = t[i];
         }
@@ -546,7 +546,7 @@ public:
         assign(expr, val);
     }
 
-    void assignment(const Tuple &t) {
+    void set(const Tuple &t) {
         _assignment(t);
     };
 };
@@ -720,7 +720,7 @@ public:
                                                                                       ocarina::struct_member_tuple<this_type>::member_index(#m))};
 
 #define OC_MAKE_MEMBER_ASSIGNMENT(m) \
-    m.assignment(t.m);
+    m.set(t.m);
 
 #define OC_MAKE_COMPUTABLE_BODY(S, ...)                   \
     namespace ocarina {                                   \
@@ -733,7 +733,7 @@ public:
         OC_COMPUTABLE_COMMON(S)                           \
     public:                                               \
         void                                              \
-        assignment(const this_type &t) {                  \
+        set(const this_type &t) {                         \
             MAP(OC_MAKE_MEMBER_ASSIGNMENT, ##__VA_ARGS__) \
         }                                                 \
                                                           \
