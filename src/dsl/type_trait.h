@@ -491,14 +491,14 @@ requires(!is_dsl_v<T>)
 Ray ray_deduce();
 
 template<typename T>
-struct ray {
+struct ray_ {
     using type = decltype(ray_deduce<T>());
 };
 
 }// namespace detail
 
 template<typename T>
-using ray_t = typename detail::ray<std::remove_cvref_t<T>>::type;
+using ray_t = typename detail::ray_<std::remove_cvref_t<T>>::type;
 
 namespace detail {
 
