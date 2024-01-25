@@ -96,7 +96,7 @@ class Buffer : public RHIResource {
 
 public:
     using element_type = T;
-    static constexpr std::array<int, sizeof...(Dims)> dims = {Dims...};
+    static constexpr ocarina::array<int, sizeof...(Dims)> dims = {Dims...};
     static constexpr bool has_multi_dim() noexcept { return !dims.empty(); }
 
 protected:

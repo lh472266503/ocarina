@@ -11,7 +11,7 @@ namespace ocarina::detail {
 
 template<typename T>
 [[nodiscard]] auto to_string(T &&t) noexcept {
-    static thread_local std::array<char, 128u> s{};
+    static thread_local ocarina::array<char, 128u> s{};
     auto [iter, size] = fmt::format_to_n(s.data(), s.size(), FMT_STRING("{}"), t);
     string ret(s.data(), size);
     return ret;

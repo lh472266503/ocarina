@@ -436,11 +436,11 @@ struct Computable<Matrix<N>>
 };
 
 template<typename T, size_t N>
-struct Computable<std::array<T, N>>
-    : detail::EnableSubscriptAccess<Computable<std::array<T, N>>>,
-      detail::EnableGetMemberByIndex<Computable<std::array<T, N>>> {
-    using this_type = std::array<T, N>;
-    OC_COMPUTABLE_COMMON(Computable<std::array<T, N>>)
+struct Computable<ocarina::array<T, N>>
+    : detail::EnableSubscriptAccess<Computable<ocarina::array<T, N>>>,
+      detail::EnableGetMemberByIndex<Computable<ocarina::array<T, N>>> {
+    using this_type = ocarina::array<T, N>;
+    OC_COMPUTABLE_COMMON(Computable<ocarina::array<T, N>>)
 public:
     void assignment(const this_type &t) {
         for (int i = 0; i < N; ++i) {

@@ -330,15 +330,15 @@ void ImageIO::save_exr(const fs::path &fn, PixelStorage pixel_storage,
     int c = 4;
     InitEXRImage(&image);
     int count = res.x * res.y;
-    std::array<float *, 4> image_ptr{nullptr, nullptr, nullptr, nullptr};
+    ocarina::array<float *, 4> image_ptr{nullptr, nullptr, nullptr, nullptr};
     image.num_channels = 4;
     image.width = res.x;
     image.height = res.y;
     image.images = reinterpret_cast<uint8_t **>(image_ptr.data());
 
-    std::array<int, 4> pixel_types{TINYEXR_PIXELTYPE_FLOAT, TINYEXR_PIXELTYPE_FLOAT, TINYEXR_PIXELTYPE_FLOAT,
+    ocarina::array<int, 4> pixel_types{TINYEXR_PIXELTYPE_FLOAT, TINYEXR_PIXELTYPE_FLOAT, TINYEXR_PIXELTYPE_FLOAT,
                                    TINYEXR_PIXELTYPE_FLOAT};
-    std::array<EXRChannelInfo, 4> channels{};
+    ocarina::array<EXRChannelInfo, 4> channels{};
     header.num_channels = c;
     header.channels = channels.data();
     header.pixel_types = pixel_types.data();

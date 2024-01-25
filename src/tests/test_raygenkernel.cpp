@@ -166,7 +166,7 @@ int main(int argc, char *argv[]) {
     stream << synchronize() << commit();
 
     Callable cb = [&]() {
-        return Var<std::array<float, 10>>();
+        return Var<ocarina::array<float, 10>>();
     };
 
     vector<float> aaa = {1, 2, 3};

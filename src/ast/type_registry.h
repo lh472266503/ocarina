@@ -131,7 +131,7 @@ struct TypeDesc<vector<T>> {
 };
 
 template<typename T, size_t N>
-struct TypeDesc<std::array<T, N>> {
+struct TypeDesc<ocarina::array<T, N>> {
     static_assert(alignof(T) >= 4u);
     static ocarina::string &description() noexcept {
         static thread_local auto s = ocarina::format(
@@ -194,7 +194,7 @@ struct TypeDesc<Accel> {
 };
 
 template<typename T, size_t N>
-struct TypeDesc<T[N]> : public TypeDesc<std::array<T, N>> {};
+struct TypeDesc<T[N]> : public TypeDesc<ocarina::array<T, N>> {};
 
 template<typename... T>
 struct TypeDesc<ocarina::tuple<T...>> {
@@ -278,9 +278,9 @@ private:
     [[nodiscard]] static constexpr bool _check() noexcept {
         constexpr auto count = sizeof...(M);
         static_assert(sizeof...(os) == count);
-        constexpr std::array<size_t, count> sizes{sizeof(M)...};
-        constexpr std::array<size_t, count> alignments{alignof(M)...};
-        constexpr std::array<size_t, count> offsets{os...};
+        constexpr ocarina::array<size_t, count> sizes{sizeof(M)...};
+        constexpr ocarina::array<size_t, count> alignments{alignof(M)...};
+        constexpr ocarina::array<size_t, count> offsets{os...};
         size_t cur_offset = 0u;
         for (auto i = 0u; i < count; ++i) {
             auto offset = offsets[i];

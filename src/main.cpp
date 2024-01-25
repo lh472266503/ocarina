@@ -14,7 +14,7 @@
 using namespace ocarina;
 
 template<typename T, size_t N, size_t... i>
-auto array_to_tuple(std::array<T, N> arr, std::index_sequence<i...>) {
+auto array_to_tuple(ocarina::array<T, N> arr, std::index_sequence<i...>) {
     //    ((cout << arr[i]),...);
     auto ret = ocarina::tuple<std::remove_cvref_t<decltype(arr[i])>...>(arr[i]...);
     return ret;
@@ -28,11 +28,11 @@ ocarina::span<const Type *const> members() noexcept {
 
 int main() {
     using namespace ocarina;
-    std::array<float, 2> arr = {1, 2};
+    ocarina::array<float, 2> arr = {1, 2};
     ocarina::tuple<float, float> tp = array_to_tuple(arr, std::make_index_sequence<2>());
     //    ocarina::tuple<float, float> tp = ocarina::tuple<float, float>(1,5);
     //    cout << typeid(tp).name() << endl;
-    //    cout << typeid(struct_member_tuple<std::array<float, 2>>::type).name();
+    //    cout << typeid(struct_member_tuple<ocarina::array<float, 2>>::type).name();
     cout << TypeDesc<decltype(tp)>::description() << endl;
     //    cout << TypeDesc<Hit>::description() << endl;
     //    cout << typeid(ocarina::tuple_join_t<tuple<int, float, int>, tuple<int, float, uint>, int>).name() << endl;

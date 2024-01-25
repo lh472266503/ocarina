@@ -95,7 +95,7 @@ public:
 
     template<typename... Args>
     static Array<T> create(Args &&...args) noexcept {
-        return create(std::array<Var<T>, sizeof...(args)>{OC_FORWARD(args)...});
+        return create(ocarina::array<Var<T>, sizeof...(args)>{OC_FORWARD(args)...});
     }
 
     [[nodiscard]] Var<T> as_scalar() const noexcept {
