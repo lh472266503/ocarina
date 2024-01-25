@@ -490,6 +490,12 @@ namespace ocarina {
             static_cast<type>(v.x),                                                                                          \
             static_cast<type>(v.y));                                                                                         \
     }                                                                                                                        \
+    template<typename T>                                                                                                     \
+    [[nodiscard]] constexpr auto make_##type##2(ocarina::array<T, 2> v) noexcept {                                           \
+        return type##2(                                                                                                      \
+            static_cast<type>(v[0]),                                                                                         \
+            static_cast<type>(v[1]));                                                                                        \
+    }                                                                                                                        \
     [[nodiscard]] constexpr auto make_##type##2(type##3 v) noexcept { return type##2(v.x, v.y); }                            \
     [[nodiscard]] constexpr auto make_##type##2(type##4 v) noexcept { return type##2(v.x, v.y); }                            \
                                                                                                                              \
@@ -501,6 +507,13 @@ namespace ocarina {
             static_cast<type>(v.x),                                                                                          \
             static_cast<type>(v.y),                                                                                          \
             static_cast<type>(v.z));                                                                                         \
+    }                                                                                                                        \
+    template<typename T>                                                                                                     \
+    [[nodiscard]] constexpr auto make_##type##3(ocarina::array<T, 3> v) noexcept {                                           \
+        return type##3(                                                                                                      \
+            static_cast<type>(v[0]),                                                                                         \
+            static_cast<type>(v[1]),                                                                                         \
+            static_cast<type>(v[2]));                                                                                        \
     }                                                                                                                        \
     [[nodiscard]] constexpr auto make_##type##3(type##2 v, type z) noexcept { return type##3(v.x, v.y, z); }                 \
     [[nodiscard]] constexpr auto make_##type##3(type x, type##2 v) noexcept { return type##3(x, v.x, v.y); }                 \
@@ -515,6 +528,14 @@ namespace ocarina {
             static_cast<type>(v.y),                                                                                          \
             static_cast<type>(v.z),                                                                                          \
             static_cast<type>(v.w));                                                                                         \
+    }                                                                                                                        \
+    template<typename T>                                                                                                     \
+    [[nodiscard]] constexpr auto make_##type##4(ocarina::array<T, 4> v) noexcept {                                           \
+        return type##4(                                                                                                      \
+            static_cast<type>(v[0]),                                                                                         \
+            static_cast<type>(v[1]),                                                                                         \
+            static_cast<type>(v[2]),                                                                                         \
+            static_cast<type>(v[3]));                                                                                        \
     }                                                                                                                        \
     [[nodiscard]] constexpr auto make_##type##4(type##2 v, type z, type w) noexcept { return type##4(v.x, v.y, z, w); }      \
     [[nodiscard]] constexpr auto make_##type##4(type x, type##2 v, type w) noexcept { return type##4(x, v.x, v.y, w); }      \
