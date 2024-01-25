@@ -51,20 +51,20 @@ def array_swizzle(file, dim):
     print("", file=file)
     for i,x in enumerate(entries):
         for j,y in enumerate(entries):
-            str = f"[[nodiscard]] auto {x}{y}() const {{ return Var<Vector<T, 2>>(at({i}), at({j})) }}"
+            str = f"[[nodiscard]] auto {x}{y}() const {{ return as_vec2().{x}{y}(); }}"
             print(str, file=file)
     print("", file=file)
     for i,x in enumerate(entries):
         for j,y in enumerate(entries):
             for k,z in enumerate(entries):
-                str = f"[[nodiscard]] auto {x}{y}{z}() const {{ return Var<Vector<T, 3>>(at({i}), at({j}), at({k})); }}"
+                str = f"[[nodiscard]] auto {x}{y}{z}() const {{ return as_vec3().{x}{y}{z}(); }}"
                 print(str, file=file)
     print("", file=file)
     for i,x in enumerate(entries):
         for j,y in enumerate(entries):
             for k,z in enumerate(entries):
                 for l,w in enumerate(entries):
-                    str = f"[[nodiscard]] auto {x}{y}{z}{w}() const {{ return Var<Vector<T, 4>>(at({i}), at({j}), at({k}), at({l})); }}"
+                    str = f"[[nodiscard]] auto {x}{y}{z}{w}() const {{ return as_vec4().{x}{y}{z}{w}(); }}"
                     print(str, file=file)
 
 if __name__ == "__main__":

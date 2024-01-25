@@ -186,10 +186,11 @@ void test_lambda(Device &device, Stream &stream) {
         Float bb = $outline {
             return (*hit).inst_id;
         };
-
+        Var<array<float, 3>> arr{};
+        arr.assignment(array<float,3>{1,2,3});
         $info("{}     ---   ", bb);
         $info("{}     ---   ", (*hit).inst_id);
-        static_assert(4 > std::max({1, 2, 3, 7}));
+        $info("{} {} {}", arr.zyx());
     };
     Shader shader = device.compile(kernel);
 

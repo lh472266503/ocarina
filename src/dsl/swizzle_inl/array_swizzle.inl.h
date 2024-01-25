@@ -1,339 +1,339 @@
 
-[[nodiscard]] auto xx() const { return Var<Vector<T, 2>>(at(0), at(0)) }
-[[nodiscard]] auto xy() const { return Var<Vector<T, 2>>(at(0), at(1)) }
-[[nodiscard]] auto xz() const { return Var<Vector<T, 2>>(at(0), at(2)) }
-[[nodiscard]] auto xw() const { return Var<Vector<T, 2>>(at(0), at(3)) }
-[[nodiscard]] auto yx() const { return Var<Vector<T, 2>>(at(1), at(0)) }
-[[nodiscard]] auto yy() const { return Var<Vector<T, 2>>(at(1), at(1)) }
-[[nodiscard]] auto yz() const { return Var<Vector<T, 2>>(at(1), at(2)) }
-[[nodiscard]] auto yw() const { return Var<Vector<T, 2>>(at(1), at(3)) }
-[[nodiscard]] auto zx() const { return Var<Vector<T, 2>>(at(2), at(0)) }
-[[nodiscard]] auto zy() const { return Var<Vector<T, 2>>(at(2), at(1)) }
-[[nodiscard]] auto zz() const { return Var<Vector<T, 2>>(at(2), at(2)) }
-[[nodiscard]] auto zw() const { return Var<Vector<T, 2>>(at(2), at(3)) }
-[[nodiscard]] auto wx() const { return Var<Vector<T, 2>>(at(3), at(0)) }
-[[nodiscard]] auto wy() const { return Var<Vector<T, 2>>(at(3), at(1)) }
-[[nodiscard]] auto wz() const { return Var<Vector<T, 2>>(at(3), at(2)) }
-[[nodiscard]] auto ww() const { return Var<Vector<T, 2>>(at(3), at(3)) }
+[[nodiscard]] auto xx() const { return as_vec2().xx(); }
+[[nodiscard]] auto xy() const { return as_vec2().xy(); }
+[[nodiscard]] auto xz() const { return as_vec2().xz(); }
+[[nodiscard]] auto xw() const { return as_vec2().xw(); }
+[[nodiscard]] auto yx() const { return as_vec2().yx(); }
+[[nodiscard]] auto yy() const { return as_vec2().yy(); }
+[[nodiscard]] auto yz() const { return as_vec2().yz(); }
+[[nodiscard]] auto yw() const { return as_vec2().yw(); }
+[[nodiscard]] auto zx() const { return as_vec2().zx(); }
+[[nodiscard]] auto zy() const { return as_vec2().zy(); }
+[[nodiscard]] auto zz() const { return as_vec2().zz(); }
+[[nodiscard]] auto zw() const { return as_vec2().zw(); }
+[[nodiscard]] auto wx() const { return as_vec2().wx(); }
+[[nodiscard]] auto wy() const { return as_vec2().wy(); }
+[[nodiscard]] auto wz() const { return as_vec2().wz(); }
+[[nodiscard]] auto ww() const { return as_vec2().ww(); }
 
-[[nodiscard]] auto xxx() const { return Var<Vector<T, 3>>(at(0), at(0), at(0)); }
-[[nodiscard]] auto xxy() const { return Var<Vector<T, 3>>(at(0), at(0), at(1)); }
-[[nodiscard]] auto xxz() const { return Var<Vector<T, 3>>(at(0), at(0), at(2)); }
-[[nodiscard]] auto xxw() const { return Var<Vector<T, 3>>(at(0), at(0), at(3)); }
-[[nodiscard]] auto xyx() const { return Var<Vector<T, 3>>(at(0), at(1), at(0)); }
-[[nodiscard]] auto xyy() const { return Var<Vector<T, 3>>(at(0), at(1), at(1)); }
-[[nodiscard]] auto xyz() const { return Var<Vector<T, 3>>(at(0), at(1), at(2)); }
-[[nodiscard]] auto xyw() const { return Var<Vector<T, 3>>(at(0), at(1), at(3)); }
-[[nodiscard]] auto xzx() const { return Var<Vector<T, 3>>(at(0), at(2), at(0)); }
-[[nodiscard]] auto xzy() const { return Var<Vector<T, 3>>(at(0), at(2), at(1)); }
-[[nodiscard]] auto xzz() const { return Var<Vector<T, 3>>(at(0), at(2), at(2)); }
-[[nodiscard]] auto xzw() const { return Var<Vector<T, 3>>(at(0), at(2), at(3)); }
-[[nodiscard]] auto xwx() const { return Var<Vector<T, 3>>(at(0), at(3), at(0)); }
-[[nodiscard]] auto xwy() const { return Var<Vector<T, 3>>(at(0), at(3), at(1)); }
-[[nodiscard]] auto xwz() const { return Var<Vector<T, 3>>(at(0), at(3), at(2)); }
-[[nodiscard]] auto xww() const { return Var<Vector<T, 3>>(at(0), at(3), at(3)); }
-[[nodiscard]] auto yxx() const { return Var<Vector<T, 3>>(at(1), at(0), at(0)); }
-[[nodiscard]] auto yxy() const { return Var<Vector<T, 3>>(at(1), at(0), at(1)); }
-[[nodiscard]] auto yxz() const { return Var<Vector<T, 3>>(at(1), at(0), at(2)); }
-[[nodiscard]] auto yxw() const { return Var<Vector<T, 3>>(at(1), at(0), at(3)); }
-[[nodiscard]] auto yyx() const { return Var<Vector<T, 3>>(at(1), at(1), at(0)); }
-[[nodiscard]] auto yyy() const { return Var<Vector<T, 3>>(at(1), at(1), at(1)); }
-[[nodiscard]] auto yyz() const { return Var<Vector<T, 3>>(at(1), at(1), at(2)); }
-[[nodiscard]] auto yyw() const { return Var<Vector<T, 3>>(at(1), at(1), at(3)); }
-[[nodiscard]] auto yzx() const { return Var<Vector<T, 3>>(at(1), at(2), at(0)); }
-[[nodiscard]] auto yzy() const { return Var<Vector<T, 3>>(at(1), at(2), at(1)); }
-[[nodiscard]] auto yzz() const { return Var<Vector<T, 3>>(at(1), at(2), at(2)); }
-[[nodiscard]] auto yzw() const { return Var<Vector<T, 3>>(at(1), at(2), at(3)); }
-[[nodiscard]] auto ywx() const { return Var<Vector<T, 3>>(at(1), at(3), at(0)); }
-[[nodiscard]] auto ywy() const { return Var<Vector<T, 3>>(at(1), at(3), at(1)); }
-[[nodiscard]] auto ywz() const { return Var<Vector<T, 3>>(at(1), at(3), at(2)); }
-[[nodiscard]] auto yww() const { return Var<Vector<T, 3>>(at(1), at(3), at(3)); }
-[[nodiscard]] auto zxx() const { return Var<Vector<T, 3>>(at(2), at(0), at(0)); }
-[[nodiscard]] auto zxy() const { return Var<Vector<T, 3>>(at(2), at(0), at(1)); }
-[[nodiscard]] auto zxz() const { return Var<Vector<T, 3>>(at(2), at(0), at(2)); }
-[[nodiscard]] auto zxw() const { return Var<Vector<T, 3>>(at(2), at(0), at(3)); }
-[[nodiscard]] auto zyx() const { return Var<Vector<T, 3>>(at(2), at(1), at(0)); }
-[[nodiscard]] auto zyy() const { return Var<Vector<T, 3>>(at(2), at(1), at(1)); }
-[[nodiscard]] auto zyz() const { return Var<Vector<T, 3>>(at(2), at(1), at(2)); }
-[[nodiscard]] auto zyw() const { return Var<Vector<T, 3>>(at(2), at(1), at(3)); }
-[[nodiscard]] auto zzx() const { return Var<Vector<T, 3>>(at(2), at(2), at(0)); }
-[[nodiscard]] auto zzy() const { return Var<Vector<T, 3>>(at(2), at(2), at(1)); }
-[[nodiscard]] auto zzz() const { return Var<Vector<T, 3>>(at(2), at(2), at(2)); }
-[[nodiscard]] auto zzw() const { return Var<Vector<T, 3>>(at(2), at(2), at(3)); }
-[[nodiscard]] auto zwx() const { return Var<Vector<T, 3>>(at(2), at(3), at(0)); }
-[[nodiscard]] auto zwy() const { return Var<Vector<T, 3>>(at(2), at(3), at(1)); }
-[[nodiscard]] auto zwz() const { return Var<Vector<T, 3>>(at(2), at(3), at(2)); }
-[[nodiscard]] auto zww() const { return Var<Vector<T, 3>>(at(2), at(3), at(3)); }
-[[nodiscard]] auto wxx() const { return Var<Vector<T, 3>>(at(3), at(0), at(0)); }
-[[nodiscard]] auto wxy() const { return Var<Vector<T, 3>>(at(3), at(0), at(1)); }
-[[nodiscard]] auto wxz() const { return Var<Vector<T, 3>>(at(3), at(0), at(2)); }
-[[nodiscard]] auto wxw() const { return Var<Vector<T, 3>>(at(3), at(0), at(3)); }
-[[nodiscard]] auto wyx() const { return Var<Vector<T, 3>>(at(3), at(1), at(0)); }
-[[nodiscard]] auto wyy() const { return Var<Vector<T, 3>>(at(3), at(1), at(1)); }
-[[nodiscard]] auto wyz() const { return Var<Vector<T, 3>>(at(3), at(1), at(2)); }
-[[nodiscard]] auto wyw() const { return Var<Vector<T, 3>>(at(3), at(1), at(3)); }
-[[nodiscard]] auto wzx() const { return Var<Vector<T, 3>>(at(3), at(2), at(0)); }
-[[nodiscard]] auto wzy() const { return Var<Vector<T, 3>>(at(3), at(2), at(1)); }
-[[nodiscard]] auto wzz() const { return Var<Vector<T, 3>>(at(3), at(2), at(2)); }
-[[nodiscard]] auto wzw() const { return Var<Vector<T, 3>>(at(3), at(2), at(3)); }
-[[nodiscard]] auto wwx() const { return Var<Vector<T, 3>>(at(3), at(3), at(0)); }
-[[nodiscard]] auto wwy() const { return Var<Vector<T, 3>>(at(3), at(3), at(1)); }
-[[nodiscard]] auto wwz() const { return Var<Vector<T, 3>>(at(3), at(3), at(2)); }
-[[nodiscard]] auto www() const { return Var<Vector<T, 3>>(at(3), at(3), at(3)); }
+[[nodiscard]] auto xxx() const { return as_vec3().xxx(); }
+[[nodiscard]] auto xxy() const { return as_vec3().xxy(); }
+[[nodiscard]] auto xxz() const { return as_vec3().xxz(); }
+[[nodiscard]] auto xxw() const { return as_vec3().xxw(); }
+[[nodiscard]] auto xyx() const { return as_vec3().xyx(); }
+[[nodiscard]] auto xyy() const { return as_vec3().xyy(); }
+[[nodiscard]] auto xyz() const { return as_vec3().xyz(); }
+[[nodiscard]] auto xyw() const { return as_vec3().xyw(); }
+[[nodiscard]] auto xzx() const { return as_vec3().xzx(); }
+[[nodiscard]] auto xzy() const { return as_vec3().xzy(); }
+[[nodiscard]] auto xzz() const { return as_vec3().xzz(); }
+[[nodiscard]] auto xzw() const { return as_vec3().xzw(); }
+[[nodiscard]] auto xwx() const { return as_vec3().xwx(); }
+[[nodiscard]] auto xwy() const { return as_vec3().xwy(); }
+[[nodiscard]] auto xwz() const { return as_vec3().xwz(); }
+[[nodiscard]] auto xww() const { return as_vec3().xww(); }
+[[nodiscard]] auto yxx() const { return as_vec3().yxx(); }
+[[nodiscard]] auto yxy() const { return as_vec3().yxy(); }
+[[nodiscard]] auto yxz() const { return as_vec3().yxz(); }
+[[nodiscard]] auto yxw() const { return as_vec3().yxw(); }
+[[nodiscard]] auto yyx() const { return as_vec3().yyx(); }
+[[nodiscard]] auto yyy() const { return as_vec3().yyy(); }
+[[nodiscard]] auto yyz() const { return as_vec3().yyz(); }
+[[nodiscard]] auto yyw() const { return as_vec3().yyw(); }
+[[nodiscard]] auto yzx() const { return as_vec3().yzx(); }
+[[nodiscard]] auto yzy() const { return as_vec3().yzy(); }
+[[nodiscard]] auto yzz() const { return as_vec3().yzz(); }
+[[nodiscard]] auto yzw() const { return as_vec3().yzw(); }
+[[nodiscard]] auto ywx() const { return as_vec3().ywx(); }
+[[nodiscard]] auto ywy() const { return as_vec3().ywy(); }
+[[nodiscard]] auto ywz() const { return as_vec3().ywz(); }
+[[nodiscard]] auto yww() const { return as_vec3().yww(); }
+[[nodiscard]] auto zxx() const { return as_vec3().zxx(); }
+[[nodiscard]] auto zxy() const { return as_vec3().zxy(); }
+[[nodiscard]] auto zxz() const { return as_vec3().zxz(); }
+[[nodiscard]] auto zxw() const { return as_vec3().zxw(); }
+[[nodiscard]] auto zyx() const { return as_vec3().zyx(); }
+[[nodiscard]] auto zyy() const { return as_vec3().zyy(); }
+[[nodiscard]] auto zyz() const { return as_vec3().zyz(); }
+[[nodiscard]] auto zyw() const { return as_vec3().zyw(); }
+[[nodiscard]] auto zzx() const { return as_vec3().zzx(); }
+[[nodiscard]] auto zzy() const { return as_vec3().zzy(); }
+[[nodiscard]] auto zzz() const { return as_vec3().zzz(); }
+[[nodiscard]] auto zzw() const { return as_vec3().zzw(); }
+[[nodiscard]] auto zwx() const { return as_vec3().zwx(); }
+[[nodiscard]] auto zwy() const { return as_vec3().zwy(); }
+[[nodiscard]] auto zwz() const { return as_vec3().zwz(); }
+[[nodiscard]] auto zww() const { return as_vec3().zww(); }
+[[nodiscard]] auto wxx() const { return as_vec3().wxx(); }
+[[nodiscard]] auto wxy() const { return as_vec3().wxy(); }
+[[nodiscard]] auto wxz() const { return as_vec3().wxz(); }
+[[nodiscard]] auto wxw() const { return as_vec3().wxw(); }
+[[nodiscard]] auto wyx() const { return as_vec3().wyx(); }
+[[nodiscard]] auto wyy() const { return as_vec3().wyy(); }
+[[nodiscard]] auto wyz() const { return as_vec3().wyz(); }
+[[nodiscard]] auto wyw() const { return as_vec3().wyw(); }
+[[nodiscard]] auto wzx() const { return as_vec3().wzx(); }
+[[nodiscard]] auto wzy() const { return as_vec3().wzy(); }
+[[nodiscard]] auto wzz() const { return as_vec3().wzz(); }
+[[nodiscard]] auto wzw() const { return as_vec3().wzw(); }
+[[nodiscard]] auto wwx() const { return as_vec3().wwx(); }
+[[nodiscard]] auto wwy() const { return as_vec3().wwy(); }
+[[nodiscard]] auto wwz() const { return as_vec3().wwz(); }
+[[nodiscard]] auto www() const { return as_vec3().www(); }
 
-[[nodiscard]] auto xxxx() const { return Var<Vector<T, 4>>(at(0), at(0), at(0), at(0)); }
-[[nodiscard]] auto xxxy() const { return Var<Vector<T, 4>>(at(0), at(0), at(0), at(1)); }
-[[nodiscard]] auto xxxz() const { return Var<Vector<T, 4>>(at(0), at(0), at(0), at(2)); }
-[[nodiscard]] auto xxxw() const { return Var<Vector<T, 4>>(at(0), at(0), at(0), at(3)); }
-[[nodiscard]] auto xxyx() const { return Var<Vector<T, 4>>(at(0), at(0), at(1), at(0)); }
-[[nodiscard]] auto xxyy() const { return Var<Vector<T, 4>>(at(0), at(0), at(1), at(1)); }
-[[nodiscard]] auto xxyz() const { return Var<Vector<T, 4>>(at(0), at(0), at(1), at(2)); }
-[[nodiscard]] auto xxyw() const { return Var<Vector<T, 4>>(at(0), at(0), at(1), at(3)); }
-[[nodiscard]] auto xxzx() const { return Var<Vector<T, 4>>(at(0), at(0), at(2), at(0)); }
-[[nodiscard]] auto xxzy() const { return Var<Vector<T, 4>>(at(0), at(0), at(2), at(1)); }
-[[nodiscard]] auto xxzz() const { return Var<Vector<T, 4>>(at(0), at(0), at(2), at(2)); }
-[[nodiscard]] auto xxzw() const { return Var<Vector<T, 4>>(at(0), at(0), at(2), at(3)); }
-[[nodiscard]] auto xxwx() const { return Var<Vector<T, 4>>(at(0), at(0), at(3), at(0)); }
-[[nodiscard]] auto xxwy() const { return Var<Vector<T, 4>>(at(0), at(0), at(3), at(1)); }
-[[nodiscard]] auto xxwz() const { return Var<Vector<T, 4>>(at(0), at(0), at(3), at(2)); }
-[[nodiscard]] auto xxww() const { return Var<Vector<T, 4>>(at(0), at(0), at(3), at(3)); }
-[[nodiscard]] auto xyxx() const { return Var<Vector<T, 4>>(at(0), at(1), at(0), at(0)); }
-[[nodiscard]] auto xyxy() const { return Var<Vector<T, 4>>(at(0), at(1), at(0), at(1)); }
-[[nodiscard]] auto xyxz() const { return Var<Vector<T, 4>>(at(0), at(1), at(0), at(2)); }
-[[nodiscard]] auto xyxw() const { return Var<Vector<T, 4>>(at(0), at(1), at(0), at(3)); }
-[[nodiscard]] auto xyyx() const { return Var<Vector<T, 4>>(at(0), at(1), at(1), at(0)); }
-[[nodiscard]] auto xyyy() const { return Var<Vector<T, 4>>(at(0), at(1), at(1), at(1)); }
-[[nodiscard]] auto xyyz() const { return Var<Vector<T, 4>>(at(0), at(1), at(1), at(2)); }
-[[nodiscard]] auto xyyw() const { return Var<Vector<T, 4>>(at(0), at(1), at(1), at(3)); }
-[[nodiscard]] auto xyzx() const { return Var<Vector<T, 4>>(at(0), at(1), at(2), at(0)); }
-[[nodiscard]] auto xyzy() const { return Var<Vector<T, 4>>(at(0), at(1), at(2), at(1)); }
-[[nodiscard]] auto xyzz() const { return Var<Vector<T, 4>>(at(0), at(1), at(2), at(2)); }
-[[nodiscard]] auto xyzw() const { return Var<Vector<T, 4>>(at(0), at(1), at(2), at(3)); }
-[[nodiscard]] auto xywx() const { return Var<Vector<T, 4>>(at(0), at(1), at(3), at(0)); }
-[[nodiscard]] auto xywy() const { return Var<Vector<T, 4>>(at(0), at(1), at(3), at(1)); }
-[[nodiscard]] auto xywz() const { return Var<Vector<T, 4>>(at(0), at(1), at(3), at(2)); }
-[[nodiscard]] auto xyww() const { return Var<Vector<T, 4>>(at(0), at(1), at(3), at(3)); }
-[[nodiscard]] auto xzxx() const { return Var<Vector<T, 4>>(at(0), at(2), at(0), at(0)); }
-[[nodiscard]] auto xzxy() const { return Var<Vector<T, 4>>(at(0), at(2), at(0), at(1)); }
-[[nodiscard]] auto xzxz() const { return Var<Vector<T, 4>>(at(0), at(2), at(0), at(2)); }
-[[nodiscard]] auto xzxw() const { return Var<Vector<T, 4>>(at(0), at(2), at(0), at(3)); }
-[[nodiscard]] auto xzyx() const { return Var<Vector<T, 4>>(at(0), at(2), at(1), at(0)); }
-[[nodiscard]] auto xzyy() const { return Var<Vector<T, 4>>(at(0), at(2), at(1), at(1)); }
-[[nodiscard]] auto xzyz() const { return Var<Vector<T, 4>>(at(0), at(2), at(1), at(2)); }
-[[nodiscard]] auto xzyw() const { return Var<Vector<T, 4>>(at(0), at(2), at(1), at(3)); }
-[[nodiscard]] auto xzzx() const { return Var<Vector<T, 4>>(at(0), at(2), at(2), at(0)); }
-[[nodiscard]] auto xzzy() const { return Var<Vector<T, 4>>(at(0), at(2), at(2), at(1)); }
-[[nodiscard]] auto xzzz() const { return Var<Vector<T, 4>>(at(0), at(2), at(2), at(2)); }
-[[nodiscard]] auto xzzw() const { return Var<Vector<T, 4>>(at(0), at(2), at(2), at(3)); }
-[[nodiscard]] auto xzwx() const { return Var<Vector<T, 4>>(at(0), at(2), at(3), at(0)); }
-[[nodiscard]] auto xzwy() const { return Var<Vector<T, 4>>(at(0), at(2), at(3), at(1)); }
-[[nodiscard]] auto xzwz() const { return Var<Vector<T, 4>>(at(0), at(2), at(3), at(2)); }
-[[nodiscard]] auto xzww() const { return Var<Vector<T, 4>>(at(0), at(2), at(3), at(3)); }
-[[nodiscard]] auto xwxx() const { return Var<Vector<T, 4>>(at(0), at(3), at(0), at(0)); }
-[[nodiscard]] auto xwxy() const { return Var<Vector<T, 4>>(at(0), at(3), at(0), at(1)); }
-[[nodiscard]] auto xwxz() const { return Var<Vector<T, 4>>(at(0), at(3), at(0), at(2)); }
-[[nodiscard]] auto xwxw() const { return Var<Vector<T, 4>>(at(0), at(3), at(0), at(3)); }
-[[nodiscard]] auto xwyx() const { return Var<Vector<T, 4>>(at(0), at(3), at(1), at(0)); }
-[[nodiscard]] auto xwyy() const { return Var<Vector<T, 4>>(at(0), at(3), at(1), at(1)); }
-[[nodiscard]] auto xwyz() const { return Var<Vector<T, 4>>(at(0), at(3), at(1), at(2)); }
-[[nodiscard]] auto xwyw() const { return Var<Vector<T, 4>>(at(0), at(3), at(1), at(3)); }
-[[nodiscard]] auto xwzx() const { return Var<Vector<T, 4>>(at(0), at(3), at(2), at(0)); }
-[[nodiscard]] auto xwzy() const { return Var<Vector<T, 4>>(at(0), at(3), at(2), at(1)); }
-[[nodiscard]] auto xwzz() const { return Var<Vector<T, 4>>(at(0), at(3), at(2), at(2)); }
-[[nodiscard]] auto xwzw() const { return Var<Vector<T, 4>>(at(0), at(3), at(2), at(3)); }
-[[nodiscard]] auto xwwx() const { return Var<Vector<T, 4>>(at(0), at(3), at(3), at(0)); }
-[[nodiscard]] auto xwwy() const { return Var<Vector<T, 4>>(at(0), at(3), at(3), at(1)); }
-[[nodiscard]] auto xwwz() const { return Var<Vector<T, 4>>(at(0), at(3), at(3), at(2)); }
-[[nodiscard]] auto xwww() const { return Var<Vector<T, 4>>(at(0), at(3), at(3), at(3)); }
-[[nodiscard]] auto yxxx() const { return Var<Vector<T, 4>>(at(1), at(0), at(0), at(0)); }
-[[nodiscard]] auto yxxy() const { return Var<Vector<T, 4>>(at(1), at(0), at(0), at(1)); }
-[[nodiscard]] auto yxxz() const { return Var<Vector<T, 4>>(at(1), at(0), at(0), at(2)); }
-[[nodiscard]] auto yxxw() const { return Var<Vector<T, 4>>(at(1), at(0), at(0), at(3)); }
-[[nodiscard]] auto yxyx() const { return Var<Vector<T, 4>>(at(1), at(0), at(1), at(0)); }
-[[nodiscard]] auto yxyy() const { return Var<Vector<T, 4>>(at(1), at(0), at(1), at(1)); }
-[[nodiscard]] auto yxyz() const { return Var<Vector<T, 4>>(at(1), at(0), at(1), at(2)); }
-[[nodiscard]] auto yxyw() const { return Var<Vector<T, 4>>(at(1), at(0), at(1), at(3)); }
-[[nodiscard]] auto yxzx() const { return Var<Vector<T, 4>>(at(1), at(0), at(2), at(0)); }
-[[nodiscard]] auto yxzy() const { return Var<Vector<T, 4>>(at(1), at(0), at(2), at(1)); }
-[[nodiscard]] auto yxzz() const { return Var<Vector<T, 4>>(at(1), at(0), at(2), at(2)); }
-[[nodiscard]] auto yxzw() const { return Var<Vector<T, 4>>(at(1), at(0), at(2), at(3)); }
-[[nodiscard]] auto yxwx() const { return Var<Vector<T, 4>>(at(1), at(0), at(3), at(0)); }
-[[nodiscard]] auto yxwy() const { return Var<Vector<T, 4>>(at(1), at(0), at(3), at(1)); }
-[[nodiscard]] auto yxwz() const { return Var<Vector<T, 4>>(at(1), at(0), at(3), at(2)); }
-[[nodiscard]] auto yxww() const { return Var<Vector<T, 4>>(at(1), at(0), at(3), at(3)); }
-[[nodiscard]] auto yyxx() const { return Var<Vector<T, 4>>(at(1), at(1), at(0), at(0)); }
-[[nodiscard]] auto yyxy() const { return Var<Vector<T, 4>>(at(1), at(1), at(0), at(1)); }
-[[nodiscard]] auto yyxz() const { return Var<Vector<T, 4>>(at(1), at(1), at(0), at(2)); }
-[[nodiscard]] auto yyxw() const { return Var<Vector<T, 4>>(at(1), at(1), at(0), at(3)); }
-[[nodiscard]] auto yyyx() const { return Var<Vector<T, 4>>(at(1), at(1), at(1), at(0)); }
-[[nodiscard]] auto yyyy() const { return Var<Vector<T, 4>>(at(1), at(1), at(1), at(1)); }
-[[nodiscard]] auto yyyz() const { return Var<Vector<T, 4>>(at(1), at(1), at(1), at(2)); }
-[[nodiscard]] auto yyyw() const { return Var<Vector<T, 4>>(at(1), at(1), at(1), at(3)); }
-[[nodiscard]] auto yyzx() const { return Var<Vector<T, 4>>(at(1), at(1), at(2), at(0)); }
-[[nodiscard]] auto yyzy() const { return Var<Vector<T, 4>>(at(1), at(1), at(2), at(1)); }
-[[nodiscard]] auto yyzz() const { return Var<Vector<T, 4>>(at(1), at(1), at(2), at(2)); }
-[[nodiscard]] auto yyzw() const { return Var<Vector<T, 4>>(at(1), at(1), at(2), at(3)); }
-[[nodiscard]] auto yywx() const { return Var<Vector<T, 4>>(at(1), at(1), at(3), at(0)); }
-[[nodiscard]] auto yywy() const { return Var<Vector<T, 4>>(at(1), at(1), at(3), at(1)); }
-[[nodiscard]] auto yywz() const { return Var<Vector<T, 4>>(at(1), at(1), at(3), at(2)); }
-[[nodiscard]] auto yyww() const { return Var<Vector<T, 4>>(at(1), at(1), at(3), at(3)); }
-[[nodiscard]] auto yzxx() const { return Var<Vector<T, 4>>(at(1), at(2), at(0), at(0)); }
-[[nodiscard]] auto yzxy() const { return Var<Vector<T, 4>>(at(1), at(2), at(0), at(1)); }
-[[nodiscard]] auto yzxz() const { return Var<Vector<T, 4>>(at(1), at(2), at(0), at(2)); }
-[[nodiscard]] auto yzxw() const { return Var<Vector<T, 4>>(at(1), at(2), at(0), at(3)); }
-[[nodiscard]] auto yzyx() const { return Var<Vector<T, 4>>(at(1), at(2), at(1), at(0)); }
-[[nodiscard]] auto yzyy() const { return Var<Vector<T, 4>>(at(1), at(2), at(1), at(1)); }
-[[nodiscard]] auto yzyz() const { return Var<Vector<T, 4>>(at(1), at(2), at(1), at(2)); }
-[[nodiscard]] auto yzyw() const { return Var<Vector<T, 4>>(at(1), at(2), at(1), at(3)); }
-[[nodiscard]] auto yzzx() const { return Var<Vector<T, 4>>(at(1), at(2), at(2), at(0)); }
-[[nodiscard]] auto yzzy() const { return Var<Vector<T, 4>>(at(1), at(2), at(2), at(1)); }
-[[nodiscard]] auto yzzz() const { return Var<Vector<T, 4>>(at(1), at(2), at(2), at(2)); }
-[[nodiscard]] auto yzzw() const { return Var<Vector<T, 4>>(at(1), at(2), at(2), at(3)); }
-[[nodiscard]] auto yzwx() const { return Var<Vector<T, 4>>(at(1), at(2), at(3), at(0)); }
-[[nodiscard]] auto yzwy() const { return Var<Vector<T, 4>>(at(1), at(2), at(3), at(1)); }
-[[nodiscard]] auto yzwz() const { return Var<Vector<T, 4>>(at(1), at(2), at(3), at(2)); }
-[[nodiscard]] auto yzww() const { return Var<Vector<T, 4>>(at(1), at(2), at(3), at(3)); }
-[[nodiscard]] auto ywxx() const { return Var<Vector<T, 4>>(at(1), at(3), at(0), at(0)); }
-[[nodiscard]] auto ywxy() const { return Var<Vector<T, 4>>(at(1), at(3), at(0), at(1)); }
-[[nodiscard]] auto ywxz() const { return Var<Vector<T, 4>>(at(1), at(3), at(0), at(2)); }
-[[nodiscard]] auto ywxw() const { return Var<Vector<T, 4>>(at(1), at(3), at(0), at(3)); }
-[[nodiscard]] auto ywyx() const { return Var<Vector<T, 4>>(at(1), at(3), at(1), at(0)); }
-[[nodiscard]] auto ywyy() const { return Var<Vector<T, 4>>(at(1), at(3), at(1), at(1)); }
-[[nodiscard]] auto ywyz() const { return Var<Vector<T, 4>>(at(1), at(3), at(1), at(2)); }
-[[nodiscard]] auto ywyw() const { return Var<Vector<T, 4>>(at(1), at(3), at(1), at(3)); }
-[[nodiscard]] auto ywzx() const { return Var<Vector<T, 4>>(at(1), at(3), at(2), at(0)); }
-[[nodiscard]] auto ywzy() const { return Var<Vector<T, 4>>(at(1), at(3), at(2), at(1)); }
-[[nodiscard]] auto ywzz() const { return Var<Vector<T, 4>>(at(1), at(3), at(2), at(2)); }
-[[nodiscard]] auto ywzw() const { return Var<Vector<T, 4>>(at(1), at(3), at(2), at(3)); }
-[[nodiscard]] auto ywwx() const { return Var<Vector<T, 4>>(at(1), at(3), at(3), at(0)); }
-[[nodiscard]] auto ywwy() const { return Var<Vector<T, 4>>(at(1), at(3), at(3), at(1)); }
-[[nodiscard]] auto ywwz() const { return Var<Vector<T, 4>>(at(1), at(3), at(3), at(2)); }
-[[nodiscard]] auto ywww() const { return Var<Vector<T, 4>>(at(1), at(3), at(3), at(3)); }
-[[nodiscard]] auto zxxx() const { return Var<Vector<T, 4>>(at(2), at(0), at(0), at(0)); }
-[[nodiscard]] auto zxxy() const { return Var<Vector<T, 4>>(at(2), at(0), at(0), at(1)); }
-[[nodiscard]] auto zxxz() const { return Var<Vector<T, 4>>(at(2), at(0), at(0), at(2)); }
-[[nodiscard]] auto zxxw() const { return Var<Vector<T, 4>>(at(2), at(0), at(0), at(3)); }
-[[nodiscard]] auto zxyx() const { return Var<Vector<T, 4>>(at(2), at(0), at(1), at(0)); }
-[[nodiscard]] auto zxyy() const { return Var<Vector<T, 4>>(at(2), at(0), at(1), at(1)); }
-[[nodiscard]] auto zxyz() const { return Var<Vector<T, 4>>(at(2), at(0), at(1), at(2)); }
-[[nodiscard]] auto zxyw() const { return Var<Vector<T, 4>>(at(2), at(0), at(1), at(3)); }
-[[nodiscard]] auto zxzx() const { return Var<Vector<T, 4>>(at(2), at(0), at(2), at(0)); }
-[[nodiscard]] auto zxzy() const { return Var<Vector<T, 4>>(at(2), at(0), at(2), at(1)); }
-[[nodiscard]] auto zxzz() const { return Var<Vector<T, 4>>(at(2), at(0), at(2), at(2)); }
-[[nodiscard]] auto zxzw() const { return Var<Vector<T, 4>>(at(2), at(0), at(2), at(3)); }
-[[nodiscard]] auto zxwx() const { return Var<Vector<T, 4>>(at(2), at(0), at(3), at(0)); }
-[[nodiscard]] auto zxwy() const { return Var<Vector<T, 4>>(at(2), at(0), at(3), at(1)); }
-[[nodiscard]] auto zxwz() const { return Var<Vector<T, 4>>(at(2), at(0), at(3), at(2)); }
-[[nodiscard]] auto zxww() const { return Var<Vector<T, 4>>(at(2), at(0), at(3), at(3)); }
-[[nodiscard]] auto zyxx() const { return Var<Vector<T, 4>>(at(2), at(1), at(0), at(0)); }
-[[nodiscard]] auto zyxy() const { return Var<Vector<T, 4>>(at(2), at(1), at(0), at(1)); }
-[[nodiscard]] auto zyxz() const { return Var<Vector<T, 4>>(at(2), at(1), at(0), at(2)); }
-[[nodiscard]] auto zyxw() const { return Var<Vector<T, 4>>(at(2), at(1), at(0), at(3)); }
-[[nodiscard]] auto zyyx() const { return Var<Vector<T, 4>>(at(2), at(1), at(1), at(0)); }
-[[nodiscard]] auto zyyy() const { return Var<Vector<T, 4>>(at(2), at(1), at(1), at(1)); }
-[[nodiscard]] auto zyyz() const { return Var<Vector<T, 4>>(at(2), at(1), at(1), at(2)); }
-[[nodiscard]] auto zyyw() const { return Var<Vector<T, 4>>(at(2), at(1), at(1), at(3)); }
-[[nodiscard]] auto zyzx() const { return Var<Vector<T, 4>>(at(2), at(1), at(2), at(0)); }
-[[nodiscard]] auto zyzy() const { return Var<Vector<T, 4>>(at(2), at(1), at(2), at(1)); }
-[[nodiscard]] auto zyzz() const { return Var<Vector<T, 4>>(at(2), at(1), at(2), at(2)); }
-[[nodiscard]] auto zyzw() const { return Var<Vector<T, 4>>(at(2), at(1), at(2), at(3)); }
-[[nodiscard]] auto zywx() const { return Var<Vector<T, 4>>(at(2), at(1), at(3), at(0)); }
-[[nodiscard]] auto zywy() const { return Var<Vector<T, 4>>(at(2), at(1), at(3), at(1)); }
-[[nodiscard]] auto zywz() const { return Var<Vector<T, 4>>(at(2), at(1), at(3), at(2)); }
-[[nodiscard]] auto zyww() const { return Var<Vector<T, 4>>(at(2), at(1), at(3), at(3)); }
-[[nodiscard]] auto zzxx() const { return Var<Vector<T, 4>>(at(2), at(2), at(0), at(0)); }
-[[nodiscard]] auto zzxy() const { return Var<Vector<T, 4>>(at(2), at(2), at(0), at(1)); }
-[[nodiscard]] auto zzxz() const { return Var<Vector<T, 4>>(at(2), at(2), at(0), at(2)); }
-[[nodiscard]] auto zzxw() const { return Var<Vector<T, 4>>(at(2), at(2), at(0), at(3)); }
-[[nodiscard]] auto zzyx() const { return Var<Vector<T, 4>>(at(2), at(2), at(1), at(0)); }
-[[nodiscard]] auto zzyy() const { return Var<Vector<T, 4>>(at(2), at(2), at(1), at(1)); }
-[[nodiscard]] auto zzyz() const { return Var<Vector<T, 4>>(at(2), at(2), at(1), at(2)); }
-[[nodiscard]] auto zzyw() const { return Var<Vector<T, 4>>(at(2), at(2), at(1), at(3)); }
-[[nodiscard]] auto zzzx() const { return Var<Vector<T, 4>>(at(2), at(2), at(2), at(0)); }
-[[nodiscard]] auto zzzy() const { return Var<Vector<T, 4>>(at(2), at(2), at(2), at(1)); }
-[[nodiscard]] auto zzzz() const { return Var<Vector<T, 4>>(at(2), at(2), at(2), at(2)); }
-[[nodiscard]] auto zzzw() const { return Var<Vector<T, 4>>(at(2), at(2), at(2), at(3)); }
-[[nodiscard]] auto zzwx() const { return Var<Vector<T, 4>>(at(2), at(2), at(3), at(0)); }
-[[nodiscard]] auto zzwy() const { return Var<Vector<T, 4>>(at(2), at(2), at(3), at(1)); }
-[[nodiscard]] auto zzwz() const { return Var<Vector<T, 4>>(at(2), at(2), at(3), at(2)); }
-[[nodiscard]] auto zzww() const { return Var<Vector<T, 4>>(at(2), at(2), at(3), at(3)); }
-[[nodiscard]] auto zwxx() const { return Var<Vector<T, 4>>(at(2), at(3), at(0), at(0)); }
-[[nodiscard]] auto zwxy() const { return Var<Vector<T, 4>>(at(2), at(3), at(0), at(1)); }
-[[nodiscard]] auto zwxz() const { return Var<Vector<T, 4>>(at(2), at(3), at(0), at(2)); }
-[[nodiscard]] auto zwxw() const { return Var<Vector<T, 4>>(at(2), at(3), at(0), at(3)); }
-[[nodiscard]] auto zwyx() const { return Var<Vector<T, 4>>(at(2), at(3), at(1), at(0)); }
-[[nodiscard]] auto zwyy() const { return Var<Vector<T, 4>>(at(2), at(3), at(1), at(1)); }
-[[nodiscard]] auto zwyz() const { return Var<Vector<T, 4>>(at(2), at(3), at(1), at(2)); }
-[[nodiscard]] auto zwyw() const { return Var<Vector<T, 4>>(at(2), at(3), at(1), at(3)); }
-[[nodiscard]] auto zwzx() const { return Var<Vector<T, 4>>(at(2), at(3), at(2), at(0)); }
-[[nodiscard]] auto zwzy() const { return Var<Vector<T, 4>>(at(2), at(3), at(2), at(1)); }
-[[nodiscard]] auto zwzz() const { return Var<Vector<T, 4>>(at(2), at(3), at(2), at(2)); }
-[[nodiscard]] auto zwzw() const { return Var<Vector<T, 4>>(at(2), at(3), at(2), at(3)); }
-[[nodiscard]] auto zwwx() const { return Var<Vector<T, 4>>(at(2), at(3), at(3), at(0)); }
-[[nodiscard]] auto zwwy() const { return Var<Vector<T, 4>>(at(2), at(3), at(3), at(1)); }
-[[nodiscard]] auto zwwz() const { return Var<Vector<T, 4>>(at(2), at(3), at(3), at(2)); }
-[[nodiscard]] auto zwww() const { return Var<Vector<T, 4>>(at(2), at(3), at(3), at(3)); }
-[[nodiscard]] auto wxxx() const { return Var<Vector<T, 4>>(at(3), at(0), at(0), at(0)); }
-[[nodiscard]] auto wxxy() const { return Var<Vector<T, 4>>(at(3), at(0), at(0), at(1)); }
-[[nodiscard]] auto wxxz() const { return Var<Vector<T, 4>>(at(3), at(0), at(0), at(2)); }
-[[nodiscard]] auto wxxw() const { return Var<Vector<T, 4>>(at(3), at(0), at(0), at(3)); }
-[[nodiscard]] auto wxyx() const { return Var<Vector<T, 4>>(at(3), at(0), at(1), at(0)); }
-[[nodiscard]] auto wxyy() const { return Var<Vector<T, 4>>(at(3), at(0), at(1), at(1)); }
-[[nodiscard]] auto wxyz() const { return Var<Vector<T, 4>>(at(3), at(0), at(1), at(2)); }
-[[nodiscard]] auto wxyw() const { return Var<Vector<T, 4>>(at(3), at(0), at(1), at(3)); }
-[[nodiscard]] auto wxzx() const { return Var<Vector<T, 4>>(at(3), at(0), at(2), at(0)); }
-[[nodiscard]] auto wxzy() const { return Var<Vector<T, 4>>(at(3), at(0), at(2), at(1)); }
-[[nodiscard]] auto wxzz() const { return Var<Vector<T, 4>>(at(3), at(0), at(2), at(2)); }
-[[nodiscard]] auto wxzw() const { return Var<Vector<T, 4>>(at(3), at(0), at(2), at(3)); }
-[[nodiscard]] auto wxwx() const { return Var<Vector<T, 4>>(at(3), at(0), at(3), at(0)); }
-[[nodiscard]] auto wxwy() const { return Var<Vector<T, 4>>(at(3), at(0), at(3), at(1)); }
-[[nodiscard]] auto wxwz() const { return Var<Vector<T, 4>>(at(3), at(0), at(3), at(2)); }
-[[nodiscard]] auto wxww() const { return Var<Vector<T, 4>>(at(3), at(0), at(3), at(3)); }
-[[nodiscard]] auto wyxx() const { return Var<Vector<T, 4>>(at(3), at(1), at(0), at(0)); }
-[[nodiscard]] auto wyxy() const { return Var<Vector<T, 4>>(at(3), at(1), at(0), at(1)); }
-[[nodiscard]] auto wyxz() const { return Var<Vector<T, 4>>(at(3), at(1), at(0), at(2)); }
-[[nodiscard]] auto wyxw() const { return Var<Vector<T, 4>>(at(3), at(1), at(0), at(3)); }
-[[nodiscard]] auto wyyx() const { return Var<Vector<T, 4>>(at(3), at(1), at(1), at(0)); }
-[[nodiscard]] auto wyyy() const { return Var<Vector<T, 4>>(at(3), at(1), at(1), at(1)); }
-[[nodiscard]] auto wyyz() const { return Var<Vector<T, 4>>(at(3), at(1), at(1), at(2)); }
-[[nodiscard]] auto wyyw() const { return Var<Vector<T, 4>>(at(3), at(1), at(1), at(3)); }
-[[nodiscard]] auto wyzx() const { return Var<Vector<T, 4>>(at(3), at(1), at(2), at(0)); }
-[[nodiscard]] auto wyzy() const { return Var<Vector<T, 4>>(at(3), at(1), at(2), at(1)); }
-[[nodiscard]] auto wyzz() const { return Var<Vector<T, 4>>(at(3), at(1), at(2), at(2)); }
-[[nodiscard]] auto wyzw() const { return Var<Vector<T, 4>>(at(3), at(1), at(2), at(3)); }
-[[nodiscard]] auto wywx() const { return Var<Vector<T, 4>>(at(3), at(1), at(3), at(0)); }
-[[nodiscard]] auto wywy() const { return Var<Vector<T, 4>>(at(3), at(1), at(3), at(1)); }
-[[nodiscard]] auto wywz() const { return Var<Vector<T, 4>>(at(3), at(1), at(3), at(2)); }
-[[nodiscard]] auto wyww() const { return Var<Vector<T, 4>>(at(3), at(1), at(3), at(3)); }
-[[nodiscard]] auto wzxx() const { return Var<Vector<T, 4>>(at(3), at(2), at(0), at(0)); }
-[[nodiscard]] auto wzxy() const { return Var<Vector<T, 4>>(at(3), at(2), at(0), at(1)); }
-[[nodiscard]] auto wzxz() const { return Var<Vector<T, 4>>(at(3), at(2), at(0), at(2)); }
-[[nodiscard]] auto wzxw() const { return Var<Vector<T, 4>>(at(3), at(2), at(0), at(3)); }
-[[nodiscard]] auto wzyx() const { return Var<Vector<T, 4>>(at(3), at(2), at(1), at(0)); }
-[[nodiscard]] auto wzyy() const { return Var<Vector<T, 4>>(at(3), at(2), at(1), at(1)); }
-[[nodiscard]] auto wzyz() const { return Var<Vector<T, 4>>(at(3), at(2), at(1), at(2)); }
-[[nodiscard]] auto wzyw() const { return Var<Vector<T, 4>>(at(3), at(2), at(1), at(3)); }
-[[nodiscard]] auto wzzx() const { return Var<Vector<T, 4>>(at(3), at(2), at(2), at(0)); }
-[[nodiscard]] auto wzzy() const { return Var<Vector<T, 4>>(at(3), at(2), at(2), at(1)); }
-[[nodiscard]] auto wzzz() const { return Var<Vector<T, 4>>(at(3), at(2), at(2), at(2)); }
-[[nodiscard]] auto wzzw() const { return Var<Vector<T, 4>>(at(3), at(2), at(2), at(3)); }
-[[nodiscard]] auto wzwx() const { return Var<Vector<T, 4>>(at(3), at(2), at(3), at(0)); }
-[[nodiscard]] auto wzwy() const { return Var<Vector<T, 4>>(at(3), at(2), at(3), at(1)); }
-[[nodiscard]] auto wzwz() const { return Var<Vector<T, 4>>(at(3), at(2), at(3), at(2)); }
-[[nodiscard]] auto wzww() const { return Var<Vector<T, 4>>(at(3), at(2), at(3), at(3)); }
-[[nodiscard]] auto wwxx() const { return Var<Vector<T, 4>>(at(3), at(3), at(0), at(0)); }
-[[nodiscard]] auto wwxy() const { return Var<Vector<T, 4>>(at(3), at(3), at(0), at(1)); }
-[[nodiscard]] auto wwxz() const { return Var<Vector<T, 4>>(at(3), at(3), at(0), at(2)); }
-[[nodiscard]] auto wwxw() const { return Var<Vector<T, 4>>(at(3), at(3), at(0), at(3)); }
-[[nodiscard]] auto wwyx() const { return Var<Vector<T, 4>>(at(3), at(3), at(1), at(0)); }
-[[nodiscard]] auto wwyy() const { return Var<Vector<T, 4>>(at(3), at(3), at(1), at(1)); }
-[[nodiscard]] auto wwyz() const { return Var<Vector<T, 4>>(at(3), at(3), at(1), at(2)); }
-[[nodiscard]] auto wwyw() const { return Var<Vector<T, 4>>(at(3), at(3), at(1), at(3)); }
-[[nodiscard]] auto wwzx() const { return Var<Vector<T, 4>>(at(3), at(3), at(2), at(0)); }
-[[nodiscard]] auto wwzy() const { return Var<Vector<T, 4>>(at(3), at(3), at(2), at(1)); }
-[[nodiscard]] auto wwzz() const { return Var<Vector<T, 4>>(at(3), at(3), at(2), at(2)); }
-[[nodiscard]] auto wwzw() const { return Var<Vector<T, 4>>(at(3), at(3), at(2), at(3)); }
-[[nodiscard]] auto wwwx() const { return Var<Vector<T, 4>>(at(3), at(3), at(3), at(0)); }
-[[nodiscard]] auto wwwy() const { return Var<Vector<T, 4>>(at(3), at(3), at(3), at(1)); }
-[[nodiscard]] auto wwwz() const { return Var<Vector<T, 4>>(at(3), at(3), at(3), at(2)); }
-[[nodiscard]] auto wwww() const { return Var<Vector<T, 4>>(at(3), at(3), at(3), at(3)); }
+[[nodiscard]] auto xxxx() const { return as_vec4().xxxx(); }
+[[nodiscard]] auto xxxy() const { return as_vec4().xxxy(); }
+[[nodiscard]] auto xxxz() const { return as_vec4().xxxz(); }
+[[nodiscard]] auto xxxw() const { return as_vec4().xxxw(); }
+[[nodiscard]] auto xxyx() const { return as_vec4().xxyx(); }
+[[nodiscard]] auto xxyy() const { return as_vec4().xxyy(); }
+[[nodiscard]] auto xxyz() const { return as_vec4().xxyz(); }
+[[nodiscard]] auto xxyw() const { return as_vec4().xxyw(); }
+[[nodiscard]] auto xxzx() const { return as_vec4().xxzx(); }
+[[nodiscard]] auto xxzy() const { return as_vec4().xxzy(); }
+[[nodiscard]] auto xxzz() const { return as_vec4().xxzz(); }
+[[nodiscard]] auto xxzw() const { return as_vec4().xxzw(); }
+[[nodiscard]] auto xxwx() const { return as_vec4().xxwx(); }
+[[nodiscard]] auto xxwy() const { return as_vec4().xxwy(); }
+[[nodiscard]] auto xxwz() const { return as_vec4().xxwz(); }
+[[nodiscard]] auto xxww() const { return as_vec4().xxww(); }
+[[nodiscard]] auto xyxx() const { return as_vec4().xyxx(); }
+[[nodiscard]] auto xyxy() const { return as_vec4().xyxy(); }
+[[nodiscard]] auto xyxz() const { return as_vec4().xyxz(); }
+[[nodiscard]] auto xyxw() const { return as_vec4().xyxw(); }
+[[nodiscard]] auto xyyx() const { return as_vec4().xyyx(); }
+[[nodiscard]] auto xyyy() const { return as_vec4().xyyy(); }
+[[nodiscard]] auto xyyz() const { return as_vec4().xyyz(); }
+[[nodiscard]] auto xyyw() const { return as_vec4().xyyw(); }
+[[nodiscard]] auto xyzx() const { return as_vec4().xyzx(); }
+[[nodiscard]] auto xyzy() const { return as_vec4().xyzy(); }
+[[nodiscard]] auto xyzz() const { return as_vec4().xyzz(); }
+[[nodiscard]] auto xyzw() const { return as_vec4().xyzw(); }
+[[nodiscard]] auto xywx() const { return as_vec4().xywx(); }
+[[nodiscard]] auto xywy() const { return as_vec4().xywy(); }
+[[nodiscard]] auto xywz() const { return as_vec4().xywz(); }
+[[nodiscard]] auto xyww() const { return as_vec4().xyww(); }
+[[nodiscard]] auto xzxx() const { return as_vec4().xzxx(); }
+[[nodiscard]] auto xzxy() const { return as_vec4().xzxy(); }
+[[nodiscard]] auto xzxz() const { return as_vec4().xzxz(); }
+[[nodiscard]] auto xzxw() const { return as_vec4().xzxw(); }
+[[nodiscard]] auto xzyx() const { return as_vec4().xzyx(); }
+[[nodiscard]] auto xzyy() const { return as_vec4().xzyy(); }
+[[nodiscard]] auto xzyz() const { return as_vec4().xzyz(); }
+[[nodiscard]] auto xzyw() const { return as_vec4().xzyw(); }
+[[nodiscard]] auto xzzx() const { return as_vec4().xzzx(); }
+[[nodiscard]] auto xzzy() const { return as_vec4().xzzy(); }
+[[nodiscard]] auto xzzz() const { return as_vec4().xzzz(); }
+[[nodiscard]] auto xzzw() const { return as_vec4().xzzw(); }
+[[nodiscard]] auto xzwx() const { return as_vec4().xzwx(); }
+[[nodiscard]] auto xzwy() const { return as_vec4().xzwy(); }
+[[nodiscard]] auto xzwz() const { return as_vec4().xzwz(); }
+[[nodiscard]] auto xzww() const { return as_vec4().xzww(); }
+[[nodiscard]] auto xwxx() const { return as_vec4().xwxx(); }
+[[nodiscard]] auto xwxy() const { return as_vec4().xwxy(); }
+[[nodiscard]] auto xwxz() const { return as_vec4().xwxz(); }
+[[nodiscard]] auto xwxw() const { return as_vec4().xwxw(); }
+[[nodiscard]] auto xwyx() const { return as_vec4().xwyx(); }
+[[nodiscard]] auto xwyy() const { return as_vec4().xwyy(); }
+[[nodiscard]] auto xwyz() const { return as_vec4().xwyz(); }
+[[nodiscard]] auto xwyw() const { return as_vec4().xwyw(); }
+[[nodiscard]] auto xwzx() const { return as_vec4().xwzx(); }
+[[nodiscard]] auto xwzy() const { return as_vec4().xwzy(); }
+[[nodiscard]] auto xwzz() const { return as_vec4().xwzz(); }
+[[nodiscard]] auto xwzw() const { return as_vec4().xwzw(); }
+[[nodiscard]] auto xwwx() const { return as_vec4().xwwx(); }
+[[nodiscard]] auto xwwy() const { return as_vec4().xwwy(); }
+[[nodiscard]] auto xwwz() const { return as_vec4().xwwz(); }
+[[nodiscard]] auto xwww() const { return as_vec4().xwww(); }
+[[nodiscard]] auto yxxx() const { return as_vec4().yxxx(); }
+[[nodiscard]] auto yxxy() const { return as_vec4().yxxy(); }
+[[nodiscard]] auto yxxz() const { return as_vec4().yxxz(); }
+[[nodiscard]] auto yxxw() const { return as_vec4().yxxw(); }
+[[nodiscard]] auto yxyx() const { return as_vec4().yxyx(); }
+[[nodiscard]] auto yxyy() const { return as_vec4().yxyy(); }
+[[nodiscard]] auto yxyz() const { return as_vec4().yxyz(); }
+[[nodiscard]] auto yxyw() const { return as_vec4().yxyw(); }
+[[nodiscard]] auto yxzx() const { return as_vec4().yxzx(); }
+[[nodiscard]] auto yxzy() const { return as_vec4().yxzy(); }
+[[nodiscard]] auto yxzz() const { return as_vec4().yxzz(); }
+[[nodiscard]] auto yxzw() const { return as_vec4().yxzw(); }
+[[nodiscard]] auto yxwx() const { return as_vec4().yxwx(); }
+[[nodiscard]] auto yxwy() const { return as_vec4().yxwy(); }
+[[nodiscard]] auto yxwz() const { return as_vec4().yxwz(); }
+[[nodiscard]] auto yxww() const { return as_vec4().yxww(); }
+[[nodiscard]] auto yyxx() const { return as_vec4().yyxx(); }
+[[nodiscard]] auto yyxy() const { return as_vec4().yyxy(); }
+[[nodiscard]] auto yyxz() const { return as_vec4().yyxz(); }
+[[nodiscard]] auto yyxw() const { return as_vec4().yyxw(); }
+[[nodiscard]] auto yyyx() const { return as_vec4().yyyx(); }
+[[nodiscard]] auto yyyy() const { return as_vec4().yyyy(); }
+[[nodiscard]] auto yyyz() const { return as_vec4().yyyz(); }
+[[nodiscard]] auto yyyw() const { return as_vec4().yyyw(); }
+[[nodiscard]] auto yyzx() const { return as_vec4().yyzx(); }
+[[nodiscard]] auto yyzy() const { return as_vec4().yyzy(); }
+[[nodiscard]] auto yyzz() const { return as_vec4().yyzz(); }
+[[nodiscard]] auto yyzw() const { return as_vec4().yyzw(); }
+[[nodiscard]] auto yywx() const { return as_vec4().yywx(); }
+[[nodiscard]] auto yywy() const { return as_vec4().yywy(); }
+[[nodiscard]] auto yywz() const { return as_vec4().yywz(); }
+[[nodiscard]] auto yyww() const { return as_vec4().yyww(); }
+[[nodiscard]] auto yzxx() const { return as_vec4().yzxx(); }
+[[nodiscard]] auto yzxy() const { return as_vec4().yzxy(); }
+[[nodiscard]] auto yzxz() const { return as_vec4().yzxz(); }
+[[nodiscard]] auto yzxw() const { return as_vec4().yzxw(); }
+[[nodiscard]] auto yzyx() const { return as_vec4().yzyx(); }
+[[nodiscard]] auto yzyy() const { return as_vec4().yzyy(); }
+[[nodiscard]] auto yzyz() const { return as_vec4().yzyz(); }
+[[nodiscard]] auto yzyw() const { return as_vec4().yzyw(); }
+[[nodiscard]] auto yzzx() const { return as_vec4().yzzx(); }
+[[nodiscard]] auto yzzy() const { return as_vec4().yzzy(); }
+[[nodiscard]] auto yzzz() const { return as_vec4().yzzz(); }
+[[nodiscard]] auto yzzw() const { return as_vec4().yzzw(); }
+[[nodiscard]] auto yzwx() const { return as_vec4().yzwx(); }
+[[nodiscard]] auto yzwy() const { return as_vec4().yzwy(); }
+[[nodiscard]] auto yzwz() const { return as_vec4().yzwz(); }
+[[nodiscard]] auto yzww() const { return as_vec4().yzww(); }
+[[nodiscard]] auto ywxx() const { return as_vec4().ywxx(); }
+[[nodiscard]] auto ywxy() const { return as_vec4().ywxy(); }
+[[nodiscard]] auto ywxz() const { return as_vec4().ywxz(); }
+[[nodiscard]] auto ywxw() const { return as_vec4().ywxw(); }
+[[nodiscard]] auto ywyx() const { return as_vec4().ywyx(); }
+[[nodiscard]] auto ywyy() const { return as_vec4().ywyy(); }
+[[nodiscard]] auto ywyz() const { return as_vec4().ywyz(); }
+[[nodiscard]] auto ywyw() const { return as_vec4().ywyw(); }
+[[nodiscard]] auto ywzx() const { return as_vec4().ywzx(); }
+[[nodiscard]] auto ywzy() const { return as_vec4().ywzy(); }
+[[nodiscard]] auto ywzz() const { return as_vec4().ywzz(); }
+[[nodiscard]] auto ywzw() const { return as_vec4().ywzw(); }
+[[nodiscard]] auto ywwx() const { return as_vec4().ywwx(); }
+[[nodiscard]] auto ywwy() const { return as_vec4().ywwy(); }
+[[nodiscard]] auto ywwz() const { return as_vec4().ywwz(); }
+[[nodiscard]] auto ywww() const { return as_vec4().ywww(); }
+[[nodiscard]] auto zxxx() const { return as_vec4().zxxx(); }
+[[nodiscard]] auto zxxy() const { return as_vec4().zxxy(); }
+[[nodiscard]] auto zxxz() const { return as_vec4().zxxz(); }
+[[nodiscard]] auto zxxw() const { return as_vec4().zxxw(); }
+[[nodiscard]] auto zxyx() const { return as_vec4().zxyx(); }
+[[nodiscard]] auto zxyy() const { return as_vec4().zxyy(); }
+[[nodiscard]] auto zxyz() const { return as_vec4().zxyz(); }
+[[nodiscard]] auto zxyw() const { return as_vec4().zxyw(); }
+[[nodiscard]] auto zxzx() const { return as_vec4().zxzx(); }
+[[nodiscard]] auto zxzy() const { return as_vec4().zxzy(); }
+[[nodiscard]] auto zxzz() const { return as_vec4().zxzz(); }
+[[nodiscard]] auto zxzw() const { return as_vec4().zxzw(); }
+[[nodiscard]] auto zxwx() const { return as_vec4().zxwx(); }
+[[nodiscard]] auto zxwy() const { return as_vec4().zxwy(); }
+[[nodiscard]] auto zxwz() const { return as_vec4().zxwz(); }
+[[nodiscard]] auto zxww() const { return as_vec4().zxww(); }
+[[nodiscard]] auto zyxx() const { return as_vec4().zyxx(); }
+[[nodiscard]] auto zyxy() const { return as_vec4().zyxy(); }
+[[nodiscard]] auto zyxz() const { return as_vec4().zyxz(); }
+[[nodiscard]] auto zyxw() const { return as_vec4().zyxw(); }
+[[nodiscard]] auto zyyx() const { return as_vec4().zyyx(); }
+[[nodiscard]] auto zyyy() const { return as_vec4().zyyy(); }
+[[nodiscard]] auto zyyz() const { return as_vec4().zyyz(); }
+[[nodiscard]] auto zyyw() const { return as_vec4().zyyw(); }
+[[nodiscard]] auto zyzx() const { return as_vec4().zyzx(); }
+[[nodiscard]] auto zyzy() const { return as_vec4().zyzy(); }
+[[nodiscard]] auto zyzz() const { return as_vec4().zyzz(); }
+[[nodiscard]] auto zyzw() const { return as_vec4().zyzw(); }
+[[nodiscard]] auto zywx() const { return as_vec4().zywx(); }
+[[nodiscard]] auto zywy() const { return as_vec4().zywy(); }
+[[nodiscard]] auto zywz() const { return as_vec4().zywz(); }
+[[nodiscard]] auto zyww() const { return as_vec4().zyww(); }
+[[nodiscard]] auto zzxx() const { return as_vec4().zzxx(); }
+[[nodiscard]] auto zzxy() const { return as_vec4().zzxy(); }
+[[nodiscard]] auto zzxz() const { return as_vec4().zzxz(); }
+[[nodiscard]] auto zzxw() const { return as_vec4().zzxw(); }
+[[nodiscard]] auto zzyx() const { return as_vec4().zzyx(); }
+[[nodiscard]] auto zzyy() const { return as_vec4().zzyy(); }
+[[nodiscard]] auto zzyz() const { return as_vec4().zzyz(); }
+[[nodiscard]] auto zzyw() const { return as_vec4().zzyw(); }
+[[nodiscard]] auto zzzx() const { return as_vec4().zzzx(); }
+[[nodiscard]] auto zzzy() const { return as_vec4().zzzy(); }
+[[nodiscard]] auto zzzz() const { return as_vec4().zzzz(); }
+[[nodiscard]] auto zzzw() const { return as_vec4().zzzw(); }
+[[nodiscard]] auto zzwx() const { return as_vec4().zzwx(); }
+[[nodiscard]] auto zzwy() const { return as_vec4().zzwy(); }
+[[nodiscard]] auto zzwz() const { return as_vec4().zzwz(); }
+[[nodiscard]] auto zzww() const { return as_vec4().zzww(); }
+[[nodiscard]] auto zwxx() const { return as_vec4().zwxx(); }
+[[nodiscard]] auto zwxy() const { return as_vec4().zwxy(); }
+[[nodiscard]] auto zwxz() const { return as_vec4().zwxz(); }
+[[nodiscard]] auto zwxw() const { return as_vec4().zwxw(); }
+[[nodiscard]] auto zwyx() const { return as_vec4().zwyx(); }
+[[nodiscard]] auto zwyy() const { return as_vec4().zwyy(); }
+[[nodiscard]] auto zwyz() const { return as_vec4().zwyz(); }
+[[nodiscard]] auto zwyw() const { return as_vec4().zwyw(); }
+[[nodiscard]] auto zwzx() const { return as_vec4().zwzx(); }
+[[nodiscard]] auto zwzy() const { return as_vec4().zwzy(); }
+[[nodiscard]] auto zwzz() const { return as_vec4().zwzz(); }
+[[nodiscard]] auto zwzw() const { return as_vec4().zwzw(); }
+[[nodiscard]] auto zwwx() const { return as_vec4().zwwx(); }
+[[nodiscard]] auto zwwy() const { return as_vec4().zwwy(); }
+[[nodiscard]] auto zwwz() const { return as_vec4().zwwz(); }
+[[nodiscard]] auto zwww() const { return as_vec4().zwww(); }
+[[nodiscard]] auto wxxx() const { return as_vec4().wxxx(); }
+[[nodiscard]] auto wxxy() const { return as_vec4().wxxy(); }
+[[nodiscard]] auto wxxz() const { return as_vec4().wxxz(); }
+[[nodiscard]] auto wxxw() const { return as_vec4().wxxw(); }
+[[nodiscard]] auto wxyx() const { return as_vec4().wxyx(); }
+[[nodiscard]] auto wxyy() const { return as_vec4().wxyy(); }
+[[nodiscard]] auto wxyz() const { return as_vec4().wxyz(); }
+[[nodiscard]] auto wxyw() const { return as_vec4().wxyw(); }
+[[nodiscard]] auto wxzx() const { return as_vec4().wxzx(); }
+[[nodiscard]] auto wxzy() const { return as_vec4().wxzy(); }
+[[nodiscard]] auto wxzz() const { return as_vec4().wxzz(); }
+[[nodiscard]] auto wxzw() const { return as_vec4().wxzw(); }
+[[nodiscard]] auto wxwx() const { return as_vec4().wxwx(); }
+[[nodiscard]] auto wxwy() const { return as_vec4().wxwy(); }
+[[nodiscard]] auto wxwz() const { return as_vec4().wxwz(); }
+[[nodiscard]] auto wxww() const { return as_vec4().wxww(); }
+[[nodiscard]] auto wyxx() const { return as_vec4().wyxx(); }
+[[nodiscard]] auto wyxy() const { return as_vec4().wyxy(); }
+[[nodiscard]] auto wyxz() const { return as_vec4().wyxz(); }
+[[nodiscard]] auto wyxw() const { return as_vec4().wyxw(); }
+[[nodiscard]] auto wyyx() const { return as_vec4().wyyx(); }
+[[nodiscard]] auto wyyy() const { return as_vec4().wyyy(); }
+[[nodiscard]] auto wyyz() const { return as_vec4().wyyz(); }
+[[nodiscard]] auto wyyw() const { return as_vec4().wyyw(); }
+[[nodiscard]] auto wyzx() const { return as_vec4().wyzx(); }
+[[nodiscard]] auto wyzy() const { return as_vec4().wyzy(); }
+[[nodiscard]] auto wyzz() const { return as_vec4().wyzz(); }
+[[nodiscard]] auto wyzw() const { return as_vec4().wyzw(); }
+[[nodiscard]] auto wywx() const { return as_vec4().wywx(); }
+[[nodiscard]] auto wywy() const { return as_vec4().wywy(); }
+[[nodiscard]] auto wywz() const { return as_vec4().wywz(); }
+[[nodiscard]] auto wyww() const { return as_vec4().wyww(); }
+[[nodiscard]] auto wzxx() const { return as_vec4().wzxx(); }
+[[nodiscard]] auto wzxy() const { return as_vec4().wzxy(); }
+[[nodiscard]] auto wzxz() const { return as_vec4().wzxz(); }
+[[nodiscard]] auto wzxw() const { return as_vec4().wzxw(); }
+[[nodiscard]] auto wzyx() const { return as_vec4().wzyx(); }
+[[nodiscard]] auto wzyy() const { return as_vec4().wzyy(); }
+[[nodiscard]] auto wzyz() const { return as_vec4().wzyz(); }
+[[nodiscard]] auto wzyw() const { return as_vec4().wzyw(); }
+[[nodiscard]] auto wzzx() const { return as_vec4().wzzx(); }
+[[nodiscard]] auto wzzy() const { return as_vec4().wzzy(); }
+[[nodiscard]] auto wzzz() const { return as_vec4().wzzz(); }
+[[nodiscard]] auto wzzw() const { return as_vec4().wzzw(); }
+[[nodiscard]] auto wzwx() const { return as_vec4().wzwx(); }
+[[nodiscard]] auto wzwy() const { return as_vec4().wzwy(); }
+[[nodiscard]] auto wzwz() const { return as_vec4().wzwz(); }
+[[nodiscard]] auto wzww() const { return as_vec4().wzww(); }
+[[nodiscard]] auto wwxx() const { return as_vec4().wwxx(); }
+[[nodiscard]] auto wwxy() const { return as_vec4().wwxy(); }
+[[nodiscard]] auto wwxz() const { return as_vec4().wwxz(); }
+[[nodiscard]] auto wwxw() const { return as_vec4().wwxw(); }
+[[nodiscard]] auto wwyx() const { return as_vec4().wwyx(); }
+[[nodiscard]] auto wwyy() const { return as_vec4().wwyy(); }
+[[nodiscard]] auto wwyz() const { return as_vec4().wwyz(); }
+[[nodiscard]] auto wwyw() const { return as_vec4().wwyw(); }
+[[nodiscard]] auto wwzx() const { return as_vec4().wwzx(); }
+[[nodiscard]] auto wwzy() const { return as_vec4().wwzy(); }
+[[nodiscard]] auto wwzz() const { return as_vec4().wwzz(); }
+[[nodiscard]] auto wwzw() const { return as_vec4().wwzw(); }
+[[nodiscard]] auto wwwx() const { return as_vec4().wwwx(); }
+[[nodiscard]] auto wwwy() const { return as_vec4().wwwy(); }
+[[nodiscard]] auto wwwz() const { return as_vec4().wwwz(); }
+[[nodiscard]] auto wwww() const { return as_vec4().wwww(); }

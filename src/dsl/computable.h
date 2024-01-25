@@ -447,6 +447,26 @@ public:
             (*this)[i] = t[i];
         }
     }
+    [[nodiscard]] Var<T> as_scalar() const noexcept {
+        return (*this)[0];
+    }
+    template<size_t Dim = N>
+    [[nodiscard]] auto as_vec() const noexcept {
+        static_assert(Dim <= N);
+        if constexpr (Dim == 1) {
+            return as_scalar();
+        } else {
+            Var<Vector<T, Dim>> ret;
+            for (int i = 0; i < Dim; ++i) {
+                ret[i] = (*this)[i];
+            }
+            return ret;
+        }
+    }
+    [[nodiscard]] Var<Vector<T, 2>> as_vec2() const noexcept { return as_vec<2>(); }
+    [[nodiscard]] Var<Vector<T, 3>> as_vec3() const noexcept { return as_vec<3>(); }
+    [[nodiscard]] Var<Vector<T, 4>> as_vec4() const noexcept { return as_vec<4>(); }
+#include "swizzle_inl/array_swizzle.inl.h"
 };
 
 template<typename T, size_t N>
