@@ -91,7 +91,7 @@ ocarina::string CUDACompiler::compile(const Function &function, int sm) const no
         return ptx;
     };
 
-    string fn = function.func_name(ext_hash);
+    string fn = function.func_name(ext_hash, function.description());
 
     ocarina::string ptx_fn = fn + ".ptx";
     string cu_fn = fn + ".cu";

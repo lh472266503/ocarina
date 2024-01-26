@@ -25,12 +25,12 @@ template<typename T>
     return "function_" + ocarina::format("{:016x}", hash);
 }
 
-[[nodiscard]] inline string kernel_name(uint64_t hash) {
-    return "kernel_" + ocarina::format("{:016x}", hash);
+[[nodiscard]] inline string kernel_name(uint64_t hash, string desc = "") {
+    return "kernel_" + ocarina::move(desc) + "_" + ocarina::format("{:016x}", hash);
 }
 
-[[nodiscard]] inline string raygen_name(uint64_t hash) {
-    return "__raygen__" + ocarina::format("{:016x}", hash);
+[[nodiscard]] inline string raygen_name(uint64_t hash, string desc = "") {
+    return "__raygen__" + ocarina::move(desc) + "_" + ocarina::format("{:016x}", hash);
 }
 
 [[nodiscard]] inline string member_name(uint index) {

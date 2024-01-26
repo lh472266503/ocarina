@@ -109,7 +109,7 @@ const RefExpr *Function::mapping_output_argument(const Expression *invoked_func_
     return _outer_to_argument.at(invoked_func_expr);
 }
 
-void Function::append_output_argument(const Expression *expression,bool *contain) noexcept {
+void Function::append_output_argument(const Expression *expression, bool *contain) noexcept {
     if (contain) {
         *contain = _local_to_output.contains(expression);
     }
@@ -423,13 +423,13 @@ ocarina::span<const Variable> Function::builtin_vars() const noexcept {
     return _builtin_vars;
 }
 
-ocarina::string Function::func_name(uint64_t ext_hash) const noexcept {
+ocarina::string Function::func_name(uint64_t ext_hash, string ext_name) const noexcept {
     uint64_t final_hash = ext_hash == 0 ? hash() : hash64(hash(), ext_hash);
     if (is_kernel()) {
         if (is_raytracing()) {
-            return detail::raygen_name(final_hash);
+            return detail::raygen_name(final_hash, ocarina::move(ext_name));
         } else {
-            return detail::kernel_name(final_hash);
+            return detail::kernel_name(final_hash, ocarina::move(ext_name));
         }
     } else {
         return detail::func_name(final_hash);
