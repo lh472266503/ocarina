@@ -10,6 +10,7 @@
 #include "dsl/rtx_type.h"
 #include "core/image_base.h"
 #include "core/concepts.h"
+#include "core/thread_pool.h"
 #include "params.h"
 
 namespace ocarina {
@@ -45,7 +46,7 @@ public:
 
     public:
         explicit Impl(Context *ctx) : _context(ctx) {}
-        [[nodiscard]] virtual handle_ty create_buffer(size_t size, const string& desc) noexcept = 0;
+        [[nodiscard]] virtual handle_ty create_buffer(size_t size, const string &desc) noexcept = 0;
         virtual void destroy_buffer(handle_ty handle) noexcept = 0;
         [[nodiscard]] virtual handle_ty create_texture(uint3 res, PixelStorage pixel_storage,
                                                        uint level_num, const string &desc) noexcept = 0;
@@ -102,9 +103,9 @@ public:
 
     template<typename VBuffer, typename TBuffer>
     [[nodiscard]] RHIMesh create_mesh(const VBuffer &v_buffer,
-                                   const TBuffer &t_buffer,
-                                   AccelUsageTag usage_tag = AccelUsageTag::FAST_TRACE,
-                                   AccelGeomTag geom_tag = AccelGeomTag::DISABLE_ANYHIT) noexcept;// implement in mesh.h
+                                      const TBuffer &t_buffer,
+                                      AccelUsageTag usage_tag = AccelUsageTag::FAST_TRACE,
+                                      AccelGeomTag geom_tag = AccelGeomTag::DISABLE_ANYHIT) noexcept;// implement in mesh.h
     [[nodiscard]] Stream create_stream() noexcept;
     [[nodiscard]] Accel create_accel() noexcept;
     [[nodiscard]] BindlessArray create_bindless_array() noexcept;
@@ -116,6 +117,12 @@ public:
         OC_INFO_FORMAT("compile shader : {}", shader_desc.c_str());
         kernel.function()->set_description(shader_desc);
         return _create<Shader<T>>(kernel.function(), tag);
+    }
+    template<typename T>
+    [[nodiscard]] auto async_compile(Kernel<T> &&kernel, const string &shader_desc = "", ShaderTag tag = CS) noexcept {
+        return async([=, this, kernel = ocarina::move(kernel)] {
+            return compile(kernel, shader_desc, tag);
+        });
     }
 };
 }// namespace ocarina

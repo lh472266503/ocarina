@@ -194,7 +194,7 @@ class FuncWrapper {
 protected:
     mutable ocarina::shared_ptr<Function> _function;
     FuncWrapper() = default;
-    explicit FuncWrapper(ocarina::shared_ptr<Function> f) : _function(std::move(f)) {}
+    explicit FuncWrapper(ocarina::shared_ptr<Function> f) : _function(f) {}
 
 public:
     [[nodiscard]] ocarina::shared_ptr<Function> &function() const noexcept { return _function; }
@@ -358,7 +358,9 @@ public:
     template<typename... A>
     requires std::is_invocable_v<signature, expr_value_t<A>...>
     auto
-    operator()(A &&...args) const noexcept {}
+    operator()(A &&...args) const noexcept {
+        OC_ERROR("Kernel invoke error");
+    }
 };
 
 template<typename T>
