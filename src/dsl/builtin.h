@@ -514,6 +514,18 @@ requires is_scalar_v<expr_value_t<T>>
     return ocarina::select(ocarina::isnan(t) || ocarina::isinf(t), T(0), t);
 }
 
+template<typename T>
+requires is_vector_v<expr_value_t<T>>
+[[nodiscard]] T zero_if_nan(T t) noexcept {
+    return ocarina::select(ocarina::has_nan(t), T{}, t);
+}
+
+template<typename T>
+requires is_vector_v<expr_value_t<T>>
+[[nodiscard]] T zero_if_nan_inf(T t) noexcept {
+    return ocarina::select(ocarina::has_nan(t) || ocarina::has_inf(t), T{}, t);
+}
+
 template<typename Org, typename Dir>
 requires(is_all_float_vector3_v<expr_value_t<Org>, expr_value_t<Dir>> && any_dsl_v<Org, Dir>)
 OC_NODISCARD Var<Ray> make_ray(const Org &org, const Dir &dir) noexcept {
