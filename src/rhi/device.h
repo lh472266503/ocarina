@@ -73,7 +73,7 @@ public:
 private:
     Handle _impl;
     template<typename T, typename... Args>
-    [[nodiscard]] auto _create(Args &&...args) noexcept {
+    [[nodiscard]] auto _create(Args &&...args) const noexcept {
         return T(this->_impl.get(), std::forward<Args>(args)...);
     }
 
@@ -113,13 +113,13 @@ public:
     [[nodiscard]] Texture create_texture(uint3 res, PixelStorage storage, const string &desc = "") noexcept;
     [[nodiscard]] Texture create_texture(uint2 res, PixelStorage storage, const string &desc = "") noexcept;
     template<typename T>
-    [[nodiscard]] auto compile(const Kernel<T> &kernel, const string &shader_desc = "", ShaderTag tag = CS) noexcept {
+    [[nodiscard]] auto compile(const Kernel<T> &kernel, const string &shader_desc = "", ShaderTag tag = CS) const noexcept {
         OC_INFO_FORMAT("compile shader : {}", shader_desc.c_str());
         kernel.function()->set_description(shader_desc);
         return _create<Shader<T>>(kernel.function(), tag);
     }
     template<typename T>
-    [[nodiscard]] auto async_compile(Kernel<T> &&kernel, const string &shader_desc = "", ShaderTag tag = CS) noexcept {
+    [[nodiscard]] auto async_compile(Kernel<T> &&kernel, const string &shader_desc = "", ShaderTag tag = CS) const noexcept {
         return async([=, this, kernel = ocarina::move(kernel)] {
             return compile(kernel, shader_desc, tag);
         });
