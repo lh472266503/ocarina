@@ -32,14 +32,8 @@ public:
 template<typename T>
 struct OCBuffer {
     T *ptr{};
-
-    [[nodiscard]] const T &operator[](oc_uint index) const noexcept {
-        return ptr[index];
-    }
-
-    [[nodiscard]] T &operator[](oc_uint index) noexcept {
-        return ptr[index];
-    }
+    [[nodiscard]] const T &operator[](oc_uint index) const noexcept { return ptr[index]; }
+    [[nodiscard]] T &operator[](oc_uint index) noexcept { return ptr[index]; }
 };
 
 constexpr float ray_t_max = 1e16f;
