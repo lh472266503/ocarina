@@ -247,7 +247,7 @@ void CUDACodegen::_emit_builtin_vars_define(const Function &f) noexcept {
         _emit_newline();
         for (const Variable &arg : f.arguments()) {
             _emit_indent();
-            current_scratch() << "const auto &";
+            current_scratch() << "auto ";
             _emit_variable_name(arg);
             current_scratch() << " = params.";
             _emit_variable_name(arg);
@@ -257,7 +257,7 @@ void CUDACodegen::_emit_builtin_vars_define(const Function &f) noexcept {
 
         f.for_each_captured_resource([&](const CapturedResource &uniform) {
             _emit_indent();
-            current_scratch() << "const auto &";
+            current_scratch() << "auto ";
             _emit_variable_name(uniform.expression()->variable());
             current_scratch() << " = params.";
             _emit_variable_name(uniform.expression()->variable());
@@ -366,8 +366,9 @@ void CUDACodegen::_emit_type_name(const Type *type) noexcept {
                 _emit_struct_name(type);
                 break;
             case Type::Tag::BUFFER:
+                current_scratch() << "OCBuffer<";
                 _emit_type_name(type->element());
-                current_scratch() << "*__restrict__ ";
+                current_scratch() << ">";
                 break;
             case Type::Tag::TEXTURE:
                 current_scratch() << "OCTexture";

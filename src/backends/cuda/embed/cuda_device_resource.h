@@ -29,6 +29,19 @@ public:
         : m0(org), m1(dir) {}
 };
 
+template<typename T>
+struct OCBuffer {
+    T *ptr{};
+
+    [[nodiscard]] const T &operator[](oc_uint index) const noexcept {
+        return ptr[index];
+    }
+
+    [[nodiscard]] T &operator[](oc_uint index) noexcept {
+        return ptr[index];
+    }
+};
+
 constexpr float ray_t_max = 1e16f;
 
 __device__ oc_float3 oc_offset_ray_origin(const oc_float3 &p_in, const oc_float3 &n_in) noexcept {
