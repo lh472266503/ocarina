@@ -103,6 +103,9 @@ protected:
     size_t _size{};
     size_t _element_size{0};
 
+    /// just for construct memory block
+    mutable OCBuffer<T> _proxy{};
+
 public:
     Buffer() : _element_size(calculate_size()) {}
 
@@ -151,6 +154,24 @@ public:
         return *this;
     }
 
+    [[nodiscard]] const void *proxy_ptr() const noexcept {
+        _proxy.ptr = reinterpret_cast<T *>(_handle);
+        _proxy.size = static_cast<uint>(_size);
+        return &_proxy;
+    }
+
+    [[nodiscard]] size_t data_alignment() const noexcept override {
+        return alignof(decltype(_proxy));
+    }
+
+    [[nodiscard]] size_t data_size() const noexcept override {
+        return sizeof(_proxy);
+    }
+
+    [[nodiscard]] MemoryBlock memory_block() const noexcept override {
+        return {proxy_ptr(), data_size(), data_alignment(), max_member_size()};
+    }
+
     template<typename U>
     [[nodiscard]] auto ptr() const noexcept {
         if constexpr (std::is_same_v<U, handle_ty>) {
@@ -185,8 +206,8 @@ public:
     template<typename U = T>
     [[nodiscard]] const Expression *expression() const noexcept {
         const CapturedResource &captured_resource = Function::current()->get_captured_resource(Type::of<decltype(*this)>(),
-                                                                                Variable::Tag::BUFFER,
-                                                                                memory_block());
+                                                                                               Variable::Tag::BUFFER,
+                                                                                               memory_block());
         return captured_resource.expression();
     }
 

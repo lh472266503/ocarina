@@ -284,6 +284,12 @@ struct OCTexture {
     PixelStorage pixel_storage{};
 };
 
+template<typename T>
+struct OCBuffer {
+    T *ptr{};
+    uint size{};
+};
+
 struct TypeVisitor {
     virtual void visit(const Type *) noexcept = 0;
 };
