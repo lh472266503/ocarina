@@ -122,6 +122,8 @@ enum struct CallOp : uint32_t {
     IS_NULL_BUFFER,
     IS_NULL_TEXTURE,
 
+    BUFFER_SIZE,
+
     TEX_SAMPLE,
     TEX_READ,
     TEX_WRITE,

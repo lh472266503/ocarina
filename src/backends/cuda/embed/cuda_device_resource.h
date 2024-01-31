@@ -37,6 +37,11 @@ struct OCBuffer {
     [[nodiscard]] T &operator[](oc_uint index) noexcept { return ptr[index]; }
 };
 
+template<typename T>
+oc_uint oc_buffer_size(OCBuffer<T> buffer) {
+    return buffer.size;
+}
+
 constexpr float ray_t_max = 1e16f;
 
 __device__ oc_float3 oc_offset_ray_origin(const oc_float3 &p_in, const oc_float3 &n_in) noexcept {

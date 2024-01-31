@@ -494,6 +494,13 @@ struct Computable<Buffer<T>>
       detail::EnableSubscriptAccess<Computable<Buffer<T>>>,
       detail::BufferAsAtomicAddress<T> {
     OC_COMPUTABLE_COMMON(Computable<Buffer<T>>)
+
+public:
+    template<typename int_type = uint>
+    [[nodiscard]] auto size() const noexcept {
+        const CallExpr *expr = Function::current()->call_builtin(Type::of<uint>(), CallOp::BUFFER_SIZE, {expression()});
+        return eval<int_type>(expr);
+    }
 };
 
 template<>
