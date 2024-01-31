@@ -312,12 +312,16 @@ public:
             OC_CU_CHECK(cuStreamSynchronize(cu_stream));
 
         }
+
         size_t offset = 0;
+        vector<std::byte> host{_params.size()};
         for (const MemoryBlock &block : blocks) {
             offset = mem_offset(offset, block.alignment);
-            OC_CU_CHECK(cuMemcpyHtoDAsync(_params.handle() + offset, block.address, block.size, cu_stream));
+            oc_memcpy(reinterpret_cast<std::byte*>(host.data()) + offset, block.address, block.size);
             offset += block.size;
         }
+        OC_CU_CHECK(cuMemcpyHtoDAsync(_params.handle(), host.data(), host.size(), cu_stream));
+
         OC_OPTIX_CHECK(optixLaunch(_optix_pipeline,
                                    cu_stream,
                                    _params.handle(),
