@@ -5,8 +5,8 @@ from os.path import realpath, dirname
 import os
 from posixpath import split
 
-scalar_types = ["int", "uint", "float", "bool", "uchar", "ushort"]
-native_types = ["int", "unsigned int", "float", "bool", "unsigned char", "unsigned short"]
+scalar_types = ["int", "uint", "float", "bool", "uchar", "ushort", "ulong"]
+native_types = ["int", "unsigned int", "float", "bool", "unsigned char", "unsigned short", "unsigned long long"]
 vector_alignments = {2: 8, 3: 16, 4: 16}
 indent = "\t"
 name_lst = ["x", "y", "z", "w"]
