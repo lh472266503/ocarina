@@ -19,6 +19,7 @@ struct valid_vector_impl : public std::disjunction<
                                std::is_same<T, char>,
                                std::is_same<T, short>,
                                std::is_same<T, ushort>,
+                               std::is_same<T, ulong>,
                                std::is_same<T, uchar>,
                                std::is_same<T, uint>> {};
 
