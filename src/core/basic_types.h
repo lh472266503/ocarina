@@ -81,6 +81,7 @@ OC_MAKE_VECTOR_TYPES(short)
 OC_MAKE_VECTOR_TYPES(ushort)
 OC_MAKE_VECTOR_TYPES(uchar)
 OC_MAKE_VECTOR_TYPES(uint)
+OC_MAKE_VECTOR_TYPES(ulong)
 
 #undef OC_MAKE_VECTOR_TYPES
 
@@ -142,7 +143,7 @@ using float3x3 = Matrix<3>;
 using float4x4 = Matrix<4>;
 
 using basic_types = ocarina::tuple<
-    bool, float, int, uint,
+    bool, float, int, uint, ulong,
     bool2, float2, int2, uint2,
     bool3, float3, int3, uint3,
     bool4, float4, int4, uint4,

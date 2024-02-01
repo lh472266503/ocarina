@@ -34,6 +34,7 @@ to_underlying(T e) noexcept {
 }
 
 using uint = uint32_t;
+using ulong = uint64_t;
 using uchar = unsigned char;
 using ushort = unsigned short;
 
