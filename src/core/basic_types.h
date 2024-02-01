@@ -144,9 +144,9 @@ using float4x4 = Matrix<4>;
 
 using basic_types = ocarina::tuple<
     bool, float, int, uint, ulong,
-    bool2, float2, int2, uint2,
-    bool3, float3, int3, uint3,
-    bool4, float4, int4, uint4,
+    bool2, float2, int2, uint2, ulong2,
+    bool3, float3, int3, uint3, ulong3,
+    bool4, float4, int4, uint4, ulong4,
     float2x2, float3x3, float4x4>;
 
 namespace detail {

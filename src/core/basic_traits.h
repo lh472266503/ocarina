@@ -74,7 +74,8 @@ template<typename T>
 constexpr auto is_signed_v = is_signed<T>::value;
 
 template<typename T>
-using is_unsigned = std::is_same<std::remove_cvref_t<T>, uint>;
+using is_unsigned = std::disjunction<std::is_same<std::remove_cvref_t<T>, uint>,
+                                     std::is_same<std::remove_cvref_t<T>, ulong>>;
 
 template<typename T>
 constexpr auto is_unsigned_v = is_unsigned<T>::value;
