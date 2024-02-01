@@ -517,13 +517,13 @@ requires is_scalar_v<expr_value_t<T>>
 template<typename T>
 requires is_vector_v<expr_value_t<T>>
 [[nodiscard]] T zero_if_nan(T t) noexcept {
-    return ocarina::select(ocarina::has_nan(t), T{}, t);
+    return ocarina::select(ocarina::isnan(t), T{}, t);
 }
 
 template<typename T>
 requires is_vector_v<expr_value_t<T>>
 [[nodiscard]] T zero_if_nan_inf(T t) noexcept {
-    return ocarina::select(ocarina::has_nan(t) || ocarina::has_inf(t), T{}, t);
+    return ocarina::select(ocarina::isnan(t) || ocarina::isinf(t), T{}, t);
 }
 
 template<typename Org, typename Dir>
