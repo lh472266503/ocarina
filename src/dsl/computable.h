@@ -352,6 +352,9 @@ private:                                                                        
                                                                                         \
 public:                                                                                 \
     [[nodiscard]] const Expression *expression() const noexcept { return _expression; } \
+    [[nodiscard]] bool is_valid() const noexcept {                                      \
+        return expression()->check_context(Function::current());                        \
+    }                                                                                   \
                                                                                         \
 protected:                                                                              \
     explicit Computable(const Expression *e) noexcept : _expression{e} {}               \

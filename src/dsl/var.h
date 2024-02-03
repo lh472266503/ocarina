@@ -22,6 +22,7 @@ using detail::Computable;
 template<typename T>
 struct Var : public Computable<T> {
     using this_type = T;
+    using Super = Computable<T>;
     explicit Var(const ocarina::Expression *expression) noexcept
         : ocarina::detail::Computable<this_type>(expression) {}
     Var() noexcept
@@ -48,7 +49,7 @@ struct Var : public Computable<T> {
     requires requires(ocarina::expr_value_t<this_type> a, ocarina::expr_value_t<Arg> b) { a = b; }
     void operator=(Arg &&arg) {
         if constexpr (is_struct_v<Arg>) {
-            Computable<T>::set(OC_FORWARD(arg));
+            Super::set(OC_FORWARD(arg));
         } else {
             ocarina::detail::assign(*this, std::forward<Arg>(arg));
         }
