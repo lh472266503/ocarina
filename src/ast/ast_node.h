@@ -24,7 +24,7 @@ public:
     OC_MAKE_MEMBER_GETTER_SETTER(context, )
     virtual bool check_context(const Function *ctx) const noexcept {
         if (ctx != _context) {
-            OC_WARNING("function correct warning ! {}");
+            volatile int i = 0;
         }
         return _context == ctx;
     }
