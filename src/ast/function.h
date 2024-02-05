@@ -70,8 +70,7 @@ private:
     const Type *_ret{nullptr};
     const CallExpr *_call_expr{nullptr};
 
-    /// The expression of the function that calls the current function
-    ocarina::vector<const Expression *> _expr_from_invoker;
+    ocarina::map<const Expression *, uint> _expr_to_argument_index;
 
     /// appended argument for output
     ocarina::vector<Variable> _appended_arguments;
@@ -82,7 +81,7 @@ private:
 
     /// key : expression from other function , value : output argument of current function
     /// use for callable
-    ocarina::map<const Expression *, const RefExpr *> _outer_to_argument;
+//    ocarina::map<const Expression *, const RefExpr *> _outer_to_argument;
 
     /// key : local expression from current function, value : output argument
     ocarina::map<const Expression *, const RefExpr *> _local_to_output;
@@ -120,7 +119,6 @@ private:
     }
 
     void correct() noexcept;
-    [[nodiscard]] uint invoker_expr_index(const ocarina::Expression *expression) const noexcept;
     /// used to capture variable from invoker
     [[nodiscard]] const RefExpr *mapping_captured_argument(const Expression *outer_expr, bool *contain) noexcept;
     [[nodiscard]] const RefExpr *mapping_local_variable(const Expression *invoked_func_expr, bool *contain) noexcept;
