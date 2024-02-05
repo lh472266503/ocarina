@@ -79,13 +79,6 @@ private:
     /// use for kernel
     ocarina::map<const Expression *, const RefExpr *> _outer_to_local;
 
-    /// key : expression from other function , value : output argument of current function
-    /// use for callable
-//    ocarina::map<const Expression *, const RefExpr *> _outer_to_argument;
-
-    /// key : local expression from current function, value : output argument
-    ocarina::map<const Expression *, const RefExpr *> _local_to_output;
-
     ocarina::vector<Variable> _arguments;
     ocarina::vector<CapturedResource> _captured_resources;
     ocarina::vector<Variable> _builtin_vars;
@@ -125,7 +118,7 @@ private:
     [[nodiscard]] const RefExpr *outer_to_local(const Expression *invoked_func_expr) noexcept;
     [[nodiscard]] const RefExpr *outer_to_argument(const Expression *invoked_func_expr) noexcept;
     [[nodiscard]] const RefExpr *mapping_output_argument(const Expression *invoked_func_expr, bool *contain) noexcept;
-    void append_output_argument(const Expression *expression,bool *contain) noexcept;
+    void append_output_argument(const Expression *expression, bool *contain) noexcept;
     template<typename Expr, typename Tuple, size_t... i>
     [[nodiscard]] auto _create_expression(Tuple &&tuple, std::index_sequence<i...>) {
         auto expr = ocarina::make_unique<Expr>(std::get<i>(OC_FORWARD(tuple))...);

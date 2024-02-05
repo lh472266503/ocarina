@@ -42,18 +42,6 @@ void Function::mark_variable_usage(ocarina::uint uid, ocarina::Usage usage) noex
     }
 }
 
-namespace detail {
-template<typename T, typename Elm>
-requires concepts::iterable<T>
-[[nodiscard]] uint find_index(T &&t, Elm &&elm) {
-    return std::find(OC_FORWARD(t).begin(),
-                     OC_FORWARD(t).end(),
-                     elm) -
-           OC_FORWARD(t).begin();
-}
-
-}// namespace detail
-
 const RefExpr *Function::mapping_captured_argument(const Expression *outer_expr, bool *contain) noexcept {
     *contain = _expr_to_argument_index.contains(outer_expr);
     if (!*contain) {
@@ -88,10 +76,6 @@ const RefExpr *Function::outer_to_argument(const Expression *invoked_func_expr) 
     OC_ASSERT(_expr_to_argument_index.contains(invoked_func_expr));
     uint arg_index = _expr_to_argument_index.at(invoked_func_expr);
     return _ref(_appended_arguments.at(arg_index));
-//    if (!_outer_to_argument.contains(invoked_func_expr)) {
-//        return nullptr;
-//    }
-//    return _outer_to_argument.at(invoked_func_expr);
 }
 
 const RefExpr *Function::mapping_output_argument(const Expression *invoked_func_expr, bool *contain) noexcept {
@@ -105,17 +89,6 @@ const RefExpr *Function::mapping_output_argument(const Expression *invoked_func_
         _appended_arguments.push_back(variable);
     }
     return outer_to_argument(invoked_func_expr);
-
-//    if (contain) {
-//        *contain = _outer_to_argument.contains(invoked_func_expr);
-//    }
-//    if (!_outer_to_argument.contains(invoked_func_expr)) {
-//        Variable variable(invoked_func_expr->type(), Variable::Tag::REFERENCE, _next_variable_uid(), nullptr, "pass");
-//        const RefExpr *ref_expr = _ref(variable);
-//        _outer_to_argument.insert(make_pair(invoked_func_expr, ref_expr));
-//        _appended_arguments.push_back(variable);
-//    }
-//    return _outer_to_argument.at(invoked_func_expr);
 }
 
 void Function::append_output_argument(const Expression *expression, bool *contain) noexcept {
@@ -125,26 +98,13 @@ void Function::append_output_argument(const Expression *expression, bool *contai
     if (_expr_to_argument_index.contains(expression)) {
         return;
     }
-    _expr_to_argument_index.insert(make_pair(expression, _appended_arguments.size()));
+    _expr_to_argument_index.insert(make_pair(expression, static_cast<uint>(_appended_arguments.size())));
     Variable variable(expression->type(), Variable::Tag::REFERENCE, _next_variable_uid(), nullptr, "output");
     _appended_arguments.push_back(variable);
     const RefExpr *ref_expr = _ref(variable);
-        with(body(), [&] {
-            assign(ref_expr, expression);
-        });
-//    if (contain) {
-//        *contain = _local_to_output.contains(expression);
-//    }
-//    if (_local_to_output.contains(expression)) {
-//        return;
-//    }
-//    Variable variable(expression->type(), Variable::Tag::REFERENCE, _next_variable_uid(), nullptr, "output");
-//    _appended_arguments.push_back(variable);
-//    const RefExpr *ref_expr = _ref(variable);
-//    with(body(), [&] {
-//        assign(ref_expr, expression);
-//    });
-//    _local_to_output.insert(make_pair(expression, ref_expr));
+    with(body(), [&] {
+        assign(ref_expr, expression);
+    });
 }
 
 Function::~Function() {
