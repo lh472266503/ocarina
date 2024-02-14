@@ -10,7 +10,7 @@
 #include "type.h"
 #include "expression.h"
 #include "statement.h"
-#include "usage.h"
+#include "ast_node.h"
 #include "op.h"
 
 namespace ocarina {

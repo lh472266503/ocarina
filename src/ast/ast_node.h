@@ -8,11 +8,17 @@
 #include "core/logging.h"
 #include "type.h"
 #include "core/concepts.h"
-#include "usage.h"
 #include "variable.h"
 #include "op.h"
 
 namespace ocarina {
+
+enum struct Usage : uint32_t {
+    NONE = 0u,
+    READ = 1 << 0,
+    WRITE = 1 << 1,
+    READ_WRITE = READ | WRITE
+};
 
 class Function;
 
