@@ -187,8 +187,12 @@ void test_lambda(Device &device, Stream &stream) {
             return (*hit).inst_id;
         };
         Var<array<float, 3>> arr{};
+        Env::instance().set("test", Float(9.6f));
+        auto& ttt = Env::instance().get<Float>("test");
         arr.set(array<float,3>{1,2,3});
-        $info("{}     ---   ", bb);
+        $info("{}     ---   ", ttt);
+        ttt = 9.7f;
+        $info("{}     ---   ",  Env::instance().get<Float>("test"));
         $info("{}     ---   ", (*hit).inst_id);
         $info("{} {} {}", arr.zyx());
     };

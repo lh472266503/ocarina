@@ -21,6 +21,7 @@ private:
 private:
     Printer _printer;
     Debugger _debugger;
+    mutable ocarina::map<string, basic_variant_var_t> _global_vars;
 
     /// Check if the array or buffer is over boundary
     bool _valid_check{true};
@@ -29,6 +30,33 @@ private:
 public:
     [[nodiscard]] static Env &instance() noexcept;
     static void destroy_instance() noexcept;
+
+    template<typename T>
+    void set(const string &key, const T &val) noexcept {
+        _global_vars.insert(make_pair(key, val));
+    }
+
+    template<typename T>
+    [[nodiscard]] T &get(const string &key) const noexcept {
+        return std::get<T>(_global_vars.at(key));
+    }
+
+    template<typename T, typename Func>
+    void execute_if(const string &key, Func func) const noexcept {
+        if (!has(key)) {
+            return;
+        }
+        func(get<T>(key));
+    }
+
+    [[nodiscard]] bool has(const string &key) const noexcept {
+        return _global_vars.contains(key);
+    }
+
+    void clear_global_vars() const noexcept {
+        _global_vars.clear();
+    }
+
     [[nodiscard]] static Printer &printer() noexcept { return instance()._printer; }
     [[nodiscard]] static Debugger &debugger() noexcept { return instance()._debugger; }
     void init(Device &device) {
