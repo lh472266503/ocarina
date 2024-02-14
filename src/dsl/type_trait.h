@@ -291,11 +291,11 @@ EXPR_TYPE_TRAITS(scalar)
 
 #undef EXPR_TYPE_TRAITS
 
-#define EXPR_DIMENSION_TRAITS(cls, dim)                                             \
-    template<typename T>                                                            \
-    using is_##cls##dim##_expr = is_##cls##dim<expr_value_t<T>>;                    \
-    OC_DEFINE_TEMPLATE_VALUE(is_##cls##dim##_expr)                                  \
-    template<typename... Ts>                                                        \
+#define EXPR_DIMENSION_TRAITS(cls, dim)                                      \
+    template<typename T>                                                     \
+    using is_##cls##dim##_expr = is_##cls##dim<expr_value_t<T>>;             \
+    OC_DEFINE_TEMPLATE_VALUE(is_##cls##dim##_expr)                           \
+    template<typename... Ts>                                                 \
     using is_all_##cls##dim##_expr = is_all_##cls##dim<expr_value_t<Ts>...>; \
     OC_DEFINE_TEMPLATE_VALUE_MULTI(is_all_##cls##dim##_expr)
 
@@ -473,6 +473,21 @@ template<typename T>
 using is_array_expr = ocarina::is_array<expr_value_t<T>>;
 
 OC_DEFINE_TEMPLATE_VALUE(is_array_expr)
+
+namespace detail {
+template<typename T>
+struct variant_var_impl {
+    static_assert(always_false_v<T>);
+};
+
+template<typename... Ts>
+struct variant_var_impl<ocarina::variant<Ts...>> {
+    using type = ocarina::variant<Var<Ts>...>;
+};
+
+}// namespace detail
+
+using basic_variant_var_t = typename detail::variant_var_impl<basic_variant_t>::type;
 
 }// namespace ocarina
 
