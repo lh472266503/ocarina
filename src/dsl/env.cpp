@@ -36,6 +36,19 @@ namespace detail {
     return index;
 }
 
+[[nodiscard]] Var<uint> correct_index(Var<uint> index, uint size, const string &desc,
+                                      const string &tb) noexcept {
+    if (Env::valid_check()) {
+        if_(index >= size, [&] {
+            string tips = ocarina::format("buffer access over boundary : {}, ", desc.c_str());
+            $warn_with_location(tips + "index = {}, size = {}, current thread will be terminated \n" + tb, index, size);
+            index = 0;
+            $return();
+        });
+    }
+    return index;
+}
+
 [[nodiscard]] Var<uint> divide(Var<uint> lhs, Var<uint> rhs) noexcept {
     return lhs / rhs;
 }

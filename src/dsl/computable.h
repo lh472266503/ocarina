@@ -24,6 +24,9 @@ void assign(Lhs &&lhs, Rhs &&rhs) noexcept;// implement in stmt_builder.h
 [[nodiscard]] Var<uint> correct_index(Var<uint> index, Var<uint> size, const string &desc,
                                       const string &tb) noexcept;// implement in env.cpp
 
+[[nodiscard]] Var<uint> correct_index(Var<uint> index, uint size, const string &desc,
+                                      const string &tb) noexcept;// implement in env.cpp
+
 [[nodiscard]] Var<uint> divide(Var<uint> lhs, Var<uint> rhs) noexcept;// implement in env.cpp
 
 }// namespace detail
