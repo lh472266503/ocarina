@@ -10,7 +10,7 @@
 #include "embed/cuda_device_resource_embed.h"
 #include "embed/optix_device_header_embed.h"
 #include "cuda_codegen.h"
-#include "rhi/context.h"
+#include "util/context.h"
 #include "core/util.h"
 #include "dsl/dsl.h"
 

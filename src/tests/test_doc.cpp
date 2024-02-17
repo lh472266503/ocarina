@@ -9,6 +9,7 @@
 #include "math/base.h"
 #include "base/scattering/interaction.h"
 #include "core/platform.h"
+#include "util/context.h"
 
 using namespace ocarina;
 

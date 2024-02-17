@@ -8,7 +8,7 @@
 #include "dsl/func.h"
 #include "ast/expression.h"
 #include <iostream>
-#include <rhi/context.h>
+#include "util/context.h"
 #include "rhi/device.h"
 #include "generator/cpp_codegen.h"
 #include "core/platform.h"
