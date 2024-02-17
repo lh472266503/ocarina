@@ -85,7 +85,7 @@ void FileManager::destroy_instance() {
 }
 
 FileManager::~FileManager() noexcept {
-    OC_INFO("context was destructed !");
+    OC_INFO("file_manager was destructed !");
 }
 
 const fs::path &FileManager::runtime_directory() const noexcept {

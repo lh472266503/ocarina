@@ -278,7 +278,7 @@ void test_poly() {
 
 int main(int argc, char *argv[]) {
     fs::path path(argv[0]);
-    FileManager context(path.parent_path());
+    FileManager file_manager(path.parent_path());
 
     /**
      * Conventional scheme
@@ -286,7 +286,7 @@ int main(int argc, char *argv[]) {
      * stream used for process some command,e.g buffer upload and download, dispatch shader
      * default is asynchronous operation
      */
-    Device device = context.create_device("cuda");
+    Device device = file_manager.create_device("cuda");
     Stream stream = device.create_stream();
     Env::printer().init(device);
     Env::debugger().init(device);
@@ -294,7 +294,7 @@ int main(int argc, char *argv[]) {
     //    Env::set_code_obfuscation(true);
     //    Env::set_valid_check(false);
 
-    /// create rtx context if need
+    /// create rtx file_manager if need
     device.init_rtx();
     //        test_compute_shader(device, stream);
     test_lambda(device, stream);

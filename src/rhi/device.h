@@ -61,7 +61,7 @@ public:
         virtual void destroy_mesh(handle_ty handle) noexcept = 0;
         [[nodiscard]] virtual handle_ty create_bindless_array() noexcept = 0;
         virtual void destroy_bindless_array(handle_ty handle) noexcept = 0;
-        [[nodiscard]] FileManager *context() noexcept { return _context; }
+        [[nodiscard]] FileManager *file_manager() noexcept { return _context; }
         virtual void init_rtx() noexcept = 0;
         [[nodiscard]] virtual CommandVisitor *command_visitor() noexcept = 0;
     };
@@ -79,7 +79,7 @@ private:
 
 public:
     explicit Device(Handle impl) : _impl(std::move(impl)) {}
-    [[nodiscard]] FileManager *context() const noexcept { return _impl->_context; }
+    [[nodiscard]] FileManager *file_manager() const noexcept { return _impl->_context; }
 
     template<typename T = std::byte, int... Dims>
     [[nodiscard]] Buffer<T, Dims...> create_buffer(size_t size, const string &desc = "") noexcept {

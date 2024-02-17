@@ -116,8 +116,8 @@ int main(int argc, char *argv[]) {
     };
 
     fs::path path(argv[0]);
-    FileManager context(path.parent_path());
-    Device device = context.create_device("cuda");
+    FileManager file_manager(path.parent_path());
+    Device device = file_manager.create_device("cuda");
 
     Stream stream = device.create_stream();
 

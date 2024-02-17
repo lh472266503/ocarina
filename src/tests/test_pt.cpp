@@ -55,9 +55,9 @@ OC_STRUCT(Onb, tangent, binormal, normal) {
 
 int main(int argc, char *argv[]) {
     fs::path path(argv[0]);
-    FileManager context(path.parent_path());
-    context.clear_cache();
-    Device device = context.create_device("cuda");
+    FileManager file_manager(path.parent_path());
+    file_manager.clear_cache();
+    Device device = file_manager.create_device("cuda");
     device.init_rtx();
     Stream stream = device.create_stream();
     tinyobj::ObjReaderConfig obj_reader_config;
@@ -180,7 +180,7 @@ int main(int argc, char *argv[]) {
     };
     auto shader = device.compile(raytracing);
 
-    auto window = context.create_window("display", res);
+    auto window = file_manager.create_window("display", res);
 //    window->run([&](double t) {
 
         stream << shader(frame).dispatch(res);
