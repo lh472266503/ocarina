@@ -14,7 +14,7 @@
 #include "params.h"
 
 namespace ocarina {
-class Context;
+class FileManager;
 
 template<typename T, int... Dims>
 class Buffer;
@@ -41,11 +41,11 @@ class Device : public concepts::Noncopyable {
 public:
     class Impl : public concepts::Noncopyable {
     protected:
-        Context *_context{};
+        FileManager *_context{};
         friend class Device;
 
     public:
-        explicit Impl(Context *ctx) : _context(ctx) {}
+        explicit Impl(FileManager *ctx) : _context(ctx) {}
         [[nodiscard]] virtual handle_ty create_buffer(size_t size, const string &desc) noexcept = 0;
         virtual void destroy_buffer(handle_ty handle) noexcept = 0;
         [[nodiscard]] virtual handle_ty create_texture(uint3 res, PixelStorage pixel_storage,
@@ -61,12 +61,12 @@ public:
         virtual void destroy_mesh(handle_ty handle) noexcept = 0;
         [[nodiscard]] virtual handle_ty create_bindless_array() noexcept = 0;
         virtual void destroy_bindless_array(handle_ty handle) noexcept = 0;
-        [[nodiscard]] Context *context() noexcept { return _context; }
+        [[nodiscard]] FileManager *context() noexcept { return _context; }
         virtual void init_rtx() noexcept = 0;
         [[nodiscard]] virtual CommandVisitor *command_visitor() noexcept = 0;
     };
 
-    using Creator = Device::Impl *(Context *);
+    using Creator = Device::Impl *(FileManager *);
     using Deleter = void(Device::Impl *);
     using Handle = ocarina::unique_ptr<Device::Impl, Device::Deleter *>;
 
@@ -79,7 +79,7 @@ private:
 
 public:
     explicit Device(Handle impl) : _impl(std::move(impl)) {}
-    [[nodiscard]] Context *context() const noexcept { return _impl->_context; }
+    [[nodiscard]] FileManager *context() const noexcept { return _impl->_context; }
 
     template<typename T = std::byte, int... Dims>
     [[nodiscard]] Buffer<T, Dims...> create_buffer(size_t size, const string &desc = "") noexcept {

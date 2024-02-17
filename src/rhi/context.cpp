@@ -55,11 +55,11 @@ bool create_directory_if_necessary(const fs::path &path) {
 
 }// namespace detail
 
-Context::Context(const fs::path &path, string_view cache_dir) {
+FileManager::FileManager(const fs::path &path, string_view cache_dir) {
     init(path, cache_dir);
 }
 
-Context &Context::init(const fs::path &path, std::string_view cache_dir) {
+FileManager &FileManager::init(const fs::path &path, std::string_view cache_dir) {
     _impl = std::move(ocarina::make_unique<Impl>());
     _impl->runtime_directory = detail::create_runtime_directory(path);
     _impl->cache_directory = runtime_directory() / cache_dir;
@@ -68,39 +68,39 @@ Context &Context::init(const fs::path &path, std::string_view cache_dir) {
     return *this;
 }
 
-Context *Context::s_context = nullptr;
+FileManager *FileManager::s_file_manager = nullptr;
 
-Context &Context::instance() noexcept {
-    if (s_context == nullptr) {
-        s_context = new Context();
+FileManager &FileManager::instance() noexcept {
+    if (s_file_manager == nullptr) {
+        s_file_manager = new FileManager();
     }
-    return *s_context;
+    return *s_file_manager;
 }
 
-void Context::destroy_instance() {
-    if (s_context) {
-        delete s_context;
-        s_context = nullptr;
+void FileManager::destroy_instance() {
+    if (s_file_manager) {
+        delete s_file_manager;
+        s_file_manager = nullptr;
     }
 }
 
-Context::~Context() noexcept {
+FileManager::~FileManager() noexcept {
     OC_INFO("context was destructed !");
 }
 
-const fs::path &Context::runtime_directory() const noexcept {
+const fs::path &FileManager::runtime_directory() const noexcept {
     return _impl->runtime_directory;
 }
 
-const fs::path &Context::cache_directory() const noexcept {
+const fs::path &FileManager::cache_directory() const noexcept {
     return _impl->cache_directory;
 }
 
-bool Context::create_directory_if_necessary(const fs::path &path) {
+bool FileManager::create_directory_if_necessary(const fs::path &path) {
     return detail::create_directory_if_necessary(path);
 }
 
-string Context::read_file(const fs::path &fn) {
+string FileManager::read_file(const fs::path &fn) {
     std::ifstream fst;
     fst.open(fn.c_str());
     std::stringstream buffer;
@@ -108,28 +108,28 @@ string Context::read_file(const fs::path &fn) {
     return buffer.str();
 }
 
-void Context::write_file(const fs::path &fn, const std::string &text) {
+void FileManager::write_file(const fs::path &fn, const std::string &text) {
     std::ofstream fs;
     fs.open(fn.c_str());
     fs << text;
     fs.close();
 }
 
-void Context::write_global_cache(const string &fn, const string &text) const noexcept {
+void FileManager::write_global_cache(const string &fn, const string &text) const noexcept {
     write_file(cache_directory() / fn, text);
 }
 
-string Context::read_global_cache(const string &fn) const noexcept {
+string FileManager::read_global_cache(const string &fn) const noexcept {
     return read_file(cache_directory() / fn);
 }
 
-void Context::clear_cache() const noexcept {
+void FileManager::clear_cache() const noexcept {
     if (fs::exists(_impl->cache_directory)) {
         fs::remove_all(_impl->cache_directory);
     }
 }
 
-bool Context::is_exist_cache(const string &fn) const noexcept {
+bool FileManager::is_exist_cache(const string &fn) const noexcept {
     if (!_impl->use_cache) {
         return false;
     }
@@ -137,7 +137,7 @@ bool Context::is_exist_cache(const string &fn) const noexcept {
     return fs::exists(path);
 }
 
-const DynamicModule *Context::obtain_module(const string &module_name) noexcept {
+const DynamicModule *FileManager::obtain_module(const string &module_name) noexcept {
     auto iter = _impl->modules.find(module_name);
     DynamicModule *ret = nullptr;
     if (iter == _impl->modules.cend()) {
@@ -150,14 +150,14 @@ const DynamicModule *Context::obtain_module(const string &module_name) noexcept 
     return ret;
 }
 
-Device Context::create_device(const string &backend_name) noexcept {
+Device FileManager::create_device(const string &backend_name) noexcept {
     auto d = obtain_module(dynamic_module_name(detail::backend_full_name(backend_name)));
     auto create_device = reinterpret_cast<Device::Creator *>(d->function_ptr("create"));
     auto destroy_func = reinterpret_cast<Device::Deleter *>(d->function_ptr("destroy"));
     return Device{Device::Handle{create_device(this), destroy_func}};
 }
 
-Window::Wrapper Context::create_window(const char *name, uint2 initial_size, const char *type, bool resizable) {
+Window::Wrapper FileManager::create_window(const char *name, uint2 initial_size, const char *type, bool resizable) {
     auto d = obtain_module(dynamic_module_name(detail::window_name(type)));
     auto create_window = reinterpret_cast<Window::Creator *>(d->function_ptr("create"));
     auto destroy_func = reinterpret_cast<Window::Deleter *>(d->function_ptr("destroy"));

@@ -21,7 +21,7 @@
 
 namespace ocarina {
 
-CUDADevice::CUDADevice(Context *context)
+CUDADevice::CUDADevice(FileManager *context)
     : Device::Impl(context) {
     OC_CU_CHECK(cuInit(0));
     OC_CU_CHECK(cuDeviceGet(&_cu_device, 0));
@@ -161,7 +161,7 @@ CommandVisitor *CUDADevice::command_visitor() noexcept {
 
 }// namespace ocarina
 
-OC_EXPORT_API ocarina::CUDADevice *create(ocarina::Context *context) {
+OC_EXPORT_API ocarina::CUDADevice *create(ocarina::FileManager *context) {
     return ocarina::new_with_allocator<ocarina::CUDADevice>(context);
 }
 

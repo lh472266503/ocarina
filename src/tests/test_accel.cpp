@@ -53,7 +53,7 @@ auto get_cube(float x = 1, float y = 1, float z = 1) {
 
 int main(int argc, char *argv[]) {
     fs::path path(argv[0]);
-    Context context(path.parent_path());
+    FileManager context(path.parent_path());
     context.clear_cache();
     Device device = context.create_device("cuda");
     device.init_rtx();

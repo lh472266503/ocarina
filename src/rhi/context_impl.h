@@ -9,7 +9,7 @@
 #include "core/platform.h"
 
 namespace ocarina {
-struct Context::Impl {
+struct FileManager::Impl {
     fs::path runtime_directory;
     fs::path cache_directory;
     bool use_cache{true};

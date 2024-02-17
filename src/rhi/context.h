@@ -12,17 +12,17 @@
 namespace ocarina {
 class Device;
 class DynamicModule;
-class Context : public concepts::Noncopyable {
+class FileManager : public concepts::Noncopyable {
 private:
-    Context() = default;
-    Context(const Context &) = delete;
-    Context(Context &&) = delete;
-    Context operator=(const Context &) = delete;
-    Context operator=(Context &&) = delete;
-    static Context *s_context;
+    FileManager() = default;
+    FileManager(const FileManager &) = delete;
+    FileManager(FileManager &&) = delete;
+    FileManager operator=(const FileManager &) = delete;
+    FileManager operator=(FileManager &&) = delete;
+    static FileManager *s_file_manager;
 
 public:
-    [[nodiscard]] static Context &instance() noexcept;
+    [[nodiscard]] static FileManager &instance() noexcept;
     static void destroy_instance();
 
 private:
@@ -30,9 +30,9 @@ private:
     ocarina::unique_ptr<Impl> _impl;
 
 public:
-    explicit Context(const fs::path &path, string_view cache_dir = ".cache");
-    Context &init(const fs::path &path, string_view cache_dir = ".cache");
-    virtual ~Context() noexcept;
+    explicit FileManager(const fs::path &path, string_view cache_dir = ".cache");
+    FileManager &init(const fs::path &path, string_view cache_dir = ".cache");
+    virtual ~FileManager() noexcept;
     [[nodiscard]] const fs::path &runtime_directory() const noexcept;
     [[nodiscard]] const fs::path &cache_directory() const noexcept;
     static bool create_directory_if_necessary(const fs::path &path);

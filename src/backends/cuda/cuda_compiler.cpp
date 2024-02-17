@@ -96,7 +96,7 @@ ocarina::string CUDACompiler::compile(const Function &function, int sm) const no
     ocarina::string ptx_fn = fn + ".ptx";
     string cu_fn = fn + ".cu";
     ocarina::string ptx;
-    Context *context = _device->context();
+    FileManager *context = _device->context();
     if (!context->is_exist_cache(ptx_fn)) {
         if (!context->is_exist_cache(cu_fn)) {
             CUDACodegen codegen{Env::code_obfuscation()};

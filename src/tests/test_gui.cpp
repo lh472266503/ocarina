@@ -18,7 +18,7 @@ using namespace ocarina;
 
 int main(int argc, char *argv[]) {
     fs::path path(argv[0]);
-    Context context(path.parent_path());
+    FileManager context(path.parent_path());
 
     auto window = context.create_window("display", make_uint2(500), "gl");
     auto image_io = ImageIO::pure_color(make_float4(1,0,0,1), ColorSpace::LINEAR, make_uint2(500));

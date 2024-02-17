@@ -277,7 +277,7 @@ void test_poly() {
 
 int main(int argc, char *argv[]) {
     fs::path path(argv[0]);
-    Context context(path.parent_path());
+    FileManager context(path.parent_path());
 
     /**
      * Conventional scheme

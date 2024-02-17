@@ -81,7 +81,7 @@ private:
     };
 
 public:
-    explicit CUDADevice(Context *context);
+    explicit CUDADevice(FileManager *context);
     void init_hardware_info();
     template<typename Func>
     decltype(auto) use_context(Func &&func) noexcept {
