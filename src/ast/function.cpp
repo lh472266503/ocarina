@@ -10,13 +10,13 @@
 namespace ocarina {
 
 void Function::StructureSet::add(const ocarina::Type *type) noexcept {
+    for (const Type *m : type->members()) {
+        add(m);
+    }
     if (struct_map.contains(type->hash()) || !type->is_structure() ||
         type->description() == TypeDesc<Hit>::description() ||
         type->description() == TypeDesc<Ray>::description()) {
         return;
-    }
-    for (const Type *m : type->members()) {
-        add(m);
     }
     struct_map.insert(make_pair(type->hash(), type));
     struct_lst.push_back(type);
@@ -110,6 +110,18 @@ void Function::append_output_argument(const Expression *expression, bool *contai
 Function::~Function() {
     for (auto &mem : _temp_memory) {
         delete_with_allocator(mem.first);
+    }
+}
+
+void Function::correct_used_structures() noexcept {
+    for (const Variable &arg : _arguments) {
+        add_used_structure(arg.type());
+    }
+    for (const Variable &arg : _appended_arguments) {
+        add_used_structure(arg.type());
+    }
+    for (const CapturedResource &resource : _captured_resources) {
+        add_used_structure(resource.type());
     }
 }
 

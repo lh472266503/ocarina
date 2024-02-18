@@ -8,13 +8,14 @@ namespace ocarina {
 
 void FunctionCorrector::traverse(Function &function) noexcept {
     visit(function.body());
+    function.correct_used_structures();
+    bool valid = function.check_context();
+    OC_ERROR_IF_NOT(valid, "FunctionCorrector error: invalid function ", function.description().c_str());
 }
 
 void FunctionCorrector::apply(Function *function) noexcept {
     _function_stack.push_back(function);
     traverse(*current_function());
-    bool valid = function->check_context();
-    OC_ERROR_IF_NOT(valid, "FunctionCorrector error: invalid function ", function->description().c_str());
     _function_stack.pop_back();
 }
 

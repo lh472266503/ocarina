@@ -229,28 +229,26 @@ public:
     }
     explicit Function(Tag tag) noexcept;
     ~Function() noexcept;
+
+    void correct_used_structures() noexcept;
     template<typename T, typename... Args>
     T *create_temp_obj(Args &&...args) noexcept {
         T *ptr = new_with_allocator<T>(std::forward<Args>(args)...);
         _temp_memory.emplace_back(reinterpret_cast<std::byte *>(ptr), sizeof(T));
         return ptr;
     }
-
     void set_block_dim(uint x, uint y = 1, uint z = 1) const noexcept { _block_dim = make_uint3(x, y, z); }
     void set_block_dim(uint2 size) const noexcept { _block_dim = make_uint3(size, 1); }
     void set_block_dim(uint3 size) const noexcept { _block_dim = size; }
     [[nodiscard]] uint3 block_dim() const noexcept { return _block_dim; }
-
     void set_grid_dim(uint x, uint y = 1, uint z = 1) const noexcept { _grid_dim = make_uint3(x, y, z); }
     void set_grid_dim(uint2 size) const noexcept { _grid_dim = make_uint3(size, 1); }
     void set_grid_dim(uint3 size) const noexcept { _grid_dim = size; }
     [[nodiscard]] uint3 grid_dim() const noexcept { return _grid_dim; }
-
     void configure(uint3 grid_dim, uint3 block_dim) const noexcept {
         _grid_dim = grid_dim;
         _block_dim = block_dim;
     }
-
     [[nodiscard]] bool has_configure() const noexcept { return all(block_dim() != 0u) || all(grid_dim() != 0u); }
     [[nodiscard]] ocarina::string func_name(uint64_t ext_hash = 0u, string ext_name = "") const noexcept;
     void assign(const Expression *lhs, const Expression *rhs) noexcept;
