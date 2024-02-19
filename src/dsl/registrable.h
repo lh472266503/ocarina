@@ -173,7 +173,7 @@ public:
     template<typename ...Args>
     OC_NODISCARD auto sample(uint channel_num, Args &&...args) const noexcept {
         if (has_registered()) {
-            return _bindless_array->tex(*_index).sample(channel_num, OC_FORWARD(args)...);
+            return _bindless_array->tex_var(*_index).sample(channel_num, OC_FORWARD(args)...);
         } else {
             return Texture::sample(channel_num, OC_FORWARD(args)...);
         }

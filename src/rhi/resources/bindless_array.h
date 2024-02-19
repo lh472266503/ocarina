@@ -87,8 +87,8 @@ public:
 
     template<typename Index>
     requires is_integral_expr_v<Index>
-    [[nodiscard]] BindlessArrayTexture tex(Index &&index) const noexcept {
-        return make_expr<BindlessArray>(expression()).tex(OC_FORWARD(index), typeid(*this).name(), texture_num());
+    [[nodiscard]] BindlessArrayTexture tex_var(Index &&index) const noexcept {
+        return make_expr<BindlessArray>(expression()).tex_var(OC_FORWARD(index), typeid(*this).name(), texture_num());
     }
 
     template<typename T, typename Index>

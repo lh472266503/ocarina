@@ -698,7 +698,7 @@ public:
 
     template<typename Index>
     requires concepts::integral<expr_value_t<Index>>
-    [[nodiscard]] BindlessArrayTexture tex(Index index, const string &desc = "",
+    [[nodiscard]] BindlessArrayTexture tex_var(Index index, const string &desc = "",
                                            uint tex_num = 0) const noexcept {
         if (tex_num != 0) {
             if constexpr (is_integral_v<Index>) {
