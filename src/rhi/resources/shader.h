@@ -45,17 +45,18 @@ class ArgumentList {
 private:
     static constexpr auto Size = 200;
     ocarina::vector<void *> _args;
-    ocarina::array<std::byte, Size> _argument_data{};
+    ocarina::array<std::byte, Size> _pod_data{};
     const Function *_function{};
     size_t _cursor{};
     ocarina::vector<MemoryBlock> _params;
+//    ocarina::vector<std::byte>
 
 private:
     template<typename T>
     requires std::is_trivially_destructible_v<T>
     void _encode_pod_type(T &&arg) noexcept {
         _cursor = mem_offset(_cursor, alignof(T));
-        auto dst_ptr = _argument_data.data() + _cursor;
+        auto dst_ptr = _pod_data.data() + _cursor;
         _cursor += sizeof(T);
         OC_ASSERT(_cursor < Size);
         oc_memcpy(dst_ptr, &arg, sizeof(T));
