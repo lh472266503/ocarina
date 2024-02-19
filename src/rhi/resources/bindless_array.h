@@ -23,6 +23,7 @@ public:
         [[nodiscard]] virtual size_t emplace_texture(handle_ty handle) noexcept = 0;
         virtual void remove_texture(handle_ty index) noexcept = 0;
         virtual void set_buffer(handle_ty index, handle_ty handle, size_t size_in_byte) noexcept = 0;
+        [[nodiscard]] virtual BufferDesc buffer_view(uint index) const noexcept = 0;
         virtual void set_texture(handle_ty index, handle_ty handle) noexcept = 0;
         [[nodiscard]] virtual BufferUploadCommand *upload_buffer_handles(bool async) const noexcept = 0;
         [[nodiscard]] virtual BufferUploadCommand *upload_texture_handles(bool async) const noexcept = 0;
@@ -95,6 +96,12 @@ public:
     requires is_integral_expr_v<Index>
     [[nodiscard]] BindlessArrayBuffer<T> buffer_var(Index &&index) const noexcept {
         return make_expr<BindlessArray>(expression()).buffer_var<T>(OC_FORWARD(index), typeid(*this).name(), buffer_num());
+    }
+
+    template<typename T>
+    [[nodiscard]] BufferView<T> buffer_view(uint index) const noexcept {
+        BufferDesc buffer_desc = impl()->buffer_view(index);
+        return BufferView<T>(buffer_desc.head, buffer_desc.size_in_byte / sizeof(T));
     }
 
     template<typename Index>

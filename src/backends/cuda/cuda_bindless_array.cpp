@@ -40,7 +40,8 @@ CommandList CUDABindlessArray::update_slotSOA(bool async) noexcept {
     ret.push_back(HostFunctionCommand::create([&]() {
         _slot_soa.buffer_slot = _buffers.head();
         _slot_soa.tex_slot = _textures.head();
-    }, async));
+    },
+                                              async));
     return ret;
 }
 
@@ -70,6 +71,10 @@ void CUDABindlessArray::remove_texture(handle_ty index) noexcept {
 void CUDABindlessArray::set_buffer(ocarina::handle_ty index, ocarina::handle_ty handle, size_t size_in_byte) noexcept {
     OC_ASSERT(index < _buffers.host_buffer().size());
     _buffers.at(index) = {handle, size_in_byte};
+}
+
+BufferDesc CUDABindlessArray::buffer_view(ocarina::uint index) const noexcept {
+    return _buffers.at(index);
 }
 
 void CUDABindlessArray::set_texture(ocarina::handle_ty index, ocarina::handle_ty handle) noexcept {
