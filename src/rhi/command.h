@@ -330,7 +330,7 @@ private:
 public:
     ShaderDispatchCommand(handle_ty entry, SP<ArgumentList> argument_list, uint3 dim);
     [[nodiscard]] span<void *> args() noexcept;
-    [[nodiscard]] span<const MemoryBlock> params() noexcept;
+    [[nodiscard]] span<const std::byte> argument_data() noexcept;
     [[nodiscard]] size_t params_size() noexcept;
     [[nodiscard]] uint3 dispatch_dim() const noexcept { return _dispatch_dim; }
 

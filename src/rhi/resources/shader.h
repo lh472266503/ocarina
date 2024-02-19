@@ -48,8 +48,8 @@ private:
     ocarina::array<std::byte, Size> _pod_data{};
     const Function *_function{};
     size_t _cursor{};
-    ocarina::vector<MemoryBlock> _params;
-//    ocarina::vector<std::byte>
+    ocarina::vector<MemoryBlock> _blocks;
+    ocarina::vector<std::byte> _argument_data;
 
 private:
     template<typename T>
@@ -81,7 +81,7 @@ public:
     void clear() noexcept {
         _cursor = 0;
         _args.clear();
-        _params.clear();
+        _blocks.clear();
     }
 
     [[nodiscard]] const Function &function() const noexcept {
@@ -89,18 +89,35 @@ public:
     }
 
     void push_memory_block(const MemoryBlock &block) noexcept {
-        if (_function->is_raytracing()) {
-            add_param(block);
-        } else {
-            _args.push_back(const_cast<void *>(block.address));
+        add_block(block);
+    }
+
+    void add_block(const MemoryBlock &block) noexcept {
+        _blocks.push_back(block);
+    }
+
+    /// move exterior data of temporary variable to argument data
+    void move_argument_data() noexcept {
+        uint size = structure_size(_blocks);
+        _argument_data.resize(size);
+        size_t offset = 0;
+        _args.clear();
+        auto head = reinterpret_cast<std::byte *>(_argument_data.data());
+        for (const MemoryBlock &block : _blocks) {
+            offset = mem_offset(offset, block.alignment);
+
+            oc_memcpy(head + offset,
+                      block.address, block.size);
+            if (!_function->is_raytracing()) {
+                _args.push_back(reinterpret_cast<void*>(head + offset));
+            }
+            offset += block.size;
         }
     }
 
-    void add_param(const MemoryBlock &block) noexcept {
-        _params.push_back(block);
-    }
+    [[nodiscard]] span<const std::byte> argument_data() const noexcept { return _argument_data; }
 
-    [[nodiscard]] span<const MemoryBlock> params() noexcept { return _params; }
+    [[nodiscard]] span<const MemoryBlock> blocks() noexcept { return _blocks; }
 
     template<typename T>
     ArgumentList &operator<<(T &&arg) {
@@ -186,6 +203,7 @@ public:
         for (const auto &var : _function->captured_resources()) {
             argument_list->push_memory_block(var.block());
         }
+        argument_list->move_argument_data();
         ShaderInvoke shader_invoke{handle(), ocarina::move(argument_list)};
         return shader_invoke;
     }

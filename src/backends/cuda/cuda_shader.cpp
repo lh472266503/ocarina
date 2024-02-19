@@ -102,26 +102,26 @@ public:
         OptixModuleCompileOptions module_compile_options = {};
         // TODO: REVIEW THIS
         module_compile_options.maxRegisterCount = OPTIX_COMPILE_DEFAULT_MAX_REGISTER_COUNT;
-//#ifndef NDEBUG
-//        module_compile_options.optLevel = OPTIX_COMPILE_OPTIMIZATION_LEVEL_0;
+        //#ifndef NDEBUG
+        //        module_compile_options.optLevel = OPTIX_COMPILE_OPTIMIZATION_LEVEL_0;
         module_compile_options.debugLevel = OPTIX_COMPILE_DEBUG_LEVEL_LINEINFO;
-//#else
+        //#else
         module_compile_options.optLevel = OPTIX_COMPILE_OPTIMIZATION_LEVEL_3;
-//        module_compile_options.debugLevel = OPTIX_COMPILE_DEBUG_LEVEL_NONE;
-//#endif
+        //        module_compile_options.debugLevel = OPTIX_COMPILE_DEBUG_LEVEL_NONE;
+        //#endif
         _pipeline_compile_options.traversableGraphFlags = OPTIX_TRAVERSABLE_GRAPH_FLAG_ALLOW_SINGLE_LEVEL_INSTANCING;
         _pipeline_compile_options.usesMotionBlur = false;
         _pipeline_compile_options.numPayloadValues = 4;
         _pipeline_compile_options.usesPrimitiveTypeFlags = OPTIX_PRIMITIVE_TYPE_FLAGS_TRIANGLE;
-//        _pipeline_compile_options.numAttributeValues = 2;
+        //        _pipeline_compile_options.numAttributeValues = 2;
 
-//#ifndef NDEBUG
-//        _pipeline_compile_options.exceptionFlags = (OPTIX_EXCEPTION_FLAG_STACK_OVERFLOW |
-//                                                    OPTIX_EXCEPTION_FLAG_TRACE_DEPTH |
-//                                                    OPTIX_EXCEPTION_FLAG_DEBUG);
-//#else
+        //#ifndef NDEBUG
+        //        _pipeline_compile_options.exceptionFlags = (OPTIX_EXCEPTION_FLAG_STACK_OVERFLOW |
+        //                                                    OPTIX_EXCEPTION_FLAG_TRACE_DEPTH |
+        //                                                    OPTIX_EXCEPTION_FLAG_DEBUG);
+        //#else
         _pipeline_compile_options.exceptionFlags = OPTIX_EXCEPTION_FLAG_NONE;
-//#endif
+        //#endif
         _pipeline_compile_options.pipelineLaunchParamsVariableName = "params";
         char log[2048];
         size_t log_size = sizeof(log);
@@ -291,11 +291,10 @@ public:
         uint z = dim.z;
         auto cu_stream = reinterpret_cast<CUstream>(stream);
         size_t total_size = cmd->params_size();
-        span<const MemoryBlock> blocks = cmd->params();
         if (!_params.valid() || _params.size() < total_size) {
 
             OC_CU_CHECK(cuMemFreeAsync(_params.handle(), cu_stream));
-            OC_CU_CHECK(cuMemAllocAsync(reinterpret_cast<CUdeviceptr*>(_params.handle_ptr()), total_size, cu_stream));
+            OC_CU_CHECK(cuMemAllocAsync(reinterpret_cast<CUdeviceptr *>(_params.handle_ptr()), total_size, cu_stream));
 
             std::function<void()> func = [this, total_size]() {
                 _params.set_size(total_size);
@@ -310,22 +309,15 @@ public:
                 },
                 ptr));
             OC_CU_CHECK(cuStreamSynchronize(cu_stream));
-
         }
-
-        size_t offset = 0;
-        vector<std::byte> host{_params.size()};
-        for (const MemoryBlock &block : blocks) {
-            offset = mem_offset(offset, block.alignment);
-            oc_memcpy(reinterpret_cast<std::byte*>(host.data()) + offset, block.address, block.size);
-            offset += block.size;
-        }
-        OC_CU_CHECK(cuMemcpyHtoDAsync(_params.handle(), host.data(), host.size(), cu_stream));
+        auto arguments = cmd->argument_data();
+        OC_CU_CHECK(cuMemcpyHtoDAsync(_params.handle(), arguments.data(),
+                                      arguments.size(), cu_stream));
 
         OC_OPTIX_CHECK(optixLaunch(_optix_pipeline,
                                    cu_stream,
                                    _params.handle(),
-                                   offset,
+                                   arguments.size(),
                                    &_sbt,
                                    x, y, z));
     }

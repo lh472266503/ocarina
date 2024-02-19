@@ -20,12 +20,12 @@ span<void *> ShaderDispatchCommand::args() noexcept {
     return _argument_list->ptr();
 }
 
-span<const MemoryBlock> ShaderDispatchCommand::params() noexcept {
-    return _argument_list->params();
+span<const std::byte> ShaderDispatchCommand::argument_data() noexcept {
+    return _argument_list->argument_data();
 }
 
 size_t ShaderDispatchCommand::params_size() noexcept {
-    return structure_size(params());
+    return structure_size(_argument_list->blocks());
 }
 
 }// namespace ocarina
