@@ -684,7 +684,7 @@ struct Computable<BindlessArray> {
 public:
     template<typename T, typename Index>
     requires concepts::integral<expr_value_t<Index>>
-    [[nodiscard]] BindlessArrayBuffer<T> buffer(Index index, const string &desc = "",
+    [[nodiscard]] BindlessArrayBuffer<T> buffer_var(Index index, const string &desc = "",
                                                 uint buffer_num = 0) const noexcept {
         if (buffer_num != 0) {
             if constexpr (is_integral_v<Index>) {

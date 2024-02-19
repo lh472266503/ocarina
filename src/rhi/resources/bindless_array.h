@@ -93,8 +93,8 @@ public:
 
     template<typename T, typename Index>
     requires is_integral_expr_v<Index>
-    [[nodiscard]] BindlessArrayBuffer<T> buffer(Index &&index) const noexcept {
-        return make_expr<BindlessArray>(expression()).buffer<T>(OC_FORWARD(index), typeid(*this).name(), buffer_num());
+    [[nodiscard]] BindlessArrayBuffer<T> buffer_var(Index &&index) const noexcept {
+        return make_expr<BindlessArray>(expression()).buffer_var<T>(OC_FORWARD(index), typeid(*this).name(), buffer_num());
     }
 
     template<typename Index>

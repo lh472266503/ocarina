@@ -38,7 +38,7 @@ protected:
     OC_NODISCARD auto _read(Index &&index) const noexcept {
         Uint buffer_index = *_index;
         Uint access_index = OC_FORWARD(index);
-        return _bindless_array->buffer<T>(buffer_index).read(access_index);
+        return _bindless_array->buffer_var<T>(buffer_index).read(access_index);
     }
 };
 
@@ -84,7 +84,7 @@ public:
         if (!has_registered()) {
             Super::write(OC_FORWARD(index), OC_FORWARD(elm));
         } else {
-            _bindless_array->buffer<T>(*_index).write(OC_FORWARD(index), OC_FORWARD(elm));
+            _bindless_array->buffer_var<T>(*_index).write(OC_FORWARD(index), OC_FORWARD(elm));
         }
     }
 };
@@ -145,7 +145,7 @@ public:
         if (!has_registered()) {
             Super::write(OC_FORWARD(index), OC_FORWARD(elm));
         } else {
-            _bindless_array->buffer<T>(*_index).write(OC_FORWARD(index), OC_FORWARD(elm));
+            _bindless_array->buffer_var<T>(*_index).write(OC_FORWARD(index), OC_FORWARD(elm));
         }
     }
 };
