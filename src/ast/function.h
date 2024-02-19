@@ -301,5 +301,4 @@ public:
     [[nodiscard]] constexpr const Type *return_type() const noexcept { return _ret; }
     constexpr void set_raytracing(bool val) const noexcept { _raytracing = val; }
 };
-
 }// namespace ocarina

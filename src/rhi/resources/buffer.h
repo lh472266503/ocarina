@@ -24,6 +24,7 @@ private:
     size_t _total_size{};
 
 public:
+    BufferView() = default;
     BufferView(const Buffer<T, Dims...> &buffer);
     [[nodiscard]] handle_ty handle() const { return _handle; }
     [[nodiscard]] size_t size() const { return _size; }
