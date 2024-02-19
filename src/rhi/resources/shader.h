@@ -155,6 +155,7 @@ public:
     [[nodiscard]] ShaderDispatchCommand *dispatch(uint x, uint y = 1, uint z = 1) const noexcept {
         if (!function().is_raytracing()) {
             *_argument_list << make_uint3(x, y, z);
+            _argument_list->move_argument_data();
         }
         return ShaderDispatchCommand::create(_shader_entry, _argument_list, make_uint3(x, y, z));
     }
