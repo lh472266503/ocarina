@@ -92,8 +92,8 @@ void test_compute_shader(Device &device, Stream &stream) {
         $info("vert from capture {} {} {}", vert.read(dispatch_id()));
 
         vert.write(dispatch_id(), vert.read(dispatch_id()));
-        $info("vert from capture resource array {} {} {}", bindless_array.buffer<float3>(0).read(Var(10000)));
-        $info("vert from ra {} {} {}", ra.buffer<float3>(v_idx).read(dispatch_id()));
+        $info("vert from capture resource array {} {} {}", bindless_array.buffer_var<float3>(0).read(Var(10000)));
+        $info("vert from ra {} {} {}", ra.buffer_var<float3>(v_idx).read(dispatch_id()));
 
         $switch(dispatch_id()) {
             $case(1) {
@@ -138,7 +138,7 @@ void test_compute_shader(Device &device, Stream &stream) {
             Float f = 2.f;
             Float a = 6.f;
             $warn_with_location("this thread idx is in debug range {} {} {},  f * a = {} ",
-                                vert.read(dispatch_id()), ra.buffer<Triple>(t_idx).size_in_byte() / 12);
+                                vert.read(dispatch_id()), ra.buffer_var<Triple>(t_idx).size_in_byte() / 12);
         };
     };
     Triple triple1{1, 2, 3};

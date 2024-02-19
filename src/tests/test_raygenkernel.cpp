@@ -190,8 +190,8 @@ int main(int argc, char *argv[]) {
         //        Var<Ray> r = make_ray(Var(float3(0, 0.1, -5)), float3(1.6f, 0, 1));
         //        Var hit = accel.trace_closest(r);
 //        Var t = t_buffer.read(0);
-//        Int3 f = make_int3(ba.byte_buffer(index).read<float>(19 * 4).cast<int>(), 6, 9);
-//        auto arr = bindless_array.byte_buffer(index).read_dynamic_array<float>(3, 19 * 4);
+//        Int3 f = make_int3(ba.byte_buffer_var(index).read<float>(19 * 4).cast<int>(), 6, 9);
+//        auto arr = bindless_array.byte_buffer_var(index).read_dynamic_array<float>(3, 19 * 4);
 //        Env::printer().warn_with_location("{} {} {}, {} {} ,{} {} {}", f, arr.sub(1, 3).as_vec2(), t.i.cast<float>() + 2.4f, t.j, t.k);
 
         DynamicArray<float> p{3};
