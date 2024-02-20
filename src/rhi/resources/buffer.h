@@ -332,6 +332,6 @@ public:
 
 template<typename T, int... dims>
 BufferView<T, dims...>::BufferView(const Buffer<T, dims...> &buffer)
-    : BufferView(buffer.handle(), buffer.size()), _element_size(buffer.element_size()) {}
+    : BufferView(buffer.handle(), buffer.size()) {}
 
 }// namespace ocarina
