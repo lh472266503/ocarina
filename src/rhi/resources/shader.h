@@ -102,7 +102,7 @@ public:
     /// move exterior data of temporary variable to argument data
     void move_argument_data() noexcept {
         uint size = structure_size(_blocks);
-        size = mem_offset(size, alignof(uint3));
+        size = mem_offset(size, alignof(uint3)) + sizeof(uint3);
         _argument_data.resize(size);
         size_t offset = 0;
         _args.clear();
