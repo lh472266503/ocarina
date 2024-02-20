@@ -55,6 +55,7 @@ protected:
     virtual void _emit_raytracing_param(const Function &f) noexcept {}
     virtual void _emit_function(const Function &f) noexcept;
     virtual void _emit_arguments(const Function &f) noexcept;
+    virtual void _emit_argument(const Variable &v) noexcept;
     virtual void _emit_body(const Function &f) noexcept;
     void _emit_comment(const string &content) noexcept override;
     virtual void _emit_local_var_define(const ScopeStmt *scope) noexcept;

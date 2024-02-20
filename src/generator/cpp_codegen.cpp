@@ -465,15 +465,19 @@ void CppCodegen::_emit_comment(const std::string &content) noexcept {
     current_scratch() << "/* " << content << " */";
 }
 
+void CppCodegen::_emit_argument(const ocarina::Variable &v) noexcept {
+    _emit_variable_define(v);
+    current_scratch() << ",";
+    _emit_newline();
+}
+
 void CppCodegen::_emit_arguments(const Function &f) noexcept {
     current_scratch() << "(";
     for (const auto &v : f.arguments()) {
-        _emit_variable_define(v);
-        current_scratch() << ",";
+        _emit_argument(v);
     }
     for (const auto &var : f.captured_resources()) {
-        _emit_variable_define(var.expression()->variable());
-        current_scratch() << ",";
+        _emit_argument(var.expression()->variable());
     }
     if (f.is_kernel() && !f.is_raytracing()) {
         Variable dispatch_dim(Type::of<uint3>(), Variable::Tag::LOCAL, -1, "d_dim");
