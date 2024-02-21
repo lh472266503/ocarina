@@ -3,12 +3,7 @@
 template<class To, class From>
 [[nodiscard]] __device__ To bit_cast(const From &src) noexcept {
     static_assert(sizeof(To) == sizeof(From));
-    union {
-        From from;
-        To to;
-    } u;
-    u.from = src;
-    return u.to;
+    return *reinterpret_cast<const To *>(&src);
 }
 
 struct alignas(16) OCHit {

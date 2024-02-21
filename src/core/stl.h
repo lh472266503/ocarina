@@ -215,15 +215,7 @@ requires(sizeof(To) == sizeof(From) &&
          std::is_trivially_copyable_v<From> &&
          std::is_trivially_copyable_v<To>)
 [[nodiscard]] To bit_cast(const From &src) noexcept {
-    static_assert(std::is_trivially_constructible_v<To>,
-                  "This implementation requires the destination type to be trivially "
-                  "constructible");
-    union {
-        From from;
-        To to;
-    } u;
-    u.from = src;
-    return u.to;
+    return *reinterpret_cast<const To *>(&src);
 }
 
 inline size_t substr_count(string_view str, string_view target) noexcept {

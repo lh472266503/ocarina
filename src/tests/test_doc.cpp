@@ -107,6 +107,17 @@ void test_compute_shader(Device &device, Stream &stream) {
     uint v_idx = bindless_array.emplace(vert);
     uint t_idx = bindless_array.emplace(tri);
 
+    uint2 aaa;
+    float2 bbb = make_float2(10.f);
+
+    auto cc = std::is_trivially_copyable_v<float2>;
+
+    uint2 p = *reinterpret_cast<uint2 *>(&bbb);
+
+    uint pp = bit_cast<uint>(10.f);
+
+//    aaa = bit_cast<uint2>(bbb);
+
     /// upload buffer and texture handle to device memory
     stream << bindless_array->upload_buffer_handles(true) << synchronize();
     stream << bindless_array->upload_texture_handles(true) << synchronize();
@@ -115,64 +126,64 @@ void test_compute_shader(Device &device, Stream &stream) {
            << tri.upload(triangles.data());
 
     Kernel kernel = [&](Var<Triple> triple, BufferVar<Triple> triangle, Var<BindlessArray> ra) {
-        $info("triple   {} {} {}   {}", Var(uint64_t(-1)), 11.5f, triangle.size() - 13, Var(uint64_t(-1)));
+        $info("triple   {} {} {}   {} {}", Var(uint64_t(-1)), 11.5f, triangle.size() - 13, as<uint2>(make_float2(Float(10.f))));
 
         Var t = triangle.read(dispatch_id());
-
-        /// Note the usage and implementation of DSL struct member function, e.g sum()
-        $info("triple  index {} : i = {}, j = {}, k = {},  sum: {} ", dispatch_id(), t.i, t.j, t.k, t->sum());
-
-        $info("vert from capture {} {} {}", vert.read(dispatch_id()));
-
-        vert.write(dispatch_id(), vert.read(dispatch_id()));
-        $info("vert from capture resource array {} {} {}", bindless_array.buffer_var<float3>(0).read(Var(10000)));
-        $info("vert from ra {} {} {}", ra.buffer_var<float3>(v_idx).read(dispatch_id()));
-
-        $switch(dispatch_id()) {
-            $case(1) {
-                $info("dispatch_idx is {} {} {}", dispatch_idx());
-            };
-            $default {
-                $info("switch default  dispatch_idx is {} {} {}", dispatch_idx());
-            };
-        };
-
-        $if(dispatch_id() == 1) {
-            $info("if branch dispatch_idx is {} {} {}", dispatch_idx());
-        }
-        $elif(dispatch_id() == 2) {
-            $info("if else branch dispatch_idx is {} {} {}", dispatch_idx());
-        }
-        $else {
-            $info("else branch dispatch_idx is {} {} {}", dispatch_idx());
-        };
-
-        Uint count = 2;
-
-        $for(i, count) {
-            $info("count for statement dispatch_idx is {} {} {}, i = {} ", dispatch_idx(), i);
-        };
-
-        Uint begin = 2;
-        Uint end = 10;
-        $for(i, begin, end) {
-            $info("begin end for statement dispatch_idx is {} {} {}, i = {} ", dispatch_idx(), i);
-        };
-
-        Uint step = 2;
-
-        $for(i, begin, end, step) {
-            $info("begin end step for statement dispatch_idx is {} {} {}, i = {} ", dispatch_idx(), i);
-        };
-
-        $debug_if(dispatch_id() == 0, "{} ", step);
-        /// execute if thread idx in debug range
-        $condition_execute {
-            Float f = 2.f;
-            Float a = 6.f;
-            $warn_with_location("this thread idx is in debug range {} {} {},  f * a = {} ",
-                                vert.read(dispatch_id()), ra.buffer_var<Triple>(t_idx).size_in_byte() / 12);
-        };
+//
+//        /// Note the usage and implementation of DSL struct member function, e.g sum()
+//        $info("triple  index {} : i = {}, j = {}, k = {},  sum: {} ", dispatch_id(), t.i, t.j, t.k, t->sum());
+//
+//        $info("vert from capture {} {} {}", vert.read(dispatch_id()));
+//
+//        vert.write(dispatch_id(), vert.read(dispatch_id()));
+//        $info("vert from capture resource array {} {} {}", bindless_array.buffer_var<float3>(0).read(Var(10000)));
+//        $info("vert from ra {} {} {}", ra.buffer_var<float3>(v_idx).read(dispatch_id()));
+//
+//        $switch(dispatch_id()) {
+//            $case(1) {
+//                $info("dispatch_idx is {} {} {}", dispatch_idx());
+//            };
+//            $default {
+//                $info("switch default  dispatch_idx is {} {} {}", dispatch_idx());
+//            };
+//        };
+//
+//        $if(dispatch_id() == 1) {
+//            $info("if branch dispatch_idx is {} {} {}", dispatch_idx());
+//        }
+//        $elif(dispatch_id() == 2) {
+//            $info("if else branch dispatch_idx is {} {} {}", dispatch_idx());
+//        }
+//        $else {
+//            $info("else branch dispatch_idx is {} {} {}", dispatch_idx());
+//        };
+//
+//        Uint count = 2;
+//
+//        $for(i, count) {
+//            $info("count for statement dispatch_idx is {} {} {}, i = {} ", dispatch_idx(), i);
+//        };
+//
+//        Uint begin = 2;
+//        Uint end = 10;
+//        $for(i, begin, end) {
+//            $info("begin end for statement dispatch_idx is {} {} {}, i = {} ", dispatch_idx(), i);
+//        };
+//
+//        Uint step = 2;
+//
+//        $for(i, begin, end, step) {
+//            $info("begin end step for statement dispatch_idx is {} {} {}, i = {} ", dispatch_idx(), i);
+//        };
+//
+//        $debug_if(dispatch_id() == 0, "{} ", step);
+//        /// execute if thread idx in debug range
+//        $condition_execute {
+//            Float f = 2.f;
+//            Float a = 6.f;
+//            $warn_with_location("this thread idx is in debug range {} {} {},  f * a = {} ",
+//                                vert.read(dispatch_id()), ra.buffer_var<Triple>(t_idx).size_in_byte() / 12);
+//        };
     };
     Triple triple1{1, 2, 3};
 

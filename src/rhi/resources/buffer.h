@@ -334,4 +334,8 @@ template<typename T, int... dims>
 BufferView<T, dims...>::BufferView(const Buffer<T, dims...> &buffer)
     : BufferView(buffer.handle(), buffer.size()) {}
 
+class ByteAddressBuffer : public RHIResource {
+    
+};
+
 }// namespace ocarina
