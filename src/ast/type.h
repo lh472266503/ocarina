@@ -278,14 +278,14 @@ struct SlotSOA {
     handle_ty tex_slot;
 };
 
-struct OCTexture {
+struct TextureProxy {
     handle_ty texture{};
     handle_ty surface{};
     PixelStorage pixel_storage{};
 };
 
 template<typename T>
-struct OCBuffer {
+struct BufferProxy {
     T *ptr{};
     uint size{};
 };

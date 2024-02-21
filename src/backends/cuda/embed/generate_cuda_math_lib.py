@@ -5,7 +5,7 @@ from os.path import realpath, dirname
 import os
 from posixpath import split
 
-scalar_types = ["int", "uint", "float", "bool", "uchar", "ushort", "ulong"]
+scalar_types = ["int", "uint", "float", "bool", "uchar", "ushort", "uint64t"]
 native_types = ["int", "unsigned int", "float", "bool", "unsigned char", "unsigned short", "unsigned long long"]
 vector_alignments = {2: 8, 3: 16, 4: 16}
 indent = "\t"
@@ -817,6 +817,7 @@ def main():
     define_make_vecs()
     define_make_matrix()
 
+    content += "\n "
     content += "\n "
 
     cuda_builtin = "cuda_device_builtin"

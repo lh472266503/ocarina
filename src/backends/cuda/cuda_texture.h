@@ -12,7 +12,7 @@ namespace ocarina {
 class CUDADevice;
 class CUDATexture : public Texture::Impl {
 private:
-    OCTexture _data;
+    TextureProxy _data;
     CUDADevice *_device{};
     uint3 _res{};
     CUarray _array_handle{};

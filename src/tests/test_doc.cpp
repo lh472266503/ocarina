@@ -27,6 +27,39 @@ OC_STRUCT(Triple, i, j, k){
 }
 ;
 
+struct CCC {
+    int ic;
+};
+
+struct AAA {
+    int a;
+    float b;
+    CCC c;
+};
+
+template<typename T>
+struct SOAView {
+    BufferVar<T> buffer_view;
+
+    template<typename Index>
+    [[nodiscard]] Var<T> read(Index &&index) noexcept {
+        return buffer_view.read(OC_FORWARD(index));
+    }
+};
+
+template<>
+struct SOAView<CCC> {
+    SOAView<int> ic;
+};
+
+template<>
+struct SOAView<AAA> {
+    SOAView<int> a;
+    SOAView<float> b;
+    SOAView<CCC> c;
+};
+
+
 struct TTT {
     Triple triple;
     int i{90};
@@ -82,7 +115,7 @@ void test_compute_shader(Device &device, Stream &stream) {
            << tri.upload(triangles.data());
 
     Kernel kernel = [&](Var<Triple> triple, BufferVar<Triple> triangle, Var<BindlessArray> ra) {
-        $info("triple   {} {} {}", triple.i, triple.j, triple.k);
+        $info("triple   {} {} {}", triple.i, triple.j, triangle.size());
 
         Var t = triangle.read(dispatch_id());
 
@@ -296,8 +329,8 @@ int main(int argc, char *argv[]) {
 
     /// create rtx file_manager if need
     device.init_rtx();
-    //        test_compute_shader(device, stream);
-    test_lambda(device, stream);
+            test_compute_shader(device, stream);
+//    test_lambda(device, stream);
 
     //    test_poly();
     return 0;

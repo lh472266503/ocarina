@@ -270,7 +270,7 @@ void TypeRegistry::parse_buffer(Type *type, ocarina::string_view desc) noexcept 
 
 void TypeRegistry::parse_texture(Type *type, ocarina::string_view desc) noexcept {
     type->_tag = Type::Tag::TEXTURE;
-    type->_alignment = alignof(OCTexture);
+    type->_alignment = alignof(TextureProxy);
 }
 
 void TypeRegistry::parse_accel(Type *type, ocarina::string_view desc) noexcept {

@@ -105,7 +105,7 @@ protected:
     size_t _element_size{0};
 
     /// just for construct memory block
-    mutable OCBuffer<T> _proxy{};
+    mutable BufferProxy<T> _proxy{};
 
 public:
     Buffer() : _element_size(calculate_size()) {}
