@@ -502,9 +502,9 @@ struct Computable<Buffer<T>>
     OC_COMPUTABLE_COMMON(Computable<Buffer<T>>)
 
 public:
-    template<typename int_type = uint>
+    template<typename int_type = uint64t>
     [[nodiscard]] auto size() const noexcept {
-        const CallExpr *expr = Function::current()->call_builtin(Type::of<uint>(), CallOp::BUFFER_SIZE, {expression()});
+        const CallExpr *expr = Function::current()->call_builtin(Type::of<int_type>(), CallOp::BUFFER_SIZE, {expression()});
         return eval<int_type>(expr);
     }
 };

@@ -115,7 +115,7 @@ void test_compute_shader(Device &device, Stream &stream) {
            << tri.upload(triangles.data());
 
     Kernel kernel = [&](Var<Triple> triple, BufferVar<Triple> triangle, Var<BindlessArray> ra) {
-        $info("triple   {} {} {}   {}", Var(uint64_t(-1)), 11.5f, triangle.size(), Var(uint64_t(-1)));
+        $info("triple   {} {} {}   {}", Var(uint64_t(-1)), 11.5f, triangle.size() - 13, Var(uint64_t(-1)));
 
         Var t = triangle.read(dispatch_id());
 

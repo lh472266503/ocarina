@@ -287,7 +287,7 @@ struct TextureProxy {
 template<typename T>
 struct BufferProxy {
     T *ptr{};
-    uint size{};
+    uint64_t size{};
 };
 
 struct TypeVisitor {
