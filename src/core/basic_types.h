@@ -19,7 +19,7 @@ struct valid_vector_impl : public std::disjunction<
                                std::is_same<T, char>,
                                std::is_same<T, short>,
                                std::is_same<T, ushort>,
-                               std::is_same<T, ulong>,
+                               std::is_same<T, uint64t>,
                                std::is_same<T, uchar>,
                                std::is_same<T, uint>> {};
 
@@ -82,7 +82,7 @@ OC_MAKE_VECTOR_TYPES(short)
 OC_MAKE_VECTOR_TYPES(ushort)
 OC_MAKE_VECTOR_TYPES(uchar)
 OC_MAKE_VECTOR_TYPES(uint)
-OC_MAKE_VECTOR_TYPES(ulong)
+OC_MAKE_VECTOR_TYPES(uint64t)
 
 #undef OC_MAKE_VECTOR_TYPES
 
@@ -144,10 +144,10 @@ using float3x3 = Matrix<3>;
 using float4x4 = Matrix<4>;
 
 using basic_types = ocarina::tuple<
-    bool, float, int, uint, ulong,
-    bool2, float2, int2, uint2, ulong2,
-    bool3, float3, int3, uint3, ulong3,
-    bool4, float4, int4, uint4, ulong4,
+    bool, float, int, uint, uint64t,
+    bool2, float2, int2, uint2, uint64t2,
+    bool3, float3, int3, uint3, uint64t3,
+    bool4, float4, int4, uint4, uint64t4,
     float2x2, float3x3, float4x4>;
 
 namespace detail {

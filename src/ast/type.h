@@ -305,6 +305,7 @@ public:
         CHAR,
         SHORT,
         USHORT,
+        UINT64T,
 
         VECTOR,
         MATRIX,

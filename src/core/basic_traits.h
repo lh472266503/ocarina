@@ -34,7 +34,7 @@ to_underlying(T e) noexcept {
 }
 
 using uint = uint32_t;
-using ulong = uint64_t;
+using uint64t = uint64_t;
 using uchar = unsigned char;
 using ushort = unsigned short;
 
@@ -75,7 +75,7 @@ constexpr auto is_signed_v = is_signed<T>::value;
 
 template<typename T>
 using is_unsigned = std::disjunction<std::is_same<std::remove_cvref_t<T>, uint>,
-                                     std::is_same<std::remove_cvref_t<T>, ulong>>;
+                                     std::is_same<std::remove_cvref_t<T>, uint64t>>;
 
 template<typename T>
 constexpr auto is_unsigned_v = is_unsigned<T>::value;
