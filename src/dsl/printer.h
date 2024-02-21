@@ -172,21 +172,25 @@ void Printer::_log(spdlog::level::level_enum level, const string &fmt, const Arg
     if (!_desc.empty()) {
         comment(_desc);
     }
-    comment("start log >>>>>>>>>> ");
-    constexpr auto count = (0u + ... + static_cast<uint>(is_dsl_v<Args>));
+
+    static constexpr array<uint, sizeof...(Args)> size_arr = {(is_dsl_v<Args> ? (sizeof(expr_value_t<Args>) / sizeof(uint)) : 0u)...};
+
+    static constexpr uint total_size = std::accumulate(size_arr.begin(), size_arr.end(), 0);
 
     uint last = static_cast<uint>(_buffer.device_buffer().size() - 1);
     Uint item_index = static_cast<uint>(_items.size());
 
+    comment("start log >>>>>>>>>> ");
     outline([&] {
-        Uint offset = _buffer.atomic(last).fetch_add(count + 1);
+        Uint offset = _buffer.atomic(last).fetch_add(total_size + 1);
         if_(offset < last, [&] {
             _buffer.write(offset, item_index, false);
         });
-        if_(offset + count < last, [&] {
+        if_(offset + total_size < last, [&] {
             _log_to_buffer(offset + 1, 0, OC_FORWARD(args)...);
         });
-    }, "log output");
+    },
+            "log output");
     comment("end log <<<<<<<<<<");
     _desc = "";
 
@@ -224,7 +228,7 @@ void Printer::_log(spdlog::level::level_enum level, const string &fmt, const Arg
             _logger.log(level, content);
         }
     };
-    _items.push_back({decode, count});
+    _items.push_back({decode, total_size});
 }
 
 }// namespace ocarina
