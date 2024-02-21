@@ -115,7 +115,7 @@ void test_compute_shader(Device &device, Stream &stream) {
            << tri.upload(triangles.data());
 
     Kernel kernel = [&](Var<Triple> triple, BufferVar<Triple> triangle, Var<BindlessArray> ra) {
-        $info("triple   {} {} {}", triple.i, 1.f, triangle.size());
+        $info("triple   {} {} {}   {}", Var(uint64_t(-1)), 11.5f, triangle.size(), Var(uint64_t(-1)));
 
         Var t = triangle.read(dispatch_id());
 
@@ -181,7 +181,7 @@ void test_compute_shader(Device &device, Stream &stream) {
     Env::debugger().set_upper(make_uint2(1));
     auto shader = device.compile(kernel, "test desc");
     stream << Env::debugger().upload();
-    stream << shader(triple1, tri, bindless_array).dispatch(1)
+    stream << shader(triple1, tri, bindless_array).dispatch(2)
            /// explict retrieve log
            << Env::printer().retrieve()
            << synchronize() << commit();

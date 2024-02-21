@@ -142,7 +142,13 @@ template<typename Current, typename... Args>
 void Printer::_log_to_buffer(Uint offset, uint index, const Current &cur, const Args &...args) noexcept {
     using type = expr_value_t<Current>;
     if constexpr (is_dsl_v<Current>) {
-        if constexpr (is_integral_v<type> || is_boolean_v<type>) {
+        if constexpr (std::is_same_v<uint64_t, type>) {
+            Uint high_bits = cur >> 32;
+            Uint low_bits = cur & 0xFFFFFFFF;
+            _buffer.write(offset + index, high_bits, false);
+            index ++;
+            _buffer.write(offset + index, low_bits, false);
+        } else if constexpr (is_integral_v<type> || is_boolean_v<type>) {
             _buffer.write(offset + index, cast<uint>(cur), false);
         } else if constexpr (is_floating_point_v<type>) {
             _buffer.write(offset + index, as<uint>(cur), false);
@@ -157,7 +163,7 @@ void Printer::_log_to_buffer(Uint offset, uint index, const Current &cur, const 
 template<typename... Args>
 void Printer::_logs(spdlog::level::level_enum level, const string &fmt, const Args &...args) noexcept {
     auto args_tuple = detail::args_to_tuple(args...);
-    auto func = [&]<size_t... i>(std::index_sequence<i...> a) {
+    auto func = [&]<size_t... i>(std::index_sequence<i...>) {
         _log(level, fmt, std::get<i>(args_tuple)...);
     };
     func(std::make_index_sequence<std::tuple_size_v<decltype(args_tuple)>>());
@@ -175,7 +181,7 @@ void Printer::_log(spdlog::level::level_enum level, const string &fmt, const Arg
 
     constexpr array<uint, sizeof...(Args)> size_arr = {(is_dsl_v<Args> ? (sizeof(expr_value_t<Args>) / sizeof(uint)) : 0u)...};
 
-    static constexpr uint total_size = std::accumulate(size_arr.begin(), size_arr.end(), 0);
+    constexpr uint total_size = std::accumulate(size_arr.begin(), size_arr.end(), 0);
 
     uint last = static_cast<uint>(_buffer.device_buffer().size() - 1);
     Uint item_index = static_cast<uint>(_items.size());
@@ -208,16 +214,23 @@ void Printer::_log(spdlog::level::level_enum level, const string &fmt, const Arg
             return arg;
         }
     };
-    auto tuple_arg = std::tuple{convert(args)...};
 
-    auto decode = [this, level, fmt, tuple_args = std::tuple{convert(args)...}](const uint *data, const OutputFunc &func) {
+    auto tuple_args = std::tuple{convert(args)...};
+
+    auto decode = [this, level, fmt, tuple_args = tuple_args](const uint *data, const OutputFunc &func) {
         auto decode_arg = [tuple_args, data]<size_t i>() noexcept {
             using Arg = std::tuple_element_t<i, std::tuple<Args...>>;
+            using type = expr_value_t<Arg>;
             if constexpr (is_dsl_v<Arg>) {
-                if constexpr (is_integral_v<Arg> || is_boolean_v<Arg>) {
-                    return static_cast<expr_value_t<Arg>>(data[std::get<i>(tuple_args)]);
+                if constexpr (std::is_same_v<uint64_t, type>) {
+                    uint high_bits = static_cast<uint>(data[std::get<i>(tuple_args)]);
+                    uint low_bits = static_cast<uint>(data[std::get<i>(tuple_args) + 1]);
+                    uint64_t recombined = (static_cast<uint64_t>(high_bits) << 32) | low_bits;
+                    return recombined;
+                } else if constexpr (is_integral_v<type> || is_boolean_v<type>) {
+                    return static_cast<type>(data[std::get<i>(tuple_args)]);
                 } else {
-                    return bit_cast<expr_value_t<Arg>>(data[std::get<i>(tuple_args)]);
+                    return bit_cast<type>(data[std::get<i>(tuple_args)]);
                 }
             } else {
                 return std::get<i>(tuple_args);
