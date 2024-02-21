@@ -147,7 +147,7 @@ VISION_DEFINE_BOX(int64_t, l);
 template<EPort p = D>
 [[nodiscard]] oc_bool<p> in_screen(const oc_int2<p> &pixel,
                                    const oc_int2<p> &res) noexcept {
-    return 0 <= pixel.x && pixel.x < res.x && 0 <= pixel.y && pixel.y < res.y;
+    return all(pixel >= 0) && all(pixel < res);
 }
 
 }
