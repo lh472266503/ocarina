@@ -173,7 +173,7 @@ void Printer::_log(spdlog::level::level_enum level, const string &fmt, const Arg
         comment(_desc);
     }
 
-    static constexpr array<uint, sizeof...(Args)> size_arr = {(is_dsl_v<Args> ? (sizeof(expr_value_t<Args>) / sizeof(uint)) : 0u)...};
+    constexpr array<uint, sizeof...(Args)> size_arr = {(is_dsl_v<Args> ? (sizeof(expr_value_t<Args>) / sizeof(uint)) : 0u)...};
 
     static constexpr uint total_size = std::accumulate(size_arr.begin(), size_arr.end(), 0);
 
@@ -194,16 +194,21 @@ void Printer::_log(spdlog::level::level_enum level, const string &fmt, const Arg
     comment("end log <<<<<<<<<<");
     _desc = "";
 
-    uint dsl_counter = 0;
+    uint offset = 0;
+    uint cursor = 0;
     // todo change to index_sequence
     auto convert = [&](const auto &arg) noexcept {
         using T = std::remove_cvref_t<decltype(arg)>;
+        uint old_cursor = cursor ++;
         if constexpr (is_dsl_v<T>) {
-            return dsl_counter++;
+            uint old_offset = offset;
+            offset += size_arr[old_cursor];
+            return old_offset;
         } else {
             return arg;
         }
     };
+    auto tuple_arg = std::tuple{convert(args)...};
 
     auto decode = [this, level, fmt, tuple_args = std::tuple{convert(args)...}](const uint *data, const OutputFunc &func) {
         auto decode_arg = [tuple_args, data]<size_t i>() noexcept {
