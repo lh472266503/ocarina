@@ -138,7 +138,7 @@ struct EnableReadAndWrite {
     }
 
     template<typename Index, typename Val>
-    requires is_all_integral_expr_v<Index> &&
+    requires is_integral_expr_v<Index> &&
              concepts::is_same_v<element_type, expr_value_t<Val>>
     void write_and_check(Index &&index, Val &&elm, uint size, const string &desc) {
         if constexpr (is_integral_v<Index>) {
@@ -148,6 +148,32 @@ struct EnableReadAndWrite {
             index = correct_index(OC_FORWARD(index), size, desc, traceback_string(1));
             write(OC_FORWARD(index), OC_FORWARD(elm));
         }
+    }
+};
+
+template<typename T>
+struct EnableByteLoadAndStore {
+
+    [[nodiscard]] T *self() noexcept { return static_cast<const T *>(this); }
+    [[nodiscard]] const T *self() const noexcept { return static_cast<const T *>(this); }
+
+    template<typename Elm, uint N, typename Offset>
+    requires is_integral_expr_v<Offset>
+    [[nodiscard]] Var<Vector<Elm, N>> load(Offset &&offset) noexcept {
+        if constexpr (is_dsl_v<Offset>) {
+            offset = detail::correct_index(offset, self()->size(), typeid(*this).name(), traceback_string());
+        }
+        const CallExpr *expr = Function::current()->call_builtin(Type::of<Vector<Elm, N>>(),
+                                                                 CallOp::BYTE_BUFFER_READ,
+                                                                 {self()->expression(),
+                                                                  OC_EXPR(offset)});
+        return eval<Vector<Elm, N>>(expr);
+    }
+
+    template<typename Elm, uint N, typename Offset>
+    requires is_integral_expr_v<Offset>
+    void store(Offset &&offset, const Var<Vector<Elm, N>> &val) noexcept {
+
     }
 };
 
@@ -685,7 +711,7 @@ public:
     template<typename T, typename Index>
     requires concepts::integral<expr_value_t<Index>>
     [[nodiscard]] BindlessArrayBuffer<T> buffer_var(Index index, const string &desc = "",
-                                                uint buffer_num = 0) const noexcept {
+                                                    uint buffer_num = 0) const noexcept {
         if (buffer_num != 0) {
             if constexpr (is_integral_v<Index>) {
                 OC_ASSERT(index <= buffer_num);
@@ -699,7 +725,7 @@ public:
     template<typename Index>
     requires concepts::integral<expr_value_t<Index>>
     [[nodiscard]] BindlessArrayTexture tex_var(Index index, const string &desc = "",
-                                           uint tex_num = 0) const noexcept {
+                                               uint tex_num = 0) const noexcept {
         if (tex_num != 0) {
             if constexpr (is_integral_v<Index>) {
                 OC_ASSERT(index <= tex_num);
@@ -713,7 +739,7 @@ public:
     template<typename Index>
     requires concepts::integral<expr_value_t<Index>>
     [[nodiscard]] BindlessArrayByteBuffer byte_buffer_var(Index index, const string &desc = "",
-                                                      uint buffer_num = 0) const noexcept {
+                                                          uint buffer_num = 0) const noexcept {
         if (buffer_num != 0) {
             if constexpr (is_integral_v<Index>) {
                 OC_ASSERT(index <= buffer_num);
