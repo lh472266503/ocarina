@@ -90,6 +90,19 @@ public:
     }
 };
 
+
+class ByteBuffer : public RHIResource {
+private:
+    /// just for construct memory block
+    mutable BufferProxy<uchar> _proxy{};
+    size_t _size{};
+
+public:
+    ByteBuffer(Device::Impl *device, size_t size, const string &desc = "")
+        : RHIResource(device, Tag::BUFFER, device->create_buffer(size, desc)),
+          _size(size) {}
+};
+
 template<typename T = std::byte, int... Dims>
 class Buffer : public RHIResource {
     static_assert(is_valid_buffer_element_v<T>);
@@ -333,17 +346,5 @@ public:
 template<typename T, int... dims>
 BufferView<T, dims...>::BufferView(const Buffer<T, dims...> &buffer)
     : BufferView(buffer.handle(), buffer.size()) {}
-
-class ByteBuffer : public RHIResource {
-private:
-    /// just for construct memory block
-    mutable BufferProxy<uchar> _proxy{};
-    size_t _size{};
-
-public:
-    ByteBuffer(Device::Impl *device, size_t size, const string &desc = "")
-        : RHIResource(device, Tag::BUFFER, device->create_buffer(size, desc)),
-          _size(size) {}
-};
 
 }// namespace ocarina
