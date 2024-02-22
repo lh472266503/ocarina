@@ -273,7 +273,7 @@ struct BufferDesc {
     size_t size_in_byte;
 };
 
-struct SlotSOA {
+struct BindlessArrayProxy {
     handle_ty buffer_slot;
     handle_ty tex_slot;
 };

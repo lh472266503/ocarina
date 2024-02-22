@@ -366,6 +366,8 @@ void CUDACodegen::_emit_type_name(const Type *type) noexcept {
                 _emit_type_name(type->element());
                 current_scratch() << ">";
                 break;
+            case Type::Tag::BYTE_BUFFER:
+                current_scratch() << "OCBuffer<oc_uchar>";
             case Type::Tag::TEXTURE:
                 current_scratch() << "OCTexture";
                 break;

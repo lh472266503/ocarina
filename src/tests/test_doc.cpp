@@ -114,6 +114,8 @@ void test_compute_shader(Device &device, Stream &stream) {
 
     uint2 p = *reinterpret_cast<uint2 *>(&bbb);
 
+    auto type = Type::of<ByteBuffer>();
+
     uint pp = bit_cast<uint>(10.f);
 
 //    aaa = bit_cast<uint2>(bbb);

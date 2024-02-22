@@ -17,10 +17,11 @@ public:
     static constexpr size_t size(Type::Tag tag) {
         using Tag = Type::Tag;
         switch (tag) {
-            case Tag::BUFFER: return sizeof(BufferProxy<void>);
+            case Tag::BUFFER: return sizeof(BufferProxy<char>);
+            case Tag::BYTE_BUFFER: return sizeof(BufferProxy<char>);
             case Tag::ACCEL: return sizeof(handle_ty);
             case Tag::TEXTURE: return sizeof(TextureProxy);
-            case Tag::BINDLESS_ARRAY: return sizeof(SlotSOA);
+            case Tag::BINDLESS_ARRAY: return sizeof(BindlessArrayProxy);
             default:
                 return 0;
         }
@@ -33,10 +34,11 @@ public:
     static constexpr size_t alignment(Type::Tag tag) {
         using Tag = Type::Tag;
         switch (tag) {
-            case Tag::BUFFER: return alignof(BufferProxy<void>);
+            case Tag::BUFFER: return alignof(BufferProxy<char>);
+            case Tag::BYTE_BUFFER: return alignof(BufferProxy<char>);
             case Tag::ACCEL: return alignof(handle_ty);
             case Tag::TEXTURE: return alignof(TextureProxy);
-            case Tag::BINDLESS_ARRAY: return alignof(SlotSOA);
+            case Tag::BINDLESS_ARRAY: return alignof(BindlessArrayProxy);
             default:
                 return 0;
         }

@@ -166,7 +166,7 @@ struct TypeDesc<Buffer<T, Dims...>> {
 template<>
 struct TypeDesc<ByteBuffer> {
     static ocarina::string_view description() noexcept {
-        return "buffer<uchar>";
+        return "bytebuffer";
     }
     static ocarina::string_view name() noexcept {
         return description();
@@ -349,6 +349,7 @@ private:
     void parse_buffer(Type *type, ocarina::string_view desc) noexcept;
     void parse_texture(Type *type, ocarina::string_view desc) noexcept;
     void parse_accel(Type *type, ocarina::string_view desc) noexcept;
+    void parse_byte_buffer(Type *type, ocarina::string_view desc) noexcept;
     void parse_struct(Type *type, ocarina::string_view desc) noexcept;
     void parse_bindless_array(Type *type, ocarina::string_view desc) noexcept;
 

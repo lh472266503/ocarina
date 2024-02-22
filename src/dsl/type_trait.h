@@ -372,6 +372,8 @@ class BufferView;
 
 class ByteBuffer;
 
+class ByteBufferView;
+
 class Texture;
 class Accel;
 class BindlessArray;

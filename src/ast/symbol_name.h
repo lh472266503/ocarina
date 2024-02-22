@@ -57,6 +57,8 @@ template<typename T>
             return "b_idx";
         case Tag::BUFFER:
             return "b";
+        case Tag::BYTE_BUFFER:
+            return "bb";
         case Tag::TEXTURE:
             return "t";
         case Tag::ACCEL:

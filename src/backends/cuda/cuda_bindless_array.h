@@ -14,7 +14,7 @@ class CUDADevice;
 class CUDABindlessArray : public BindlessArray::Impl {
 
 private:
-    SlotSOA _slot_soa{};
+    BindlessArrayProxy _slot_soa{};
     CUDADevice *_device{};
     Managed<BufferDesc> _buffers;
     Managed<CUtexObject> _textures;
@@ -27,8 +27,8 @@ public:
         return &_slot_soa;
     }
     [[nodiscard]] size_t max_member_size() const noexcept override { return sizeof(CUdeviceptr); }
-    [[nodiscard]] size_t data_size() const noexcept override { return sizeof(SlotSOA); }
-    [[nodiscard]] size_t data_alignment() const noexcept override { return alignof(SlotSOA); }
+    [[nodiscard]] size_t data_size() const noexcept override { return sizeof(BindlessArrayProxy); }
+    [[nodiscard]] size_t data_alignment() const noexcept override { return alignof(BindlessArrayProxy); }
     void prepare_slotSOA(Device &device) noexcept override;
     [[nodiscard]] CommandList update_slotSOA(bool async) noexcept override;
 
