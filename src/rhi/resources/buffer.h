@@ -101,6 +101,29 @@ public:
     ByteBuffer(Device::Impl *device, size_t size, const string &desc = "")
         : RHIResource(device, Tag::BUFFER, device->create_buffer(size, desc)),
           _size(size) {}
+
+    void destroy() override {
+        _destroy();
+        _size = 0;
+    }
+
+    [[nodiscard]] const void *proxy_ptr() const noexcept {
+        _proxy.ptr = reinterpret_cast<uchar *>(_handle);
+        _proxy.size = _size;
+        return &_proxy;
+    }
+
+    [[nodiscard]] size_t data_alignment() const noexcept override {
+        return alignof(decltype(_proxy));
+    }
+
+    [[nodiscard]] size_t data_size() const noexcept override {
+        return sizeof(_proxy);
+    }
+
+    [[nodiscard]] MemoryBlock memory_block() const noexcept override {
+        return {proxy_ptr(), data_size(), data_alignment(), max_member_size()};
+    }
 };
 
 template<typename T = std::byte, int... Dims>
@@ -170,7 +193,7 @@ public:
 
     [[nodiscard]] const void *proxy_ptr() const noexcept {
         _proxy.ptr = reinterpret_cast<T *>(_handle);
-        _proxy.size = static_cast<uint>(_size);
+        _proxy.size = _size;
         return &_proxy;
     }
 

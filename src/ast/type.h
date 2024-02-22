@@ -314,6 +314,7 @@ public:
         STRUCTURE,
 
         BUFFER,
+        BYTE_BUFFER,
         TEXTURE,
         BINDLESS_ARRAY,
         ACCEL,
