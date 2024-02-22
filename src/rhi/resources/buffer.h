@@ -8,6 +8,7 @@
 #include "rhi/command.h"
 #include "rhi/stats.h"
 #include "bindless_array.h"
+#include "byte_buffer.h"
 
 namespace ocarina {
 
@@ -29,14 +30,14 @@ public:
     [[nodiscard]] handle_ty handle() const { return _handle; }
     [[nodiscard]] size_t size() const { return _size; }
     [[nodiscard]] size_t element_size() const noexcept { return _element_size; }
-    [[nodiscard]] size_t size_in_byte() const noexcept { return _size * _element_size; }
+    [[nodiscard]] size_t size_in_byte() const noexcept { return _size * element_size(); }
     BufferView(handle_ty handle, size_t offset, size_t size, size_t total_size)
         : _handle(handle), _offset(offset), _size(size), _total_size(total_size) {}
 
     BufferView(handle_ty handle, size_t total_size)
         : _handle(handle), _offset(0), _total_size(total_size), _size(total_size) {}
 
-    [[nodiscard]] handle_ty head() const { return _handle + _offset * _element_size; }
+    [[nodiscard]] handle_ty head() const { return _handle + _offset * element_size(); }
 
     [[nodiscard]] BufferView<T> subview(size_t offset, size_t size) const noexcept {
         return BufferView<T>(_handle, _offset + offset, size, _total_size);
@@ -45,19 +46,19 @@ public:
     template<typename Arg>
     requires is_buffer_or_view_v<Arg> && std::is_same_v<buffer_element_t<Arg>, T>
     [[nodiscard]] BufferCopyCommand *copy_from(const Arg &src, uint dst_offset = 0) noexcept {
-        return BufferCopyCommand::create(src.head(), head(), 0, dst_offset * _element_size,
+        return BufferCopyCommand::create(src.head(), head(), 0, dst_offset * element_size(),
                                          src.size_in_byte(), true);
     }
 
     template<typename Arg>
     requires is_buffer_or_view_v<Arg> && std::is_same_v<buffer_element_t<Arg>, T>
     [[nodiscard]] BufferCopyCommand *copy_to(Arg &dst, uint src_offset = 0) noexcept {
-        return BufferCopyCommand::create(head(), dst.head(), src_offset * _element_size,
+        return BufferCopyCommand::create(head(), dst.head(), src_offset * element_size(),
                                          0, dst.size_in_byte(), true);
     }
 
     [[nodiscard]] BufferUploadCommand *upload(const void *data, bool async = true) const noexcept {
-        return BufferUploadCommand::create(data, head(), _size * _element_size, async);
+        return BufferUploadCommand::create(data, head(), size_in_byte(), async);
     }
 
     [[nodiscard]] BufferUploadCommand *upload_sync(const void *data) const noexcept {
@@ -65,7 +66,7 @@ public:
     }
 
     [[nodiscard]] BufferDownloadCommand *download(void *data, uint src_offset = 0, bool async = true) const noexcept {
-        return BufferDownloadCommand::create(data, head() + src_offset * _element_size,
+        return BufferDownloadCommand::create(data, head() + src_offset * element_size(),
                                              size_in_byte(), async);
     }
 
@@ -77,54 +78,11 @@ public:
         return BufferByteSetCommand::create(head(), size_in_byte(), value, async);
     }
 
-    [[nodiscard]] BufferByteSetCommand *byte_set_sync(uchar value) const noexcept {
-        return byte_set(value, false);
-    }
-
     [[nodiscard]] BufferByteSetCommand *reset(bool async = true) const noexcept {
         return byte_set(0, async);
     }
-
-    [[nodiscard]] BufferByteSetCommand *reset_sync() const noexcept {
-        return byte_set_sync(0);
-    }
 };
 
-
-class ByteBuffer : public RHIResource {
-private:
-    /// just for construct memory block
-    mutable BufferProxy<uchar> _proxy{};
-    size_t _size{};
-
-public:
-    ByteBuffer(Device::Impl *device, size_t size, const string &desc = "")
-        : RHIResource(device, Tag::BUFFER, device->create_buffer(size, desc)),
-          _size(size) {}
-
-    void destroy() override {
-        _destroy();
-        _size = 0;
-    }
-
-    [[nodiscard]] const void *proxy_ptr() const noexcept {
-        _proxy.ptr = reinterpret_cast<uchar *>(_handle);
-        _proxy.size = _size;
-        return &_proxy;
-    }
-
-    [[nodiscard]] size_t data_alignment() const noexcept override {
-        return alignof(decltype(_proxy));
-    }
-
-    [[nodiscard]] size_t data_size() const noexcept override {
-        return sizeof(_proxy);
-    }
-
-    [[nodiscard]] MemoryBlock memory_block() const noexcept override {
-        return {proxy_ptr(), data_size(), data_alignment(), max_member_size()};
-    }
-};
 
 template<typename T = std::byte, int... Dims>
 class Buffer : public RHIResource {
@@ -229,7 +187,7 @@ public:
 
     template<typename U = void *>
     [[nodiscard]] auto address(size_t offset) const noexcept {
-        return (U)(handle() + offset * _element_size);
+        return (U)(handle() + offset * element_size());
     }
 
     void set_size(size_t size) noexcept { _size = size; }
@@ -291,7 +249,7 @@ public:
     [[nodiscard]] size_t size_in_byte() const noexcept { return _size * sizeof(T); }
 
     [[nodiscard]] CommandList reallocate(size_t size, bool async = true) {
-        return {BufferReallocateCommand::create(this, size * _element_size, async),
+        return {BufferReallocateCommand::create(this, size * element_size(), async),
                 HostFunctionCommand::create([this, size] {
                     this->_size = size;
                 },
@@ -313,20 +271,13 @@ public:
         return view(0, _size).download(OC_FORWARD(args)...);
     }
 
-    [[nodiscard]] BufferByteSetCommand *byte_set(uchar value) const noexcept {
-        return view(0, _size).byte_set(value);
+    template<typename... Args>
+    [[nodiscard]] BufferByteSetCommand *byte_set(Args &&...args) const noexcept {
+        return view(0, _size).byte_set(OC_FORWARD(args)...);
     }
 
-    [[nodiscard]] BufferByteSetCommand *byte_set_sync(uchar value) const noexcept {
-        return view(0, _size).byte_set_sync(value);
-    }
-
-    [[nodiscard]] BufferByteSetCommand *reset() const noexcept {
-        return byte_set(0);
-    }
-
-    [[nodiscard]] BufferByteSetCommand *reset_sync() const noexcept {
-        return byte_set_sync(0);
+    [[nodiscard]] BufferByteSetCommand *reset(bool async = true) const noexcept {
+        return byte_set(0, async);
     }
 
     template<typename... Args>
@@ -362,7 +313,7 @@ public:
     }
 
     void reset_immediately() const noexcept {
-        reset_sync()->accept(*_device->command_visitor());
+        reset(false)->accept(*_device->command_visitor());
     }
 };
 
