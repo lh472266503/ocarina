@@ -173,7 +173,13 @@ struct EnableByteLoadAndStore {
     template<typename Elm, uint N, typename Offset>
     requires is_integral_expr_v<Offset>
     void store(Offset &&offset, const Var<Vector<Elm, N>> &val) noexcept {
-
+        if constexpr (is_dsl_v<Offset>) {
+            offset = detail::correct_index(offset, self()->size(), typeid(*this).name(), traceback_string());
+        }
+        const CallExpr *expr = Function::current()->call_builtin(nullptr, CallOp::BYTE_BUFFER_WRITE,
+                                                                 {self()->expression(),
+                                                                  OC_EXPR(offset), val});
+        Function::current()->expr_statement(expr);
     }
 };
 
@@ -634,7 +640,7 @@ public:
         if constexpr (is_dsl_v<Index>) {
             index = detail::correct_index(index, size(), typeid(*this).name(), traceback_string());
         }
-        const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::BINDLESS_ARRAY_BUFFER_WRITE,
+        const CallExpr *expr = Function::current()->call_builtin(nullptr, CallOp::BINDLESS_ARRAY_BUFFER_WRITE,
                                                                  {_bindless_array, _index, OC_EXPR(index), OC_EXPR(elm)});
         Function::current()->expr_statement(expr);
     }
