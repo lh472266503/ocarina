@@ -370,6 +370,8 @@ class Buffer;
 template<typename T, int... dims>
 class BufferView;
 
+class ByteBuffer;
+
 class Texture;
 class Accel;
 class BindlessArray;

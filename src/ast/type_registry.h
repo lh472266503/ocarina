@@ -164,6 +164,16 @@ struct TypeDesc<Buffer<T, Dims...>> {
 };
 
 template<>
+struct TypeDesc<ByteBuffer> {
+    static ocarina::string_view description() noexcept {
+        return "buffer<uchar>";
+    }
+    static ocarina::string_view name() noexcept {
+        return description();
+    }
+};
+
+template<>
 struct TypeDesc<Texture> {
     static ocarina::string_view description() noexcept {
         return "texture";
@@ -175,14 +185,15 @@ struct TypeDesc<Texture> {
 
 template<typename T>
 struct TypeDesc<Texture2D<T>> {
-    static ocarina::string_view description() noexcept {
-        return "texture2d";
+    static ocarina::string &description() noexcept {
+        static thread_local string str = ocarina::format("texture2d<{}>",
+                                                         TypeDesc<T>::description());
+        return str;
     }
     static ocarina::string_view name() noexcept {
         return description();
     }
 };
-
 
 template<>
 struct TypeDesc<Accel> {
