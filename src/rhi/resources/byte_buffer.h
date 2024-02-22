@@ -33,7 +33,7 @@ public:
     [[nodiscard]] size_t element_size() const noexcept { return 1; }
     [[nodiscard]] handle_ty head() const { return _handle + _offset * element_size(); }
 
-    [[nodiscard]] BufferCopyCommand *copy_from(const ByteBufferView &src,bool async = true,
+    [[nodiscard]] BufferCopyCommand *copy_from(const ByteBufferView &src, bool async = true,
                                                uint dst_offset = 0) noexcept {
         return BufferCopyCommand::create(src.head(), head(), 0, dst_offset * element_size(),
                                          src.size_in_byte(), true);
@@ -41,13 +41,14 @@ public:
 
     template<typename Arg>
     requires is_buffer_or_view_v<Arg>
-    [[nodiscard]] BufferCopyCommand *copy_to(Arg &dst, bool async = true,
-                                             uint src_offset = 0) noexcept {
+    [[nodiscard]] BufferCopyCommand *copy_to(Arg &dst, uint src_offset = 0,
+                                             bool async = true) noexcept {
         return BufferCopyCommand::create(head(), dst.head(), src_offset * element_size(),
                                          0, dst.size_in_byte(), true);
     }
 
-    [[nodiscard]] BufferDownloadCommand *download(void *data, uint src_offset = 0, bool async = true) const noexcept {
+    [[nodiscard]] BufferDownloadCommand *download(void *data, uint src_offset = 0,
+                                                  bool async = true) const noexcept {
         return BufferDownloadCommand::create(data, head() + src_offset * element_size(),
                                              size_in_byte(), async);
     }
@@ -105,6 +106,31 @@ public:
                                                                                                Variable::Tag::BUFFER,
                                                                                                memory_block());
         return captured_resource.expression();
+    }
+
+    [[nodiscard]] ByteBufferView view(size_t offset = 0, size_t size = 0) const noexcept {
+        size = size == 0 ? _size - offset : size;
+        return ByteBufferView(_handle, offset, size, _size);
+    }
+    template<typename... Args>
+    [[nodiscard]] BufferCopyCommand *copy_from(Args &&...args) const noexcept {
+        return view(0, _size).copy_from(OC_FORWARD(args)...);
+    }
+    template<typename... Args>
+    [[nodiscard]] BufferCopyCommand *download(Args &&...args) const noexcept {
+        return view(0, _size).download(OC_FORWARD(args)...);
+    }
+    template<typename... Args>
+    [[nodiscard]] BufferCopyCommand *upload(Args &&...args) const noexcept {
+        return view(0, _size).upload(OC_FORWARD(args)...);
+    }
+    template<typename... Args>
+    [[nodiscard]] BufferCopyCommand *byte_set(Args &&...args) const noexcept {
+        return view(0, _size).byte_set(OC_FORWARD(args)...);
+    }
+    template<typename... Args>
+    [[nodiscard]] BufferCopyCommand *reset(Args &&...args) const noexcept {
+        return view(0, _size).reset(OC_FORWARD(args)...);
     }
 };
 }// namespace ocarina
