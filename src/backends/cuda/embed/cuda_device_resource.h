@@ -30,6 +30,8 @@ struct OCBuffer {
     oc_uint64t size{};
     [[nodiscard]] const T &operator[](oc_uint64t index) const noexcept { return ptr[index]; }
     [[nodiscard]] T &operator[](oc_uint64t index) noexcept { return ptr[index]; }
+    [[nodiscard]] const T &operator[](oc_uint index) const noexcept { return ptr[index]; }
+    [[nodiscard]] T &operator[](oc_uint index) noexcept { return ptr[index]; }
 };
 
 template<typename T>
