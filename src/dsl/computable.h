@@ -311,13 +311,15 @@ public:
     }
 };
 
-template<typename T>
+template<typename TBuffer, typename Elm>
 struct BufferAsAtomicAddress {
     template<typename Index>
     requires is_integral_expr_v<Index>
-    [[nodiscard]] AtomicRef<T> atomic(Index &&index) noexcept {
-        static_assert(is_scalar_expr_v<T>);
-        return AtomicRef<T>(Function::current()->subscript(Type::of<T>(), static_cast<Computable<Buffer<T>> *>(this)->expression(), OC_EXPR(index)));
+    [[nodiscard]] AtomicRef<Elm> atomic(Index &&index) noexcept {
+        static_assert(is_scalar_expr_v<Elm>);
+        return AtomicRef<Elm>(Function::current()->subscript(Type::of<Elm>(),
+                                                             static_cast<TBuffer *>(this)->expression(),
+                                                             OC_EXPR(index)));
     }
 };
 
@@ -540,7 +542,7 @@ template<typename T>
 struct Computable<Buffer<T>>
     : detail::EnableReadAndWrite<Computable<Buffer<T>>>,
       detail::EnableSubscriptAccess<Computable<Buffer<T>>>,
-      detail::BufferAsAtomicAddress<T> {
+      detail::BufferAsAtomicAddress<Computable<Buffer<T>>, T> {
     OC_COMPUTABLE_COMMON(Computable<Buffer<T>>)
 
 public:
@@ -553,7 +555,8 @@ public:
 
 template<>
 struct Computable<ByteBuffer>
-    : detail::EnableByteLoadAndStore<Computable<ByteBuffer>> {
+    : detail::EnableByteLoadAndStore<Computable<ByteBuffer>>,
+      detail::BufferAsAtomicAddress<Computable<ByteBuffer>, uint> {
     OC_COMPUTABLE_COMMON(Computable<ByteBuffer>)
 };
 
