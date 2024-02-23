@@ -137,9 +137,9 @@ void test_compute_shader(Device &device, Stream &stream) {
 //        $info("triple   {} {} {}   {} {}", Var(uint64_t(-1)), 11.5f, triangle.size() - 13, as<uint2>(make_float2(Float(10.f))));
 
 //        Var t = triangle.read(dispatch_id());
-byte_buffer_var.store(8, make_uint2(6));
-        Var t = byte_buffer_var.atomic(4).fetch_add(1u);
-        $info("{}   {}   {} {}",byte_buffer_var.load<4>(0));
+byte_buffer.store(8, make_uint2(6));
+        Var t = byte_buffer.atomic(4).fetch_add(1u);
+        $info("{}   {}   {} {}",byte_buffer.load4(0));
 //
 //        /// Note the usage and implementation of DSL struct member function, e.g sum()
 //        $info("triple  index {} : i = {}, j = {}, k = {},  sum: {} ", dispatch_id(), t.i, t.j, t.k, t->sum());

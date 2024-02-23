@@ -159,7 +159,7 @@ struct EnableByteLoadAndStore {
 
     template<uint N = 1, typename Elm = uint, typename Offset>
     requires is_integral_expr_v<Offset>
-    [[nodiscard]] auto load(Offset &&offset) noexcept {
+    [[nodiscard]] auto load(Offset &&offset) const noexcept {
         if constexpr (is_dsl_v<Offset>) {
             offset = detail::correct_index(offset, self()->size(), typeid(*this).name(), traceback_string());
         }
@@ -178,6 +178,24 @@ struct EnableByteLoadAndStore {
                                                                      {N});
             return eval<Vector<Elm, N>>(expr);
         }
+    }
+
+    template<typename Elm = uint, typename Offset>
+    requires is_integral_expr_v<Offset>
+    [[nodiscard]] auto load2(Offset &&offset)const noexcept {
+        return load<2>(OC_FORWARD(offset));
+    }
+
+    template<typename Elm = uint, typename Offset>
+    requires is_integral_expr_v<Offset>
+    [[nodiscard]] auto load3(Offset &&offset)const noexcept {
+        return load<3>(OC_FORWARD(offset));
+    }
+
+    template<typename Elm = uint, typename Offset>
+    requires is_integral_expr_v<Offset>
+    [[nodiscard]] auto load4(Offset &&offset)const noexcept {
+        return load<4>(OC_FORWARD(offset));
     }
 
     template<typename Elm, typename Offset>

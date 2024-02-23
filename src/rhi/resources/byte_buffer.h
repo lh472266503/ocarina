@@ -103,9 +103,47 @@ public:
     template<typename U = uint>
     [[nodiscard]] const Expression *expression() const noexcept {
         const CapturedResource &captured_resource = Function::current()->get_captured_resource(Type::of<decltype(*this)>(),
-                                                                                               Variable::Tag::BUFFER,
+                                                                                               Variable::Tag::BYTE_BUFFER,
                                                                                                memory_block());
         return captured_resource.expression();
+    }
+
+    template<uint N = 1, typename Elm = uint, typename Offset>
+    requires is_integral_expr_v<Offset>
+    [[nodiscard]] auto load(Offset &&offset) const noexcept {
+        auto expr = make_expr<ByteBuffer>(expression());
+        return expr.template load<N>(OC_FORWARD(offset));
+    }
+
+    template<typename Elm = uint, typename Offset>
+    requires is_integral_expr_v<Offset>
+    [[nodiscard]] auto load2(Offset &&offset) const noexcept {
+        return load<2>(OC_FORWARD(offset));
+    }
+
+    template<typename Elm = uint, typename Offset>
+    requires is_integral_expr_v<Offset>
+    [[nodiscard]] auto load3(Offset &&offset) const noexcept {
+        return load<3>(OC_FORWARD(offset));
+    }
+
+    template<typename Elm = uint, typename Offset>
+    requires is_integral_expr_v<Offset>
+    [[nodiscard]] auto load4(Offset &&offset) const noexcept {
+        return load<4>(OC_FORWARD(offset));
+    }
+
+    template<typename Elm, typename Offset>
+    requires is_integral_expr_v<Offset> && is_uint_element_expr_v<Elm>
+    void store(Offset &&offset, const Elm &val) noexcept {
+        auto expr = make_expr<ByteBuffer>(expression());
+        expr.store(OC_FORWARD(offset), val);
+    }
+
+    template<typename Index>
+    requires concepts::integral<expr_value_t<Index>>
+    [[nodiscard]] detail::AtomicRef<uint> atomic(Index &&index) const noexcept {
+        return make_expr<ByteBuffer>(expression()).atomic(OC_FORWARD(index));
     }
 
     [[nodiscard]] ByteBufferView view(size_t offset = 0, size_t size = 0) const noexcept {
