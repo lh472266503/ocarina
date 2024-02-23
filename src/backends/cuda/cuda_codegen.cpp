@@ -107,9 +107,9 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         }
         case CallOp::BYTE_BUFFER_WRITE:OC_GEN_FUNC_NAME(byte_buffer_write);break;
         case CallOp::BYTE_BUFFER_READ :{
-            current_scratch() << "oc_byte_buffer_read<";
-            _emit_type_name(expr->type());
-            current_scratch() << ">";
+            auto t_args = expr->template_args();
+            uint N = std::get<uint>(t_args[0]);
+            current_scratch() << "oc_byte_buffer_read" << N;
         }
         case CallOp::BINDLESS_ARRAY_TEX_SAMPLE: {
             auto t_args = expr->template_args();

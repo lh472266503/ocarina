@@ -157,22 +157,32 @@ struct EnableByteLoadAndStore {
     [[nodiscard]] T *self() noexcept { return static_cast<const T *>(this); }
     [[nodiscard]] const T *self() const noexcept { return static_cast<const T *>(this); }
 
-    template<typename Elm, uint N, typename Offset>
+    template<uint N = 1, typename Elm = uint, typename Offset>
     requires is_integral_expr_v<Offset>
-    [[nodiscard]] Var<Vector<Elm, N>> load(Offset &&offset) noexcept {
+    [[nodiscard]] auto load(Offset &&offset) noexcept {
         if constexpr (is_dsl_v<Offset>) {
             offset = detail::correct_index(offset, self()->size(), typeid(*this).name(), traceback_string());
         }
-        const CallExpr *expr = Function::current()->call_builtin(Type::of<Vector<Elm, N>>(),
-                                                                 CallOp::BYTE_BUFFER_READ,
-                                                                 {self()->expression(),
-                                                                  OC_EXPR(offset)});
-        return eval<Vector<Elm, N>>(expr);
+        if constexpr (N == 1) {
+            const CallExpr *expr = Function::current()->call_builtin(Type::of<Elm>(),
+                                                                     CallOp::BYTE_BUFFER_READ,
+                                                                     {self()->expression(),
+                                                                      OC_EXPR(offset)},
+                                                                     {N});
+            return eval<Elm>(expr);
+        } else {
+            const CallExpr *expr = Function::current()->call_builtin(Type::of<Vector<Elm, N>>(),
+                                                                     CallOp::BYTE_BUFFER_READ,
+                                                                     {self()->expression(),
+                                                                      OC_EXPR(offset)},
+                                                                     {N});
+            return eval<Vector<Elm, N>>(expr);
+        }
     }
 
-    template<typename Elm, uint N, typename Offset>
-    requires is_integral_expr_v<Offset>
-    void store(Offset &&offset, const Var<Vector<Elm, N>> &val) noexcept {
+    template<typename Elm, typename Offset>
+    requires is_integral_expr_v<Offset> && is_uint_element_expr_v<Elm>
+    void store(Offset &&offset, const Elm &val) noexcept {
         if constexpr (is_dsl_v<Offset>) {
             offset = detail::correct_index(offset, self()->size(), typeid(*this).name(), traceback_string());
         }

@@ -198,15 +198,27 @@ __device__ void oc_bindless_array_buffer_write(OCBindlessArray bindless_array, o
     buffer[index] = val;
 }
 
-template<typename T>
-__device__ T oc_byte_buffer_read(OCBuffer<oc_uchar> buffer, oc_uint64t offset) noexcept {
-    return *reinterpret_cast<const T *>(&buffer[offset]);
+__device__ oc_uint oc_byte_buffer_read1(OCBuffer<oc_uchar> buffer, oc_uint64t offset) noexcept {
+    return *reinterpret_cast<const oc_uint *>(&buffer[offset]);
+}
+
+__device__ oc_uint2 oc_byte_buffer_read2(OCBuffer<oc_uchar> buffer, oc_uint64t offset) noexcept {
+    return *reinterpret_cast<const oc_uint2 *>(&buffer[offset]);
+}
+
+__device__ oc_uint3 oc_byte_buffer_read2(OCBuffer<oc_uchar> buffer, oc_uint64t offset) noexcept {
+    return *reinterpret_cast<const oc_uint3 *>(&buffer[offset]);
+}
+
+__device__ oc_uint4 oc_byte_buffer_read4(OCBuffer<oc_uchar> buffer, oc_uint64t offset) noexcept {
+    return *reinterpret_cast<const oc_uint4 *>(&buffer[offset]);
 }
 
 template<typename T>
 __device__ void oc_byte_buffer_write(OCBuffer<oc_uchar> buffer, oc_uint64t offset, const T &val) noexcept {
     *(reinterpret_cast<T *>(&buffer[offset])) = val;
 }
+
 
 template<typename T>
 __device__ T oc_bindless_array_tex_sample(OCBindlessArray bindless_array, oc_uint tex_index,
