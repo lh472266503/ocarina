@@ -154,7 +154,7 @@ struct EnableReadAndWrite {
 template<typename T>
 struct EnableByteLoadAndStore {
 
-    [[nodiscard]] T *self() noexcept { return static_cast<const T *>(this); }
+    [[nodiscard]] T *self() noexcept { return static_cast<T *>(this); }
     [[nodiscard]] const T *self() const noexcept { return static_cast<const T *>(this); }
 
     template<uint N = 1, typename Elm = uint, typename Offset>
@@ -188,7 +188,7 @@ struct EnableByteLoadAndStore {
         }
         const CallExpr *expr = Function::current()->call_builtin(nullptr, CallOp::BYTE_BUFFER_WRITE,
                                                                  {self()->expression(),
-                                                                  OC_EXPR(offset), val});
+                                                                  OC_EXPR(offset), OC_EXPR(val)});
         Function::current()->expr_statement(expr);
     }
 };

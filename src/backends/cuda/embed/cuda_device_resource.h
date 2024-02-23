@@ -253,7 +253,7 @@ __device__ oc_uint4 oc_byte_buffer_read4(OCBuffer<oc_uchar> buffer, oc_uint64t o
 
 template<typename T>
 __device__ void oc_byte_buffer_write(OCBuffer<oc_uchar> buffer, oc_uint64t offset, const T &val) noexcept {
-    T *ref = (reinterpret_cast<oc_uint3 *>(&(buffer.ptr[offset])));
+    T *ref = (reinterpret_cast<T *>(&(buffer.ptr[offset])));
     ref[0] = val;
 }
 
