@@ -552,6 +552,12 @@ public:
 };
 
 template<>
+struct Computable<ByteBuffer>
+    : detail::EnableByteLoadAndStore<Computable<ByteBuffer>> {
+    OC_COMPUTABLE_COMMON(Computable<ByteBuffer>)
+};
+
+template<>
 struct Computable<Texture>
     : detail::EnableTextureSample<Computable<Texture>>,
       detail::EnableTextureReadAndWrite<Computable<Texture>> {
