@@ -555,7 +555,8 @@ public:
 
 template<>
 struct Computable<ByteBuffer>
-    : detail::EnableByteLoadAndStore<Computable<ByteBuffer>> {
+    : detail::EnableByteLoadAndStore<Computable<ByteBuffer>>,
+      detail::BufferAsAtomicAddress<Computable<ByteBuffer>, uint> {
     OC_COMPUTABLE_COMMON(Computable<ByteBuffer>)
 };
 

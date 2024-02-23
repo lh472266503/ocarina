@@ -95,6 +95,12 @@ inline T oc_atomicExch(OCBuffer<T> buffer, Index index, T val) noexcept {
     return oc_atomicExch(buffer[index], val);
 }
 
+template<typename T, typename Offset>
+inline T oc_atomicExch(OCBuffer<oc_uchar> buffer, Offset offset, T val) noexcept {
+    T ref = *(reinterpret_cast<T *>(&buffer[offset]));
+    return oc_atomicExch(ref, val);
+}
+
 template<typename T>
 inline T oc_atomicAdd(T &a, T v) noexcept {
     return atomicAdd(&a, v);
@@ -105,6 +111,12 @@ inline T oc_atomicAdd(OCBuffer<T> buffer, Index index, T val) noexcept {
     return oc_atomicAdd(buffer[index], val);
 }
 
+template<typename T, typename Offset>
+inline T oc_atomicAdd(OCBuffer<oc_uchar> buffer, Offset offset, T val) noexcept {
+    T ref = *(reinterpret_cast<T *>(&buffer[offset]));
+    return oc_atomicAdd(ref, val);
+}
+
 template<typename T>
 inline T oc_atomicSub(T &a, T v) noexcept {
     return atomicAdd(&a, -v);
@@ -113,6 +125,12 @@ inline T oc_atomicSub(T &a, T v) noexcept {
 template<typename T, typename Index>
 inline T oc_atomicSub(OCBuffer<T> buffer, Index index, T val) noexcept {
     return oc_atomicSub(buffer[index], val);
+}
+
+template<typename T, typename Offset>
+inline T oc_atomicSub(OCBuffer<oc_uchar> buffer, Offset offset, T val) noexcept {
+    T ref = *(reinterpret_cast<T *>(&buffer[offset]));
+    return oc_atomicSub(ref, val);
 }
 
 struct OCTexture {
