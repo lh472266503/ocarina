@@ -82,9 +82,11 @@ public:
     [[nodiscard]] FileManager *file_manager() const noexcept { return _impl->_context; }
 
     template<typename T = std::byte, int... Dims>
-    [[nodiscard]] Buffer<T, Dims...> create_buffer(size_t size, const string &desc = "") noexcept {
-        return Buffer<T, Dims...>(_impl.get(), size, desc);
+    [[nodiscard]] Buffer<T, Dims...> create_buffer(size_t size, const string &name = "") const noexcept {
+        return Buffer<T, Dims...>(_impl.get(), size, name);
     }
+
+    [[nodiscard]] ByteBuffer create_byte_buffer(size_t size, const string &name = "") const noexcept;
 
     template<typename T = std::byte, int... Dims>
     [[nodiscard]] Buffer<T, Dims...> create_buffer(size_t size, handle_ty stream) noexcept {
@@ -105,13 +107,13 @@ public:
     [[nodiscard]] RHIMesh create_mesh(const VBuffer &v_buffer,
                                       const TBuffer &t_buffer,
                                       AccelUsageTag usage_tag = AccelUsageTag::FAST_TRACE,
-                                      AccelGeomTag geom_tag = AccelGeomTag::DISABLE_ANYHIT) noexcept;// implement in mesh.h
+                                      AccelGeomTag geom_tag = AccelGeomTag::DISABLE_ANYHIT) const noexcept;// implement in mesh.h
     [[nodiscard]] Stream create_stream() noexcept;
-    [[nodiscard]] Accel create_accel() noexcept;
-    [[nodiscard]] BindlessArray create_bindless_array() noexcept;
+    [[nodiscard]] Accel create_accel() const noexcept;
+    [[nodiscard]] BindlessArray create_bindless_array() const noexcept;
     void init_rtx() noexcept { _impl->init_rtx(); }
-    [[nodiscard]] Texture create_texture(uint3 res, PixelStorage storage, const string &desc = "") noexcept;
-    [[nodiscard]] Texture create_texture(uint2 res, PixelStorage storage, const string &desc = "") noexcept;
+    [[nodiscard]] Texture create_texture(uint3 res, PixelStorage storage, const string &desc = "") const noexcept;
+    [[nodiscard]] Texture create_texture(uint2 res, PixelStorage storage, const string &desc = "") const noexcept;
     template<typename T>
     [[nodiscard]] auto compile(const Kernel<T> &kernel, const string &shader_desc = "", ShaderTag tag = CS) const noexcept {
         OC_INFO_FORMAT("compile shader : {}", shader_desc.c_str());

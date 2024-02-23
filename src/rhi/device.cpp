@@ -10,23 +10,27 @@
 
 namespace ocarina {
 
+ByteBuffer Device::create_byte_buffer(size_t size, const std::string &name) const noexcept {
+    return ByteBuffer(_impl.get(), size, name);
+}
+
 Stream Device::create_stream() noexcept {
     return _create<Stream>();
 }
 
-Accel Device::create_accel() noexcept {
+Accel Device::create_accel() const noexcept {
     return _create<Accel>();
 }
 
-BindlessArray Device::create_bindless_array() noexcept {
+BindlessArray Device::create_bindless_array() const noexcept {
     return _create<BindlessArray>();
 }
 
-Texture Device::create_texture(uint3 res, PixelStorage storage, const string &desc) noexcept {
+Texture Device::create_texture(uint3 res, PixelStorage storage, const string &desc) const noexcept {
     return _create<Texture>(res, storage);
 }
 
-Texture Device::create_texture(uint2 res, PixelStorage storage, const string &desc) noexcept {
+Texture Device::create_texture(uint2 res, PixelStorage storage, const string &desc) const noexcept {
     return create_texture(make_uint3(res, 1u), storage, desc);
 }
 

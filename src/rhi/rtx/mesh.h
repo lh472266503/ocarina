@@ -36,7 +36,7 @@ public:
 
 template<typename VBuffer, typename TBuffer>
 RHIMesh Device::create_mesh(const VBuffer &v_buffer, const TBuffer &t_buffer,
-                         AccelUsageTag usage_tag, AccelGeomTag geom_tag) noexcept {
+                            AccelUsageTag usage_tag, AccelGeomTag geom_tag) const noexcept {
     MeshParams params;
     params.vert_handle = v_buffer.head();
     params.vert_stride = v_buffer.element_size();

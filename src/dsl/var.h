@@ -61,6 +61,8 @@ struct Var : public Computable<T> {
 template<typename T>
 using BufferVar = Var<Buffer<T>>;
 
+using ByteBufferVar = Var<ByteBuffer>;
+
 using TextureVar = Var<Texture>;
 
 using BindlessArrayVar = Var<BindlessArray>;
