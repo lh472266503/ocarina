@@ -267,7 +267,7 @@ void TypeRegistry::parse_buffer(Type *type, ocarina::string_view desc) noexcept 
     for (int i = 1; i < lst.size(); ++i) {
         type->_dims.push_back(std::stoi(lst[i].data()));
     }
-    type->_alignment = alignof(BufferProxy<uchar>);
+    type->_alignment = alignof(BufferProxy);
 }
 
 void TypeRegistry::parse_texture(Type *type, ocarina::string_view desc) noexcept {
@@ -281,7 +281,7 @@ void TypeRegistry::parse_accel(Type *type, ocarina::string_view desc) noexcept {
 
 void TypeRegistry::parse_byte_buffer(ocarina::Type *type, ocarina::string_view desc) noexcept {
     type->_tag = Type::Tag::BYTE_BUFFER;
-    type->_alignment = alignof(BufferProxy<uchar>);
+    type->_alignment = alignof(BufferProxy);
 }
 
 void TypeRegistry::parse_array(Type *type, ocarina::string_view desc) noexcept {

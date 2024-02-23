@@ -99,7 +99,7 @@ protected:
     size_t _element_size{0};
 
     /// just for construct memory block
-    mutable BufferProxy<T> _proxy{};
+    mutable BufferProxy _proxy{};
 
 public:
     Buffer() : _element_size(calculate_size()) {}
@@ -150,7 +150,7 @@ public:
     }
 
     [[nodiscard]] const void *proxy_ptr() const noexcept {
-        _proxy.ptr = reinterpret_cast<T *>(_handle);
+        _proxy.handle = _handle;
         _proxy.size = _size;
         return &_proxy;
     }

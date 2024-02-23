@@ -284,9 +284,8 @@ struct TextureProxy {
     PixelStorage pixel_storage{};
 };
 
-template<typename T>
 struct BufferProxy {
-    T *ptr{};
+    handle_ty handle{};
     uint64_t size{};
 };
 
