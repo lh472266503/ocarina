@@ -276,11 +276,13 @@ struct EnableTextureReadAndWrite {
 template<typename T>
 struct AtomicRef {
 private:
-    const SubscriptExpr *_expression{};
+    const Expression *_range{};
+    const Expression *_index{};
 
 public:
-    explicit AtomicRef(const SubscriptExpr *expression)
-        : _expression(expression) {}
+    explicit AtomicRef(const Expression *range,
+                       const Expression *index)
+        : _range(range), _index(index) {}
     AtomicRef(AtomicRef &&) noexcept = delete;
     AtomicRef(const AtomicRef &) noexcept = delete;
     AtomicRef &operator=(AtomicRef &&) noexcept = delete;
@@ -289,24 +291,24 @@ public:
     Var<T> exchange(Var<T> value) noexcept {
         const Expression *expr = Function::current()->call_builtin(Type::of<T>(),
                                                                    CallOp::ATOMIC_EXCH,
-                                                                   {_expression, OC_EXPR(value)});
-        _expression->mark(Usage::READ_WRITE);
+                                                                   {_range, _index, OC_EXPR(value)});
+        _range->mark(Usage::READ_WRITE);
         return eval<T>(expr);
     }
 
     Var<T> fetch_add(Var<T> value) noexcept {
         const Expression *expr = Function::current()->call_builtin(Type::of<T>(),
                                                                    CallOp::ATOMIC_ADD,
-                                                                   {_expression, OC_EXPR(value)});
-        _expression->mark(Usage::READ_WRITE);
+                                                                   {_range, _index, OC_EXPR(value)});
+        _range->mark(Usage::READ_WRITE);
         return eval<T>(expr);
     }
 
     Var<T> fetch_sub(Var<T> value) noexcept {
         const Expression *expr = Function::current()->call_builtin(Type::of<T>(),
                                                                    CallOp::ATOMIC_SUB,
-                                                                   {_expression, OC_EXPR(value)});
-        _expression->mark(Usage::READ_WRITE);
+                                                                   {_range, _index, OC_EXPR(value)});
+        _range->mark(Usage::READ_WRITE);
         return eval<T>(expr);
     }
 };
@@ -317,9 +319,7 @@ struct BufferAsAtomicAddress {
     requires is_integral_expr_v<Index>
     [[nodiscard]] AtomicRef<Elm> atomic(Index &&index) noexcept {
         static_assert(is_scalar_expr_v<Elm>);
-        return AtomicRef<Elm>(Function::current()->subscript(Type::of<Elm>(),
-                                                             static_cast<TBuffer *>(this)->expression(),
-                                                             OC_EXPR(index)));
+        return AtomicRef<Elm>(static_cast<TBuffer *>(this)->expression(), OC_EXPR(index));
     }
 };
 

@@ -90,14 +90,29 @@ inline T oc_atomicExch(T &a, T v) noexcept {
     return atomicExch(&a, v);
 }
 
+template<typename T, typename Index>
+inline T oc_atomicExch(OCBuffer<T> buffer, Index index, T val) noexcept {
+    return oc_atomicExch(buffer[index], val);
+}
+
 template<typename T>
 inline T oc_atomicAdd(T &a, T v) noexcept {
     return atomicAdd(&a, v);
 }
 
+template<typename T, typename Index>
+inline T oc_atomicAdd(OCBuffer<T> buffer, Index index, T val) noexcept {
+    return oc_atomicAdd(buffer[index], val);
+}
+
 template<typename T>
 inline T oc_atomicSub(T &a, T v) noexcept {
     return atomicAdd(&a, -v);
+}
+
+template<typename T, typename Index>
+inline T oc_atomicSub(OCBuffer<T> buffer, Index index, T val) noexcept {
+    return oc_atomicSub(buffer[index], val);
 }
 
 struct OCTexture {
@@ -218,7 +233,6 @@ template<typename T>
 __device__ void oc_byte_buffer_write(OCBuffer<oc_uchar> buffer, oc_uint64t offset, const T &val) noexcept {
     *(reinterpret_cast<T *>(&buffer[offset])) = val;
 }
-
 
 template<typename T>
 __device__ T oc_bindless_array_tex_sample(OCBindlessArray bindless_array, oc_uint tex_index,
