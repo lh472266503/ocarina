@@ -28,10 +28,10 @@ template<typename T>
 struct OCBuffer {
     T *ptr{};
     oc_uint64t size{};
-    [[nodiscard]] const T &operator[](oc_uint64t index) const noexcept { return ptr[index]; }
-    [[nodiscard]] T &operator[](oc_uint64t index) noexcept { return ptr[index]; }
-    [[nodiscard]] const T &operator[](oc_uint index) const noexcept { return ptr[index]; }
-    [[nodiscard]] T &operator[](oc_uint index) noexcept { return ptr[index]; }
+    template<typename Index>
+    [[nodiscard]] const T &operator[](Index index) const noexcept { return ptr[index]; }
+    template<typename Index>
+    [[nodiscard]] T &operator[](Index index) noexcept { return ptr[index]; }
 };
 
 template<typename T>
@@ -97,8 +97,8 @@ inline T oc_atomicExch(OCBuffer<T> buffer, Index index, T val) noexcept {
 
 template<typename T, typename Offset>
 inline T oc_atomicExch(OCBuffer<oc_uchar> buffer, Offset offset, T val) noexcept {
-    T ref = *(reinterpret_cast<T *>(&buffer[offset]));
-    return oc_atomicExch(ref, val);
+    T *ref = (reinterpret_cast<T *>(&(buffer.ptr[offset])));
+    return oc_atomicExch(ref[0], val);
 }
 
 template<typename T>
@@ -113,8 +113,8 @@ inline T oc_atomicAdd(OCBuffer<T> buffer, Index index, T val) noexcept {
 
 template<typename T, typename Offset>
 inline T oc_atomicAdd(OCBuffer<oc_uchar> buffer, Offset offset, T val) noexcept {
-    T ref = *(reinterpret_cast<T *>(&buffer[offset]));
-    return oc_atomicAdd(ref, val);
+    T *ref = (reinterpret_cast<T *>(&(buffer.ptr[offset])));
+    return oc_atomicAdd(ref[0], val);
 }
 
 template<typename T>
@@ -129,8 +129,8 @@ inline T oc_atomicSub(OCBuffer<T> buffer, Index index, T val) noexcept {
 
 template<typename T, typename Offset>
 inline T oc_atomicSub(OCBuffer<oc_uchar> buffer, Offset offset, T val) noexcept {
-    T ref = *(reinterpret_cast<T *>(&buffer[offset]));
-    return oc_atomicSub(ref, val);
+    T *ref = (reinterpret_cast<T *>(&(buffer.ptr[offset])));
+    return oc_atomicSub(ref[0], val);
 }
 
 struct OCTexture {
@@ -232,24 +232,29 @@ __device__ void oc_bindless_array_buffer_write(OCBindlessArray bindless_array, o
 }
 
 __device__ oc_uint oc_byte_buffer_read1(OCBuffer<oc_uchar> buffer, oc_uint64t offset) noexcept {
-    return *reinterpret_cast<const oc_uint *>(&buffer[offset]);
+    oc_uint *ref = (reinterpret_cast<oc_uint *>(&(buffer.ptr[offset])));
+    return ref[0];
 }
 
 __device__ oc_uint2 oc_byte_buffer_read2(OCBuffer<oc_uchar> buffer, oc_uint64t offset) noexcept {
-    return *reinterpret_cast<const oc_uint2 *>(&buffer[offset]);
+    oc_uint2 *ref = (reinterpret_cast<oc_uint2 *>(&(buffer.ptr[offset])));
+    return ref[0];
 }
 
 __device__ oc_uint3 oc_byte_buffer_read3(OCBuffer<oc_uchar> buffer, oc_uint64t offset) noexcept {
-    return *reinterpret_cast<const oc_uint3 *>(&buffer[offset]);
+    oc_uint3 *ref = (reinterpret_cast<oc_uint3 *>(&(buffer.ptr[offset])));
+    return ref[0];
 }
 
 __device__ oc_uint4 oc_byte_buffer_read4(OCBuffer<oc_uchar> buffer, oc_uint64t offset) noexcept {
-    return *reinterpret_cast<const oc_uint4 *>(&buffer[offset]);
+    oc_uint4 *ref = (reinterpret_cast<oc_uint4 *>(&(buffer.ptr[offset])));
+    return ref[0];
 }
 
 template<typename T>
 __device__ void oc_byte_buffer_write(OCBuffer<oc_uchar> buffer, oc_uint64t offset, const T &val) noexcept {
-    *(reinterpret_cast<T *>(&buffer[offset])) = val;
+    T *ref = (reinterpret_cast<oc_uint3 *>(&(buffer.ptr[offset])));
+    ref[0] = val;
 }
 
 template<typename T>

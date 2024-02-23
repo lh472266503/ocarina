@@ -63,8 +63,8 @@ private:
         push_memory_block({dst_ptr, sizeof(T), alignof(T), Type::of<T>()->max_member_size()});
     }
 
-    template<typename T>
-    void _encode_buffer(const Buffer<T> &buffer) noexcept {
+    template<typename TBuffer>
+    void _encode_buffer(const TBuffer &buffer) noexcept {
         push_memory_block(buffer.memory_block());
     }
 

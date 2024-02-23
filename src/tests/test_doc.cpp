@@ -118,6 +118,12 @@ void test_compute_shader(Device &device, Stream &stream) {
 
     uint pp = bit_cast<uint>(10.f);
 
+    auto byte_buffer = device.create_byte_buffer(sizeof(uint4), "");
+//    auto byte_buffer = device.create_buffer<uint>(sizeof(uint4), "");
+    uint4 host = make_uint4(12);
+    stream << byte_buffer.upload(&host, false);
+
+
 //    aaa = bit_cast<uint2>(bbb);
 
     /// upload buffer and texture handle to device memory
@@ -127,10 +133,12 @@ void test_compute_shader(Device &device, Stream &stream) {
     stream << vert.upload(vertices.data())
            << tri.upload(triangles.data());
 
-    Kernel kernel = [&](Var<Triple> triple, BufferVar<Triple> triangle, Var<BindlessArray> ra) {
-        $info("triple   {} {} {}   {} {}", Var(uint64_t(-1)), 11.5f, triangle.size() - 13, as<uint2>(make_float2(Float(10.f))));
+    Kernel kernel = [&](Var<Triple> triple, BufferVar<Triple> triangle, Var<BindlessArray> ra, ByteBufferVar byte_buffer_var) {
+//        $info("triple   {} {} {}   {} {}", Var(uint64_t(-1)), 11.5f, triangle.size() - 13, as<uint2>(make_float2(Float(10.f))));
 
-        Var t = triangle.read(dispatch_id());
+//        Var t = triangle.read(dispatch_id());
+        Var t = byte_buffer_var.atomic(4).fetch_add(1u);
+        $info("{}   ",t);
 //
 //        /// Note the usage and implementation of DSL struct member function, e.g sum()
 //        $info("triple  index {} : i = {}, j = {}, k = {},  sum: {} ", dispatch_id(), t.i, t.j, t.k, t->sum());
@@ -194,10 +202,13 @@ void test_compute_shader(Device &device, Stream &stream) {
     Env::debugger().set_upper(make_uint2(1));
     auto shader = device.compile(kernel, "test desc");
     stream << Env::debugger().upload();
-    stream << shader(triple1, tri, bindless_array).dispatch(2)
+    stream << shader(triple1, tri, bindless_array, byte_buffer).dispatch(2)
            /// explict retrieve log
+           << byte_buffer.download(&host, 0)
            << Env::printer().retrieve()
            << synchronize() << commit();
+
+    int iii = 0;
 }
 
 struct Test {

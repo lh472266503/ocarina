@@ -117,19 +117,19 @@ public:
         return view(0, _size).copy_from(OC_FORWARD(args)...);
     }
     template<typename... Args>
-    [[nodiscard]] BufferCopyCommand *download(Args &&...args) const noexcept {
+    [[nodiscard]] BufferDownloadCommand *download(Args &&...args) const noexcept {
         return view(0, _size).download(OC_FORWARD(args)...);
     }
     template<typename... Args>
-    [[nodiscard]] BufferCopyCommand *upload(Args &&...args) const noexcept {
+    [[nodiscard]] BufferUploadCommand *upload(Args &&...args) const noexcept {
         return view(0, _size).upload(OC_FORWARD(args)...);
     }
     template<typename... Args>
-    [[nodiscard]] BufferCopyCommand *byte_set(Args &&...args) const noexcept {
+    [[nodiscard]] BufferByteSetCommand *byte_set(Args &&...args) const noexcept {
         return view(0, _size).byte_set(OC_FORWARD(args)...);
     }
     template<typename... Args>
-    [[nodiscard]] BufferCopyCommand *reset(Args &&...args) const noexcept {
+    [[nodiscard]] BufferByteSetCommand *reset(Args &&...args) const noexcept {
         return view(0, _size).reset(OC_FORWARD(args)...);
     }
 };
