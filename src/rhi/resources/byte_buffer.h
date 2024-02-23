@@ -69,7 +69,7 @@ public:
 class ByteBuffer : public RHIResource {
 private:
     /// just for construct memory block
-    mutable BufferProxy<uint> _proxy{};
+    mutable BufferProxy<uchar> _proxy{};
     size_t _size{};
 
 public:
@@ -83,7 +83,7 @@ public:
     }
 
     [[nodiscard]] const void *proxy_ptr() const noexcept {
-        _proxy.ptr = reinterpret_cast<uint *>(_handle);
+        _proxy.ptr = reinterpret_cast<uchar *>(_handle);
         _proxy.size = _size;
         return &_proxy;
     }
