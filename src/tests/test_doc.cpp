@@ -120,7 +120,7 @@ void test_compute_shader(Device &device, Stream &stream) {
 
     auto byte_buffer = device.create_byte_buffer(sizeof(uint4), "");
 //    auto byte_buffer = device.create_buffer<uint>(sizeof(uint4), "");
-    uint4 host = make_uint4(12);
+    float4 host = make_float4(12);
     stream << byte_buffer.upload(&host, false);
 
 

@@ -180,22 +180,37 @@ struct EnableByteLoadAndStore {
         }
     }
 
-    template<typename Elm = uint, typename Offset>
+    template<typename Target, typename Offset>
     requires is_integral_expr_v<Offset>
-    [[nodiscard]] auto load2(Offset &&offset)const noexcept {
-        return load<2>(OC_FORWARD(offset));
+    [[nodiscard]] Var<Target> load_as(Offset &&offset) const noexcept {
+        if constexpr (is_dsl_v<Offset>) {
+            offset = detail::correct_index(offset, self()->size(), typeid(*this).name(), traceback_string());
+        }
+        const Type *ret_type = Type::of<Target>();
+        const CallExpr *expr = Function::current()->call_builtin(ret_type,
+                                                                 CallOp::BYTE_BUFFER_READ,
+                                                                 {self()->expression(),
+                                                                  OC_EXPR(offset)},
+                                                                 {ret_type});
+        return eval<Target>(expr);
     }
 
     template<typename Elm = uint, typename Offset>
     requires is_integral_expr_v<Offset>
-    [[nodiscard]] auto load3(Offset &&offset)const noexcept {
-        return load<3>(OC_FORWARD(offset));
+    [[nodiscard]] auto load2(Offset &&offset) const noexcept {
+        return load<2, Elm>(OC_FORWARD(offset));
+    }
+
+    template<typename Elm = uint, typename Offset>
+    requires is_integral_expr_v<Offset>
+    [[nodiscard]] auto load3(Offset &&offset) const noexcept {
+        return load<3, Elm>(OC_FORWARD(offset));
     }
 
     template<typename Elm = uint, typename Offset>
     requires is_integral_expr_v<Offset>
     [[nodiscard]] auto load4(Offset &&offset)const noexcept {
-        return load<4>(OC_FORWARD(offset));
+        return load<4, Elm>(OC_FORWARD(offset));
     }
 
     template<typename Elm, typename Offset>

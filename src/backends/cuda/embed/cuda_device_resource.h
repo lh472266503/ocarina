@@ -231,24 +231,27 @@ __device__ void oc_bindless_array_buffer_write(OCBindlessArray bindless_array, o
     buffer[index] = val;
 }
 
-__device__ oc_uint oc_byte_buffer_read1(OCBuffer<oc_uchar> buffer, oc_uint64t offset) noexcept {
-    oc_uint *ref = (reinterpret_cast<oc_uint *>(&(buffer.ptr[offset])));
+template<typename T>
+__device__ T oc_byte_buffer_read(OCBuffer<oc_uchar> buffer, oc_uint64t offset) noexcept {
+    T *ref = (reinterpret_cast<T *>(&(buffer.ptr[offset])));
     return ref[0];
 }
 
-__device__ oc_uint2 oc_byte_buffer_read2(OCBuffer<oc_uchar> buffer, oc_uint64t offset) noexcept {
-    oc_uint2 *ref = (reinterpret_cast<oc_uint2 *>(&(buffer.ptr[offset])));
-    return ref[0];
-}
-
-__device__ oc_uint3 oc_byte_buffer_read3(OCBuffer<oc_uchar> buffer, oc_uint64t offset) noexcept {
-    oc_uint3 *ref = (reinterpret_cast<oc_uint3 *>(&(buffer.ptr[offset])));
-    return ref[0];
-}
-
-__device__ oc_uint4 oc_byte_buffer_read4(OCBuffer<oc_uchar> buffer, oc_uint64t offset) noexcept {
-    oc_uint4 *ref = (reinterpret_cast<oc_uint4 *>(&(buffer.ptr[offset])));
-    return ref[0];
+template<int N>
+__device__ auto oc_byte_buffer_read(OCBuffer<oc_uchar> buffer, oc_uint64t offset) noexcept {
+    if constexpr (N == 1) {
+        oc_uint *ref = (reinterpret_cast<oc_uint *>(&(buffer.ptr[offset])));
+        return ref[0];
+    } else if constexpr (N == 2) {
+        oc_uint2 *ref = (reinterpret_cast<oc_uint2 *>(&(buffer.ptr[offset])));
+        return ref[0];
+    } else if constexpr (N == 3) {
+        oc_uint3 *ref = (reinterpret_cast<oc_uint3 *>(&(buffer.ptr[offset])));
+        return ref[0];
+    } else if constexpr (N == 4) {
+        oc_uint4 *ref = (reinterpret_cast<oc_uint4 *>(&(buffer.ptr[offset])));
+        return ref[0];
+    }
 }
 
 template<typename T>

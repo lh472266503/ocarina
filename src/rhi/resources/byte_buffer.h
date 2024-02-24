@@ -112,25 +112,25 @@ public:
     requires is_integral_expr_v<Offset>
     [[nodiscard]] auto load(Offset &&offset) const noexcept {
         auto expr = make_expr<ByteBuffer>(expression());
-        return expr.template load<N>(OC_FORWARD(offset));
+        return expr.template load<N, Elm>(OC_FORWARD(offset));
     }
 
     template<typename Elm = uint, typename Offset>
     requires is_integral_expr_v<Offset>
     [[nodiscard]] auto load2(Offset &&offset) const noexcept {
-        return load<2>(OC_FORWARD(offset));
+        return load<2, Elm>(OC_FORWARD(offset));
     }
 
     template<typename Elm = uint, typename Offset>
     requires is_integral_expr_v<Offset>
     [[nodiscard]] auto load3(Offset &&offset) const noexcept {
-        return load<3>(OC_FORWARD(offset));
+        return load<3, Elm>(OC_FORWARD(offset));
     }
 
     template<typename Elm = uint, typename Offset>
     requires is_integral_expr_v<Offset>
     [[nodiscard]] auto load4(Offset &&offset) const noexcept {
-        return load<4>(OC_FORWARD(offset));
+        return load<4, Elm>(OC_FORWARD(offset));
     }
 
     template<typename Elm, typename Offset>
