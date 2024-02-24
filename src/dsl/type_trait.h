@@ -405,7 +405,7 @@ template<typename T>
 struct is_buffer_view_impl<BufferView<T>> : std::true_type {};
 
 template<>
-struct is_buffer_view_impl<ByteBuffer> : std::true_type {};
+struct is_buffer_view_impl<ByteBufferView> : std::true_type {};
 
 template<typename T>
 struct buffer_element_impl {

@@ -203,7 +203,7 @@ Var t = byte_buffer.atomic<float>(4).fetch_add(1.f);
     Env::debugger().set_upper(make_uint2(1));
     auto shader = device.compile(kernel, "test desc");
     stream << Env::debugger().upload();
-    stream << shader(triple1, tri, bindless_array, byte_buffer).dispatch(2)
+    stream << shader(triple1, tri, bindless_array, byte_buffer.view()).dispatch(2)
            /// explict retrieve log
            << byte_buffer.download(&host, 0)
            << Env::printer().retrieve()
