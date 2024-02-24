@@ -29,34 +29,82 @@ OC_STRUCT(Triple, i, j, k){
 
 struct CCC {
     int ic;
+    int id;
 };
+OC_STRUCT(CCC, ic, id){};
 
 struct AAA {
     int a;
     float b;
     CCC c;
 };
+OC_STRUCT(AAA, a, b, c){};
 
 template<typename T>
+//requires is_scalar_v<T>
 struct SOAView {
-    BufferVar<T> buffer_view;
+    Uint offset;
+    ByteBufferVar buffer;
+    uint stride;
 
     template<typename Index>
     [[nodiscard]] Var<T> read(Index &&index) noexcept {
-        return buffer_view.read(OC_FORWARD(index));
+        return buffer.read(offset + OC_FORWARD(index) * sizeof(T));
+    }
+
+    template<typename int_type = uint>
+    [[nodiscard]] Var<int_type> size_in_byte() noexcept {
+        return buffer.size() / stride * sizeof(T);
     }
 };
 
 template<>
 struct SOAView<CCC> {
+
     SOAView<int> ic;
+    SOAView<int> id;
+
+    template<typename Index>
+    [[nodiscard]] Var<CCC> read(Index &&index) noexcept {
+        Var<CCC> ret;
+        ret.ic = ic.read(index);
+        ret.id = id.read(index);
+        return ret;
+    }
+
+    template<typename int_type = uint>
+    [[nodiscard]] Var<int_type> size_in_byte() noexcept {
+        Var<int_type> ret = 0;
+        ret += ic.size_in_byte();
+        ret += id.size_in_byte();
+        return ret;
+    }
 };
 
 template<>
 struct SOAView<AAA> {
+
     SOAView<int> a;
     SOAView<float> b;
     SOAView<CCC> c;
+
+    template<typename Index>
+    [[nodiscard]] Var<AAA> read(Index &&index) noexcept {
+        Var<AAA> ret;
+        ret.a = a.read(index);
+        ret.b = b.read(index);
+        ret.c = c.read(index);
+        return ret;
+    }
+
+    template<typename int_type = uint>
+    [[nodiscard]] Var<int_type> size_in_byte() noexcept {
+        Var<int_type> ret = 0;
+        ret += a.size_in_byte();
+        ret += b.size_in_byte();
+        ret += c.size_in_byte();
+        return ret;
+    }
 };
 
 
