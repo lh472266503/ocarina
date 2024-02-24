@@ -214,7 +214,7 @@ struct EnableByteLoadAndStore {
     }
 
     template<typename Elm, typename Offset>
-    requires is_integral_expr_v<Offset> && is_uint_element_expr_v<Elm>
+    requires is_integral_expr_v<Offset>
     void store(Offset &&offset, const Elm &val) noexcept {
         if constexpr (is_dsl_v<Offset>) {
             offset = detail::correct_index(offset, self()->size(), typeid(*this).name(), traceback_string());
@@ -348,11 +348,11 @@ public:
 
 template<typename TBuffer, typename Elm>
 struct BufferAsAtomicAddress {
-    template<typename Index>
+    template<typename Target = Elm,typename Index>
     requires is_integral_expr_v<Index>
-    [[nodiscard]] AtomicRef<Elm> atomic(Index &&index) noexcept {
+    [[nodiscard]] AtomicRef<Target> atomic(Index &&index) noexcept {
         static_assert(is_scalar_expr_v<Elm>);
-        return AtomicRef<Elm>(static_cast<TBuffer *>(this)->expression(), OC_EXPR(index));
+        return AtomicRef<Target>(static_cast<TBuffer *>(this)->expression(), OC_EXPR(index));
     }
 };
 
@@ -591,6 +591,13 @@ struct Computable<ByteBuffer>
     : detail::EnableByteLoadAndStore<Computable<ByteBuffer>>,
       detail::BufferAsAtomicAddress<Computable<ByteBuffer>, uint> {
     OC_COMPUTABLE_COMMON(Computable<ByteBuffer>)
+
+public:
+    template<typename int_type = uint64t>
+    [[nodiscard]] auto size() const noexcept {
+        const CallExpr *expr = Function::current()->call_builtin(Type::of<int_type>(), CallOp::BUFFER_SIZE, {expression()});
+        return eval<int_type>(expr);
+    }
 };
 
 template<>

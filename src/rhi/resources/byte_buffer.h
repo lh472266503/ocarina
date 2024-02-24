@@ -141,16 +141,16 @@ public:
     }
 
     template<typename Elm, typename Offset>
-    requires is_integral_expr_v<Offset> && is_uint_element_expr_v<Elm>
+    requires is_integral_expr_v<Offset>
     void store(Offset &&offset, const Elm &val) noexcept {
         auto expr = make_expr<ByteBuffer>(expression());
         expr.store(OC_FORWARD(offset), val);
     }
 
-    template<typename Index>
+    template<typename Target = uint, typename Index>
     requires concepts::integral<expr_value_t<Index>>
-    [[nodiscard]] detail::AtomicRef<uint> atomic(Index &&index) const noexcept {
-        return make_expr<ByteBuffer>(expression()).atomic(OC_FORWARD(index));
+    [[nodiscard]] detail::AtomicRef<Target> atomic(Index &&index) const noexcept {
+        return make_expr<ByteBuffer>(expression()).atomic<Target>(OC_FORWARD(index));
     }
 
     [[nodiscard]] ByteBufferView view(size_t offset = 0, size_t size = 0) const noexcept {
