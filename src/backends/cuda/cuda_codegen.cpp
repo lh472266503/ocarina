@@ -106,10 +106,19 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
             break;
         }
         case CallOp::BYTE_BUFFER_WRITE:OC_GEN_FUNC_NAME(byte_buffer_write);break;
-        case CallOp::BYTE_BUFFER_READ :{
+        case CallOp::BYTE_BUFFER_READ: {
             auto t_args = expr->template_args();
-            int N = std::get<uint>(t_args[0]);
-            current_scratch() << "oc_byte_buffer_read<" << N << ">";
+            ocarina::visit(
+                [&]<typename T>(T &&t) {
+                    if constexpr (is_integral_v<T>) {
+                        current_scratch() << "oc_byte_buffer_read<" << int(t) << ">";
+                    } else {
+                        current_scratch() << "oc_byte_buffer_read<";
+                        _emit_type_name(t);
+                        current_scratch() << ">";
+                    }
+                },
+                t_args[0]);
             break;
         }
         case CallOp::BINDLESS_ARRAY_TEX_SAMPLE: {

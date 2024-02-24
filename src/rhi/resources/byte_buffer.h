@@ -133,6 +133,13 @@ public:
         return load<4, Elm>(OC_FORWARD(offset));
     }
 
+    template<typename Target, typename Offset>
+    requires is_integral_expr_v<Offset>
+    [[nodiscard]] Var<Target> load_as(Offset &&offset) const noexcept {
+        auto expr = make_expr<ByteBuffer>(expression());
+        return expr.template load_as<Target>(OC_FORWARD(offset));
+    }
+
     template<typename Elm, typename Offset>
     requires is_integral_expr_v<Offset> && is_uint_element_expr_v<Elm>
     void store(Offset &&offset, const Elm &val) noexcept {

@@ -138,8 +138,8 @@ void test_compute_shader(Device &device, Stream &stream) {
 
 //        Var t = triangle.read(dispatch_id());
 byte_buffer.store(8, make_uint2(6));
-        Var t = byte_buffer.atomic(4).fetch_add(1u);
-        $info("{}   {}   {} {}",byte_buffer.load4(0));
+        Var t = byte_buffer.atomic(4).fetch_add(1.f);
+        $info("{}   {}   {} {}",byte_buffer.load_as<float4>(0));
 //
 //        /// Note the usage and implementation of DSL struct member function, e.g sum()
 //        $info("triple  index {} : i = {}, j = {}, k = {},  sum: {} ", dispatch_id(), t.i, t.j, t.k, t->sum());
