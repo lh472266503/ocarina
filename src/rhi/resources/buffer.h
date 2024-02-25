@@ -8,7 +8,6 @@
 #include "rhi/command.h"
 #include "rhi/stats.h"
 #include "bindless_array.h"
-#include "byte_buffer.h"
 
 namespace ocarina {
 

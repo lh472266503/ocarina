@@ -8,8 +8,11 @@
 #include "rhi/command.h"
 #include "rhi/stats.h"
 #include "bindless_array.h"
+#include "buffer.h"
 
 namespace ocarina {
+
+class ByteBuffer;
 
 class ByteBufferView {
 private:
@@ -24,13 +27,25 @@ public:
     ByteBufferView(handle_ty handle, size_t offset, size_t size, size_t total_size)
         : _handle(handle), _offset(offset), _size(size), _total_size(total_size) {}
 
+    ByteBufferView(handle_ty handle, size_t total_size)
+        : _handle(handle), _offset(0), _size(total_size), _total_size(total_size) {}
+
+    inline ByteBufferView(const ByteBuffer &buffer);
+
     [[nodiscard]] ByteBufferView subview(size_t offset, size_t size) const noexcept {
         return ByteBufferView(_handle, _offset + offset, size, _total_size);
     }
 
+    template<typename T>
+    [[nodiscard]] BufferView<T> view_as(size_t offset = 0, size_t size = 0) const noexcept {
+        size = size == 0 ? _size - offset : size;
+        return BufferView<T>(_handle, (_offset + offset) / sizeof(T),
+                             size / sizeof(T), _total_size / sizeof(T));
+    }
+
     [[nodiscard]] size_t size() const { return _size; }
-    [[nodiscard]] size_t size_in_byte() const noexcept { return _size; }
     [[nodiscard]] size_t element_size() const noexcept { return 1; }
+    [[nodiscard]] size_t size_in_byte() const noexcept { return _size * size_in_byte(); }
     [[nodiscard]] handle_ty head() const { return _handle + _offset * element_size(); }
 
     [[nodiscard]] BufferCopyCommand *copy_from(const ByteBufferView &src, bool async = true,
@@ -81,6 +96,8 @@ public:
         : RHIResource(nullptr, Tag::BUFFER, buffer_view.head()),
           _size(buffer_view.size()) {}
 
+    [[nodiscard]] size_t size() const noexcept { return _size; }
+
     void destroy() override {
         _destroy();
         _size = 0;
@@ -112,6 +129,38 @@ public:
         return captured_resource.expression();
     }
 
+    [[nodiscard]] ByteBufferView view(size_t offset = 0, size_t size = 0) const noexcept {
+        size = size == 0 ? _size - offset : size;
+        return ByteBufferView(_handle, offset, size, _size);
+    }
+
+    template<typename T>
+    [[nodiscard]] BufferView<T> view_as(size_t offset = 0, size_t size = 0) const noexcept {
+        return view().view_as<T>(offset, size);
+    }
+
+    template<typename... Args>
+    [[nodiscard]] BufferCopyCommand *copy_from(Args &&...args) const noexcept {
+        return view(0, _size).copy_from(OC_FORWARD(args)...);
+    }
+    template<typename... Args>
+    [[nodiscard]] BufferDownloadCommand *download(Args &&...args) const noexcept {
+        return view(0, _size).download(OC_FORWARD(args)...);
+    }
+    template<typename... Args>
+    [[nodiscard]] BufferUploadCommand *upload(Args &&...args) const noexcept {
+        return view(0, _size).upload(OC_FORWARD(args)...);
+    }
+    template<typename... Args>
+    [[nodiscard]] BufferByteSetCommand *byte_set(Args &&...args) const noexcept {
+        return view(0, _size).byte_set(OC_FORWARD(args)...);
+    }
+    template<typename... Args>
+    [[nodiscard]] BufferByteSetCommand *reset(Args &&...args) const noexcept {
+        return view(0, _size).reset(OC_FORWARD(args)...);
+    }
+
+    /// for dsl start
     template<uint N = 1, typename Elm = uint, typename Offset>
     requires is_integral_expr_v<Offset>
     [[nodiscard]] auto load(Offset &&offset) const noexcept {
@@ -156,30 +205,10 @@ public:
     [[nodiscard]] detail::AtomicRef<Target> atomic(Index &&index) const noexcept {
         return make_expr<ByteBuffer>(expression()).atomic<Target>(OC_FORWARD(index));
     }
-
-    [[nodiscard]] ByteBufferView view(size_t offset = 0, size_t size = 0) const noexcept {
-        size = size == 0 ? _size - offset : size;
-        return ByteBufferView(_handle, offset, size, _size);
-    }
-    template<typename... Args>
-    [[nodiscard]] BufferCopyCommand *copy_from(Args &&...args) const noexcept {
-        return view(0, _size).copy_from(OC_FORWARD(args)...);
-    }
-    template<typename... Args>
-    [[nodiscard]] BufferDownloadCommand *download(Args &&...args) const noexcept {
-        return view(0, _size).download(OC_FORWARD(args)...);
-    }
-    template<typename... Args>
-    [[nodiscard]] BufferUploadCommand *upload(Args &&...args) const noexcept {
-        return view(0, _size).upload(OC_FORWARD(args)...);
-    }
-    template<typename... Args>
-    [[nodiscard]] BufferByteSetCommand *byte_set(Args &&...args) const noexcept {
-        return view(0, _size).byte_set(OC_FORWARD(args)...);
-    }
-    template<typename... Args>
-    [[nodiscard]] BufferByteSetCommand *reset(Args &&...args) const noexcept {
-        return view(0, _size).reset(OC_FORWARD(args)...);
-    }
+    /// for dsl end
 };
+
+ByteBufferView::ByteBufferView(const ocarina::ByteBuffer &buffer)
+    : ByteBufferView(buffer.handle(), buffer.size()) {}
+
 }// namespace ocarina

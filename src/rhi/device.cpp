@@ -7,6 +7,7 @@
 #include "resources/stream.h"
 #include "rtx/accel.h"
 #include "resources/bindless_array.h"
+#include "resources/byte_buffer.h"
 
 namespace ocarina {
 
