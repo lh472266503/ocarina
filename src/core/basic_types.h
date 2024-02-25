@@ -93,50 +93,53 @@ struct Matrix {
 
 template<>
 struct Matrix<2> {
+private:
+    array<float2, 2> _cols{};
 
-    array<float2, 2> cols{};
-
+public:
     constexpr Matrix() noexcept
-        : cols{float2{1.0f, 0.0f}, float2{0.0f, 1.0f}} {}
+        : _cols{float2{1.0f, 0.0f}, float2{0.0f, 1.0f}} {}
 
     constexpr Matrix(const float2 c0, const float2 c1) noexcept
-        : cols{c0, c1} {}
+        : _cols{c0, c1} {}
 
-    [[nodiscard]] constexpr float2 &operator[](size_t i) noexcept { return cols[i]; }
-    [[nodiscard]] constexpr const float2 &operator[](size_t i) const noexcept { return cols[i]; }
+    [[nodiscard]] constexpr float2 &operator[](size_t i) noexcept { return _cols[i]; }
+    [[nodiscard]] constexpr const float2 &operator[](size_t i) const noexcept { return _cols[i]; }
 };
 
 template<>
 struct Matrix<3> {
+private:
+    array<float3, 3> _cols{};
 
-    array<float3, 3> cols{};
-
+public:
     constexpr Matrix() noexcept
-        : cols{float3{1.0f, 0.0f, 0.0f}, float3{0.0f, 1.0f, 0.0f}, float3{0.0f, 0.0f, 1.0f}} {}
+        : _cols{float3{1.0f, 0.0f, 0.0f}, float3{0.0f, 1.0f, 0.0f}, float3{0.0f, 0.0f, 1.0f}} {}
 
     constexpr Matrix(const float3 c0, const float3 c1, const float3 c2) noexcept
-        : cols{c0, c1, c2} {}
+        : _cols{c0, c1, c2} {}
 
-    [[nodiscard]] constexpr float3 &operator[](size_t i) noexcept { return cols[i]; }
-    [[nodiscard]] constexpr const float3 &operator[](size_t i) const noexcept { return cols[i]; }
+    [[nodiscard]] constexpr float3 &operator[](size_t i) noexcept { return _cols[i]; }
+    [[nodiscard]] constexpr const float3 &operator[](size_t i) const noexcept { return _cols[i]; }
 };
 
 template<>
 struct Matrix<4> {
+private:
+    array<float4, 4> _cols{};
 
-    array<float4, 4> cols{};
-
+public:
     constexpr Matrix() noexcept
-        : cols{float4{1.0f, 0.0f, 0.0f, 0.0f},
+        : _cols{float4{1.0f, 0.0f, 0.0f, 0.0f},
                float4{0.0f, 1.0f, 0.0f, 0.0f},
                float4{0.0f, 0.0f, 1.0f, 0.0f},
                float4{0.0f, 0.0f, 0.0f, 1.0f}} {}
 
     constexpr Matrix(const float4 c0, const float4 c1, const float4 c2, const float4 c3) noexcept
-        : cols{c0, c1, c2, c3} {}
+        : _cols{c0, c1, c2, c3} {}
 
-    [[nodiscard]] constexpr float4 &operator[](size_t i) noexcept { return cols[i]; }
-    [[nodiscard]] constexpr const float4 &operator[](size_t i) const noexcept { return cols[i]; }
+    [[nodiscard]] constexpr float4 &operator[](size_t i) noexcept { return _cols[i]; }
+    [[nodiscard]] constexpr const float4 &operator[](size_t i) const noexcept { return _cols[i]; }
 };
 
 using float2x2 = Matrix<2>;

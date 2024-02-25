@@ -176,24 +176,27 @@ struct SOAView<Matrix<N>> {
 public:
     static constexpr uint size = sizeof(Matrix<N>);
 
-public:
-    array<SOAView<Vector<float, N>>, N> cols;
+private:
+    array<SOAView<Vector<float, N>>, N> _cols;
 
 public:
     explicit SOAView(const ByteBufferVar &buffer_var,
                      Uint offset = 0u,
                      uint stride = size) {
         for (int i = 0; i < N; ++i) {
-            cols[i] = SOAView<Vector<float, N>>(buffer_var, offset, stride);
-            offset += cols[i].size_in_byte();
+            _cols[i] = SOAView<Vector<float, N>>(buffer_var, offset, stride);
+            offset += _cols[i].size_in_byte();
         }
     }
+
+    [[nodiscard]] auto &operator[](size_t index) const noexcept { return _cols[index];}
+    [[nodiscard]] auto &operator[](size_t index) noexcept {return _cols[index];}
 
     template<typename Index>
     [[nodiscard]] Var<Matrix<N>> read(Index &&index) noexcept {
         Var<Matrix<N>> ret;
         for (int i = 0; i < N; ++i) {
-
+            ret[i] = _cols[i].read(OC_FORWARD(index));
         }
         return ret;
     }
@@ -202,7 +205,7 @@ public:
     [[nodiscard]] Var<int_type> size_in_byte() noexcept {
         Var<int_type> ret = 0;
         for (int i = 0; i < N; ++i) {
-
+            ret += _cols[i].size_in_byte();
         }
         return ret;
     }
