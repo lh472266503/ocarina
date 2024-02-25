@@ -22,13 +22,14 @@ struct SOAView {
         static constexpr uint size = sizeof(type);                             \
                                                                                \
     private:                                                                   \
-        Uint _offset{};                                                        \
         const ByteBufferVar *_buffer{};                                        \
+        Uint _offset{};                                                        \
         uint _stride{};                                                        \
                                                                                \
     public:                                                                    \
-        SOAView(const Uint &ofs, const ByteBufferVar &buffer, uint stride)     \
-            : _offset(ofs), _buffer(&buffer), _stride(stride) {}               \
+        SOAView() = default;                                                   \
+        SOAView(const ByteBufferVar &buffer, const Uint &ofs, uint stride)     \
+            : _buffer(&buffer), _offset(ofs), _stride(stride) {}               \
                                                                                \
         template<typename Index>                                               \
         [[nodiscard]] Var<float> read(Index &&index) noexcept {                \
@@ -52,41 +53,159 @@ OC_MAKE_ATOMIC_SOA(array<T OC_COMMA N>,
 
 template<typename T>
 struct SOAView<Vector<T, 2>> {
+public:
+    static constexpr uint size = sizeof(Vector<T, 2>);
+
+public:
     SOAView<T> x;
     SOAView<T> y;
+
+public:
+    explicit SOAView(const ByteBufferVar &buffer_var,
+                     Uint offset = 0u,
+                     uint stride = size) {
+        x = SOAView<T>(buffer_var, offset, stride);
+        offset += x.size_in_byte();
+        y = SOAView<T>(buffer_var, offset, stride);
+    }
+
+    template<typename Index>
+    [[nodiscard]] Var<Vector<T, 2>> read(Index &&index) noexcept {
+        Var<Vector<T, 2>> ret;
+        ret.x = x.read(OC_FORWARD(index));
+        ret.y = y.read(OC_FORWARD(index));
+        return ret;
+    }
+
+    template<typename int_type = uint>
+    [[nodiscard]] Var<int_type> size_in_byte() noexcept {
+        Var<int_type> ret = 0;
+        ret += x.size_in_byte();
+        ret += y.size_in_byte();
+        return ret;
+    }
 };
 
 template<typename T>
 struct SOAView<Vector<T, 3>> {
+public:
+    static constexpr uint size = sizeof(Vector<T, 3>);
+
+public:
     SOAView<T> x;
     SOAView<T> y;
     SOAView<T> z;
+
+public:
+    explicit SOAView(const ByteBufferVar &buffer_var,
+                     Uint offset = 0u,
+                     uint stride = size) {
+        x = SOAView<T>(buffer_var, offset, stride);
+        offset += x.size_in_byte();
+        y = SOAView<T>(buffer_var, offset, stride);
+        offset += y.size_in_byte();
+        z = SOAView<T>(buffer_var, offset, stride);
+    }
+
+    template<typename Index>
+    [[nodiscard]] Var<Vector<T, 2>> read(Index &&index) noexcept {
+        Var<Vector<T, 2>> ret;
+        ret.x = x.read(OC_FORWARD(index));
+        ret.y = y.read(OC_FORWARD(index));
+        ret.z = z.read(OC_FORWARD(index));
+        return ret;
+    }
+
+    template<typename int_type = uint>
+    [[nodiscard]] Var<int_type> size_in_byte() noexcept {
+        Var<int_type> ret = 0;
+        ret += x.size_in_byte();
+        ret += y.size_in_byte();
+        ret += z.size_in_byte();
+        return ret;
+    }
 };
 
 template<typename T>
 struct SOAView<Vector<T, 4>> {
+public:
+    static constexpr uint size = sizeof(Vector<T, 4>);
+
+public:
     SOAView<T> x;
     SOAView<T> y;
     SOAView<T> z;
     SOAView<T> w;
+
+public:
+    explicit SOAView(const ByteBufferVar &buffer_var,
+                     Uint offset = 0u,
+                     uint stride = size) {
+        x = SOAView<T>(buffer_var, offset, stride);
+        offset += x.size_in_byte();
+        y = SOAView<T>(buffer_var, offset, stride);
+        offset += y.size_in_byte();
+        z = SOAView<T>(buffer_var, offset, stride);
+        offset += z.size_in_byte();
+        w = SOAView<T>(buffer_var, offset, stride);
+    }
+
+    template<typename Index>
+    [[nodiscard]] Var<Vector<T, 2>> read(Index &&index) noexcept {
+        Var<Vector<T, 2>> ret;
+        ret.x = x.read(OC_FORWARD(index));
+        ret.y = y.read(OC_FORWARD(index));
+        ret.z = z.read(OC_FORWARD(index));
+        ret.w = w.read(OC_FORWARD(index));
+        return ret;
+    }
+
+    template<typename int_type = uint>
+    [[nodiscard]] Var<int_type> size_in_byte() noexcept {
+        Var<int_type> ret = 0;
+        ret += x.size_in_byte();
+        ret += y.size_in_byte();
+        ret += z.size_in_byte();
+        ret += w.size_in_byte();
+        return ret;
+    }
 };
 
-template<>
-struct SOAView<Matrix<2>> {
-    array<SOAView<float2>, 2> cols;
+template<uint N>
+struct SOAView<Matrix<N>> {
+public:
+    static constexpr uint size = sizeof(Matrix<N>);
 
-};
+public:
+    array<SOAView<Vector<float, N>>, N> cols;
 
-template<>
-struct SOAView<Matrix<3>> {
-    array<SOAView<float3>, 3> cols;
+public:
+    explicit SOAView(const ByteBufferVar &buffer_var,
+                     Uint offset = 0u,
+                     uint stride = size) {
+        for (int i = 0; i < N; ++i) {
+            cols[i] = SOAView<Vector<float, N>>(buffer_var, offset, stride);
+            offset += cols[i].size_in_byte();
+        }
+    }
 
-};
+    template<typename Index>
+    [[nodiscard]] Var<Matrix<N>> read(Index &&index) noexcept {
+        Var<Matrix<N>> ret;
+        for (int i = 0; i < N; ++i) {
 
-template<>
-struct SOAView<Matrix<4>> {
-    array<SOAView<float4>, 4> cols;
-    
+        }
+        return ret;
+    }
+
+    template<typename int_type = uint>
+    [[nodiscard]] Var<int_type> size_in_byte() noexcept {
+        Var<int_type> ret = 0;
+        for (int i = 0; i < N; ++i) {
+
+        }
+        return ret;
+    }
 };
 
 #undef OC_MAKE_ATOMIC_SOA
