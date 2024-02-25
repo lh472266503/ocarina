@@ -45,7 +45,7 @@ public:
 
     [[nodiscard]] size_t size() const { return _size; }
     [[nodiscard]] size_t element_size() const noexcept { return 1; }
-    [[nodiscard]] size_t size_in_byte() const noexcept { return _size * size_in_byte(); }
+    [[nodiscard]] size_t size_in_byte() const noexcept { return _size * element_size(); }
     [[nodiscard]] handle_ty head() const { return _handle + _offset * element_size(); }
 
     [[nodiscard]] BufferCopyCommand *copy_from(const ByteBufferView &src, bool async = true,
