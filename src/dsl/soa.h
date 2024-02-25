@@ -61,7 +61,7 @@ OC_MAKE_ATOMIC_SOA(array<T OC_COMMA N>,
 template<typename T>
 struct SOAView<Vector<T, 2>> {
 public:
-    static constexpr uint size = sizeof(Vector<T, 2>);
+    static constexpr uint type_size = sizeof(Vector<T, 2>);
 
 public:
     SOAView<T> x;
@@ -70,7 +70,7 @@ public:
 public:
     explicit SOAView(ByteBufferVar &buffer_var,
                      Uint offset = 0u,
-                     uint stride = size) {
+                     uint stride = type_size) {
         x = SOAView<T>(buffer_var, offset, stride);
         offset += x.size_in_byte();
         y = SOAView<T>(buffer_var, offset, stride);
@@ -104,7 +104,7 @@ public:
 template<typename T>
 struct SOAView<Vector<T, 3>> {
 public:
-    static constexpr uint size = sizeof(Vector<T, 3>);
+    static constexpr uint type_size = sizeof(Vector<T, 3>);
 
 public:
     SOAView<T> x;
@@ -114,7 +114,7 @@ public:
 public:
     explicit SOAView(ByteBufferVar &buffer_var,
                      Uint offset = 0u,
-                     uint stride = size) {
+                     uint stride = type_size) {
         x = SOAView<T>(buffer_var, offset, stride);
         offset += x.size_in_byte();
         y = SOAView<T>(buffer_var, offset, stride);
@@ -153,7 +153,7 @@ public:
 template<typename T>
 struct SOAView<Vector<T, 4>> {
 public:
-    static constexpr uint size = sizeof(Vector<T, 4>);
+    static constexpr uint type_size = sizeof(Vector<T, 4>);
 
 public:
     SOAView<T> x;
@@ -164,7 +164,7 @@ public:
 public:
     explicit SOAView(ByteBufferVar &buffer_var,
                      Uint offset = 0u,
-                     uint stride = size) {
+                     uint stride = type_size) {
         x = SOAView<T>(buffer_var, offset, stride);
         offset += x.size_in_byte();
         y = SOAView<T>(buffer_var, offset, stride);
@@ -208,7 +208,7 @@ public:
 template<uint N>
 struct SOAView<Matrix<N>> {
 public:
-    static constexpr uint size = sizeof(Matrix<N>);
+    static constexpr uint type_size = sizeof(Matrix<N>);
 
 private:
     array<SOAView<Vector<float, N>>, N> _cols;
@@ -216,7 +216,7 @@ private:
 public:
     explicit SOAView(ByteBufferVar &buffer_var,
                      Uint offset = 0u,
-                     uint stride = size) {
+                     uint stride = type_size) {
         for (int i = 0; i < N; ++i) {
             _cols[i] = SOAView<Vector<float, N>>(buffer_var, offset, stride);
             offset += _cols[i].size_in_byte();
