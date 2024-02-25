@@ -42,7 +42,7 @@ OC_STRUCT(AAA, a, b, c){};
 
 template<typename T>
 //requires is_scalar_v<T>
-struct SOAView {
+struct TSOAView {
     Uint offset;
     ByteBufferVar buffer;
     uint stride{};
@@ -59,10 +59,10 @@ struct SOAView {
 };
 
 template<>
-struct SOAView<CCC> {
+struct TSOAView<CCC> {
 
-    SOAView<int> ic;
-    SOAView<int> id;
+    TSOAView<int> ic;
+    TSOAView<int> id;
 
     template<typename Index>
     [[nodiscard]] Var<CCC> read(Index &&index) noexcept {
@@ -82,11 +82,11 @@ struct SOAView<CCC> {
 };
 
 template<>
-struct SOAView<AAA> {
+struct TSOAView<AAA> {
 
-    SOAView<int> a;
-    SOAView<float> b;
-    SOAView<CCC> c;
+    TSOAView<int> a;
+    TSOAView<float> b;
+    TSOAView<CCC> c;
 
     template<typename Index>
     [[nodiscard]] Var<AAA> read(Index &&index) noexcept {
@@ -188,7 +188,7 @@ void test_compute_shader(Device &device, Stream &stream) {
         //        Var t = triangle.read(dispatch_id());
         byte_buffer.store(8, make_float2(6));
         Var t = byte_buffer.atomic<float>(4).fetch_add(1.f);
-        $info("{}   {}   {} {}   {}", byte_buffer.load_as<float4>(0), byte_buffer_var.size());
+        $info("{}   {}   {}    {}", byte_buffer.load_as<array<float, 3>>(4).as_vec3(), byte_buffer_var.size());
         $info("{}   {}   {} {}   {}", f4.read(0), f4.size());
         //
         //        /// Note the usage and implementation of DSL struct member function, e.g sum()
