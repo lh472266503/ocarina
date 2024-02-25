@@ -45,11 +45,11 @@ template<typename T>
 struct SOAView {
     Uint offset;
     ByteBufferVar buffer;
-    uint stride;
+    uint stride{};
 
     template<typename Index>
     [[nodiscard]] Var<T> read(Index &&index) noexcept {
-        return buffer.read(offset + OC_FORWARD(index) * sizeof(T));
+        return buffer.load_as<T>(offset + OC_FORWARD(index) * sizeof(T));
     }
 
     template<typename int_type = uint>

@@ -98,17 +98,16 @@ ocarina::string CUDACompiler::compile(const Function &function, int sm) const no
     ocarina::string ptx;
     FileManager *file_manager = _device->file_manager();
     if (!file_manager->is_exist_cache(ptx_fn)) {
+        OC_INFO_FORMAT("miss ptx file {}", ptx_fn);
         if (!file_manager->is_exist_cache(cu_fn)) {
             CUDACodegen codegen{Env::code_obfuscation()};
             codegen.emit(function);
             const ocarina::string &cu = codegen.scratch().c_str();
-            //            cout << cu << endl;
             file_manager->write_global_cache(cu_fn, cu);
             ptx = compile(cu, cu_fn, 75);
             file_manager->write_global_cache(ptx_fn, ptx);
         } else {
             const ocarina::string &cu = file_manager->read_global_cache(cu_fn);
-            //            cout << cu << endl;
             ptx = compile(cu, cu_fn, sm);
             file_manager->write_global_cache(ptx_fn, ptx);
         }

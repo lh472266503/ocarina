@@ -94,7 +94,7 @@ struct Matrix {
 template<>
 struct Matrix<2> {
 
-    float2 cols[2];
+    array<float2, 2> cols{};
 
     constexpr Matrix() noexcept
         : cols{float2{1.0f, 0.0f}, float2{0.0f, 1.0f}} {}
@@ -109,7 +109,7 @@ struct Matrix<2> {
 template<>
 struct Matrix<3> {
 
-    float3 cols[3];
+    array<float3, 3> cols{};
 
     constexpr Matrix() noexcept
         : cols{float3{1.0f, 0.0f, 0.0f}, float3{0.0f, 1.0f, 0.0f}, float3{0.0f, 0.0f, 1.0f}} {}
@@ -124,7 +124,7 @@ struct Matrix<3> {
 template<>
 struct Matrix<4> {
 
-    float4 cols[4];
+    array<float4, 4> cols{};
 
     constexpr Matrix() noexcept
         : cols{float4{1.0f, 0.0f, 0.0f, 0.0f},
