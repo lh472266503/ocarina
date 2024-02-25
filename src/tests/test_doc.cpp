@@ -27,92 +27,6 @@ OC_STRUCT(Triple, i, j, k){
 }
 ;
 
-struct CCC {
-    int ic;
-    int id;
-};
-OC_STRUCT(CCC, ic, id){};
-
-struct AAA {
-    int a;
-    float b;
-    CCC c;
-};
-OC_STRUCT(AAA, a, b, c){};
-
-template<typename T>
-//requires is_scalar_v<T>
-struct TSOAView {
-    Uint offset;
-    ByteBufferVar buffer;
-    uint stride{};
-
-    template<typename Index>
-    [[nodiscard]] Var<T> read(Index &&index) noexcept {
-        return buffer.load_as<T>(offset + OC_FORWARD(index) * sizeof(T));
-    }
-
-    template<typename int_type = uint>
-    [[nodiscard]] Var<int_type> size_in_byte() noexcept {
-        return buffer.size() / stride * sizeof(T);
-    }
-};
-
-template<>
-struct TSOAView<CCC> {
-
-    TSOAView<int> ic;
-    TSOAView<int> id;
-
-    template<typename Index>
-    [[nodiscard]] Var<CCC> read(Index &&index) noexcept {
-        Var<CCC> ret;
-        ret.ic = ic.read(index);
-        ret.id = id.read(index);
-        return ret;
-    }
-
-    template<typename int_type = uint>
-    [[nodiscard]] Var<int_type> size_in_byte() noexcept {
-        Var<int_type> ret = 0;
-        ret += ic.size_in_byte();
-        ret += id.size_in_byte();
-        return ret;
-    }
-};
-
-template<>
-struct TSOAView<AAA> {
-
-    TSOAView<int> a;
-    TSOAView<float> b;
-    TSOAView<CCC> c;
-
-    template<typename Index>
-    [[nodiscard]] Var<AAA> read(Index &&index) noexcept {
-        Var<AAA> ret;
-        ret.a = a.read(index);
-        ret.b = b.read(index);
-        ret.c = c.read(index);
-        return ret;
-    }
-
-    template<typename int_type = uint>
-    [[nodiscard]] Var<int_type> size_in_byte() noexcept {
-        Var<int_type> ret = 0;
-        ret += a.size_in_byte();
-        ret += b.size_in_byte();
-        ret += c.size_in_byte();
-        return ret;
-    }
-};
-
-struct TTT {
-    Triple triple;
-    int i{90};
-};
-OC_STRUCT(TTT, triple, i){};
-
 auto get_cube(float x = 1, float y = 1, float z = 1) {
     x = x / 2.f;
     y = y / 2.f;
@@ -186,10 +100,14 @@ void test_compute_shader(Device &device, Stream &stream) {
         //        $info("triple   {} {} {}   {} {}", Var(uint64_t(-1)), 11.5f, triangle.size() - 13, as<uint2>(make_float2(Float(10.f))));
 
         //        Var t = triangle.read(dispatch_id());
-        byte_buffer.store(8, make_float2(6));
-        Var t = byte_buffer.atomic<float>(4).fetch_add(1.f);
-        $info("{}   {}   {}    {}", byte_buffer.load_as<array<float, 3>>(4).as_vec3(), byte_buffer_var.size());
-        $info("{}   {}   {} {}   {}", f4.read(0), f4.size());
+//        byte_buffer.store(8, make_float2(6));
+//        Var t = byte_buffer.atomic<float>(4).fetch_add(1.f);
+//        $info("{}   {}   {}    {}", byte_buffer.load_as<array<float, 3>>(4).as_vec3(), byte_buffer_var.size());
+//        $info("{}   {}   {} {}   {}", f4.read(0), f4.size());
+        SOAView<float4> soa{byte_buffer_var};
+        comment("wocao");
+        Float4 a = soa.read(0);
+//        $info("{} {} {} {}  ", a);
         //
         //        /// Note the usage and implementation of DSL struct member function, e.g sum()
         //        $info("triple  index {} : i = {}, j = {}, k = {},  sum: {} ", dispatch_id(), t.i, t.j, t.k, t->sum());

@@ -108,8 +108,8 @@ public:
     }
 
     template<typename Index>
-    [[nodiscard]] Var<Vector<T, 2>> read(Index &&index) noexcept {
-        Var<Vector<T, 2>> ret;
+    [[nodiscard]] Var<Vector<T, 3>> read(Index &&index) noexcept {
+        Var<Vector<T, 3>> ret;
         ret.x = x.read(OC_FORWARD(index));
         ret.y = y.read(OC_FORWARD(index));
         ret.z = z.read(OC_FORWARD(index));
@@ -151,8 +151,8 @@ public:
     }
 
     template<typename Index>
-    [[nodiscard]] Var<Vector<T, 2>> read(Index &&index) noexcept {
-        Var<Vector<T, 2>> ret;
+    [[nodiscard]] Var<Vector<T, 4>> read(Index &&index) noexcept {
+        Var<Vector<T, 4>> ret;
         ret.x = x.read(OC_FORWARD(index));
         ret.y = y.read(OC_FORWARD(index));
         ret.z = z.read(OC_FORWARD(index));

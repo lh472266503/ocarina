@@ -159,8 +159,8 @@ struct EnableByteLoadAndStore {
 
     template<uint N = 1, typename Elm = uint, typename Offset>
     requires is_integral_expr_v<Offset>
-    [[nodiscard]] auto load(Offset &&offset) const noexcept {
-        if constexpr (is_dsl_v<Offset>) {
+    [[nodiscard]] auto load(Offset &&offset, bool check_boundary = false) const noexcept {
+        if (check_boundary) {
             offset = detail::correct_index(offset, self()->size(), typeid(*this).name(), traceback_string());
         }
         if constexpr (N == 1) {
@@ -182,8 +182,8 @@ struct EnableByteLoadAndStore {
 
     template<typename Target, typename Offset>
     requires is_integral_expr_v<Offset>
-    [[nodiscard]] Var<Target> load_as(Offset &&offset) const noexcept {
-        if constexpr (is_dsl_v<Offset>) {
+    [[nodiscard]] Var<Target> load_as(Offset &&offset, bool check_boundary = false) const noexcept {
+        if (check_boundary) {
             offset = detail::correct_index(offset, self()->size(), typeid(*this).name(), traceback_string());
         }
         const Type *ret_type = Type::of<Target>();
@@ -197,26 +197,26 @@ struct EnableByteLoadAndStore {
 
     template<typename Elm = uint, typename Offset>
     requires is_integral_expr_v<Offset>
-    [[nodiscard]] auto load2(Offset &&offset) const noexcept {
-        return load<2, Elm>(OC_FORWARD(offset));
+    [[nodiscard]] auto load2(Offset &&offset, bool check_boundary = false) const noexcept {
+        return load<2, Elm>(OC_FORWARD(offset), check_boundary);
     }
 
     template<typename Elm = uint, typename Offset>
     requires is_integral_expr_v<Offset>
-    [[nodiscard]] auto load3(Offset &&offset) const noexcept {
-        return load<3, Elm>(OC_FORWARD(offset));
+    [[nodiscard]] auto load3(Offset &&offset, bool check_boundary = false) const noexcept {
+        return load<3, Elm>(OC_FORWARD(offset), check_boundary);
     }
 
     template<typename Elm = uint, typename Offset>
     requires is_integral_expr_v<Offset>
-    [[nodiscard]] auto load4(Offset &&offset)const noexcept {
-        return load<4, Elm>(OC_FORWARD(offset));
+    [[nodiscard]] auto load4(Offset &&offset, bool check_boundary = false) const noexcept {
+        return load<4, Elm>(OC_FORWARD(offset), check_boundary);
     }
 
     template<typename Elm, typename Offset>
     requires is_integral_expr_v<Offset>
-    void store(Offset &&offset, const Elm &val) noexcept {
-        if constexpr (is_dsl_v<Offset>) {
+    void store(Offset &&offset, const Elm &val, bool check_boundary = false) noexcept {
+        if (check_boundary) {
             offset = detail::correct_index(offset, self()->size(), typeid(*this).name(), traceback_string());
         }
         const CallExpr *expr = Function::current()->call_builtin(nullptr, CallOp::BYTE_BUFFER_WRITE,
@@ -348,7 +348,7 @@ public:
 
 template<typename TBuffer, typename Elm>
 struct BufferAsAtomicAddress {
-    template<typename Target = Elm,typename Index>
+    template<typename Target = Elm, typename Index>
     requires is_integral_expr_v<Index>
     [[nodiscard]] AtomicRef<Target> atomic(Index &&index) noexcept {
         static_assert(is_scalar_expr_v<Elm>);
