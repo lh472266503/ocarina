@@ -14,39 +14,39 @@ struct SOAView {
     static_assert(always_false_v<T>);
 };
 
-#define OC_MAKE_ATOMIC_SOA(TypeName, TemplateArg)                              \
-    template<TemplateArg>                                                      \
-    struct SOAView<TypeName> {                                                 \
-    public:                                                                    \
-        using type = TypeName;                                                 \
-        static constexpr uint size = sizeof(type);                             \
-                                                                               \
-    private:                                                                   \
-        ByteBufferVar *_buffer{};                                              \
-        Uint _offset{};                                                        \
-        uint _stride{};                                                        \
-                                                                               \
-    public:                                                                    \
-        SOAView() = default;                                                   \
-        SOAView(ByteBufferVar &buffer, const Uint &ofs, uint stride)           \
-            : _buffer(&buffer), _offset(ofs), _stride(stride) {}               \
-                                                                               \
-        template<typename Index>                                               \
-        requires is_integral_expr_v<Index>                                     \
-        [[nodiscard]] Var<float> read(Index &&index) const noexcept {          \
-            return _buffer->load_as<type>(_offset + OC_FORWARD(index) * size); \
-        }                                                                      \
-                                                                               \
-        template<typename Index>                                               \
-        requires is_integral_expr_v<Index>                                     \
-        void write(Index &&index, const Var<type> &val) noexcept {             \
-            _buffer->store(_offset + OC_FORWARD(index) * size, val);           \
-        }                                                                      \
-                                                                               \
-        template<typename int_type = uint>                                     \
-        [[nodiscard]] Var<int_type> size_in_byte() const noexcept {            \
-            return _buffer->size<int_type>() / _stride * size;                 \
-        }                                                                      \
+#define OC_MAKE_ATOMIC_SOA(TypeName, TemplateArg)                                   \
+    template<TemplateArg>                                                           \
+    struct SOAView<TypeName> {                                                      \
+    public:                                                                         \
+        using type = TypeName;                                                      \
+        static constexpr uint type_size = sizeof(type);                             \
+                                                                                    \
+    private:                                                                        \
+        ByteBufferVar *_buffer{};                                                   \
+        Uint _offset{};                                                             \
+        uint _stride{};                                                             \
+                                                                                    \
+    public:                                                                         \
+        SOAView() = default;                                                        \
+        SOAView(ByteBufferVar &buffer, const Uint &ofs, uint stride)                \
+            : _buffer(&buffer), _offset(ofs), _stride(stride) {}                    \
+                                                                                    \
+        template<typename Index>                                                    \
+        requires is_integral_expr_v<Index>                                          \
+        [[nodiscard]] Var<float> read(Index &&index) const noexcept {               \
+            return _buffer->load_as<type>(_offset + OC_FORWARD(index) * type_size); \
+        }                                                                           \
+                                                                                    \
+        template<typename Index>                                                    \
+        requires is_integral_expr_v<Index>                                          \
+        void write(Index &&index, const Var<type> &val) noexcept {                  \
+            _buffer->store(_offset + OC_FORWARD(index) * type_size, val);           \
+        }                                                                           \
+                                                                                    \
+        template<typename int_type = uint>                                          \
+        [[nodiscard]] Var<int_type> size_in_byte() const noexcept {                 \
+            return _buffer->size<int_type>() / _stride * type_size;                 \
+        }                                                                           \
     };
 
 #define OC_COMMA ,
