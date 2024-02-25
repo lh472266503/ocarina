@@ -13,6 +13,7 @@
 #include "syntax.h"
 #include "operators.h"
 #include "func.h"
+#include "soa.h"
 #include "struct.h"
 #include "rtx_type.h"
 #include "computable.inl"

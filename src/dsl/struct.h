@@ -6,7 +6,6 @@
 
 #include "ast/type_registry.h"
 #include "var.h"
-#include "soa.h"
 
 #define OC_STRUCT(S, ...)                       \
     OC_MAKE_STRUCT_REFLECTION(S, ##__VA_ARGS__) \

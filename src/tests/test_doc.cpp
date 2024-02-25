@@ -108,7 +108,7 @@ void test_compute_shader(Device &device, Stream &stream) {
         comment("wocao");
         Float4 a = soa.read(0);
         $info("{} {} {} {}  ", a);
-//        soa.write(dispatch_id(), make_float4(19 * dispatch_id()));
+        soa.write(dispatch_id(), make_float4(19 * dispatch_id()));
         //
         //        /// Note the usage and implementation of DSL struct member function, e.g sum()
         //        $info("triple  index {} : i = {}, j = {}, k = {},  sum: {} ", dispatch_id(), t.i, t.j, t.k, t->sum());
@@ -172,7 +172,7 @@ void test_compute_shader(Device &device, Stream &stream) {
     Env::debugger().set_upper(make_uint2(1));
     auto shader = device.compile(kernel, "test desc");
     stream << Env::debugger().upload();
-    array<float4, 2> fff;
+    array<float, 8> fff;
     stream << shader(triple1, tri, bindless_array, byte_buffer.view(), f4v).dispatch(2)
            /// explict retrieve log
            << byte_buffer.download(fff.data(), 0)
