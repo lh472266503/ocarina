@@ -79,7 +79,7 @@ void test_compute_shader(Device &device, Stream &stream) {
 
     uint pp = bit_cast<uint>(10.f);
 
-    auto byte_buffer = device.create_byte_buffer(sizeof(uint4), "");
+    auto byte_buffer = device.create_byte_buffer(sizeof(uint4) * 2, "");
     //    auto byte_buffer = device.create_buffer<uint>(sizeof(uint4), "");
     float4 host = make_float4(12);
     stream << byte_buffer.upload(&host, false);
@@ -107,7 +107,8 @@ void test_compute_shader(Device &device, Stream &stream) {
         SOAView<float4> soa{byte_buffer_var};
         comment("wocao");
         Float4 a = soa.read(0);
-//        $info("{} {} {} {}  ", a);
+        $info("{} {} {} {}  ", a);
+        soa.write(dispatch_id(), make_float4(19 * dispatch_id()));
         //
         //        /// Note the usage and implementation of DSL struct member function, e.g sum()
         //        $info("triple  index {} : i = {}, j = {}, k = {},  sum: {} ", dispatch_id(), t.i, t.j, t.k, t->sum());
@@ -171,9 +172,10 @@ void test_compute_shader(Device &device, Stream &stream) {
     Env::debugger().set_upper(make_uint2(1));
     auto shader = device.compile(kernel, "test desc");
     stream << Env::debugger().upload();
+    array<float4, 2> fff;
     stream << shader(triple1, tri, bindless_array, byte_buffer.view(), f4v).dispatch(2)
            /// explict retrieve log
-           << byte_buffer.download(&host, 0)
+           << byte_buffer.download(fff.data(), 0)
            << Env::printer().retrieve()
            << synchronize() << commit();
 
@@ -318,7 +320,7 @@ int main(int argc, char *argv[]) {
     Env::debugger().init(device);
 
     //    Env::set_code_obfuscation(true);
-    //    Env::set_valid_check(false);
+        Env::set_valid_check(false);
 
     /// create rtx file_manager if need
     device.init_rtx();

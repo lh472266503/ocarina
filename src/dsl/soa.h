@@ -22,22 +22,29 @@ struct SOAView {
         static constexpr uint size = sizeof(type);                             \
                                                                                \
     private:                                                                   \
-        const ByteBufferVar *_buffer{};                                        \
+        ByteBufferVar *_buffer{};                                              \
         Uint _offset{};                                                        \
         uint _stride{};                                                        \
                                                                                \
     public:                                                                    \
         SOAView() = default;                                                   \
-        SOAView(const ByteBufferVar &buffer, const Uint &ofs, uint stride)     \
+        SOAView(ByteBufferVar &buffer, const Uint &ofs, uint stride)           \
             : _buffer(&buffer), _offset(ofs), _stride(stride) {}               \
                                                                                \
         template<typename Index>                                               \
-        [[nodiscard]] Var<float> read(Index &&index) noexcept {                \
+        requires is_integral_expr_v<Index>                                     \
+        [[nodiscard]] Var<float> read(Index &&index) const noexcept {          \
             return _buffer->load_as<type>(_offset + OC_FORWARD(index) * size); \
         }                                                                      \
                                                                                \
+        template<typename Index>                                               \
+        requires is_integral_expr_v<Index>                                     \
+        void write(Index &&index, const Var<type> &val) noexcept {             \
+            _buffer->store(_offset + OC_FORWARD(index) * size, val);           \
+        }                                                                      \
+                                                                               \
         template<typename int_type = uint>                                     \
-        [[nodiscard]] Var<int_type> size_in_byte() noexcept {                  \
+        [[nodiscard]] Var<int_type> size_in_byte() const noexcept {            \
             return _buffer->size<int_type>() / _stride * size;                 \
         }                                                                      \
     };
@@ -61,7 +68,7 @@ public:
     SOAView<T> y;
 
 public:
-    explicit SOAView(const ByteBufferVar &buffer_var,
+    explicit SOAView(ByteBufferVar &buffer_var,
                      Uint offset = 0u,
                      uint stride = size) {
         x = SOAView<T>(buffer_var, offset, stride);
@@ -70,15 +77,23 @@ public:
     }
 
     template<typename Index>
-    [[nodiscard]] Var<Vector<T, 2>> read(Index &&index) noexcept {
+    requires is_integral_expr_v<Index>
+    [[nodiscard]] Var<Vector<T, 2>> read(Index &&index) const noexcept {
         Var<Vector<T, 2>> ret;
         ret.x = x.read(OC_FORWARD(index));
         ret.y = y.read(OC_FORWARD(index));
         return ret;
     }
 
+    template<typename Index>
+    requires is_integral_expr_v<Index>
+    void write(Index &&index, const Var<Vector<T, 2>> &val) noexcept {
+        x.write(OC_FORWARD(index), val.x);
+        y.write(OC_FORWARD(index), val.y);
+    }
+
     template<typename int_type = uint>
-    [[nodiscard]] Var<int_type> size_in_byte() noexcept {
+    [[nodiscard]] Var<int_type> size_in_byte() const noexcept {
         Var<int_type> ret = 0;
         ret += x.size_in_byte();
         ret += y.size_in_byte();
@@ -97,7 +112,7 @@ public:
     SOAView<T> z;
 
 public:
-    explicit SOAView(const ByteBufferVar &buffer_var,
+    explicit SOAView(ByteBufferVar &buffer_var,
                      Uint offset = 0u,
                      uint stride = size) {
         x = SOAView<T>(buffer_var, offset, stride);
@@ -108,7 +123,8 @@ public:
     }
 
     template<typename Index>
-    [[nodiscard]] Var<Vector<T, 3>> read(Index &&index) noexcept {
+    requires is_integral_expr_v<Index>
+    [[nodiscard]] Var<Vector<T, 3>> read(Index &&index) const noexcept {
         Var<Vector<T, 3>> ret;
         ret.x = x.read(OC_FORWARD(index));
         ret.y = y.read(OC_FORWARD(index));
@@ -116,8 +132,16 @@ public:
         return ret;
     }
 
+    template<typename Index>
+    requires is_integral_expr_v<Index>
+    void write(Index &&index, const Var<Vector<T, 3>> &val) noexcept {
+        x.write(OC_FORWARD(index), val.x);
+        y.write(OC_FORWARD(index), val.y);
+        z.write(OC_FORWARD(index), val.z);
+    }
+
     template<typename int_type = uint>
-    [[nodiscard]] Var<int_type> size_in_byte() noexcept {
+    [[nodiscard]] Var<int_type> size_in_byte() const noexcept {
         Var<int_type> ret = 0;
         ret += x.size_in_byte();
         ret += y.size_in_byte();
@@ -138,7 +162,7 @@ public:
     SOAView<T> w;
 
 public:
-    explicit SOAView(const ByteBufferVar &buffer_var,
+    explicit SOAView(ByteBufferVar &buffer_var,
                      Uint offset = 0u,
                      uint stride = size) {
         x = SOAView<T>(buffer_var, offset, stride);
@@ -151,7 +175,8 @@ public:
     }
 
     template<typename Index>
-    [[nodiscard]] Var<Vector<T, 4>> read(Index &&index) noexcept {
+    requires is_integral_expr_v<Index>
+    [[nodiscard]] Var<Vector<T, 4>> read(Index &&index) const noexcept {
         Var<Vector<T, 4>> ret;
         ret.x = x.read(OC_FORWARD(index));
         ret.y = y.read(OC_FORWARD(index));
@@ -160,8 +185,17 @@ public:
         return ret;
     }
 
+    template<typename Index>
+    requires is_integral_expr_v<Index>
+    void write(Index &&index, const Var<Vector<T, 4>> &val) noexcept {
+        x.write(OC_FORWARD(index), val.x);
+        y.write(OC_FORWARD(index), val.y);
+        z.write(OC_FORWARD(index), val.z);
+        w.write(OC_FORWARD(index), val.w);
+    }
+
     template<typename int_type = uint>
-    [[nodiscard]] Var<int_type> size_in_byte() noexcept {
+    [[nodiscard]] Var<int_type> size_in_byte() const noexcept {
         Var<int_type> ret = 0;
         ret += x.size_in_byte();
         ret += y.size_in_byte();
@@ -180,7 +214,7 @@ private:
     array<SOAView<Vector<float, N>>, N> _cols;
 
 public:
-    explicit SOAView(const ByteBufferVar &buffer_var,
+    explicit SOAView(ByteBufferVar &buffer_var,
                      Uint offset = 0u,
                      uint stride = size) {
         for (int i = 0; i < N; ++i) {
@@ -189,11 +223,12 @@ public:
         }
     }
 
-    [[nodiscard]] auto &operator[](size_t index) const noexcept { return _cols[index];}
-    [[nodiscard]] auto &operator[](size_t index) noexcept {return _cols[index];}
+    [[nodiscard]] auto &operator[](size_t index) const noexcept { return _cols[index]; }
+    [[nodiscard]] auto &operator[](size_t index) noexcept { return _cols[index]; }
 
     template<typename Index>
-    [[nodiscard]] Var<Matrix<N>> read(Index &&index) noexcept {
+    requires is_integral_expr_v<Index>
+    [[nodiscard]] Var<Matrix<N>> read(Index &&index) const noexcept {
         Var<Matrix<N>> ret;
         for (int i = 0; i < N; ++i) {
             ret[i] = _cols[i].read(OC_FORWARD(index));
@@ -201,8 +236,16 @@ public:
         return ret;
     }
 
+    template<typename Index>
+    requires is_integral_expr_v<Index>
+    void write(Index &&index, const Var<Matrix<N>> &val) noexcept {
+        for (int i = 0; i < N; ++i) {
+            _cols[i].write(OC_FORWARD(index), val[i]);
+        }
+    }
+
     template<typename int_type = uint>
-    [[nodiscard]] Var<int_type> size_in_byte() noexcept {
+    [[nodiscard]] Var<int_type> size_in_byte() const noexcept {
         Var<int_type> ret = 0;
         for (int i = 0; i < N; ++i) {
             ret += _cols[i].size_in_byte();
