@@ -50,6 +50,45 @@ OC_MAKE_ATOMIC_SOA(int, )
 OC_MAKE_ATOMIC_SOA(array<T OC_COMMA N>,
                    typename T OC_COMMA uint N)
 
+template<typename T>
+struct SOAView<Vector<T, 2>> {
+    SOAView<T> x;
+    SOAView<T> y;
+};
+
+template<typename T>
+struct SOAView<Vector<T, 3>> {
+    SOAView<T> x;
+    SOAView<T> y;
+    SOAView<T> z;
+};
+
+template<typename T>
+struct SOAView<Vector<T, 4>> {
+    SOAView<T> x;
+    SOAView<T> y;
+    SOAView<T> z;
+    SOAView<T> w;
+};
+
+template<>
+struct SOAView<Matrix<2>> {
+    array<SOAView<float2>, 2> cols;
+
+};
+
+template<>
+struct SOAView<Matrix<3>> {
+    array<SOAView<float3>, 3> cols;
+
+};
+
+template<>
+struct SOAView<Matrix<4>> {
+    array<SOAView<float4>, 4> cols;
+    
+};
+
 #undef OC_MAKE_ATOMIC_SOA
 
 }// namespace ocarina
