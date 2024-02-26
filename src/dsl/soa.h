@@ -15,8 +15,8 @@ struct SOAView {
     static_assert(always_false_v<T>, "The SOAView template must be specialized");
 };
 
-#define OC_MAKE_ATOMIC_SOA(TemplateArg, TypeName)                                           \
-    TemplateArg struct SOAView<TypeName> {                                                  \
+#define OC_MAKE_ATOMIC_SOA(TemplateArgs, TypeName)                                          \
+    TemplateArgs struct SOAView<TypeName> {                                                 \
     public:                                                                                 \
         using element_type = TypeName;                                                      \
         static constexpr uint type_size = sizeof(element_type);                             \
@@ -63,6 +63,20 @@ OC_MAKE_ATOMIC_SOA(template<typename T OC_COMMA uint N>,
 
 }// namespace ocarina
 
+#define OC_MAKE_SOA_MEMBER(field_name) ocarina::SOAView<decltype(element_type::field_name)> field_name;
+
+#define OC_MAKE_SOA_MEMBER_CONSTRUCT(field_name)                                                              \
+    field_name = ocarina::SOAView<decltype(element_type::field_name)>(buffer_var, view_size, offset, stride); \
+    offset += field_name.size_in_byte();
+
+#define OC_MAKE_SOA_MEMBER_READ(field_name) ret.field_name = field_name.read(OC_FORWARD(index));
+
+#define OC_MAKE_SOA_MEMBER_WRITE(field_name) field_name.write(OC_FORWARD(index), val.field_name);
+
+#define OC_MAKE_SOA_MEMBER_SIZE(field_name) ret += field_name.size_in_byte();
+
+#define OC_MAKE_STRUCT_SOA_VIEW(TemplateArgs, S, ...)
+
 namespace ocarina {
 
 template<typename T>
@@ -82,9 +96,8 @@ public:
                      Uint offset = 0u,
                      uint stride = type_size) {
         view_size = ocarina::min(buffer_var.size<uint>(), view_size);
-        x = SOAView<T>(buffer_var, view_size, offset, stride);
-        offset += x.size_in_byte();
-        y = SOAView<T>(buffer_var, view_size, offset, stride);
+        OC_MAKE_SOA_MEMBER_CONSTRUCT(x)
+        OC_MAKE_SOA_MEMBER_CONSTRUCT(y)
     }
 
     template<typename Index>
@@ -133,11 +146,9 @@ public:
                      Uint offset = 0u,
                      uint stride = type_size) {
         view_size = ocarina::min(buffer_var.size<uint>(), view_size);
-        x = SOAView<T>(buffer_var, view_size, offset, stride);
-        offset += x.size_in_byte();
-        y = SOAView<T>(buffer_var, view_size, offset, stride);
-        offset += y.size_in_byte();
-        z = SOAView<T>(buffer_var, view_size, offset, stride);
+        OC_MAKE_SOA_MEMBER_CONSTRUCT(x)
+        OC_MAKE_SOA_MEMBER_CONSTRUCT(y)
+        OC_MAKE_SOA_MEMBER_CONSTRUCT(z)
     }
 
     template<typename Index>
@@ -178,7 +189,7 @@ public:
     static constexpr uint type_size = sizeof(element_type);
 
 public:
-    SOAView<T> x;
+    OC_MAKE_SOA_MEMBER(x)
     SOAView<T> y;
     SOAView<T> z;
     SOAView<T> w;
@@ -190,20 +201,17 @@ public:
                      Uint offset = 0u,
                      uint stride = type_size) {
         view_size = ocarina::min(buffer_var.size<uint>(), view_size);
-        x = SOAView<T>(buffer_var, view_size, offset, stride);
-        offset += x.size_in_byte();
-        y = SOAView<T>(buffer_var, view_size, offset, stride);
-        offset += y.size_in_byte();
-        z = SOAView<T>(buffer_var, view_size, offset, stride);
-        offset += z.size_in_byte();
-        w = SOAView<T>(buffer_var, view_size, offset, stride);
+        OC_MAKE_SOA_MEMBER_CONSTRUCT(x)
+        OC_MAKE_SOA_MEMBER_CONSTRUCT(y)
+        OC_MAKE_SOA_MEMBER_CONSTRUCT(z)
+        OC_MAKE_SOA_MEMBER_CONSTRUCT(w)
     }
 
     template<typename Index>
     requires is_integral_expr_v<Index>
     [[nodiscard]] Var<element_type> read(Index &&index) const noexcept {
         Var<element_type> ret;
-        ret.x = x.read(OC_FORWARD(index));
+        OC_MAKE_SOA_MEMBER_READ(x)
         ret.y = y.read(OC_FORWARD(index));
         ret.z = z.read(OC_FORWARD(index));
         ret.w = w.read(OC_FORWARD(index));
@@ -213,7 +221,7 @@ public:
     template<typename Index>
     requires is_integral_expr_v<Index>
     void write(Index &&index, const Var<element_type> &val) noexcept {
-        x.write(OC_FORWARD(index), val.x);
+        OC_MAKE_SOA_MEMBER_WRITE(x)
         y.write(OC_FORWARD(index), val.y);
         z.write(OC_FORWARD(index), val.z);
         w.write(OC_FORWARD(index), val.w);
@@ -222,7 +230,7 @@ public:
     template<typename int_type = uint>
     [[nodiscard]] Var<int_type> size_in_byte() const noexcept {
         Var<int_type> ret = 0;
-        ret += x.size_in_byte();
+        OC_MAKE_SOA_MEMBER_SIZE(x)
         ret += y.size_in_byte();
         ret += z.size_in_byte();
         ret += w.size_in_byte();
