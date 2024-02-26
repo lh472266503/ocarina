@@ -147,9 +147,9 @@ OC_MAKE_ATOMIC_SOA(template<typename T OC_COMMA uint N OC_COMMA typename TBuffer
         }                                                                         \
     };
 
-OC_MAKE_STRUCT_SOA_VIEW(template<typename T OC_COMMA typename TBuffer>, ocarina::Vector<T OC_COMMA 2>, x, y)
-OC_MAKE_STRUCT_SOA_VIEW(template<typename T OC_COMMA typename TBuffer>, ocarina::Vector<T OC_COMMA 3>, x, y, z)
-OC_MAKE_STRUCT_SOA_VIEW(template<typename T OC_COMMA typename TBuffer>, ocarina::Vector<T OC_COMMA 4>, x, y, z, w)
+//OC_MAKE_STRUCT_SOA_VIEW(template<typename T OC_COMMA typename TBuffer>, ocarina::Vector<T OC_COMMA 2>, x, y)
+//OC_MAKE_STRUCT_SOA_VIEW(template<typename T OC_COMMA typename TBuffer>, ocarina::Vector<T OC_COMMA 3>, x, y, z)
+//OC_MAKE_STRUCT_SOA_VIEW(template<typename T OC_COMMA typename TBuffer>, ocarina::Vector<T OC_COMMA 4>, x, y, z, w)
 
 namespace ocarina {
 
@@ -157,11 +157,11 @@ template<uint N, typename TBuffer>
 struct SOAView<Matrix<N>, TBuffer> {
 public:
     using element_type = Matrix<N>;
-    using array_element_type = decltype(std::declval<element_type>()[0]);
+    using array_element_type = Vector<float, N>;
     static constexpr uint type_size = sizeof(element_type);
 
 private:
-    array<SOAView<Vector<float, N>, TBuffer>, N> _array{};
+    array<SOAView<array_element_type, TBuffer>, N> _array{};
 
 public:
     SOAView() = default;
@@ -171,7 +171,7 @@ public:
                      uint stride = type_size) {
         view_size = ocarina::min(buffer_var.size_in_byte<uint>(), view_size);
         for (int i = 0; i < N; ++i) {
-            _array[i] = SOAView<Vector<float, N>, TBuffer>(buffer_var, view_size,
+            _array[i] = SOAView<array_element_type, TBuffer>(buffer_var, view_size,
                                                           offset, stride);
             offset += _array[i].size_in_byte();
         }
