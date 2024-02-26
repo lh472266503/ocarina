@@ -96,7 +96,10 @@ public:
         : RHIResource(nullptr, Tag::BUFFER, buffer_view.head()),
           _size(buffer_view.size()) {}
 
+    /// head of the buffer
+    [[nodiscard]] handle_ty head() const noexcept { return handle(); }
     [[nodiscard]] size_t size() const noexcept { return _size; }
+    [[nodiscard]] size_t size_in_byte() const noexcept { return size(); }
 
     void destroy() override {
         _destroy();

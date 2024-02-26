@@ -75,43 +75,43 @@ OC_MAKE_ATOMIC_SOA(template<typename T OC_COMMA uint N OC_COMMA typename TBuffer
 
 #define OC_MAKE_SOA_MEMBER_SIZE(field_name) ret += field_name.size_in_byte();
 
-#define OC_MAKE_STRUCT_SOA_VIEW(TemplateArgs, S, ...)                        \
-    TemplateArgs struct ocarina::SOAView<S, TBuffer> {                       \
-    public:                                                                  \
-        using element_type = S;                                              \
-        static constexpr uint type_size = sizeof(element_type);              \
-                                                                             \
-    public:                                                                  \
-        MAP(OC_MAKE_SOA_MEMBER, ##__VA_ARGS__)                               \
-    public:                                                                  \
-        SOAView() = default;                                                 \
-        explicit SOAView(TBuffer &buffer_var,                                \
-                         Uint view_size = InvalidUI32,                       \
-                         Uint offset = 0u,                                   \
-                         uint stride = type_size) {                          \
-            view_size = ocarina::min(buffer_var.size<uint>(), view_size);    \
-            MAP(OC_MAKE_SOA_MEMBER_CONSTRUCT, ##__VA_ARGS__)                 \
-        }                                                                    \
-                                                                             \
-        template<typename Index>                                             \
-        requires is_integral_expr_v<Index>                                   \
-        [[nodiscard]] Var<element_type> read(Index &&index) const noexcept { \
-            Var<element_type> ret;                                           \
-            MAP(OC_MAKE_SOA_MEMBER_READ, ##__VA_ARGS__)                      \
-            return ret;                                                      \
-        }                                                                    \
-                                                                             \
-        template<typename Index>                                             \
-        requires is_integral_expr_v<Index>                                   \
-        void write(Index &&index, const Var<element_type> &val) noexcept {   \
-            MAP(OC_MAKE_SOA_MEMBER_WRITE, ##__VA_ARGS__)                     \
-        }                                                                    \
-        template<typename int_type = uint>                                   \
-        [[nodiscard]] Var<int_type> size_in_byte() const noexcept {          \
-            Var<int_type> ret = 0;                                           \
-            MAP(OC_MAKE_SOA_MEMBER_SIZE, ##__VA_ARGS__)                      \
-            return ret;                                                      \
-        }                                                                    \
+#define OC_MAKE_STRUCT_SOA_VIEW(TemplateArgs, S, ...)                             \
+    TemplateArgs struct ocarina::SOAView<S, TBuffer> {                            \
+    public:                                                                       \
+        using element_type = S;                                                   \
+        static constexpr uint type_size = sizeof(element_type);                   \
+                                                                                  \
+    public:                                                                       \
+        MAP(OC_MAKE_SOA_MEMBER, ##__VA_ARGS__)                                    \
+    public:                                                                       \
+        SOAView() = default;                                                      \
+        explicit SOAView(TBuffer &buffer_var,                                     \
+                         Uint view_size = InvalidUI32,                            \
+                         Uint offset = 0u,                                        \
+                         uint stride = type_size) {                               \
+            view_size = ocarina::min(buffer_var.size_in_byte<uint>(), view_size); \
+            MAP(OC_MAKE_SOA_MEMBER_CONSTRUCT, ##__VA_ARGS__)                      \
+        }                                                                         \
+                                                                                  \
+        template<typename Index>                                                  \
+        requires is_integral_expr_v<Index>                                        \
+        [[nodiscard]] Var<element_type> read(Index &&index) const noexcept {      \
+            Var<element_type> ret;                                                \
+            MAP(OC_MAKE_SOA_MEMBER_READ, ##__VA_ARGS__)                           \
+            return ret;                                                           \
+        }                                                                         \
+                                                                                  \
+        template<typename Index>                                                  \
+        requires is_integral_expr_v<Index>                                        \
+        void write(Index &&index, const Var<element_type> &val) noexcept {        \
+            MAP(OC_MAKE_SOA_MEMBER_WRITE, ##__VA_ARGS__)                          \
+        }                                                                         \
+        template<typename int_type = uint>                                        \
+        [[nodiscard]] Var<int_type> size_in_byte() const noexcept {               \
+            Var<int_type> ret = 0;                                                \
+            MAP(OC_MAKE_SOA_MEMBER_SIZE, ##__VA_ARGS__)                           \
+            return ret;                                                           \
+        }                                                                         \
     };
 
 OC_MAKE_STRUCT_SOA_VIEW(template<typename T OC_COMMA typename TBuffer>, ocarina::Vector<T OC_COMMA 2>, x, y)
@@ -135,7 +135,7 @@ public:
                      Uint view_size = InvalidUI32,
                      Uint offset = 0u,
                      uint stride = type_size) {
-        view_size = ocarina::min(buffer_var.size<uint>(), view_size);
+        view_size = ocarina::min(buffer_var.size_in_byte<uint>(), view_size);
         for (int i = 0; i < N; ++i) {
             _cols[i] = SOAView<Vector<float, N>, TBuffer>(buffer_var, view_size,
                                                           offset, stride);

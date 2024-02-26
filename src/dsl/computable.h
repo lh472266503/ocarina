@@ -597,9 +597,14 @@ struct Computable<ByteBuffer>
 
 public:
     template<typename int_type = uint64t>
-    [[nodiscard]] auto size() const noexcept {
+    [[nodiscard]] auto size_in_byte() const noexcept {
         const CallExpr *expr = Function::current()->call_builtin(Type::of<int_type>(), CallOp::BUFFER_SIZE, {expression()});
         return eval<int_type>(expr);
+    }
+
+    template<typename int_type = uint64t>
+    [[nodiscard]] auto size() const noexcept {
+        return size_in_byte<int_type>();
     }
 
     template<typename Elm>
