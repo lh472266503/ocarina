@@ -203,6 +203,12 @@ public:
         expr.store(OC_FORWARD(offset), val);
     }
 
+    template<typename Elm>
+    [[nodiscard]] SOAView<Elm, Expr<ByteBuffer>> soa_view() noexcept {
+        auto e = make_expr<ByteBuffer>(expression());
+        return SOAView<Elm, Expr<ByteBuffer>>(e);
+    }
+
     template<typename Target = uint, typename Index>
     requires concepts::integral<expr_value_t<Index>>
     [[nodiscard]] detail::AtomicRef<Target> atomic(Index &&index) const noexcept {
