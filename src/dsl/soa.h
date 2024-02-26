@@ -15,9 +15,8 @@ struct SOAView {
     static_assert(always_false_v<T>, "The SOAView template must be specialized");
 };
 
-#define OC_MAKE_ATOMIC_SOA(TypeName, TemplateArg)                                           \
-    template<TemplateArg>                                                                   \
-    struct SOAView<TypeName> {                                                              \
+#define OC_MAKE_ATOMIC_SOA(TemplateArg, TypeName)                                           \
+    TemplateArg struct SOAView<TypeName> {                                                  \
     public:                                                                                 \
         using element_type = TypeName;                                                      \
         static constexpr uint type_size = sizeof(element_type);                             \
@@ -55,12 +54,12 @@ struct SOAView {
 
 #define OC_COMMA ,
 
-OC_MAKE_ATOMIC_SOA(uint, )
-OC_MAKE_ATOMIC_SOA(uint64t, )
-OC_MAKE_ATOMIC_SOA(float, )
-OC_MAKE_ATOMIC_SOA(int, )
-OC_MAKE_ATOMIC_SOA(array<T OC_COMMA N>,
-                   typename T OC_COMMA uint N)
+OC_MAKE_ATOMIC_SOA(template<>, uint)
+OC_MAKE_ATOMIC_SOA(template<>, uint64t)
+OC_MAKE_ATOMIC_SOA(template<>, float)
+OC_MAKE_ATOMIC_SOA(template<>, int)
+OC_MAKE_ATOMIC_SOA(template<typename T OC_COMMA uint N>,
+                   array<T OC_COMMA N>)
 
 }// namespace ocarina
 
