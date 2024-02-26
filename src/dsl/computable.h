@@ -46,7 +46,7 @@ template<typename T>
 class Hit;
 class Ray;
 
-template<typename T>
+template<typename T, typename TBuffer>
 struct SOAView;
 
 namespace detail {
@@ -603,8 +603,8 @@ public:
     }
 
     template<typename Elm>
-    [[nodiscard]] SOAView<Elm> soa_view() noexcept {
-        return SOAView<Elm>(*this);
+    [[nodiscard]] SOAView<Elm, Computable<ByteBuffer>> soa_view() noexcept {
+        return SOAView<Elm, Computable<ByteBuffer>>(*this);
     }
 };
 

@@ -10,16 +10,15 @@
 
 namespace ocarina {
 
-template<typename T>
+template<typename T, typename TBuffer = detail::Computable<ByteBuffer>>
 struct SOAView {
-    static_assert(always_false_v<T>, "The SOAView template must be specialized");
+    static_assert(always_false_v<T, TBuffer>, "The SOAView template must be specialized");
 };
 
 #define OC_MAKE_ATOMIC_SOA(TemplateArgs, TypeName)                                          \
-    TemplateArgs struct SOAView<TypeName> {                                                 \
+    TemplateArgs struct SOAView<TypeName, TBuffer> {                                        \
     public:                                                                                 \
         using element_type = TypeName;                                                      \
-        using TBuffer = detail::Computable<ByteBuffer>;                                     \
         static constexpr uint type_size = sizeof(element_type);                             \
                                                                                             \
     private:                                                                                \
@@ -55,19 +54,19 @@ struct SOAView {
 
 #define OC_COMMA ,
 
-OC_MAKE_ATOMIC_SOA(template<>, uint)
-OC_MAKE_ATOMIC_SOA(template<>, uint64t)
-OC_MAKE_ATOMIC_SOA(template<>, float)
-OC_MAKE_ATOMIC_SOA(template<>, int)
-OC_MAKE_ATOMIC_SOA(template<typename T OC_COMMA uint N>,
+OC_MAKE_ATOMIC_SOA(template<typename TBuffer>, uint)
+OC_MAKE_ATOMIC_SOA(template<typename TBuffer>, uint64t)
+OC_MAKE_ATOMIC_SOA(template<typename TBuffer>, float)
+OC_MAKE_ATOMIC_SOA(template<typename TBuffer>, int)
+OC_MAKE_ATOMIC_SOA(template<typename T OC_COMMA uint N OC_COMMA typename TBuffer>,
                    array<T OC_COMMA N>)
 
 }// namespace ocarina
 
-#define OC_MAKE_SOA_MEMBER(field_name) ocarina::SOAView<decltype(element_type::field_name)> field_name;
+#define OC_MAKE_SOA_MEMBER(field_name) ocarina::SOAView<decltype(element_type::field_name), TBuffer> field_name;
 
-#define OC_MAKE_SOA_MEMBER_CONSTRUCT(field_name)                                                              \
-    field_name = ocarina::SOAView<decltype(element_type::field_name)>(buffer_var, view_size, offset, stride); \
+#define OC_MAKE_SOA_MEMBER_CONSTRUCT(field_name)                                                                       \
+    field_name = ocarina::SOAView<decltype(element_type::field_name), TBuffer>(buffer_var, view_size, offset, stride); \
     offset += field_name.size_in_byte();
 
 #define OC_MAKE_SOA_MEMBER_READ(field_name) ret.field_name = field_name.read(OC_FORWARD(index));
@@ -77,9 +76,8 @@ OC_MAKE_ATOMIC_SOA(template<typename T OC_COMMA uint N>,
 #define OC_MAKE_SOA_MEMBER_SIZE(field_name) ret += field_name.size_in_byte();
 
 #define OC_MAKE_STRUCT_SOA_VIEW(TemplateArgs, S, ...)                        \
-    TemplateArgs struct ocarina::SOAView<S> {                                \
+    TemplateArgs struct ocarina::SOAView<S, TBuffer> {                       \
     public:                                                                  \
-        using TBuffer = detail::Computable<ByteBuffer>;                      \
         using element_type = S;                                              \
         static constexpr uint type_size = sizeof(element_type);              \
                                                                              \
@@ -116,21 +114,20 @@ OC_MAKE_ATOMIC_SOA(template<typename T OC_COMMA uint N>,
         }                                                                    \
     };
 
-OC_MAKE_STRUCT_SOA_VIEW(template<typename T>, ocarina::Vector<T OC_COMMA 2>, x, y)
-OC_MAKE_STRUCT_SOA_VIEW(template<typename T>, ocarina::Vector<T OC_COMMA 3>, x, y, z)
-OC_MAKE_STRUCT_SOA_VIEW(template<typename T>, ocarina::Vector<T OC_COMMA 4>, x, y, z, w)
+OC_MAKE_STRUCT_SOA_VIEW(template<typename T OC_COMMA typename TBuffer>, ocarina::Vector<T OC_COMMA 2>, x, y)
+OC_MAKE_STRUCT_SOA_VIEW(template<typename T OC_COMMA typename TBuffer>, ocarina::Vector<T OC_COMMA 3>, x, y, z)
+OC_MAKE_STRUCT_SOA_VIEW(template<typename T OC_COMMA typename TBuffer>, ocarina::Vector<T OC_COMMA 4>, x, y, z, w)
 
 namespace ocarina {
 
-template<uint N>
-struct SOAView<Matrix<N>> {
+template<uint N, typename TBuffer>
+struct SOAView<Matrix<N>, TBuffer> {
 public:
-    using TBuffer = detail::Computable<ByteBuffer>;
     using element_type = Matrix<N>;
     static constexpr uint type_size = sizeof(element_type);
 
 private:
-    array<SOAView<Vector<float, N>>, N> _cols{};
+    array<SOAView<Vector<float, N>, TBuffer>, N> _cols{};
 
 public:
     SOAView() = default;
@@ -140,8 +137,8 @@ public:
                      uint stride = type_size) {
         view_size = ocarina::min(buffer_var.size<uint>(), view_size);
         for (int i = 0; i < N; ++i) {
-            _cols[i] = SOAView<Vector<float, N>>(buffer_var, view_size,
-                                                 offset, stride);
+            _cols[i] = SOAView<Vector<float, N>, TBuffer>(buffer_var, view_size,
+                                                          offset, stride);
             offset += _cols[i].size_in_byte();
         }
     }
