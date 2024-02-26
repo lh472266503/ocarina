@@ -735,7 +735,7 @@ public:
         return eval<T>(expr);
     }
 
-    template<typename Elm, typename Offset,typename Size = uint>
+    template<typename Elm, typename Offset, typename Size = uint>
     requires is_integral_expr_v<Offset>
     void store(Offset &&offset, const Elm &val, bool check_boundary = true) noexcept {
         if (check_boundary) {
@@ -758,6 +758,11 @@ public:
     [[nodiscard]] Var<Size> size() const noexcept {
         Var<Size> ret = size_in_byte<float, Size>();
         return detail::divide(ret, static_cast<uint>(sizeof(float)));
+    }
+
+    template<typename Elm>
+    [[nodiscard]] SOAView<Elm, BindlessArrayByteBuffer> soa_view() noexcept {
+        return SOAView<Elm, BindlessArrayByteBuffer>(*this);
     }
 
     template<typename T, typename Offset>
@@ -798,6 +803,7 @@ public:
 namespace detail {
 template<>
 struct Computable<BindlessArray> {
+    OC_COMPUTABLE_COMMON(Computable<BindlessArray>)
 public:
     template<typename T, typename Index>
     requires concepts::integral<expr_value_t<Index>>
@@ -841,7 +847,9 @@ public:
         return BindlessArrayByteBuffer(expression(), OC_EXPR(index));
     }
 
-    OC_COMPUTABLE_COMMON(Computable<BindlessArray>)
+    //    template<typename Elm, typename Index>
+    //    requires concepts::integral<expr_value_t<Index>>
+    //    [[nodiscard]] SOAView<Elm, BindlessArrayByteBuffer> soa_view(In)
 };
 
 #define OC_MAKE_STRUCT_MEMBER(m)                                                                                             \

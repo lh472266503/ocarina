@@ -10,6 +10,38 @@
 
 namespace ocarina {
 
+template<typename T>
+struct BufferStorage {
+public:
+    using Storage = std::aligned_storage_t<sizeof(T), alignof(T)>;
+
+private:
+    Storage _storage{};
+
+public:
+    BufferStorage() = default;
+    explicit BufferStorage(T &buffer) {
+        oc_memcpy(addressof(_storage), addressof(buffer), sizeof(T));
+    }
+
+    BufferStorage(const BufferStorage<T> &other) {
+        oc_memcpy(addressof(_storage), addressof(other._storage), sizeof(T));
+    }
+
+    BufferStorage &operator=(const BufferStorage<T> &other) {
+        oc_memcpy(addressof(_storage), addressof(other._storage), sizeof(T));
+        return *this;
+    }
+
+    [[nodiscard]] T *operator->() noexcept {
+        return reinterpret_cast<T *>(addressof(_storage));
+    }
+
+    [[nodiscard]] const T *operator->() const noexcept {
+        return reinterpret_cast<const T *>(addressof(_storage));
+    }
+};
+
 template<typename T, typename TBuffer>
 struct SOAView {
     static_assert(always_false_v<T, TBuffer>, "The SOAView template must be specialized");
@@ -22,7 +54,7 @@ struct SOAView {
         static constexpr uint type_size = sizeof(element_type);                             \
                                                                                             \
     private:                                                                                \
-        TBuffer *_buffer{};                                                                 \
+        BufferStorage<TBuffer> _buffer{};                                                   \
         Uint _view_size{};                                                                  \
         Uint _offset{};                                                                     \
         uint _stride{};                                                                     \
@@ -31,7 +63,7 @@ struct SOAView {
         SOAView() = default;                                                                \
         SOAView(TBuffer &buffer, const Uint &view_size,                                     \
                 const Uint &ofs, uint stride)                                               \
-            : _buffer(&buffer), _view_size(view_size),                                      \
+            : _buffer(buffer), _view_size(view_size),                                       \
               _offset(ofs), _stride(stride) {}                                              \
                                                                                             \
         template<typename Index>                                                            \
