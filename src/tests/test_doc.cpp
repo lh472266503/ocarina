@@ -90,6 +90,8 @@ void test_compute_shader(Device &device, Stream &stream) {
 
     uint byte_handle = bindless_array.emplace(byte_buffer);
 
+    auto cname = typeid(decltype(std::declval<Matrix<4>>()[0])).name();
+
     //    aaa = bit_cast<uint2>(bbb);
 
     /// upload buffer and texture handle to device memory
