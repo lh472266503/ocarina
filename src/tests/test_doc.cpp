@@ -79,10 +79,14 @@ void test_compute_shader(Device &device, Stream &stream) {
 
     uint pp = bit_cast<uint>(10.f);
 
-    auto byte_buffer = device.create_byte_buffer(sizeof(uint4) * 2, "");
+    using Elm = float4x4;
+    uint len = 10;
+    auto byte_buffer = device.create_byte_buffer(sizeof(Elm) * len, "");
+    vector<Elm> byte_vec;
+    byte_vec.resize(len);
     //    auto byte_buffer = device.create_buffer<uint>(sizeof(uint4), "");
     float4 host = make_float4(12);
-    stream << byte_buffer.upload(&host, false);
+    stream << byte_buffer.upload(byte_vec.data(), false);
 
     //    aaa = bit_cast<uint2>(bbb);
 
@@ -104,11 +108,12 @@ void test_compute_shader(Device &device, Stream &stream) {
 //        Var t = byte_buffer.atomic<float>(4).fetch_add(1.f);
 //        $info("{}   {}   {}    {}", byte_buffer.load_as<array<float, 3>>(4).as_vec3(), byte_buffer_var.size());
 //        $info("{}   {}   {} {}   {}", f4.read(0), f4.size());
-        SOAView<float4> soa{byte_buffer_var};
+        SOAView<Elm> soa{byte_buffer_var};
         comment("wocao");
-        Float4 a = soa.read(0);
-        $info("{} {} {} {}  ", a);
-        soa.write(dispatch_id(), make_float4(19 * dispatch_id()));
+      soa.write(dispatch_id(), make_float4x4(1.f * dispatch_id()));
+      Var a = soa.read(dispatch_id());
+      $info("{} {} {} {}  \n""{} {} {} {}  \n""{} {} {} {}  \n""{} {} {} {}  \n", a[0], a[1], a[2], a[3]);
+
         //
         //        /// Note the usage and implementation of DSL struct member function, e.g sum()
         //        $info("triple  index {} : i = {}, j = {}, k = {},  sum: {} ", dispatch_id(), t.i, t.j, t.k, t->sum());
@@ -172,10 +177,9 @@ void test_compute_shader(Device &device, Stream &stream) {
     Env::debugger().set_upper(make_uint2(1));
     auto shader = device.compile(kernel, "test desc");
     stream << Env::debugger().upload();
-    array<float, 8> fff;
-    stream << shader(triple1, tri, bindless_array, byte_buffer.view(), f4v).dispatch(2)
+    stream << shader(triple1, tri, bindless_array, byte_buffer.view(), f4v).dispatch(len)
            /// explict retrieve log
-           << byte_buffer.download(fff.data(), 0)
+           << byte_buffer.download(byte_vec.data(), 0)
            << Env::printer().retrieve()
            << synchronize() << commit();
 

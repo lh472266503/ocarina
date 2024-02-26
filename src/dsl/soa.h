@@ -12,45 +12,45 @@ namespace ocarina {
 
 template<typename T>
 struct SOAView {
-    static_assert(always_false_v<T>);
+    static_assert(always_false_v<T>, "The SOAView template must be specialized");
 };
 
-#define OC_MAKE_ATOMIC_SOA(TypeName, TemplateArg)                                   \
-    template<TemplateArg>                                                           \
-    struct SOAView<TypeName> {                                                      \
-    public:                                                                         \
-        using type = TypeName;                                                      \
-        static constexpr uint type_size = sizeof(type);                             \
-                                                                                    \
-    private:                                                                        \
-        ByteBufferVar *_buffer{};                                                   \
-        Uint _view_size{};                                                          \
-        Uint _offset{};                                                             \
-        uint _stride{};                                                             \
-                                                                                    \
-    public:                                                                         \
-        SOAView() = default;                                                        \
-        SOAView(ByteBufferVar &buffer, const Uint &view_size,                       \
-                const Uint &ofs, uint stride)                                       \
-            : _buffer(&buffer), _view_size(view_size),                              \
-              _offset(ofs), _stride(stride) {}                                      \
-                                                                                    \
-        template<typename Index>                                                    \
-        requires is_integral_expr_v<Index>                                          \
-        [[nodiscard]] Var<float> read(Index &&index) const noexcept {               \
-            return _buffer->load_as<type>(_offset + OC_FORWARD(index) * type_size); \
-        }                                                                           \
-                                                                                    \
-        template<typename Index>                                                    \
-        requires is_integral_expr_v<Index>                                          \
-        void write(Index &&index, const Var<type> &val) noexcept {                  \
-            _buffer->store(_offset + OC_FORWARD(index) * type_size, val);           \
-        }                                                                           \
-                                                                                    \
-        template<typename int_type = uint>                                          \
-        [[nodiscard]] Var<int_type> size_in_byte() const noexcept {                 \
-            return _view_size / _stride * type_size;                                \
-        }                                                                           \
+#define OC_MAKE_ATOMIC_SOA(TypeName, TemplateArg)                                           \
+    template<TemplateArg>                                                                   \
+    struct SOAView<TypeName> {                                                              \
+    public:                                                                                 \
+        using element_type = TypeName;                                                      \
+        static constexpr uint type_size = sizeof(element_type);                             \
+                                                                                            \
+    private:                                                                                \
+        ByteBufferVar *_buffer{};                                                           \
+        Uint _view_size{};                                                                  \
+        Uint _offset{};                                                                     \
+        uint _stride{};                                                                     \
+                                                                                            \
+    public:                                                                                 \
+        SOAView() = default;                                                                \
+        SOAView(ByteBufferVar &buffer, const Uint &view_size,                               \
+                const Uint &ofs, uint stride)                                               \
+            : _buffer(&buffer), _view_size(view_size),                                      \
+              _offset(ofs), _stride(stride) {}                                              \
+                                                                                            \
+        template<typename Index>                                                            \
+        requires is_integral_expr_v<Index>                                                  \
+        [[nodiscard]] Var<element_type> read(Index &&index) const noexcept {                \
+            return _buffer->load_as<element_type>(_offset + OC_FORWARD(index) * type_size); \
+        }                                                                                   \
+                                                                                            \
+        template<typename Index>                                                            \
+        requires is_integral_expr_v<Index>                                                  \
+        void write(Index &&index, const Var<element_type> &val) noexcept {                  \
+            _buffer->store(_offset + OC_FORWARD(index) * type_size, val);                   \
+        }                                                                                   \
+                                                                                            \
+        template<typename int_type = uint>                                                  \
+        [[nodiscard]] Var<int_type> size_in_byte() const noexcept {                         \
+            return _view_size / _stride * type_size;                                        \
+        }                                                                                   \
     };
 
 #define OC_COMMA ,
@@ -62,16 +62,22 @@ OC_MAKE_ATOMIC_SOA(int, )
 OC_MAKE_ATOMIC_SOA(array<T OC_COMMA N>,
                    typename T OC_COMMA uint N)
 
+}// namespace ocarina
+
+namespace ocarina {
+
 template<typename T>
 struct SOAView<Vector<T, 2>> {
 public:
-    static constexpr uint type_size = sizeof(Vector<T, 2>);
+    using element_type = Vector<T, 2>;
+    static constexpr uint type_size = sizeof(element_type);
 
 public:
     SOAView<T> x;
     SOAView<T> y;
 
 public:
+    SOAView() = default;
     explicit SOAView(ByteBufferVar &buffer_var,
                      Uint view_size = InvalidUI32,
                      Uint offset = 0u,
@@ -84,8 +90,8 @@ public:
 
     template<typename Index>
     requires is_integral_expr_v<Index>
-    [[nodiscard]] Var<Vector<T, 2>> read(Index &&index) const noexcept {
-        Var<Vector<T, 2>> ret;
+    [[nodiscard]] Var<element_type> read(Index &&index) const noexcept {
+        Var<element_type> ret;
         ret.x = x.read(OC_FORWARD(index));
         ret.y = y.read(OC_FORWARD(index));
         return ret;
@@ -93,7 +99,7 @@ public:
 
     template<typename Index>
     requires is_integral_expr_v<Index>
-    void write(Index &&index, const Var<Vector<T, 2>> &val) noexcept {
+    void write(Index &&index, const Var<element_type> &val) noexcept {
         x.write(OC_FORWARD(index), val.x);
         y.write(OC_FORWARD(index), val.y);
     }
@@ -110,7 +116,8 @@ public:
 template<typename T>
 struct SOAView<Vector<T, 3>> {
 public:
-    static constexpr uint type_size = sizeof(Vector<T, 3>);
+    using element_type = Vector<T, 3>;
+    static constexpr uint type_size = sizeof(element_type);
 
 public:
     SOAView<T> x;
@@ -118,6 +125,7 @@ public:
     SOAView<T> z;
 
 public:
+    SOAView() = default;
     explicit SOAView(ByteBufferVar &buffer_var,
                      Uint view_size = InvalidUI32,
                      Uint offset = 0u,
@@ -132,8 +140,8 @@ public:
 
     template<typename Index>
     requires is_integral_expr_v<Index>
-    [[nodiscard]] Var<Vector<T, 3>> read(Index &&index) const noexcept {
-        Var<Vector<T, 3>> ret;
+    [[nodiscard]] Var<element_type> read(Index &&index) const noexcept {
+        Var<element_type> ret;
         ret.x = x.read(OC_FORWARD(index));
         ret.y = y.read(OC_FORWARD(index));
         ret.z = z.read(OC_FORWARD(index));
@@ -142,7 +150,7 @@ public:
 
     template<typename Index>
     requires is_integral_expr_v<Index>
-    void write(Index &&index, const Var<Vector<T, 3>> &val) noexcept {
+    void write(Index &&index, const Var<element_type> &val) noexcept {
         x.write(OC_FORWARD(index), val.x);
         y.write(OC_FORWARD(index), val.y);
         z.write(OC_FORWARD(index), val.z);
@@ -161,7 +169,8 @@ public:
 template<typename T>
 struct SOAView<Vector<T, 4>> {
 public:
-    static constexpr uint type_size = sizeof(Vector<T, 4>);
+    using element_type = Vector<T, 4>;
+    static constexpr uint type_size = sizeof(element_type);
 
 public:
     SOAView<T> x;
@@ -170,6 +179,7 @@ public:
     SOAView<T> w;
 
 public:
+    SOAView() = default;
     explicit SOAView(ByteBufferVar &buffer_var,
                      Uint view_size = InvalidUI32,
                      Uint offset = 0u,
@@ -186,8 +196,8 @@ public:
 
     template<typename Index>
     requires is_integral_expr_v<Index>
-    [[nodiscard]] Var<Vector<T, 4>> read(Index &&index) const noexcept {
-        Var<Vector<T, 4>> ret;
+    [[nodiscard]] Var<element_type> read(Index &&index) const noexcept {
+        Var<element_type> ret;
         ret.x = x.read(OC_FORWARD(index));
         ret.y = y.read(OC_FORWARD(index));
         ret.z = z.read(OC_FORWARD(index));
@@ -197,7 +207,7 @@ public:
 
     template<typename Index>
     requires is_integral_expr_v<Index>
-    void write(Index &&index, const Var<Vector<T, 4>> &val) noexcept {
+    void write(Index &&index, const Var<element_type> &val) noexcept {
         x.write(OC_FORWARD(index), val.x);
         y.write(OC_FORWARD(index), val.y);
         z.write(OC_FORWARD(index), val.z);
@@ -218,10 +228,11 @@ public:
 template<uint N>
 struct SOAView<Matrix<N>> {
 public:
-    static constexpr uint type_size = sizeof(Matrix<N>);
+    using element_type = Matrix<N>;
+    static constexpr uint type_size = sizeof(element_type);
 
 private:
-    array<SOAView<Vector<float, N>>, N> _cols;
+    array<SOAView<Vector<float, N>>, N> _cols{};
 
 public:
     explicit SOAView(ByteBufferVar &buffer_var,
@@ -241,8 +252,8 @@ public:
 
     template<typename Index>
     requires is_integral_expr_v<Index>
-    [[nodiscard]] Var<Matrix<N>> read(Index &&index) const noexcept {
-        Var<Matrix<N>> ret;
+    [[nodiscard]] Var<element_type> read(Index &&index) const noexcept {
+        Var<element_type> ret;
         for (int i = 0; i < N; ++i) {
             ret[i] = _cols[i].read(OC_FORWARD(index));
         }
@@ -251,7 +262,7 @@ public:
 
     template<typename Index>
     requires is_integral_expr_v<Index>
-    void write(Index &&index, const Var<Matrix<N>> &val) noexcept {
+    void write(Index &&index, const Var<element_type> &val) noexcept {
         for (int i = 0; i < N; ++i) {
             _cols[i].write(OC_FORWARD(index), val[i]);
         }
