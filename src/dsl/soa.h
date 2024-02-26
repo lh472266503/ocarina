@@ -130,6 +130,7 @@ private:
     array<SOAView<Vector<float, N>>, N> _cols{};
 
 public:
+    SOAView() = default;
     explicit SOAView(ByteBufferVar &buffer_var,
                      Uint view_size = InvalidUI32,
                      Uint offset = 0u,
