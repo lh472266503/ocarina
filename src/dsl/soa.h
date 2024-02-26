@@ -111,6 +111,9 @@ public:
         return ret;
     }
 };
+}// namespace ocarina
+
+namespace ocarina {
 
 template<typename T>
 struct SOAView<Vector<T, 3>> {
@@ -164,6 +167,9 @@ public:
         return ret;
     }
 };
+}// namespace ocarina
+
+namespace ocarina {
 
 template<typename T>
 struct SOAView<Vector<T, 4>> {
@@ -223,6 +229,10 @@ public:
         return ret;
     }
 };
+
+}// namespace ocarina
+
+namespace ocarina {
 
 template<uint N>
 struct SOAView<Matrix<N>> {
