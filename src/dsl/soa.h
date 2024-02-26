@@ -75,170 +75,48 @@ OC_MAKE_ATOMIC_SOA(template<typename T OC_COMMA uint N>,
 
 #define OC_MAKE_SOA_MEMBER_SIZE(field_name) ret += field_name.size_in_byte();
 
-#define OC_MAKE_STRUCT_SOA_VIEW(TemplateArgs, S, ...)
+#define OC_MAKE_STRUCT_SOA_VIEW(TemplateArgs, S, ...)                        \
+    TemplateArgs struct ocarina::SOAView<S> {                                \
+    public:                                                                  \
+        using element_type = S;                                              \
+        static constexpr uint type_size = sizeof(element_type);              \
+                                                                             \
+    public:                                                                  \
+        MAP(OC_MAKE_SOA_MEMBER, ##__VA_ARGS__)                               \
+    public:                                                                  \
+        SOAView() = default;                                                 \
+        explicit SOAView(ByteBufferVar &buffer_var,                          \
+                         Uint view_size = InvalidUI32,                       \
+                         Uint offset = 0u,                                   \
+                         uint stride = type_size) {                          \
+            view_size = ocarina::min(buffer_var.size<uint>(), view_size);    \
+            MAP(OC_MAKE_SOA_MEMBER_CONSTRUCT, ##__VA_ARGS__)                 \
+        }                                                                    \
+                                                                             \
+        template<typename Index>                                             \
+        requires is_integral_expr_v<Index>                                   \
+        [[nodiscard]] Var<element_type> read(Index &&index) const noexcept { \
+            Var<element_type> ret;                                           \
+            MAP(OC_MAKE_SOA_MEMBER_READ, ##__VA_ARGS__)                      \
+            return ret;                                                      \
+        }                                                                    \
+                                                                             \
+        template<typename Index>                                             \
+        requires is_integral_expr_v<Index>                                   \
+        void write(Index &&index, const Var<element_type> &val) noexcept {   \
+            MAP(OC_MAKE_SOA_MEMBER_WRITE, ##__VA_ARGS__)                     \
+        }                                                                    \
+        template<typename int_type = uint>                                   \
+        [[nodiscard]] Var<int_type> size_in_byte() const noexcept {          \
+            Var<int_type> ret = 0;                                           \
+            MAP(OC_MAKE_SOA_MEMBER_SIZE, ##__VA_ARGS__)                      \
+            return ret;                                                      \
+        }                                                                    \
+    };
 
-namespace ocarina {
-
-template<typename T>
-struct SOAView<Vector<T, 2>> {
-public:
-    using element_type = Vector<T, 2>;
-    static constexpr uint type_size = sizeof(element_type);
-
-public:
-    SOAView<T> x;
-    SOAView<T> y;
-
-public:
-    SOAView() = default;
-    explicit SOAView(ByteBufferVar &buffer_var,
-                     Uint view_size = InvalidUI32,
-                     Uint offset = 0u,
-                     uint stride = type_size) {
-        view_size = ocarina::min(buffer_var.size<uint>(), view_size);
-        OC_MAKE_SOA_MEMBER_CONSTRUCT(x)
-        OC_MAKE_SOA_MEMBER_CONSTRUCT(y)
-    }
-
-    template<typename Index>
-    requires is_integral_expr_v<Index>
-    [[nodiscard]] Var<element_type> read(Index &&index) const noexcept {
-        Var<element_type> ret;
-        ret.x = x.read(OC_FORWARD(index));
-        ret.y = y.read(OC_FORWARD(index));
-        return ret;
-    }
-
-    template<typename Index>
-    requires is_integral_expr_v<Index>
-    void write(Index &&index, const Var<element_type> &val) noexcept {
-        x.write(OC_FORWARD(index), val.x);
-        y.write(OC_FORWARD(index), val.y);
-    }
-
-    template<typename int_type = uint>
-    [[nodiscard]] Var<int_type> size_in_byte() const noexcept {
-        Var<int_type> ret = 0;
-        ret += x.size_in_byte();
-        ret += y.size_in_byte();
-        return ret;
-    }
-};
-}// namespace ocarina
-
-namespace ocarina {
-
-template<typename T>
-struct SOAView<Vector<T, 3>> {
-public:
-    using element_type = Vector<T, 3>;
-    static constexpr uint type_size = sizeof(element_type);
-
-public:
-    SOAView<T> x;
-    SOAView<T> y;
-    SOAView<T> z;
-
-public:
-    SOAView() = default;
-    explicit SOAView(ByteBufferVar &buffer_var,
-                     Uint view_size = InvalidUI32,
-                     Uint offset = 0u,
-                     uint stride = type_size) {
-        view_size = ocarina::min(buffer_var.size<uint>(), view_size);
-        OC_MAKE_SOA_MEMBER_CONSTRUCT(x)
-        OC_MAKE_SOA_MEMBER_CONSTRUCT(y)
-        OC_MAKE_SOA_MEMBER_CONSTRUCT(z)
-    }
-
-    template<typename Index>
-    requires is_integral_expr_v<Index>
-    [[nodiscard]] Var<element_type> read(Index &&index) const noexcept {
-        Var<element_type> ret;
-        ret.x = x.read(OC_FORWARD(index));
-        ret.y = y.read(OC_FORWARD(index));
-        ret.z = z.read(OC_FORWARD(index));
-        return ret;
-    }
-
-    template<typename Index>
-    requires is_integral_expr_v<Index>
-    void write(Index &&index, const Var<element_type> &val) noexcept {
-        x.write(OC_FORWARD(index), val.x);
-        y.write(OC_FORWARD(index), val.y);
-        z.write(OC_FORWARD(index), val.z);
-    }
-
-    template<typename int_type = uint>
-    [[nodiscard]] Var<int_type> size_in_byte() const noexcept {
-        Var<int_type> ret = 0;
-        ret += x.size_in_byte();
-        ret += y.size_in_byte();
-        ret += z.size_in_byte();
-        return ret;
-    }
-};
-}// namespace ocarina
-
-namespace ocarina {
-
-template<typename T>
-struct SOAView<Vector<T, 4>> {
-public:
-    using element_type = Vector<T, 4>;
-    static constexpr uint type_size = sizeof(element_type);
-
-public:
-    OC_MAKE_SOA_MEMBER(x)
-    SOAView<T> y;
-    SOAView<T> z;
-    SOAView<T> w;
-
-public:
-    SOAView() = default;
-    explicit SOAView(ByteBufferVar &buffer_var,
-                     Uint view_size = InvalidUI32,
-                     Uint offset = 0u,
-                     uint stride = type_size) {
-        view_size = ocarina::min(buffer_var.size<uint>(), view_size);
-        OC_MAKE_SOA_MEMBER_CONSTRUCT(x)
-        OC_MAKE_SOA_MEMBER_CONSTRUCT(y)
-        OC_MAKE_SOA_MEMBER_CONSTRUCT(z)
-        OC_MAKE_SOA_MEMBER_CONSTRUCT(w)
-    }
-
-    template<typename Index>
-    requires is_integral_expr_v<Index>
-    [[nodiscard]] Var<element_type> read(Index &&index) const noexcept {
-        Var<element_type> ret;
-        OC_MAKE_SOA_MEMBER_READ(x)
-        ret.y = y.read(OC_FORWARD(index));
-        ret.z = z.read(OC_FORWARD(index));
-        ret.w = w.read(OC_FORWARD(index));
-        return ret;
-    }
-
-    template<typename Index>
-    requires is_integral_expr_v<Index>
-    void write(Index &&index, const Var<element_type> &val) noexcept {
-        OC_MAKE_SOA_MEMBER_WRITE(x)
-        y.write(OC_FORWARD(index), val.y);
-        z.write(OC_FORWARD(index), val.z);
-        w.write(OC_FORWARD(index), val.w);
-    }
-
-    template<typename int_type = uint>
-    [[nodiscard]] Var<int_type> size_in_byte() const noexcept {
-        Var<int_type> ret = 0;
-        OC_MAKE_SOA_MEMBER_SIZE(x)
-        ret += y.size_in_byte();
-        ret += z.size_in_byte();
-        ret += w.size_in_byte();
-        return ret;
-    }
-};
-
-}// namespace ocarina
+OC_MAKE_STRUCT_SOA_VIEW(template<typename T>, ocarina::Vector<T OC_COMMA 2>, x, y)
+OC_MAKE_STRUCT_SOA_VIEW(template<typename T>, ocarina::Vector<T OC_COMMA 3>, x, y, z)
+OC_MAKE_STRUCT_SOA_VIEW(template<typename T>, ocarina::Vector<T OC_COMMA 4>, x, y, z, w)
 
 namespace ocarina {
 
