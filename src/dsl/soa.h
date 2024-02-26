@@ -10,7 +10,7 @@
 
 namespace ocarina {
 
-template<typename T, typename TBuffer = detail::Computable<ByteBuffer>>
+template<typename T, typename TBuffer>
 struct SOAView {
     static_assert(always_false_v<T, TBuffer>, "The SOAView template must be specialized");
 };
@@ -175,5 +175,10 @@ public:
 };
 
 #undef OC_MAKE_ATOMIC_SOA
+
+template<typename Elm, typename TBuffer>
+[[nodiscard]] SOAView<Elm, TBuffer> make_soa_view(TBuffer &buffer) noexcept {
+    return SOAView<Elm, TBuffer>(buffer);
+}
 
 }// namespace ocarina

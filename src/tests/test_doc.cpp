@@ -109,7 +109,8 @@ void test_compute_shader(Device &device, Stream &stream) {
 //        $info("{}   {}   {}    {}", byte_buffer.load_as<array<float, 3>>(4).as_vec3(), byte_buffer_var.size());
 //        $info("{}   {}   {} {}   {}", f4.read(0), f4.size());
 //        auto ab = byte_buffer_var;
-        SOAView<Elm> soa = byte_buffer_var.soa_view<Elm>();
+//        SOAView<Elm> soa = byte_buffer_var.soa_view<Elm>();
+        SOAView soa = make_soa_view<Elm>(byte_buffer_var);
         comment("wocao");
       soa.write(dispatch_id(), make_float4x4(1.f * dispatch_id()));
       Var a = soa.read(dispatch_id());
