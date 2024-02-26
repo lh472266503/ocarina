@@ -4,6 +4,7 @@
 
 #include "function.h"
 #include "type_registry.h"
+#include "dsl/rtx_type.h"
 #include "generator/codegen.h"
 #include "function_corrector.h"
 
