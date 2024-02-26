@@ -321,14 +321,14 @@ DynamicArray<float> EnableTextureSample<T>::sample(uint channel_num, const UV &u
 }// namespace detail
 
 template<typename T, typename Offset>
-[[nodiscard]] DynamicArray<T> BindlessArrayByteBuffer::read_dynamic_array(uint size, Offset &&offset) const noexcept {
+[[nodiscard]] DynamicArray<T> BindlessArrayByteBuffer::load_dynamic_array(uint array_size, Offset &&offset) const noexcept {
     if constexpr (is_dsl_v<Offset>) {
         offset = detail::correct_index(offset, this->size_in_byte(), typeid(*this).name(), traceback_string());
     }
-    const CallExpr *expr = Function::current()->call_builtin(DynamicArray<T>::type(size),
+    const CallExpr *expr = Function::current()->call_builtin(DynamicArray<T>::type(array_size),
                                                              CallOp::BINDLESS_ARRAY_BYTE_BUFFER_READ,
                                                              {_bindless_array, _index, OC_EXPR(offset)});
-    return detail::eval_dynamic_array(DynamicArray<T>(size, expr));
+    return detail::eval_dynamic_array(DynamicArray<T>(array_size, expr));
 }
 
 template<typename U, typename V>

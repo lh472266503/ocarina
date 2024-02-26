@@ -716,7 +716,7 @@ public:
 
     template<typename T, typename Offset>
     requires concepts::integral<expr_value_t<Offset>>
-    [[nodiscard]] Var<T> read(Offset &&offset) const noexcept {
+    [[nodiscard]] Var<T> load_as(Offset &&offset) const noexcept {
         const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::BINDLESS_ARRAY_BYTE_BUFFER_READ,
                                                                  {_bindless_array, _index, OC_EXPR(offset)});
         return eval<T>(expr);
@@ -736,7 +736,8 @@ public:
     }
 
     template<typename T, typename Offset>
-    [[nodiscard]] DynamicArray<T> read_dynamic_array(uint size, Offset &&offset) const noexcept;// implement in dsl/array.h
+    [[nodiscard]] DynamicArray<T> load_dynamic_array(uint array_size, Offset &&offset)
+        const noexcept;// implement in dsl/array.h
 };
 
 class BindlessArrayTexture {

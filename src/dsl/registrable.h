@@ -134,9 +134,9 @@ public:
 
     template<typename Elm, typename Offset>
     requires is_integral_expr_v<Offset>
-    [[nodiscard]] DynamicArray<Elm> read_dynamic_array(uint size, Offset &&offset) const noexcept {
+    [[nodiscard]] DynamicArray<Elm> load_dynamic_array(uint size, Offset &&offset) const noexcept {
         OC_ASSERT(has_registered());
-        return _bindless_array->byte_buffer_var(*_index).template read_dynamic_array<Elm>(size, OC_FORWARD(offset));
+        return _bindless_array->byte_buffer_var(*_index).template load_dynamic_array<Elm>(size, OC_FORWARD(offset));
     }
 
     template<typename Index, typename Val>

@@ -21,8 +21,8 @@ struct DataAccessor {
     const RegistrableManaged<U> &datas;
 
     template<typename T>
-    [[nodiscard]] DynamicArray<T> read_dynamic_array(uint size) const noexcept {
-        auto ret = datas.template read_dynamic_array<T>(size, offset);
+    [[nodiscard]] DynamicArray<T> load_dynamic_array(uint size) const noexcept {
+        auto ret = datas.template load_dynamic_array<T>(size, offset);
         offset += size * static_cast<uint>(sizeof(T));
         return ret;
     }
@@ -210,7 +210,7 @@ public:
     }
 
     void decode(const DataAccessor<T> *da) const noexcept override {
-        const DynamicArray<T> array = da->template read_dynamic_array<T>(element_num());
+        const DynamicArray<T> array = da->template load_dynamic_array<T>(element_num());
         const_cast<decltype(_device_value) *>(&_device_value)->emplace(_decode(array));
     }
 };
