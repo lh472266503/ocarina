@@ -19,17 +19,18 @@ struct SOAView {
     TemplateArgs struct SOAView<TypeName> {                                                 \
     public:                                                                                 \
         using element_type = TypeName;                                                      \
+        using TBuffer = detail::Computable<ByteBuffer>;                                     \
         static constexpr uint type_size = sizeof(element_type);                             \
                                                                                             \
     private:                                                                                \
-        ByteBufferVar *_buffer{};                                                           \
+        TBuffer *_buffer{};                                                                 \
         Uint _view_size{};                                                                  \
         Uint _offset{};                                                                     \
         uint _stride{};                                                                     \
                                                                                             \
     public:                                                                                 \
         SOAView() = default;                                                                \
-        SOAView(ByteBufferVar &buffer, const Uint &view_size,                               \
+        SOAView(TBuffer &buffer, const Uint &view_size,                                     \
                 const Uint &ofs, uint stride)                                               \
             : _buffer(&buffer), _view_size(view_size),                                      \
               _offset(ofs), _stride(stride) {}                                              \
@@ -78,6 +79,7 @@ OC_MAKE_ATOMIC_SOA(template<typename T OC_COMMA uint N>,
 #define OC_MAKE_STRUCT_SOA_VIEW(TemplateArgs, S, ...)                        \
     TemplateArgs struct ocarina::SOAView<S> {                                \
     public:                                                                  \
+        using TBuffer = detail::Computable<ByteBuffer>;                      \
         using element_type = S;                                              \
         static constexpr uint type_size = sizeof(element_type);              \
                                                                              \
@@ -85,7 +87,7 @@ OC_MAKE_ATOMIC_SOA(template<typename T OC_COMMA uint N>,
         MAP(OC_MAKE_SOA_MEMBER, ##__VA_ARGS__)                               \
     public:                                                                  \
         SOAView() = default;                                                 \
-        explicit SOAView(ByteBufferVar &buffer_var,                          \
+        explicit SOAView(TBuffer &buffer_var,                                \
                          Uint view_size = InvalidUI32,                       \
                          Uint offset = 0u,                                   \
                          uint stride = type_size) {                          \
@@ -123,6 +125,7 @@ namespace ocarina {
 template<uint N>
 struct SOAView<Matrix<N>> {
 public:
+    using TBuffer = detail::Computable<ByteBuffer>;
     using element_type = Matrix<N>;
     static constexpr uint type_size = sizeof(element_type);
 
@@ -131,7 +134,7 @@ private:
 
 public:
     SOAView() = default;
-    explicit SOAView(ByteBufferVar &buffer_var,
+    explicit SOAView(TBuffer &buffer_var,
                      Uint view_size = InvalidUI32,
                      Uint offset = 0u,
                      uint stride = type_size) {

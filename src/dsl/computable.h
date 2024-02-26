@@ -46,6 +46,9 @@ template<typename T>
 class Hit;
 class Ray;
 
+template<typename T>
+struct SOAView;
+
 namespace detail {
 
 template<typename T>
@@ -597,6 +600,11 @@ public:
     [[nodiscard]] auto size() const noexcept {
         const CallExpr *expr = Function::current()->call_builtin(Type::of<int_type>(), CallOp::BUFFER_SIZE, {expression()});
         return eval<int_type>(expr);
+    }
+
+    template<typename Elm>
+    [[nodiscard]] SOAView<Elm> soa_view() noexcept {
+        return SOAView<Elm>(*this);
     }
 };
 
