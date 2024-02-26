@@ -16,12 +16,11 @@ using namespace ocarina;
 struct Triangle {
 public:
     uint i, j, k;
-    vector<float> f;
 //    array<float, 3> f;
     Triangle(uint i, uint j, uint k) : i(i), j(j), k(k) {}
     Triangle() = default;
 };
-OC_STRUCT(Triangle, i, j, k, f){};
+OC_STRUCT(Triangle, i, j, k){};
 
 auto get_cube(float x = 1, float y = 1, float z = 1) {
     x = x / 2.f;
