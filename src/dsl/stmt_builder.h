@@ -26,6 +26,10 @@ inline void assign(Lhs &&lhs, Rhs &&rhs) noexcept {
         Function::current()->assign(OC_EXPR(lhs), rhs);
     } else if constexpr (std::is_pointer_v<std::remove_cvref_t<Lhs>>) {
         Function::current()->assign(lhs, OC_EXPR(rhs));
+    } else if constexpr (std::is_same_v<expr_value_t<Lhs>, ByteBuffer>) {
+        Function::current()->assign(
+            detail::extract_expression(std::forward<Lhs>(lhs)),
+            detail::extract_expression(std::forward<Rhs>(rhs)));
     } else {
         static_assert(always_false_v<Lhs, Rhs>, "invalid assignment operator !");
     }
