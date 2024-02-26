@@ -92,6 +92,7 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         case CallOp::ATOMIC_ADD: OC_GEN_FUNC_NAME(atomicAdd); break;
         case CallOp::ATOMIC_SUB: OC_GEN_FUNC_NAME(atomicSub); break;
         case CallOp::BINDLESS_ARRAY_BUFFER_WRITE: OC_GEN_FUNC_NAME(bindless_array_buffer_write); break;
+        case CallOp::BINDLESS_ARRAY_BYTE_BUFFER_WRITE: OC_GEN_FUNC_NAME(bindless_array_byte_buffer_write); break;
         case CallOp::BINDLESS_ARRAY_BUFFER_SIZE: OC_GEN_FUNC_NAME(bindless_array_buffer_size); break;
         case CallOp::BINDLESS_ARRAY_BYTE_BUFFER_READ: {
             current_scratch() << "oc_bindless_array_byte_buffer_read<";

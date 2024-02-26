@@ -735,6 +735,18 @@ public:
         return eval<T>(expr);
     }
 
+    template<typename Elm, typename Offset,typename Size = uint>
+    requires is_integral_expr_v<Offset>
+    void store(Offset &&offset, const Elm &val, bool check_boundary = true) noexcept {
+        if (check_boundary) {
+            offset = detail::correct_index(offset, size_in_byte<Size>(), typeid(*this).name(), traceback_string());
+        }
+        const CallExpr *expr = Function::current()->call_builtin(nullptr, CallOp::BINDLESS_ARRAY_BYTE_BUFFER_WRITE,
+                                                                 {_bindless_array, _index,
+                                                                  OC_EXPR(offset), OC_EXPR(val)});
+        Function::current()->expr_statement(expr);
+    }
+
     template<typename T = float, typename Size = uint>
     [[nodiscard]] Var<Size> size_in_byte() const noexcept {
         const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::BINDLESS_ARRAY_BUFFER_SIZE,
