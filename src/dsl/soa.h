@@ -61,9 +61,10 @@ struct SOAView {
                                                                                             \
     public:                                                                                 \
         SOAView() = default;                                                                \
-        SOAView(TBuffer &buffer, const Uint &view_size,                                     \
-                const Uint &ofs, uint stride)                                               \
-            : _buffer(buffer), _view_size(view_size),                                       \
+        SOAView(TBuffer &buffer, const Uint &view_size = InvalidUI32,                       \
+                const Uint &ofs = 0u, uint stride = type_size)                              \
+            : _buffer(buffer),                                                              \
+              _view_size(ocarina::min(view_size, buffer.size_in_byte<uint>())),             \
               _offset(ofs), _stride(stride) {}                                              \
                                                                                             \
         template<typename Index>                                                            \
@@ -91,7 +92,7 @@ OC_MAKE_ATOMIC_SOA(template<typename TBuffer>, uint64t)
 OC_MAKE_ATOMIC_SOA(template<typename TBuffer>, float)
 OC_MAKE_ATOMIC_SOA(template<typename TBuffer>, int)
 OC_MAKE_ATOMIC_SOA(template<typename T OC_COMMA uint N OC_COMMA typename TBuffer>,
-                   array<T OC_COMMA N>)
+                   Vector<T OC_COMMA N>)
 
 }// namespace ocarina
 
@@ -156,10 +157,11 @@ template<uint N, typename TBuffer>
 struct SOAView<Matrix<N>, TBuffer> {
 public:
     using element_type = Matrix<N>;
+    using array_element_type = decltype(std::declval<element_type>()[0]);
     static constexpr uint type_size = sizeof(element_type);
 
 private:
-    array<SOAView<Vector<float, N>, TBuffer>, N> _cols{};
+    array<SOAView<Vector<float, N>, TBuffer>, N> _array{};
 
 public:
     SOAView() = default;
@@ -169,21 +171,21 @@ public:
                      uint stride = type_size) {
         view_size = ocarina::min(buffer_var.size_in_byte<uint>(), view_size);
         for (int i = 0; i < N; ++i) {
-            _cols[i] = SOAView<Vector<float, N>, TBuffer>(buffer_var, view_size,
+            _array[i] = SOAView<Vector<float, N>, TBuffer>(buffer_var, view_size,
                                                           offset, stride);
-            offset += _cols[i].size_in_byte();
+            offset += _array[i].size_in_byte();
         }
     }
 
-    [[nodiscard]] auto &operator[](size_t index) const noexcept { return _cols[index]; }
-    [[nodiscard]] auto &operator[](size_t index) noexcept { return _cols[index]; }
+    [[nodiscard]] auto &operator[](size_t index) const noexcept { return _array[index]; }
+    [[nodiscard]] auto &operator[](size_t index) noexcept { return _array[index]; }
 
     template<typename Index>
     requires is_integral_expr_v<Index>
     [[nodiscard]] Var<element_type> read(Index &&index) const noexcept {
         Var<element_type> ret;
         for (int i = 0; i < N; ++i) {
-            ret[i] = _cols[i].read(OC_FORWARD(index));
+            ret[i] = _array[i].read(OC_FORWARD(index));
         }
         return ret;
     }
@@ -192,7 +194,7 @@ public:
     requires is_integral_expr_v<Index>
     void write(Index &&index, const Var<element_type> &val) noexcept {
         for (int i = 0; i < N; ++i) {
-            _cols[i].write(OC_FORWARD(index), val[i]);
+            _array[i].write(OC_FORWARD(index), val[i]);
         }
     }
 
@@ -200,7 +202,7 @@ public:
     [[nodiscard]] Var<int_type> size_in_byte() const noexcept {
         Var<int_type> ret = 0;
         for (int i = 0; i < N; ++i) {
-            ret += _cols[i].size_in_byte();
+            ret += _array[i].size_in_byte();
         }
         return ret;
     }
