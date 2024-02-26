@@ -847,9 +847,12 @@ public:
         return BindlessArrayByteBuffer(expression(), OC_EXPR(index));
     }
 
-    //    template<typename Elm, typename Index>
-    //    requires concepts::integral<expr_value_t<Index>>
-    //    [[nodiscard]] SOAView<Elm, BindlessArrayByteBuffer> soa_view(In)
+    template<typename Elm, typename Index>
+    requires concepts::integral<expr_value_t<Index>>
+    [[nodiscard]] SOAView<Elm, BindlessArrayByteBuffer> soa_view(Index &&index, const string &desc = "",
+                                                                 uint buffer_num = 0) noexcept {
+        return byte_buffer_var(OC_FORWARD(index), desc, buffer_num).template soa_view<Elm>();
+    }
 };
 
 #define OC_MAKE_STRUCT_MEMBER(m)                                                                                             \

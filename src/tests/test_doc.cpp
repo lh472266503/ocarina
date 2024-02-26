@@ -116,7 +116,7 @@ void test_compute_shader(Device &device, Stream &stream) {
 
 
         auto b2 = ra.byte_buffer_var(byte_handle);
-        auto soa2 = b2.soa_view<Elm>();
+        auto soa2 = bindless_array.soa_view<Elm>(byte_handle);
         comment("wocao");
       soa2.write(dispatch_id(), make_float4x4(1.f * dispatch_id()));
       Var a = soa2.read(dispatch_id());

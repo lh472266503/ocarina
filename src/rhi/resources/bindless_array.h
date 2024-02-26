@@ -81,8 +81,8 @@ public:
     /// for dsl
     [[nodiscard]] const Expression *expression() const noexcept override {
         const CapturedResource &captured_resource = Function::current()->get_captured_resource(Type::of<decltype(*this)>(),
-                                                                               Variable::Tag::BINDLESS_ARRAY,
-                                                                               memory_block());
+                                                                                               Variable::Tag::BINDLESS_ARRAY,
+                                                                                               memory_block());
         return captured_resource.expression();
     }
 
@@ -108,6 +108,12 @@ public:
     requires is_integral_expr_v<Index>
     [[nodiscard]] BindlessArrayByteBuffer byte_buffer_var(Index &&index) const noexcept {
         return make_expr<BindlessArray>(expression()).byte_buffer_var(OC_FORWARD(index), typeid(*this).name(), buffer_num());
+    }
+
+    template<typename Elm, typename Index>
+    requires concepts::integral<expr_value_t<Index>>
+    [[nodiscard]] SOAView<Elm, BindlessArrayByteBuffer> soa_view(Index &&index) noexcept {
+        return byte_buffer_var(OC_FORWARD(index)).template soa_view<Elm>();
     }
 
     [[nodiscard]] Var<BindlessArray> var() const noexcept {
