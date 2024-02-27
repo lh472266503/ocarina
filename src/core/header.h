@@ -119,3 +119,5 @@ using handle_ty = uint64_t;
 #define OC_MAKE_MEMBER_GETTER_SETTER(member, modifier) \
     OC_MAKE_MEMBER_GETTER(member, modifier)            \
     OC_MAKE_MEMBER_SETTER(member)
+
+#define OC_COMMA ,
