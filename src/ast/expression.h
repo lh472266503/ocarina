@@ -189,6 +189,7 @@ public:
     LiteralExpr(const Type *type, value_type value)
         : Expression(Tag::LITERAL, type), _value(value) {}
     [[nodiscard]] decltype(auto) value() const noexcept { return _value; }
+    bool check_context(const Function *ctx) const noexcept override { return true; }
     OC_MAKE_EXPRESSION_COMMON
 };
 
