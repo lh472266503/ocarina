@@ -136,6 +136,7 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         case CallOp::IS_NULL_BUFFER: OC_GEN_FUNC_NAME(is_null_buffer); break;
         case CallOp::IS_NULL_TEXTURE: OC_GEN_FUNC_NAME(is_null_texture); break;
         case CallOp::BUFFER_SIZE: OC_GEN_FUNC_NAME(buffer_size); break;
+        case CallOp::BYTE_BUFFER_SIZE: OC_GEN_FUNC_NAME(buffer_size); break;
         case CallOp::TEX_SAMPLE: {
             auto t_args = expr->template_args();
             uint N = std::get<uint>(t_args[0]);

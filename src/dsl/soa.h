@@ -51,8 +51,8 @@ struct SOAView {
 #define OC_MAKE_ATOMIC_SOA(TemplateArgs, TypeName)                                        \
     TemplateArgs struct ocarina::SOAView<TypeName, TBuffer> {                             \
     public:                                                                               \
-        using struct_type = TypeName;                                                     \
-        static constexpr ocarina::uint type_size = sizeof(struct_type);                   \
+        using atomic_type = TypeName;                                                     \
+        static constexpr ocarina::uint type_size = sizeof(atomic_type);                   \
                                                                                           \
     private:                                                                              \
         ocarina::BufferStorage<TBuffer> _buffer{};                                        \
@@ -72,14 +72,14 @@ struct SOAView {
                                                                                           \
         template<typename Index>                                                          \
         requires ocarina::is_integral_expr_v<Index>                                       \
-        [[nodiscard]] ocarina::Var<struct_type> read(Index &&index) const noexcept {      \
-            return _buffer->template load_as<struct_type>(_offset +                       \
+        [[nodiscard]] ocarina::Var<atomic_type> read(Index &&index) const noexcept {      \
+            return _buffer->template load_as<atomic_type>(_offset +                       \
                                                           OC_FORWARD(index) * type_size); \
         }                                                                                 \
                                                                                           \
         template<typename Index>                                                          \
         requires ocarina::is_integral_expr_v<Index>                                       \
-        void write(Index &&index, const ocarina::Var<struct_type> &val) noexcept {        \
+        void write(Index &&index, const ocarina::Var<atomic_type> &val) noexcept {        \
             _buffer->store(_offset + OC_FORWARD(index) * type_size, val);                 \
         }                                                                                 \
                                                                                           \
