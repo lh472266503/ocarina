@@ -248,15 +248,15 @@ constexpr auto is_vector3_v = is_vector3<T>::value;
 template<typename T>
 constexpr auto is_vector4_v = is_vector4<T>::value;
 
-#define OC_MAKE_IS_ALL_CLS(cls,dim)                                 \
-    template<typename... Ts>                                       \
+#define OC_MAKE_IS_ALL_CLS(cls, dim)                                  \
+    template<typename... Ts>                                          \
     using is_all_##cls##dim = std::conjunction<is_##cls##dim<Ts>...>; \
     OC_DEFINE_TEMPLATE_VALUE_MULTI(is_all_##cls##dim)
 
-OC_MAKE_IS_ALL_CLS(vector,)
-OC_MAKE_IS_ALL_CLS(vector,2)
-OC_MAKE_IS_ALL_CLS(vector,3)
-OC_MAKE_IS_ALL_CLS(vector,4)
+OC_MAKE_IS_ALL_CLS(vector, )
+OC_MAKE_IS_ALL_CLS(vector, 2)
+OC_MAKE_IS_ALL_CLS(vector, 3)
+OC_MAKE_IS_ALL_CLS(vector, 4)
 
 #define OC_MAKE_IS_TYPE_VECTOR_DIM(type, dim)                                                                     \
     template<typename T>                                                                                          \
@@ -295,10 +295,10 @@ using is_matrix3 = is_matrix<T, 3u>;
 template<typename T>
 using is_matrix4 = is_matrix<T, 4u>;
 
-OC_MAKE_IS_ALL_CLS(matrix,)
-OC_MAKE_IS_ALL_CLS(matrix,2)
-OC_MAKE_IS_ALL_CLS(matrix,3)
-OC_MAKE_IS_ALL_CLS(matrix,4)
+OC_MAKE_IS_ALL_CLS(matrix, )
+OC_MAKE_IS_ALL_CLS(matrix, 2)
+OC_MAKE_IS_ALL_CLS(matrix, 3)
+OC_MAKE_IS_ALL_CLS(matrix, 4)
 
 #undef OC_MAKE_IS_ALL_CLS
 
@@ -344,5 +344,23 @@ using is_std_vector = detail::is_std_vector_impl<std::remove_cvref_t<T>>;
 
 template<typename T>
 static constexpr bool is_std_vector_v = detail::is_std_vector_impl<std::remove_cvref_t<T>>::value;
+
+template<typename T, size_t N>
+struct scalar_or_vector {
+private:
+    [[nodiscard]] constexpr static auto func() noexcept {
+        using raw_type = std::remove_cvref_t<T>;
+        if constexpr (N == 1) {
+            return raw_type{};
+        } else {
+            return Vector<raw_type, N>{};
+        }
+    }
+public:
+    using type = decltype(func());
+};
+
+template<typename T, size_t N>
+using scalar_or_vector_t = typename scalar_or_vector<T, N>::type;
 
 }// namespace ocarina
