@@ -377,7 +377,7 @@ OC_MAKE_BINARY_BUILTIN_FUNC(atan2, ATAN2)
         return eval<type##2>(expr);                                              \
     }                                                                            \
     template<typename A, typename B>                                             \
-    requires(any_dsl_v<A, B> && is_all_##type##_element_expr_v<A, B>)            \
+    requires(any_dsl_v<A, B>)                                                    \
     OC_NODISCARD auto make_##type##2(const A &a, const B &b) noexcept {          \
         auto expr = Function::current()->call_builtin(Type::of<type##2>(),       \
                                                       CallOp::MAKE_##tag##2,     \
@@ -396,7 +396,6 @@ OC_MAKE_BINARY_BUILTIN_FUNC(atan2, ATAN2)
     }                                                                                                          \
     template<typename A, typename B>                                                                           \
     requires(any_dsl_v<A, B> &&                                                                                \
-             is_all_##type##_element_expr_v<A, B> &&                                                           \
              ((is_vector2_expr_v<A> && is_scalar_expr_v<B>) || (is_vector2_expr_v<B> && is_scalar_expr_v<A>))) \
     OC_NODISCARD auto make_##type##3(const A &a, const B &b) noexcept {                                        \
         auto expr = Function::current()->call_builtin(Type::of<type##3>(),                                     \
@@ -405,7 +404,7 @@ OC_MAKE_BINARY_BUILTIN_FUNC(atan2, ATAN2)
         return eval<type##3>(expr);                                                                            \
     }                                                                                                          \
     template<typename A, typename B, typename C>                                                               \
-    requires(any_dsl_v<A, B, C> && is_all_##type##_element_expr_v<A, B, C>)                                    \
+    requires(any_dsl_v<A, B, C>)                                                                               \
     OC_NODISCARD auto make_##type##3(const A &a, const B &b, const C &c) noexcept {                            \
         auto expr = Function::current()->call_builtin(Type::of<type##3>(),                                     \
                                                       CallOp::MAKE_##tag##3,                                   \
@@ -423,7 +422,6 @@ OC_MAKE_BINARY_BUILTIN_FUNC(atan2, ATAN2)
     }                                                                                           \
     template<typename T, typename U>                                                            \
     requires(any_dsl_v<T, U> &&                                                                 \
-             is_all_##type##_element_expr_v<T, U> &&                                            \
              ((is_vector3_expr_v<T> && is_scalar_expr_v<U>) ||                                  \
               (is_scalar_expr_v<T> && is_vector3_expr_v<U>) ||                                  \
               (is_vector2_expr_v<T> && is_vector2_expr_v<U>)))                                  \
@@ -435,7 +433,6 @@ OC_MAKE_BINARY_BUILTIN_FUNC(atan2, ATAN2)
     }                                                                                           \
     template<typename A, typename B, typename C>                                                \
     requires(any_dsl_v<A, B, C> &&                                                              \
-             is_all_##type##_element_expr_v<A, B, C> &&                                         \
              ((is_vector2_expr_v<A> && is_scalar_expr_v<B> && is_scalar_expr_v<C>) ||           \
               (is_scalar_expr_v<A> && is_vector2_expr_v<B> && is_scalar_expr_v<C>) ||           \
               (is_scalar_expr_v<A> && is_scalar_expr_v<B> && is_vector2_expr_v<C>)))            \
@@ -446,7 +443,7 @@ OC_MAKE_BINARY_BUILTIN_FUNC(atan2, ATAN2)
         return eval<type##4>(expr);                                                             \
     }                                                                                           \
     template<typename A, typename B, typename C, typename D>                                    \
-    requires(any_dsl_v<A, B, C, D> && is_all_##type##_element_expr_v<A, B, C, D>)               \
+    requires(any_dsl_v<A, B, C, D>)                                                             \
     OC_NODISCARD auto make_##type##4(const A &a, const B &b, const C &c, const D &d) noexcept { \
         auto expr = Function::current()->call_builtin(Type::of<type##4>(),                      \
                                                       CallOp::MAKE_##tag##4,                    \
