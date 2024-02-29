@@ -89,13 +89,17 @@ public:
     template<typename Index>
     requires is_integral_expr_v<Index>
     [[nodiscard]] BindlessArrayTexture tex_var(Index &&index) const noexcept {
-        return make_expr<BindlessArray>(expression()).tex_var(OC_FORWARD(index), typeid(*this).name(), texture_num());
+        return expr().tex_var(OC_FORWARD(index),
+                              typeid(*this).name(),
+                              texture_num());
     }
 
     template<typename T, typename Index>
     requires is_integral_expr_v<Index>
     [[nodiscard]] BindlessArrayBuffer<T> buffer_var(Index &&index) const noexcept {
-        return make_expr<BindlessArray>(expression()).buffer_var<T>(OC_FORWARD(index), typeid(*this).name(), buffer_num());
+        return expr().buffer_var<T>(OC_FORWARD(index),
+                                    typeid(*this).name(),
+                                    buffer_num());
     }
 
     template<typename T>
@@ -107,7 +111,9 @@ public:
     template<typename Index>
     requires is_integral_expr_v<Index>
     [[nodiscard]] BindlessArrayByteBuffer byte_buffer_var(Index &&index) const noexcept {
-        return make_expr<BindlessArray>(expression()).byte_buffer_var(OC_FORWARD(index), typeid(*this).name(), buffer_num());
+        return expr().byte_buffer_var(OC_FORWARD(index),
+                                      typeid(*this).name(),
+                                      buffer_num());
     }
 
     template<typename Elm, typename Index>
@@ -118,6 +124,10 @@ public:
 
     [[nodiscard]] Var<BindlessArray> var() const noexcept {
         return Var<BindlessArray>(expression());
+    }
+
+    [[nodiscard]] Expr<BindlessArray> expr() const noexcept {
+        return make_expr<BindlessArray>(expression());
     }
 };
 
