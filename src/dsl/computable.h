@@ -123,7 +123,7 @@ struct EnableReadAndWrite {
     auto read(Index &&index, bool check_boundary = true) const noexcept {
         Var<expr_value_t<Index>> new_index = OC_FORWARD(index);
         if (check_boundary) {
-            Var<expr_value_t<Index>> size = static_cast<const T *>(this)->size<expr_value_t<Index>>();
+            Var<expr_value_t<Index>> size = static_cast<const T *>(this)->template size<expr_value_t<Index>>();
             new_index = correct_index(OC_FORWARD(index), size, typeid(T).name(), traceback_string(1));
         }
         const SubscriptExpr *expr = Function::current()->subscript(Type::of<element_type>(),
@@ -138,7 +138,7 @@ struct EnableReadAndWrite {
     void write(Index &&index, Val &&elm, bool check_boundary = true) {
         Var<expr_value_t<Index>> new_index = OC_FORWARD(index);
         if (check_boundary) {
-            Var<expr_value_t<Index>> size = static_cast<const T *>(this)->size<expr_value_t<Index>>();
+            Var<expr_value_t<Index>> size = static_cast<const T *>(this)->template size<expr_value_t<Index>>();
             new_index = correct_index(OC_FORWARD(index), size, typeid(T).name(), traceback_string(1));
         }
         const SubscriptExpr *expr = Function::current()->subscript(Type::of<element_type>(),
@@ -172,7 +172,8 @@ struct EnableByteLoadAndStore {
     requires is_integral_expr_v<Offset>
     [[nodiscard]] auto load(Offset &&offset, bool check_boundary = true) const noexcept {
         if (check_boundary) {
-            offset = detail::correct_index(offset, self()->size(), typeid(*this).name(), traceback_string());
+            offset = detail::correct_index(offset, self()->template size<expr_value_t<Offset>>(),
+                                           typeid(*this).name(), traceback_string());
         }
         if constexpr (N == 1) {
             const CallExpr *expr = Function::current()->call_builtin(Type::of<Elm>(),
@@ -195,7 +196,8 @@ struct EnableByteLoadAndStore {
     requires is_integral_expr_v<Offset>
     [[nodiscard]] Var<Target> load_as(Offset &&offset, bool check_boundary = true) const noexcept {
         if (check_boundary) {
-            offset = detail::correct_index(offset, self()->size(), typeid(*this).name(), traceback_string());
+            offset = detail::correct_index(offset, self()->template size<expr_value_t<Offset>>(),
+                                           typeid(*this).name(), traceback_string());
         }
         const Type *ret_type = Type::of<Target>();
         const CallExpr *expr = Function::current()->call_builtin(ret_type,
@@ -228,7 +230,8 @@ struct EnableByteLoadAndStore {
     requires is_integral_expr_v<Offset>
     void store(Offset &&offset, const Elm &val, bool check_boundary = true) noexcept {
         if (check_boundary) {
-            offset = detail::correct_index(offset, self()->size(), typeid(*this).name(), traceback_string());
+            offset = detail::correct_index(offset, self()->template size<expr_value_t<Offset>>(),
+                                           typeid(*this).name(), traceback_string());
         }
         const CallExpr *expr = Function::current()->call_builtin(nullptr, CallOp::BYTE_BUFFER_WRITE,
                                                                  {self()->expression(),
@@ -604,13 +607,13 @@ struct Computable<ByteBuffer>
     OC_COMPUTABLE_COMMON(Computable<ByteBuffer>)
 
 public:
-    template<typename int_type = uint64t>
+    template<typename int_type = uint>
     [[nodiscard]] auto size_in_byte() const noexcept {
         const CallExpr *expr = Function::current()->call_builtin(Type::of<int_type>(), CallOp::BYTE_BUFFER_SIZE, {expression()});
         return eval<int_type>(expr);
     }
 
-    template<typename int_type = uint64t>
+    template<typename int_type = uint>
     [[nodiscard]] auto size() const noexcept {
         return size_in_byte<int_type>();
     }
