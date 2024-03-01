@@ -110,7 +110,7 @@ struct EnableReadAndWrite {
     using element_type = std::remove_cvref_t<decltype(std::declval<expr_value_t<T>>()[0])>;
     template<typename... Index>
     requires concepts::all_integral<expr_value_t<Index>...>
-    auto read(Index &&...index) const noexcept {
+    auto read_multi(Index &&...index) const noexcept {
         const SubscriptExpr *expr = Function::current()->subscript(Type::of<element_type>(),
                                                                    static_cast<const T *>(this)->expression(),
                                                                    {OC_EXPR(index)...});
@@ -119,23 +119,31 @@ struct EnableReadAndWrite {
     }
 
     template<typename Index>
-    requires is_all_integral_expr_v<Index>
-    auto read_and_check(Index index, uint size, const string &desc) const noexcept {
-        if constexpr (is_integral_v<Index>) {
-            OC_ASSERT(index <= size);
-            return read(OC_FORWARD(index));
-        } else {
-            index = correct_index(OC_FORWARD(index), size, desc, traceback_string(1));
-            return read(index);
+    requires concepts::all_integral<expr_value_t<Index>>
+    auto read(Index &&index, bool check_boundary = true) const noexcept {
+        Var<expr_value_t<Index>> new_index = OC_FORWARD(index);
+        if (check_boundary) {
+            Var<expr_value_t<Index>> size = static_cast<const T *>(this)->size<expr_value_t<Index>>();
+            new_index = correct_index(OC_FORWARD(index), size, typeid(T).name(), traceback_string(1));
         }
+        const SubscriptExpr *expr = Function::current()->subscript(Type::of<element_type>(),
+                                                                   static_cast<const T *>(this)->expression(),
+                                                                   {OC_EXPR(new_index)});
+        expr->mark(Usage::READ);
+        return eval<element_type>(expr);
     }
 
     template<typename Index, typename Val>
     requires concepts::integral<expr_value_t<Index>> && concepts::is_same_v<element_type, expr_value_t<Val>>
-    void write(Index &&index, Val &&elm) {
+    void write(Index &&index, Val &&elm, bool check_boundary = true) {
+        Var<expr_value_t<Index>> new_index = OC_FORWARD(index);
+        if (check_boundary) {
+            Var<expr_value_t<Index>> size = static_cast<const T *>(this)->size<expr_value_t<Index>>();
+            new_index = correct_index(OC_FORWARD(index), size, typeid(T).name(), traceback_string(1));
+        }
         const SubscriptExpr *expr = Function::current()->subscript(Type::of<element_type>(),
                                                                    static_cast<const T *>(this)->expression(),
-                                                                   OC_EXPR(index));
+                                                                   OC_EXPR(new_index));
         expr->mark(Usage::WRITE);
         assign(expr, OC_FORWARD(elm));
     }

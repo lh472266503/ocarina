@@ -210,32 +210,21 @@ public:
     OC_NODISCARD auto
     read(Index &&index, bool check_boundary = true) const {
         auto expr = make_expr<Buffer<T>>(expression());
-        if (check_boundary) {
-            return expr.read_and_check(OC_FORWARD(index),
-                                       static_cast<uint>(_size),
-                                       typeid(*this).name());
-        } else {
-            return expr.read(OC_FORWARD(index));
-        }
+        return expr.read(OC_FORWARD(index), check_boundary);
     }
 
     template<typename... Index>
     requires concepts::all_integral<expr_value_t<Index>...>
     OC_NODISCARD auto
     read_multi(Index &&...index) const {
-        return make_expr<Buffer<T>>(expression()).read(OC_FORWARD(index)...);
+        return make_expr<Buffer<T>>(expression()).read_multi(OC_FORWARD(index)...);
     }
 
     template<typename Index, typename Val>
     requires concepts::integral<expr_value_t<Index>> && concepts::is_same_v<element_type, expr_value_t<Val>>
     void write(Index &&index, Val &&elm, bool check_boundary = true) {
         auto expr = make_expr<Buffer<T>>(expression());
-        if (check_boundary) {
-            expr.write_and_check(OC_FORWARD(index), OC_FORWARD(elm),
-                                 static_cast<uint>(_size), typeid(*this).name());
-        } else {
-            expr.write(OC_FORWARD(index), OC_FORWARD(elm));
-        }
+        expr.write(OC_FORWARD(index), OC_FORWARD(elm), check_boundary);
     }
 
     template<typename Index>
