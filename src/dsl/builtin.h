@@ -225,14 +225,15 @@ OC_MAKE_UNARY_VECTOR_FUNC(length_squared, LENGTH_SQUARED)
 
 #undef OC_MAKE_UNARY_VECTOR_FUNC
 
-#define OC_MAKE_MATRIX_FUNC(func, tag)                                               \
-    template<typename T>                                                             \
-    requires(is_dsl_v<T> && is_matrix_v<expr_value_t<T>>)                            \
-    OC_NODISCARD auto                                                                \
-    func(const T &m) noexcept {                                                      \
-        auto expr = Function::current() -> call_builtin(Type::of<expr_value_t<T>>(), \
-                                                        CallOp::tag, {OC_EXPR(m)});  \
-        return eval<expr_value_t<T>>(expr);                                          \
+#define OC_MAKE_MATRIX_FUNC(func, tag)                                                      \
+    template<typename T>                                                                    \
+    requires(is_dsl_v<T> && is_matrix_v<expr_value_t<T>>)                                   \
+    OC_NODISCARD auto                                                                       \
+    func(const T &m) noexcept {                                                             \
+        using ret_type = decltype(func(std::declval<expr_value_t<T>>()));                   \
+        auto expr = Function::current() -> call_builtin(Type::of<expr_value_t<ret_type>>(), \
+                                                        CallOp::tag, {OC_EXPR(m)});         \
+        return eval<expr_value_t<ret_type>>(expr);                                          \
     }
 
 OC_MAKE_MATRIX_FUNC(determinant, DETERMINANT)
