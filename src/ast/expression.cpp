@@ -17,7 +17,13 @@ uint64_t RefExpr::_compute_hash() const noexcept {
 }
 
 uint64_t LiteralExpr::_compute_hash() const noexcept {
-    return ocarina::visit([&](auto &&arg) { return hash64(OC_FORWARD(arg)); }, _value);
+    uint64_t ret = ocarina::visit(
+        [&](auto &&arg) {
+            return hash64(OC_FORWARD(arg));
+        },
+        _value);
+    ret = hash64(ret, _value.index());
+    return ret;
 }
 
 uint64_t SubscriptExpr::_compute_hash() const noexcept {
@@ -73,8 +79,12 @@ uint64_t CallExpr::_compute_hash() const noexcept {
     uint64_t ret = _function ? _function->hash() : Hash64::default_seed;
     ret = hash64(_call_op, ret);
     for (auto _template_arg : _template_args) {
-        ret = ocarina::visit([&](auto &&arg) { return hash64(OC_FORWARD(arg)); },
-                             _template_arg);
+        ret = ocarina::visit(
+            [&](auto &&arg) {
+                return hash64(OC_FORWARD(arg));
+            },
+            _template_arg);
+        ret = hash64(ret, _template_arg.index());
     }
     for (const auto &arg : _arguments) {
         ret = hash64(ret, arg->hash());
