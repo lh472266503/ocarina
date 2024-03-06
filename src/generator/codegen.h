@@ -107,7 +107,7 @@ protected:
     virtual void _emit_member_name(int index) noexcept;
 
 public:
-    Codegen(bool obfuscation) : _obfuscation(obfuscation) { push(_scratch); }
+    explicit Codegen(bool obfuscation) : _obfuscation(obfuscation) { push(_scratch); }
     explicit Codegen(Scratch &scratch)
         : _scratch(scratch) {
         push(_scratch);
