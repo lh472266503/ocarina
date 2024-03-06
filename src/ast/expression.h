@@ -283,6 +283,7 @@ public:
     [[nodiscard]] ocarina::span<const Expression *const> arguments() const noexcept { return _arguments; }
     [[nodiscard]] ocarina::span<const Template> template_args() const noexcept { return _template_args; }
     void append_argument(const Expression *expression) noexcept;
+    [[nodiscard]] vector<const Function *> call_chain() const noexcept;
     [[nodiscard]] auto call_op() const noexcept { return _call_op; }
     [[nodiscard]] auto function() const noexcept { return _function; }
     OC_MAKE_EXPRESSION_COMMON

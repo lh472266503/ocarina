@@ -74,6 +74,17 @@ CallExpr::CallExpr(const Type *type, const Function *func,
     const_cast<Function *>(_function)->set_call_expression(this);
 }
 
+vector<const Function *> CallExpr::call_chain() const noexcept {
+    vector<const Function *> ret;
+    const Function *func = context();
+    while (func) {
+        ret.push_back(func);
+        const CallExpr *call_expr = func->call_expr();
+        func = call_expr ? call_expr->context() : nullptr;
+    }
+    return ret;
+}
+
 void CallExpr::append_argument(const Expression *expression) noexcept {
     _arguments.push_back(expression);
 }
