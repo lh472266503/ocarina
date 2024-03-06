@@ -16,6 +16,10 @@ uint64_t RefExpr::_compute_hash() const noexcept {
     return hash64(_variable.hash(), to_underlying(usage));
 }
 
+Usage RefExpr::usage() const noexcept {
+    return context()->variable_usage(_variable.uid());
+}
+
 uint64_t LiteralExpr::_compute_hash() const noexcept {
     uint64_t ret = ocarina::visit(
         [&](auto &&arg) {

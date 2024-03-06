@@ -66,6 +66,7 @@ public:
         return tag() == Tag::BINARY || tag() == Tag::UNARY;
     }
     virtual void accept(ExprVisitor &) const = 0;
+    [[nodiscard]] virtual Usage usage() const noexcept { return Usage::NONE; }
     void mark(Usage usage) const noexcept {
         _mark(usage);
     }
@@ -89,6 +90,7 @@ public:
     OC_MAKE_CHECK_CONTEXT(Expression, _operand)
     [[nodiscard]] auto operand() const noexcept { return _operand; }
     [[nodiscard]] auto op() const noexcept { return _op; }
+    [[nodiscard]] Usage usage() const noexcept override { return _operand->usage(); }
     OC_MAKE_EXPRESSION_COMMON
 };
 
@@ -169,7 +171,7 @@ public:
             func(index);
         }
     }
-
+    [[nodiscard]] Usage usage() const noexcept override { return _range->usage(); }
     [[nodiscard]] const Expression *range() const noexcept { return _range; }
     [[nodiscard]] const Expression *index(int i) const noexcept { return _indexes.at(i); }
     OC_MAKE_EXPRESSION_COMMON
@@ -205,6 +207,7 @@ public:
     explicit RefExpr(const Variable &v) noexcept
         : Expression(Tag::REF, v.type()), _variable(v) {}
     [[nodiscard]] auto variable() const noexcept { return _variable; }
+    [[nodiscard]] Usage usage() const noexcept override;
     OC_MAKE_EXPRESSION_COMMON
 };
 
@@ -225,12 +228,9 @@ public:
         _expression->mark(Usage::READ);
     }
     OC_MAKE_CHECK_CONTEXT(Expression, _expression)
-    [[nodiscard]] CastOp cast_op() const noexcept {
-        return _cast_op;
-    }
-    [[nodiscard]] const Expression *expression() const noexcept {
-        return _expression;
-    }
+    [[nodiscard]] CastOp cast_op() const noexcept { return _cast_op; }
+    [[nodiscard]] const Expression *expression() const noexcept { return _expression; }
+    [[nodiscard]] Usage usage() const noexcept override { return _expression->usage(); }
     OC_MAKE_EXPRESSION_COMMON
 };
 
@@ -241,9 +241,7 @@ private:
     uint16_t _swizzle_size{0};
 
 private:
-    void _mark(Usage usage) const noexcept override {
-        _parent->mark(usage);
-    }
+    void _mark(Usage usage) const noexcept override { _parent->mark(usage); }
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
@@ -255,6 +253,7 @@ public:
     [[nodiscard]] int swizzle_size() const noexcept { return _swizzle_size; }
     [[nodiscard]] int swizzle_index(int idx) const noexcept;
     [[nodiscard]] const Expression *parent() const noexcept { return _parent; }
+    [[nodiscard]] Usage usage() const noexcept override { return parent()->usage(); }
     OC_MAKE_EXPRESSION_COMMON
 };
 

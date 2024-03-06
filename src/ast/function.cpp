@@ -145,7 +145,12 @@ uint Function::_next_variable_uid() noexcept {
     return ret;
 }
 
-Usage Function::variable_usage(uint uid) const noexcept {
+const Usage &Function::variable_usage(uint uid) const noexcept {
+    OC_ASSERT(uid < _variable_usages.size());
+    return _variable_usages[uid];
+}
+
+Usage &Function::variable_usage(uint uid) noexcept {
     OC_ASSERT(uid < _variable_usages.size());
     return _variable_usages[uid];
 }
