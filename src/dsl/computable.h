@@ -175,6 +175,7 @@ struct EnableByteLoadAndStore {
             offset = detail::correct_index(offset, self()->template size<expr_value_t<Offset>>(),
                                            typeid(*this).name(), traceback_string());
         }
+        self()->expression()->mark(Usage::READ);
         if constexpr (N == 1) {
             const CallExpr *expr = Function::current()->call_builtin(Type::of<Elm>(),
                                                                      CallOp::BYTE_BUFFER_READ,
@@ -200,6 +201,7 @@ struct EnableByteLoadAndStore {
                                            typeid(*this).name(), traceback_string());
         }
         const Type *ret_type = Type::of<Target>();
+        self()->expression()->mark(Usage::READ);
         const CallExpr *expr = Function::current()->call_builtin(ret_type,
                                                                  CallOp::BYTE_BUFFER_READ,
                                                                  {self()->expression(),
@@ -236,6 +238,7 @@ struct EnableByteLoadAndStore {
         const CallExpr *expr = Function::current()->call_builtin(nullptr, CallOp::BYTE_BUFFER_WRITE,
                                                                  {self()->expression(),
                                                                   OC_EXPR(offset), OC_EXPR(val)});
+        self()->expression()->mark(Usage::WRITE);
         Function::current()->expr_statement(expr);
     }
 };

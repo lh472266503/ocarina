@@ -114,7 +114,7 @@ void test_compute_shader(Device &device, Stream &stream) {
 //        $info("{}   {}   {} {}   {}", f4.read(0), f4.size());
 //        auto ab = byte_buffer_var;
 //        SOAView<Elm> soa = byte_buffer_var.soa_view<Elm>();
-      SOAView soa = byte_buffer.soa_view<Elm>();
+      SOAView soa = byte_buffer_var.soa_view<Elm>();
       auto soa2 = ra.soa_view<Elm>(byte_handle);
       soa.write(dispatch_id(), make_float4x4(1.f * dispatch_id()));
       Var a = soa2.read(dispatch_id());
