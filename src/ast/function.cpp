@@ -43,6 +43,19 @@ void Function::mark_variable_usage(ocarina::uint uid, ocarina::Usage usage) noex
     }
 }
 
+namespace detail {
+void combine_usage(const Expression *a, const Expression *b) noexcept {
+    auto bit_or = [](Usage lhs, Usage rhs) {
+        return Usage(to_underlying(lhs) | to_underlying(rhs));
+    };
+    Usage usage_a = a->usage();
+    Usage usage_b = b->usage();
+    Usage combined = bit_or(usage_a, usage_b);
+    a->mark(combined);
+    b->mark(combined);
+}
+}// namespace detail
+
 const RefExpr *Function::mapping_captured_argument(const Expression *outer_expr, bool *contain) noexcept {
     *contain = _expr_to_argument_index.contains(outer_expr);
     if (!*contain) {
@@ -52,7 +65,9 @@ const RefExpr *Function::mapping_captured_argument(const Expression *outer_expr,
         _appended_arguments.push_back(variable);
     }
     uint arg_index = _expr_to_argument_index.at(outer_expr);
-    return _ref(_appended_arguments.at(arg_index));
+    const RefExpr *ret = _ref(_appended_arguments.at(arg_index));
+    detail::combine_usage(ret, outer_expr);
+    return ret;
 }
 
 const RefExpr *Function::mapping_local_variable(const Expression *invoked_func_expr, bool *contain) noexcept {
@@ -63,20 +78,26 @@ const RefExpr *Function::mapping_local_variable(const Expression *invoked_func_e
         const RefExpr *ref_expr = local(invoked_func_expr->type());
         _outer_to_local.insert(make_pair(invoked_func_expr, ref_expr));
     }
-    return _outer_to_local.at(invoked_func_expr);
+    const RefExpr *ret = _outer_to_local.at(invoked_func_expr);
+    detail::combine_usage(ret, invoked_func_expr);
+    return ret;
 }
 
 const RefExpr *Function::outer_to_local(const Expression *invoked_func_expr) noexcept {
     if (!_outer_to_local.contains(invoked_func_expr)) {
         return nullptr;
     }
-    return _outer_to_local.at(invoked_func_expr);
+    const RefExpr *ret = _outer_to_local.at(invoked_func_expr);
+    detail::combine_usage(ret, invoked_func_expr);
+    return ret;
 }
 
 const RefExpr *Function::outer_to_argument(const Expression *invoked_func_expr) noexcept {
     OC_ASSERT(_expr_to_argument_index.contains(invoked_func_expr));
     uint arg_index = _expr_to_argument_index.at(invoked_func_expr);
-    return _ref(_appended_arguments.at(arg_index));
+    const RefExpr *ret = _ref(_appended_arguments.at(arg_index));
+    detail::combine_usage(ret, invoked_func_expr);
+    return ret;
 }
 
 const RefExpr *Function::mapping_output_argument(const Expression *invoked_func_expr, bool *contain) noexcept {
@@ -103,6 +124,7 @@ void Function::append_output_argument(const Expression *expression, bool *contai
     Variable variable(expression->type(), Variable::Tag::REFERENCE, _next_variable_uid(), nullptr, "output");
     _appended_arguments.push_back(variable);
     const RefExpr *ref_expr = _ref(variable);
+    detail::combine_usage(ref_expr, expression);
     with(body(), [&] {
         assign(ref_expr, expression);
     });

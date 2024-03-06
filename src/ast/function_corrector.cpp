@@ -24,17 +24,6 @@ bool FunctionCorrector::is_from_invoker(const Expression *expression) noexcept {
                      expression->context()) != _function_stack.end();
 }
 
-void FunctionCorrector::combine_usage(const Expression *a, const Expression *b) noexcept {
-    auto bit_or = [](Usage lhs, Usage rhs) {
-        return Usage(to_underlying(lhs) | to_underlying(rhs));
-    };
-    Usage usage_a = a->usage();
-    Usage usage_b = b->usage();
-    Usage combined = bit_or(usage_a, usage_b);
-    a->mark(combined);
-    b->mark(combined);
-}
-
 void FunctionCorrector::process_ref_expr(const Expression *&expression, Function *cur_func) noexcept {
     if (expression->context() == cur_func) {
         return;
@@ -68,7 +57,6 @@ void FunctionCorrector::capture_from_invoker(const Expression *&expression, Func
     bool contain;
     const Expression *old_expr = expression;
     expression = cur_func->mapping_captured_argument(expression, &contain);
-    combine_usage(old_expr, expression);
     if (contain) {
         return;
     }
@@ -106,14 +94,12 @@ void FunctionCorrector::output_from_invoked(const Expression *&expression, Funct
         const RefExpr *ref_expr;
         if (invoker == kernel()) {
             ref_expr = invoker->mapping_local_variable(org_expr, &contain);
-            combine_usage(ref_expr, org_expr);
             if (!contain) {
                 call_expr->append_argument(ref_expr);
             }
             break;
         } else {
             ref_expr = invoker->mapping_output_argument(org_expr, &contain);
-            combine_usage(ref_expr, org_expr);
             if (!contain) {
                 call_expr->append_argument(ref_expr);
             }
@@ -126,10 +112,8 @@ void FunctionCorrector::output_from_invoked(const Expression *&expression, Funct
         } else {
             expression = cur_func->outer_to_argument(org_expr);
         }
-        combine_usage(expression, org_expr);
     } else {
         const RefExpr *kernel_expr = kernel()->outer_to_local(expression);
-        combine_usage(kernel_expr, expression);
         expression = kernel_expr;
         capture_from_invoker(expression, cur_func);
     }

@@ -114,9 +114,9 @@ void test_compute_shader(Device &device, Stream &stream) {
 //        $info("{}   {}   {} {}   {}", f4.read(0), f4.size());
 //        auto ab = byte_buffer_var;
 //        SOAView<Elm> soa = byte_buffer_var.soa_view<Elm>();
-      SOAView soa = byte_buffer_var.soa_view<Elm>();
+//      SOAView soa = byte_buffer_var.soa_view<Elm>();
 //      auto soa2 = ra.soa_view<Elm>(byte_handle);
-      soa.write(dispatch_id(), make_float4x4(1.f * dispatch_id()));
+//      soa.write(dispatch_id(), make_float4x4(1.f * dispatch_id()));
 //      Var a = soa.read(dispatch_id());
 //      $info("\n {} {} {} {}  \n""{} {} {} {}  \n""{} {} {} {}  \n""{} {} {} {}  \n", a[0], a[1], a[2], a[3]);
 
@@ -210,30 +210,25 @@ void test_lambda(Device &device, Stream &stream) {
     Kernel kernel = [&](Uint i) {
         Float *p;
         OCHit *hit;
+        Float b;
         $outline {
 
-            Var aa = $outline {
+            $outline {
                 $outline {
                     p = new Float(15);
-                    hit = new OCHit{};
+//                    hit = new OCHit{};
+                    *p = b;
+                    b = 19;
                 };
-                return 5;
             };
-            $info("{}   {}   {}   i  ---   ", vert.read(0));
+//            $info("{}   i  ---   ", *p);
         };
 
-        Float bb = $outline {
-            return (*hit).inst_id;
-        };
-        Var<array<float, 3>> arr{};
-        Env::instance().set("test", Float(9.6f));
-        auto &ttt = Env::instance().get<Float>("test");
-        arr.set(array<float, 3>{1, 2, 3});
-        $info("{}     ---   ", ttt);
-        ttt = 9.7f;
-        $info("{}     ---   ", Env::instance().get<Float>("test"));
-        $info("{}     ---   ", (*hit).inst_id);
-        $info("{} {} {}", arr.zyx());
+        Float a = *p;
+//        Float bb = $outline {
+//            return (*hit).inst_id;
+//        };
+        $info("{}     ---   ", *p);
     };
     Shader shader = device.compile(kernel);
 
@@ -334,8 +329,8 @@ int main(int argc, char *argv[]) {
 
     /// create rtx file_manager if need
     device.init_rtx();
-    test_compute_shader(device, stream);
-    //    test_lambda(device, stream);
+//    test_compute_shader(device, stream);
+        test_lambda(device, stream);
 
     //    test_poly();
     return 0;
