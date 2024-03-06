@@ -14,9 +14,6 @@
 
 namespace ocarina {
 
-template<typename T>
-class DynamicArray;
-
 namespace detail {
 template<typename Lhs, typename Rhs>
 void assign(Lhs &&lhs, Rhs &&rhs) noexcept;// implement in stmt_builder.h
@@ -60,11 +57,14 @@ template<typename T,
          typename element_type = std::remove_cvref_t<decltype(std::declval<expr_value_t<T>>()[0])>>
 struct EnableSubscriptAccess {
 
+    [[nodiscard]] T *self() noexcept { return static_cast<T *>(this); }
+    [[nodiscard]] const T *self() const noexcept { return static_cast<const T *>(this); }
+
     template<typename Index>
     requires concepts::integral<expr_value_t<Index>>
     auto operator[](Index &&index) const noexcept {
         const SubscriptExpr *expr = Function::current()->subscript(Type::of<element_type>(),
-                                                                   static_cast<const T *>(this)->expression(),
+                                                                   self()->expression(),
                                                                    OC_EXPR(index));
         expr->mark(Usage::READ);
         return eval<element_type>(expr);
@@ -74,7 +74,7 @@ struct EnableSubscriptAccess {
     requires concepts::integral<expr_value_t<Index>>
     auto at(Index &&index) const noexcept {
         const SubscriptExpr *expr = Function::current()->subscript(Type::of<element_type>(),
-                                                                   static_cast<const T *>(this)->expression(),
+                                                                   self()->expression(),
                                                                    OC_EXPR(index));
         expr->mark(Usage::READ);
         return eval<element_type>(expr);
@@ -85,7 +85,7 @@ struct EnableSubscriptAccess {
     auto &operator[](Index &&index) noexcept {
         auto f = Function::current();
         const SubscriptExpr *expr = f->subscript(Type::of<element_type>(),
-                                                 static_cast<const T *>(this)->expression(),
+                                                 self()->expression(),
                                                  OC_EXPR(index));
         expr->mark(Usage::WRITE);
         Var<element_type> *ret = f->template create_temp_obj<Var<element_type>>(expr);
@@ -97,7 +97,7 @@ struct EnableSubscriptAccess {
     auto at(Index &&index) noexcept {
         auto f = Function::current();
         const SubscriptExpr *expr = f->subscript(Type::of<element_type>(),
-                                                 static_cast<const T *>(this)->expression(),
+                                                 self()->expression(),
                                                  OC_EXPR(index));
         expr->mark(Usage::WRITE);
         Var<element_type> *ret = f->template create_temp_obj<Var<element_type>>(expr);
@@ -107,12 +107,16 @@ struct EnableSubscriptAccess {
 
 template<typename T>
 struct EnableReadAndWrite {
+
+    [[nodiscard]] T *self() noexcept { return static_cast<T *>(this); }
+    [[nodiscard]] const T *self() const noexcept { return static_cast<const T *>(this); }
+
     using element_type = std::remove_cvref_t<decltype(std::declval<expr_value_t<T>>()[0])>;
     template<typename... Index>
     requires concepts::all_integral<expr_value_t<Index>...>
     auto read_multi(Index &&...index) const noexcept {
         const SubscriptExpr *expr = Function::current()->subscript(Type::of<element_type>(),
-                                                                   static_cast<const T *>(this)->expression(),
+                                                                   self()->expression(),
                                                                    {OC_EXPR(index)...});
         expr->mark(Usage::READ);
         return eval<element_type>(expr);
@@ -127,7 +131,7 @@ struct EnableReadAndWrite {
             new_index = correct_index(OC_FORWARD(index), size, typeid(T).name(), traceback_string(1));
         }
         const SubscriptExpr *expr = Function::current()->subscript(Type::of<element_type>(),
-                                                                   static_cast<const T *>(this)->expression(),
+                                                                   self()->expression(),
                                                                    {OC_EXPR(new_index)});
         expr->mark(Usage::READ);
         return eval<element_type>(expr);
@@ -142,7 +146,7 @@ struct EnableReadAndWrite {
             new_index = correct_index(OC_FORWARD(index), size, typeid(T).name(), traceback_string(1));
         }
         const SubscriptExpr *expr = Function::current()->subscript(Type::of<element_type>(),
-                                                                   static_cast<const T *>(this)->expression(),
+                                                                   self()->expression(),
                                                                    OC_EXPR(new_index));
         expr->mark(Usage::WRITE);
         assign(expr, OC_FORWARD(elm));
@@ -246,25 +250,26 @@ struct EnableByteLoadAndStore {
 template<typename T>
 struct EnableTextureReadAndWrite {
 
+    [[nodiscard]] T *self() noexcept { return static_cast<T *>(this); }
+    [[nodiscard]] const T *self() const noexcept { return static_cast<const T *>(this); }
+
     template<typename Output, typename X, typename Y>
     requires(is_all_integral_expr_v<X, Y>)
     OC_NODISCARD auto read(const X &x, const Y &y) const noexcept {
-        const T *texture = static_cast<const T *>(this);
         const CallExpr *expr = Function::current()->call_builtin(Type::of<Output>(), CallOp::TEX_READ,
-                                                                 {texture->expression(), OC_EXPR(x), OC_EXPR(y)},
+                                                                 {self()->expression(), OC_EXPR(x), OC_EXPR(y)},
                                                                  {Type::of<Output>()});
-        texture->expression()->mark(Usage::READ);
+        self()->expression()->mark(Usage::READ);
         return eval<Output>(expr);
     }
 
     template<typename Output, typename X, typename Y, typename Z>
     requires(is_all_integral_expr_v<X, Y, Z>)
     OC_NODISCARD auto read(const X &x, const Y &y, const Z &z) const noexcept {
-        const T *texture = static_cast<const T *>(this);
         const CallExpr *expr = Function::current()->call_builtin(Type::of<Output>(), CallOp::TEX_READ,
-                                                                 {texture->expression(), OC_EXPR(x), OC_EXPR(y), OC_EXPR(z)},
+                                                                 {self()->expression(), OC_EXPR(x), OC_EXPR(y), OC_EXPR(z)},
                                                                  {Type::of<Output>()});
-        texture->expression()->mark(Usage::READ);
+        self()->expression()->mark(Usage::READ);
         return eval<Output>(expr);
     }
 
@@ -291,9 +296,9 @@ struct EnableTextureReadAndWrite {
     void write(const Val &elm, const X &x, const Y &y) noexcept {
         const T *texture = static_cast<const T *>(this);
         const CallExpr *expr = Function::current()->call_builtin(nullptr, CallOp::TEX_WRITE,
-                                                                 {texture->expression(),
+                                                                 {self()->expression(),
                                                                   OC_EXPR(elm), OC_EXPR(x), OC_EXPR(y)});
-        texture->expression()->mark(Usage::WRITE);
+        self()->expression()->mark(Usage::WRITE);
         Function::current()->expr_statement(expr);
     }
 
@@ -302,11 +307,10 @@ struct EnableTextureReadAndWrite {
              (is_uchar_element_expr_v<Val> ||
               is_float_element_expr_v<Val>))
     void write(const Val &elm, const X &x, const Y &y, const Z &z) noexcept {
-        const T *texture = static_cast<const T *>(this);
         const CallExpr *expr = Function::current()->call_builtin(nullptr, CallOp::TEX_WRITE,
-                                                                 {texture->expression(),
+                                                                 {self()->expression(),
                                                                   OC_EXPR(elm), OC_EXPR(x), OC_EXPR(y), OC_EXPR(z)});
-        texture->expression()->mark(Usage::WRITE);
+        self()->expression()->mark(Usage::WRITE);
         Function::current()->expr_statement(expr);
     }
 
@@ -399,18 +403,22 @@ struct EnableTextureSample {
 
 template<typename T>
 struct EnableGetMemberByIndex {
+
+    [[nodiscard]] T *self() noexcept { return static_cast<T *>(this); }
+    [[nodiscard]] const T *self() const noexcept { return static_cast<const T *>(this); }
+
     using element_type = std::remove_cvref_t<decltype(std::declval<expr_value_t<T>>()[0])>;
     template<int i>
     [[nodiscard]] auto get() const noexcept {
         return eval<element_type>(Function::current()->subscript(Type::of<element_type>(),
-                                                                 OC_EXPR(*static_cast<const T *>(this)),
+                                                                 OC_EXPR(*self()),
                                                                  OC_EXPR(i)));
     }
     template<int i>
     auto &get() noexcept {
         auto f = Function::current();
         const SubscriptExpr *expr = f->subscript(Type::of<element_type>(),
-                                                 OC_EXPR(*static_cast<const T *>(this)),
+                                                 OC_EXPR(*self()),
                                                  OC_EXPR(int(i)));
         Var<element_type> *ret = f->template create_temp_obj<Var<element_type>>(expr);
         return *ret;
