@@ -20,17 +20,9 @@ enum struct Usage : uint32_t {
     READ_WRITE = READ | WRITE
 };
 
-//OC_MAKE_ENUM_BIT_OPS(Usage, |, &, <<, >>)
-
-//inline auto operator|(Usage lhs, Usage rhs) { return static_cast<Usage>(ocarina::to_underlying(lhs) | ocarina::to_underlying(rhs)); }
-//inline auto operator&(Usage lhs, Usage rhs) { return static_cast<Usage>(ocarina::to_underlying(lhs) & ocarina::to_underlying(rhs)); }
-//inline auto operator<<(Usage lhs, Usage rhs) { return static_cast<Usage>(ocarina::to_underlying(lhs) << ocarina::to_underlying(rhs)); }
-//inline auto operator>>(Usage lhs, Usage rhs) { return static_cast<Usage>(ocarina::to_underlying(lhs) >> ocarina::to_underlying(rhs)); }
-
-
-//[[nodiscard]] inline bool is_write(Usage usage) {
-//    return (usage & Usage::WRITE) == Usage::WRITE;
-//}
+[[nodiscard]] inline bool is_write(Usage usage) {
+    return (to_underlying(usage) & to_underlying(Usage::WRITE)) == to_underlying(Usage::WRITE);
+}
 
 class Function;
 
