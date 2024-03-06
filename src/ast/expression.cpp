@@ -12,8 +12,7 @@ void RefExpr::_mark(Usage usage) const noexcept {
 }
 
 uint64_t RefExpr::_compute_hash() const noexcept {
-    Usage usage = context()->variable_usage(_variable.uid());
-    return hash64(_variable.hash(), to_underlying(usage));
+    return hash64(_variable.hash(), to_underlying(usage()));
 }
 
 Usage RefExpr::usage() const noexcept {
