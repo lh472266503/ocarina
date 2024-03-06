@@ -48,6 +48,7 @@ private:
     [[nodiscard]] bool is_from_invoker(const Expression *expression) noexcept;
     void capture_from_invoker(const Expression *&expression, Function *cur_func) noexcept;
     void output_from_invoked(const Expression *&expression, Function *cur_func) noexcept;
+    static void combine_usage(const Expression *a, const Expression *b) noexcept;
 
 public:
     explicit FunctionCorrector() = default;
