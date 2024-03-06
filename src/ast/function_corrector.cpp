@@ -27,11 +27,21 @@ bool FunctionCorrector::is_from_invoker(const Expression *expression) noexcept {
 void FunctionCorrector::process_ref_expr(const Expression *&expression, Function *cur_func) noexcept {
     if (expression->context() == cur_func) {
         return;
-    } else if (is_from_invoker(expression)) {
+    }
+    auto bit_or = [](Usage lhs, Usage rhs) {
+        return Usage(to_underlying(lhs) | to_underlying(rhs));
+    };
+    const Expression *old_expr = expression;
+    if (is_from_invoker(expression)) {
         capture_from_invoker(expression, cur_func);
     } else {
         output_from_invoked(expression, cur_func);
     }
+    Usage old_usage = old_expr->usage();
+    Usage new_usage = expression->usage();
+    Usage combined = bit_or(old_usage, new_usage);
+    old_expr->mark(combined);
+    expression->mark(combined);
 }
 
 void FunctionCorrector::visit_expr(const Expression *const &expression, Function *cur_func) noexcept {
@@ -67,38 +77,6 @@ void FunctionCorrector::visit(const CallExpr *const_expr) {
     }
     if (expr->_function) {
         apply(const_cast<Function *>(expr->_function));
-        correct_resource_usage(expr);
-    }
-}
-
-void FunctionCorrector::correct_resource_usage(CallExpr *call_expr) noexcept {
-    auto bit_or = [](Usage lhs, Usage rhs) {
-        return Usage(to_underlying(lhs) | to_underlying(rhs));
-    };
-
-    vector<Usage *> formal_param_usage_addr;
-
-    auto invoked = const_cast<Function *>(call_expr->_function);
-    for (const Variable &variable : invoked->_arguments) {
-        Usage &usage = invoked->variable_usage(variable.uid());
-        formal_param_usage_addr.push_back(&usage);
-    }
-    invoked->for_each_captured_resource([&](const CapturedResource &captured_resource) {
-        Usage &usage = invoked->variable_usage(captured_resource.expression()->variable().uid());
-        formal_param_usage_addr.push_back(&usage);
-    });
-    for (const Variable &variable : invoked->_appended_arguments) {
-        Usage &usage = invoked->variable_usage(variable.uid());
-        formal_param_usage_addr.push_back(&usage);
-    }
-
-    for (int i = 0; i < call_expr->_arguments.size(); ++i) {
-        Expression *arg = const_cast<Expression *>(call_expr->_arguments[i]);
-        Usage act_param_usage = arg->usage();
-        Usage& formal_param_usage = *formal_param_usage_addr[i];
-        Usage combined_usage = bit_or(formal_param_usage, act_param_usage);
-        formal_param_usage = combined_usage;
-        arg->mark(combined_usage);
     }
 }
 
