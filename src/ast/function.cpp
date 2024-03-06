@@ -435,6 +435,7 @@ ocarina::string Function::func_name(uint64_t ext_hash, string ext_name) const no
 }
 
 void Function::assign(const Expression *lhs, const Expression *rhs) noexcept {
+    lhs->mark(Usage::WRITE);
     create_statement<AssignStmt>(lhs, rhs);
 }
 

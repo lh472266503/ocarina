@@ -10,6 +10,7 @@
 #include <cstddef>
 #include <tuple>
 #include <type_traits>
+#include "macro_map.h"
 #include "oc_windows.h"
 
 #ifdef OC_AST_EXPORT_DLL
@@ -121,3 +122,11 @@ using handle_ty = uint64_t;
     OC_MAKE_MEMBER_SETTER(member)
 
 #define OC_COMMA ,
+
+#define OC_MAKE_ENUM_BIT_OPS_IMPL(op, type)                                                   \
+    inline auto operator op(type lhs, type rhs) {                                             \
+        return static_cast<type>(ocarina::to_underlying(lhs) op ocarina::to_underlying(rhs)); \
+    }
+
+#define OC_MAKE_ENUM_BIT_OPS(type, ...) \
+    MAP_UD(OC_MAKE_ENUM_BIT_OPS_IMPL, type, ##__VA_ARGS__)
