@@ -204,6 +204,7 @@ public:
             visitor(var);
         }
     }
+    [[nodiscard]] vector<Variable> all_arguments() const noexcept;
     void update_captured_resources(const Function *func) noexcept;
     [[nodiscard]] static Function *current() noexcept;
     template<typename Func>

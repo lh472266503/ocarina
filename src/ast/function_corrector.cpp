@@ -127,6 +127,8 @@ void FunctionCorrector::visit(const ScopeStmt *scope) {
 
 void FunctionCorrector::visit(const AssignStmt *stmt) {
     visit_expr(stmt->_lhs);
+    OC_ERROR_IF(stmt->lhs()->type()->is_resource());
+    stmt->lhs()->mark(Usage::WRITE);
     visit_expr(stmt->_rhs);
 }
 

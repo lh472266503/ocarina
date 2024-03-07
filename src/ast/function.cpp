@@ -51,11 +51,11 @@ void combine_usage(const Expression *inner, const Expression *outer) noexcept {
     Usage usage_a = inner->usage();
     Usage usage_b = outer->usage();
     Usage combined = bit_or(usage_a, usage_b);
-    
+
     if (inner->type()->is_resource()) {
         inner->mark(combined);
+        outer->mark(combined);
     }
-    outer->mark(combined);
 }
 }// namespace detail
 
@@ -374,6 +374,20 @@ void Function::update_captured_resources(const Function *func) noexcept {
     });
 }
 
+vector<Variable> Function::all_arguments() const noexcept {
+    vector<Variable> ret;
+    for (const auto &v : arguments()) {
+        ret.push_back(v);
+    }
+    for (const auto &res : captured_resources()) {
+        ret.push_back(res.expression()->variable());
+    }
+    for (const auto &v : appended_arguments()) {
+        ret.push_back(v);
+    }
+    return ret;
+}
+
 const CapturedResource *Function::get_captured_resource_by_handle(const void *handle) const noexcept {
     const CapturedResource *var = nullptr;
     for (const CapturedResource &v : _captured_resources) {
@@ -466,7 +480,6 @@ ocarina::string Function::func_name(uint64_t ext_hash, string ext_name) const no
 }
 
 void Function::assign(const Expression *lhs, const Expression *rhs) noexcept {
-    lhs->mark(Usage::WRITE);
     create_statement<AssignStmt>(lhs, rhs);
 }
 

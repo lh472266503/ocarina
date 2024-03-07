@@ -327,22 +327,13 @@ void CUDACodegen::_emit_builtin_var(Variable v) noexcept {
 void CUDACodegen::_emit_arguments(const Function &f) noexcept {
     current_scratch() << "(";
     if (f.is_general_kernel()) {
-        for (const auto &v : f.arguments()) {
+        for (const auto &v : f.all_arguments()) {
             _emit_argument(v);
-        }
-        for (const auto &var : f.captured_resources()) {
-            _emit_argument(var.expression()->variable());
         }
         Variable dispatch_dim(Type::of<uint3>(), Variable::Tag::LOCAL, -1, "d_dim");
         _emit_variable_define(dispatch_dim);
     } else if (f.is_callable()) {
-        for (const auto &v : f.arguments()) {
-            _emit_argument(v);
-        }
-        for (const auto &var : f.captured_resources()) {
-            _emit_argument(var.expression()->variable());
-        }
-        for (const auto &v : f.appended_arguments()) {
+        for (const auto &v : f.all_arguments()) {
             _emit_argument(v);
         }
         Variable dispatch_dim(Type::of<uint3>(), Variable::Tag::LOCAL, -1, "d_dim");
