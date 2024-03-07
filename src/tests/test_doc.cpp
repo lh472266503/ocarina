@@ -211,10 +211,12 @@ void test_lambda(Device &device, Stream &stream) {
     Kernel kernel = [&](Uint i) {
         Float *p;
         OCHit *hit;
-        Float b = 123;
+        Float b;
         $outline {
 
             $outline {
+                b = 123;
+
                 $outline {
                     p = new Float(15);
 //                    hit = new OCHit{};
@@ -224,14 +226,14 @@ void test_lambda(Device &device, Stream &stream) {
             };
 //            $info("{}   i  ---   ", *p);
         };
-        $outline{
-            Float a = *p;
-            //        Float bb = $outline {
-            //            return (*hit).inst_id;
-            //        };
-//            b = 10;
-            $info("{}     ---   ", *p);
-        };
+//        $outline{
+//            Float a = *p;
+//            //        Float bb = $outline {
+//            //            return (*hit).inst_id;
+//            //        };
+////            b = 10;
+//            $info("{}     ---   ", *p);
+//        };
     };
     Shader shader = device.compile(kernel);
 
