@@ -51,12 +51,11 @@ void combine_usage(const Expression *inner, const Expression *outer) noexcept {
     Usage usage_a = inner->usage();
     Usage usage_b = outer->usage();
     Usage combined = bit_or(usage_a, usage_b);
+    
     if (inner->type()->is_resource()) {
         inner->mark(combined);
-        outer->mark(combined);
-    } else {
-        outer->mark(combined);
     }
+    outer->mark(combined);
 }
 }// namespace detail
 
@@ -128,7 +127,7 @@ void Function::append_output_argument(const Expression *expression, bool *contai
     Variable variable(expression->type(), Variable::Tag::REFERENCE, _next_variable_uid(), nullptr, "output");
     _appended_arguments.push_back(variable);
     const RefExpr *ref_expr = _ref(variable);
-    detail::combine_usage(ref_expr, expression);
+    OC_ERROR_IF(expression->type()->is_resource());
     with(body(), [&] {
         assign(ref_expr, expression);
     });
@@ -369,7 +368,8 @@ bool Function::has_captured_resource(const void *handle) const noexcept {
 void Function::update_captured_resources(const Function *func) noexcept {
     func->for_each_captured_resource([&](const CapturedResource &var) {
         if (!has_captured_resource(var.handle_ptr())) {
-            add_captured_resource(var.type(), var.expression()->variable().tag(), var.block());
+            const CapturedResource &res = add_captured_resource(var.type(), var.expression()->variable().tag(), var.block());
+            detail::combine_usage(res.expression(), var.expression());
         }
     });
 }

@@ -391,13 +391,13 @@ public:
     [[nodiscard]] constexpr bool is_matrix() const noexcept { return _tag == Tag::MATRIX; }
     [[nodiscard]] constexpr bool is_structure() const noexcept { return _tag == Tag::STRUCTURE; }
     [[nodiscard]] constexpr bool is_buffer() const noexcept { return _tag == Tag::BUFFER; }
-    [[nodiscard]] constexpr bool is_resource() const noexcept {
-        return is_buffer() || is_byte_buffer() || is_texture();
-    }
     [[nodiscard]] constexpr bool is_byte_buffer() const noexcept { return _tag == Tag::BYTE_BUFFER; }
     [[nodiscard]] constexpr bool is_texture() const noexcept { return _tag == Tag::TEXTURE; }
     [[nodiscard]] constexpr bool is_bindless_array() const noexcept { return _tag == Tag::BINDLESS_ARRAY; }
     [[nodiscard]] constexpr bool is_accel() const noexcept { return _tag == Tag::ACCEL; }
+    [[nodiscard]] constexpr bool is_resource() const noexcept {
+        return is_buffer() || is_byte_buffer() || is_texture() || is_accel() || is_bindless_array();
+    }
 };
 
 }// namespace ocarina
