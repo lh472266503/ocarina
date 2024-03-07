@@ -44,15 +44,19 @@ void Function::mark_variable_usage(ocarina::uint uid, ocarina::Usage usage) noex
 }
 
 namespace detail {
-void combine_usage(const Expression *a, const Expression *b) noexcept {
+void combine_usage(const Expression *inner, const Expression *outer) noexcept {
     auto bit_or = [](Usage lhs, Usage rhs) {
         return Usage(to_underlying(lhs) | to_underlying(rhs));
     };
-    Usage usage_a = a->usage();
-    Usage usage_b = b->usage();
+    Usage usage_a = inner->usage();
+    Usage usage_b = outer->usage();
     Usage combined = bit_or(usage_a, usage_b);
-    a->mark(combined);
-    b->mark(combined);
+    if (inner->type()->is_resource()) {
+        inner->mark(combined);
+        outer->mark(combined);
+    } else {
+        outer->mark(combined);
+    }
 }
 }// namespace detail
 
@@ -79,7 +83,7 @@ const RefExpr *Function::mapping_local_variable(const Expression *invoked_func_e
         _outer_to_local.insert(make_pair(invoked_func_expr, ref_expr));
     }
     const RefExpr *ret = _outer_to_local.at(invoked_func_expr);
-    detail::combine_usage(ret, invoked_func_expr);
+    detail::combine_usage(invoked_func_expr, ret);
     return ret;
 }
 
@@ -88,7 +92,7 @@ const RefExpr *Function::outer_to_local(const Expression *invoked_func_expr) noe
         return nullptr;
     }
     const RefExpr *ret = _outer_to_local.at(invoked_func_expr);
-    detail::combine_usage(ret, invoked_func_expr);
+    detail::combine_usage(invoked_func_expr, ret);
     return ret;
 }
 
@@ -96,7 +100,7 @@ const RefExpr *Function::outer_to_argument(const Expression *invoked_func_expr) 
     OC_ASSERT(_expr_to_argument_index.contains(invoked_func_expr));
     uint arg_index = _expr_to_argument_index.at(invoked_func_expr);
     const RefExpr *ret = _ref(_appended_arguments.at(arg_index));
-    detail::combine_usage(ret, invoked_func_expr);
+    detail::combine_usage(invoked_func_expr, ret);
     return ret;
 }
 

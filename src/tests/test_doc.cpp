@@ -207,10 +207,11 @@ void test_lambda(Device &device, Stream &stream) {
     stream << bindless_array->upload_buffer_handles(true) << synchronize();
     stream << vert.upload(vertices.data())
            << tri.upload(triangles.data());
+
     Kernel kernel = [&](Uint i) {
         Float *p;
         OCHit *hit;
-        Float b;
+        Float b = 123;
         $outline {
 
             $outline {
@@ -218,17 +219,19 @@ void test_lambda(Device &device, Stream &stream) {
                     p = new Float(15);
 //                    hit = new OCHit{};
                     *p = b;
-                    b = 19;
+//                    b = 19;
                 };
             };
 //            $info("{}   i  ---   ", *p);
         };
-
-        Float a = *p;
-//        Float bb = $outline {
-//            return (*hit).inst_id;
-//        };
-        $info("{}     ---   ", *p);
+        $outline{
+            Float a = *p;
+            //        Float bb = $outline {
+            //            return (*hit).inst_id;
+            //        };
+//            b = 10;
+            $info("{}     ---   ", *p);
+        };
     };
     Shader shader = device.compile(kernel);
 
