@@ -226,14 +226,14 @@ void test_lambda(Device &device, Stream &stream) {
             };
 //            $info("{}   i  ---   ", *p);
         };
-//        $outline{
+        $outline{
 //            Float a = *p;
 //            //        Float bb = $outline {
 //            //            return (*hit).inst_id;
 //            //        };
 ////            b = 10;
-//            $info("{}     ---   ", *p);
-//        };
+            $info("{}     ---   ", *p);
+        };
     };
     Shader shader = device.compile(kernel);
 

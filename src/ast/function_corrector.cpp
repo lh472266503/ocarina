@@ -65,14 +65,45 @@ void FunctionCorrector::capture_from_invoker(const Expression *&expression, Func
     call_expr->append_argument(old_expr);
 }
 
+namespace detail {
+
+void correct_usage(const CallExpr *expr) noexcept {
+    vector<Variable> formal_arguments = expr->function()->all_arguments();
+    OC_ERROR_IF(expr->arguments().size() != formal_arguments.size());
+
+    auto bit_or = [](Usage lhs, Usage rhs) {
+        return Usage(to_underlying(lhs) | to_underlying(rhs));
+    };
+
+    for (int i = 0; i < formal_arguments.size(); ++i) {
+        Variable formal_arg = formal_arguments[i];
+        Usage &formal_arg_usage = const_cast<Usage &>(expr->function()->variable_usage(formal_arg.uid()));
+
+        const Expression *act_arg = expr->arguments()[i];
+        Usage act_arg_usage = act_arg->usage();
+
+        Usage combined = bit_or(formal_arg_usage, act_arg_usage);
+        if (act_arg->type()->is_resource()) {
+            formal_arg_usage = combined;
+            act_arg->mark(combined);
+        } else {
+            act_arg->mark(combined);
+        }
+    }
+}
+
+}// namespace detail
+
 void FunctionCorrector::visit(const CallExpr *const_expr) {
     CallExpr *expr = const_cast<CallExpr *>(const_expr);
     for (const Expression *const &arg : expr->_arguments) {
         visit_expr(arg);
     }
-    if (expr->_function) {
-        apply(const_cast<Function *>(expr->_function));
+    if (!expr->_function) {
+        return;
     }
+    apply(const_cast<Function *>(expr->_function));
+    detail::correct_usage(expr);
 }
 
 void FunctionCorrector::output_from_invoked(const Expression *&expression, Function *cur_func) noexcept {
