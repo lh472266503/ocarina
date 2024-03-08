@@ -233,7 +233,7 @@ void test_lambda(Device &device, Stream &stream) {
 //            //        };
 ////            b = 10;
 
-            $info("{}    {}  ---   ", min(b, *p) , call<float>("max", b, *p));
+            $info("{}    {}  ---   ", min(b, *p) , call<float>("oc_max", b, *p));
         };
     };
     Shader shader = device.compile(kernel);

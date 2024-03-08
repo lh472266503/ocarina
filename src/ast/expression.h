@@ -267,7 +267,7 @@ private:
     ocarina::vector<const Expression *> _arguments;
     const Function *_function{};
     CallOp _call_op{CallOp::CUSTOM};
-    string _function_name;
+    string_view _function_name{};
     ocarina::vector<Template> _template_args;
 
 private:
@@ -282,7 +282,7 @@ public:
              ocarina::vector<Template> &&t_args = {})
         : Expression(Tag::CALL, type), _call_op(op),
           _arguments(std::move(args)), _template_args(ocarina::move(t_args)) {}
-    CallExpr(const Type *type, string func_name,
+    CallExpr(const Type *type, string_view func_name,
              ocarina::vector<const Expression *> &&args)
         : Expression(Tag::CALL, type), _function_name(ocarina::move(func_name)),
           _arguments(ocarina::move(args)) {}

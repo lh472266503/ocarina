@@ -20,7 +20,7 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         }
         current_scratch() << ")";
     };
-    const string func_name = expr->function_name();
+    string_view func_name = expr->function_name();
     if (!func_name.empty()) {
         current_scratch() << func_name;
         emit_act_arguments(expr);

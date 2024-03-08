@@ -502,7 +502,7 @@ OC_MAKE_MATRIX(4)
 #undef OC_MAKE_MATRIX
 
 template<typename Ret = void, typename... Args>
-auto call(const string &func_name, Args &&...args) noexcept {
+auto call(string_view func_name, Args &&...args) noexcept {
     if constexpr (std::is_void_v<Ret>) {
         const CallExpr *expr = Function::current()->call(nullptr, func_name, {OC_EXPR(args)...});
         Function::current()->expr_statement(expr);

@@ -307,7 +307,7 @@ const CallExpr *Function::call(const Type *type, SP<const Function> func,
     return create_expression<CallExpr>(type, ptr, std::move(args));
 }
 
-const CallExpr *Function::call(const ocarina::Type *type, const std::string &func_name,
+const CallExpr *Function::call(const ocarina::Type *type, string_view func_name,
                                ocarina::vector<const Expression *> args) noexcept {
     return create_expression<CallExpr>(type, func_name, ocarina::move(args));
 }
