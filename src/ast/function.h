@@ -275,6 +275,7 @@ public:
     [[nodiscard]] const MemberExpr *swizzle(const Type *type, const Expression *obj, uint16_t mask, uint16_t swizzle_size) noexcept;
     [[nodiscard]] const MemberExpr *member(const Type *type, const Expression *obj, int index) noexcept;
     const CallExpr *call(const Type *type, SP<const Function> func, ocarina::vector<const Expression *> args) noexcept;
+    const CallExpr *call(const Type *type, const string &func_name, ocarina::vector<const Expression *> args) noexcept;
     const CallExpr *call_builtin(const Type *type, CallOp op, ocarina::vector<const Expression *> args,
                                  ocarina::vector<CallExpr::Template> t_args = {}) noexcept;
     [[nodiscard]] ScopeStmt *scope() noexcept;

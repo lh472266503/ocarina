@@ -92,6 +92,7 @@ void CallExpr::append_argument(const Expression *expression) noexcept {
 uint64_t CallExpr::_compute_hash() const noexcept {
     uint64_t ret = _function ? _function->hash() : Hash64::default_seed;
     ret = hash64(_call_op, ret);
+    ret = hash64(_function_name, ret);
     for (auto _template_arg : _template_args) {
         ret = ocarina::visit(
             [&](auto &&arg) {

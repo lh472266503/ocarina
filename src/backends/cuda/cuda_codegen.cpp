@@ -9,6 +9,24 @@
 namespace ocarina {
 
 void CUDACodegen::visit(const CallExpr *expr) noexcept {
+    auto emit_act_arguments = [this](const CallExpr *expr) {
+        current_scratch() << "(";
+        for (const auto &arg : expr->arguments()) {
+            arg->accept(*this);
+            current_scratch() << ",";
+        }
+        if (!expr->arguments().empty()) {
+            current_scratch().pop_back();
+        }
+        current_scratch() << ")";
+    };
+    const string func_name = expr->function_name();
+    if (!func_name.empty()) {
+        current_scratch() << func_name;
+        emit_act_arguments(expr);
+        return;
+    }
+
 #define OC_GEN_FUNC_NAME(func_name) current_scratch() << TYPE_PREFIX #func_name
     switch (expr->call_op()) {
         case CallOp::CUSTOM: CppCodegen::visit(expr); return;
@@ -106,7 +124,7 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
             current_scratch() << ">";
             break;
         }
-        case CallOp::BYTE_BUFFER_WRITE:OC_GEN_FUNC_NAME(byte_buffer_write);break;
+        case CallOp::BYTE_BUFFER_WRITE: OC_GEN_FUNC_NAME(byte_buffer_write); break;
         case CallOp::BYTE_BUFFER_READ: {
             auto t_args = expr->template_args();
             ocarina::visit(
@@ -158,15 +176,7 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         default: OC_ASSERT(0); break;
     }
 #undef OC_GEN_FUNC_NAME
-    current_scratch() << "(";
-    for (const auto &arg : expr->arguments()) {
-        arg->accept(*this);
-        current_scratch() << ",";
-    }
-    if (!expr->arguments().empty()) {
-        current_scratch().pop_back();
-    }
-    current_scratch() << ")";
+    emit_act_arguments(expr);
 }
 
 void CUDACodegen::visit(const MemberExpr *expr) noexcept {

@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <utility>
+
 #include "ast_node.h"
 
 namespace ocarina {
@@ -265,6 +267,7 @@ private:
     ocarina::vector<const Expression *> _arguments;
     const Function *_function{};
     CallOp _call_op{CallOp::CUSTOM};
+    string _function_name;
     ocarina::vector<Template> _template_args;
 
 private:
@@ -278,10 +281,15 @@ public:
              ocarina::vector<const Expression *> &&args,
              ocarina::vector<Template> &&t_args = {})
         : Expression(Tag::CALL, type), _call_op(op),
-          _arguments(std::move(args)), _template_args(std::move(t_args)) {}
+          _arguments(std::move(args)), _template_args(ocarina::move(t_args)) {}
+    CallExpr(const Type *type, string func_name,
+             ocarina::vector<const Expression *> &&args)
+        : Expression(Tag::CALL, type), _function_name(ocarina::move(func_name)),
+          _arguments(ocarina::move(args)) {}
     OC_MAKE_CHECK_CONTEXT(Expression, _arguments)
     [[nodiscard]] ocarina::span<const Expression *const> arguments() const noexcept { return _arguments; }
     [[nodiscard]] ocarina::span<const Template> template_args() const noexcept { return _template_args; }
+    OC_MAKE_MEMBER_GETTER(function_name, &)
     void append_argument(const Expression *expression) noexcept;
     [[nodiscard]] vector<const Function *> call_chain() const noexcept;
     [[nodiscard]] auto call_op() const noexcept { return _call_op; }

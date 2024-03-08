@@ -220,7 +220,7 @@ void test_lambda(Device &device, Stream &stream) {
                 $outline {
                     p = new Float(15);
 //                    hit = new OCHit{};
-                    *p = b;
+//                    *p = b;
 //                    b = 19;
                 };
             };
@@ -232,7 +232,8 @@ void test_lambda(Device &device, Stream &stream) {
 //            //            return (*hit).inst_id;
 //            //        };
 ////            b = 10;
-            $info("{}     ---   ", *p);
+
+            $info("{}    {}  ---   ", min(b, *p) , call<float>("max", b, *p));
         };
     };
     Shader shader = device.compile(kernel);
