@@ -21,7 +21,7 @@ struct alignas(16) Hit {
 }// namespace ocarina
 
 // clang-format off
-OC_STRUCT(ocarina::Hit, inst_id, prim_id, bary){
+OC_BUILTIN_STRUCT(ocarina::Hit, inst_id, prim_id, bary){
     [[nodiscard]] Bool is_miss() const noexcept {
         return eval(inst_id == uint(-1));
     }
@@ -86,7 +86,7 @@ requires none_dsl_v<Args...>
 }// namespace ocarina
 
 // clang-format off
-OC_STRUCT(ocarina::Ray, org_min, dir_max) {
+OC_BUILTIN_STRUCT(ocarina::Ray, org_min, dir_max) {
 
     void update_origin(Float3 origin) noexcept {
         org_min.x = origin.x;

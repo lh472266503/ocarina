@@ -214,6 +214,9 @@ void test_lambda(Device &device, Stream &stream) {
         Float b;
         $outline {
 
+            Var<Triple> ttt;
+            Var<Hit> hit;
+
             $outline {
                 b = 123;
 

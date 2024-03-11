@@ -335,6 +335,7 @@ private:
     ocarina::vector<const Type *> _members;
     [[nodiscard]] uint64_t _compute_hash() const noexcept override { return hash64(_description); }
     vector<int> _dims;
+    mutable bool _builtin_struct{false};
 
 private:
     void update_name(ocarina::string_view desc) noexcept;
@@ -385,6 +386,11 @@ public:
                _tag == Tag::USHORT || _tag == Tag::SHORT;
     }
     [[nodiscard]] size_t max_member_size() const noexcept;
+    [[nodiscard]] auto set_builtin_struct(bool val) const noexcept {
+        _builtin_struct = val;
+        return this;
+    }
+    [[nodiscard]] constexpr bool is_builtin_struct() const noexcept { return _builtin_struct; }
     [[nodiscard]] constexpr bool is_basic() const noexcept { return is_scalar() || is_vector() || is_matrix(); }
     [[nodiscard]] constexpr bool is_array() const noexcept { return _tag == Tag::ARRAY; }
     [[nodiscard]] constexpr bool is_vector() const noexcept { return _tag == Tag::VECTOR; }

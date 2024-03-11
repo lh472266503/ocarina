@@ -877,21 +877,22 @@ public:
     }
 };
 
-#define OC_MAKE_STRUCT_MEMBER(m)                                                                                             \
-    dsl_t<std::remove_cvref_t<decltype(this_type::m)>>(m){Function::current()->member(Type::of<this_type>()->get_member(#m), \
-                                                                                      expression(),                          \
+#define OC_MAKE_STRUCT_MEMBER(m)                                                                                                                             \
+    dsl_t<std::remove_cvref_t<decltype(this_type::m)>>(m){Function::current()->member(Type::of<this_type>()->set_builtin_struct(is_builtin)->get_member(#m), \
+                                                                                      expression(),                                                          \
                                                                                       ocarina::struct_member_tuple<this_type>::member_index(#m))};
 
 #define OC_MAKE_MEMBER_ASSIGNMENT(m) \
     m.set(t.m);
 
-#define OC_MAKE_COMPUTABLE_BODY(S, ...)                   \
+#define OC_MAKE_COMPUTABLE_BODY(S, builtin, ...)          \
     namespace ocarina {                                   \
     namespace detail {                                    \
     template<>                                            \
     struct Computable<S> {                                \
     public:                                               \
         using this_type = S;                              \
+        static constexpr auto is_builtin = builtin;       \
         static constexpr auto cname = #S;                 \
         OC_COMPUTABLE_COMMON(S)                           \
     public:                                               \
