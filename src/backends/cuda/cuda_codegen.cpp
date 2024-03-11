@@ -202,7 +202,7 @@ void CUDACodegen::visit(const MemberExpr *expr) noexcept {
     } else {
         expr->parent()->accept(*this);
         current_scratch() << ".";
-        _emit_member_name(expr->member_index());
+        _emit_member_name(expr->parent()->type(), expr->member_index());
     }
 }
 

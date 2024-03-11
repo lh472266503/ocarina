@@ -242,7 +242,7 @@ void CppCodegen::visit(const MemberExpr *expr) noexcept {
         }
     } else {
         current_scratch() << ".";
-        _emit_member_name(expr->member_index());
+        _emit_member_name(expr->parent()->type(), expr->member_index());
     }
 }
 
@@ -325,7 +325,7 @@ void CppCodegen::visit(const Type *type) noexcept {
         _emit_indent();
         _emit_type_name(member);
         _emit_space();
-        _emit_member_name(i);
+        _emit_member_name(type, i);
         current_scratch() << "{};";
         _emit_newline();
     }

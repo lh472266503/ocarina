@@ -104,7 +104,7 @@ protected:
     virtual void _emit_func_name(const Function &f) noexcept;
     virtual void _emit_struct_name(const Type *type) noexcept;
     virtual void _emit_comment(const string &content) noexcept = 0;
-    virtual void _emit_member_name(int index) noexcept;
+    virtual void _emit_member_name(const Type *type, int index) noexcept;
 
 public:
     explicit Codegen(bool obfuscation) : _obfuscation(obfuscation) { push(_scratch); }

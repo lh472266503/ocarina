@@ -95,7 +95,7 @@ void Codegen::_emit_struct_name(const Type *type) noexcept {
     _emit_comment(ocarina::format("{} : size = {}", type->cname(), type->size()));
 }
 
-void Codegen::_emit_member_name(int index) noexcept {
+void Codegen::_emit_member_name(const Type *type, int index) noexcept {
     current_scratch() << detail::member_name(index);
 }
 
