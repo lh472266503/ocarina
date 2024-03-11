@@ -20,6 +20,6 @@ protected:
     void _emit_builtin_vars_define(const Function &f) noexcept override;
 
 public:
-    CUDACodegen(bool obfuscation) : CppCodegen(obfuscation) {}
+    explicit CUDACodegen(bool obfuscation) : CppCodegen(obfuscation) {}
 };
 }// namespace ocarina

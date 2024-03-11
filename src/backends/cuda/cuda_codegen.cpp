@@ -403,10 +403,8 @@ void CUDACodegen::_emit_type_name(const Type *type) noexcept {
 }
 
 void CUDACodegen::_emit_struct_name(const Type *type) noexcept {
-    if (type->description() == TypeDesc<Ray>::description()) {
-        current_scratch() << "Ray";
-    } else if (type->description() == TypeDesc<Hit>::description()) {
-        current_scratch() << "Hit";
+    if (type->is_builtin_struct()) {
+        current_scratch() << type->simple_cname();
     } else {
         Codegen::_emit_struct_name(type);
     }

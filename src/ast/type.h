@@ -335,7 +335,7 @@ private:
     ocarina::vector<const Type *> _members;
     [[nodiscard]] uint64_t _compute_hash() const noexcept override { return hash64(_description); }
     vector<int> _dims;
-    mutable bool _builtin_struct{false};
+    bool _builtin_struct{false};
 
 private:
     void update_name(ocarina::string_view desc) noexcept;
@@ -351,6 +351,7 @@ private:
     }
 
 public:
+    Type() = default;
     static void for_each(TypeVisitor *visitor);
     template<typename T>
     [[nodiscard]] static const Type *of() noexcept;
@@ -375,7 +376,8 @@ public:
     [[nodiscard]] auto description() const noexcept { return ocarina::string_view{_description}; }
     [[nodiscard]] ocarina::string name() const noexcept { return _name; }
     [[nodiscard]] ocarina::string cname() const noexcept { return _cname; }
-    void set_cname(string s) const noexcept { _cname = ocarina::move(s); }
+    void set_cname(string s) const noexcept;
+    [[nodiscard]] ocarina::string simple_cname() const noexcept;
     [[nodiscard]] constexpr int dimension() const noexcept { return _dimension; }
     [[nodiscard]] ocarina::span<const Type *const> members() const noexcept;
     [[nodiscard]] const Type *element() const noexcept;
@@ -386,10 +388,6 @@ public:
                _tag == Tag::USHORT || _tag == Tag::SHORT;
     }
     [[nodiscard]] size_t max_member_size() const noexcept;
-    [[nodiscard]] auto set_builtin_struct(bool val) const noexcept {
-        _builtin_struct = val;
-        return this;
-    }
     [[nodiscard]] constexpr bool is_builtin_struct() const noexcept { return _builtin_struct; }
     [[nodiscard]] constexpr bool is_basic() const noexcept { return is_scalar() || is_vector() || is_matrix(); }
     [[nodiscard]] constexpr bool is_array() const noexcept { return _tag == Tag::ARRAY; }

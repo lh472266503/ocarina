@@ -240,13 +240,15 @@ void TypeRegistry::parse_struct(Type *type, string_view desc) noexcept {
     uint64_t ext_hash = hash64(desc);
     auto lst = detail::find_content(desc);
     auto alignment_str = lst[0];
+    bool is_builtin_struct = lst[1] == "true";
+    type->_builtin_struct = is_builtin_struct;
     auto alignment = std::stoi(string(alignment_str));
     type->_alignment = alignment;
     auto size = 0u;
-    for (int i = 1; i < lst.size(); ++i) {
+    for (int i = 2; i < lst.size(); ++i) {
         auto type_str = lst[i];
         type->_members.push_back(parse_type(type_str, hash64(ext_hash, i - 1)));
-        auto member = type->_members[i - 1];
+        auto member = type->_members[i - 2];
         size = mem_offset(size, member->alignment());
         size += member->size();
     }
@@ -311,9 +313,7 @@ void TypeRegistry::add_type(ocarina::unique_ptr<Type> type) {
 }
 
 void TypeRegistry::try_add_to_current_function(const ocarina::Type *type) noexcept {
-    if (auto f = Function::current(); f != nullptr && type->is_structure() &&
-                                      type->description() != TypeDesc<Ray>::description() &&
-                                      type->description() != TypeDesc<Hit>::description()) {
+    if (auto f = Function::current(); f != nullptr && type->is_structure()) {
         f->add_used_structure(type);
     }
 }

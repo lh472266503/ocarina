@@ -4,7 +4,6 @@
 
 #include "function.h"
 #include "type_registry.h"
-#include "dsl/rtx_type.h"
 #include "generator/codegen.h"
 #include "function_corrector.h"
 
@@ -14,9 +13,7 @@ void Function::StructureSet::add(const ocarina::Type *type) noexcept {
     for (const Type *m : type->members()) {
         add(m);
     }
-    if (struct_map.contains(type->hash()) || !type->is_structure() ||
-        type->description() == TypeDesc<Hit>::description() ||
-        type->description() == TypeDesc<Ray>::description()) {
+    if (struct_map.contains(type->hash()) || !type->is_structure()) {
         return;
     }
     struct_map.insert(make_pair(type->hash(), type));

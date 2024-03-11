@@ -29,6 +29,19 @@ struct TypeDesc {
     static_assert(always_false_v<T>, "Invalid type.");
 };
 
+template<typename T>
+struct is_builtin_struct {
+    static constexpr bool value = false;
+};
+
+OC_DEFINE_TEMPLATE_VALUE(is_builtin_struct)
+
+#define OC_MAKE_BUILTIN_STRUCT(S)           \
+    template<>                              \
+    struct ocarina::is_builtin_struct<S> {  \
+        static constexpr bool value = true; \
+    };
+
 #define OC_MAKE_VECTOR_DESC_NAME(S, N)                                 \
     template<>                                                         \
     struct TypeDesc<Vector<S, N>> {                                    \
@@ -237,6 +250,7 @@ struct TypeDesc<BindlessArray> {
 template<typename T>
 const Type *Type::of() noexcept {
     using raw_type = std::remove_cvref_t<T>;
+    constexpr bool is_builtin = is_builtin_struct_v<raw_type>;
     auto ret = Type::from(TypeDesc<raw_type>::description());
     if constexpr (ocarina::is_struct_v<T>) {
         if constexpr (requires {
@@ -261,17 +275,17 @@ const Type *Type::of() noexcept {
 #define OC_MAKE_STRUCT_MEMBER_DESC(member) \
     ocarina::TypeDesc<std::remove_cvref_t<decltype(this_type::member)>>::description()
 
-#define OC_MAKE_STRUCT_DESC(S, ...)                                                        \
-    template<>                                                                             \
-    struct ocarina::TypeDesc<S> {                                                          \
-        using this_type = S;                                                               \
-        static ocarina::string description() noexcept {                                    \
-            static thread_local ocarina::string s = ocarina::format(                       \
-                FMT_STRING("struct<{}" MAP(OC_MAKE_STRUCT_MEMBER_FMT, ##__VA_ARGS__) ">"), \
-                alignof(this_type),                                                        \
-                MAP_LIST(OC_MAKE_STRUCT_MEMBER_DESC, ##__VA_ARGS__));                      \
-            return s;                                                                      \
-        }                                                                                  \
+#define OC_MAKE_STRUCT_DESC(S, ...)                                                           \
+    template<>                                                                                \
+    struct ocarina::TypeDesc<S> {                                                             \
+        using this_type = S;                                                                  \
+        static ocarina::string description() noexcept {                                       \
+            static thread_local ocarina::string s = ocarina::format(                          \
+                FMT_STRING("struct<{},{}" MAP(OC_MAKE_STRUCT_MEMBER_FMT, ##__VA_ARGS__) ">"), \
+                alignof(this_type), ocarina::is_builtin_struct_v<this_type>,                  \
+                MAP_LIST(OC_MAKE_STRUCT_MEMBER_DESC, ##__VA_ARGS__));                         \
+            return s;                                                                         \
+        }                                                                                     \
     };
 
 namespace detail {
@@ -357,7 +371,8 @@ public:
     TypeRegistry &operator=(const TypeRegistry &) = delete;
     TypeRegistry &operator=(TypeRegistry &&) = delete;
     [[nodiscard]] static TypeRegistry &instance() noexcept;
-    [[nodiscard]] const Type *parse_type(ocarina::string_view desc, uint64_t ext_hash = 0u) noexcept;
+    [[nodiscard]] const Type *parse_type(ocarina::string_view desc,
+                                         uint64_t ext_hash = 0u) noexcept;
     [[nodiscard]] bool is_exist(ocarina::string_view desc) const noexcept;
     [[nodiscard]] bool is_exist(uint64_t hash) const noexcept;
     [[nodiscard]] const Type *type_from(ocarina::string_view desc) noexcept;

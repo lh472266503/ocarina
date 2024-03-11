@@ -15,12 +15,13 @@ using namespace ocarina;
 
 struct Triple {
     uint i{50}, j{}, k{};
+    Hit h{};
     Triple(uint i, uint j, uint k) : i(i), j(j), k(k) {}
     Triple() = default;
 };
 
 /// register a DSL struct, if you need upload a struct to device, be sure to register
-OC_STRUCT(Triple, i, j, k){
+OC_STRUCT(Triple, i, j, k, h){
     [[nodiscard]] Uint sum() const noexcept {
         return i + j + k;
 }
@@ -216,6 +217,8 @@ void test_lambda(Device &device, Stream &stream) {
 
             Var<Triple> ttt;
             Var<Hit> hit;
+
+//            auto sn = hit.expression()->type()->simple_cname();
 
             $outline {
                 b = 123;

@@ -7,7 +7,6 @@
 
 namespace ocarina {
 
-
 size_t Type::count() noexcept {
     return TypeRegistry::instance().type_count();
 }
@@ -26,6 +25,14 @@ ocarina::span<const Type *const> Type::members() const noexcept {
 
 const Type *Type::element() const noexcept {
     return _members.front();
+}
+
+void Type::set_cname(std::string s) const noexcept {
+    _cname = ocarina::move(s);
+}
+
+ocarina::string Type::simple_cname() const noexcept {
+    return _cname.substr(_cname.find_last_of("::") + 1);
 }
 
 bool Type::is_valid() const noexcept {
@@ -60,7 +67,7 @@ void Type::update_dynamic_member_length(ocarina::string_view member_name, uint l
 
 void Type::update_structure_alignment_and_size() const noexcept {
     vector<MemoryBlock> blocks;
-    for(const Type *member : _members) {
+    for (const Type *member : _members) {
         MemoryBlock block;
         block.max_member_size = member->max_member_size();
         block.size = member->size();

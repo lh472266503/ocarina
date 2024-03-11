@@ -307,7 +307,11 @@ void CppCodegen::visit(const CastExpr *expr) noexcept {
 }
 
 void CppCodegen::visit(const Type *type) noexcept {
-    if (!type->is_structure() || has_generated(type)) { return; }
+    if (!type->is_structure() ||
+        has_generated(type) ||
+        type->is_builtin_struct()) {
+        return;
+    }
     current_scratch() << "struct ";
     current_scratch() << "alignas(";
     current_scratch() << type->alignment();
@@ -444,24 +448,24 @@ void CppCodegen::_emit_function(const Function &f) noexcept {
 
 void CppCodegen::_emit_variable_name(Variable v) noexcept {
     current_scratch() << v.name();
-//    if (v.uid() == InvalidUI32) {
-//        return;
-//    }
-//    Usage usage = current_function().variable_usage(v.uid());
-//    switch (usage) {
-//        case Usage::NONE:
-//            _emit_comment("none");
-//            break;
-//        case Usage::READ:
-//            _emit_comment("read");
-//            break;
-//        case Usage::WRITE:
-//            _emit_comment("write");
-//            break;
-//        case Usage::READ_WRITE:
-//            _emit_comment("read_write");
-//            break;
-//    }
+    //    if (v.uid() == InvalidUI32) {
+    //        return;
+    //    }
+    //    Usage usage = current_function().variable_usage(v.uid());
+    //    switch (usage) {
+    //        case Usage::NONE:
+    //            _emit_comment("none");
+    //            break;
+    //        case Usage::READ:
+    //            _emit_comment("read");
+    //            break;
+    //        case Usage::WRITE:
+    //            _emit_comment("write");
+    //            break;
+    //        case Usage::READ_WRITE:
+    //            _emit_comment("read_write");
+    //            break;
+    //    }
 }
 
 void CppCodegen::_emit_statements(ocarina::span<const Statement *const> stmts) noexcept {
