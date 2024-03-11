@@ -364,6 +364,7 @@ public:
     void update_dynamic_member_length(ocarina::string_view member_name, uint length) const noexcept;
     void update_structure_alignment_and_size() const noexcept;
     [[nodiscard]] const Type *get_member(ocarina::string_view name) const noexcept;
+    [[nodiscard]] ocarina::span<const string_view> member_name() const noexcept { return _member_name; }
     [[nodiscard]] bool operator==(const Type &rhs) const noexcept { return hash() == rhs.hash(); }
     [[nodiscard]] bool operator!=(const Type &rhs) const noexcept { return !(*this == rhs); }
     [[nodiscard]] bool operator<(const Type &rhs) const noexcept { return _index < rhs._index; }

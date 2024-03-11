@@ -96,7 +96,12 @@ void Codegen::_emit_struct_name(const Type *type) noexcept {
 }
 
 void Codegen::_emit_member_name(const Type *type, int index) noexcept {
-    current_scratch() << detail::member_name(index);
+    const auto &member_name = type->member_name();
+    if (member_name.empty() || !type->is_builtin_struct()) {
+        current_scratch() << detail::member_name(index);
+    } else {
+        current_scratch() << member_name[index];
+    }
 }
 
 }// namespace ocarina

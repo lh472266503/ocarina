@@ -12,15 +12,15 @@ __device__ inline void trace(OptixTraversableHandle handle,
                              oc_uint SBTstride,
                              oc_uint missSBTIndex,
                              Args &&...payload) {
-    auto origin = ::make_float3(ray.m0.x, ray.m0.y, ray.m0.z);
-    auto direction = ::make_float3(ray.m1.x, ray.m1.y, ray.m1.z);
+    auto origin = ::make_float3(ray.org_min.x, ray.org_min.y, ray.org_min.z);
+    auto direction = ::make_float3(ray.dir_max.x, ray.dir_max.y, ray.dir_max.z);
 
     optixTrace(
         handle,
         origin,
         direction,
-        ray.m0.w,
-        ray.m1.w,
+        ray.org_min.w,
+        ray.dir_max.w,
         0.0f,// rayTime
         OptixVisibilityMask(1),
         flags,
@@ -87,9 +87,9 @@ __device__ inline bool oc_trace_any(OptixTraversableHandle handle, Ray ray) {
 
 __device__ inline Hit getClosestHit() {
     Hit ret;
-    ret.m0 = optixGetInstanceId();
-    ret.m1 = optixGetPrimitiveIndex();
-    ret.m2 = getTriangleBarycentric();
+    ret.inst_id = optixGetInstanceId();
+    ret.prim_id = optixGetPrimitiveIndex();
+    ret.bary = getTriangleBarycentric();
     return ret;
 }
 

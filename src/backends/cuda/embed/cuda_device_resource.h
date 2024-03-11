@@ -7,21 +7,21 @@ template<class To, class From>
 }
 
 struct alignas(16) Hit {
-    oc_uint m0{oc_uint(-1)};
-    oc_uint m1{oc_uint(-1)};
-    oc_float2 m2;
+    oc_uint inst_id{oc_uint(-1)};
+    oc_uint prim_id{oc_uint(-1)};
+    oc_float2 bary;
     Hit() = default;
     Hit(oc_uint inst_id, oc_uint prim_id, oc_float2 bary)
-        : m0(inst_id), m1(prim_id), m2(bary) {}
+        : inst_id(inst_id), prim_id(prim_id), bary(bary) {}
 };
 
 struct alignas(16) Ray {
 public:
-    oc_float4 m0;
-    oc_float4 m1;
+    oc_float4 org_min;
+    oc_float4 dir_max;
     Ray() = default;
     Ray(oc_float4 org, oc_float4 dir)
-        : m0(org), m1(dir) {}
+        : org_min(org), dir_max(dir) {}
 };
 
 template<typename T>
@@ -63,8 +63,8 @@ __device__ oc_float3 oc_offset_ray_origin(const oc_float3 &p_in, const oc_float3
 __device__ inline Ray oc_make_ray(oc_float3 org, oc_float3 dir, oc_float t_max = ray_t_max) noexcept {
     Ray ret;
 
-    ret.m0 = oc_make_float4(org, 0.f);
-    ret.m1 = oc_make_float4(dir, t_max);
+    ret.org_min = oc_make_float4(org, 0.f);
+    ret.dir_max = oc_make_float4(dir, t_max);
 
     return ret;
 }
