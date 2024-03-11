@@ -247,7 +247,7 @@ void TypeRegistry::parse_struct(Type *type, string_view desc) noexcept {
     auto size = 0u;
     for (int i = 2; i < lst.size(); ++i) {
         auto type_str = lst[i];
-        type->_members.push_back(parse_type(type_str, hash64(ext_hash, i - 1)));
+        type->_members.push_back(parse_type(type_str, hash64(ext_hash, i - 2)));
         auto member = type->_members[i - 2];
         size = mem_offset(size, member->alignment());
         size += member->size();
