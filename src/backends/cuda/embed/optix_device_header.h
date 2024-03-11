@@ -6,7 +6,7 @@
 
 template<typename... Args>
 __device__ inline void trace(OptixTraversableHandle handle,
-                             OCRay ray,
+                             Ray ray,
                              oc_uint flags,
                              oc_uint SBToffset,
                              oc_uint SBTstride,
@@ -61,10 +61,10 @@ __device__ inline oc_float2 getTriangleBarycentric() {
     return oc_make_float2(1 - barycentric.y - barycentric.x, barycentric.x);
 }
 
-__device__ inline OCHit oc_trace_closest(OptixTraversableHandle handle,
-                                          OCRay ray) {
+__device__ inline Hit oc_trace_closest(OptixTraversableHandle handle,
+                                          Ray ray) {
     unsigned int u0, u1;
-    OCHit hit;
+    Hit hit;
     pack_pointer(&hit, u0, u1);
     trace(handle, ray, OPTIX_RAY_FLAG_DISABLE_ANYHIT,
           0,        // SBT offset
@@ -74,7 +74,7 @@ __device__ inline OCHit oc_trace_closest(OptixTraversableHandle handle,
     return hit;
 }
 
-__device__ inline bool oc_trace_any(OptixTraversableHandle handle, OCRay ray) {
+__device__ inline bool oc_trace_any(OptixTraversableHandle handle, Ray ray) {
     unsigned int occluded = 0u;
     trace(handle, ray, OPTIX_RAY_FLAG_DISABLE_ANYHIT
                        | OPTIX_RAY_FLAG_TERMINATE_ON_FIRST_HIT,
@@ -85,15 +85,15 @@ __device__ inline bool oc_trace_any(OptixTraversableHandle handle, OCRay ray) {
     return bool(occluded);
 }
 
-__device__ inline OCHit getClosestHit() {
-    OCHit ret;
+__device__ inline Hit getClosestHit() {
+    Hit ret;
     ret.m0 = optixGetInstanceId();
     ret.m1 = optixGetPrimitiveIndex();
     ret.m2 = getTriangleBarycentric();
     return ret;
 }
 
-template<typename T = OCHit>
+template<typename T = Hit>
 __device__ inline T *getPRD() {
     const unsigned int u0 = optixGetPayload_0();
     const unsigned int u1 = optixGetPayload_1();
@@ -101,7 +101,7 @@ __device__ inline T *getPRD() {
 }
 
 extern "C" __global__ void __closesthit__closest() {
-    OCHit *hit = getPRD<OCHit>();
+    Hit *hit = getPRD<Hit>();
     *hit = getClosestHit();
 }
 
