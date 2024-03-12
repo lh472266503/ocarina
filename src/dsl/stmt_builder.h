@@ -487,6 +487,10 @@ void for_range(Begin &&begin, End &&end, Step &&step, Body &&body) noexcept {
         std::forward<Body>(body);
 }
 
+inline void include(string_view fn) noexcept {
+    Function::current()->add_header(fn);
+}
+
 template<typename... Args>
 void configure_block(Args &&...args) noexcept {
     Function::current()->set_block_dim(OC_FORWARD(args)...);

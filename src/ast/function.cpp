@@ -391,6 +391,10 @@ ScopeStmt *Function::scope() noexcept {
     return create_statement<ScopeStmt>(false);
 }
 
+void Function::add_header(std::string_view fn) noexcept {
+    _headers.push_back(fn);
+}
+
 IfStmt *Function::if_(const Expression *expr) noexcept {
     return create_statement<IfStmt>(expr);
 }

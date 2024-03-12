@@ -72,6 +72,8 @@ private:
 
     ocarina::map<const Expression *, uint> _expr_to_argument_index;
 
+    ocarina::vector<string_view> _headers;
+
     /// appended argument for output
     ocarina::vector<Variable> _appended_arguments;
 
@@ -112,13 +114,15 @@ private:
     }
 
     void correct() noexcept;
-    /// used to capture variable from invoker
+    /// used to capture variable from invoker start
     [[nodiscard]] const RefExpr *mapping_captured_argument(const Expression *outer_expr, bool *contain) noexcept;
     [[nodiscard]] const RefExpr *mapping_local_variable(const Expression *invoked_func_expr, bool *contain) noexcept;
     [[nodiscard]] const RefExpr *outer_to_local(const Expression *invoked_func_expr) noexcept;
     [[nodiscard]] const RefExpr *outer_to_argument(const Expression *invoked_func_expr) noexcept;
     [[nodiscard]] const RefExpr *mapping_output_argument(const Expression *invoked_func_expr, bool *contain) noexcept;
     void append_output_argument(const Expression *expression, bool *contain) noexcept;
+    /// used to capture variable from invoker end
+
     template<typename Expr, typename Tuple, size_t... i>
     [[nodiscard]] auto _create_expression(Tuple &&tuple, std::index_sequence<i...>) {
         auto expr = ocarina::make_unique<Expr>(std::get<i>(OC_FORWARD(tuple))...);
@@ -189,6 +193,11 @@ public:
         for (const auto &type : _used_struct.struct_lst) {
             visitor(type);
         }
+    }
+
+    template<typename Func>
+    void for_each_header(Func &&func) const noexcept {
+        std::for_each(_headers.begin(), _headers.end(), OC_FORWARD(func));
     }
     void add_used_structure(const Type *type) noexcept { _used_struct.add(type); }
     [[nodiscard]] const Usage &variable_usage(uint uid) const noexcept;
@@ -278,6 +287,7 @@ public:
     const CallExpr *call(const Type *type, string_view func_name, ocarina::vector<const Expression *> args) noexcept;
     const CallExpr *call_builtin(const Type *type, CallOp op, ocarina::vector<const Expression *> args,
                                  ocarina::vector<CallExpr::Template> t_args = {}) noexcept;
+    void add_header(string_view fn) noexcept;
     [[nodiscard]] ScopeStmt *scope() noexcept;
     [[nodiscard]] IfStmt *if_(const Expression *expr) noexcept;
     [[nodiscard]] SwitchStmt *switch_(const Expression *expr) noexcept;
