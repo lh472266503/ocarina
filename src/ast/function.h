@@ -35,7 +35,6 @@ private:
 public:
     CapturedResource(const RefExpr *expr, const Type *type, MemoryBlock block)
         : _type(type), _block(block), _expr(expr) {}
-
     [[nodiscard]] const Type *type() const noexcept { return _type; }
     [[nodiscard]] const void *handle_ptr() const noexcept {
         return _block.address;
