@@ -125,7 +125,7 @@ void test_compute_shader(Device &device, Stream &stream) {
         //        /// Note the usage and implementation of DSL struct member function, e.g sum()
         //        $info("triple  index {} : i = {}, j = {}, k = {},  sum: {} ", dispatch_id(), t.i, t.j, t.k, t->sum());
         //
-        //        $info("vert from capture {} {} {}", vert.read(dispatch_id()));
+                $info("vert from capture {} {} {}", vert.read(dispatch_id()));
         //
         //        vert.write(dispatch_id(), vert.read(dispatch_id()));
         //        $info("vert from capture resource array {} {} {}", bindless_array.buffer_var<float3>(0).read(Var(10000)));
@@ -184,7 +184,7 @@ void test_compute_shader(Device &device, Stream &stream) {
     Env::debugger().set_upper(make_uint2(1));
     auto shader = device.compile(kernel, "test desc");
     stream << Env::debugger().upload();
-    stream << shader(triple1, tri, bindless_array, byte_buffer.view(), f4v).dispatch(len)
+    stream << shader(triple1, tri, bindless_array, byte_buffer.view(), f4v).dispatch(vert.size() + 1)
            /// explict retrieve log
            << byte_buffer.download(byte_vec.data(), 0)
            << Env::printer().retrieve()
@@ -337,12 +337,12 @@ int main(int argc, char *argv[]) {
     Env::debugger().init(device);
 
     //    Env::set_code_obfuscation(true);
-        Env::set_valid_check(false);
+        Env::set_valid_check(true);
 
     /// create rtx file_manager if need
     device.init_rtx();
-//    test_compute_shader(device, stream);
-        test_lambda(device, stream);
+    test_compute_shader(device, stream);
+//        test_lambda(device, stream);
 
     //    test_poly();
     return 0;
