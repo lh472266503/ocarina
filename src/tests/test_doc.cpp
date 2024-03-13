@@ -24,9 +24,8 @@ struct Triple {
 OC_STRUCT(Triple, i, j, k, h){
     [[nodiscard]] Uint sum() const noexcept {
         return i + j + k;
-}
-}
-;
+    }
+};
 
 auto get_cube(float x = 1, float y = 1, float z = 1) {
     x = x / 2.f;
@@ -69,25 +68,17 @@ void test_compute_shader(Device &device, Stream &stream) {
     uint v_idx = bindless_array.emplace(vert);
     uint t_idx = bindless_array.emplace(tri);
 
-    float2 bbb = make_float2(10.f);
-
-    auto cc = std::is_trivially_copyable_v<float2>;
-
-    uint2 p = *reinterpret_cast<uint2 *>(&bbb);
-
-    uint pp = bit_cast<uint>(10.f);
-
     using Elm = float4x4;
     uint len = 10;
     auto byte_buffer = device.create_byte_buffer(sizeof(Elm) * len, "");
     vector<Elm> byte_vec;
+
     byte_vec.resize(len);
 
     float4 host = make_float4(12);
     stream << byte_buffer.upload(byte_vec.data(), false);
 
     uint byte_handle = bindless_array.emplace(byte_buffer);
-
 
     /// upload buffer and texture handle to device memory
     stream << bindless_array->upload_buffer_handles(true) << synchronize();
@@ -98,70 +89,62 @@ void test_compute_shader(Device &device, Stream &stream) {
 
     BufferView<float4> f4v = byte_buffer.view_as<float4>();
 
-
     Kernel kernel = [&](Var<Triple> triple, BufferVar<Triple> triangle, Var<BindlessArray> ra,
-                        ByteBufferVar byte_buffer_var, BufferVar<float4> f4) {
+                        ByteBufferVar byte_buffer_var, BufferVar<float3> vert_buffer) {
 
-      SOAView soa = byte_buffer_var.soa_view<Elm>();
-      soa.write(dispatch_id(), make_float4x4(1.f * dispatch_id()));
-      Var a = soa.read(dispatch_id());
-      $info("\n {} {} {} {}  \n""{} {} {} {}  \n""{} {} {} {}  \n""{} {} {} {}  \n", a[0], a[1], a[2], a[3]);
+        /// Note the usage and implementation of DSL struct member function, e.g sum()
+        Var t = triangle.read(dispatch_id());
+        $info("triple  index {} : i = {}, j = {}, k = {},  sum: {} ", dispatch_id(), t.i, t.j, t.k, t->sum());
 
-        //
-        //        /// Note the usage and implementation of DSL struct member function, e.g sum()
-        //        $info("triple  index {} : i = {}, j = {}, k = {},  sum: {} ", dispatch_id(), t.i, t.j, t.k, t->sum());
-        //
-//                $info("vert from capture {} {} {}", vert.read(dispatch_id()));
-        //
-        //        vert.write(dispatch_id(), vert.read(dispatch_id()));
-        //        $info("vert from capture resource array {} {} {}", bindless_array.buffer_var<float3>(0).read(Var(10000)));
-        //        $info("vert from ra {} {} {}", ra.buffer_var<float3>(v_idx).read(dispatch_id()));
-        //
-        //        $switch(dispatch_id()) {
-        //            $case(1) {
-        //                $info("dispatch_idx is {} {} {}", dispatch_idx());
-        //            };
-        //            $default {
-        //                $info("switch default  dispatch_idx is {} {} {}", dispatch_idx());
-        //            };
-        //        };
-        //
-        //        $if(dispatch_id() == 1) {
-        //            $info("if branch dispatch_idx is {} {} {}", dispatch_idx());
-        //        }
-        //        $elif(dispatch_id() == 2) {
-        //            $info("if else branch dispatch_idx is {} {} {}", dispatch_idx());
-        //        }
-        //        $else {
-        //            $info("else branch dispatch_idx is {} {} {}", dispatch_idx());
-        //        };
-        //
-        //        Uint count = 2;
-        //
-        //        $for(i, count) {
-        //            $info("count for statement dispatch_idx is {} {} {}, i = {} ", dispatch_idx(), i);
-        //        };
-        //
-        //        Uint begin = 2;
-        //        Uint end = 10;
-        //        $for(i, begin, end) {
-        //            $info("begin end for statement dispatch_idx is {} {} {}, i = {} ", dispatch_idx(), i);
-        //        };
-        //
-        //        Uint step = 2;
-        //
-        //        $for(i, begin, end, step) {
-        //            $info("begin end step for statement dispatch_idx is {} {} {}, i = {} ", dispatch_idx(), i);
-        //        };
-        //
-        //        $debug_if(dispatch_id() == 0, "{} ", step);
-        //        /// execute if thread idx in debug range
-        //        $condition_execute {
-        //            Float f = 2.f;
-        //            Float a = 6.f;
-        //            $warn_with_location("this thread idx is in debug range {} {} {},  f * a = {} ",
-        //                                vert.read(dispatch_id()), ra.buffer_var<Triple>(t_idx).size_in_byte() / 12);
-        //        };
+        $info("vert from capture {} {} {}", vert.read(dispatch_id()));
+        $info("vert_buffer  {} {} {}", vert_buffer.read(dispatch_id()));
+
+
+        $switch(dispatch_id()) {
+            $case(1) {
+                $info("dispatch_idx is {} {} {}", dispatch_idx());
+            };
+            $default {
+                $info("switch default  dispatch_idx is {} {} {}", dispatch_idx());
+            };
+        };
+
+        $if(dispatch_id() == 1) {
+            $info("if branch dispatch_idx is {} {} {}", dispatch_idx());
+        }
+        $elif(dispatch_id() == 2) {
+            $info("if else branch dispatch_idx is {} {} {}", dispatch_idx());
+        }
+        $else {
+            $info("else branch dispatch_idx is {} {} {}", dispatch_idx());
+        };
+
+        Uint count = 2;
+
+        $for(i, count) {
+            $info("count for statement dispatch_idx is {} {} {}, i = {} ", dispatch_idx(), i);
+        };
+
+        Uint begin = 2;
+        Uint end = 10;
+        $for(i, begin, end) {
+            $info("begin end for statement dispatch_idx is {} {} {}, i = {} ", dispatch_idx(), i);
+        };
+
+        Uint step = 2;
+
+        $for(i, begin, end, step) {
+            $info("begin end step for statement dispatch_idx is {} {} {}, i = {} ", dispatch_idx(), i);
+        };
+
+        SOAView soa = byte_buffer_var.soa_view<Elm>();
+        soa.write(dispatch_id(), make_float4x4(1.f * dispatch_id()));
+        Var a = soa.read(dispatch_id());
+        $info("\n {} {} {} {}  \n"
+              "{} {} {} {}  \n"
+              "{} {} {} {}  \n"
+              "{} {} {} {}  \n",
+              a[0], a[1], a[2], a[3]);
     };
     Triple triple1{1, 2, 3};
 
@@ -170,7 +153,7 @@ void test_compute_shader(Device &device, Stream &stream) {
     Env::debugger().set_upper(make_uint2(1));
     auto shader = device.compile(kernel, "test desc");
     stream << Env::debugger().upload();
-    stream << shader(triple1, tri, bindless_array, byte_buffer.view(), f4v).dispatch(len)
+    stream << shader(triple1, tri, bindless_array, byte_buffer.view(), vert).dispatch(len)
            /// explict retrieve log
            << byte_buffer.download(byte_vec.data(), 0)
            << Env::printer().retrieve()
@@ -204,28 +187,28 @@ void test_lambda(Device &device, Stream &stream) {
             Var<Triple> ttt;
             Var<Hit> hit;
 
-//            auto sn = hit.expression()->type()->simple_cname();
+            //            auto sn = hit.expression()->type()->simple_cname();
 
             $outline {
                 b = 123;
 
                 $outline {
                     p = new Float(15);
-//                    hit = new OCHit{};
-//                    *p = b;
-//                    b = 19;
+                    //                    hit = new OCHit{};
+                    //                    *p = b;
+                    //                    b = 19;
                 };
             };
-//            $info("{}   i  ---   ", *p);
+            //            $info("{}   i  ---   ", *p);
         };
-        $outline{
-//            Float a = *p;
-//            //        Float bb = $outline {
-//            //            return (*hit).inst_id;
-//            //        };
-////            b = 10;
+        $outline {
+            //            Float a = *p;
+            //            //        Float bb = $outline {
+            //            //            return (*hit).inst_id;
+            //            //        };
+            ////            b = 10;
 
-            $info("{}    {}  ---   ", min(b, *p) , call<float>("oc_max", b, *p));
+            $info("{}    {}  ---   ", min(b, *p), call<float>("oc_max", b, *p));
         };
     };
     Shader shader = device.compile(kernel);
@@ -323,12 +306,12 @@ int main(int argc, char *argv[]) {
     Env::debugger().init(device);
 
     //    Env::set_code_obfuscation(true);
-        Env::set_valid_check(true);
+    Env::set_valid_check(true);
 
     /// create rtx file_manager if need
     device.init_rtx();
     test_compute_shader(device, stream);
-//        test_lambda(device, stream);
+    //        test_lambda(device, stream);
 
     //    test_poly();
     return 0;
