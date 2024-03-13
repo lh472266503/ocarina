@@ -69,14 +69,11 @@ void test_compute_shader(Device &device, Stream &stream) {
     uint v_idx = bindless_array.emplace(vert);
     uint t_idx = bindless_array.emplace(tri);
 
-    uint2 aaa;
     float2 bbb = make_float2(10.f);
 
     auto cc = std::is_trivially_copyable_v<float2>;
 
     uint2 p = *reinterpret_cast<uint2 *>(&bbb);
-
-    auto type = Type::of<ByteBuffer>();
 
     uint pp = bit_cast<uint>(10.f);
 
@@ -85,15 +82,12 @@ void test_compute_shader(Device &device, Stream &stream) {
     auto byte_buffer = device.create_byte_buffer(sizeof(Elm) * len, "");
     vector<Elm> byte_vec;
     byte_vec.resize(len);
-    //    auto byte_buffer = device.create_buffer<uint>(sizeof(uint4), "");
+
     float4 host = make_float4(12);
     stream << byte_buffer.upload(byte_vec.data(), false);
 
     uint byte_handle = bindless_array.emplace(byte_buffer);
 
-    auto cname = typeid(decltype(std::declval<Matrix<4>>()[0])).name();
-
-    //    aaa = bit_cast<uint2>(bbb);
 
     /// upload buffer and texture handle to device memory
     stream << bindless_array->upload_buffer_handles(true) << synchronize();
@@ -104,28 +98,20 @@ void test_compute_shader(Device &device, Stream &stream) {
 
     BufferView<float4> f4v = byte_buffer.view_as<float4>();
 
+
     Kernel kernel = [&](Var<Triple> triple, BufferVar<Triple> triangle, Var<BindlessArray> ra,
                         ByteBufferVar byte_buffer_var, BufferVar<float4> f4) {
-        //        $info("triple   {} {} {}   {} {}", Var(uint64_t(-1)), 11.5f, triangle.size() - 13, as<uint2>(make_float2(Float(10.f))));
 
-        //        Var t = triangle.read(dispatch_id());
-//        byte_buffer.store(8, make_float2(6));
-//        Var t = byte_buffer.atomic<float>(4).fetch_add(1.f);
-//        $info("{}   {}   {}    {}", byte_buffer.load_as<array<float, 3>>(4).as_vec3(), byte_buffer_var.size());
-//        $info("{}   {}   {} {}   {}", f4.read(0), f4.size());
-//        auto ab = byte_buffer_var;
-//        SOAView<Elm> soa = byte_buffer_var.soa_view<Elm>();
-//      SOAView soa = byte_buffer_var.soa_view<Elm>();
-//      auto soa2 = ra.soa_view<Elm>(byte_handle);
-//      soa.write(dispatch_id(), make_float4x4(1.f * dispatch_id()));
-//      Var a = soa.read(dispatch_id());
-//      $info("\n {} {} {} {}  \n""{} {} {} {}  \n""{} {} {} {}  \n""{} {} {} {}  \n", a[0], a[1], a[2], a[3]);
+      SOAView soa = byte_buffer_var.soa_view<Elm>();
+      soa.write(dispatch_id(), make_float4x4(1.f * dispatch_id()));
+      Var a = soa.read(dispatch_id());
+      $info("\n {} {} {} {}  \n""{} {} {} {}  \n""{} {} {} {}  \n""{} {} {} {}  \n", a[0], a[1], a[2], a[3]);
 
         //
         //        /// Note the usage and implementation of DSL struct member function, e.g sum()
         //        $info("triple  index {} : i = {}, j = {}, k = {},  sum: {} ", dispatch_id(), t.i, t.j, t.k, t->sum());
         //
-                $info("vert from capture {} {} {}", vert.read(dispatch_id()));
+//                $info("vert from capture {} {} {}", vert.read(dispatch_id()));
         //
         //        vert.write(dispatch_id(), vert.read(dispatch_id()));
         //        $info("vert from capture resource array {} {} {}", bindless_array.buffer_var<float3>(0).read(Var(10000)));
@@ -184,7 +170,7 @@ void test_compute_shader(Device &device, Stream &stream) {
     Env::debugger().set_upper(make_uint2(1));
     auto shader = device.compile(kernel, "test desc");
     stream << Env::debugger().upload();
-    stream << shader(triple1, tri, bindless_array, byte_buffer.view(), f4v).dispatch(vert.size() + 1)
+    stream << shader(triple1, tri, bindless_array, byte_buffer.view(), f4v).dispatch(len)
            /// explict retrieve log
            << byte_buffer.download(byte_vec.data(), 0)
            << Env::printer().retrieve()

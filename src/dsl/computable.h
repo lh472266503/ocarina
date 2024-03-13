@@ -128,7 +128,7 @@ struct EnableReadAndWrite {
         Var<expr_value_t<Index>> new_index = OC_FORWARD(index);
         if (check_boundary) {
             Var<expr_value_t<Index>> size = static_cast<const T *>(this)->template size<expr_value_t<Index>>();
-            new_index = correct_index(OC_FORWARD(index), size, typeid(T).name(), traceback_string(1));
+            new_index = correct_index(new_index, size, typeid(T).name(), traceback_string(1));
         }
         const SubscriptExpr *expr = Function::current()->subscript(Type::of<element_type>(),
                                                                    self()->expression(),
@@ -143,7 +143,7 @@ struct EnableReadAndWrite {
         Var<expr_value_t<Index>> new_index = OC_FORWARD(index);
         if (check_boundary) {
             Var<expr_value_t<Index>> size = static_cast<const T *>(this)->template size<expr_value_t<Index>>();
-            new_index = correct_index(OC_FORWARD(index), size, typeid(T).name(), traceback_string(1));
+            new_index = correct_index(new_index, size, typeid(T).name(), traceback_string(1));
         }
         const SubscriptExpr *expr = Function::current()->subscript(Type::of<element_type>(),
                                                                    self()->expression(),
@@ -175,8 +175,9 @@ struct EnableByteLoadAndStore {
     template<uint N = 1, typename Elm = uint, typename Offset>
     requires is_integral_expr_v<Offset>
     [[nodiscard]] auto load(Offset &&offset, bool check_boundary = true) const noexcept {
+        Var<expr_value_t<Offset>> new_offset = OC_FORWARD(offset);
         if (check_boundary) {
-            offset = detail::correct_index(offset, self()->template size<expr_value_t<Offset>>(),
+            new_offset = detail::correct_index(new_offset, self()->template size<expr_value_t<Offset>>(),
                                            typeid(*this).name(), traceback_string());
         }
         self()->expression()->mark(Usage::READ);
@@ -184,14 +185,14 @@ struct EnableByteLoadAndStore {
             const CallExpr *expr = Function::current()->call_builtin(Type::of<Elm>(),
                                                                      CallOp::BYTE_BUFFER_READ,
                                                                      {self()->expression(),
-                                                                      OC_EXPR(offset)},
+                                                                      OC_EXPR(new_offset)},
                                                                      {N});
             return eval<Elm>(expr);
         } else {
             const CallExpr *expr = Function::current()->call_builtin(Type::of<Vector<Elm, N>>(),
                                                                      CallOp::BYTE_BUFFER_READ,
                                                                      {self()->expression(),
-                                                                      OC_EXPR(offset)},
+                                                                      OC_EXPR(new_offset)},
                                                                      {N});
             return eval<Vector<Elm, N>>(expr);
         }
@@ -200,8 +201,9 @@ struct EnableByteLoadAndStore {
     template<typename Target, typename Offset>
     requires is_integral_expr_v<Offset>
     [[nodiscard]] Var<Target> load_as(Offset &&offset, bool check_boundary = true) const noexcept {
+        Var<expr_value_t<Offset>> new_offset = OC_FORWARD(offset);
         if (check_boundary) {
-            offset = detail::correct_index(offset, self()->template size<expr_value_t<Offset>>(),
+            new_offset = detail::correct_index(new_offset, self()->template size<expr_value_t<Offset>>(),
                                            typeid(*this).name(), traceback_string());
         }
         const Type *ret_type = Type::of<Target>();
@@ -209,7 +211,7 @@ struct EnableByteLoadAndStore {
         const CallExpr *expr = Function::current()->call_builtin(ret_type,
                                                                  CallOp::BYTE_BUFFER_READ,
                                                                  {self()->expression(),
-                                                                  OC_EXPR(offset)},
+                                                                  OC_EXPR(new_offset)},
                                                                  {ret_type});
         return eval<Target>(expr);
     }
@@ -235,13 +237,14 @@ struct EnableByteLoadAndStore {
     template<typename Elm, typename Offset>
     requires is_integral_expr_v<Offset>
     void store(Offset &&offset, const Elm &val, bool check_boundary = true) noexcept {
+        Var<expr_value_t<Offset>> new_offset = OC_FORWARD(offset);
         if (check_boundary) {
-            offset = detail::correct_index(offset, self()->template size<expr_value_t<Offset>>(),
+            new_offset = detail::correct_index(new_offset, self()->template size<expr_value_t<Offset>>(),
                                            typeid(*this).name(), traceback_string());
         }
         const CallExpr *expr = Function::current()->call_builtin(nullptr, CallOp::BYTE_BUFFER_WRITE,
                                                                  {self()->expression(),
-                                                                  OC_EXPR(offset), OC_EXPR(val)});
+                                                                  OC_EXPR(new_offset), OC_EXPR(val)});
         self()->expression()->mark(Usage::WRITE);
         Function::current()->expr_statement(expr);
     }
