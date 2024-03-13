@@ -89,8 +89,19 @@ void test_compute_shader(Device &device, Stream &stream) {
 
     BufferView<float4> f4v = byte_buffer.view_as<float4>();
 
+    Callable add = [&](Float a, Float b) {
+        return a + b;
+    };
+
     Kernel kernel = [&](Var<Triple> triple, BufferVar<Triple> triangle, Var<BindlessArray> ra,
                         ByteBufferVar byte_buffer_var, BufferVar<float3> vert_buffer) {
+
+        OCHit hit;
+
+        Float l = 1.f;
+        Float r = 2.f;
+
+        Float c = add(l, r);
 
         /// Note the usage and implementation of DSL struct member function, e.g sum()
         Var t = triangle.read(dispatch_id());
