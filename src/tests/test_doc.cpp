@@ -95,7 +95,7 @@ void test_compute_shader(Device &device, Stream &stream) {
     Kernel kernel = [&](Var<Triple> triple, BufferVar<Triple> triangle,
                         ByteBufferVar byte_buffer_var, BufferVar<float3> vert_buffer) {
 
-        OCHit hit;
+        HitVar hit;
 
         Float l = 1.f;
         Float r = 2.f;
@@ -190,7 +190,7 @@ void test_lambda(Device &device, Stream &stream) {
 
     Kernel kernel = [&](Uint i) {
         Float *p;
-        OCHit *hit;
+        HitVar *hit;
         Float b;
         $outline {
 
@@ -204,7 +204,7 @@ void test_lambda(Device &device, Stream &stream) {
 
                 $outline {
                     p = new Float(15);
-                    //                    hit = new OCHit{};
+                    //                    hit = new HitVar{};
                     //                    *p = b;
                     //                    b = 19;
                 };

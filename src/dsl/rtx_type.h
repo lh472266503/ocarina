@@ -36,7 +36,7 @@ OC_BUILTIN_STRUCT(ocarina::Hit, inst_id, prim_id, bary){
 // clang-format on
 
 namespace ocarina {
-using OCHit = Var<Hit>;
+using HitVar = Var<Hit>;
 }
 
 constexpr float ray_t_max = 1e16f;
@@ -109,7 +109,7 @@ OC_BUILTIN_STRUCT(ocarina::Ray, org_min, dir_max) {
 // clang-format on
 
 namespace ocarina {
-using OCRay = Var<Ray>;
+using RayVar = Var<Ray>;
 }
 
 namespace ocarina {
