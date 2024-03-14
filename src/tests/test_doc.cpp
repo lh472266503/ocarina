@@ -65,8 +65,8 @@ void test_compute_shader(Device &device, Stream &stream) {
 
     /// used for store the handle of texture or buffer
     BindlessArray bindless_array = device.create_bindless_array();
-    uint v_idx = bindless_array.emplace(vert);
-    uint t_idx = bindless_array.emplace(tri);
+//    uint v_idx = bindless_array.emplace(vert);
+//    uint t_idx = bindless_array.emplace(tri);
 
     using Elm = float4x4;
     uint len = 10;
@@ -75,25 +75,24 @@ void test_compute_shader(Device &device, Stream &stream) {
 
     byte_vec.resize(len);
 
-    float4 host = make_float4(12);
     stream << byte_buffer.upload(byte_vec.data(), false);
 
-    uint byte_handle = bindless_array.emplace(byte_buffer);
+//    uint byte_handle = bindless_array.emplace(byte_buffer);
 
     /// upload buffer and texture handle to device memory
-    stream << bindless_array->upload_buffer_handles(true) << synchronize();
-    stream << bindless_array->upload_texture_handles(true) << synchronize();
+//    stream << bindless_array->upload_buffer_handles(true) << synchronize();
+//    stream << bindless_array->upload_texture_handles(true) << synchronize();
 
     stream << vert.upload(vertices.data())
            << tri.upload(triangles.data());
 
-    BufferView<float4> f4v = byte_buffer.view_as<float4>();
+//    BufferView<float4> f4v = byte_buffer.view_as<float4>();
 
     Callable add = [&](Float a, Float b) {
         return a + b;
     };
 
-    Kernel kernel = [&](Var<Triple> triple, BufferVar<Triple> triangle, Var<BindlessArray> ra,
+    Kernel kernel = [&](Var<Triple> triple, BufferVar<Triple> triangle,
                         ByteBufferVar byte_buffer_var, BufferVar<float3> vert_buffer) {
 
         OCHit hit;
@@ -164,7 +163,7 @@ void test_compute_shader(Device &device, Stream &stream) {
     Env::debugger().set_upper(make_uint2(1));
     auto shader = device.compile(kernel, "test desc");
     stream << Env::debugger().upload();
-    stream << shader(triple1, tri, bindless_array, byte_buffer.view(), vert).dispatch(len)
+    stream << shader(triple1, tri, byte_buffer.view(), vert).dispatch(len)
            /// explict retrieve log
            << byte_buffer.download(byte_vec.data(), 0)
            << Env::printer().retrieve()
