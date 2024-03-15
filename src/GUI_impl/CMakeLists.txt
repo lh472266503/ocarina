@@ -20,4 +20,4 @@ function(ocarina_add_window_plugin name)
             DEBUG_POSTFIX "")
 endfunction()
 
-ocarina_add_window_plugin(gl CATEGORY GUI_impl SOURCES gl.cpp)
+add_subdirectory(imGui)

@@ -28,7 +28,7 @@ target_link_libraries(ocarina-all INTERFACE
         ocarina-math
         ocarina-core)
 
-add_dependencies(ocarina-all ocarina-windows)
+add_dependencies(ocarina-all ocarina-GUI_impl)
 
 add_library(ocarina SHARED main.cpp)
 target_link_libraries(ocarina ocarina-all)
