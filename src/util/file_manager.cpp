@@ -3,9 +3,6 @@
 //
 
 #include "file_manager.h"
-#include "core/logging.h"
-#include "ocarina/src/rhi/device.h"
-#include "windows/gl.h"
 
 #ifdef NDEBUG
 

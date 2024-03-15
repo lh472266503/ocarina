@@ -1,7 +1,7 @@
 file(GLOB_RECURSE HEADER_FILES *.h*)
 file(GLOB_RECURSE SOURCE_FILES *.c*)
 
-add_library(ocarina-windows INTERFACE)
+add_library(ocarina-GUI_impl INTERFACE)
 
 function(ocarina_add_window_plugin name)
 
@@ -9,7 +9,7 @@ function(ocarina_add_window_plugin name)
     set(lib_name ocarina-${PLUGIN_CATEGORY}-${name})
     add_library(${lib_name} MODULE ${PLUGIN_SOURCES})
     target_link_libraries(${lib_name} PRIVATE ocarina-GUI)
-    set(category ocarina-${PLUGIN_CATEGORY}s)
+    set(category ocarina-${PLUGIN_CATEGORY})
     add_dependencies(${category} ${lib_name})
 
     set_target_properties(${lib_name} PROPERTIES
@@ -20,4 +20,4 @@ function(ocarina_add_window_plugin name)
             DEBUG_POSTFIX "")
 endfunction()
 
-ocarina_add_window_plugin(gl CATEGORY window SOURCES gl.cpp)
+ocarina_add_window_plugin(gl CATEGORY GUI_impl SOURCES gl.cpp)
