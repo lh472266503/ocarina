@@ -7,7 +7,7 @@
 #include "core/header.h"
 #include "core/stl.h"
 #include "core/concepts.h"
-#include "ocarina/src/rhi/window.h"
+#include "ocarina/src/GUI/window.h"
 
 namespace ocarina {
 class Device;

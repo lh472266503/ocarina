@@ -9,6 +9,7 @@ add_subdirectory(ast)
 add_subdirectory(dsl)
 add_subdirectory(generator)
 add_subdirectory(rhi)
+add_subdirectory(GUI)
 add_subdirectory(backends)
 add_subdirectory(util)
 add_subdirectory(math)
@@ -22,6 +23,7 @@ target_link_libraries(ocarina-all INTERFACE
         ocarina-generator
         ocarina-backend
         ocarina-rhi
+        ocarina-GUI
         ocarina-util
         ocarina-math
         ocarina-core)

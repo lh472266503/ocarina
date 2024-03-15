@@ -6,7 +6,7 @@
 
 #include <ext/imgui/glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "rhi/window.h"
+#include "GUI/window.h"
 
 namespace ocarina {
 
