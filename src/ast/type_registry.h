@@ -261,8 +261,8 @@ const Type *Type::of() noexcept {
         if constexpr (requires {
                           ocarina::struct_member_tuple<raw_type>::members;
                       }) {
-            auto arr = ocarina::struct_member_tuple<raw_type>::members;
-            int num = sizeof(ocarina::struct_member_tuple<raw_type>::members) / sizeof(arr[1]);
+            constexpr auto arr = ocarina::struct_member_tuple<raw_type>::members;
+            constexpr int num = sizeof(ocarina::struct_member_tuple<raw_type>::members) / sizeof(arr[1]);
             const_cast<Type *>(ret)->update_member_name(arr, num);
         }
     }
