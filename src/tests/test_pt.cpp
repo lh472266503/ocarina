@@ -182,11 +182,6 @@ int main(int argc, char *argv[]) {
     auto window = file_manager.create_window("display", res);
 //    window->run([&](double t) {
 
-        stream << shader(frame).dispatch(res);
-        stream << synchronize() << commit();
-        stream << frame.download_sync(image.pixel_ptr()) << commit();
-        window->set_background(image.pixel_ptr<float4>(), res);
-//    });
 
     return 0;
 }
