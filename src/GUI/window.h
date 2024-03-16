@@ -4,9 +4,7 @@
 
 #pragma once
 
-#include "core/stl.h"
-#include "core/basic_types.h"
-#include "core/util.h"
+#include "decl.h"
 
 namespace ocarina {
 class Window {
@@ -19,10 +17,6 @@ public:
     using UpdateCallback = ocarina::function<void(double)>;
     using BeginFrame = ocarina::function<void()>;
     using EndFrame = ocarina::function<void()>;
-
-    using Creator = Window *(const char *name, uint2 initial_size, bool resizable);
-    using Deleter = void(Window *);
-    using Wrapper = ocarina::unique_ptr<Window, Deleter *>;
 
 protected:
     MouseButtonCallback _mouse_button_callback;

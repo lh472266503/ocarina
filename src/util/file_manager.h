@@ -7,7 +7,7 @@
 #include "core/header.h"
 #include "core/stl.h"
 #include "core/concepts.h"
-#include "ocarina/src/GUI/window.h"
+#include "GUI/decl.h"
 
 namespace ocarina {
 class Device;
@@ -44,7 +44,7 @@ public:
     [[nodiscard]] bool is_exist_cache(const string &fn) const noexcept;
     const DynamicModule *obtain_module(const string &module_name) noexcept;
     [[nodiscard]] Device create_device(const string &backend_name) noexcept;
-    [[nodiscard]] Window::Wrapper create_window(const char *name, uint2 initial_size, const char *type = "gl", bool resizable = false);
+    [[nodiscard]] WindowWrapper create_window(const char *name, uint2 initial_size, const char *type = "gl", bool resizable = false);
 };
 
 }// namespace ocarina
