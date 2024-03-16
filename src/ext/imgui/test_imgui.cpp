@@ -63,15 +63,17 @@ void text(const char *format, ...) noexcept {
 
 class Base {
 public:
-    virtual void text(std::string_view, ...) noexcept = 0;
+//    virtual void text(std::string_view, ...) noexcept {
+//
+//    }
 };
 
 class Derive : public Base {
 public:
-    void text(std::string_view fmt, ...) noexcept override {
+    void text(const char * fmt, ...) noexcept {
         va_list args;
-        va_start(args, fmt.data());
-        ImGui::TextV(fmt.data(), args);
+        va_start(args, fmt);
+        ImGui::TextV(fmt, args);
         va_end(args);
     }
 };

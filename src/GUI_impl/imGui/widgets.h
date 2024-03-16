@@ -11,10 +11,10 @@ namespace ocarina {
 class ImGuiWidgets : public Widgets {
 public:
     void init() noexcept override;
-    void push_window(std::string_view label) noexcept override;
+    void push_window(const char *label) noexcept override;
     void pop_window() noexcept override;
 
-    void text(std::string_view format, ...) noexcept override;
+    void text(const char *format, ...) noexcept override;
 };
 
 }// namespace ocarina
