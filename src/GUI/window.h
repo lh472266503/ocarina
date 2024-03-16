@@ -5,6 +5,7 @@
 #pragma once
 
 #include "decl.h"
+#include "widget_context.h"
 
 namespace ocarina {
 class Window {

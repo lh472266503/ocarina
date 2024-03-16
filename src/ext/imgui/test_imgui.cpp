@@ -11,6 +11,7 @@
 #include "ext/imgui/imgui_impl_glfw.h"
 #include "ext/imgui/imgui_impl_opengl3.h"
 #include <stdio.h>
+#include <string>
 
 // About Desktop OpenGL function loaders:
 //  Modern desktop OpenGL doesn't have a standard portable header file to load OpenGL function pointers.
@@ -52,6 +53,28 @@ static void glfw_error_callback(int error, const char* description)
 {
     fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
+
+void text(const char *format, ...) noexcept {
+    va_list args;
+    va_start(args, format);
+    ImGui::TextV(format, args);
+    va_end(args);
+}
+
+class Base {
+public:
+    virtual void text(std::string_view, ...) noexcept = 0;
+};
+
+class Derive : public Base {
+public:
+    void text(std::string_view fmt, ...) noexcept override {
+        va_list args;
+        va_start(args, fmt.data());
+        ImGui::TextV(fmt.data(), args);
+        va_end(args);
+    }
+};
 
 int main(int, char**)
 {
@@ -127,7 +150,7 @@ int main(int, char**)
     bool show_demo_window = true;
     bool show_another_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
+    float f = 0.0f;
     // Main loop
     while (!glfwWindowShouldClose(window))
     {
@@ -149,16 +172,20 @@ int main(int, char**)
 
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
         {
-            static float f = 0.0f;
+
             static int counter = 0;
 
             ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
 
-            ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+            Derive d;
+            int aaa = 109;
+            int bbb = 110;
+            d.text("This is some useful text. %d   %d", aaa, bbb);               // Display some text (you can use a format strings too)
             ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
             ImGui::Checkbox("Another Window", &show_another_window);
 
             ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+            ImGui::SliderFloat2("float2", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
             ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
 
             if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
