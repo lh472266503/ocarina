@@ -5,7 +5,7 @@
 #pragma once
 
 #include "decl.h"
-#include "widget_context.h"
+#include "widgets.h"
 
 namespace ocarina {
 class Window {
@@ -31,6 +31,7 @@ protected:
     bool _resizable{false};
     Clock _clock;
     double _dt{};
+    unique_ptr<Widgets> _widgets{};
 
 protected:
     virtual void _begin_frame() noexcept;
@@ -44,6 +45,8 @@ public:
     Window &operator=(Window &&) noexcept = delete;
     Window &operator=(const Window &) noexcept = delete;
     virtual ~Window() noexcept = default;
+    [[nodiscard]] Widgets *widgets() noexcept { return _widgets.get(); }
+    [[nodiscard]] const Widgets *widgets() const noexcept { return _widgets.get(); }
     [[nodiscard]] double dt() const noexcept { return _dt; }
     [[nodiscard]] virtual uint2 size() const noexcept = 0;
     [[nodiscard]] virtual bool should_close() const noexcept = 0;
