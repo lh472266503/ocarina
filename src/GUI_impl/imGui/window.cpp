@@ -2,7 +2,7 @@
 // Created by Zero on 2022/8/16.
 //
 
-#include "gl.h"
+#include "window.h"
 #include "ext/imgui/imgui_impl_opengl3.h"
 #include <ext/imgui/imgui_impl_glfw.h>
 #include "core/logging.h"
