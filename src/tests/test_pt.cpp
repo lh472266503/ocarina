@@ -10,7 +10,6 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
 #include "cornell_box.h"
-#include "windows/gl.h"
 #include "util/file_manager.h"
 
 using namespace ocarina;
