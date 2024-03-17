@@ -24,6 +24,8 @@ public:
     virtual void push_window(const char *label) noexcept = 0;
     virtual void pop_window() noexcept = 0;
 
+    virtual bool folding_header(const char *label) noexcept = 0;
+
     virtual void text(const char *format, ...) noexcept = 0;
     virtual bool check_box(const char *label, bool *val) noexcept = 0;
 

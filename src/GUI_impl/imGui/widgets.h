@@ -16,6 +16,8 @@ public:
     void push_window(const char *label) noexcept override;
     void pop_window() noexcept override;
 
+    bool folding_header(const char *label) noexcept override;
+
     void text(const char *format, ...) noexcept override;
     bool check_box(const char *label, bool *val) noexcept override;
 

@@ -18,6 +18,11 @@ void ImGuiWidgets::push_window(const char *label) noexcept {
 void ImGuiWidgets::pop_window() noexcept {
     ImGui::End();
 }
+
+bool ImGuiWidgets::folding_header(const char *label) noexcept {
+    ImGui::CollapsingHeader(label);
+}
+
 void ImGuiWidgets::text(const char *format, ...) noexcept {
     va_list args;
     va_start(args, format);

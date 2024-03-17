@@ -177,6 +177,51 @@ int main(int, char**)
 
             static int counter = 0;
 
+            if (ImGui::BeginMainMenuBar()) {
+                // 创建一个菜单
+                if (ImGui::BeginMenu("File")) {
+                    // 添加菜单项
+                    if (ImGui::MenuItem("Open", "Ctrl+O")) {
+                        // 当"Open"被点击时的处理逻辑
+                    }
+                    if (ImGui::MenuItem("Save", "Ctrl+S")) {
+                        // 当"Save"被点击时的处理逻辑
+                    }
+                    if (ImGui::MenuItem("Exit", "Alt+F4")) {
+                        // 当"Exit"被点击时的处理逻辑
+                    }
+
+                    ImGui::EndMenu();
+                }
+                ImGui::EndMainMenuBar();
+            }
+
+            ImGui::Begin("Subwindow",NULL, ImGuiWindowFlags_MenuBar);
+
+            // 在子窗口中创建一个菜单栏
+            if (ImGui::BeginMenuBar()) {
+                // 创建一个菜单
+                if (ImGui::BeginMenu("File")) {
+                    // 添加菜单项
+                    if (ImGui::MenuItem("Open", "Ctrl+O")) {
+                        // 当"Open"被点击时的处理逻辑
+                    }
+                    if (ImGui::MenuItem("Save", "Ctrl+S")) {
+                        // 当"Save"被点击时的处理逻辑
+                    }
+                    if (ImGui::MenuItem("Exit", "Alt+F4")) {
+                        // 当"Exit"被点击时的处理逻辑
+                    }
+
+                    ImGui::EndMenu();
+                }
+                ImGui::EndMenuBar();
+            }
+
+            // 其他子窗口内容...
+
+            ImGui::End(); // 结束子窗口
+
             ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
 
             Derive d;
