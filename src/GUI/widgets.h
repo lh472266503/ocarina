@@ -13,6 +13,14 @@ namespace ocarina {
 class Widgets {
 public:
     Widgets() = default;
+
+    template<typename Func>
+    void use_window(Func &&func, const char *label) noexcept {
+        push_window(label);
+        func();
+        pop_window();
+    }
+
     virtual void push_window(const char *label) noexcept = 0;
     virtual void pop_window() noexcept = 0;
 
