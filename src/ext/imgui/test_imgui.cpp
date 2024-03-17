@@ -196,7 +196,8 @@ int main(int, char**)
                 ImGui::EndMainMenuBar();
             }
 
-            ImGui::Begin("Subwindow",NULL, ImGuiWindowFlags_MenuBar);
+            ImGui::Begin("Hello, world!", nullptr, ImGuiWindowFlags_MenuBar);                          // Create a window called "Hello, world!" and append into it.
+
 
             // 在子窗口中创建一个菜单栏
             if (ImGui::BeginMenuBar()) {
@@ -208,6 +209,7 @@ int main(int, char**)
                     }
                     if (ImGui::MenuItem("Save", "Ctrl+S")) {
                         // 当"Save"被点击时的处理逻辑
+                        int i = 0;
                     }
                     if (ImGui::MenuItem("Exit", "Alt+F4")) {
                         // 当"Exit"被点击时的处理逻辑
@@ -219,10 +221,6 @@ int main(int, char**)
             }
 
             // 其他子窗口内容...
-
-            ImGui::End(); // 结束子窗口
-
-            ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
 
             Derive d;
             int aaa = 109;

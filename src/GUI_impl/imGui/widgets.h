@@ -14,9 +14,16 @@ class ImGuiWidgets : public Widgets {
 public:
     ImGuiWidgets();
     void push_window(const char *label) noexcept override;
+    void push_window(const char *label, WindowFlag flag) noexcept override;
     void pop_window() noexcept override;
 
     bool folding_header(const char *label) noexcept override;
+
+    bool begin_menu_bar() noexcept override;
+    bool begin_menu(const char *label) noexcept override;
+    bool menu_item(const char *label) noexcept override;
+    void end_menu() noexcept override;
+    void end_menu_bar() noexcept override;
 
     void text(const char *format, ...) noexcept override;
     bool check_box(const char *label, bool *val) noexcept override;

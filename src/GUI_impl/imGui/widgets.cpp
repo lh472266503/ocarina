@@ -15,12 +15,36 @@ void ImGuiWidgets::push_window(const char *label) noexcept {
     ImGui::Begin(label);
 }
 
+void ImGuiWidgets::push_window(const char *label, ocarina::WindowFlag flag) noexcept {
+    ImGui::Begin(label, nullptr, flag);
+}
+
 void ImGuiWidgets::pop_window() noexcept {
     ImGui::End();
 }
 
 bool ImGuiWidgets::folding_header(const char *label) noexcept {
-    ImGui::CollapsingHeader(label);
+    return ImGui::CollapsingHeader(label);
+}
+
+bool ImGuiWidgets::begin_menu_bar() noexcept {
+    return ImGui::BeginMenuBar();
+}
+
+bool ImGuiWidgets::begin_menu(const char *label) noexcept {
+    return ImGui::BeginMenu(label);
+}
+
+bool ImGuiWidgets::menu_item(const char *label) noexcept {
+    return ImGui::MenuItem(label);
+}
+
+void ImGuiWidgets::end_menu() noexcept {
+    ImGui::EndMenu();
+}
+
+void ImGuiWidgets::end_menu_bar() noexcept {
+    ImGui::EndMenuBar();
 }
 
 void ImGuiWidgets::text(const char *format, ...) noexcept {

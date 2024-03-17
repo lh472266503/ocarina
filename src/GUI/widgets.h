@@ -10,6 +10,11 @@
 
 namespace ocarina {
 
+enum WindowFlag {
+    None = 0,
+    MenuBar = 1 << 10
+};
+
 class Widgets {
 public:
     Widgets() = default;
@@ -22,9 +27,16 @@ public:
     }
 
     virtual void push_window(const char *label) noexcept = 0;
+    virtual void push_window(const char *label, WindowFlag flag) noexcept = 0;
     virtual void pop_window() noexcept = 0;
 
     virtual bool folding_header(const char *label) noexcept = 0;
+
+    virtual bool begin_menu_bar() noexcept = 0;
+    virtual bool begin_menu(const char *label) noexcept = 0;
+    virtual bool menu_item(const char *label) noexcept = 0;
+    virtual void end_menu() noexcept = 0;
+    virtual void end_menu_bar() noexcept = 0;
 
     virtual void text(const char *format, ...) noexcept = 0;
     virtual bool check_box(const char *label, bool *val) noexcept = 0;
