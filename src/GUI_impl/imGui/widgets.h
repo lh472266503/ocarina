@@ -11,8 +11,10 @@
 namespace ocarina {
 
 class ImGuiWidgets : public Widgets {
+private:
+    int i = 0 ;
 public:
-    void init() noexcept override;
+    ImGuiWidgets();
     void push_window(const char *label) noexcept override;
     void pop_window() noexcept override;
 

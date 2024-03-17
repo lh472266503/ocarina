@@ -12,7 +12,7 @@ namespace ocarina {
 
 class Widgets {
 public:
-    virtual void init() noexcept = 0;
+    Widgets() = default;
     virtual void push_window(const char *label) noexcept = 0;
     virtual void pop_window() noexcept = 0;
 
@@ -40,6 +40,8 @@ public:
 
     virtual bool input_int(const char *label, int *val) noexcept = 0;
     virtual bool input_float(const char *label, float *val) noexcept = 0;
+
+    virtual ~Widgets() = default;
 };
 
 }// namespace ocarina

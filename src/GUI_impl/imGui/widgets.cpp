@@ -6,12 +6,15 @@
 
 namespace ocarina {
 
-void ImGuiWidgets::init() noexcept {
+ImGuiWidgets::ImGuiWidgets()
+    : Widgets() {
     ImGui::CreateContext();
 }
+
 void ImGuiWidgets::push_window(const char *label) noexcept {
     ImGui::Begin(label);
 }
+
 void ImGuiWidgets::pop_window() noexcept {
     ImGui::End();
 }
@@ -49,10 +52,10 @@ bool ImGuiWidgets::slider_int4(const char *label, int4 *val, int min, int max) n
     return ImGui::SliderInt4(label, reinterpret_cast<int *>(val), min, max);
 }
 bool ImGuiWidgets::color_edit(const char *label, float3 *val) noexcept {
-    return ImGui::ColorEdit3(label, reinterpret_cast<float*>(val));
+    return ImGui::ColorEdit3(label, reinterpret_cast<float *>(val));
 }
 bool ImGuiWidgets::color_edit(const char *label, float4 *val) noexcept {
-    return ImGui::ColorEdit4(label, reinterpret_cast<float*>(val));;
+    return ImGui::ColorEdit4(label, reinterpret_cast<float *>(val));
 }
 bool ImGuiWidgets::button(const char *label, uint2 size) noexcept {
     return ImGui::Button(label, ImVec2(size.x, size.y));
