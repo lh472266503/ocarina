@@ -27,6 +27,7 @@ private:
 public:
     GLWindow(const char *name, uint2 initial_size, bool resizable = false) noexcept;
     void init(const char *name, uint2 initial_size, bool resizable) noexcept override;
+    void init_widgets() noexcept override;
     GLWindow(GLWindow &&) noexcept = delete;
     GLWindow(const GLWindow &) noexcept = delete;
     GLWindow &operator=(GLWindow &&) noexcept = delete;

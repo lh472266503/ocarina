@@ -40,6 +40,7 @@ protected:
 public:
     explicit Window(bool resizable = false) noexcept;
     virtual void init(const char *name, uint2 initial_size, bool resizable) noexcept = 0;
+    virtual void init_widgets() noexcept = 0;
     Window(Window &&) noexcept = delete;
     Window(const Window &) noexcept = delete;
     Window &operator=(Window &&) noexcept = delete;

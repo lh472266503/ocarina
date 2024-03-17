@@ -49,26 +49,28 @@ bool ImGuiWidgets::slider_int4(const char *label, int4 *val, int min, int max) n
     return ImGui::SliderInt4(label, reinterpret_cast<int *>(val), min, max);
 }
 bool ImGuiWidgets::color_edit(const char *label, float3 *val) noexcept {
-    return false;
+    return ImGui::ColorEdit3(label, reinterpret_cast<float*>(val));
 }
 bool ImGuiWidgets::color_edit(const char *label, float4 *val) noexcept {
-    return false;
+    return ImGui::ColorEdit4(label, reinterpret_cast<float*>(val));;
 }
 bool ImGuiWidgets::button(const char *label, uint2 size) noexcept {
-    return false;
+    return ImGui::Button(label, ImVec2(size.x, size.y));
 }
 bool ImGuiWidgets::button(const char *label) noexcept {
-    return false;
+    return ImGui::Button(label);
 }
 void ImGuiWidgets::same_line() noexcept {
+    ImGui::SameLine();
 }
 void ImGuiWidgets::new_line() noexcept {
+    ImGui::NewLine();
 }
 bool ImGuiWidgets::input_int(const char *label, int *val) noexcept {
-    return false;
+    return ImGui::InputInt(label, val);
 }
 bool ImGuiWidgets::input_float(const char *label, float *val) noexcept {
-    return false;
+    return ImGui::InputFloat(label, val);
 }
 
 }// namespace ocarina

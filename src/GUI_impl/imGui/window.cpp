@@ -3,8 +3,7 @@
 //
 
 #include "window.h"
-#include "ext/imgui/imgui_impl_opengl3.h"
-#include <ext/imgui/imgui_impl_glfw.h>
+#include "widgets.h"
 #include "core/logging.h"
 #include "gl_helper.h"
 
@@ -104,6 +103,9 @@ public:
     }
 };
 
+void GLWindow::init_widgets() noexcept {
+    _widgets = make_unique<ImGuiWidgets>();
+}
 
 void GLWindow::init(const char *name, uint2 initial_size, bool resizable) noexcept {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -175,6 +177,7 @@ void GLWindow::init(const char *name, uint2 initial_size, bool resizable) noexce
         }
     });
     glfwSetCharCallback(_handle, ImGui_ImplGlfw_CharCallback);
+    init_widgets();
 }
 
 GLWindow::GLWindow(const char *name, uint2 initial_size, bool resizable) noexcept
