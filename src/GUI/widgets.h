@@ -24,8 +24,8 @@ public:
     virtual void pop_window() noexcept = 0;
 
     template<typename Func>
-    bool use_window(const char *label, Func &&func) noexcept {
-        bool show = push_window(label);
+    bool use_window(const char *label, WindowFlag flag, Func &&func) noexcept {
+        bool show = push_window(label, flag);
         if (show) {
             func();
         }
@@ -34,10 +34,8 @@ public:
     }
 
     template<typename Func>
-    void use_window(const char *label, WindowFlag flag, Func &&func) noexcept {
-        push_window(label, flag);
-        func();
-        pop_window();
+    bool use_window(const char *label, Func &&func) noexcept {
+        return use_window(label, WindowFlag::None, OC_FORWARD(func));
     }
 
     virtual bool tree_node(const char *label) noexcept = 0;
@@ -45,9 +43,12 @@ public:
 
     template<typename Func>
     bool use_tree(const char *label, Func &&func) noexcept {
-        tree_node(label);
-        func();
-        tree_pop();
+        bool show = tree_node(label);
+        if (show) {
+            func();
+            tree_pop();
+        }
+        return show;
     }
 
     virtual bool folding_header(const char *label) noexcept = 0;
