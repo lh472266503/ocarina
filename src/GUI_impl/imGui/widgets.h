@@ -51,7 +51,16 @@ public:
     void new_line() noexcept override;
 
     bool input_int(const char *label, int *val) noexcept override;
+    bool input_int(const char *label, int *val, int step, int step_fast) noexcept override;
+    bool input_int2(const char *label, ocarina::int2 *val) noexcept override;
+    bool input_int3(const char *label, ocarina::int3 *val) noexcept override;
+    bool input_int4(const char *label, ocarina::int4 *val) noexcept override;
+
     bool input_float(const char *label, float *val) noexcept override;
+    bool input_float(const char *label, float *val, float step, float step_fast) noexcept override;
+    bool input_float2(const char *label, ocarina::float2 *val) noexcept override;
+    bool input_float3(const char *label, ocarina::float3 *val) noexcept override;
+    bool input_float4(const char *label, ocarina::float4 *val) noexcept override;
 };
 
 }// namespace ocarina
