@@ -19,11 +19,18 @@ class Widgets {
 public:
     Widgets() = default;
 
+    virtual bool push_window(const char *label) noexcept = 0;
+    virtual bool push_window(const char *label, WindowFlag flag) noexcept = 0;
+    virtual void pop_window() noexcept = 0;
+
     template<typename Func>
-    void use_window(const char *label, Func &&func) noexcept {
-        push_window(label);
-        func();
+    bool use_window(const char *label, Func &&func) noexcept {
+        bool show = push_window(label);
+        if (show) {
+            func();
+        }
         pop_window();
+        return show;
     }
 
     template<typename Func>
@@ -33,9 +40,15 @@ public:
         pop_window();
     }
 
-    virtual void push_window(const char *label) noexcept = 0;
-    virtual void push_window(const char *label, WindowFlag flag) noexcept = 0;
-    virtual void pop_window() noexcept = 0;
+    virtual bool tree_node(const char *label) noexcept = 0;
+    virtual void tree_pop() noexcept = 0;
+
+    template<typename Func>
+    bool use_tree(const char *label, Func &&func) noexcept {
+        tree_node(label);
+        func();
+        tree_pop();
+    }
 
     virtual bool folding_header(const char *label) noexcept = 0;
 

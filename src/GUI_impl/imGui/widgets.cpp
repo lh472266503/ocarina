@@ -11,16 +11,24 @@ ImGuiWidgets::ImGuiWidgets()
     ImGui::CreateContext();
 }
 
-void ImGuiWidgets::push_window(const char *label) noexcept {
-    ImGui::Begin(label);
+bool ImGuiWidgets::push_window(const char *label) noexcept {
+    return ImGui::Begin(label);
 }
 
-void ImGuiWidgets::push_window(const char *label, ocarina::WindowFlag flag) noexcept {
-    ImGui::Begin(label, nullptr, flag);
+bool ImGuiWidgets::push_window(const char *label, ocarina::WindowFlag flag) noexcept {
+    return ImGui::Begin(label, nullptr, flag);
 }
 
 void ImGuiWidgets::pop_window() noexcept {
     ImGui::End();
+}
+
+bool ImGuiWidgets::tree_node(const char *label) noexcept {
+    return ImGui::TreeNode(label);
+}
+
+void ImGuiWidgets::tree_pop() noexcept {
+    ImGui::TreePop();
 }
 
 bool ImGuiWidgets::folding_header(const char *label) noexcept {
