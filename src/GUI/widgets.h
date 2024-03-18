@@ -93,6 +93,16 @@ public:
     virtual bool input_float3(const char *label, float3 *val) noexcept = 0;
     virtual bool input_float4(const char *label, float4 *val) noexcept = 0;
 
+    virtual bool drag_int(const char *label, int *val, float speed, int min, int max) noexcept = 0;
+    virtual bool drag_int2(const char *label, int2 *val, float speed, int min, int max) noexcept = 0;
+    virtual bool drag_int3(const char *label, int3 *val, float speed, int min, int max) noexcept = 0;
+    virtual bool drag_int4(const char *label, int4 *val, float speed, int min, int max) noexcept = 0;
+
+    virtual bool drag_float(const char *label, float *val, float speed, float min, float max) noexcept = 0;
+    virtual bool drag_float2(const char *label, float2 *val, float speed, float min, float max) noexcept = 0;
+    virtual bool drag_float3(const char *label, float3 *val, float speed, float min, float max) noexcept = 0;
+    virtual bool drag_float4(const char *label, float4 *val, float speed, float min, float max) noexcept = 0;
+
     virtual ~Widgets() = default;
 };
 

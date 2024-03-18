@@ -61,6 +61,16 @@ public:
     bool input_float2(const char *label, ocarina::float2 *val) noexcept override;
     bool input_float3(const char *label, ocarina::float3 *val) noexcept override;
     bool input_float4(const char *label, ocarina::float4 *val) noexcept override;
+
+    bool drag_int(const char *label, int *val, float speed, int min, int max) noexcept override;
+    bool drag_int2(const char *label, ocarina::int2 *val, float speed, int min, int max) noexcept override;
+    bool drag_int3(const char *label, ocarina::int3 *val, float speed, int min, int max) noexcept override;
+    bool drag_int4(const char *label, ocarina::int4 *val, float speed, int min, int max) noexcept override;
+
+    bool drag_float(const char *label, float *val, float speed, float min, float max) noexcept override;
+    bool drag_float2(const char *label, ocarina::float2 *val, float speed, float min, float max) noexcept override;
+    bool drag_float3(const char *label, ocarina::float3 *val, float speed, float min, float max) noexcept override;
+    bool drag_float4(const char *label, ocarina::float4 *val, float speed, float min, float max) noexcept override;
 };
 
 }// namespace ocarina

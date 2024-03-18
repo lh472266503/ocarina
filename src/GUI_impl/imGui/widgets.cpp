@@ -162,4 +162,36 @@ bool ImGuiWidgets::input_float4(const char *label, ocarina::float4 *val) noexcep
     return ImGui::InputFloat4(label, reinterpret_cast<float *>(val));
 }
 
+bool ImGuiWidgets::drag_int(const char *label, int *val, float speed, int min, int max) noexcept {
+    return ImGui::DragInt(label, val, speed, min, max);
+}
+
+bool ImGuiWidgets::drag_int2(const char *label, ocarina::int2 *val, float speed, int min, int max) noexcept {
+    return ImGui::DragInt2(label, reinterpret_cast<int *>(val), speed, min, max);
+}
+
+bool ImGuiWidgets::drag_int3(const char *label, ocarina::int3 *val, float speed, int min, int max) noexcept {
+    return ImGui::DragInt3(label, reinterpret_cast<int *>(val), speed, min, max);
+}
+
+bool ImGuiWidgets::drag_int4(const char *label, ocarina::int4 *val, float speed, int min, int max) noexcept {
+    return ImGui::DragInt4(label, reinterpret_cast<int *>(val), speed, min, max);
+}
+
+bool ImGuiWidgets::drag_float(const char *label, float *val, float speed, float min, float max) noexcept {
+    return ImGui::DragFloat(label, val, speed, min, max);
+}
+
+bool ImGuiWidgets::drag_float2(const char *label, ocarina::float2 *val, float speed, float min, float max) noexcept {
+    return ImGui::DragFloat2(label, reinterpret_cast<float *>(val), speed, min, max);
+}
+
+bool ImGuiWidgets::drag_float3(const char *label, ocarina::float3 *val, float speed, float min, float max) noexcept {
+    return ImGui::DragFloat3(label, reinterpret_cast<float *>(val), speed, min, max);
+}
+
+bool ImGuiWidgets::drag_float4(const char *label, ocarina::float4 *val, float speed, float min, float max) noexcept {
+    return ImGui::DragFloat4(label, reinterpret_cast<float *>(val), speed, min, max);
+}
+
 }// namespace ocarina
