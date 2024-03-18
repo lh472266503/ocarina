@@ -26,6 +26,13 @@ public:
         pop_window();
     }
 
+    template<typename Func>
+    void use_window(const char *label, WindowFlag flag, Func &&func) noexcept {
+        push_window(label, flag);
+        func();
+        pop_window();
+    }
+
     virtual void push_window(const char *label) noexcept = 0;
     virtual void push_window(const char *label, WindowFlag flag) noexcept = 0;
     virtual void pop_window() noexcept = 0;
