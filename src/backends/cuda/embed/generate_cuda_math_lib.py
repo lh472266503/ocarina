@@ -781,7 +781,7 @@ def save_to_inl(var_name, content, fn):
 
         if i % line_len == line_len - 1:
             string += "\n    "
-    string += "};"
+    string += ", 0x00};"
     with open(fn, "w") as file:
         file.write(file_head() + string)
         file.close()
