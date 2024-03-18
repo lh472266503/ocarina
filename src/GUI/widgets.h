@@ -20,7 +20,7 @@ public:
     Widgets() = default;
 
     template<typename Func>
-    void use_window(Func &&func, const char *label) noexcept {
+    void use_window(const char *label, Func &&func) noexcept {
         push_window(label);
         func();
         pop_window();
