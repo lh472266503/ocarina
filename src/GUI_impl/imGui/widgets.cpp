@@ -35,6 +35,14 @@ bool ImGuiWidgets::folding_header(const char *label) noexcept {
     return ImGui::CollapsingHeader(label);
 }
 
+bool ImGuiWidgets::begin_main_menu_bar() noexcept {
+    return ImGui::BeginMainMenuBar();
+}
+
+void ImGuiWidgets::end_main_menu_bar() noexcept {
+    ImGui::EndMainMenuBar();
+}
+
 bool ImGuiWidgets::begin_menu_bar() noexcept {
     return ImGui::BeginMenuBar();
 }

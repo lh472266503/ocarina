@@ -22,6 +22,9 @@ public:
 
     bool folding_header(const char *label) noexcept override;
 
+    bool begin_main_menu_bar() noexcept override;
+    void end_main_menu_bar() noexcept override;
+
     bool begin_menu_bar() noexcept override;
     bool begin_menu(const char *label) noexcept override;
     bool menu_item(const char *label) noexcept override;

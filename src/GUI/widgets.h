@@ -68,11 +68,45 @@ public:
         return open;
     }
 
+    virtual bool begin_main_menu_bar() noexcept = 0;
+    virtual void end_main_menu_bar() noexcept = 0;
+
     virtual bool begin_menu_bar() noexcept = 0;
     virtual bool begin_menu(const char *label) noexcept = 0;
     virtual bool menu_item(const char *label) noexcept = 0;
     virtual void end_menu() noexcept = 0;
     virtual void end_menu_bar() noexcept = 0;
+
+    template<typename Func>
+    bool use_main_menu_bar(Func &&func) noexcept {
+        bool ret = begin_main_menu_bar();
+        if (ret) {
+            func();
+            end_main_menu_bar();
+        }
+        return ret;
+    }
+
+    template<typename Func>
+    bool use_menu_bar(Func &&func) noexcept {
+        bool ret = begin_menu_bar();
+        if (ret) {
+            func();
+            end_menu_bar();
+        }
+        return ret;
+    }
+
+    template<typename Func>
+    bool use_menu(const string &label, Func &&func) noexcept {
+        bool ret = begin_menu(label.c_str());
+        if (ret) {
+            func();
+            end_menu();
+        }
+        return ret;
+    }
+
 
     virtual void text(const char *format, ...) noexcept = 0;
     virtual bool check_box(const char *label, bool *val) noexcept = 0;
