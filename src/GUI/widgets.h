@@ -98,7 +98,7 @@ public:
 
     virtual bool input_int(const char *label, int *val) noexcept = 0;
     virtual bool input_int(const char *label, int *val, int step, int step_fast) noexcept = 0;
-    template<typename ...Args>
+    template<typename... Args>
     bool input_int_limit(const char *label, int *val, int min, int max, Args &&...args) noexcept {
         int old_value = *val;
         bool dirty = input_int(label, val, OC_FORWARD(args)...);
@@ -114,7 +114,7 @@ public:
 
     virtual bool input_uint(const char *label, uint *val) noexcept = 0;
     virtual bool input_uint(const char *label, uint *val, uint step, uint step_fast) noexcept = 0;
-    template<typename ...Args>
+    template<typename... Args>
     bool input_uint_limit(const char *label, uint *val, uint min, uint max, Args &&...args) noexcept {
         uint old_value = *val;
         bool dirty = input_uint(label, val, OC_FORWARD(args)...);
@@ -127,11 +127,10 @@ public:
     virtual bool input_uint2(const char *label, uint2 *val) noexcept = 0;
     virtual bool input_uint3(const char *label, uint3 *val) noexcept = 0;
     virtual bool input_uint4(const char *label, uint4 *val) noexcept = 0;
-    
 
     virtual bool input_float(const char *label, float *val) noexcept = 0;
     virtual bool input_float(const char *label, float *val, float step, float step_fast) noexcept = 0;
-    template<typename ...Args>
+    template<typename... Args>
     bool input_float_limit(const char *label, float *val, float min, float max, Args &&...args) noexcept {
         float old_value = *val;
         bool dirty = input_float(label, val, OC_FORWARD(args)...);
