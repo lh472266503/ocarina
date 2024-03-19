@@ -39,11 +39,14 @@ public:
     }
 
     virtual bool tree_node(const char *label) noexcept = 0;
+    bool tree_node(const string &label) noexcept {
+        return tree_node(label.c_str());
+    }
     virtual void tree_pop() noexcept = 0;
 
-    template<typename Func>
-    bool use_tree(const char *label, Func &&func) noexcept {
-        bool show = tree_node(label);
+    template<typename T, typename Func>
+    bool use_tree(T &&label, Func &&func) noexcept {
+        bool show = tree_node(OC_FORWARD(label));
         if (show) {
             func();
             tree_pop();
@@ -52,10 +55,13 @@ public:
     }
 
     virtual bool folding_header(const char *label) noexcept = 0;
+    bool folding_header(const string &label) noexcept {
+        return folding_header(label.c_str());
+    }
 
-    template<typename Func>
-    bool use_folding_header(const char *label, Func &&func) noexcept {
-        bool open = folding_header(label);
+    template<typename T, typename Func>
+    bool use_folding_header(T &&label, Func &&func) noexcept {
+        bool open = folding_header(OC_FORWARD(label));
         if (open) {
             func();
         }
