@@ -53,6 +53,15 @@ public:
 
     virtual bool folding_header(const char *label) noexcept = 0;
 
+    template<typename Func>
+    bool use_folding_header(const char *label, Func &&func) noexcept {
+        bool open = folding_header(label);
+        if (open) {
+            func();
+        }
+        return open;
+    }
+
     virtual bool begin_menu_bar() noexcept = 0;
     virtual bool begin_menu(const char *label) noexcept = 0;
     virtual bool menu_item(const char *label) noexcept = 0;
