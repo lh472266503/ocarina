@@ -106,6 +106,23 @@ public:
     virtual bool input_int3(const char *label, int3 *val) noexcept = 0;
     virtual bool input_int4(const char *label, int4 *val) noexcept = 0;
 
+    virtual bool input_uint(const char *label, uint *val) noexcept = 0;
+    virtual bool input_uint(const char *label, uint *val, uint step, uint step_fast) noexcept = 0;
+    template<typename ...Args>
+    bool input_uint_limit(const char *label, uint *val, uint min, uint max, Args &&...args) noexcept {
+        uint old_value = *val;
+        bool dirty = input_uint(label, val, OC_FORWARD(args)...);
+        *val = ocarina::clamp(*val, min, max);
+        if (*val == old_value) {
+            dirty = false;
+        }
+        return dirty;
+    }
+    virtual bool input_uint2(const char *label, uint2 *val) noexcept = 0;
+    virtual bool input_uint3(const char *label, uint3 *val) noexcept = 0;
+    virtual bool input_uint4(const char *label, uint4 *val) noexcept = 0;
+    
+
     virtual bool input_float(const char *label, float *val) noexcept = 0;
     virtual bool input_float(const char *label, float *val, float step, float step_fast) noexcept = 0;
     template<typename ...Args>
@@ -126,6 +143,11 @@ public:
     virtual bool drag_int2(const char *label, int2 *val, float speed, int min, int max) noexcept = 0;
     virtual bool drag_int3(const char *label, int3 *val, float speed, int min, int max) noexcept = 0;
     virtual bool drag_int4(const char *label, int4 *val, float speed, int min, int max) noexcept = 0;
+
+    virtual bool drag_uint(const char *label, uint *val, float speed, uint min, uint max) noexcept = 0;
+    virtual bool drag_uint2(const char *label, uint2 *val, float speed, uint min, uint max) noexcept = 0;
+    virtual bool drag_uint3(const char *label, uint3 *val, float speed, uint min, uint max) noexcept = 0;
+    virtual bool drag_uint4(const char *label, uint4 *val, float speed, uint min, uint max) noexcept = 0;
 
     virtual bool drag_float(const char *label, float *val, float speed, float min, float max) noexcept = 0;
     virtual bool drag_float2(const char *label, float2 *val, float speed, float min, float max) noexcept = 0;

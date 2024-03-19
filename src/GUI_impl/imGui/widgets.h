@@ -56,6 +56,12 @@ public:
     bool input_int3(const char *label, ocarina::int3 *val) noexcept override;
     bool input_int4(const char *label, ocarina::int4 *val) noexcept override;
 
+    bool input_uint(const char *label, uint *val) noexcept override;
+    bool input_uint(const char *label, uint *val, uint step, uint step_fast) noexcept override;
+    bool input_uint2(const char *label, ocarina::uint2 *val) noexcept override;
+    bool input_uint3(const char *label, ocarina::uint3 *val) noexcept override;
+    bool input_uint4(const char *label, ocarina::uint4 *val) noexcept override;
+
     bool input_float(const char *label, float *val) noexcept override;
     bool input_float(const char *label, float *val, float step, float step_fast) noexcept override;
     bool input_float2(const char *label, ocarina::float2 *val) noexcept override;
@@ -66,6 +72,11 @@ public:
     bool drag_int2(const char *label, ocarina::int2 *val, float speed, int min, int max) noexcept override;
     bool drag_int3(const char *label, ocarina::int3 *val, float speed, int min, int max) noexcept override;
     bool drag_int4(const char *label, ocarina::int4 *val, float speed, int min, int max) noexcept override;
+
+    bool drag_uint(const char *label, ocarina::uint *val, float speed, ocarina::uint min, ocarina::uint max) noexcept override;
+    bool drag_uint2(const char *label, ocarina::uint2 *val, float speed, ocarina::uint min, ocarina::uint max) noexcept override;
+    bool drag_uint3(const char *label, ocarina::uint3 *val, float speed, ocarina::uint min, ocarina::uint max) noexcept override;
+    bool drag_uint4(const char *label, ocarina::uint4 *val, float speed, ocarina::uint min, ocarina::uint max) noexcept override;
 
     bool drag_float(const char *label, float *val, float speed, float min, float max) noexcept override;
     bool drag_float2(const char *label, ocarina::float2 *val, float speed, float min, float max) noexcept override;

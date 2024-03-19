@@ -2443,6 +2443,27 @@ bool ImGui::DragInt4(const char* label, int v[4], float v_speed, int v_min, int 
     return DragScalarN(label, ImGuiDataType_S32, v, 4, v_speed, &v_min, &v_max, format, flags);
 }
 
+// NB: v_speed is float to allow adjusting the drag speed with more precision
+bool ImGui::DragUint(const char* label, ImU32* v, float v_speed, ImU32 v_min, ImU32 v_max, const char* format, ImGuiSliderFlags flags)
+{
+    return DragScalar(label, ImGuiDataType_U32, v, v_speed, &v_min, &v_max, format, flags);
+}
+
+bool ImGui::DragUint2(const char* label, ImU32 v[2], float v_speed, ImU32 v_min, ImU32 v_max, const char* format, ImGuiSliderFlags flags)
+{
+    return DragScalarN(label, ImGuiDataType_U32, v, 2, v_speed, &v_min, &v_max, format, flags);
+}
+
+bool ImGui::DragUint3(const char* label, ImU32 v[3], float v_speed, ImU32 v_min, ImU32 v_max, const char* format, ImGuiSliderFlags flags)
+{
+    return DragScalarN(label, ImGuiDataType_U32, v, 3, v_speed, &v_min, &v_max, format, flags);
+}
+
+bool ImGui::DragUint4(const char* label, ImU32 v[4], float v_speed, ImU32 v_min, ImU32 v_max, const char* format, ImGuiSliderFlags flags)
+{
+    return DragScalarN(label, ImGuiDataType_U32, v, 4, v_speed, &v_min, &v_max, format, flags);
+}
+
 // NB: You likely want to specify the ImGuiSliderFlags_AlwaysClamp when using this.
 bool ImGui::DragIntRange2(const char* label, int* v_current_min, int* v_current_max, float v_speed, int v_min, int v_max, const char* format, const char* format_max, ImGuiSliderFlags flags)
 {
@@ -3436,7 +3457,7 @@ bool ImGui::InputInt4(const char* label, int v[4], ImGuiInputTextFlags flags)
     return InputScalarN(label, ImGuiDataType_S32, v, 4, NULL, NULL, "%d", flags);
 }
 
-bool ImGui::InputUint(const char *label, ImU32 *v, int step, int step_fast, ImGuiInputTextFlags flags)
+bool ImGui::InputUint(const char *label, ImU32 *v, ImU32 step, ImU32 step_fast, ImGuiInputTextFlags flags)
 {
     const char* format = (flags & ImGuiInputTextFlags_CharsHexadecimal) ? "%08X" : "%u";
     return InputScalar(label, ImGuiDataType_U32, (void*)v, (void*)(step > 0 ? &step : NULL), (void*)(step_fast > 0 ? &step_fast : NULL), format, flags);

@@ -498,6 +498,10 @@ namespace ImGui
     IMGUI_API bool          DragInt2(const char* label, int v[2], float v_speed = 1.0f, int v_min = 0, int v_max = 0, const char* format = "%d", ImGuiSliderFlags flags = 0);
     IMGUI_API bool          DragInt3(const char* label, int v[3], float v_speed = 1.0f, int v_min = 0, int v_max = 0, const char* format = "%d", ImGuiSliderFlags flags = 0);
     IMGUI_API bool          DragInt4(const char* label, int v[4], float v_speed = 1.0f, int v_min = 0, int v_max = 0, const char* format = "%d", ImGuiSliderFlags flags = 0);
+    IMGUI_API bool          DragUint(const char* label, ImU32 * v, float v_speed = 1.0f, ImU32 v_min = 0, ImU32 v_max = 0, const char* format = "%u", ImGuiSliderFlags flags = 0);  // If v_min >= v_max we have no bound
+    IMGUI_API bool          DragUint2(const char* label, ImU32 v[2], float v_speed = 1.0f, ImU32 v_min = 0, ImU32 v_max = 0, const char* format = "%u", ImGuiSliderFlags flags = 0);
+    IMGUI_API bool          DragUint3(const char* label, ImU32 v[3], float v_speed = 1.0f, ImU32 v_min = 0, ImU32 v_max = 0, const char* format = "%u", ImGuiSliderFlags flags = 0);
+    IMGUI_API bool          DragUint4(const char* label, ImU32 v[4], float v_speed = 1.0f, ImU32 v_min = 0, ImU32 v_max = 0, const char* format = "%u", ImGuiSliderFlags flags = 0);
     IMGUI_API bool          DragIntRange2(const char* label, int* v_current_min, int* v_current_max, float v_speed = 1.0f, int v_min = 0, int v_max = 0, const char* format = "%d", const char* format_max = NULL, ImGuiSliderFlags flags = 0);
     IMGUI_API bool          DragScalar(const char* label, ImGuiDataType data_type, void* p_data, float v_speed, const void* p_min = NULL, const void* p_max = NULL, const char* format = NULL, ImGuiSliderFlags flags = 0);
     IMGUI_API bool          DragScalarN(const char* label, ImGuiDataType data_type, void* p_data, int components, float v_speed, const void* p_min = NULL, const void* p_max = NULL, const char* format = NULL, ImGuiSliderFlags flags = 0);
@@ -537,7 +541,7 @@ namespace ImGui
     IMGUI_API bool          InputInt2(const char* label, int v[2], ImGuiInputTextFlags flags = 0);
     IMGUI_API bool          InputInt3(const char* label, int v[3], ImGuiInputTextFlags flags = 0);
     IMGUI_API bool          InputInt4(const char* label, int v[4], ImGuiInputTextFlags flags = 0);
-    IMGUI_API bool          InputUint(const char* label, ImU32 * v, int step = 1, int step_fast = 100, ImGuiInputTextFlags flags = 0);
+    IMGUI_API bool          InputUint(const char* label, ImU32 * v, ImU32 step = 1, ImU32 step_fast = 100, ImGuiInputTextFlags flags = 0);
     IMGUI_API bool          InputUint2(const char* label, ImU32 v[2], ImGuiInputTextFlags flags = 0);
     IMGUI_API bool          InputUint3(const char* label, ImU32 v[3], ImGuiInputTextFlags flags = 0);
     IMGUI_API bool          InputUint4(const char* label, ImU32 v[4], ImGuiInputTextFlags flags = 0);
