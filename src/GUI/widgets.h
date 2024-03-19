@@ -93,6 +93,15 @@ public:
     virtual bool button(const char *label, uint2 size) noexcept = 0;
     virtual bool button(const char *label) noexcept = 0;
 
+    template<typename Func>
+    bool button_click(const string &label, Func &&func) noexcept {
+        bool ret = button(label.c_str());
+        if (ret) {
+            func();
+        }
+        return ret;
+    }
+
     virtual void same_line() noexcept = 0;
     virtual void new_line() noexcept = 0;
 
