@@ -135,13 +135,13 @@ using handle_ty = uint64_t;
     template<typename T, typename... Args>                      \
     auto func(T &&obj, Args &&...args) noexcept {               \
         if constexpr (requires {                                \
-                          obj->func(OC_FORWARD(args)...);       \
+                          obj.func(OC_FORWARD(args)...);       \
                       }) {                                      \
-            return obj->func(OC_FORWARD(args)...);              \
+            return obj.func(OC_FORWARD(args)...);              \
         } else if constexpr (requires {                         \
-                                 obj.func(OC_FORWARD(args)...); \
+                                 obj->func(OC_FORWARD(args)...); \
                              }) {                               \
-            return obj.func(OC_FORWARD(args)...);               \
+            return obj->func(OC_FORWARD(args)...);               \
         } else {                                                \
             static_assert(ocarina::always_false_v<T>);          \
         }                                                       \
