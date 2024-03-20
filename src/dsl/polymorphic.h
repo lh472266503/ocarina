@@ -324,7 +324,12 @@ public:
      * tips: Called on the host side code
      */
     void update() noexcept {
-        // todo
+        _type_mgr.for_each_type([&](TypeData &type_data) {
+            for (ptr_type *object : type_data.objects) {
+                object->encode(type_data.data_set);
+            }
+            type_data.data_set.upload_immediately();
+        });
     }
 
     void set_datas(const ptr_type *object, datas_type &&datas) noexcept {
