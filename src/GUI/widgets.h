@@ -187,6 +187,22 @@ public:
     virtual bool input_float3(const char *label, float3 *val) noexcept = 0;
     virtual bool input_float4(const char *label, float4 *val) noexcept = 0;
 
+    bool input(const string &label, float *val, uint size) noexcept {
+        switch (size) {
+            case 1:
+                return input_float(label.c_str(), val);
+            case 2:
+                return input_float2(label.c_str(), reinterpret_cast<float2 *>(val));
+            case 3:
+                return input_float3(label.c_str(), reinterpret_cast<float3 *>(val));
+            case 4:
+                return input_float4(label.c_str(), reinterpret_cast<float4 *>(val));
+            default:
+                break;
+        }
+        return false;
+    }
+
     virtual bool drag_int(const char *label, int *val, float speed, int min, int max) noexcept = 0;
     virtual bool drag_int2(const char *label, int2 *val, float speed, int min, int max) noexcept = 0;
     virtual bool drag_int3(const char *label, int3 *val, float speed, int min, int max) noexcept = 0;
