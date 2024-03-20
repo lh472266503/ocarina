@@ -103,7 +103,7 @@ public:
     }
 
     [[nodiscard]] bool has_encoded() const noexcept { return _offset != InvalidUI32; }
-    void invalidation() noexcept { _offset = InvalidUI32;}
+    void invalidation() noexcept { _offset = InvalidUI32; }
 
     void init_encode(RegistrableManaged<T> &data) const noexcept {
         OC_ASSERT(!has_encoded());
@@ -215,12 +215,21 @@ public:
     }
 };
 
-#define OC_ENCODE_ELEMENT(name) (name).encode(datas);
-#define OC_UPDATE_ELEMENT(name) (name).update(datas);
-#define OC_DECODE_ELEMENT(name) (name).decode(da);
-#define OC_INVALIDATE_ELEMENT(name) (name).reset_device_value();
-#define OC_VALID_ELEMENT(name) &&(name).has_device_value()
-#define OC_SIZE_ELEMENT(name) +(name).element_num()
+namespace detail {
+OC_MAKE_AUTO_MEMBER_FUNC(encode)
+OC_MAKE_AUTO_MEMBER_FUNC(update)
+OC_MAKE_AUTO_MEMBER_FUNC(decode)
+OC_MAKE_AUTO_MEMBER_FUNC(reset_device_value)
+OC_MAKE_AUTO_MEMBER_FUNC(has_device_value)
+OC_MAKE_AUTO_MEMBER_FUNC(element_num)
+}// namespace detail
+
+#define OC_ENCODE_ELEMENT(name) ocarina::detail::encode(name, datas);
+#define OC_UPDATE_ELEMENT(name) ocarina::detail::update(name, datas);
+#define OC_DECODE_ELEMENT(name) ocarina::detail::decode(name, da);
+#define OC_INVALIDATE_ELEMENT(name) ocarina::detail::reset_device_value(name);
+#define OC_VALID_ELEMENT(name) &&ocarina::detail::has_device_value(name)
+#define OC_SIZE_ELEMENT(name) +ocarina::detail::element_num(name)
 
 #define OC_SERIALIZABLE_FUNC(Super, ...)                                                   \
     [[nodiscard]] uint element_num() const noexcept override {                             \
