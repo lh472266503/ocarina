@@ -120,9 +120,9 @@ public:
     bool colorN_edit(const string &label, float *val, uint size) noexcept {
         switch (size) {
             case 3:
-                return color_edit(label.c_str(), reinterpret_cast<float3 *>(val));
+                return color_edit(label, reinterpret_cast<float3 *>(val));
             case 4:
-                return color_edit(label.c_str(), reinterpret_cast<float4 *>(val));
+                return color_edit(label, reinterpret_cast<float4 *>(val));
             default:
                 OC_ERROR("error");
                 return false;
@@ -195,13 +195,13 @@ public:
     bool input_floatN(const string &label, float *val, uint size) noexcept {
         switch (size) {
             case 1:
-                return input_float(label.c_str(), val);
+                return input_float(label, val);
             case 2:
-                return input_float2(label.c_str(), reinterpret_cast<float2 *>(val));
+                return input_float2(label, reinterpret_cast<float2 *>(val));
             case 3:
-                return input_float3(label.c_str(), reinterpret_cast<float3 *>(val));
+                return input_float3(label, reinterpret_cast<float3 *>(val));
             case 4:
-                return input_float4(label.c_str(), reinterpret_cast<float4 *>(val));
+                return input_float4(label, reinterpret_cast<float4 *>(val));
             default:
                 OC_ERROR("error");
                 break;
