@@ -107,7 +107,6 @@ public:
         return ret;
     }
 
-
     virtual void text(const char *format, ...) noexcept = 0;
     virtual bool check_box(const char *label, bool *val) noexcept = 0;
 
@@ -123,6 +122,17 @@ public:
 
     virtual bool color_edit(const char *label, float3 *val) noexcept = 0;
     virtual bool color_edit(const char *label, float4 *val) noexcept = 0;
+
+    bool colorN_edit(const string &label, float *val, uint size) noexcept {
+        switch (size) {
+            case 3:
+                return color_edit(label.c_str(), reinterpret_cast<float3 *>(val));
+            case 4:
+                return color_edit(label.c_str(), reinterpret_cast<float4 *>(val));
+            default:
+                return false;
+        }
+    }
 
     virtual bool button(const char *label, uint2 size) noexcept = 0;
     virtual bool button(const char *label) noexcept = 0;
@@ -187,7 +197,7 @@ public:
     virtual bool input_float3(const char *label, float3 *val) noexcept = 0;
     virtual bool input_float4(const char *label, float4 *val) noexcept = 0;
 
-    bool input(const string &label, float *val, uint size) noexcept {
+    bool input_floatN(const string &label, float *val, uint size) noexcept {
         switch (size) {
             case 1:
                 return input_float(label.c_str(), val);
