@@ -124,6 +124,7 @@ public:
             case 4:
                 return color_edit(label.c_str(), reinterpret_cast<float4 *>(val));
             default:
+                OC_ERROR("error");
                 return false;
         }
     }
@@ -202,6 +203,7 @@ public:
             case 4:
                 return input_float4(label.c_str(), reinterpret_cast<float4 *>(val));
             default:
+                OC_ERROR("error");
                 break;
         }
         return false;
