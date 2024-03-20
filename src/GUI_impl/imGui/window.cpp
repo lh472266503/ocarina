@@ -131,6 +131,7 @@ void GLWindow::init(const char *name, uint2 initial_size, bool resizable) noexce
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
+    init_widgets();
     ImGui::CreateContext();
     ImGui::StyleColorsDark();
     ImGui_ImplGlfw_InitForOpenGL(_handle, true);
@@ -159,9 +160,9 @@ void GLWindow::init(const char *name, uint2 initial_size, bool resizable) noexce
         if (auto &&cb = self->_window_size_callback) { cb(make_uint2(width, height)); }
     });
     glfwSetKeyCallback(_handle, [](GLFWwindow *window, int key, int scancode, int action, int mods) noexcept {
-        if (ImGui::GetIO().WantCaptureKeyboard) {// ImGui is handling the keyboard
-            ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
-        } else {
+        // ImGui is handling the keyboard
+        ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
+        if (!ImGui::GetIO().WantCaptureKeyboard) {
             auto self = static_cast<GLWindow *>(glfwGetWindowUserPointer(window));
             if (auto &&cb = self->_key_callback) { cb(key, action); }
         }
@@ -177,7 +178,6 @@ void GLWindow::init(const char *name, uint2 initial_size, bool resizable) noexce
         }
     });
     glfwSetCharCallback(_handle, ImGui_ImplGlfw_CharCallback);
-    init_widgets();
 }
 
 GLWindow::GLWindow(const char *name, uint2 initial_size, bool resizable) noexcept

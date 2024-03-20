@@ -8,7 +8,6 @@ namespace ocarina {
 
 ImGuiWidgets::ImGuiWidgets()
     : Widgets() {
-    ImGui::CreateContext();
 }
 
 bool ImGuiWidgets::push_window(const string &label) noexcept {
