@@ -224,6 +224,9 @@ public:
     }
 
     void decode() const noexcept override {
+        if (_data == nullptr) {
+            return;
+        }
         DataAccessor<T> da{_offset * sizeof(T), *_data};
         decode(&da);
     }
