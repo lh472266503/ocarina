@@ -131,18 +131,18 @@ using handle_ty = uint64_t;
 #define OC_MAKE_ENUM_BIT_OPS(type, ...) \
     MAP_UD(OC_MAKE_ENUM_BIT_OPS_IMPL, type, ##__VA_ARGS__)
 
-#define OC_MAKE_AUTO_MEMBER_FUNC(func)                          \
-    template<typename T, typename... Args>                      \
-    auto func(T &&obj, Args &&...args) noexcept {               \
-        if constexpr (requires {                                \
-                          obj.func(OC_FORWARD(args)...);       \
-                      }) {                                      \
-            return obj.func(OC_FORWARD(args)...);              \
-        } else if constexpr (requires {                         \
+#define OC_MAKE_AUTO_MEMBER_FUNC(func)                           \
+    template<typename T, typename... Args>                       \
+    auto func(T &&obj, Args &&...args) noexcept {                \
+        if constexpr (requires {                                 \
+                          obj.func(OC_FORWARD(args)...);         \
+                      }) {                                       \
+            return obj.func(OC_FORWARD(args)...);                \
+        } else if constexpr (requires {                          \
                                  obj->func(OC_FORWARD(args)...); \
-                             }) {                               \
+                             }) {                                \
             return obj->func(OC_FORWARD(args)...);               \
-        } else {                                                \
-            static_assert(ocarina::always_false_v<T>);          \
-        }                                                       \
+        } else {                                                 \
+            static_assert(ocarina::always_false_v<T>);           \
+        }                                                        \
     }
