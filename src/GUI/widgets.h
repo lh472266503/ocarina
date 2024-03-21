@@ -110,6 +110,23 @@ public:
     virtual bool slider_float3(const string &label, float3 *val, float min, float max) noexcept = 0;
     virtual bool slider_float4(const string &label, float4 *val, float min, float max) noexcept = 0;
 
+    bool slider_floatN(const string &label, float *val, uint size, float min, float max) noexcept {
+        switch (size) {
+            case 1:
+                return slider_float(label, val, min, max);
+            case 2:
+                return slider_float2(label, reinterpret_cast<float2 *>(val), min, max);
+            case 3:
+                return slider_float3(label, reinterpret_cast<float3 *>(val), min, max);
+            case 4:
+                return slider_float4(label, reinterpret_cast<float4 *>(val), min, max);
+            default:
+                OC_ERROR("error");
+                break;
+        }
+        return false;
+    }
+
     virtual bool slider_int(const string &label, int *val, int min, int max) noexcept = 0;
     virtual bool slider_int2(const string &label, int2 *val, int min, int max) noexcept = 0;
     virtual bool slider_int3(const string &label, int3 *val, int min, int max) noexcept = 0;
