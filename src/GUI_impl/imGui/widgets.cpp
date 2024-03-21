@@ -69,6 +69,13 @@ void ImGuiWidgets::text(const char *format, ...) noexcept {
     va_end(args);
 }
 
+void ImGuiWidgets::text_wrapped(const char *format, ...) noexcept {
+    va_list args;
+    va_start(args, format);
+    ImGui::TextWrappedV(format, args);
+    va_end(args);
+}
+
 bool ImGuiWidgets::check_box(const string &label, bool *val) noexcept {
     return ImGui::Checkbox(label.c_str(), val);
 }

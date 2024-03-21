@@ -32,6 +32,7 @@ public:
     void end_menu_bar() noexcept override;
 
     void text(const char *format, ...) noexcept override;
+    void text_wrapped(const char *format, ...) noexcept override;
     bool check_box(const string &label, bool *val) noexcept override;
 
     bool slider_float(const string &label, float *val, float min, float max) noexcept override;

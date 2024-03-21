@@ -102,6 +102,7 @@ public:
     }
 
     virtual void text(const char *format, ...) noexcept = 0;
+    virtual void text_wrapped(const char *format, ...) noexcept = 0;
     virtual bool check_box(const string &label, bool *val) noexcept = 0;
 
     virtual bool slider_float(const string &label, float *val, float min, float max) noexcept = 0;
