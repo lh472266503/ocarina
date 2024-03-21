@@ -42,8 +42,10 @@ public:
     /// for host
     virtual void encode(RegistrableManaged<T> &data) const noexcept {}
     virtual void update(RegistrableManaged<T> &data) const noexcept {}
+    virtual void update() const noexcept {}
     /// for device
     virtual void decode(const DataAccessor<T> *da) const noexcept {}
+    virtual void decode() const noexcept {}
     [[nodiscard]] virtual uint element_num() const noexcept { return 0; }
     [[nodiscard]] virtual bool has_device_value() const noexcept { return true; }
     virtual void reset_device_value() const noexcept {}
@@ -62,9 +64,11 @@ private:
     optional<dsl_t<value_ty>> _device_value{};
     /// origin index in buffer
     mutable uint _offset{InvalidUI32};
+    mutable RegistrableManaged<T> *_data{nullptr};
 
 public:
     explicit Serial(value_ty val = value_ty{}) : _host_value(std::move(val)) {}
+
     Serial &operator=(const value_ty &val) {
         _host_value = val;
         return *this;
@@ -108,6 +112,7 @@ public:
     void init_encode(RegistrableManaged<T> &data) const noexcept {
         OC_ASSERT(!has_encoded());
         _offset = data.host_buffer().size();
+        _data = addressof(data);
         if constexpr (is_scalar_v<value_ty>) {
             data.push_back(bit_cast<T>(hv()));
         } else if constexpr (is_vector_v<value_ty>) {
@@ -152,6 +157,10 @@ public:
         } else {
             static_assert(always_false_v<value_ty>);
         }
+    }
+
+    void update() const noexcept override {
+        update(*_data);
     }
 
     void encode(RegistrableManaged<T> &data) const noexcept override {
@@ -212,6 +221,11 @@ public:
     void decode(const DataAccessor<T> *da) const noexcept override {
         const DynamicArray<T> array = da->template load_dynamic_array<T>(element_num());
         const_cast<decltype(_device_value) *>(&_device_value)->emplace(_decode(array));
+    }
+
+    void decode() const noexcept override {
+        DataAccessor<T> da{_offset * sizeof(T), *_data};
+        decode(&da);
     }
 };
 
