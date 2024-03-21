@@ -49,7 +49,6 @@ bool create_directory_if_necessary(const fs::path &path) {
 [[nodiscard]] string window_name(const string &name) {
     return string(window_lib_prefix) + name;
 }
-
 }// namespace detail
 
 FileManager::FileManager(const fs::path &path, string_view cache_dir) {
@@ -145,6 +144,19 @@ const DynamicModule *FileManager::obtain_module(const string &module_name) noexc
         ret = &iter->second;
     }
     return ret;
+}
+
+void FileManager::unload_module(void *handle) noexcept {
+    dynamic_module_destroy(handle);
+}
+
+bool FileManager::unload_module(const std::string &module_name) noexcept {
+    auto iter = _impl->modules.find(module_name);
+    if (iter == _impl->modules.cend()) {
+        return false;
+    }
+    unload_module(iter->second.handle());
+    return true;
 }
 
 Device FileManager::create_device(const string &backend_name) noexcept {

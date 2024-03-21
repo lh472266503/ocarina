@@ -43,6 +43,8 @@ public:
     void clear_cache() const noexcept;
     [[nodiscard]] bool is_exist_cache(const string &fn) const noexcept;
     const DynamicModule *obtain_module(const string &module_name) noexcept;
+    bool unload_module(const string &module_name) noexcept;
+    void unload_module(void *handle) noexcept;
     [[nodiscard]] Device create_device(const string &backend_name) noexcept;
     [[nodiscard]] WindowWrapper create_window(const char *name, uint2 initial_size, const char *type = "gl", bool resizable = false);
 };
