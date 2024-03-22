@@ -187,16 +187,16 @@ OC_MAKE_VECTOR_ASSIGN_OPERATOR(^=, ocarina::is_all_integral_v<T, U>)
     operator op(                                                         \
         ocarina::Vector<T, N> lhs, ocarina::Vector<T, N> rhs) noexcept { \
         if constexpr (N == 2) {                                          \
-            return ocarina::bool2{                                       \
+            return ocarina::Vector<bool, 2>{                             \
                 lhs.x op rhs.x,                                          \
                 lhs.y op rhs.y};                                         \
         } else if constexpr (N == 3) {                                   \
-            return ocarina::bool3{                                       \
+            return ocarina::Vector<bool, 3>{                             \
                 lhs.x op rhs.x,                                          \
                 lhs.y op rhs.y,                                          \
                 lhs.z op rhs.z};                                         \
         } else {                                                         \
-            return ocarina::bool4{                                       \
+            return ocarina::Vector<bool, 4>{                             \
                 lhs.x op rhs.x,                                          \
                 lhs.y op rhs.y,                                          \
                 lhs.z op rhs.z,                                          \
