@@ -32,7 +32,7 @@ ocarina::string CUDACompiler::compile(const Function &function, int sm) const no
     int nvrtc_version = ver_major * 10000 + ver_minor * 100;
     auto nvrtc_option = fmt::format("-DLC_NVRTC_VERSION={}", nvrtc_version);
     std::vector header_names{"cuda_device_type.h","cuda_device_builtin.h", "cuda_device_math.h", "cuda_device_resource.h"};
-    std::vector header_sources{cuda_device_type, cuda_device_builtin, cuda_device_math, cuda_device_resource};
+    std::vector header_sources_ptr{cuda_device_type, cuda_device_builtin, cuda_device_math, cuda_device_resource};
     auto compute_sm = ocarina::format("-arch=compute_{}", sm);
     auto rt_option = fmt::format("-DLC_OPTIX_VERSION={}", 70300);
     auto const_option = fmt::format("-Dlc_constant={}", nvrtc_version <= 110200 ? "const" : "constexpr");
@@ -56,20 +56,20 @@ ocarina::string CUDACompiler::compile(const Function &function, int sm) const no
         includes.push_back(ocarina::format("-I {}", optix_include));
         compile_option.push_back(includes.back().c_str());
         header_names.push_back("optix_device_header.h");
-        header_sources.push_back(optix_device_header);
+        header_sources_ptr.push_back(optix_device_header);
     }
     for (const auto &header_name : header_names) {
         includes.push_back(ocarina::format("-include={}", header_name));
         compile_option.push_back(includes.back().c_str());
     }
 
-    uint64_t ext_hash = hash64(hash64_list(compile_option), hash64_list(header_sources));
+    uint64_t ext_hash = hash64(hash64_list(compile_option), hash64_list(header_sources_ptr));
 
     auto compile = [&](const string &cu, const string &fn, int sm) -> string {
         TIMER_TAG(compile, "compile " + fn);
         nvrtcProgram program{};
         OC_NVRTC_CHECK(nvrtcCreateProgram(&program, cu.c_str(), fn.c_str(),
-                                          header_names.size(), header_sources.data(),
+                                          header_names.size(), header_sources_ptr.data(),
                                           header_names.data()));
         const nvrtcResult compile_res = nvrtcCompileProgram(program, compile_option.size(), compile_option.data());
         size_t log_size = 0;
