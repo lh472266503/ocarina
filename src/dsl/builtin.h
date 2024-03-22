@@ -368,6 +368,18 @@ OC_MAKE_BINARY_BUILTIN_FUNC(atan2, ATAN2)
 
 #undef OC_MAKE_BINARY_BUILTIN_FUNC
 
+#define OC_MAKE_VEC_MAKER_DIM(type, tag, dim)                                  \
+    template<typename... Args>                                                 \
+    requires(any_dsl_v<Args...> && requires {                                  \
+        make_##type##dim(expr_value_t<Args>{}...);                             \
+    })                                                                         \
+    OC_NODISCARD auto make_##type##dim(const Args &...args) noexcept {         \
+        auto expr = Function::current()->call_builtin(Type::of<type##dim>(),   \
+                                                      CallOp::MAKE_##tag##dim, \
+                                                      {OC_EXPR(args)...});     \
+        return eval<type##dim>(expr);                                          \
+    }
+
 #define OC_MAKE_VEC2_MAKER(type, tag)                                            \
     template<typename T>                                                         \
     requires(is_dsl_v<T> && (is_scalar_expr_v<T> || is_vector_expr_v<T>))        \
