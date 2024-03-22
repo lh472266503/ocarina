@@ -320,6 +320,13 @@ int main(int argc, char *argv[]) {
 
     /// create rtx file_manager if need
     device.init_rtx();
+
+    float3 a;
+    int3 b;
+
+    a = a + a;
+    a = a + b;
+
     test_compute_shader(device, stream);
     //        test_lambda(device, stream);
 

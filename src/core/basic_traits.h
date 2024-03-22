@@ -97,7 +97,7 @@ constexpr auto is_number_v = is_number<T>::value;
 
 #define MAKE_ALL_TYPE_TRAITS(type)                           \
     template<typename... T>                                  \
-    using is_all_##type = std::disjunction<is_##type<T>...>; \
+    using is_all_##type = std::conjunction<is_##type<T>...>; \
     OC_DEFINE_TEMPLATE_VALUE_MULTI(is_all_##type)
 
 MAKE_ALL_TYPE_TRAITS(scalar)
