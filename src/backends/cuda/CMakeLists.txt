@@ -19,7 +19,7 @@ if (CUDAToolkit_FOUND)
             COMMAND ${CMAKE_COMMAND} -E echo "Copying cuda header files..."
             COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/bin/cuda
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${backend_headers} ${CMAKE_BINARY_DIR}/bin/cuda
+            COMMAND ${CMAKE_COMMAND} -E echo "Complete copy!"
     )
-
 endif ()
 
