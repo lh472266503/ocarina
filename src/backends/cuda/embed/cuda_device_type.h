@@ -41,6 +41,29 @@ struct alignas(sizeof(T) * 4) Vector<T, 4> {
     __device__ T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
     __device__ const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
 };
+
+using uint = unsigned int;
+using uint64t = unsigned long long;
+using uchar = unsigned char;
+using ushort = unsigned short;
+
+#define OC_MAKE_VECTOR_TYPES(T) \
+    using T##2 = Vector<T, 2>;  \
+    using T##3 = Vector<T, 3>;  \
+    using T##4 = Vector<T, 4>;
+
+OC_MAKE_VECTOR_TYPES(bool)
+OC_MAKE_VECTOR_TYPES(float)
+OC_MAKE_VECTOR_TYPES(int)
+OC_MAKE_VECTOR_TYPES(char)
+OC_MAKE_VECTOR_TYPES(short)
+OC_MAKE_VECTOR_TYPES(ushort)
+OC_MAKE_VECTOR_TYPES(uchar)
+OC_MAKE_VECTOR_TYPES(uint)
+OC_MAKE_VECTOR_TYPES(uint64t)
+
+#undef OC_MAKE_VECTOR_TYPES
+
 }// namespace ocarina
 
 using oc_int = int;
