@@ -5,11 +5,11 @@
 #include "cuda_compiler.h"
 #include "cuda_device.h"
 #include "ast/function.h"
-#include "embed/cuda_device_type_embed.h"
-#include "embed/cuda_device_builtin_embed.h"
-#include "embed/cuda_device_math_embed.h"
-#include "embed/cuda_device_resource_embed.h"
-#include "embed/optix_device_header_embed.h"
+//#include "embed/cuda_device_type_embed.h"
+//#include "embed/cuda_device_builtin_embed.h"
+//#include "embed/cuda_device_math_embed.h"
+//#include "embed/cuda_device_resource_embed.h"
+//#include "embed/optix_device_header_embed.h"
 #include "cuda_codegen.h"
 #include "util/file_manager.h"
 #include "core/util.h"
@@ -32,7 +32,15 @@ ocarina::string CUDACompiler::compile(const Function &function, int sm) const no
     int nvrtc_version = ver_major * 10000 + ver_minor * 100;
     auto nvrtc_option = fmt::format("-DLC_NVRTC_VERSION={}", nvrtc_version);
     std::vector header_names{"cuda_device_type.h","cuda_device_builtin.h", "cuda_device_math.h", "cuda_device_resource.h"};
-    std::vector header_sources_ptr{cuda_device_type, cuda_device_builtin, cuda_device_math, cuda_device_resource};
+    std::vector<string> header_sources;
+    std::vector<const char *> header_sources_ptr;
+
+    for (auto fn : header_names) {
+        string source = FileManager::read_file(string("cuda/") + fn);
+        header_sources_ptr.push_back(source.c_str());
+        header_sources.push_back(ocarina::move(source));
+    }
+
     auto compute_sm = ocarina::format("-arch=compute_{}", sm);
     auto rt_option = fmt::format("-DLC_OPTIX_VERSION={}", 70300);
     auto const_option = fmt::format("-Dlc_constant={}", nvrtc_version <= 110200 ? "const" : "constexpr");
@@ -56,7 +64,9 @@ ocarina::string CUDACompiler::compile(const Function &function, int sm) const no
         includes.push_back(ocarina::format("-I {}", optix_include));
         compile_option.push_back(includes.back().c_str());
         header_names.push_back("optix_device_header.h");
-        header_sources_ptr.push_back(optix_device_header);
+        string source = FileManager::read_file(string("cuda/optix_device_header.h"));
+        header_sources_ptr.push_back(source.c_str());
+        header_sources.push_back(ocarina::move(source));
     }
     for (const auto &header_name : header_names) {
         includes.push_back(ocarina::format("-include={}", header_name));
