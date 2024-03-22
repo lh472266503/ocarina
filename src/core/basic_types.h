@@ -311,7 +311,7 @@ operator~(const ocarina::Vector<T, N> v) noexcept {
     requires __VA_ARGS__                                                 \
     [[nodiscard]] constexpr auto                                         \
     operator op(T lhs, ocarina::Vector<U, N> rhs) noexcept {             \
-        return ocarina::Vector<U, N>{lhs} op rhs;                        \
+        return ocarina::Vector<T, N>{lhs} op rhs;                        \
     }
 OC_MAKE_VECTOR_BINARY_OPERATOR(+, ocarina::is_all_number_v<T, U>)
 OC_MAKE_VECTOR_BINARY_OPERATOR(-, ocarina::is_all_number_v<T, U>)
