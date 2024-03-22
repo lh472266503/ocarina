@@ -6,6 +6,7 @@
 
 #include "core/stl.h"
 #include "rhi/resources/texture.h"
+#include "gl_interop.h"
 #include <cuda.h>
 
 namespace ocarina {

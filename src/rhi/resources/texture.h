@@ -8,6 +8,7 @@
 #include "resource.h"
 #include "rhi/command.h"
 #include "texture_sampler.h"
+#include "gl_interop.h"
 
 namespace ocarina {
 
