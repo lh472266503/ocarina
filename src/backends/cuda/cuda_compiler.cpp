@@ -5,6 +5,7 @@
 #include "cuda_compiler.h"
 #include "cuda_device.h"
 #include "ast/function.h"
+#include "embed/cuda_device_type_embed.h"
 #include "embed/cuda_device_builtin_embed.h"
 #include "embed/cuda_device_math_embed.h"
 #include "embed/cuda_device_resource_embed.h"
@@ -30,8 +31,8 @@ ocarina::string CUDACompiler::compile(const Function &function, int sm) const no
     OC_NVRTC_CHECK(nvrtcVersion(&ver_major, &ver_minor));
     int nvrtc_version = ver_major * 10000 + ver_minor * 100;
     auto nvrtc_option = fmt::format("-DLC_NVRTC_VERSION={}", nvrtc_version);
-    std::vector header_names{"cuda_device_builtin.h", "cuda_device_math.h", "cuda_device_resource.h"};
-    std::vector header_sources{cuda_device_builtin, cuda_device_math, cuda_device_resource};
+    std::vector header_names{"cuda_device_type.h","cuda_device_builtin.h", "cuda_device_math.h", "cuda_device_resource.h"};
+    std::vector header_sources{cuda_device_type, cuda_device_builtin, cuda_device_math, cuda_device_resource};
     auto compute_sm = ocarina::format("-arch=compute_{}", sm);
     auto rt_option = fmt::format("-DLC_OPTIX_VERSION={}", 70300);
     auto const_option = fmt::format("-Dlc_constant={}", nvrtc_version <= 110200 ? "const" : "constexpr");
