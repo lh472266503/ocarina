@@ -290,7 +290,7 @@ def define_operator():
     bit_binary = ["&", "|", "^", "<<", ">>"]
     
     define_array_binary(cal_binary, cmp_binary, bit_binary)
-    
+    # cal_binary = []
     binary = cal_binary + cmp_binary + bit_binary
     for i, scalar in enumerate(scalar_types):
         for dim in range(2, 5):

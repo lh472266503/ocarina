@@ -12,9 +12,6 @@
 #include <optix_stubs.h>
 #include <optix_function_table_definition.h>
 #include <nvrtc.h>
-#include "embed/cuda_device_builtin_embed.h"
-#include "embed/cuda_device_math_embed.h"
-#include "embed/cuda_device_resource_embed.h"
 #include "cuda_compiler.h"
 #include "optix_accel.h"
 #include "cuda_command_visitor.h"
