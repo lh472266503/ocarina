@@ -10,6 +10,14 @@ ImGuiWidgets::ImGuiWidgets()
     : Widgets() {
 }
 
+void ImGuiWidgets::push_item_width(int width) noexcept {
+    ImGui::PushItemWidth(width);
+}
+
+void ImGuiWidgets::pop_item_width() noexcept {
+    ImGui::PopItemWidth();
+}
+
 bool ImGuiWidgets::push_window(const string &label) noexcept {
     return ImGui::Begin(label.c_str());
 }

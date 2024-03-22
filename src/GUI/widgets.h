@@ -19,6 +19,16 @@ class Widgets {
 public:
     Widgets() = default;
 
+    virtual void push_item_width(int width) noexcept = 0;
+    virtual void pop_item_width() noexcept = 0;
+
+    template<typename Func>
+    void use_item_width(int width, Func &&func) noexcept {
+        push_item_width(width);
+        func();
+        pop_item_width();
+    }
+
     virtual bool push_window(const string &label) noexcept = 0;
     virtual bool push_window(const string &label, WindowFlag flag) noexcept = 0;
     virtual void pop_window() noexcept = 0;
@@ -110,22 +120,7 @@ public:
     virtual bool slider_float3(const string &label, float3 *val, float min, float max) noexcept = 0;
     virtual bool slider_float4(const string &label, float4 *val, float min, float max) noexcept = 0;
 
-    bool slider_floatN(const string &label, float *val, uint size, float min, float max) noexcept {
-        switch (size) {
-            case 1:
-                return slider_float(label, val, min, max);
-            case 2:
-                return slider_float2(label, reinterpret_cast<float2 *>(val), min, max);
-            case 3:
-                return slider_float3(label, reinterpret_cast<float3 *>(val), min, max);
-            case 4:
-                return slider_float4(label, reinterpret_cast<float4 *>(val), min, max);
-            default:
-                OC_ERROR("error");
-                break;
-        }
-        return false;
-    }
+    bool slider_floatN(const string &label, float *val, uint size, float min, float max) noexcept;
 
     virtual bool slider_int(const string &label, int *val, int min, int max) noexcept = 0;
     virtual bool slider_int2(const string &label, int2 *val, int min, int max) noexcept = 0;
@@ -135,17 +130,7 @@ public:
     virtual bool color_edit(const string &label, float3 *val) noexcept = 0;
     virtual bool color_edit(const string &label, float4 *val) noexcept = 0;
 
-    bool colorN_edit(const string &label, float *val, uint size) noexcept {
-        switch (size) {
-            case 3:
-                return color_edit(label, reinterpret_cast<float3 *>(val));
-            case 4:
-                return color_edit(label, reinterpret_cast<float4 *>(val));
-            default:
-                OC_ERROR("error");
-                return false;
-        }
-    }
+    bool colorN_edit(const string &label, float *val, uint size) noexcept;
 
     virtual bool button(const string &label, uint2 size) noexcept = 0;
     virtual bool button(const string &label) noexcept = 0;
@@ -210,22 +195,7 @@ public:
     virtual bool input_float3(const string &label, float3 *val) noexcept = 0;
     virtual bool input_float4(const string &label, float4 *val) noexcept = 0;
 
-    bool input_floatN(const string &label, float *val, uint size) noexcept {
-        switch (size) {
-            case 1:
-                return input_float(label, val);
-            case 2:
-                return input_float2(label, reinterpret_cast<float2 *>(val));
-            case 3:
-                return input_float3(label, reinterpret_cast<float3 *>(val));
-            case 4:
-                return input_float4(label, reinterpret_cast<float4 *>(val));
-            default:
-                OC_ERROR("error");
-                break;
-        }
-        return false;
-    }
+    bool input_floatN(const string &label, float *val, uint size) noexcept;
 
     virtual bool drag_int(const string &label, int *val, float speed, int min, int max) noexcept = 0;
     virtual bool drag_int2(const string &label, int2 *val, float speed, int min, int max) noexcept = 0;
