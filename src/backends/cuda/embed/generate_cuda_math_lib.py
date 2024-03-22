@@ -811,8 +811,8 @@ def convert_cuda_math():
 def main():
     global content
     curr_dir = dirname(realpath(__file__))
-    using_scalar()
-    define_vector()
+    # using_scalar()
+    # define_vector()
     define_array()
     define_operator()
     define_matrix()
