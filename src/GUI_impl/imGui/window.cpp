@@ -5,22 +5,9 @@
 #include "window.h"
 #include "widgets.h"
 #include "core/logging.h"
-#include "gl_helper.h"
+#include "rhi/gl_helper.h"
 
 namespace ocarina {
-
-namespace detail {
-[[nodiscard]] auto gl_error_string(GLenum error) noexcept {
-    OC_USING_SV;
-    switch (error) {
-        case GL_INVALID_ENUM: return "invalid enum"sv;
-        case GL_INVALID_VALUE: return "invalid value"sv;
-        case GL_INVALID_OPERATION: return "invalid operation"sv;
-        case GL_OUT_OF_MEMORY: return "out of memory"sv;
-        default: return "unknown error"sv;
-    }
-}
-}// namespace detail
 
 class GLFWContext {
 
@@ -44,16 +31,6 @@ public:
         return p;
     }
 };
-
-#define CHECK_GL(...)                                          \
-    [&] {                                                      \
-        __VA_ARGS__;                                           \
-        if (auto error = glGetError(); error != GL_NO_ERROR) { \
-            OC_ERROR_FORMAT(                                   \
-                "OpenGL error: {}.",                           \
-                ::ocarina::detail::gl_error_string(error));    \
-        }                                                      \
-    }()
 
 class GLTexture {
 

@@ -3,8 +3,9 @@
 //
 
 #pragma once
-#include <glad.h>
-#include <GLFW/glfw3.h>
+
+#include "ext/imgui/glad/glad.h"
+#include "ext/glfw/include/GLFW/glfw3.h"
 #include "core/logging.h"
 
 #define DO_GL_CHECK
@@ -41,6 +42,29 @@
 #define GL_CHECK_ERRORS() \
     do { ; } while (0)
 #endif
+
+namespace ocarina::detail {
+[[nodiscard]] inline auto gl_error_string(GLenum error) noexcept {
+    OC_USING_SV;
+    switch (error) {
+        case GL_INVALID_ENUM: return "invalid enum"sv;
+        case GL_INVALID_VALUE: return "invalid value"sv;
+        case GL_INVALID_OPERATION: return "invalid operation"sv;
+        case GL_OUT_OF_MEMORY: return "out of memory"sv;
+        default: return "unknown error"sv;
+    }
+}
+}// namespace ocarina::detail
+
+#define CHECK_GL(...)                                          \
+    [&] {                                                      \
+        __VA_ARGS__;                                           \
+        if (auto error = glGetError(); error != GL_NO_ERROR) { \
+            OC_ERROR_FORMAT(                                   \
+                "OpenGL error: {}.",                           \
+                ::ocarina::detail::gl_error_string(error));    \
+        }                                                      \
+    }()
 
 namespace ocarina::detail {
 
@@ -197,4 +221,4 @@ const GLfloat vertex_buffer_data[] = {
     1.0f,
     0.0f,
 };
-}// namespace ocarina::gl
+}// namespace ocarina::detail

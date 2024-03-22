@@ -7,6 +7,7 @@
 #include <cuda_runtime.h>
 #include <cuda_gl_interop.h>
 #include "rhi/resources/gl_interop.h"
+#include "rhi/resources/texture.h"
 
 namespace ocarina {
 
@@ -17,6 +18,16 @@ private:
 public:
     explicit CUDAGLInterop(Texture *texture) : GLInterop(texture) {}
     void register_() noexcept override {
+        CHECK_GL(glGenBuffers(1, &_pbo));
+        CHECK_GL(glBindBuffer(GL_ARRAY_BUFFER, _pbo));
+
+        uint2 res = _texture->resolution().xy();
+        uint stride = _texture->pixel_size();
+
+        CHECK_GL(glBufferData(GL_ARRAY_BUFFER, stride * res.x * res.y,
+                              nullptr, GL_STREAM_DRAW));
+
+        CHECK_GL(glBindBuffer(GL_ARRAY_BUFFER, 0u));
     }
     void mapping() noexcept override {
     }

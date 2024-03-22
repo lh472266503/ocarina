@@ -6,6 +6,7 @@
 
 #include "core/stl.h"
 #include "core/basic_types.h"
+#include "rhi/gl_helper.h"
 #include <glad/glad.h>
 
 namespace ocarina {

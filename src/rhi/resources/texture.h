@@ -61,11 +61,19 @@ public:
         return res.x * res.y * res.z;
     }
 
+    [[nodiscard]] uint pixel_size() const noexcept {
+        return ::ocarina::pixel_size(impl()->pixel_storage());
+    }
+
+    [[nodiscard]] uint3 resolution() const noexcept {
+        return impl()->resolution();
+    }
+
     /// for dsl
     [[nodiscard]] const Expression *expression() const noexcept override {
         const CapturedResource &captured_resource = Function::current()->get_captured_resource(Type::of<decltype(*this)>(),
-                                                                                Variable::Tag::TEXTURE,
-                                                                                memory_block());
+                                                                                               Variable::Tag::TEXTURE,
+                                                                                               memory_block());
         return captured_resource.expression();
     }
 

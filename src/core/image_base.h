@@ -129,6 +129,9 @@ public:
     [[nodiscard]] uint2 resolution() const { return _resolution; }
     [[nodiscard]] uint width() const { return _resolution.x; }
     [[nodiscard]] uint height() const { return _resolution.y; }
+    [[nodiscard]] uint pixel_size() const noexcept {
+        return ::ocarina::pixel_size(_pixel_storage);
+    }
     template<size_t N = 4>
     [[nodiscard]] const auto &average() const noexcept {
         OC_ASSERT(N <= channel_num());
@@ -149,10 +152,10 @@ public:
     }
     [[nodiscard]] auto average_vector() const noexcept { return _average; }
     [[nodiscard]] PixelStorage pixel_storage() const { return _pixel_storage; }
-    [[nodiscard]] size_t pitch_byte_size() const { return _resolution.x * pixel_size(_pixel_storage); }
+    [[nodiscard]] size_t pitch_byte_size() const { return _resolution.x * pixel_size(); }
     [[nodiscard]] size_t pixel_num() const { return _resolution.x * _resolution.y; }
     [[nodiscard]] size_t size_in_bytes() const {
-        return pixel_size(_pixel_storage) * pixel_num() * channel_num();
+        return pixel_size() * pixel_num() * channel_num();
     }
 };
 
