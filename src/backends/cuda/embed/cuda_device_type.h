@@ -65,3 +65,75 @@ OC_MAKE_VECTOR(oc_bool)
 OC_MAKE_VECTOR(oc_uchar)
 OC_MAKE_VECTOR(oc_ushort)
 OC_MAKE_VECTOR(oc_uint64t)
+
+#define OC_MAKE_VECTOR_BINARY_OPERATOR(op, ...)                          \
+    template<typename T, typename U, size_t N>                           \
+    [[nodiscard]] __device__ constexpr auto                              \
+    operator op(                                                         \
+        ocarina::Vector<T, N> lhs, ocarina::Vector<U, N> rhs) noexcept { \
+        using ret_type = decltype(T{} + U{});                            \
+        if constexpr (N == 2) {                                          \
+            return ocarina::Vector<ret_type, 2>{                         \
+                lhs.x op rhs.x,                                          \
+                lhs.y op rhs.y};                                         \
+        } else if constexpr (N == 3) {                                   \
+            return ocarina::Vector<ret_type, 3>{                         \
+                lhs.x op rhs.x,                                          \
+                lhs.y op rhs.y,                                          \
+                lhs.z op rhs.z};                                         \
+        } else {                                                         \
+            return ocarina::Vector<ret_type, 4>{                         \
+                lhs.x op rhs.x,                                          \
+                lhs.y op rhs.y,                                          \
+                lhs.z op rhs.z,                                          \
+                lhs.w op rhs.w};                                         \
+        }                                                                \
+    }                                                                    \
+    template<typename T, typename U, size_t N>                           \
+    [[nodiscard]] __device__ constexpr auto                              \
+    operator op(ocarina::Vector<T, N> lhs, U rhs) noexcept {             \
+        return lhs op ocarina::Vector<U, N>{rhs};                        \
+    }                                                                    \
+    template<typename T, typename U, size_t N>                           \
+    [[nodiscard]] __device__ constexpr auto                              \
+    operator op(T lhs, ocarina::Vector<U, N> rhs) noexcept {             \
+        return ocarina::Vector<T, N>{lhs} op rhs;                        \
+    }
+
+OC_MAKE_VECTOR_BINARY_OPERATOR(+, ocarina::is_all_number_v<T, U>)
+OC_MAKE_VECTOR_BINARY_OPERATOR(-, ocarina::is_all_number_v<T, U>)
+OC_MAKE_VECTOR_BINARY_OPERATOR(*, ocarina::is_all_number_v<T, U>)
+OC_MAKE_VECTOR_BINARY_OPERATOR(/, ocarina::is_all_number_v<T, U>)
+OC_MAKE_VECTOR_BINARY_OPERATOR(%, ocarina::is_all_number_v<T, U>)
+OC_MAKE_VECTOR_BINARY_OPERATOR(>>, ocarina::is_all_integral_v<T, U>)
+OC_MAKE_VECTOR_BINARY_OPERATOR(<<, ocarina::is_all_integral_v<T, U>)
+OC_MAKE_VECTOR_BINARY_OPERATOR(|, ocarina::is_all_integral_v<T, U>)
+OC_MAKE_VECTOR_BINARY_OPERATOR(&, ocarina::is_all_integral_v<T, U>)
+OC_MAKE_VECTOR_BINARY_OPERATOR(^, ocarina::is_all_integral_v<T, U>)
+
+#define OC_MAKE_VECTOR_ASSIGN_OPERATOR(op, ...)                           \
+    template<typename T, typename U, size_t N>                            \
+    __device__ constexpr decltype(auto) operator op(                      \
+        ocarina::Vector<T, N> &lhs, ocarina::Vector<U, N> rhs) noexcept { \
+        lhs.x op rhs.x;                                                   \
+        lhs.y op rhs.y;                                                   \
+        if constexpr (N >= 3) { lhs.z op rhs.z; }                         \
+        if constexpr (N == 4) { lhs.w op rhs.w; }                         \
+        return (lhs);                                                     \
+    }                                                                     \
+    template<typename T, typename U, size_t N>                            \
+    __device__ constexpr decltype(auto) operator op(                      \
+        ocarina::Vector<T, N> &lhs, U rhs) noexcept {                     \
+        return (lhs op ocarina::Vector<U, N>{rhs});                       \
+    }
+
+OC_MAKE_VECTOR_ASSIGN_OPERATOR(+=, ocarina::is_all_number_v<T, U>)
+OC_MAKE_VECTOR_ASSIGN_OPERATOR(-=, ocarina::is_all_number_v<T, U>)
+OC_MAKE_VECTOR_ASSIGN_OPERATOR(*=, ocarina::is_all_number_v<T, U>)
+OC_MAKE_VECTOR_ASSIGN_OPERATOR(/=, ocarina::is_all_number_v<T, U>)
+OC_MAKE_VECTOR_ASSIGN_OPERATOR(%=, ocarina::is_all_number_v<T, U>)
+OC_MAKE_VECTOR_ASSIGN_OPERATOR(<<=, ocarina::is_all_integral_v<T, U>)
+OC_MAKE_VECTOR_ASSIGN_OPERATOR(>>=, ocarina::is_all_integral_v<T, U>)
+OC_MAKE_VECTOR_ASSIGN_OPERATOR(|=, ocarina::is_all_integral_v<T, U>)
+OC_MAKE_VECTOR_ASSIGN_OPERATOR(&=, ocarina::is_all_integral_v<T, U>)
+OC_MAKE_VECTOR_ASSIGN_OPERATOR(^=, ocarina::is_all_integral_v<T, U>)

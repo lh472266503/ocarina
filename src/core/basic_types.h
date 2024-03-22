@@ -305,7 +305,7 @@ operator~(const ocarina::Vector<T, N> v) noexcept {
     requires __VA_ARGS__                                                 \
     [[nodiscard]] constexpr auto                                         \
     operator op(ocarina::Vector<T, N> lhs, U rhs) noexcept {             \
-        return lhs op ocarina::Vector<T, N>{rhs};                        \
+        return lhs op ocarina::Vector<U, N>{rhs};                        \
     }                                                                    \
     template<typename T, typename U, size_t N>                           \
     requires __VA_ARGS__                                                 \

@@ -150,11 +150,19 @@ void test_compute_shader(Device &device, Stream &stream) {
         SOAView soa = byte_buffer_var.soa_view<Elm>();
         soa.write(dispatch_id(), make_float4x4(1.f * dispatch_id()));
         Var a = soa.read(dispatch_id());
+
+        Uint2 aa = make_uint2(1);
+        Float2 bb = make_float2(1.5f);
+
+        bb += bb + aa;
+
         $info("\n {} {} {} {}  \n"
               "{} {} {} {}  \n"
               "{} {} {} {}  \n"
               "{} {} {} {}  \n",
               a[0], a[1], a[2], a[3]);
+
+        $info("{} {}   ", bb);
     };
     Triple triple1{1, 2, 3};
 
