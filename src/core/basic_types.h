@@ -39,6 +39,8 @@ struct alignas(sizeof(T) * 2) Vector<T, 2> {
     T x{}, y{};
     Vector() = default;
     explicit constexpr Vector(T s) noexcept : x{s}, y{s} {}
+    template<typename U>
+    explicit constexpr Vector(U s) noexcept : Vector(static_cast<T>(s)) {}
     constexpr Vector(T x, T y) noexcept : x{x}, y{y} {}
     [[nodiscard]] constexpr T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
     [[nodiscard]] constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
@@ -51,6 +53,8 @@ struct alignas(sizeof(T) * 4) Vector<T, 3> {
     T x{}, y{}, z{};
     Vector() = default;
     explicit constexpr Vector(T s) noexcept : x{s}, y{s}, z{s} {}
+    template<typename U>
+    explicit constexpr Vector(U s) noexcept : Vector(static_cast<T>(s)) {}
     constexpr Vector(T x, T y, T z) noexcept : x{x}, y{y}, z{z} {}
     [[nodiscard]] constexpr T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
     [[nodiscard]] constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
@@ -63,6 +67,8 @@ struct alignas(sizeof(T) * 4) Vector<T, 4> {
     T x{}, y{}, z{}, w{};
     Vector() = default;
     explicit constexpr Vector(T s) noexcept : x{s}, y{s}, z{s}, w{s} {}
+    template<typename U>
+    explicit constexpr Vector(U s) noexcept : Vector(static_cast<T>(s)) {}
     constexpr Vector(T x, T y, T z, T w) noexcept : x{x}, y{y}, z{z}, w{w} {}
     [[nodiscard]] constexpr T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
     [[nodiscard]] constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
