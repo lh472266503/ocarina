@@ -5,7 +5,7 @@
 #include "window.h"
 #include "widgets.h"
 #include "core/logging.h"
-#include "rhi/gl_helper.h"
+#include "gl_helper.h"
 
 namespace ocarina {
 
@@ -213,11 +213,13 @@ void GLWindow::_begin_frame() noexcept {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+        Window::_begin_frame();
     }
 }
 
 void GLWindow::_end_frame() noexcept {
     if (!should_close()) {
+        Window::_end_frame();
         // background
         if (_texture != nullptr) {
             ImVec2 background_size{

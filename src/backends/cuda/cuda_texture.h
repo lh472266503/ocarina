@@ -6,7 +6,6 @@
 
 #include "core/stl.h"
 #include "rhi/resources/texture.h"
-#include "gl_interop.h"
 #include <cuda.h>
 
 namespace ocarina {
@@ -21,7 +20,7 @@ private:
 
 public:
     CUDATexture(CUDADevice *device, uint3 res, PixelStorage pixel_storage, uint level_num);
-    ~CUDATexture();
+    ~CUDATexture() override;
     void init();
     [[nodiscard]] uint3 resolution() const noexcept override { return _res; }
     [[nodiscard]] handle_ty array_handle() const noexcept override { return reinterpret_cast<handle_ty>(_array_handle); }
