@@ -17,6 +17,9 @@ public:
     void push_item_width(int width) noexcept override;
     void pop_item_width() noexcept override;
 
+    void begin_tool_tip() noexcept override;
+    void end_tool_tip() noexcept override;
+
     bool push_window(const string &label) noexcept override;
     bool push_window(const string &label, WindowFlag flag) noexcept override;
     void pop_window() noexcept override;

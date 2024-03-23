@@ -18,6 +18,14 @@ void ImGuiWidgets::pop_item_width() noexcept {
     ImGui::PopItemWidth();
 }
 
+void ImGuiWidgets::begin_tool_tip() noexcept {
+    ImGui::BeginTooltip();
+}
+
+void ImGuiWidgets::end_tool_tip() noexcept {
+    ImGui::EndTooltip();
+}
+
 bool ImGuiWidgets::push_window(const string &label) noexcept {
     return ImGui::Begin(label.c_str());
 }

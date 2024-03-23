@@ -22,6 +22,16 @@ public:
     virtual void push_item_width(int width) noexcept = 0;
     virtual void pop_item_width() noexcept = 0;
 
+    virtual void begin_tool_tip() noexcept = 0;
+    virtual void end_tool_tip() noexcept = 0;
+
+    template<typename Func>
+    void use_tool_tip(Func &&func) noexcept {
+        begin_tool_tip();
+        func();
+        end_tool_tip();
+    }
+
     template<typename Func>
     void use_item_width(int width, Func &&func) noexcept {
         push_item_width(width);
