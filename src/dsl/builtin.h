@@ -394,30 +394,15 @@ OC_MAKE_VEC_MAKER(uchar, UCHAR)
 #undef OC_MAKE_VEC_MAKER_DIM
 #undef OC_MAKE_VEC_MAKER
 
-#define OC_MAKE_MATRIX(dim)                                                                                     \
-    template<typename T>                                                                                        \
-    requires(is_dsl_v<T> && (is_matrix_v<expr_value_t<T>> || is_floating_point_expr_v<T>))                      \
-    OC_NODISCARD auto                                                                                           \
-        make_float##dim##x##dim(const T &t) noexcept {                                                          \
-        auto expr = Function::current()->call_builtin(Type::of<float##dim##x##dim>(),                           \
-                                                      CallOp::MAKE_FLOAT##dim##X##dim, {OC_EXPR(t)});           \
-        return eval<float##dim##x##dim>(expr);                                                                  \
-    }                                                                                                           \
-    template<typename... Args>                                                                                  \
-    requires(any_dsl_v<Args...> && sizeof...(Args) == dim * dim && is_all_float_element_expr_v<Args...>)        \
-    OC_NODISCARD auto                                                                                           \
-        make_float##dim##x##dim(const Args &...args) {                                                          \
-        auto expr = Function::current()->call_builtin(Type::of<float##dim##x##dim>(),                           \
-                                                      CallOp::MAKE_FLOAT##dim##X##dim, {OC_EXPR(args)...});     \
-        return eval<float##dim##x##dim>(expr);                                                                  \
-    }                                                                                                           \
-    template<typename... Args>                                                                                  \
-    requires(any_dsl_v<Args...> && sizeof...(Args) == dim && is_all_int_vector##dim##_v<expr_value_t<Args>...>) \
-    OC_NODISCARD auto                                                                                           \
-        make_float##dim##x##dim(const Args &...args) {                                                          \
-        auto expr = Function::current()->call_builtin(Type::of<float##dim##x##dim>(),                           \
-                                                      CallOp::MAKE_FLOAT##dim##X##dim, {OC_EXPR(args)...});     \
-        return eval<float##dim##x##dim>(expr);                                                                  \
+#define OC_MAKE_MATRIX(dim)                                                                                 \
+    template<typename... Args>                                                                              \
+    requires(any_dsl_v<Args...> && requires {                                                               \
+        make_float##dim##x##dim(expr_value_t<Args>{}...);                                                   \
+    })                                                                                                      \
+    OC_NODISCARD auto make_float##dim##x##dim(const Args &...args) {                                        \
+        auto expr = Function::current()->call_builtin(Type::of<float##dim##x##dim>(),                       \
+                                                      CallOp::MAKE_FLOAT##dim##X##dim, {OC_EXPR(args)...}); \
+        return eval<float##dim##x##dim>(expr);                                                              \
     }
 
 OC_MAKE_MATRIX(2)
@@ -447,18 +432,6 @@ template<typename T>
 requires is_vector_v<expr_value_t<T>> || is_scalar_v<expr_value_t<T>>
 [[nodiscard]] T zero_if_nan_inf(T t) noexcept {
     return ocarina::select(ocarina::isnan(t) || ocarina::isinf(t), T{}, t);
-}
-
-template<typename T>
-[[nodiscard]] Bool is_null(const BufferVar<T> &buffer) noexcept {
-    auto expr = Function::current()->call_builtin(Type::of<bool>(), CallOp::IS_NULL_BUFFER, {OC_EXPR(buffer)});
-    return eval<bool>(expr);
-}
-
-// todo fix bug
-[[nodiscard]] inline Bool is_null(const TextureVar &tex) noexcept {
-    auto expr = Function::current()->call_builtin(Type::of<bool>(), CallOp::IS_NULL_TEXTURE, {OC_EXPR(tex)});
-    return eval<bool>(expr);
 }
 
 inline void unreachable() noexcept {
