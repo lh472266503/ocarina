@@ -95,7 +95,8 @@ public:
 protected:
     size_t _size{};
     size_t _element_size{0};
-
+    mutable uint _gl_handle{0};
+    mutable handle_ty _gl_shared_res{0};
     /// just for construct memory block
     mutable BufferProxy _proxy{};
 
@@ -124,6 +125,9 @@ public:
           _size(buffer_view.size()), _element_size(calculate_size()) {
         proxy_ptr();
     }
+
+    [[nodiscard]] uint &gl_handle() const noexcept { return _gl_handle; }
+    [[nodiscard]] handle_ty &gl_shared_res() const noexcept { return _gl_shared_res; }
 
     void destroy() override {
         _destroy();

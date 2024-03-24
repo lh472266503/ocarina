@@ -26,7 +26,8 @@ namespace detail {
 class Texture : public RHIResource {
 protected:
     uint _channel_num{};
-    mutable uint _gl_tex{0u};
+    mutable uint _gl_handle{0};
+    mutable handle_ty _gl_shared_res{0};
 
 public:
     class Impl {
@@ -36,10 +37,6 @@ public:
         [[nodiscard]] virtual PixelStorage pixel_storage() const noexcept = 0;
         [[nodiscard]] virtual handle_ty array_handle() const noexcept = 0;
         [[nodiscard]] virtual handle_ty tex_handle() const noexcept = 0;
-        virtual void register_gfx_resource(uint &gl_tex) const noexcept = 0;
-        virtual void unregister_gfx_resource(uint &gl_tex) const noexcept = 0;
-        virtual void mapping() const noexcept = 0;
-        virtual void unmapping() const noexcept = 0;
 
         /// for device side structure
         [[nodiscard]] virtual const void *handle_ptr() const noexcept = 0;
@@ -69,23 +66,8 @@ public:
         return pixel_num() * pixel_size();
     }
 
-    [[nodiscard]] uint &gl_tex() const noexcept { return _gl_tex; }
-
-    void register_gfx_resource() const noexcept {
-        impl()->register_gfx_resource(_gl_tex);
-    }
-
-    void unregister_gfx_resource() const noexcept {
-        impl()->unregister_gfx_resource(_gl_tex);
-    }
-
-    void mapping() const noexcept {
-        impl()->mapping();
-    }
-
-    void unmapping() const noexcept {
-        impl()->unmapping();
-    }
+    [[nodiscard]] uint &gl_handle() const noexcept { return _gl_handle; }
+    [[nodiscard]] handle_ty &gl_shared_res() const noexcept { return _gl_shared_res; }
 
     [[nodiscard]] uint pixel_size() const noexcept {
         return ::ocarina::pixel_size(impl()->pixel_storage());

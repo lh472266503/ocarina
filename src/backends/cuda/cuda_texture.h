@@ -32,10 +32,6 @@ public:
     [[nodiscard]] const void *handle_ptr() const noexcept override {
         return &_data;
     }
-    void register_gfx_resource(uint &gl_tex) const noexcept override;
-    void unregister_gfx_resource(uint &gl_tex) const noexcept override;
-    void mapping() const noexcept override;
-    void unmapping() const noexcept override;
     [[nodiscard]] size_t data_size() const noexcept override;
     [[nodiscard]] size_t data_alignment() const noexcept override;
     [[nodiscard]] size_t max_member_size() const noexcept override;

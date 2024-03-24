@@ -39,7 +39,6 @@ public:
     void set_background(const uchar4 *pixels, uint2 size) noexcept override;
     void set_background(const float4 *pixels, uint2 size) noexcept override;
     void set_background(const Buffer<ocarina::float4> &buffer, ocarina::uint2 size) noexcept override;
-    void interop(const ocarina::Texture *texture) noexcept override;
     void set_should_close() noexcept override;
     void set_size(uint2 size) noexcept override;
 };

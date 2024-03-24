@@ -68,33 +68,6 @@ void CUDATexture::init() {
     OC_CU_CHECK(cuTexObjectCreate(&_data.texture, &res_desc, &tex_desc, nullptr));
 }
 
-void CUDATexture::register_gfx_resource(uint &gl_tex) const noexcept {
-    if (_gfx_resource == nullptr) {
-        OC_CUDA_CHECK(cudaGraphicsGLRegisterImage(
-            &_gfx_resource,
-            gl_tex,
-            GL_TEXTURE_2D,
-            cudaGraphicsMapFlagsWriteDiscard));
-    }
-}
-
-void CUDATexture::unregister_gfx_resource(uint &pbo) const noexcept {
-    OC_CUDA_CHECK(cudaGraphicsUnregisterResource(_gfx_resource));
-    _gfx_resource = nullptr;
-}
-
-void CUDATexture::mapping() const noexcept {
-    OC_CUDA_CHECK(cudaGraphicsMapResources(1, &_gfx_resource));
-    const cudaArray_t *addr = reinterpret_cast<const cudaArray_t *>(&_array_handle);
-    cudaArray_t cudaArray;
-
-    OC_CUDA_CHECK(cudaGraphicsSubResourceGetMappedArray(const_cast<cudaArray_t *>(addr),_gfx_resource, 0, 0));
-}
-
-void CUDATexture::unmapping() const noexcept {
-    OC_CUDA_CHECK(cudaGraphicsUnmapResources(1, &_gfx_resource));
-}
-
 CUDATexture::~CUDATexture() {
     OC_CU_CHECK(cuArrayDestroy(_array_handle));
     OC_CU_CHECK(cuTexObjectDestroy(_data.texture));
