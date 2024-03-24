@@ -6,6 +6,7 @@
 #include "widgets.h"
 #include "core/logging.h"
 #include "gl_helper.h"
+#include "rhi/resources/texture.h"
 
 namespace ocarina {
 
@@ -190,7 +191,13 @@ void GLWindow::set_background(const uchar4 *pixels, uint2 size) noexcept {
 }
 
 void GLWindow::interop(ocarina::Texture *texture) noexcept {
-
+    auto &pbo = texture->pbo();
+    if (pbo == 0) {
+        CHECK_GL(glGenBuffers(1, &pbo));
+    }
+    CHECK_GL(glBindBuffer(GL_ARRAY_BUFFER, pbo));
+    CHECK_GL(glBufferData(GL_ARRAY_BUFFER, texture->size_in_byte(), nullptr, GL_STREAM_DRAW));
+    CHECK_GL(glBindBuffer(GL_ARRAY_BUFFER, 0));
 }
 
 void GLWindow::set_background(const uchar4 *pixels) noexcept {

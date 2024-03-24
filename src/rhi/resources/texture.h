@@ -26,7 +26,7 @@ namespace detail {
 class Texture : public RHIResource {
 protected:
     uint _channel_num{};
-    mutable handle_ty _pbo{0u};
+    mutable uint _pbo{0u};
 
 public:
     class Impl {
@@ -36,8 +36,8 @@ public:
         [[nodiscard]] virtual PixelStorage pixel_storage() const noexcept = 0;
         [[nodiscard]] virtual handle_ty array_handle() const noexcept = 0;
         [[nodiscard]] virtual handle_ty tex_handle() const noexcept = 0;
-        virtual void register_gfx_resource(handle_ty &pbo) const noexcept = 0;
-        virtual void unregister_gfx_resource(handle_ty &pbo) const noexcept = 0;
+        virtual void register_gfx_resource(uint &pbo) const noexcept = 0;
+        virtual void unregister_gfx_resource(uint &pbo) const noexcept = 0;
 
         /// for device side structure
         [[nodiscard]] virtual const void *handle_ptr() const noexcept = 0;
@@ -61,6 +61,10 @@ public:
     [[nodiscard]] uint pixel_num() const noexcept {
         uint3 res = impl()->resolution();
         return res.x * res.y * res.z;
+    }
+
+    [[nodiscard]] uint size_in_byte() const noexcept {
+        return pixel_num() * pixel_size();
     }
 
     OC_MAKE_MEMBER_GETTER(pbo, &)
