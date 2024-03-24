@@ -139,6 +139,10 @@ public:
         return BufferView<T>(_handle, offset, size, _size);
     }
 
+    void register_shared() const noexcept {
+        device()->register_shared_buffer(_gl_shared_handle, _gl_handle);
+    }
+
     // Move constructor
     Buffer(Buffer &&other) noexcept
         : RHIResource(std::move(other)) {
