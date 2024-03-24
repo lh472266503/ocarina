@@ -5,6 +5,8 @@
 #include "cuda_texture.h"
 #include "util.h"
 #include "cuda_device.h"
+#include "cuda_runtime_api.h"
+#include "texture_fetch_functions.h"
 #include <cuda_gl_interop.h>
 
 namespace ocarina {
@@ -67,14 +69,30 @@ void CUDATexture::init() {
 }
 
 void CUDATexture::register_gfx_resource(uint &gl_tex) const noexcept {
-    OC_CUDA_CHECK(cudaGraphicsGLRegisterImage(
-        &_gfx_resource,
-        gl_tex,
-        GL_TEXTURE_2D,
-        cudaGraphicsMapFlagsWriteDiscard));
+    if (_gfx_resource == nullptr) {
+        OC_CUDA_CHECK(cudaGraphicsGLRegisterImage(
+            &_gfx_resource,
+            gl_tex,
+            GL_TEXTURE_2D,
+            cudaGraphicsMapFlagsWriteDiscard));
+    }
 }
 
 void CUDATexture::unregister_gfx_resource(uint &pbo) const noexcept {
+    OC_CUDA_CHECK(cudaGraphicsUnregisterResource(_gfx_resource));
+    _gfx_resource = nullptr;
+}
+
+void CUDATexture::mapping() const noexcept {
+    OC_CUDA_CHECK(cudaGraphicsMapResources(1, &_gfx_resource));
+    const cudaArray_t *addr = reinterpret_cast<const cudaArray_t *>(&_array_handle);
+    cudaArray_t cudaArray;
+
+    OC_CUDA_CHECK(cudaGraphicsSubResourceGetMappedArray(const_cast<cudaArray_t *>(addr),_gfx_resource, 0, 0));
+}
+
+void CUDATexture::unmapping() const noexcept {
+    OC_CUDA_CHECK(cudaGraphicsUnmapResources(1, &_gfx_resource));
 }
 
 CUDATexture::~CUDATexture() {

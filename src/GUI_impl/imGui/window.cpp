@@ -205,6 +205,10 @@ void GLWindow::interop(const ocarina::Texture *texture) noexcept {
         texture->register_gfx_resource();
     }
     CHECK_GL(glBindTexture(GL_TEXTURE_2D, gl_tex));
+    texture->mapping();
+    widgets()->image(gl_tex, texture->resolution().xy() / 2);
+    texture->unmapping();
+    CHECK_GL(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
 void GLWindow::set_background(const uchar4 *pixels) noexcept {
