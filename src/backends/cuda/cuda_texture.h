@@ -6,6 +6,7 @@
 
 #include "core/stl.h"
 #include "rhi/resources/texture.h"
+#include "driver_types.h"
 #include <cuda.h>
 
 namespace ocarina {
@@ -17,6 +18,7 @@ private:
     uint3 _res{};
     CUarray _array_handle{};
     uint level_num{1u};
+    mutable cudaGraphicsResource *_gfx_resource{};
 
 public:
     CUDATexture(CUDADevice *device, uint3 res, PixelStorage pixel_storage, uint level_num);
@@ -30,6 +32,8 @@ public:
     [[nodiscard]] const void *handle_ptr() const noexcept override {
         return &_data;
     }
+    void register_gfx_resource(handle_ty &pbo) const noexcept override;
+    void unregister_gfx_resource(handle_ty &pbo) const noexcept override;
     [[nodiscard]] size_t data_size() const noexcept override;
     [[nodiscard]] size_t data_alignment() const noexcept override;
     [[nodiscard]] size_t max_member_size() const noexcept override;

@@ -5,6 +5,7 @@
 #include "cuda_texture.h"
 #include "util.h"
 #include "cuda_device.h"
+#include <cuda_gl_interop.h>
 
 namespace ocarina {
 
@@ -64,6 +65,17 @@ void CUDATexture::init() {
     OC_CU_CHECK(cuSurfObjectCreate(&_data.surface, &res_desc));
     OC_CU_CHECK(cuTexObjectCreate(&_data.texture, &res_desc, &tex_desc, nullptr));
 }
+
+void CUDATexture::register_gfx_resource(handle_ty &pbo) const noexcept {
+    OC_CUDA_CHECK(cudaGraphicsGLRegisterBuffer(
+        &_gfx_resource,
+        pbo,
+        cudaGraphicsMapFlagsWriteDiscard));
+}
+
+void CUDATexture::unregister_gfx_resource(handle_ty &pbo) const noexcept {
+}
+
 CUDATexture::~CUDATexture() {
     OC_CU_CHECK(cuArrayDestroy(_array_handle));
     OC_CU_CHECK(cuTexObjectDestroy(_data.texture));

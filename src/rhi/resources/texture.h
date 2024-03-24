@@ -26,7 +26,7 @@ namespace detail {
 class Texture : public RHIResource {
 protected:
     uint _channel_num{};
-    handle_ty _pbo{0u};
+    mutable handle_ty _pbo{0u};
 
 public:
     class Impl {
@@ -36,6 +36,8 @@ public:
         [[nodiscard]] virtual PixelStorage pixel_storage() const noexcept = 0;
         [[nodiscard]] virtual handle_ty array_handle() const noexcept = 0;
         [[nodiscard]] virtual handle_ty tex_handle() const noexcept = 0;
+        virtual void register_gfx_resource(handle_ty &pbo) const noexcept = 0;
+        virtual void unregister_gfx_resource(handle_ty &pbo) const noexcept = 0;
 
         /// for device side structure
         [[nodiscard]] virtual const void *handle_ptr() const noexcept = 0;
@@ -62,6 +64,14 @@ public:
     }
 
     OC_MAKE_MEMBER_GETTER(pbo, &)
+
+    void register_gfx_resource() const noexcept {
+        impl()->register_gfx_resource(_pbo);
+    }
+
+    void unregister_gfx_resource() const noexcept {
+        impl()->unregister_gfx_resource(_pbo);
+    }
 
     [[nodiscard]] uint pixel_size() const noexcept {
         return ::ocarina::pixel_size(impl()->pixel_storage());
