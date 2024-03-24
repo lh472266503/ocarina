@@ -82,7 +82,7 @@ public:
 };
 
 void GLWindow::init_widgets() noexcept {
-    _widgets = make_unique<ImGuiWidgets>();
+    _widgets = make_unique<ImGuiWidgets>(this);
 }
 
 void GLWindow::init(const char *name, uint2 initial_size, bool resizable) noexcept {
@@ -190,14 +190,21 @@ void GLWindow::set_background(const uchar4 *pixels, uint2 size) noexcept {
     _texture->load(pixels, size);
 }
 
-void GLWindow::interop(ocarina::Texture *texture) noexcept {
-    auto &pbo = texture->pbo();
-    if (pbo == 0) {
-        CHECK_GL(glGenBuffers(1, &pbo));
+void GLWindow::interop(const ocarina::Texture *texture) noexcept {
+    uint &gl_tex = texture->gl_tex();
+    if (gl_tex == 0) {
+        CHECK_GL(glGenTextures(1, &gl_tex));
+        CHECK_GL(glBindTexture(GL_TEXTURE_2D, gl_tex));
+        CHECK_GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+        CHECK_GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+        CHECK_GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+        CHECK_GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+        uint3 res = texture->resolution();
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, res.x, res.y,
+                     0, GL_RGBA, GL_FLOAT, nullptr);
+        texture->register_gfx_resource();
     }
-    CHECK_GL(glBindBuffer(GL_ARRAY_BUFFER, pbo));
-    CHECK_GL(glBufferData(GL_ARRAY_BUFFER, texture->size_in_byte(), nullptr, GL_STREAM_DRAW));
-    CHECK_GL(glBindBuffer(GL_ARRAY_BUFFER, 0));
+    CHECK_GL(glBindTexture(GL_TEXTURE_2D, gl_tex));
 }
 
 void GLWindow::set_background(const uchar4 *pixels) noexcept {

@@ -7,12 +7,13 @@
 #include "GUI/widgets.h"
 #include "ext/imgui/imgui_impl_opengl3.h"
 #include <ext/imgui/imgui_impl_glfw.h>
+#include "GUI/window.h"
 
 namespace ocarina {
 
 class ImGuiWidgets : public Widgets {
 public:
-    ImGuiWidgets();
+    ImGuiWidgets(Window *window);
 
     void push_item_width(int width) noexcept override;
     void pop_item_width() noexcept override;

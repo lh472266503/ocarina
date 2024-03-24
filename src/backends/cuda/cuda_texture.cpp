@@ -66,10 +66,11 @@ void CUDATexture::init() {
     OC_CU_CHECK(cuTexObjectCreate(&_data.texture, &res_desc, &tex_desc, nullptr));
 }
 
-void CUDATexture::register_gfx_resource(uint &pbo) const noexcept {
-    OC_CUDA_CHECK(cudaGraphicsGLRegisterBuffer(
+void CUDATexture::register_gfx_resource(uint &gl_tex) const noexcept {
+    OC_CUDA_CHECK(cudaGraphicsGLRegisterImage(
         &_gfx_resource,
-        pbo,
+        gl_tex,
+        GL_TEXTURE_2D,
         cudaGraphicsMapFlagsWriteDiscard));
 }
 

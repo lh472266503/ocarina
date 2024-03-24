@@ -6,8 +6,8 @@
 
 namespace ocarina {
 
-ImGuiWidgets::ImGuiWidgets()
-    : Widgets() {
+ImGuiWidgets::ImGuiWidgets(Window *window)
+    : Widgets(window) {
 }
 
 void ImGuiWidgets::push_item_width(int width) noexcept {

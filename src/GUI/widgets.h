@@ -15,15 +15,22 @@ enum WindowFlag {
     MenuBar = 1 << 10
 };
 
+class Window;
+
 class Widgets {
+private:
+    Window *_window{nullptr};
+
 public:
-    Widgets() = default;
+    explicit Widgets(Window *window = nullptr) : _window(window) {}
 
     virtual void push_item_width(int width) noexcept = 0;
     virtual void pop_item_width() noexcept = 0;
 
     virtual void begin_tool_tip() noexcept = 0;
     virtual void end_tool_tip() noexcept = 0;
+
+    OC_MAKE_MEMBER_GETTER(window, )
 
     template<typename Func>
     void use_tool_tip(Func &&func) noexcept {
