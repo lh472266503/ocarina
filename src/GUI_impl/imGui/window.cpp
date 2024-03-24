@@ -211,17 +211,17 @@ void GLWindow::interop(const ocarina::Texture *texture) noexcept {
     CHECK_GL(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
-void GLWindow::set_background(const uchar4 *pixels) noexcept {
-    set_background(pixels, size());
-}
-
 void GLWindow::set_background(const float4 *pixels, uint2 size) noexcept {
-    if (_texture == nullptr) { _texture = ocarina::make_unique<GLTexture>(); }
+    if (_texture == nullptr) {
+        _texture = ocarina::make_unique<GLTexture>();
+    }
     _texture->load(pixels, size);
 }
 
-void GLWindow::set_background(const float4 *pixels) noexcept {
-    set_background(pixels, size());
+void GLWindow::set_background(const Buffer<ocarina::float4> &buffer, ocarina::uint2 size) noexcept {
+    if (_texture == nullptr) {
+        _texture = ocarina::make_unique<GLTexture>();
+    }
 }
 
 void GLWindow::set_should_close() noexcept {

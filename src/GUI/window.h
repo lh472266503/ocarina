@@ -60,10 +60,18 @@ public:
     virtual Window &set_begin_frame_callback(BeginFrame cb) noexcept;
     virtual Window &set_end_frame_callback(EndFrame cb) noexcept;
     virtual void set_background(const uchar4 *pixels, uint2 size) noexcept = 0;
-    virtual void set_background(const uchar4 *pixels) noexcept = 0;
+    void set_background(const uchar4 *pixels) noexcept {
+        set_background(pixels, size());
+    }
+    virtual void set_background(const Buffer<float4> &buffer, uint2 size) noexcept = 0;
+    void set_background(const Buffer<float4> &buffer) noexcept {
+        set_background(buffer, size());
+    }
     void set_clear_color(float4 color) noexcept { _clear_color = color; }
     virtual void set_background(const float4 *pixels, uint2 size) noexcept = 0;
-    virtual void set_background(const float4 *pixels) noexcept = 0;
+    void set_background(const float4 *pixels) noexcept {
+        set_background(pixels, size());
+    }
     virtual void set_should_close() noexcept = 0;
     virtual void set_size(uint2 size) noexcept = 0;
     virtual void interop(const Texture *texture) noexcept = 0;
