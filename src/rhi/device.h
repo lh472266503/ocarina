@@ -61,6 +61,12 @@ public:
         virtual void destroy_mesh(handle_ty handle) noexcept = 0;
         [[nodiscard]] virtual handle_ty create_bindless_array() noexcept = 0;
         virtual void destroy_bindless_array(handle_ty handle) noexcept = 0;
+        virtual void register_shared_buffer(void *&shared_handle, uint &gl_handle) noexcept = 0;
+        virtual void register_shared_tex(void *&shared_handle, uint &gl_handle) noexcept = 0;
+        virtual void mapping_shared_buffer(void *&shared_handle, handle_ty &handle) noexcept = 0;
+        virtual void mapping_shared_tex(void *&shared_handle, handle_ty &handle) noexcept = 0;
+        virtual void unmapping_shared(void *&shared_handle) noexcept = 0;
+        virtual void unregister_shared(void *&shared_handle) noexcept = 0;
         [[nodiscard]] FileManager *file_manager() noexcept { return _context; }
         virtual void init_rtx() noexcept = 0;
         [[nodiscard]] virtual CommandVisitor *command_visitor() noexcept = 0;

@@ -27,7 +27,7 @@ class Texture : public RHIResource {
 protected:
     uint _channel_num{};
     mutable uint _gl_handle{0};
-    mutable handle_ty _gl_shared_res{0};
+    mutable void *_gl_shared_handle{0};
 
 public:
     class Impl {
@@ -67,7 +67,7 @@ public:
     }
 
     [[nodiscard]] uint &gl_handle() const noexcept { return _gl_handle; }
-    [[nodiscard]] handle_ty &gl_shared_res() const noexcept { return _gl_shared_res; }
+    [[nodiscard]] void *gl_shared_handle() const noexcept { return _gl_shared_handle; }
 
     [[nodiscard]] uint pixel_size() const noexcept {
         return ::ocarina::pixel_size(impl()->pixel_storage());
