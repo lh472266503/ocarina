@@ -21,6 +21,8 @@ public:
     void begin_tool_tip() noexcept override;
     void end_tool_tip() noexcept override;
 
+    void image(ocarina::uint tex_handle, ocarina::uint2 size, ocarina::float2 uv0, ocarina::float2 uv1) noexcept override;
+
     bool push_window(const string &label) noexcept override;
     bool push_window(const string &label, WindowFlag flag) noexcept override;
     void pop_window() noexcept override;

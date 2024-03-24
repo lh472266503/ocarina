@@ -6,6 +6,11 @@
 
 namespace ocarina {
 
+template<typename T>
+ImVec2 to_ImVec2(const T &t) noexcept {
+    return ImVec2(t.x, t.y);
+}
+
 ImGuiWidgets::ImGuiWidgets(Window *window)
     : Widgets(window) {
 }
@@ -24,6 +29,12 @@ void ImGuiWidgets::begin_tool_tip() noexcept {
 
 void ImGuiWidgets::end_tool_tip() noexcept {
     ImGui::EndTooltip();
+}
+
+void ImGuiWidgets::image(ocarina::uint tex_handle, ocarina::uint2 size, ocarina::float2 uv0, ocarina::float2 uv1) noexcept {
+    auto tex_id = reinterpret_cast<ImTextureID>(static_cast<handle_ty>(tex_handle));
+    ImGui::Image(tex_id, to_ImVec2(size),
+                 to_ImVec2(uv0), to_ImVec2(uv1));
 }
 
 bool ImGuiWidgets::push_window(const string &label) noexcept {

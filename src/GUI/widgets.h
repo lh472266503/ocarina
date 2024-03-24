@@ -30,6 +30,12 @@ public:
     virtual void begin_tool_tip() noexcept = 0;
     virtual void end_tool_tip() noexcept = 0;
 
+    virtual void image(uint tex_handle, uint2 size, float2 uv0, float2 uv1) noexcept = 0;
+
+    void image(uint tex_handle, uint2 size) noexcept {
+        image(tex_handle, size, make_float2(0), make_float2(1));
+    }
+
     OC_MAKE_MEMBER_GETTER(window, )
 
     template<typename Func>
