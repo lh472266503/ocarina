@@ -25,7 +25,8 @@ namespace detail {
 
 class Texture : public RHIResource {
 protected:
-    uint _channel_num;
+    uint _channel_num{};
+    handle_ty _pbo{0u};
 
 public:
     class Impl {
@@ -59,6 +60,8 @@ public:
         uint3 res = impl()->resolution();
         return res.x * res.y * res.z;
     }
+
+    OC_MAKE_MEMBER_GETTER(pbo, &)
 
     [[nodiscard]] uint pixel_size() const noexcept {
         return ::ocarina::pixel_size(impl()->pixel_storage());

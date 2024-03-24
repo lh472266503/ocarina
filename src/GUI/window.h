@@ -66,10 +66,11 @@ public:
     virtual void set_background(const float4 *pixels) noexcept = 0;
     virtual void set_should_close() noexcept = 0;
     virtual void set_size(uint2 size) noexcept = 0;
+    virtual void interop(Texture *texture) noexcept = 0;
     virtual void run(UpdateCallback &&draw) noexcept;
     virtual void run_one_frame(UpdateCallback &&draw, double dt) noexcept;
     virtual void run_one_frame(UpdateCallback &&draw) noexcept {
         run_one_frame(OC_FORWARD(draw), 0);
     }
 };
-}
+}// namespace ocarina

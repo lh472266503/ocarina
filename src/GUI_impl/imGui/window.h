@@ -37,6 +37,7 @@ public:
     [[nodiscard]] bool should_close() const noexcept override;
     [[nodiscard]] auto handle() const noexcept { return _handle; }
     void set_background(const uchar4 *pixels, uint2 size) noexcept override;
+    void interop(ocarina::Texture *texture) noexcept override;
     void set_background(const uchar4 *pixels) noexcept override;
     void set_background(const float4 *pixels, uint2 size) noexcept override;
     void set_background(const float4 *pixels) noexcept override;

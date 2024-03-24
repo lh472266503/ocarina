@@ -189,6 +189,10 @@ void GLWindow::set_background(const uchar4 *pixels, uint2 size) noexcept {
     _texture->load(pixels, size);
 }
 
+void GLWindow::interop(ocarina::Texture *texture) noexcept {
+
+}
+
 void GLWindow::set_background(const uchar4 *pixels) noexcept {
     set_background(pixels, size());
 }
