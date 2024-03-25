@@ -11,6 +11,29 @@ ImVec2 to_ImVec2(const T &t) noexcept {
     return ImVec2(t.x, t.y);
 }
 
+uint64_t ImGuiWidgets::calculate_key(const ocarina::ImageIO &image) noexcept {
+    return hash64(image.resolution(), image.pixel_storage());
+}
+
+GLTexture *ImGuiWidgets::obtain_texture(const ocarina::ImageIO &image) noexcept {
+    uint64_t key = calculate_key(image);
+    if (!_texture_map.contains(key)) {
+        _texture_map.insert(make_pair(key, TextureVec{}));
+    }
+    TextureVec &texture_vec = _texture_map.at(key);
+    uint unbinding_index = _texture_map.size();
+    for (int i = 0; i < texture_vec.size(); ++i) {
+        GLTexture *texture = texture_vec[i].get();
+        if (!texture->binding()) {
+            unbinding_index = i;
+        }
+    }
+    if (unbinding_index == texture_vec.size()) {
+        texture_vec.emplace_back();
+    }
+    return texture_vec[unbinding_index].get();
+}
+
 ImGuiWidgets::ImGuiWidgets(Window *window)
     : Widgets(window) {
 }
@@ -38,7 +61,6 @@ void ImGuiWidgets::image(ocarina::uint tex_handle, ocarina::uint2 size, ocarina:
 }
 
 void ImGuiWidgets::image(const ImageIO &image) noexcept {
-
 }
 
 bool ImGuiWidgets::push_window(const string &label) noexcept {

@@ -32,64 +32,6 @@ public:
     }
 };
 
-class GLTexture {
-
-private:
-    uint32_t _handle{0u};
-    bool _is_float4{false};
-    uint2 _size{};
-
-public:
-    explicit GLTexture() noexcept {
-        CHECK_GL(glGenTextures(1, &_handle));
-        CHECK_GL(glBindTexture(GL_TEXTURE_2D, _handle));
-        CHECK_GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-        CHECK_GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-        CHECK_GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-        CHECK_GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-    }
-
-    GLTexture(GLTexture &&) noexcept = delete;
-    GLTexture(const GLTexture &) noexcept = delete;
-    GLTexture &operator=(GLTexture &&) noexcept = delete;
-    GLTexture &operator=(const GLTexture &) noexcept = delete;
-
-    ~GLTexture() noexcept { CHECK_GL(glDeleteTextures(1, &_handle)); }
-
-    [[nodiscard]] auto handle() const noexcept { return _handle; }
-    [[nodiscard]] auto size() const noexcept { return _size; }
-
-    void bind() const noexcept {
-        CHECK_GL(glBindTexture(GL_TEXTURE_2D, _handle));
-    }
-
-    void unbind() const noexcept {
-        CHECK_GL(glBindTexture(GL_TEXTURE_2D, 0));
-    }
-
-    void load(const uchar4 *pixels, uint2 size) noexcept {
-        bind();
-        if (any(_size != size) || _is_float4) {
-            _size = size;
-            _is_float4 = false;
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, size.x, size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-        }
-        CHECK_GL(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, _size.x, _size.y, GL_RGBA, GL_UNSIGNED_BYTE, pixels));
-        unbind();
-    }
-
-    void load(const float4 *pixels, uint2 size) noexcept {
-        bind();
-        if (any(_size != size) || !_is_float4) {
-            _size = size;
-            _is_float4 = true;
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, size.x, size.y, 0, GL_RGBA, GL_FLOAT, nullptr);
-        }
-        CHECK_GL(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, _size.x, _size.y, GL_RGBA, GL_FLOAT, pixels));
-        unbind();
-    }
-};
-
 void GLWindow::init_widgets() noexcept {
     _widgets = make_unique<ImGuiWidgets>(this);
 }

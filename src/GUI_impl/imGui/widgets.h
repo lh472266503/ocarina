@@ -4,6 +4,9 @@
 
 #pragma once
 
+#include "gl_helper.h"
+#include <ext/imgui/glad/glad.h>
+#include <GLFW/glfw3.h>
 #include "GUI/widgets.h"
 #include "ext/imgui/imgui_impl_opengl3.h"
 #include <ext/imgui/imgui_impl_glfw.h>
@@ -12,7 +15,77 @@
 
 namespace ocarina {
 
+class GLTexture {
+
+private:
+    uint32_t _handle{0u};
+    bool _is_float4{false};
+    uint2 _size{};
+    mutable bool _binding{false};
+
+public:
+    explicit GLTexture() noexcept {
+        CHECK_GL(glGenTextures(1, &_handle));
+        CHECK_GL(glBindTexture(GL_TEXTURE_2D, _handle));
+        CHECK_GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+        CHECK_GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+        CHECK_GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+        CHECK_GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+    }
+
+    GLTexture(GLTexture &&) noexcept = delete;
+    GLTexture(const GLTexture &) noexcept = delete;
+    GLTexture &operator=(GLTexture &&) noexcept = delete;
+    GLTexture &operator=(const GLTexture &) noexcept = delete;
+
+    ~GLTexture() noexcept { CHECK_GL(glDeleteTextures(1, &_handle)); }
+
+    [[nodiscard]] auto handle() const noexcept { return _handle; }
+    [[nodiscard]] auto size() const noexcept { return _size; }
+    OC_MAKE_MEMBER_GETTER(binding, )
+
+    void bind() const noexcept {
+        _binding = true;
+        CHECK_GL(glBindTexture(GL_TEXTURE_2D, _handle));
+    }
+
+    void unbind() const noexcept {
+        CHECK_GL(glBindTexture(GL_TEXTURE_2D, 0));
+        _binding = false;
+    }
+
+    void load(const uchar4 *pixels, uint2 size) noexcept {
+        bind();
+        if (any(_size != size) || _is_float4) {
+            _size = size;
+            _is_float4 = false;
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, size.x, size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+        }
+        CHECK_GL(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, _size.x, _size.y, GL_RGBA, GL_UNSIGNED_BYTE, pixels));
+        unbind();
+    }
+
+    void load(const float4 *pixels, uint2 size) noexcept {
+        bind();
+        if (any(_size != size) || !_is_float4) {
+            _size = size;
+            _is_float4 = true;
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, size.x, size.y, 0, GL_RGBA, GL_FLOAT, nullptr);
+        }
+        CHECK_GL(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, _size.x, _size.y, GL_RGBA, GL_FLOAT, pixels));
+        unbind();
+    }
+};
+
 class ImGuiWidgets : public Widgets {
+private:
+    using TextureVec = vector<UP<GLTexture>>;
+    map<uint64_t, TextureVec> _texture_map;
+
+private:
+    [[nodiscard]] uint64_t calculate_key(const ImageIO &image) noexcept;
+    [[nodiscard]] GLTexture *obtain_texture(const ImageIO &image) noexcept;
+
 public:
     explicit ImGuiWidgets(Window *window);
 

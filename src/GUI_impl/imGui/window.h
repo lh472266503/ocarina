@@ -4,11 +4,9 @@
 
 #pragma once
 
-#include <ext/imgui/glad/glad.h>
-#include <GLFW/glfw3.h>
 #include "GUI/window.h"
 #include "widgets.h"
-#include "gl_helper.h"
+
 
 namespace ocarina {
 
