@@ -35,7 +35,7 @@ public:
         virtual ~Impl() = default;
         [[nodiscard]] virtual uint3 resolution() const noexcept = 0;
         [[nodiscard]] virtual PixelStorage pixel_storage() const noexcept = 0;
-        [[nodiscard]] virtual handle_ty array_handle() const noexcept = 0;
+        [[nodiscard]] virtual const handle_ty& array_handle() const noexcept = 0;
         [[nodiscard]] virtual handle_ty tex_handle() const noexcept = 0;
 
         /// for device side structure
@@ -67,7 +67,23 @@ public:
     }
 
     [[nodiscard]] uint &gl_handle() const noexcept { return _gl_handle; }
-    [[nodiscard]] void *gl_shared_handle() const noexcept { return _gl_shared_handle; }
+    [[nodiscard]] void *&gl_shared_handle() const noexcept { return _gl_shared_handle; }
+
+    void register_shared() const noexcept {
+        device()->register_shared_tex(_gl_shared_handle, _gl_handle);
+    }
+
+    void mapping() const noexcept {
+        device()->mapping_shared_tex(_gl_shared_handle, const_cast<handle_ty &>(impl()->array_handle()));
+    }
+
+    void unmapping() const noexcept {
+        device()->unmapping_shared(_gl_shared_handle);
+    }
+
+    void unregister_shared() const noexcept {
+        device()->unregister_shared(_gl_shared_handle);
+    }
 
     [[nodiscard]] uint pixel_size() const noexcept {
         return ::ocarina::pixel_size(impl()->pixel_storage());

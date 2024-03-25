@@ -25,7 +25,7 @@ public:
     ~CUDATexture() override;
     void init();
     [[nodiscard]] uint3 resolution() const noexcept override { return _res; }
-    [[nodiscard]] handle_ty array_handle() const noexcept override { return reinterpret_cast<handle_ty>(_array_handle); }
+    [[nodiscard]] const handle_ty &array_handle() const noexcept override { return reinterpret_cast<handle_ty>(_array_handle); }
     [[nodiscard]] handle_ty tex_handle() const noexcept override {
         return _data.texture;
     }

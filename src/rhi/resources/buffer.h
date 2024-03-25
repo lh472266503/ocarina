@@ -127,7 +127,7 @@ public:
     }
 
     [[nodiscard]] uint &gl_handle() const noexcept { return _gl_handle; }
-    [[nodiscard]] void *gl_shared_handle() const noexcept { return _gl_shared_handle; }
+    [[nodiscard]] void *&gl_shared_handle() const noexcept { return _gl_shared_handle; }
 
     void destroy() override {
         _destroy();
