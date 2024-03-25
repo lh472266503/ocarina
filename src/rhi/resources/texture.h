@@ -35,7 +35,8 @@ public:
         virtual ~Impl() = default;
         [[nodiscard]] virtual uint3 resolution() const noexcept = 0;
         [[nodiscard]] virtual PixelStorage pixel_storage() const noexcept = 0;
-        [[nodiscard]] virtual const handle_ty& array_handle() const noexcept = 0;
+        [[nodiscard]] virtual handle_ty array_handle() const noexcept = 0;
+        [[nodiscard]] virtual const handle_ty *array_handle_ptr() const noexcept = 0;
         [[nodiscard]] virtual handle_ty tex_handle() const noexcept = 0;
 
         /// for device side structure
@@ -74,7 +75,8 @@ public:
     }
 
     void mapping() const noexcept {
-        device()->mapping_shared_tex(_gl_shared_handle, const_cast<handle_ty &>(impl()->array_handle()));
+        device()->mapping_shared_tex(_gl_shared_handle,
+                                     *const_cast<handle_ty *>(impl()->array_handle_ptr()));
     }
 
     void unmapping() const noexcept {
