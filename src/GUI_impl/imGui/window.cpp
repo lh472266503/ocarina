@@ -5,7 +5,6 @@
 #include "window.h"
 #include "widgets.h"
 #include "core/logging.h"
-#include "gl_helper.h"
 #include "rhi/resources/texture.h"
 
 namespace ocarina {
@@ -60,24 +59,34 @@ public:
     [[nodiscard]] auto handle() const noexcept { return _handle; }
     [[nodiscard]] auto size() const noexcept { return _size; }
 
-    void load(const uchar4 *pixels, uint2 size) noexcept {
+    void bind() const noexcept {
         CHECK_GL(glBindTexture(GL_TEXTURE_2D, _handle));
+    }
+
+    void unbind() const noexcept {
+        CHECK_GL(glBindTexture(GL_TEXTURE_2D, 0));
+    }
+
+    void load(const uchar4 *pixels, uint2 size) noexcept {
+        bind();
         if (any(_size != size) || _is_float4) {
             _size = size;
             _is_float4 = false;
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, size.x, size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
         }
         CHECK_GL(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, _size.x, _size.y, GL_RGBA, GL_UNSIGNED_BYTE, pixels));
+        unbind();
     }
 
     void load(const float4 *pixels, uint2 size) noexcept {
-        CHECK_GL(glBindTexture(GL_TEXTURE_2D, _handle));
+        bind();
         if (any(_size != size) || !_is_float4) {
             _size = size;
             _is_float4 = true;
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, size.x, size.y, 0, GL_RGBA, GL_FLOAT, nullptr);
         }
         CHECK_GL(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, _size.x, _size.y, GL_RGBA, GL_FLOAT, pixels));
+        unbind();
     }
 };
 
@@ -201,6 +210,7 @@ void GLWindow::set_background(const Buffer<ocarina::float4> &buffer, ocarina::ui
     if (_texture == nullptr) {
         _texture = ocarina::make_unique<GLTexture>();
     }
+    _texture->bind();
 }
 
 void GLWindow::set_should_close() noexcept {
