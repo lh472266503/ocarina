@@ -5,7 +5,6 @@
 #include "widgets.h"
 
 namespace ocarina {
-
 template<typename T>
 ImVec2 to_ImVec2(const T &t) noexcept {
     return ImVec2(t.x, t.y);
