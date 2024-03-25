@@ -143,6 +143,18 @@ public:
         device()->register_shared_buffer(_gl_shared_handle, _gl_handle);
     }
 
+    void mapping() const noexcept {
+        device()->mapping_shared_buffer(_gl_shared_handle, const_cast<handle_ty &>(_handle));
+    }
+
+    void unmapping() const noexcept {
+        device()->unmapping_shared(_gl_shared_handle);
+    }
+
+    void unregister_shared() const noexcept {
+        device()->unregister_shared(_gl_shared_handle);
+    }
+
     // Move constructor
     Buffer(Buffer &&other) noexcept
         : RHIResource(std::move(other)) {

@@ -154,29 +154,17 @@ void CUDADevice::mapping_shared_buffer(void *&shared_handle, handle_ty &handle) 
 void CUDADevice::mapping_shared_tex(void *&shared_handle, handle_ty &handle) noexcept {
     OC_CUDA_CHECK(cudaGraphicsMapResources(1, reinterpret_cast<cudaGraphicsResource_t *>(&shared_handle)));
     OC_CUDA_CHECK(cudaGraphicsSubResourceGetMappedArray(reinterpret_cast<cudaArray_t *>(handle),
-                                          reinterpret_cast<cudaGraphicsResource_t>(shared_handle), 0, 0));
+                                                        reinterpret_cast<cudaGraphicsResource_t>(shared_handle), 0, 0));
 }
 
 void CUDADevice::unmapping_shared(void *&shared_handle) noexcept {
     OC_CUDA_CHECK(cudaGraphicsUnmapResources(1,
-                                          reinterpret_cast<cudaGraphicsResource_t *>(&shared_handle)));
+                                             reinterpret_cast<cudaGraphicsResource_t *>(&shared_handle)));
 }
 
 void CUDADevice::unregister_shared(void *&shared_handle) noexcept {
 
-
-
-
-
-
-
-
-
-
-
-    
-
-
+    OC_CUDA_CHECK(cudaGraphicsUnregisterResource(reinterpret_cast<cudaGraphicsResource_t>(shared_handle)));
 }
 
 void CUDADevice::destroy_buffer(handle_ty handle) noexcept {
