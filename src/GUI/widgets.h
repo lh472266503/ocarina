@@ -7,6 +7,7 @@
 #include "core/stl.h"
 #include "core/basic_types.h"
 #include "core/util.h"
+#include "util/image_io.h"
 
 namespace ocarina {
 
@@ -31,6 +32,7 @@ public:
     virtual void end_tool_tip() noexcept = 0;
 
     virtual void image(uint tex_handle, uint2 size, float2 uv0, float2 uv1) noexcept = 0;
+    virtual void image(const ImageIO &image) noexcept = 0;
 
     void image(uint tex_handle, uint2 size) noexcept {
         image(tex_handle, size, make_float2(0), make_float2(1));

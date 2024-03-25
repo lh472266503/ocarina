@@ -8,12 +8,13 @@
 #include "ext/imgui/imgui_impl_opengl3.h"
 #include <ext/imgui/imgui_impl_glfw.h>
 #include "GUI/window.h"
+#include "util/image_io.h"
 
 namespace ocarina {
 
 class ImGuiWidgets : public Widgets {
 public:
-    ImGuiWidgets(Window *window);
+    explicit ImGuiWidgets(Window *window);
 
     void push_item_width(int width) noexcept override;
     void pop_item_width() noexcept override;
@@ -21,7 +22,8 @@ public:
     void begin_tool_tip() noexcept override;
     void end_tool_tip() noexcept override;
 
-    void image(ocarina::uint tex_handle, ocarina::uint2 size, ocarina::float2 uv0, ocarina::float2 uv1) noexcept override;
+    void image(uint tex_handle, uint2 size, float2 uv0, float2 uv1) noexcept override;
+    void image(const ImageIO &image) noexcept override;
 
     bool push_window(const string &label) noexcept override;
     bool push_window(const string &label, WindowFlag flag) noexcept override;

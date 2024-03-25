@@ -37,6 +37,10 @@ void ImGuiWidgets::image(ocarina::uint tex_handle, ocarina::uint2 size, ocarina:
                  to_ImVec2(uv0), to_ImVec2(uv1));
 }
 
+void ImGuiWidgets::image(const ImageIO &image) noexcept {
+
+}
+
 bool ImGuiWidgets::push_window(const string &label) noexcept {
     return ImGui::Begin(label.c_str());
 }
