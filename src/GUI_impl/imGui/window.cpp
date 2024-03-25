@@ -117,6 +117,7 @@ GLWindow::GLWindow(const char *name, uint2 initial_size, bool resizable) noexcep
 GLWindow::~GLWindow() noexcept {
     glfwMakeContextCurrent(_handle);
     _texture.reset();
+    _widgets.reset();
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();

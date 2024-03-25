@@ -96,7 +96,9 @@ public:
     void end_tool_tip() noexcept override;
 
     void image(uint tex_handle, uint2 size, float2 uv0, float2 uv1) noexcept override;
-    void image(const ImageIO &image) noexcept override;
+    void image(const ImageIO &image_io) noexcept override;
+
+    uint2 node_size() noexcept override;
 
     bool push_window(const string &label) noexcept override;
     bool push_window(const string &label, WindowFlag flag) noexcept override;
