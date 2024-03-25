@@ -126,7 +126,7 @@ void CUDADevice::destroy_bindless_array(handle_ty handle) noexcept {
 }
 
 void CUDADevice::register_shared_buffer(void *&shared_handle, ocarina::uint &gl_handle) noexcept {
-    if (shared_handle == nullptr) {
+    if (shared_handle != nullptr) {
         return;
     }
     OC_CUDA_CHECK(cudaGraphicsGLRegisterBuffer(reinterpret_cast<cudaGraphicsResource_t *>(&shared_handle),
