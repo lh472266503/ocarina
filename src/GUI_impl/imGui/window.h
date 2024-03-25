@@ -39,17 +39,8 @@ public:
     [[nodiscard]] auto handle() const noexcept { return _handle; }
     void set_background(const uchar4 *pixels, uint2 size) noexcept override;
     void set_background(const float4 *pixels, uint2 size) noexcept override;
-    template<typename T>
-    void bind_buffer(uint &buffer, uint2 res) noexcept {
-        if (buffer == 0) {
-            CHECK_GL(glGenBuffers(1, addressof(buffer)));
-            CHECK_GL(glBindBuffer(GL_ARRAY_BUFFER, buffer));
-            CHECK_GL(glBufferData(GL_ARRAY_BUFFER, sizeof(T) * res.x * res.y,
-                                  nullptr, GL_STREAM_DRAW));
-            CHECK_GL(glBindBuffer(GL_ARRAY_BUFFER, 0u));
-        }
-        CHECK_GL(glBindBuffer(GL_ARRAY_BUFFER, buffer));
-    }
+    void bind_buffer(ocarina::uint &handle, ocarina::uint size_in_byte) const noexcept override;
+    void unbind_buffer(ocarina::uint &handle) const noexcept override;
     void set_background(const Buffer<ocarina::float4> &buffer, ocarina::uint2 size) noexcept override;
     void set_should_close() noexcept override;
     void set_size(uint2 size) noexcept override;
