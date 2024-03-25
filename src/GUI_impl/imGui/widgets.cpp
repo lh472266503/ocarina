@@ -73,10 +73,7 @@ void ImGuiWidgets::image(const ImageIO &image_io) noexcept {
         gl_texture->load(image_io.pixel_ptr<float4>(), image_io.resolution());
     }
     uint2 res = image_io.resolution();
-    float ratio = res.x * 1.f / res.y;
-    uint2 size = make_uint2(node_size().x, node_size().x / ratio);
-    image(gl_texture->handle(), min(size, res),
-          make_float2(0), make_float2(1));
+    adaptive_image(gl_texture->handle(), res);
 }
 
 bool ImGuiWidgets::push_window(const string &label) noexcept {
