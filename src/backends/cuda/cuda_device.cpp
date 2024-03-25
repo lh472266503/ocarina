@@ -163,7 +163,9 @@ void CUDADevice::unmapping_shared(void *&shared_handle) noexcept {
 }
 
 void CUDADevice::unregister_shared(void *&shared_handle) noexcept {
-
+    if(shared_handle == nullptr){
+        return;
+    }
     OC_CUDA_CHECK(cudaGraphicsUnregisterResource(reinterpret_cast<cudaGraphicsResource_t>(shared_handle)));
 }
 

@@ -59,6 +59,7 @@ public:
     virtual Window &set_scroll_callback(ScrollCallback cb) noexcept;
     virtual Window &set_begin_frame_callback(BeginFrame cb) noexcept;
     virtual Window &set_end_frame_callback(EndFrame cb) noexcept;
+    virtual void gen_buffer(uint &handle,uint size_in_byte) const noexcept = 0;
     virtual void bind_buffer(uint &handle, uint size_in_byte) const noexcept = 0;
     virtual void unbind_buffer(uint &handle) const noexcept = 0;
     virtual void set_background(const uchar4 *pixels, uint2 size) noexcept = 0;
