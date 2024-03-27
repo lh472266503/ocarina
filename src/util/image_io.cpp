@@ -71,13 +71,16 @@ ImageIO ImageIO::create_empty(ocarina::PixelStorage pixel_format, ocarina::uint2
 ImageIO ImageIO::load(const fs::path &path, ColorSpace color_space, float3 scale) {
     auto extension = to_lower(path.extension().string());
     OC_INFO("load picture ", path.string());
+    ImageIO ret;
     if (extension == ".exr") {
-        return load_exr(path, color_space, scale);
+        ret = load_exr(path, color_space, scale);
     } else if (extension == ".hdr") {
-        return load_hdr(path, color_space, scale);
+        ret = load_hdr(path, color_space, scale);
     } else {
-        return load_other(path, color_space, scale);
+        ret = load_other(path, color_space, scale);
     }
+    ret._path = path;
+    return ret;
 }
 
 ImageIO ImageIO::load_hdr(const fs::path &path, ColorSpace color_space, float3 scale) {
@@ -337,7 +340,7 @@ void ImageIO::save_exr(const fs::path &fn, PixelStorage pixel_storage,
     image.images = reinterpret_cast<uint8_t **>(image_ptr.data());
 
     ocarina::array<int, 4> pixel_types{TINYEXR_PIXELTYPE_FLOAT, TINYEXR_PIXELTYPE_FLOAT, TINYEXR_PIXELTYPE_FLOAT,
-                                   TINYEXR_PIXELTYPE_FLOAT};
+                                       TINYEXR_PIXELTYPE_FLOAT};
     ocarina::array<EXRChannelInfo, 4> channels{};
     header.num_channels = c;
     header.channels = channels.data();
