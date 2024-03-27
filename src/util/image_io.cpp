@@ -40,6 +40,7 @@ ImageIO::ImageIO(ImageIO &&other) noexcept
 ImageIO &ImageIO::operator=(ImageIO &&rhs) noexcept {
     (*(ImageBase *)this) = std::forward<ImageBase>(rhs);
     std::swap(this->_pixel, rhs._pixel);
+    std::swap(this->_path, rhs._path);
     return *this;
 }
 
