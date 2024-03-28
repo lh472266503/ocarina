@@ -6,6 +6,22 @@
 
 namespace ocarina {
 
+template<typename TDialog>
+bool file_dialog_common(const FileDialogFilterVec &filters, fs::path &path, DWORD options, const CLSID clsid) {
+    TDialog *pDialog;
+    if (FAILED(CoCreateInstance(clsid, NULL, CLSCTX_ALL, IID_PPV_ARGS(&pDialog)))) {
+    }
+    pDialog->SetOptions(options | FOS_FORCEFILESYSTEM);
+    pDialog->Show(nullptr);
+
+    return true;
+}
+
+bool Widgets::open_file_dialog(const ocarina::FileDialogFilterVec &filters, std::filesystem::path &path) noexcept {
+    return file_dialog_common<IFileOpenDialog>(filters, path,
+                                               FOS_FILEMUSTEXIST, CLSID_FileOpenDialog);
+};
+
 bool Widgets::slider_floatN(const std::string &label, float *val, ocarina::uint size, float min, float max) noexcept {
     switch (size) {
         case 1:

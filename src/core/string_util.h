@@ -9,6 +9,7 @@
 #include <sstream>
 #include <fstream>
 #include <array>
+#include <codecvt>
 #include <regex>
 #include <filesystem>
 #include <fmt/format.h>

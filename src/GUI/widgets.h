@@ -58,18 +58,7 @@ public:
         image(tex_handle, min(size, res), uv0, uv1);
     }
 
-    template<typename TDialog>
-    bool file_dialog_common(const FileDialogFilterVec &filters, fs::path &path, DWORD options, const CLSID clsid) {
-        TDialog *pDialog;
-        if (FAILED(CoCreateInstance(clsid, NULL, CLSCTX_ALL, IID_PPV_ARGS(&pDialog)))) {
-        }
-        return true;
-    }
-
-    bool open_file_dialog(const FileDialogFilterVec &filters, std::filesystem::path &path) {
-        return file_dialog_common<IFileOpenDialog>(filters, path,
-                                                   FOS_FILEMUSTEXIST, CLSID_FileOpenDialog);
-    };
+    static bool open_file_dialog(const FileDialogFilterVec &filters, std::filesystem::path &path) noexcept;
 
     virtual uint2 node_size() noexcept = 0;
 
