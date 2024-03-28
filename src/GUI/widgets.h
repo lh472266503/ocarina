@@ -4,12 +4,23 @@
 
 #pragma once
 
+#include <utility>
 #include "core/stl.h"
 #include "core/basic_types.h"
 #include "core/util.h"
 #include "util/image_io.h"
+#include "objbase.h"
 
 namespace ocarina {
+
+struct FileDialogFilter {
+    explicit FileDialogFilter(std::string ext_, std::string desc_ = {})
+        : desc(std::move(desc_)), ext(std::move(ext_)) {}
+    std::string desc;// The description ("Portable Network Graphics")
+    std::string ext; // The extension, without the `.` ("png")
+};
+
+using FileDialogFilterVec = std::vector<FileDialogFilter>;
 
 enum WindowFlag {
     None = 0,
@@ -38,6 +49,14 @@ public:
         float ratio = res.x * 1.f / res.y;
         uint2 size = make_uint2(node_size().x, node_size().x / ratio);
         image(tex_handle, min(size, res), uv0, uv1);
+    }
+
+    template<typename TDialog>
+    bool file_dialog_common(fs::path path, DWORD options, const CLSID clsid) {
+        TDialog *pDialog;
+        if (FAILED(CoCreateInstance(clsid, NULL, CLSCTX_ALL, IID_PPV_ARGS(&pDialog)))) {
+        }
+        return true;
     }
 
     virtual uint2 node_size() noexcept = 0;
