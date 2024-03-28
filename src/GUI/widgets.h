@@ -10,6 +10,13 @@
 #include "core/util.h"
 #include "util/image_io.h"
 #include "objbase.h"
+#include <commctrl.h>
+#include <commdlg.h>
+#include <comutil.h>
+#include <psapi.h>
+#include <shellscalingapi.h>
+#include <ShlObj_core.h>
+#include <winioctl.h>
 
 namespace ocarina {
 
@@ -52,12 +59,17 @@ public:
     }
 
     template<typename TDialog>
-    bool file_dialog_common(fs::path path, DWORD options, const CLSID clsid) {
+    bool file_dialog_common(const FileDialogFilterVec &filters, fs::path &path, DWORD options, const CLSID clsid) {
         TDialog *pDialog;
         if (FAILED(CoCreateInstance(clsid, NULL, CLSCTX_ALL, IID_PPV_ARGS(&pDialog)))) {
         }
         return true;
     }
+
+    bool open_file_dialog(const FileDialogFilterVec &filters, std::filesystem::path &path) {
+        return file_dialog_common<IFileOpenDialog>(filters, path,
+                                                   FOS_FILEMUSTEXIST, CLSID_FileOpenDialog);
+    };
 
     virtual uint2 node_size() noexcept = 0;
 
