@@ -84,6 +84,9 @@ public:
     virtual bool tree_node(const string &label) noexcept = 0;
     virtual void tree_pop() noexcept = 0;
 
+    virtual void push_id(char *str) noexcept = 0;
+    virtual void pop_id() noexcept = 0;
+
     template<typename T, typename Func>
     bool use_tree(T &&label, Func &&func) noexcept {
         bool show = tree_node(OC_FORWARD(label));

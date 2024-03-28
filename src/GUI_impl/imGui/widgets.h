@@ -107,6 +107,9 @@ public:
     bool tree_node(const string &label) noexcept override;
     void tree_pop() noexcept override;
 
+    void push_id(char *str) noexcept override;
+    void pop_id() noexcept override;
+
     bool folding_header(const string &label) noexcept override;
 
     bool begin_main_menu_bar() noexcept override;

@@ -95,6 +95,14 @@ void ImGuiWidgets::tree_pop() noexcept {
     ImGui::TreePop();
 }
 
+void ImGuiWidgets::push_id(char *str) noexcept {
+    ImGui::PushID(str);
+}
+
+void ImGuiWidgets::pop_id() noexcept {
+    ImGui::PopID();
+}
+
 bool ImGuiWidgets::folding_header(const string &label) noexcept {
     return ImGui::CollapsingHeader(label.c_str());
 }
