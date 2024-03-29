@@ -563,6 +563,11 @@ public:
             (*this)[i] = t[i];
         }
     }
+    void set(const Var<Vector<T, N>> &t) {
+        for (int i = 0; i < N; ++i) {
+            (*this)[i] = t[i];
+        }
+    }
     [[nodiscard]] Var<T> as_scalar() const noexcept {
         return (*this)[0];
     }
