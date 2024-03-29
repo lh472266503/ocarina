@@ -26,8 +26,8 @@ bool file_dialog_common(const FileDialogFilterVec &filters, fs::path &path, DWOR
         if (IShellItem * pItem;
             pDialog->GetResult(&pItem) == S_OK) {
             pItem->Release();
-            if (PWSTR pathStr;
-                pItem->GetDisplayName(SIGDN_FILESYSPATH, &pathStr) == S_OK) {
+            PWSTR pathStr;
+            if (pItem->GetDisplayName(SIGDN_FILESYSPATH, &pathStr) == S_OK) {
                 path = pathStr;
                 CoTaskMemFree(pathStr);
                 return true;
