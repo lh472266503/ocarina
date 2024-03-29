@@ -21,3 +21,10 @@
 #define OC_BUILTIN_STRUCT(S, ...) \
     OC_MAKE_BUILTIN_STRUCT(S)     \
     OC_STRUCT_IMPL(S, ##__VA_ARGS__)
+
+
+#define OC_PARAM_STRUCT(S, ...)                 \
+    OC_MAKE_STRUCT_REFLECTION(S, ##__VA_ARGS__) \
+    OC_MAKE_STRUCT_DESC(S, ##__VA_ARGS__)       \
+    OC_MAKE_COMPUTABLE_BODY(S, ##__VA_ARGS__)   \
+    OC_MAKE_PROXY(S)

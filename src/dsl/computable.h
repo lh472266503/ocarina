@@ -178,7 +178,7 @@ struct EnableByteLoadAndStore {
         Var<expr_value_t<Offset>> new_offset = OC_FORWARD(offset);
         if (check_boundary) {
             new_offset = detail::correct_index(new_offset, self()->template size<expr_value_t<Offset>>(),
-                                           typeid(*this).name(), traceback_string());
+                                               typeid(*this).name(), traceback_string());
         }
         self()->expression()->mark(Usage::READ);
         if constexpr (N == 1) {
@@ -204,7 +204,7 @@ struct EnableByteLoadAndStore {
         Var<expr_value_t<Offset>> new_offset = OC_FORWARD(offset);
         if (check_boundary) {
             new_offset = detail::correct_index(new_offset, self()->template size<expr_value_t<Offset>>(),
-                                           typeid(*this).name(), traceback_string());
+                                               typeid(*this).name(), traceback_string());
         }
         const Type *ret_type = Type::of<Target>();
         self()->expression()->mark(Usage::READ);
@@ -240,7 +240,7 @@ struct EnableByteLoadAndStore {
         Var<expr_value_t<Offset>> new_offset = OC_FORWARD(offset);
         if (check_boundary) {
             new_offset = detail::correct_index(new_offset, self()->template size<expr_value_t<Offset>>(),
-                                           typeid(*this).name(), traceback_string());
+                                               typeid(*this).name(), traceback_string());
         }
         const CallExpr *expr = Function::current()->call_builtin(nullptr, CallOp::BYTE_BUFFER_WRITE,
                                                                  {self()->expression(),
@@ -558,7 +558,7 @@ public:
             (*this)[i] = t[i];
         }
     }
-    void set(const Var<Vector<T, N>> &t) {
+    void set(const Var<array<T, N>> &t) {
         for (int i = 0; i < N; ++i) {
             (*this)[i] = t[i];
         }
@@ -607,6 +607,9 @@ struct Computable<Buffer<T>>
     OC_COMPUTABLE_COMMON(Computable<Buffer<T>>)
 
 public:
+    void set(const Buffer<T> &buffer) noexcept {
+        /// empty
+    }
     template<typename int_type = uint64t>
     [[nodiscard]] auto size() const noexcept {
         const CallExpr *expr = Function::current()->call_builtin(Type::of<int_type>(), CallOp::BUFFER_SIZE, {expression()});

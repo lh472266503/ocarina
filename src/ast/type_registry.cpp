@@ -83,6 +83,8 @@ namespace detail {
     if (ret == "vector"sv ||
         ret == "matrix"sv ||
         ret == "struct"sv ||
+        ret == "buffer"sv ||
+        ret == "texture"sv ||
         ret == "d_array"sv ||
         ret == "array"sv) {
         auto [start, end] = bracket_matching_near(str);
@@ -270,11 +272,13 @@ void TypeRegistry::parse_buffer(Type *type, ocarina::string_view desc) noexcept 
         type->_dims.push_back(std::stoi(lst[i].data()));
     }
     type->_alignment = alignof(BufferProxy);
+    type->_size = sizeof(BufferProxy);
 }
 
 void TypeRegistry::parse_texture(Type *type, ocarina::string_view desc) noexcept {
     type->_tag = Type::Tag::TEXTURE;
     type->_alignment = alignof(TextureProxy);
+    type->_size = sizeof(TextureProxy);
 }
 
 void TypeRegistry::parse_accel(Type *type, ocarina::string_view desc) noexcept {
