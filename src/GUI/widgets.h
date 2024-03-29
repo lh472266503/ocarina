@@ -58,7 +58,7 @@ public:
         image(tex_handle, min(size, res), uv0, uv1);
     }
 
-    static bool open_file_dialog(const FileDialogFilterVec &filters, std::filesystem::path &path) noexcept;
+    static bool open_file_dialog(std::filesystem::path &path, const FileDialogFilterVec &filters = {}) noexcept;
 
     virtual uint2 node_size() noexcept = 0;
 

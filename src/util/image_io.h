@@ -23,6 +23,7 @@ public:
     ImageIO(const ImageIO &other) = delete;
     ImageIO &operator=(const ImageIO &other) = delete;
     ImageIO &operator=(ImageIO &&other) noexcept;
+    OC_MAKE_MEMBER_GETTER(path, &)
     template<typename T = std::byte>
     const T *pixel_ptr() const { return reinterpret_cast<const T *>(_pixel.get()); }
     template<typename T = std::byte>
