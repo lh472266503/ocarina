@@ -106,10 +106,14 @@ public:
         _size = 0;
     }
 
-    [[nodiscard]] const void *proxy_ptr() const noexcept {
+    const BufferProxy<std::byte> &proxy() const noexcept {
         _proxy.handle = reinterpret_cast<std::byte *>(_handle);
         _proxy.size = _size;
-        return &_proxy;
+        return _proxy;
+    }
+
+    const BufferProxy<std::byte> *proxy_ptr() const noexcept {
+        return &proxy();
     }
 
     [[nodiscard]] size_t data_alignment() const noexcept override {
