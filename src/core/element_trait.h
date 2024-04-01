@@ -8,18 +8,6 @@
 
 namespace ocarina {
 
-template<typename... T>
-struct always_false : std::false_type {};
-
-template<typename... T>
-constexpr auto always_false_v = always_false<T...>::value;
-
-template<typename... T>
-struct always_true : std::true_type {};
-
-template<typename... T>
-constexpr auto always_true_v = always_true<T...>::value;
-
 namespace detail {
 
 template<typename T>

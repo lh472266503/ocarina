@@ -30,6 +30,22 @@
 
 #define OC_FORWARD(arg) std::forward<decltype(arg)>(arg)
 
+#define OC_DEFINE_TEMPLATE_VALUE(template_name) \
+    template<typename T>                        \
+    constexpr auto template_name##_v = template_name<T>::value;
+
+#define OC_DEFINE_TEMPLATE_VALUE_MULTI(template_name) \
+    template<typename... T>                           \
+    constexpr auto template_name##_v = template_name<T...>::value;
+
+#define OC_DEFINE_TEMPLATE_TYPE(template_name) \
+    template<typename T>                       \
+    using template_name##_t = typename template_name<T>::type;
+
+#define OC_DEFINE_TEMPLATE_TYPE_MULTI(template_name) \
+    template<typename... T>                          \
+    using template_name##_t = typename template_name<T...>::type;
+
 namespace ocarina {
 
 namespace detail {
@@ -37,6 +53,18 @@ OC_CORE_API void *allocator_allocate(size_t size, size_t alignment) noexcept;
 OC_CORE_API void allocator_deallocate(void *p, size_t alignment) noexcept;
 OC_CORE_API void *allocator_reallocate(void *p, size_t size, size_t alignment) noexcept;
 }// namespace detail
+
+template<typename... T>
+struct always_false : std::false_type {};
+
+template<typename... T>
+constexpr auto always_false_v = always_false<T...>::value;
+
+template<typename... T>
+struct always_true : std::true_type {};
+
+template<typename... T>
+constexpr auto always_true_v = always_true<T...>::value;
 
 template<typename T = std::byte>
 struct allocator {
@@ -241,24 +269,66 @@ using std::stack;
 using std::unordered_map;
 using std::unordered_set;
 using std::vector;
-using std::array;
 
 #if 1
 // tuple
 using eastl::get;
 using eastl::tuple;
-using eastl::tuple_element;
-using eastl::tuple_element_t;
-using eastl::tuple_size;
-using eastl::tuple_size_v;
 #else
 using std::get;
 using std::tuple;
-using std::tuple_element;
-using std::tuple_element_t;
-using std::tuple_size;
-using std::tuple_size_v;
 #endif
+
+namespace detail {
+template<typename T>
+struct tuple_size_impl {
+    static_assert(ocarina::always_false_v<T>);
+};
+
+template<typename... Ts>
+struct tuple_size_impl<std::tuple<Ts...>> : public std::tuple_size<std::tuple<Ts...>> {};
+
+template<typename... Ts>
+struct tuple_size_impl<eastl::tuple<Ts...>> : public eastl::tuple_size<eastl::tuple<Ts...>> {};
+}
+template<typename T>
+using tuple_size = typename detail::tuple_size_impl<std::remove_cvref_t<T>>;
+
+template<typename T>
+constexpr auto tuple_size_v = tuple_size<T>::value;
+
+template<size_t i, typename T>
+struct tuple_element {
+    static_assert(ocarina::always_false_v<T>);
+};
+
+template<size_t i, typename... Ts>
+struct tuple_element<i, std::tuple<Ts...>> : public std::tuple_element<i, std::tuple<Ts...>> {};
+
+template<size_t i, typename... Ts>
+struct tuple_element<i, eastl::tuple<Ts...>> : public eastl::tuple_element<i, eastl::tuple<Ts...>> {};
+
+template<size_t i, typename T>
+using tuple_element_t = typename tuple_element<i, T>::type;
+
+template<size_t i, typename ...Ts>
+auto tuple_get(const std::tuple<Ts...> &tp) noexcept {
+    return std::get<i>(tp);
+}
+
+template<size_t i, typename ...Ts>
+auto tuple_get(const eastl::tuple<Ts...> &tp) noexcept {
+    return eastl::get<i>(tp);
+}
+
+template<size_t i = 0, typename Tuple, typename Func>
+void traverse_tuple(Tuple &&tuple, Func &&func) noexcept {
+    if constexpr (i < tuple_size_v<Tuple>) {
+        func(ocarina::tuple_get<i>(OC_FORWARD(tuple)));
+        traverse_tuple<i + 1>(OC_FORWARD(tuple), OC_FORWARD(func));
+    }
+}
+
 // sequence
 using std::index_sequence;
 using std::index_sequence_for;

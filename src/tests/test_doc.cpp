@@ -103,18 +103,25 @@ void test_compute_shader(Device &device, Stream &stream) {
         return a + b;
     };
     Pair pa;
+//    Type::of<Hit>();
 
-    auto tt = Type::of<Triple>();
+//    auto tt = Type::of<Triple>();
 
 //    Kernel k = [] {
 //        Var<Triple> a;
 //    };
 
+    std::tuple<int, float> tp;
+
+    traverse_tuple(tp, [&](auto elm) {
+        int i = 0;
+    });
+
     Kernel kernel = [&](BufferVar<Triple> triangle,
                         ByteBufferVar byte_buffer_var, BufferVar<float3> vert_buffer) {
 
 
-
+//        Var<Triple> t;
 //        HitVar hit;
 //
 //        Float l = 1.f;

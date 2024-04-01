@@ -10,22 +10,6 @@
 
 namespace ocarina {
 
-#define OC_DEFINE_TEMPLATE_VALUE(template_name) \
-    template<typename T>                        \
-    constexpr auto template_name##_v = template_name<T>::value;
-
-#define OC_DEFINE_TEMPLATE_VALUE_MULTI(template_name) \
-    template<typename... T>                           \
-    constexpr auto template_name##_v = template_name<T...>::value;
-
-#define OC_DEFINE_TEMPLATE_TYPE(template_name) \
-    template<typename T>                       \
-    using template_name##_t = typename template_name<T>::type;
-
-#define OC_DEFINE_TEMPLATE_TYPE_MULTI(template_name) \
-    template<typename... T>                          \
-    using template_name##_t = typename template_name<T...>::type;
-
 template<typename T>
 requires std::is_enum_v<T>
 [[nodiscard]] constexpr auto
