@@ -176,6 +176,9 @@ struct TypeDesc<Buffer<T, Dims...>> {
     }
 };
 
+template<typename T>
+struct TypeDesc<BufferProxy<T>> : public TypeDesc<Buffer<T>> {};
+
 template<>
 struct TypeDesc<ByteBuffer> {
     static ocarina::string_view description() noexcept {
@@ -257,6 +260,8 @@ const Type *Type::of() noexcept {
                           Var<T>::cname;
                       }) {
             ret->set_cname(Var<T>::cname);
+        } else {
+            ret->set_cname(string(ret->description()));
         }
         if constexpr (requires {
                           ocarina::struct_member_tuple<raw_type>::members;

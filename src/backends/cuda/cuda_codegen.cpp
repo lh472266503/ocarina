@@ -397,12 +397,14 @@ void CUDACodegen::_emit_type_name(const Type *type) noexcept {
             case Type::Tag::ACCEL:
                 current_scratch() << "OptixTraversableHandle";
                 break;
-            case Type::Tag::NONE: break;
+            case Type::Tag::NONE:
+                break;
         }
     }
 }
 
 void CUDACodegen::_emit_struct_name(const Type *type) noexcept {
+    OC_ERROR_IF(type->cname().empty());
     if (type->is_builtin_struct()) {
         current_scratch() << type->simple_cname();
     } else {

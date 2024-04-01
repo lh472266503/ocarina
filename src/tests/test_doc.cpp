@@ -27,6 +27,17 @@ OC_STRUCT(Triple, i, j, k, h){
     }
 };
 
+struct Pair {
+    uint i{50};
+    BufferProxy<float3> b;
+    Pair() = default;
+};
+
+/// register a DSL struct, if you need upload a struct to device, be sure to register
+OC_PARAM_STRUCT(Pair, i, b){
+
+};
+
 auto get_cube(float x = 1, float y = 1, float z = 1) {
     x = x / 2.f;
     y = y / 2.f;
@@ -91,87 +102,98 @@ void test_compute_shader(Device &device, Stream &stream) {
     Callable add = [&](Float a, Float b) {
         return a + b;
     };
+    Pair pa;
 
-    Kernel kernel = [&](Var<Triple> triple, BufferVar<Triple> triangle,
+    auto tt = Type::of<Triple>();
+
+//    Kernel k = [] {
+//        Var<Triple> a;
+//    };
+
+    Kernel kernel = [&](BufferVar<Triple> triangle,
                         ByteBufferVar byte_buffer_var, BufferVar<float3> vert_buffer) {
 
-        HitVar hit;
-
-        Float l = 1.f;
-        Float r = 2.f;
-
-        Float c = add(l, r);
-
-        /// Note the usage and implementation of DSL struct member function, e.g sum()
-        Var t = triangle.read(dispatch_id());
-        $info("triple  index {} : i = {}, j = {}, k = {},  sum: {} ", dispatch_id(), t.i, t.j, t.k, t->sum());
-
-        $info("vert from capture {} {} {}", vert.read(dispatch_id()));
-        $info("vert_buffer  {} {} {}", vert_buffer.read(dispatch_id()));
 
 
-        $switch(dispatch_id()) {
-            $case(1) {
-                $info("dispatch_idx is {} {} {}", dispatch_idx());
-            };
-            $default {
-                $info("switch default  dispatch_idx is {} {} {}", dispatch_idx());
-            };
-        };
-
-        $if(dispatch_id() == 1) {
-            $info("if branch dispatch_idx is {} {} {}", dispatch_idx());
-        }
-        $elif(dispatch_id() == 2) {
-            $info("if else branch dispatch_idx is {} {} {}", dispatch_idx());
-        }
-        $else {
-            $info("else branch dispatch_idx is {} {} {}", dispatch_idx());
-        };
-
-        Uint count = 2;
-
-        $for(i, count) {
-            $info("count for statement dispatch_idx is {} {} {}, i = {} ", dispatch_idx(), i);
-        };
-
-        Uint begin = 2;
-        Uint end = 10;
-        $for(i, begin, end) {
-            $info("begin end for statement dispatch_idx is {} {} {}, i = {} ", dispatch_idx(), i);
-        };
-
-        Uint step = 2;
-
-        $for(i, begin, end, step) {
-            $info("begin end step for statement dispatch_idx is {} {} {}, i = {} ", dispatch_idx(), i);
-        };
-
-        SOAView soa = byte_buffer_var.soa_view<Elm>();
-        soa.write(dispatch_id(), make_float4x4(1.f * dispatch_id()));
-        Var a = soa.read(dispatch_id());
-
-        Uint2 aa = make_uint2(1);
-        Float2 bb = make_float2(1.5f);
-
-        bb += bb + aa;
-
-        $info("\n {} {} {} {}  \n"
-              "{} {} {} {}  \n"
-              "{} {} {} {}  \n"
-              "{} {} {} {}  \n",
-              a[0], a[1], a[2], a[3]);
-
-        $info("{} {}   ", bb);
+//        HitVar hit;
+//
+//        Float l = 1.f;
+//        Float r = 2.f;
+//
+//        Float c = add(l, r);
+//
+//        /// Note the usage and implementation of DSL struct member function, e.g sum()
+//        Var t = triangle.read(dispatch_id());
+//        $info("triple  index {} : i = {}, j = {}, k = {},  sum: {} ", dispatch_id(), t.i, t.j, t.k, t->sum());
+//
+//        $info("vert from capture {} {} {}", vert.read(dispatch_id()));
+//        $info("vert_buffer  {} {} {}", vert_buffer.read(dispatch_id()));
+//
+//
+//        $switch(dispatch_id()) {
+//            $case(1) {
+//                $info("dispatch_idx is {} {} {}", dispatch_idx());
+//            };
+//            $default {
+//                $info("switch default  dispatch_idx is {} {} {}", dispatch_idx());
+//            };
+//        };
+//
+//        $if(dispatch_id() == 1) {
+//            $info("if branch dispatch_idx is {} {} {}", dispatch_idx());
+//        }
+//        $elif(dispatch_id() == 2) {
+//            $info("if else branch dispatch_idx is {} {} {}", dispatch_idx());
+//        }
+//        $else {
+//            $info("else branch dispatch_idx is {} {} {}", dispatch_idx());
+//        };
+//
+//        Uint count = 2;
+//
+//        $for(i, count) {
+//            $info("count for statement dispatch_idx is {} {} {}, i = {} ", dispatch_idx(), i);
+//        };
+//
+//        Uint begin = 2;
+//        Uint end = 10;
+//        $for(i, begin, end) {
+//            $info("begin end for statement dispatch_idx is {} {} {}, i = {} ", dispatch_idx(), i);
+//        };
+//
+//        Uint step = 2;
+//
+//        $for(i, begin, end, step) {
+//            $info("begin end step for statement dispatch_idx is {} {} {}, i = {} ", dispatch_idx(), i);
+//        };
+//
+//        SOAView soa = byte_buffer_var.soa_view<Elm>();
+//        soa.write(dispatch_id(), make_float4x4(1.f * dispatch_id()));
+//        Var a = soa.read(dispatch_id());
+//
+//        Uint2 aa = make_uint2(1);
+//        Float2 bb = make_float2(1.5f);
+//
+//        bb += bb + aa;
+//
+//        $info("\n {} {} {} {}  \n"
+//              "{} {} {} {}  \n"
+//              "{} {} {} {}  \n"
+//              "{} {} {} {}  \n",
+//              a[0], a[1], a[2], a[3]);
+//
+//        $info("{} {}   ", bb);
     };
     Triple triple1{1, 2, 3};
+
+
 
     /// set debug range
     Env::debugger().set_lower(make_uint2(0));
     Env::debugger().set_upper(make_uint2(1));
     auto shader = device.compile(kernel, "test desc");
     stream << Env::debugger().upload();
-    stream << shader(triple1, tri, byte_buffer.view(), vert).dispatch(len)
+    stream << shader( tri, byte_buffer.view(), vert).dispatch(len)
            /// explict retrieve log
            << byte_buffer.download(byte_vec.data(), 0)
            << Env::printer().retrieve()

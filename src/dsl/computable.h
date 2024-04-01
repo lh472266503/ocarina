@@ -612,7 +612,7 @@ struct Computable<Buffer<T>>
     OC_COMPUTABLE_COMMON(Computable<Buffer<T>>)
 
 public:
-    void set(const Buffer<T> &buffer) noexcept {
+    void set(const BufferProxy<T> &buffer) noexcept {
         /// empty
     }
     template<typename int_type = uint64t>
