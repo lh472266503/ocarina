@@ -268,11 +268,6 @@ class Type;
 
 class TypeRegistry;
 
-struct BufferDesc {
-    handle_ty head;
-    size_t size_in_byte;
-};
-
 struct BindlessArrayProxy {
     handle_ty buffer_slot;
     handle_ty tex_slot;
@@ -288,7 +283,15 @@ template<typename T = std::byte>
 struct BufferProxy {
     T *handle{};
     uint64_t size{};
+    [[nodiscard]] handle_ty head() const noexcept {
+        return reinterpret_cast<handle_ty>(handle);
+    }
+    [[nodiscard]] uint64_t size_in_byte() const noexcept {
+        return size * sizeof(T);
+    }
 };
+
+using ByteBufferProxy = BufferProxy<>;
 
 struct TypeVisitor {
     virtual void visit(const Type *) noexcept = 0;

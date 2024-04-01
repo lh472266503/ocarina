@@ -16,7 +16,7 @@ CUDABindlessArray::CUDABindlessArray(CUDADevice *device)
 
 size_t CUDABindlessArray::emplace_buffer(handle_ty handle, size_t size_in_byte) noexcept {
     auto ret = _buffers.host_buffer().size();
-    _buffers.emplace_back(handle, size_in_byte);
+    _buffers.emplace_back(reinterpret_cast<std::byte *>(handle), size_in_byte);
     return ret;
 }
 
@@ -70,10 +70,10 @@ void CUDABindlessArray::remove_texture(handle_ty index) noexcept {
 
 void CUDABindlessArray::set_buffer(ocarina::handle_ty index, ocarina::handle_ty handle, size_t size_in_byte) noexcept {
     OC_ASSERT(index < _buffers.host_buffer().size());
-    _buffers.at(index) = {handle, size_in_byte};
+    _buffers.at(index) = {reinterpret_cast<std::byte *>(handle), size_in_byte};
 }
 
-BufferDesc CUDABindlessArray::buffer_view(ocarina::uint index) const noexcept {
+ByteBufferProxy CUDABindlessArray::buffer_view(ocarina::uint index) const noexcept {
     return _buffers.at(index);
 }
 
