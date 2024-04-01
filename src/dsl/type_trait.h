@@ -21,6 +21,9 @@ struct Expr;
 template<typename T>
 class DynamicArray;
 
+template<typename T, int... Dims>
+class Buffer;
+
 namespace detail {
 
 template<typename T>
@@ -132,6 +135,12 @@ template<typename T>
 struct dsl_impl<vector<T>> {
     using type = DynamicArray<T>;
 };
+
+template<typename T>
+struct dsl_impl<BufferProxy<T>> {
+    using type = Var<Buffer<T>>;
+};
+
 }// namespace detail
 
 template<typename T>

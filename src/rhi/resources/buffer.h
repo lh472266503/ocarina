@@ -98,7 +98,7 @@ protected:
     mutable uint _gl_handle{0};
     mutable void *_gl_shared_handle{0};
     /// just for construct memory block
-    mutable BufferProxy _proxy{};
+    mutable BufferProxy<T> _proxy{};
 
 public:
     Buffer() : _element_size(calculate_size()) {}
@@ -174,7 +174,7 @@ public:
     }
 
     const void *proxy_ptr() const noexcept {
-        _proxy.handle = _handle;
+        _proxy.handle = reinterpret_cast<T *>(_handle);
         _proxy.size = _size;
         return &_proxy;
     }

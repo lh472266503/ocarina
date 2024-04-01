@@ -284,8 +284,9 @@ struct TextureProxy {
     PixelStorage pixel_storage{};
 };
 
+template<typename T = std::byte>
 struct BufferProxy {
-    handle_ty handle{};
+    T *handle{};
     uint64_t size{};
 };
 
