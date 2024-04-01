@@ -103,6 +103,10 @@ void test_compute_shader(Device &device, Stream &stream) {
         return a + b;
     };
     Pair pa;
+
+
+    pa.b = vert.proxy();
+
 //    Type::of<Hit>();
 
 //    auto tt = Type::of<Triple>();
@@ -117,10 +121,12 @@ void test_compute_shader(Device &device, Stream &stream) {
         int i = 0;
     });
 
-    Kernel kernel = [&](BufferVar<Triple> triangle,
+    Kernel kernel = [&](Var<Pair> p,BufferVar<Triple> triangle,
                         ByteBufferVar byte_buffer_var, BufferVar<float3> vert_buffer) {
 
-
+        $info("{}   ", p.i);
+        Float3 vert = p.b.read(dispatch_id());
+        $info("{}  {}  {}   {}", vert, p.b.size());
 //        Var<Triple> t;
 //        HitVar hit;
 //
@@ -200,7 +206,7 @@ void test_compute_shader(Device &device, Stream &stream) {
     Env::debugger().set_upper(make_uint2(1));
     auto shader = device.compile(kernel, "test desc");
     stream << Env::debugger().upload();
-    stream << shader( tri, byte_buffer.view(), vert).dispatch(len)
+    stream << shader( pa, tri, byte_buffer.view(), vert).dispatch(len)
            /// explict retrieve log
            << byte_buffer.download(byte_vec.data(), 0)
            << Env::printer().retrieve()

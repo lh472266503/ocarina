@@ -173,10 +173,14 @@ public:
         return *this;
     }
 
-    const void *proxy_ptr() const noexcept {
+    const BufferProxy<T> &proxy() const noexcept {
         _proxy.handle = reinterpret_cast<T *>(_handle);
         _proxy.size = _size;
-        return &_proxy;
+        return _proxy;
+    }
+
+    const BufferProxy<T> *proxy_ptr() const noexcept {
+        return &proxy();
     }
 
     [[nodiscard]] size_t data_alignment() const noexcept override {
