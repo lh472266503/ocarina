@@ -11,6 +11,13 @@ namespace ocarina {
 class FunctionCorrector : public ExprVisitor, public StmtVisitor {
 private:
     ocarina::deque<Function *> _function_stack;
+    enum Stage {
+        /// process capture variable
+        ProcessCapture,
+        /// Split parameter structure into separate elements
+        SplitParamStruct
+    };
+    Stage _stage{ProcessCapture};
 
 private:
     void visit(const AssignStmt *stmt) override;
@@ -44,6 +51,8 @@ private:
     void traverse(Function &function) noexcept;
     void process_ref_expr(const Expression *&expression, Function *cur_func) noexcept;
     void visit_expr(const Expression *const &expression, Function *cur_func = nullptr) noexcept;
+
+    void splitting_param_struct(const Expression *const &expression) noexcept;
 
     [[nodiscard]] bool is_from_invoker(const Expression *expression) noexcept;
     void capture_from_invoker(const Expression *&expression, Function *cur_func) noexcept;

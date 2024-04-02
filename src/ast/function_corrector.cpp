@@ -16,6 +16,11 @@ void FunctionCorrector::traverse(Function &function) noexcept {
 void FunctionCorrector::apply(Function *function) noexcept {
     _function_stack.push_back(function);
     traverse(*current_function());
+    if (current_function()->is_kernel()) {
+        /// Split parameter structure into separate elements
+        _stage = SplitParamStruct;
+        traverse(*current_function());
+    }
     _function_stack.pop_back();
 }
 
@@ -39,6 +44,12 @@ void FunctionCorrector::process_ref_expr(const Expression *&expression, Function
     }
 }
 
+void FunctionCorrector::splitting_param_struct(const ocarina::Expression *const &expression) noexcept {
+
+
+    
+}
+
 void FunctionCorrector::visit_expr(const Expression *const &expression, Function *cur_func) noexcept {
     cur_func = cur_func == nullptr ? current_function() : cur_func;
     if (expression == nullptr) {
@@ -47,7 +58,14 @@ void FunctionCorrector::visit_expr(const Expression *const &expression, Function
     if (expression->is_ref()) {
         process_ref_expr(const_cast<const Expression *&>(expression), cur_func);
     } else if (expression->is_member()) {
-        process_ref_expr(const_cast<const Expression *&>(expression), cur_func);
+        switch (_stage) {
+            case ProcessCapture:
+                process_ref_expr(const_cast<const Expression *&>(expression), cur_func);
+                break;
+            case SplitParamStruct:
+                splitting_param_struct(const_cast<const Expression *&>(expression));
+                break;
+        }
     } else {
         expression->accept(*this);
     }
@@ -218,7 +236,6 @@ void FunctionCorrector::visit(const ConditionalExpr *expr) {
 }
 
 void FunctionCorrector::visit(const MemberExpr *expr) {
-    OC_ERROR("FunctionCorrector error !");
 }
 
 void FunctionCorrector::visit(const SubscriptExpr *expr) {
