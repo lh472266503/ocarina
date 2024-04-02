@@ -7,6 +7,7 @@
 #include "core/basic_types.h"
 #include "builtin.h"
 #include "var.h"
+#include "type_trait.h"
 #include "func.h"
 
 namespace ocarina {
@@ -51,6 +52,7 @@ struct SOAView {
 #define OC_MAKE_ATOMIC_SOA(TemplateArgs, TypeName)                                        \
     TemplateArgs struct ocarina::SOAView<TypeName, TBuffer> {                             \
     public:                                                                               \
+        static_assert(is_valid_buffer_element_v<TypeName>);                               \
         using atomic_type = TypeName;                                                     \
         static constexpr ocarina::uint type_size = sizeof(atomic_type);                   \
                                                                                           \
@@ -114,6 +116,7 @@ OC_MAKE_ATOMIC_SOA(template<typename T OC_COMMA ocarina::uint N OC_COMMA typenam
     TemplateArgs struct ocarina::SOAView<S, TBuffer> {                                  \
     public:                                                                             \
         using struct_type = S;                                                          \
+        static_assert(is_valid_buffer_element_v<struct_type>);                          \
         static constexpr ocarina::uint type_size = sizeof(struct_type);                 \
                                                                                         \
     public:                                                                             \
@@ -170,6 +173,7 @@ OC_MAKE_ATOMIC_SOA(template<typename T OC_COMMA ocarina::uint N OC_COMMA typenam
     TemplateArgs struct ocarina::SOAView<TypeName, TBuffer> {                           \
     public:                                                                             \
         using struct_type = TypeName;                                                   \
+        static_assert(is_valid_buffer_element_v<struct_type>);                          \
         using element_type = ElementType;                                               \
         static constexpr ocarina::uint type_size = sizeof(struct_type);                 \
                                                                                         \

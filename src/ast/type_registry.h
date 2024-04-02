@@ -29,18 +29,6 @@ struct TypeDesc {
     static_assert(always_false_v<T>, "Invalid type.");
 };
 
-template<typename T>
-struct is_builtin_struct {
-    static constexpr bool value = false;
-};
-
-OC_DEFINE_TEMPLATE_VALUE(is_builtin_struct)
-
-#define OC_MAKE_BUILTIN_STRUCT(S)           \
-    template<>                              \
-    struct ocarina::is_builtin_struct<S> {  \
-        static constexpr bool value = true; \
-    };
 
 #define OC_MAKE_VECTOR_DESC_NAME(S, N)                                 \
     template<>                                                         \

@@ -264,6 +264,31 @@ using dimension = detail::dimension_impl<std::remove_cvref_t<T>>;
 template<typename T>
 constexpr auto dimension_v = dimension<T>::value;
 
+template<typename T>
+struct is_builtin_struct {
+    static constexpr bool value = false;
+};
+OC_DEFINE_TEMPLATE_VALUE(is_builtin_struct)
+
+#define OC_MAKE_BUILTIN_STRUCT(S)           \
+    template<>                              \
+    struct ocarina::is_builtin_struct<S> {  \
+        static constexpr bool value = true; \
+    };
+
+template<typename T>
+struct is_param_struct {
+    static constexpr bool value = false;
+};
+OC_DEFINE_TEMPLATE_VALUE(is_param_struct)
+
+#define OC_MAKE_PARAM_STRUCT(S)             \
+    template<>                              \
+    struct ocarina::is_param_struct<S> {    \
+        static constexpr bool value = true; \
+    };
+
+
 class Type;
 
 class TypeRegistry;
