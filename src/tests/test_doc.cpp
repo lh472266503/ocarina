@@ -24,17 +24,19 @@ struct Triple {
 OC_STRUCT(Triple, i, j, k, h){
     [[nodiscard]] Uint sum() const noexcept {
         return i + j + k;
-    }
-};
+}
+}
+;
 
 struct Pair {
     uint i{50};
     BufferProxy<float3> b;
+    BufferProxy<Triple> t;
     Pair() = default;
 };
 
 /// register a DSL struct, if you need upload a struct to device, be sure to register
-OC_PARAM_STRUCT(Pair, i, b){
+OC_PARAM_STRUCT(Pair, i, b, t){
 
 };
 
@@ -76,8 +78,8 @@ void test_compute_shader(Device &device, Stream &stream) {
 
     /// used for store the handle of texture or buffer
     BindlessArray bindless_array = device.create_bindless_array();
-//    uint v_idx = bindless_array.emplace(vert);
-//    uint t_idx = bindless_array.emplace(tri);
+    //    uint v_idx = bindless_array.emplace(vert);
+    //    uint t_idx = bindless_array.emplace(tri);
 
     using Elm = float4x4;
     uint len = 10;
@@ -88,32 +90,31 @@ void test_compute_shader(Device &device, Stream &stream) {
 
     stream << byte_buffer.upload(byte_vec.data(), false);
 
-//    uint byte_handle = bindless_array.emplace(byte_buffer);
+    //    uint byte_handle = bindless_array.emplace(byte_buffer);
 
     /// upload buffer and texture handle to device memory
-//    stream << bindless_array->upload_buffer_handles(true) << synchronize();
-//    stream << bindless_array->upload_texture_handles(true) << synchronize();
+    //    stream << bindless_array->upload_buffer_handles(true) << synchronize();
+    //    stream << bindless_array->upload_texture_handles(true) << synchronize();
 
     stream << vert.upload(vertices.data())
            << tri.upload(triangles.data());
 
-//    BufferView<float4> f4v = byte_buffer.view_as<float4>();
+    //    BufferView<float4> f4v = byte_buffer.view_as<float4>();
 
     Callable add = [&](Float a, Float b) {
         return a + b;
     };
     Pair pa;
 
-
     pa.b = vert.proxy();
 
-//    Type::of<Hit>();
+    //    Type::of<Hit>();
 
-//    auto tt = Type::of<Triple>();
+    //    auto tt = Type::of<Triple>();
 
-//    Kernel k = [] {
-//        Var<Triple> a;
-//    };
+    //    Kernel k = [] {
+    //        Var<Triple> a;
+    //    };
 
     std::tuple<int, float> tp;
 
@@ -121,9 +122,8 @@ void test_compute_shader(Device &device, Stream &stream) {
         int i = 0;
     });
 
-    Kernel kernel = [&](Var<Pair> p,BufferVar<Triple> triangle,
+    Kernel kernel = [&](Var<Pair> p, BufferVar<Triple> triangle,
                         ByteBufferVar byte_buffer_var, BufferVar<float3> vert_buffer) {
-
         $info("{}   ", p.i);
         Float3 ver = p.b.read(dispatch_id());
         $info("{}  {}  {}   {}", ver, p.b.size());
@@ -140,7 +140,6 @@ void test_compute_shader(Device &device, Stream &stream) {
 
         $info("vert from capture {} {} {}", vert.read(dispatch_id()));
         $info("vert_buffer  {} {} {}", vert_buffer.read(dispatch_id()));
-
 
         $switch(dispatch_id()) {
             $case(1) {
@@ -198,14 +197,12 @@ void test_compute_shader(Device &device, Stream &stream) {
     };
     Triple triple1{1, 2, 3};
 
-
-
     /// set debug range
     Env::debugger().set_lower(make_uint2(0));
     Env::debugger().set_upper(make_uint2(1));
     auto shader = device.compile(kernel, "test desc");
     stream << Env::debugger().upload();
-    stream << shader( pa, tri, byte_buffer.view(), vert).dispatch(len)
+    stream << shader(pa, tri, byte_buffer.view(), vert).dispatch(len)
            /// explict retrieve log
            << byte_buffer.download(byte_vec.data(), 0)
            << Env::printer().retrieve()
@@ -342,6 +339,30 @@ void test_poly() {
     return;
 }
 
+void test_parameter_struct(Device &device, Stream &stream) {
+    auto [vertices, triangles] = get_cube();
+
+    Buffer<float3> vert = device.create_buffer<float3>(vertices.size());
+    Buffer tri = device.create_buffer<Triple>(triangles.size());
+
+    stream << vert.upload(vertices.data());
+    stream << tri.upload(triangles.data());
+
+    Pair p;
+    p.b = vert.proxy();
+    p.t = tri.proxy();
+
+    Kernel kernel = [&](Var<Pair> pp) {
+        auto v = pp.b.read(dispatch_id());
+        $info("{} {} {} ", v);
+    };
+    auto shader = device.compile(kernel, "param struct");
+
+    stream << shader(p).dispatch(2);
+    stream << Env::printer().retrieve();
+    stream << synchronize() << commit();
+}
+
 int main(int argc, char *argv[]) {
     fs::path path(argv[0]);
     FileManager file_manager(path.parent_path());
@@ -369,7 +390,8 @@ int main(int argc, char *argv[]) {
     a = a + a;
     a = a + b;
 
-    test_compute_shader(device, stream);
+    //    test_compute_shader(device, stream);
+    test_parameter_struct(device, stream);
     //        test_lambda(device, stream);
 
     //    test_poly();

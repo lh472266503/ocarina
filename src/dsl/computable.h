@@ -894,7 +894,7 @@ public:
                                                                                       ocarina::struct_member_tuple<this_type>::member_index(#m))};
 
 #define OC_MAKE_MEMBER_ASSIGNMENT(m) \
-    m.set(t.m);
+    m.set(_t_.m);
 
 #define OC_MAKE_COMPUTABLE_BODY(S, ...)                   \
     namespace ocarina {                                   \
@@ -907,7 +907,7 @@ public:
         OC_COMPUTABLE_COMMON(S)                           \
     public:                                               \
         void                                              \
-        set(const this_type &t) {                         \
+        set(const this_type &_t_) {                       \
             MAP(OC_MAKE_MEMBER_ASSIGNMENT, ##__VA_ARGS__) \
         }                                                 \
                                                           \
