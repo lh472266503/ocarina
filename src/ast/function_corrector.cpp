@@ -44,12 +44,6 @@ void FunctionCorrector::process_ref_expr(const Expression *&expression, Function
     }
 }
 
-void FunctionCorrector::splitting_param_struct(const ocarina::Expression *const &expression) noexcept {
-
-
-    
-}
-
 void FunctionCorrector::visit_expr(const Expression *const &expression, Function *cur_func) noexcept {
     cur_func = cur_func == nullptr ? current_function() : cur_func;
     if (expression == nullptr) {
@@ -63,7 +57,7 @@ void FunctionCorrector::visit_expr(const Expression *const &expression, Function
                 process_ref_expr(const_cast<const Expression *&>(expression), cur_func);
                 break;
             case SplitParamStruct:
-                splitting_param_struct(const_cast<const Expression *&>(expression));
+                process_param_struct(const_cast<const Expression *&>(expression));
                 break;
         }
     } else {
@@ -236,6 +230,16 @@ void FunctionCorrector::visit(const ConditionalExpr *expr) {
 }
 
 void FunctionCorrector::visit(const MemberExpr *expr) {
+    OC_ERROR_IF(_stage == ProcessCapture);
+    const Type *parent_type = expr->parent()->type();
+    if (parent_type->is_param_struct()) {
+        /// splitting
+    }
+}
+
+void FunctionCorrector::process_param_struct(const Expression *&expression) noexcept {
+    expression->accept(*this);
+
 }
 
 void FunctionCorrector::visit(const SubscriptExpr *expr) {

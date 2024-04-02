@@ -122,6 +122,8 @@ private:
     void append_output_argument(const Expression *expression, bool *contain) noexcept;
     /// used to capture variable from invoker end
 
+    void splitting_param_struct(Variable variable) noexcept;
+
     template<typename Expr, typename Tuple, size_t... i>
     [[nodiscard]] auto _create_expression(Tuple &&tuple, std::index_sequence<i...>) {
         auto expr = ocarina::make_unique<Expr>(std::get<i>(OC_FORWARD(tuple))...);

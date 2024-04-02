@@ -110,6 +110,10 @@ void Function::append_output_argument(const Expression *expression, bool *contai
     });
 }
 
+void Function::splitting_param_struct(ocarina::Variable variable) noexcept {
+
+}
+
 Function::~Function() {
     for (auto &mem : _temp_memory) {
         delete_with_allocator(mem.first);

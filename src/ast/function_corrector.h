@@ -52,7 +52,7 @@ private:
     void process_ref_expr(const Expression *&expression, Function *cur_func) noexcept;
     void visit_expr(const Expression *const &expression, Function *cur_func = nullptr) noexcept;
 
-    void splitting_param_struct(const Expression *const &expression) noexcept;
+    void process_param_struct(const Expression *&expression) noexcept;
 
     [[nodiscard]] bool is_from_invoker(const Expression *expression) noexcept;
     void capture_from_invoker(const Expression *&expression, Function *cur_func) noexcept;
