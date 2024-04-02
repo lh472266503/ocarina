@@ -40,6 +40,19 @@ OC_PARAM_STRUCT(Pair, i, b, t){
 
 };
 
+struct Param {
+    uint i{50};
+    BufferProxy<float3> b;
+    BufferProxy<Triple> t;
+    Pair pa;
+    Param() = default;
+};
+
+/// register a DSL struct, if you need upload a struct to device, be sure to register
+OC_PARAM_STRUCT(Param, i, b, t,pa){
+
+};
+
 auto get_cube(float x = 1, float y = 1, float z = 1) {
     x = x / 2.f;
     y = y / 2.f;
@@ -348,13 +361,16 @@ void test_parameter_struct(Device &device, Stream &stream) {
     stream << vert.upload(vertices.data());
     stream << tri.upload(triangles.data());
 
-    Pair p;
+    Param p;
     p.b = vert.proxy();
     p.t = tri.proxy();
+    p.pa.b = vert.proxy();
 
-    Kernel kernel = [&](Var<Pair> pp) {
+    Kernel kernel = [&](Var<Param> pp) {
         auto v = pp.b.read(dispatch_id());
         $info("{} {} {} ", v);
+        v = pp.pa.b.read(dispatch_id());
+        $info("{} {} {}  -- ", v);
     };
     auto shader = device.compile(kernel, "param struct");
 
