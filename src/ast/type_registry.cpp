@@ -244,13 +244,15 @@ void TypeRegistry::parse_struct(Type *type, string_view desc) noexcept {
     auto alignment_str = lst[0];
     bool is_builtin_struct = lst[1] == "true";
     type->_builtin_struct = is_builtin_struct;
+    bool is_param_struct = lst[2] == "true";
+    type->_param_struct = is_param_struct;
     auto alignment = std::stoi(string(alignment_str));
     type->_alignment = alignment;
     auto size = 0u;
-    for (int i = 2; i < lst.size(); ++i) {
+    for (int i = 3; i < lst.size(); ++i) {
         auto type_str = lst[i];
-        type->_members.push_back(parse_type(type_str, hash64(ext_hash, i - 2)));
-        auto member = type->_members[i - 2];
+        type->_members.push_back(parse_type(type_str, hash64(ext_hash, i - 3)));
+        auto member = type->_members[i - 3];
         size = mem_offset(size, member->alignment());
         size += member->size();
     }

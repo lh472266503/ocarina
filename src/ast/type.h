@@ -288,7 +288,6 @@ OC_DEFINE_TEMPLATE_VALUE(is_param_struct)
         static constexpr bool value = true; \
     };
 
-
 class Type;
 
 class TypeRegistry;
@@ -365,6 +364,7 @@ private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override { return hash64(_description); }
     vector<int> _dims;
     bool _builtin_struct{false};
+    bool _param_struct{false};
 
 private:
     void update_name(ocarina::string_view desc) noexcept;
@@ -419,6 +419,7 @@ public:
     }
     [[nodiscard]] size_t max_member_size() const noexcept;
     [[nodiscard]] constexpr bool is_builtin_struct() const noexcept { return _builtin_struct; }
+    [[nodiscard]] constexpr bool is_param_struct() const noexcept { return _param_struct; }
     [[nodiscard]] constexpr bool is_basic() const noexcept { return is_scalar() || is_vector() || is_matrix(); }
     [[nodiscard]] constexpr bool is_array() const noexcept { return _tag == Tag::ARRAY; }
     [[nodiscard]] constexpr bool is_vector() const noexcept { return _tag == Tag::VECTOR; }
