@@ -19,6 +19,7 @@ void FunctionCorrector::apply(Function *function) noexcept {
     if (current_function()->is_kernel()) {
         /// Split parameter structure into separate elements
         _stage = SplitParamStruct;
+        current_function()->splitting_arguments();
         traverse(*current_function());
     }
     _function_stack.pop_back();

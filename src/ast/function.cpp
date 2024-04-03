@@ -45,7 +45,7 @@ const RefExpr *Function::mapping_captured_argument(const Expression *outer_expr,
     if (!*contain) {
         uint arg_index = static_cast<uint>(_appended_arguments.size());
         _expr_to_argument_index.insert(make_pair(outer_expr, arg_index));
-        Variable variable(outer_expr->type(), Variable::Tag::REFERENCE, _next_variable_uid(), nullptr, "outer");
+        Variable variable(outer_expr->type(), Variable::Tag::REFERENCE, _next_variable_uid(), "", "outer");
         _appended_arguments.push_back(variable);
     }
     uint arg_index = _expr_to_argument_index.at(outer_expr);
@@ -86,7 +86,7 @@ const RefExpr *Function::mapping_output_argument(const Expression *invoked_func_
     }
     if (!_expr_to_argument_index.contains(invoked_func_expr)) {
         uint arg_index = static_cast<uint>(_appended_arguments.size());
-        Variable variable(invoked_func_expr->type(), Variable::Tag::REFERENCE, _next_variable_uid(), nullptr, "pass");
+        Variable variable(invoked_func_expr->type(), Variable::Tag::REFERENCE, _next_variable_uid(), "", "pass");
         _expr_to_argument_index.insert(make_pair(invoked_func_expr, arg_index));
         _appended_arguments.push_back(variable);
     }
@@ -101,7 +101,7 @@ void Function::append_output_argument(const Expression *expression, bool *contai
         return;
     }
     _expr_to_argument_index.insert(make_pair(expression, static_cast<uint>(_appended_arguments.size())));
-    Variable variable(expression->type(), Variable::Tag::REFERENCE, _next_variable_uid(), nullptr, "output");
+    Variable variable(expression->type(), Variable::Tag::REFERENCE, _next_variable_uid(), "", "output");
     _appended_arguments.push_back(variable);
     const RefExpr *ref_expr = _ref(variable);
     OC_ERROR_IF(expression->type()->is_resource());
@@ -110,8 +110,34 @@ void Function::append_output_argument(const Expression *expression, bool *contai
     });
 }
 
-void Function::splitting_param_struct(ocarina::Variable variable) noexcept {
+void Function::process_param_struct_member(const ocarina::Variable &arg, const Type *type,
+                                           vector<int> &path) noexcept {
+    if (type->is_param_struct()) {
+        splitting_param_struct(arg, type, path);
+    } else {
+        Variable v(type, Variable::Tag::LOCAL, _next_variable_uid(), "", ocarina::format(""));
+        _splitted_arguments.push_back(v);
+    }
+}
 
+void Function::splitting_param_struct(const ocarina::Variable &arg, const Type *type,
+                                      vector<int> &path) noexcept {
+    for (int i = 0; i < type->members().size(); ++i) {
+        path.push_back(i);
+        process_param_struct_member(arg, type->members()[i], path);
+        path.pop_back();
+    }
+}
+
+void Function::splitting_arguments() noexcept {
+    for (const Variable &arg : _arguments) {
+        if (arg.type()->is_param_struct()) {
+            vector<int> path;
+            splitting_param_struct(arg, arg.type(), path);
+        } else {
+            _splitted_arguments.push_back(arg);
+        }
+    }
 }
 
 Function::~Function() {
@@ -247,7 +273,7 @@ const RefExpr *Function::argument(const Type *type) noexcept {
 }
 
 const RefExpr *Function::reference_argument(const Type *type) noexcept {
-    Variable variable(type, Variable::Tag::REFERENCE, _next_variable_uid(), nullptr, "ref");
+    Variable variable(type, Variable::Tag::REFERENCE, _next_variable_uid(), "", "ref");
     _arguments.push_back(variable);
     return _ref(variable);
 }
@@ -337,7 +363,7 @@ const CapturedResource &Function::get_captured_resource(const Type *type, Variab
 }
 
 const CapturedResource &Function::add_captured_resource(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept {
-    const RefExpr *expr = _ref(Variable(type, tag, _next_variable_uid(), nullptr, "cap_res"));
+    const RefExpr *expr = _ref(Variable(type, tag, _next_variable_uid(), "", "cap_res"));
     _captured_resources.emplace_back(expr, type, block);
     return _captured_resources.back();
 }
