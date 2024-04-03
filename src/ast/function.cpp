@@ -112,26 +112,31 @@ void Function::append_output_argument(const Expression *expression, bool *contai
 
 namespace detail {
 
-[[nodiscard]] string path_key(const Variable &arg, const vector<int> &path) noexcept {
-    string ret = ocarina::format("{}", arg.uid());
-    for (int i : path) {
-        ret += "_" + to_string(i);
+[[nodiscard]] string path_key(const vector<int> &path) noexcept {
+    string ret = ocarina::format("{}", path[0]);
+    for (int i = 1; i < path.size(); ++i) {
+        ret += "_" + to_string(path[i]);
     }
     return ret;
 }
 
 }// namespace detail
 
-void Function::replace_param_struct_member(const vector<int> &path, const ocarina::Expression *&expression) noexcept {
-
+void Function::replace_param_struct_member(const vector<int> &path, const Expression *&expression) noexcept {
+    string key = detail::path_key(path);
+    if (_argument_map.contains(key)) {
+        const RefExpr *ref_expr = _ref(_argument_map[key]);
+    } else {
+        return;
+    }
 }
 
-void Function::process_param_struct_member(const ocarina::Variable &arg, const Type *type,
+void Function::process_param_struct_member(const Variable &arg, const Type *type,
                                            vector<int> &path) noexcept {
     if (type->is_param_struct()) {
         splitting_param_struct(arg, type, path);
     } else {
-        string key = detail::path_key(arg, path);
+        string key = detail::path_key(path);
         Variable v(type, Variable::Tag::LOCAL, _next_variable_uid(), "", key);
         _argument_map.insert(make_pair(key, v));
         _splitted_arguments.push_back(v);
@@ -151,6 +156,7 @@ void Function::splitting_arguments() noexcept {
     for (const Variable &arg : _arguments) {
         if (arg.type()->is_param_struct()) {
             vector<int> path;
+            path.push_back(arg.uid());
             splitting_param_struct(arg, arg.type(), path);
         } else {
             _splitted_arguments.push_back(arg);
