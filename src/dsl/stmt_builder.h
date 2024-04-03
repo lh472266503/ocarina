@@ -17,6 +17,7 @@ inline void comment(const ocarina::string &str) noexcept {
 
 namespace detail {
 template<typename Lhs, typename Rhs>
+requires (!is_param_struct_v<expr_value_t<Lhs>> && !is_param_struct_v<expr_value_t<Rhs>>)
 inline void assign(Lhs &&lhs, Rhs &&rhs) noexcept {
     if constexpr (concepts::assign_able<expr_value_t<Lhs>, expr_value_t<Rhs>>) {
         Function::current()->assign(

@@ -16,6 +16,7 @@ namespace ocarina {
 
 namespace detail {
 template<typename Lhs, typename Rhs>
+requires (!is_param_struct_v<expr_value_t<Lhs>> && !is_param_struct_v<expr_value_t<Rhs>>)
 void assign(Lhs &&lhs, Rhs &&rhs) noexcept;// implement in stmt_builder.h
 
 [[nodiscard]] Var<uint> correct_index(Var<uint> index, Var<uint> size, const string &desc,

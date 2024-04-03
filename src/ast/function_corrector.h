@@ -49,7 +49,7 @@ private:
     [[nodiscard]] Function *kernel() noexcept { return _function_stack.front(); }
 
     void traverse(Function &function) noexcept;
-    void process_ref_expr(const Expression *&expression, Function *cur_func) noexcept;
+    void process_capture(const Expression *&expression, Function *cur_func) noexcept;
     void visit_expr(const Expression *const &expression, Function *cur_func = nullptr) noexcept;
 
     void process_param_struct(const Expression *&expression) noexcept;

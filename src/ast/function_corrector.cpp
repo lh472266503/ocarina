@@ -30,7 +30,7 @@ bool FunctionCorrector::is_from_invoker(const Expression *expression) noexcept {
                      expression->context()) != _function_stack.end();
 }
 
-void FunctionCorrector::process_ref_expr(const Expression *&expression, Function *cur_func) noexcept {
+void FunctionCorrector::process_capture(const Expression *&expression, Function *cur_func) noexcept {
     if (expression->context() == cur_func) {
         return;
     }
@@ -51,11 +51,11 @@ void FunctionCorrector::visit_expr(const Expression *const &expression, Function
         return;
     }
     if (expression->is_ref()) {
-        process_ref_expr(const_cast<const Expression *&>(expression), cur_func);
+        process_capture(const_cast<const Expression *&>(expression), cur_func);
     } else if (expression->is_member()) {
         switch (_stage) {
             case ProcessCapture:
-                process_ref_expr(const_cast<const Expression *&>(expression), cur_func);
+                process_capture(const_cast<const Expression *&>(expression), cur_func);
                 break;
             case SplitParamStruct:
                 process_param_struct(const_cast<const Expression *&>(expression));

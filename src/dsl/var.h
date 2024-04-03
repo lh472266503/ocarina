@@ -27,6 +27,7 @@ struct Var : public Computable<T> {
         : ocarina::detail::Computable<this_type>(expression) {}
     Var() noexcept
         : Var(ocarina::Function::current()->local(ocarina::Type::of<this_type>())) {
+        static_assert(!is_param_struct_v<T>);
         if constexpr (is_struct_v<T>) {
             Computable<T>::set(T{});
         }
