@@ -128,7 +128,7 @@ void Function::process_param_struct_member(const ocarina::Variable &arg, const T
         splitting_param_struct(arg, type, path);
     } else {
         string key = detail::path_key(arg, path);
-        Variable v(type, Variable::Tag::LOCAL, _next_variable_uid(), "", ocarina::format(""));
+        Variable v(type, Variable::Tag::LOCAL, _next_variable_uid(), "", key);
         _argument_map.insert(make_pair(key, v));
         _splitted_arguments.push_back(v);
     }
