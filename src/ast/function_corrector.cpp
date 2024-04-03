@@ -232,15 +232,24 @@ void FunctionCorrector::visit(const ConditionalExpr *expr) {
 
 void FunctionCorrector::visit(const MemberExpr *expr) {
     OC_ERROR_IF(_stage == ProcessCapture);
-    const Type *parent_type = expr->parent()->type();
-    if (parent_type->is_param_struct()) {
-        /// splitting
-    }
 }
 
 void FunctionCorrector::process_param_struct(const Expression *&expression) noexcept {
-    expression->accept(*this);
-
+    const MemberExpr *member_expr = dynamic_cast<const MemberExpr *>(expression);
+    const Expression *parent = member_expr->parent();
+    vector<int> path;
+    path.push_back(member_expr->member_index());
+    do {
+        const MemberExpr *member_parent = dynamic_cast<const MemberExpr *>(parent);
+        if (member_parent) {
+            parent = member_parent->parent();
+            path.push_back(member_parent->member_index());
+        }
+    } while (!parent->is_ref());
+    const RefExpr *ref_expr = dynamic_cast<const RefExpr *>(parent);
+    path.push_back(ref_expr->variable().uid());
+    std::reverse(path.begin(), path.end());
+    kernel()->replace_param_struct_member(path, expression);
 }
 
 void FunctionCorrector::visit(const SubscriptExpr *expr) {

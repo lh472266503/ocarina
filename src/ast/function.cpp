@@ -122,6 +122,10 @@ namespace detail {
 
 }// namespace detail
 
+void Function::replace_param_struct_member(const vector<int> &path, const ocarina::Expression *&expression) noexcept {
+
+}
+
 void Function::process_param_struct_member(const ocarina::Variable &arg, const Type *type,
                                            vector<int> &path) noexcept {
     if (type->is_param_struct()) {

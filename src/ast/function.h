@@ -130,6 +130,7 @@ private:
 
     void process_param_struct_member(const Variable &arg, const Type *type, vector<int> &path) noexcept;
     void splitting_param_struct(const Variable &arg, const Type *type, vector<int> &path) noexcept;
+    void replace_param_struct_member(const vector<int> &path, const Expression *&expression) noexcept;
     void splitting_arguments() noexcept;
 
     template<typename Expr, typename Tuple, size_t... i>
