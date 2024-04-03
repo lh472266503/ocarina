@@ -159,6 +159,7 @@ struct struct_member_tuple<Matrix<N>> {
         static constexpr string_view members[] = {MAP_LIST(OC_STRINGIFY, __VA_ARGS__)};           \
         using type = ocarina::tuple<MAP_LIST(OC_MEMBER_TYPE_MAP, ##__VA_ARGS__)>;                 \
         using offset = std::index_sequence<MAP_LIST(OC_TYPE_OFFSET_OF, ##__VA_ARGS__)>;           \
+        static constexpr array offset_array = {MAP_LIST(OC_TYPE_OFFSET_OF, ##__VA_ARGS__)};                    \
         static constexpr auto min_size = std::min({MAP_LIST(OC_TYPE_SIZE, ##__VA_ARGS__)});       \
         static_assert(min_size >= 4, "Due to the memory alignment, min member size must >= 4");   \
         static_assert(is_valid_reflection_v<this_type, type, offset>,                             \
@@ -268,7 +269,8 @@ template<typename T>
 struct is_builtin_struct {
     static constexpr bool value = false;
 };
-OC_DEFINE_TEMPLATE_VALUE(is_builtin_struct)
+template<typename T>
+constexpr auto is_builtin_struct_v = is_builtin_struct<std::remove_cvref_t<T>>::value;
 
 #define OC_MAKE_BUILTIN_STRUCT(S)           \
     template<>                              \
@@ -280,7 +282,8 @@ template<typename T>
 struct is_param_struct {
     static constexpr bool value = false;
 };
-OC_DEFINE_TEMPLATE_VALUE(is_param_struct)
+template<typename T>
+constexpr auto is_param_struct_v = is_param_struct<std::remove_cvref_t<T>>::value;
 
 #define OC_MAKE_PARAM_STRUCT(S)             \
     template<>                              \

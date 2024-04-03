@@ -115,7 +115,7 @@ public:
             oc_memcpy(head + offset,
                       block.address, block.size);
             if (!_function->is_raytracing()) {
-                _args.push_back(reinterpret_cast<void*>(head + offset));
+                _args.push_back(reinterpret_cast<void *>(head + offset));
             }
             offset += block.size;
         }
@@ -127,7 +127,18 @@ public:
 
     template<typename T>
     ArgumentList &operator<<(T &&arg) {
-        if constexpr (is_buffer_v<T>) {
+        if constexpr (is_param_struct_v<T>) {
+            using arg_type = std::remove_cvref_t<T>;
+            using Tuple = ocarina::struct_member_tuple_t<arg_type>;
+            const std::byte *head = reinterpret_cast<const std::byte *>(addressof(arg));
+            traverse_tuple(Tuple{}, [&]<typename Elm>(const Elm &_, uint index) {
+                constexpr auto offset_array = ocarina::struct_member_tuple<arg_type>::offset_array;
+                uint offset = offset_array[index];
+                const std::byte *addr = head + offset;
+                const Elm &elm = reinterpret_cast<const Elm &>(*addr);
+                *this << elm;
+            });
+        } else if constexpr (is_buffer_v<T>) {
             _encode_buffer(OC_FORWARD(arg));
         } else if constexpr (is_texture_v<T>) {
             _encode_texture(OC_FORWARD(arg));
