@@ -110,12 +110,26 @@ void Function::append_output_argument(const Expression *expression, bool *contai
     });
 }
 
+namespace detail {
+
+[[nodiscard]] string path_key(const Variable &arg, const vector<int> &path) noexcept {
+    string ret = ocarina::format("{}", arg.uid());
+    for (int i : path) {
+        ret += "_" + to_string(i);
+    }
+    return ret;
+}
+
+}// namespace detail
+
 void Function::process_param_struct_member(const ocarina::Variable &arg, const Type *type,
                                            vector<int> &path) noexcept {
     if (type->is_param_struct()) {
         splitting_param_struct(arg, type, path);
     } else {
+        string key = detail::path_key(arg, path);
         Variable v(type, Variable::Tag::LOCAL, _next_variable_uid(), "", ocarina::format(""));
+        _argument_map.insert(make_pair(key, v));
         _splitted_arguments.push_back(v);
     }
 }

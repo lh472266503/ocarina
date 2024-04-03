@@ -81,7 +81,12 @@ private:
     ocarina::map<const Expression *, const RefExpr *> _outer_to_local;
 
     ocarina::vector<Variable> _arguments;
+
+    /// use for splitting parameter structure start
+    ocarina::map<string, Variable> _argument_map;
     ocarina::vector<Variable> _splitted_arguments;
+    /// use for splitting parameter structure end
+
     ocarina::vector<CapturedResource> _captured_resources;
     ocarina::vector<Variable> _builtin_vars;
     ocarina::vector<Usage> _variable_usages;
@@ -123,8 +128,8 @@ private:
     void append_output_argument(const Expression *expression, bool *contain) noexcept;
     /// used to capture variable from invoker end
 
-    void process_param_struct_member(const Variable& arg, const Type *type, vector<int>& path) noexcept;
-    void splitting_param_struct(const Variable& arg,const Type *type,vector<int>& path) noexcept;
+    void process_param_struct_member(const Variable &arg, const Type *type, vector<int> &path) noexcept;
+    void splitting_param_struct(const Variable &arg, const Type *type, vector<int> &path) noexcept;
     void splitting_arguments() noexcept;
 
     template<typename Expr, typename Tuple, size_t... i>

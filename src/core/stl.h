@@ -290,7 +290,7 @@ struct tuple_size_impl<std::tuple<Ts...>> : public std::tuple_size<std::tuple<Ts
 
 template<typename... Ts>
 struct tuple_size_impl<eastl::tuple<Ts...>> : public eastl::tuple_size<eastl::tuple<Ts...>> {};
-}
+}// namespace detail
 template<typename T>
 using tuple_size = typename detail::tuple_size_impl<std::remove_cvref_t<T>>;
 
@@ -311,12 +311,12 @@ struct tuple_element<i, eastl::tuple<Ts...>> : public eastl::tuple_element<i, ea
 template<size_t i, typename T>
 using tuple_element_t = typename tuple_element<i, T>::type;
 
-template<size_t i, typename ...Ts>
+template<size_t i, typename... Ts>
 auto tuple_get(const std::tuple<Ts...> &tp) noexcept {
     return std::get<i>(tp);
 }
 
-template<size_t i, typename ...Ts>
+template<size_t i, typename... Ts>
 auto tuple_get(const eastl::tuple<Ts...> &tp) noexcept {
     return eastl::get<i>(tp);
 }
@@ -324,7 +324,11 @@ auto tuple_get(const eastl::tuple<Ts...> &tp) noexcept {
 template<size_t i = 0, typename Tuple, typename Func>
 void traverse_tuple(Tuple &&tuple, Func &&func) noexcept {
     if constexpr (i < tuple_size_v<Tuple>) {
-        func(ocarina::tuple_get<i>(OC_FORWARD(tuple)));
+        if constexpr (std::invocable<Func, decltype(ocarina::tuple_get<i>(OC_FORWARD(tuple))), size_t>) {
+            func(ocarina::tuple_get<i>(OC_FORWARD(tuple)), i);
+        } else {
+            func(ocarina::tuple_get<i>(OC_FORWARD(tuple)));
+        }
         traverse_tuple<i + 1>(OC_FORWARD(tuple), OC_FORWARD(func));
     }
 }

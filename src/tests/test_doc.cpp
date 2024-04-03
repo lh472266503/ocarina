@@ -344,12 +344,6 @@ void test_poly() {
     p1 = p2;
     cout << "after p1->a = " << p1->a << ", p1->c = " << dynamic_cast<Derive *>(p1.get())->c << endl;
     cout << "after p2->a = " << p2->a << ", p2->c = " << dynamic_cast<Derive *>(p2.get())->c << endl;
-
-    //    auto p3 = make_unique<Derive1>(1);
-    //
-    //    unique_ptr<Derive> derive = dynamic_unique_pointer_cast<Derive>(move(p2));
-
-    return;
 }
 
 void test_parameter_struct(Device &device, Stream &stream) {
