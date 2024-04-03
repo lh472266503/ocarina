@@ -13,7 +13,9 @@ void Function::StructureSet::add(const ocarina::Type *type) noexcept {
     for (const Type *m : type->members()) {
         add(m);
     }
-    if (struct_map.contains(type->hash()) || !type->is_structure()) {
+    if (struct_map.contains(type->hash()) ||
+        !type->is_structure() ||
+        type->is_param_struct()) {
         return;
     }
     struct_map.insert(make_pair(type->hash(), type));
@@ -126,6 +128,7 @@ void Function::replace_param_struct_member(const vector<int> &path, const Expres
     string key = detail::path_key(path);
     if (_argument_map.contains(key)) {
         const RefExpr *ref_expr = _ref(_argument_map[key]);
+        expression = ref_expr;
     } else {
         return;
     }
@@ -162,6 +165,7 @@ void Function::splitting_arguments() noexcept {
             _splitted_arguments.push_back(arg);
         }
     }
+    std::swap(_arguments, _splitted_arguments);
 }
 
 Function::~Function() {
