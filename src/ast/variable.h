@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <utility>
+
 #include "core/stl.h"
 #include "core/hash.h"
 #include "type.h"
@@ -41,14 +43,14 @@ private:
     const Type *_type{};
     uint32_t _uid{};
     Tag _tag;
-    const char *_name{};
-    const char *_suffix{};
+    string _name{};
+    string _suffix{};
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
     Variable() noexcept = default;
-    Variable(const Type *type, Tag tag, uint uid, const char *name = nullptr, const char *suffix = nullptr) noexcept
-        : _type(type), _tag(tag), _uid(uid), _name(name),_suffix(suffix) {}
+    Variable(const Type *type, Tag tag, uint uid, string name = "", string suffix = "") noexcept
+        : _type(type), _tag(tag), _uid(uid), _name(std::move(name)), _suffix(std::move(suffix)) {}
     [[nodiscard]] constexpr const Type *type() const noexcept { return _type; }
     [[nodiscard]] constexpr Tag tag() const noexcept { return _tag; }
     [[nodiscard]] constexpr uint uid() const noexcept { return _uid; }
