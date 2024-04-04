@@ -20,6 +20,7 @@ private:
     size_t _offset{};
     size_t _size{};
     size_t _total_size{};
+    mutable BufferProxy<> _proxy{};
 
 public:
     ByteBufferView() = default;
@@ -32,8 +33,18 @@ public:
 
     inline ByteBufferView(const ByteBuffer &buffer);
 
+    const BufferProxy<> &proxy() const noexcept {
+        _proxy.handle = reinterpret_cast<std::byte *>(head());
+        _proxy.size = _size;
+        return _proxy;
+    }
+
+    const BufferProxy<> *proxy_ptr() const noexcept {
+        return &proxy();
+    }
+
     [[nodiscard]] ByteBufferView subview(size_t offset, size_t size) const noexcept {
-        return ByteBufferView(_handle, _offset + offset, size, _total_size);
+        return {_handle, _offset + offset, size, _total_size};
     }
 
     template<typename T>

@@ -23,6 +23,8 @@ private:
     size_t _size{};
     size_t _total_size{};
 
+    mutable BufferProxy<T> _proxy{};
+
 public:
     BufferView() = default;
     BufferView(const Buffer<T, Dims...> &buffer);
@@ -30,6 +32,17 @@ public:
     [[nodiscard]] size_t size() const { return _size; }
     [[nodiscard]] size_t element_size() const noexcept { return _element_size; }
     [[nodiscard]] size_t size_in_byte() const noexcept { return _size * element_size(); }
+
+    const BufferProxy<T> &proxy() const noexcept {
+        _proxy.handle = reinterpret_cast<T *>(head());
+        _proxy.size = _size;
+        return _proxy;
+    }
+
+    const BufferProxy<T> *proxy_ptr() const noexcept {
+        return &proxy();
+    }
+
     BufferView(handle_ty handle, size_t offset, size_t size, size_t total_size)
         : _handle(handle), _offset(offset), _size(size), _total_size(total_size) {}
 
@@ -97,7 +110,6 @@ protected:
     size_t _element_size{0};
     mutable uint _gl_handle{0};
     mutable void *_gl_shared_handle{0};
-    /// just for construct memory block
     mutable BufferProxy<T> _proxy{};
 
 public:
