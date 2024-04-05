@@ -159,7 +159,7 @@ struct struct_member_tuple<Matrix<N>> {
         static constexpr string_view members[] = {MAP_LIST(OC_STRINGIFY, __VA_ARGS__)};           \
         using type = ocarina::tuple<MAP_LIST(OC_MEMBER_TYPE_MAP, ##__VA_ARGS__)>;                 \
         using offset = std::index_sequence<MAP_LIST(OC_TYPE_OFFSET_OF, ##__VA_ARGS__)>;           \
-        static constexpr array offset_array = {MAP_LIST(OC_TYPE_OFFSET_OF, ##__VA_ARGS__)};                    \
+        static constexpr array offset_array = {MAP_LIST(OC_TYPE_OFFSET_OF, ##__VA_ARGS__)};       \
         static constexpr auto min_size = std::min({MAP_LIST(OC_TYPE_SIZE, ##__VA_ARGS__)});       \
         static_assert(min_size >= 4, "Due to the memory alignment, min member size must >= 4");   \
         static_assert(is_valid_reflection_v<this_type, type, offset>,                             \
@@ -310,6 +310,19 @@ template<typename T = std::byte>
 struct BufferProxy {
     T *handle{};
     uint64_t size{};
+
+    [[nodiscard]] size_t data_alignment() const noexcept {
+        return alignof(decltype(*this));
+    }
+
+    [[nodiscard]] size_t data_size() const noexcept {
+        return sizeof(*this);
+    }
+
+    [[nodiscard]] MemoryBlock memory_block() const noexcept {
+        return {this, data_size(), data_alignment(), sizeof(handle_ty)};
+    }
+
     [[nodiscard]] handle_ty head() const noexcept {
         return reinterpret_cast<handle_ty>(handle);
     }
@@ -317,6 +330,22 @@ struct BufferProxy {
         return size * sizeof(T);
     }
 };
+
+namespace detail {
+template<typename T>
+struct is_buffer_proxy_impl {
+    static constexpr bool value = false;
+};
+
+template<typename T>
+struct is_buffer_proxy_impl<BufferProxy<T>> {
+    static constexpr bool value = true;
+};
+}// namespace detail
+
+template<typename T>
+struct is_buffer_proxy : public detail::is_buffer_proxy_impl<std::remove_cvref_t<T>> {};
+OC_DEFINE_TEMPLATE_VALUE(is_buffer_proxy);
 
 using ByteBufferProxy = BufferProxy<>;
 

@@ -138,7 +138,7 @@ public:
                 const Elm &elm = reinterpret_cast<const Elm &>(*addr);
                 *this << elm;
             });
-        } else if constexpr (is_buffer_v<T>) {
+        } else if constexpr (is_buffer_v<T> || is_buffer_proxy_v<T>) {
             _encode_buffer(OC_FORWARD(arg));
         } else if constexpr (is_texture_v<T>) {
             _encode_texture(OC_FORWARD(arg));
