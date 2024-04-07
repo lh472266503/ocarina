@@ -276,10 +276,10 @@ template<typename T>
 struct is_builtin_struct : public detail::is_builtin_struct_impl<std::remove_cvref_t<T>> {};
 OC_DEFINE_TEMPLATE_VALUE(is_builtin_struct)
 
-#define OC_MAKE_BUILTIN_STRUCT(S)           \
-    template<>                              \
-    struct ocarina::is_builtin_struct<S> {  \
-        static constexpr bool value = true; \
+#define OC_MAKE_BUILTIN_STRUCT(S)                       \
+    template<>                                          \
+    struct ocarina::detail::is_builtin_struct_impl<S> { \
+        static constexpr bool value = true;             \
     };
 
 namespace detail {
@@ -292,10 +292,10 @@ template<typename T>
 struct is_param_struct : public detail::is_param_struct_impl<std::remove_cvref_t<T>> {};
 OC_DEFINE_TEMPLATE_VALUE(is_param_struct)
 
-#define OC_MAKE_PARAM_STRUCT(S)             \
-    template<>                              \
-    struct ocarina::is_param_struct<S> {    \
-        static constexpr bool value = true; \
+#define OC_MAKE_PARAM_STRUCT(S)                       \
+    template<>                                        \
+    struct ocarina::detail::is_param_struct_impl<S> { \
+        static constexpr bool value = true;           \
     };
 
 class Type;
