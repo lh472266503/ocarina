@@ -2,14 +2,14 @@
 // Created by Zero on 05/08/2022.
 //
 
-#include "util/image_io.h"
+#include "util/image.h"
 #include "core/stl.h"
 #include "dsl/dsl.h"
 #include "util/file_manager.h"
 #include "rhi/common.h"
 #include <windows.h>
 #include "math/base.h"
-#include "util/image_io.h"
+#include "util/image.h"
 #include "dsl/dsl.h"
 
 using namespace ocarina;
@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
     Stream stream = device.create_stream();
     auto path1 = R"(D:\work\engine\Vision\gallery\cbox-sss.png)";
     auto path2 = R"(D:\work\engine\Vision\gallery\cbox-sss.jpg)";
-    auto image_io = ImageIO::load(path1, LINEAR);
+    auto image_io = Image::load(path1, LINEAR);
 
     auto image = device.create_texture(image_io.resolution(), image_io.pixel_storage());
     auto image_out = device.create_texture(image_io.resolution(), image_io.pixel_storage());

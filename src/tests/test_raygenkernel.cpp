@@ -2,7 +2,7 @@
 // Created by Zero on 2022/8/18.
 //
 
-#include "util/image_io.h"
+#include "util/image.h"
 #include "core/stl.h"
 #include "dsl/dsl.h"
 #include "rhi/common.h"
@@ -119,7 +119,7 @@ int main(int argc, char *argv[]) {
     Env::printer().init(device);
 //    auto path1 = R"(E:/work/test_dir/D5.png)";
 //    auto path2 = R"(E:/work/test_dir/D5.jpg)";
-//    auto image_io = ImageIO::load(path1, LINEAR);
+//    auto image_io = Image::load(path1, LINEAR);
 //    auto image = device.create_texture(image_io.resolution(), image_io.pixel_storage());
 //    stream << image.upload_sync(image_io.pixel_ptr());
     device.init_rtx();

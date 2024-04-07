@@ -2,7 +2,7 @@
 // Created by Zero on 2022/8/18.
 //
 
-#include "util/image_io.h"
+#include "util/image.h"
 #include "core/stl.h"
 #include "dsl/dsl.h"
 #include "rhi/common.h"
@@ -159,7 +159,7 @@ int main(int argc, char *argv[]) {
 //        return make_ray(origin, direction);
 //    };
 
-    auto image = ImageIO::pure_color(make_float4(0, 0, 0, 1), ColorSpace::LINEAR, res);
+    auto image = Image::pure_color(make_float4(0, 0, 0, 1), ColorSpace::LINEAR, res);
     auto frame = device.create_texture(res, PixelStorage::FLOAT4);
 
     Kernel raytracing = [&](Var<Texture> output) {

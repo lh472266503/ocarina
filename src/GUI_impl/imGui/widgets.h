@@ -11,7 +11,7 @@
 #include "ext/imgui/imgui_impl_opengl3.h"
 #include <ext/imgui/imgui_impl_glfw.h>
 #include "GUI/window.h"
-#include "util/image_io.h"
+#include "util/image.h"
 
 namespace ocarina {
 
@@ -83,8 +83,8 @@ private:
     map<uint64_t, TextureVec> _texture_map;
 
 private:
-    [[nodiscard]] uint64_t calculate_key(const ImageIO &image) noexcept;
-    [[nodiscard]] GLTexture *obtain_texture(const ImageIO &image) noexcept;
+    [[nodiscard]] uint64_t calculate_key(const Image &image) noexcept;
+    [[nodiscard]] GLTexture *obtain_texture(const Image &image) noexcept;
 
 public:
     explicit ImGuiWidgets(Window *window);
@@ -96,7 +96,7 @@ public:
     void end_tool_tip() noexcept override;
 
     void image(uint tex_handle, uint2 size, float2 uv0, float2 uv1) noexcept override;
-    void image(const ImageIO &image_io) noexcept override;
+    void image(const Image &image_io) noexcept override;
 
     uint2 node_size() noexcept override;
 

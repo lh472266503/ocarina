@@ -1,7 +1,7 @@
 //
 // Created by Zero on 26/07/2022.
 //
-#include "image_io.h"
+#include "image.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 
@@ -20,31 +20,31 @@
 
 namespace ocarina {
 
-ImageIO::ImageIO(PixelStorage pixel_storage, const std::byte *pixel, uint2 res, const fs::path &path)
+Image::Image(PixelStorage pixel_storage, const std::byte *pixel, uint2 res, const fs::path &path)
     : ImageBase(pixel_storage, res),
       _path(path) {
     _pixel.reset(pixel);
 }
 
-ImageIO::ImageIO(PixelStorage pixel_storage, const std::byte *pixel, uint2 res)
+Image::Image(PixelStorage pixel_storage, const std::byte *pixel, uint2 res)
     : ImageBase(pixel_storage, res) {
     _pixel.reset(pixel);
 }
 
-ImageIO::ImageIO(ImageIO &&other) noexcept
+Image::Image(Image &&other) noexcept
     : ImageBase(ocarina::move(other)) {
     _pixel = ocarina::move(other._pixel);
     _path = ocarina::move(other._path);
 }
 
-ImageIO &ImageIO::operator=(ImageIO &&rhs) noexcept {
+Image &Image::operator=(Image &&rhs) noexcept {
     (*(ImageBase *)this) = std::forward<ImageBase>(rhs);
     std::swap(this->_pixel, rhs._pixel);
     std::swap(this->_path, rhs._path);
     return *this;
 }
 
-ImageIO ImageIO::pure_color(float4 color, ColorSpace color_space, uint2 res) {
+Image Image::pure_color(float4 color, ColorSpace color_space, uint2 res) {
     auto pixel_count = res.x * res.y;
     auto pixel_size = PixelStorageImpl<float4>::pixel_size * pixel_count;
     auto pixel = new_array<std::byte>(pixel_size);
@@ -58,21 +58,21 @@ ImageIO ImageIO::pure_color(float4 color, ColorSpace color_space, uint2 res) {
             dest[i] = srgb_to_linear(color);
         }
     }
-    ImageIO ret{PixelStorage::FLOAT4, pixel, res};
+    Image ret{PixelStorage::FLOAT4, pixel, res};
     ret.average<4>() = color;
     return ret;
 }
 
-ImageIO ImageIO::create_empty(ocarina::PixelStorage pixel_format, ocarina::uint2 res) {
+Image Image::create_empty(ocarina::PixelStorage pixel_format, ocarina::uint2 res) {
     size_t size_in_bytes = pixel_size(pixel_format) * res.x * res.y;
     auto pixel = new_array<std::byte>(size_in_bytes);
     return {pixel_format, pixel, res};
 }
 
-ImageIO ImageIO::load(const fs::path &path, ColorSpace color_space, float3 scale) {
+Image Image::load(const fs::path &path, ColorSpace color_space, float3 scale) {
     auto extension = to_lower(path.extension().string());
     OC_INFO("load picture ", path.string());
-    ImageIO ret;
+    Image ret;
     if (extension == ".exr") {
         ret = load_exr(path, color_space, scale);
     } else if (extension == ".hdr") {
@@ -84,7 +84,7 @@ ImageIO ImageIO::load(const fs::path &path, ColorSpace color_space, float3 scale
     return ret;
 }
 
-ImageIO ImageIO::load_hdr(const fs::path &path, ColorSpace color_space, float3 scale) {
+Image Image::load_hdr(const fs::path &path, ColorSpace color_space, float3 scale) {
     int w, h;
     int comp;
     auto path_str = fs::absolute(path).string();
@@ -115,12 +115,12 @@ ImageIO ImageIO::load_hdr(const fs::path &path, ColorSpace color_space, float3 s
         }
     }
     free(rgb);
-    ImageIO ret = {pixel_storage, pixel, make_uint2(w, h), path};
+    Image ret = {pixel_storage, pixel, make_uint2(w, h), path};
     ret.average<4>() = average;
     return ret;
 }
 
-ImageIO ImageIO::load_exr(const fs::path &fn, ColorSpace color_space, float3 scale) {
+Image Image::load_exr(const fs::path &fn, ColorSpace color_space, float3 scale) {
     // Parse OpenEXR
     EXRVersion exr_version;
     auto path_str = fs::absolute(fn).string();
@@ -181,7 +181,7 @@ ImageIO ImageIO::load_exr(const fs::path &fn, ColorSpace color_space, float3 sca
                     average = lerp(1.f / (i + 1), average, pixel[i]);
                 }
             }
-            auto ret = ImageIO(pixel_storage, (std::byte *)pixel, resolution, fn);
+            auto ret = Image(pixel_storage, (std::byte *)pixel, resolution, fn);
             ret.average<1>() = average;
             return ret;
         }
@@ -207,7 +207,7 @@ ImageIO ImageIO::load_exr(const fs::path &fn, ColorSpace color_space, float3 sca
                     average = lerp(1.f / (i + 1), average, pixel[i]);
                 }
             }
-            auto ret = ImageIO(pixel_storage, (std::byte *)pixel, resolution, fn);
+            auto ret = Image(pixel_storage, (std::byte *)pixel, resolution, fn);
             ret.average<2>() = average;
             return ret;
         }
@@ -236,7 +236,7 @@ ImageIO ImageIO::load_exr(const fs::path &fn, ColorSpace color_space, float3 sca
                     average = lerp(1.f / (i + 1), average, pixel[i]);
                 }
             }
-            auto ret = ImageIO(pixel_storage, (std::byte *)pixel, resolution, fn);
+            auto ret = Image(pixel_storage, (std::byte *)pixel, resolution, fn);
             ret.average<4>() = average;
             return ret;
         }
@@ -265,7 +265,7 @@ ImageIO ImageIO::load_exr(const fs::path &fn, ColorSpace color_space, float3 sca
                     average = lerp(1.f / (i + 1), average, pixel[i]);
                 }
             }
-            auto ret = ImageIO(pixel_storage, (std::byte *)pixel, resolution, fn);
+            auto ret = Image(pixel_storage, (std::byte *)pixel, resolution, fn);
             ret.average<4>() = average;
             return ret;
         }
@@ -274,7 +274,7 @@ ImageIO ImageIO::load_exr(const fs::path &fn, ColorSpace color_space, float3 sca
     }
 }
 
-ImageIO ImageIO::load_other(const fs::path &path, ColorSpace color_space, float3 scale) {
+Image Image::load_other(const fs::path &path, ColorSpace color_space, float3 scale) {
     uint8_t *rgba;
     int w, h;
     int channel;
@@ -315,16 +315,16 @@ ImageIO ImageIO::load_other(const fs::path &path, ColorSpace color_space, float3
         }
     }
     free(rgba);
-    ImageIO ret = {pixel_storage, pixel, resolution, path};
+    Image ret = {pixel_storage, pixel, resolution, path};
     ret.average<4>() = average;
     return ret;
 }
 
-void ImageIO::save(const fs::path &fn) const {
+void Image::save(const fs::path &fn) const {
     save_image(fn, _pixel_storage, resolution(), _pixel.get());
 }
 
-void ImageIO::save_exr(const fs::path &fn, PixelStorage pixel_storage,
+void Image::save_exr(const fs::path &fn, PixelStorage pixel_storage,
                        uint2 res, const std::byte *ptr) {
     OC_ASSERT(is_32bit(pixel_storage));
     EXRHeader header;
@@ -371,7 +371,7 @@ void ImageIO::save_exr(const fs::path &fn, PixelStorage pixel_storage,
     }
 }
 
-void ImageIO::save_hdr(const fs::path &fn, PixelStorage pixel_storage,
+void Image::save_hdr(const fs::path &fn, PixelStorage pixel_storage,
                        uint2 res, const std::byte *ptr) {
     OC_ASSERT(is_32bit(pixel_storage));
     auto path_str = fs::absolute(fn).string();
@@ -379,7 +379,7 @@ void ImageIO::save_hdr(const fs::path &fn, PixelStorage pixel_storage,
                    reinterpret_cast<const float *>(ptr));
 }
 
-void ImageIO::save_other(const fs::path &fn, PixelStorage pixel_storage,
+void Image::save_other(const fs::path &fn, PixelStorage pixel_storage,
                          uint2 res, const std::byte *ptr) {
     OC_ASSERT(is_8bit(pixel_storage));
     auto path_str = fs::absolute(fn).string();
@@ -396,7 +396,7 @@ void ImageIO::save_other(const fs::path &fn, PixelStorage pixel_storage,
     }
 }
 
-void ImageIO::convert_to_8bit_image() {
+void Image::convert_to_8bit_image() {
     if (is_8bit(pixel_storage())) {
         return;
     }
@@ -405,7 +405,7 @@ void ImageIO::convert_to_8bit_image() {
     _pixel.reset(ptr);
 }
 
-void ImageIO::convert_to_32bit_image() {
+void Image::convert_to_32bit_image() {
     if (is_32bit(pixel_storage())) {
         return;
     }
@@ -414,7 +414,7 @@ void ImageIO::convert_to_32bit_image() {
     _pixel.reset(ptr);
 }
 
-void ImageIO::save_image(const fs::path &fn, PixelStorage pixel_storage,
+void Image::save_image(const fs::path &fn, PixelStorage pixel_storage,
                          uint2 res, const void *raw_ptr) {
     OC_ASSERT(raw_ptr != nullptr);
     const std::byte *ptr = reinterpret_cast<const std::byte *>(raw_ptr);
@@ -448,7 +448,7 @@ void ImageIO::save_image(const fs::path &fn, PixelStorage pixel_storage,
 }
 
 std::pair<PixelStorage, const std::byte *>
-ImageIO::convert_to_32bit(PixelStorage pixel_storage, const std::byte *ptr, uint2 res) {
+Image::convert_to_32bit(PixelStorage pixel_storage, const std::byte *ptr, uint2 res) {
     OC_ASSERT(is_8bit(pixel_storage));
     uint pixel_num = res.x * res.y;
     const std::byte *pixel = nullptr;
@@ -496,7 +496,7 @@ ImageIO::convert_to_32bit(PixelStorage pixel_storage, const std::byte *ptr, uint
 }
 
 std::pair<PixelStorage, const std::byte *>
-ImageIO::convert_to_8bit(PixelStorage pixel_storage, const std::byte *ptr, uint2 res) {
+Image::convert_to_8bit(PixelStorage pixel_storage, const std::byte *ptr, uint2 res) {
     OC_ASSERT(is_32bit(pixel_storage));
     uint pixel_num = res.x * res.y;
     const std::byte *pixel = nullptr;

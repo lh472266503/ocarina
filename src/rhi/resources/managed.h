@@ -7,7 +7,7 @@
 #include "core/stl.h"
 #include "buffer.h"
 #include "texture.h"
-#include "util/image_io.h"
+#include "util/image.h"
 
 namespace ocarina {
 
@@ -110,9 +110,9 @@ public:
     }
 };
 
-class ManagedTexture : public Texture, public ImageIO {
+class ManagedTexture : public Texture, public Image {
 public:
-    using host_ty = ocarina::ImageIO;
+    using host_ty = ocarina::Image;
     using device_ty = ocarina::Texture;
 
 public:
@@ -124,8 +124,8 @@ public:
     [[nodiscard]] const host_ty &host_tex() const noexcept { return *this; }
 
     void allocate_on_device(Device &device) noexcept {
-        device_tex() = device.create_texture(ImageIO::resolution(),
-                                             ImageIO::pixel_storage());
+        device_tex() = device.create_texture(Image::resolution(),
+                                             Image::pixel_storage());
     }
 
     void upload_immediately() const noexcept {

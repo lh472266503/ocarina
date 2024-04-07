@@ -10,11 +10,11 @@ ImVec2 to_ImVec2(const T &t) noexcept {
     return ImVec2(t.x, t.y);
 }
 
-uint64_t ImGuiWidgets::calculate_key(const ocarina::ImageIO &image) noexcept {
+uint64_t ImGuiWidgets::calculate_key(const ocarina::Image &image) noexcept {
     return hash64(image.resolution(), image.pixel_storage());
 }
 
-GLTexture *ImGuiWidgets::obtain_texture(const ocarina::ImageIO &image) noexcept {
+GLTexture *ImGuiWidgets::obtain_texture(const ocarina::Image &image) noexcept {
     uint64_t key = calculate_key(image);
     if (!_texture_map.contains(key)) {
         _texture_map.insert(make_pair(key, TextureVec{}));
@@ -64,7 +64,7 @@ uint2 ImGuiWidgets::node_size() noexcept {
     return make_uint2(size.x, size.y);
 }
 
-void ImGuiWidgets::image(const ImageIO &image_io) noexcept {
+void ImGuiWidgets::image(const Image &image_io) noexcept {
     GLTexture *gl_texture = obtain_texture(image_io);
     if (image_io.pixel_storage() == PixelStorage::BYTE4) {
         gl_texture->load(image_io.pixel_ptr<uchar4>(), image_io.resolution());

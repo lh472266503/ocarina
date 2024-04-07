@@ -9,7 +9,7 @@
 #include "rhi/common.h"
 #include <windows.h>
 #include "math/base.h"
-#include "util/image_io.h"
+#include "util/image.h"
 #include "dsl/dsl.h"
 
 using namespace ocarina;
@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
     Stream stream = device.create_stream();
 
     auto path2 = R"(E:/work/compile/ocarina/res/test.png)";
-    auto image = ImageIO::load(path2, LINEAR);
+    auto image = Image::load(path2, LINEAR);
 
     auto texture = device.create_texture(image.resolution(), image.pixel_storage());
     stream << texture.upload_sync(image.pixel_ptr());
