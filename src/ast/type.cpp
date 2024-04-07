@@ -107,6 +107,8 @@ void Type::for_each(TypeVisitor *visitor) {
     TypeRegistry::instance().for_each(visitor);
 }
 
+uint64_t Type::_compute_hash() const noexcept { return hash64(_description);}
+
 void Type::update_name(ocarina::string_view desc) noexcept {
     switch (_tag) {
         case Tag::NONE:

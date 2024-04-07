@@ -400,7 +400,7 @@ private:
     mutable ocarina::string _cname;
     mutable ocarina::vector<string_view> _member_name;
     ocarina::vector<const Type *> _members;
-    [[nodiscard]] uint64_t _compute_hash() const noexcept override { return hash64(_description, _builtin_struct, _param_struct); }
+    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
     vector<int> _dims;
     bool _builtin_struct{false};
     bool _param_struct{false};
