@@ -111,6 +111,7 @@ protected:
     mutable uint _gl_handle{0};
     mutable void *_gl_shared_handle{0};
     mutable BufferProxy<T> _proxy{};
+    string _name;
 
 public:
     Buffer() : _element_size(calculate_size()) {}
@@ -121,9 +122,11 @@ public:
 
     Buffer(Device::Impl *device, size_t size, const string &desc = "")
         : RHIResource(device, Tag::BUFFER, device->create_buffer(size * calculate_size(), desc)),
-          _size(size), _element_size(calculate_size()) {
+          _size(size), _element_size(calculate_size()), _name(desc) {
         proxy_ptr();
     }
+
+    OC_MAKE_MEMBER_GETTER_SETTER(name, )
 
     static size_t calculate_size() noexcept {
         if constexpr (is_struct_v<T>) {
@@ -171,6 +174,7 @@ public:
     Buffer(Buffer &&other) noexcept
         : RHIResource(std::move(other)) {
         this->_size = other._size;
+        this->_name = std::move(other._name);
         this->_proxy = other._proxy;
         this->_element_size = other._element_size;
     }
@@ -180,6 +184,7 @@ public:
         destroy();
         RHIResource::operator=(std::move(other));
         this->_size = other._size;
+        this->_name = std::move(other._name);
         this->_proxy = other._proxy;
         this->_element_size = other._element_size;
         return *this;

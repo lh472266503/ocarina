@@ -109,6 +109,11 @@ public:
         };
     }
 
+    uint register_view(size_t offset, size_t size = 0) {
+        BufferView<T> buffer_view = Super::device_buffer().view(offset, size);
+        return _bindless_array->emplace(buffer_view);
+    }
+
     void unregister() noexcept {
         if (has_registered()) {
             (*_bindless_array)->remove_buffer(_index.hv());
