@@ -265,12 +265,16 @@ using dimension = detail::dimension_impl<std::remove_cvref_t<T>>;
 template<typename T>
 constexpr auto dimension_v = dimension<T>::value;
 
+namespace detail {
 template<typename T>
-struct is_builtin_struct {
+struct is_builtin_struct_impl {
     static constexpr bool value = false;
 };
+}// namespace detail
+
 template<typename T>
-constexpr auto is_builtin_struct_v = is_builtin_struct<std::remove_cvref_t<T>>::value;
+struct is_builtin_struct : public detail::is_builtin_struct_impl<std::remove_cvref_t<T>>{};
+OC_DEFINE_TEMPLATE_VALUE(is_builtin_struct)
 
 #define OC_MAKE_BUILTIN_STRUCT(S)           \
     template<>                              \
@@ -278,12 +282,16 @@ constexpr auto is_builtin_struct_v = is_builtin_struct<std::remove_cvref_t<T>>::
         static constexpr bool value = true; \
     };
 
+
+namespace detail {
 template<typename T>
-struct is_param_struct {
+struct is_param_struct_impl {
     static constexpr bool value = false;
 };
+}// namespace detail
 template<typename T>
-constexpr auto is_param_struct_v = is_param_struct<std::remove_cvref_t<T>>::value;
+struct is_param_struct : public detail::is_param_struct_impl<std::remove_cvref_t<T>>{};
+OC_DEFINE_TEMPLATE_VALUE(is_param_struct)
 
 #define OC_MAKE_PARAM_STRUCT(S)             \
     template<>                              \
