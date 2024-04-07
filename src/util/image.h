@@ -15,17 +15,12 @@ private:
 public:
     ImageView(PixelStorage pixel_storage, const std::byte *pixel, uint2 res);
 
-    template<typename T>
-    static ImageView create(const T* pixel, uint2 res) noexcept {
-        if constexpr (std::is_same_v<T, float4>) {
-            return {PixelStorage::FLOAT4, reinterpret_cast<const std::byte *>(pixel), res};
-        } else if constexpr (std::is_same_v<T, uchar4>) {
-            return {PixelStorage::BYTE4, reinterpret_cast<const std::byte *>(pixel), res};
-        } else {
-            static_assert(always_false_v<T>);
-        }
-    }
-
+    ImageView(const float4 *pixel, uint2 res)
+        : ImageView(PixelStorage::FLOAT4,
+                    reinterpret_cast<const std::byte *>(pixel), res) {}
+    ImageView(const uchar4 *pixel, uint2 res)
+        : ImageView(PixelStorage::BYTE4,
+                    reinterpret_cast<const std::byte *>(pixel), res) {}
     template<typename T = std::byte>
     const T *pixel_ptr() const { return reinterpret_cast<const T *>(_pixel); }
 
