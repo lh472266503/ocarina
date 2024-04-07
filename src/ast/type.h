@@ -273,7 +273,7 @@ struct is_builtin_struct_impl {
 }// namespace detail
 
 template<typename T>
-struct is_builtin_struct : public detail::is_builtin_struct_impl<std::remove_cvref_t<T>>{};
+struct is_builtin_struct : public detail::is_builtin_struct_impl<std::remove_cvref_t<T>> {};
 OC_DEFINE_TEMPLATE_VALUE(is_builtin_struct)
 
 #define OC_MAKE_BUILTIN_STRUCT(S)           \
@@ -282,7 +282,6 @@ OC_DEFINE_TEMPLATE_VALUE(is_builtin_struct)
         static constexpr bool value = true; \
     };
 
-
 namespace detail {
 template<typename T>
 struct is_param_struct_impl {
@@ -290,7 +289,7 @@ struct is_param_struct_impl {
 };
 }// namespace detail
 template<typename T>
-struct is_param_struct : public detail::is_param_struct_impl<std::remove_cvref_t<T>>{};
+struct is_param_struct : public detail::is_param_struct_impl<std::remove_cvref_t<T>> {};
 OC_DEFINE_TEMPLATE_VALUE(is_param_struct)
 
 #define OC_MAKE_PARAM_STRUCT(S)             \
@@ -401,7 +400,7 @@ private:
     mutable ocarina::string _cname;
     mutable ocarina::vector<string_view> _member_name;
     ocarina::vector<const Type *> _members;
-    [[nodiscard]] uint64_t _compute_hash() const noexcept override { return hash64(_description); }
+    [[nodiscard]] uint64_t _compute_hash() const noexcept override { return hash64(_description, _builtin_struct, _param_struct); }
     vector<int> _dims;
     bool _builtin_struct{false};
     bool _param_struct{false};
