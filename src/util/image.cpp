@@ -20,10 +20,17 @@
 
 namespace ocarina {
 
+ImageView::ImageView(ocarina::PixelStorage pixel_storage, const std::byte *pixel, ocarina::uint2 res)
+    : ImageBase(pixel_storage, res), _pixel(pixel) {}
+
 Image::Image(PixelStorage pixel_storage, const std::byte *pixel, uint2 res, const fs::path &path)
     : ImageBase(pixel_storage, res),
       _path(path) {
     _pixel.reset(pixel);
+}
+
+ImageView Image::view() const noexcept {
+    return {pixel_storage(), _pixel.get(), resolution()};
 }
 
 Image::Image(PixelStorage pixel_storage, const std::byte *pixel, uint2 res)
@@ -325,7 +332,7 @@ void Image::save(const fs::path &fn) const {
 }
 
 void Image::save_exr(const fs::path &fn, PixelStorage pixel_storage,
-                       uint2 res, const std::byte *ptr) {
+                     uint2 res, const std::byte *ptr) {
     OC_ASSERT(is_32bit(pixel_storage));
     EXRHeader header;
     InitEXRHeader(&header);
@@ -372,7 +379,7 @@ void Image::save_exr(const fs::path &fn, PixelStorage pixel_storage,
 }
 
 void Image::save_hdr(const fs::path &fn, PixelStorage pixel_storage,
-                       uint2 res, const std::byte *ptr) {
+                     uint2 res, const std::byte *ptr) {
     OC_ASSERT(is_32bit(pixel_storage));
     auto path_str = fs::absolute(fn).string();
     stbi_write_hdr(path_str.c_str(), res.x, res.y, 4,
@@ -380,7 +387,7 @@ void Image::save_hdr(const fs::path &fn, PixelStorage pixel_storage,
 }
 
 void Image::save_other(const fs::path &fn, PixelStorage pixel_storage,
-                         uint2 res, const std::byte *ptr) {
+                       uint2 res, const std::byte *ptr) {
     OC_ASSERT(is_8bit(pixel_storage));
     auto path_str = fs::absolute(fn).string();
     auto extension = to_lower(fn.extension().string());
@@ -415,7 +422,7 @@ void Image::convert_to_32bit_image() {
 }
 
 void Image::save_image(const fs::path &fn, PixelStorage pixel_storage,
-                         uint2 res, const void *raw_ptr) {
+                       uint2 res, const void *raw_ptr) {
     OC_ASSERT(raw_ptr != nullptr);
     const std::byte *ptr = reinterpret_cast<const std::byte *>(raw_ptr);
     auto extension = to_lower(fn.extension().string());

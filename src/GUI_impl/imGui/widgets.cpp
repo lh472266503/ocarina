@@ -10,11 +10,11 @@ ImVec2 to_ImVec2(const T &t) noexcept {
     return ImVec2(t.x, t.y);
 }
 
-uint64_t ImGuiWidgets::calculate_key(const ocarina::Image &image) noexcept {
+uint64_t ImGuiWidgets::calculate_key(const ocarina::ImageView &image) noexcept {
     return hash64(image.resolution(), image.pixel_storage());
 }
 
-GLTexture *ImGuiWidgets::obtain_texture(const ocarina::Image &image) noexcept {
+GLTexture *ImGuiWidgets::obtain_texture(const ocarina::ImageView &image) noexcept {
     uint64_t key = calculate_key(image);
     if (!_texture_map.contains(key)) {
         _texture_map.insert(make_pair(key, TextureVec{}));
@@ -53,7 +53,8 @@ void ImGuiWidgets::end_tool_tip() noexcept {
     ImGui::EndTooltip();
 }
 
-void ImGuiWidgets::image(ocarina::uint tex_handle, ocarina::uint2 size, ocarina::float2 uv0, ocarina::float2 uv1) noexcept {
+void ImGuiWidgets::image(ocarina::uint tex_handle, ocarina::uint2 size,
+                         ocarina::float2 uv0, ocarina::float2 uv1) noexcept {
     auto tex_id = reinterpret_cast<ImTextureID>(static_cast<handle_ty>(tex_handle));
     ImGui::Image(tex_id, to_ImVec2(size),
                  to_ImVec2(uv0), to_ImVec2(uv1));
@@ -64,14 +65,18 @@ uint2 ImGuiWidgets::node_size() noexcept {
     return make_uint2(size.x, size.y);
 }
 
-void ImGuiWidgets::image(const Image &image_io) noexcept {
-    GLTexture *gl_texture = obtain_texture(image_io);
-    if (image_io.pixel_storage() == PixelStorage::BYTE4) {
-        gl_texture->load(image_io.pixel_ptr<uchar4>(), image_io.resolution());
-    } else if (image_io.pixel_storage() == PixelStorage::FLOAT4) {
-        gl_texture->load(image_io.pixel_ptr<float4>(), image_io.resolution());
+void ImGuiWidgets::image(const Image &obj) noexcept {
+    image(obj.view());
+}
+
+void ImGuiWidgets::image(const ocarina::ImageView &image_view) noexcept {
+    GLTexture *gl_texture = obtain_texture(image_view);
+    if (image_view.pixel_storage() == PixelStorage::BYTE4) {
+        gl_texture->load(image_view.pixel_ptr<uchar4>(), image_view.resolution());
+    } else if (image_view.pixel_storage() == PixelStorage::FLOAT4) {
+        gl_texture->load(image_view.pixel_ptr<float4>(), image_view.resolution());
     }
-    uint2 res = image_io.resolution();
+    uint2 res = image_view.resolution();
     adaptive_image(gl_texture->handle(), res);
 }
 

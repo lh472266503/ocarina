@@ -7,6 +7,21 @@
 #include "core/image_base.h"
 
 namespace ocarina {
+
+class ImageView : public ImageBase {
+private:
+    const std::byte *_pixel{nullptr};
+
+public:
+    ImageView(PixelStorage pixel_storage, const std::byte *pixel, uint2 res);
+
+    template<typename T = std::byte>
+    const T *pixel_ptr() const { return reinterpret_cast<const T *>(_pixel); }
+
+    template<typename T = std::byte>
+    T *pixel_ptr() { return reinterpret_cast<T *>(const_cast<std::byte *>(_pixel)); }
+};
+
 class Image : public ImageBase {
 private:
     fs::path _path;
@@ -17,9 +32,10 @@ public:
 
 public:
     Image() = default;
-    Image(PixelStorage pixel_format, const std::byte *pixel, uint2 res, const fs::path &path);
-    Image(PixelStorage pixel_format, const std::byte *pixel, uint2 res);
+    Image(PixelStorage pixel_storage, const std::byte *pixel, uint2 res, const fs::path &path);
+    Image(PixelStorage pixel_storage, const std::byte *pixel, uint2 res);
     Image(Image &&other) noexcept;
+    [[nodiscard]] ImageView view() const noexcept;
     Image(const Image &other) = delete;
     Image &operator=(const Image &other) = delete;
     Image &operator=(Image &&other) noexcept;
@@ -45,7 +61,7 @@ public:
      * ".bmp" or ".png" or ".tga" or ".jpg" or ".jpeg"
      */
     static Image load_other(const fs::path &fn, ColorSpace color_space,
-                              float3 scale = make_float3(1.f));
+                            float3 scale = make_float3(1.f));
 
     void clear() noexcept { _pixel.reset(); }
 

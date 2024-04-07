@@ -83,8 +83,8 @@ private:
     map<uint64_t, TextureVec> _texture_map;
 
 private:
-    [[nodiscard]] uint64_t calculate_key(const Image &image) noexcept;
-    [[nodiscard]] GLTexture *obtain_texture(const Image &image) noexcept;
+    [[nodiscard]] static uint64_t calculate_key(const ImageView &image) noexcept;
+    [[nodiscard]] GLTexture *obtain_texture(const ImageView &image) noexcept;
 
 public:
     explicit ImGuiWidgets(Window *window);
@@ -96,8 +96,8 @@ public:
     void end_tool_tip() noexcept override;
 
     void image(uint tex_handle, uint2 size, float2 uv0, float2 uv1) noexcept override;
-    void image(const Image &image_io) noexcept override;
-
+    void image(const Image &image) noexcept override;
+    void image(const ImageView &image_view) noexcept override;
     uint2 node_size() noexcept override;
 
     bool push_window(const string &label) noexcept override;
