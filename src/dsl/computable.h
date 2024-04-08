@@ -95,7 +95,7 @@ struct EnableSubscriptAccess {
 
     template<typename Index>
     requires concepts::integral<expr_value_t<Index>>
-    auto at(Index &&index) noexcept {
+    auto &at(Index &&index) noexcept {
         auto f = Function::current();
         const SubscriptExpr *expr = f->subscript(Type::of<element_type>(),
                                                  self()->expression(),
