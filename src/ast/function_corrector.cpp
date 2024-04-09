@@ -235,9 +235,12 @@ void FunctionCorrector::visit(const MemberExpr *expr) {
 }
 
 void FunctionCorrector::process_member_expr(const Expression *&expression) noexcept {
-    const Expression **expr_addr = &expression;
-    
-    process_param_struct(*expr_addr);
+    auto member_expr = dynamic_cast<const MemberExpr *>(expression);
+    if (member_expr->parent()->type()->is_param_struct()) {
+        process_param_struct(expression);
+    } else {
+        visit_expr(member_expr->_parent);
+    }
 }
 
 void FunctionCorrector::process_param_struct(const Expression *&expression) noexcept {

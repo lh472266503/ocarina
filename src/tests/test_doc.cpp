@@ -362,15 +362,15 @@ void test_parameter_struct(Device &device, Stream &stream) {
     p.pa.b = vert.proxy();
 
     Kernel kernel = [&](Var<Param> pp, Var<Pair> pa, BufferVar<float3> b3) {
-        $info("{} ", pp.pa.i);
-//        pp.b.ref_read(dispatch_id()).x = 25;
+        $info("{} ", pp.pa.b.ref_read(dispatch_id()).x);
+        pp.b.ref_read(dispatch_id()).x += 25;
 
-//        $outline{
-//            auto v = pp.pa.b.read(dispatch_id());
-//            $info("{} {} {}  -- ", v);
-//        };
-//        auto v =  pp.b.ref_read(dispatch_id()) ;
-//        $info("{} {} {} ", v);
+        $outline{
+            auto v = pp.pa.b.read(dispatch_id());
+            $info("{} {} {}  -- ", v);
+        };
+        auto v =  pp.b.ref_read(dispatch_id()) ;
+        $info("{} {} {} ", v);
     };
     auto shader = device.compile(kernel, "param struct");
 
