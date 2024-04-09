@@ -30,13 +30,14 @@ OC_STRUCT(Triple, i, j, k, h){
 
 struct Pair {
     uint i{50};
+    Triple triple;
     BufferProxy<float3> b;
     BufferProxy<Triple> t;
     Pair() = default;
 };
 
 /// register a DSL struct, if you need upload a struct to device, be sure to register
-OC_PARAM_STRUCT(Pair, i, b, t){
+OC_PARAM_STRUCT(Pair, i, triple, b, t){
 
 };
 
@@ -361,15 +362,15 @@ void test_parameter_struct(Device &device, Stream &stream) {
     p.pa.b = vert.proxy();
 
     Kernel kernel = [&](Var<Param> pp, Var<Pair> pa, BufferVar<float3> b3) {
+        $info("{} ", pp.pa.i);
+//        pp.b.ref_read(dispatch_id()).x = 25;
 
-        b3.ref_read(dispatch_id()).x = 10.f;
-
-        $outline{
-            auto v = pp.pa.b.read(dispatch_id());
-            $info("{} {} {}  -- ", v);
-        };
-        auto v =  pp.b.ref_read(dispatch_id()) ;
-        $info("{} {} {} ", v);
+//        $outline{
+//            auto v = pp.pa.b.read(dispatch_id());
+//            $info("{} {} {}  -- ", v);
+//        };
+//        auto v =  pp.b.ref_read(dispatch_id()) ;
+//        $info("{} {} {} ", v);
     };
     auto shader = device.compile(kernel, "param struct");
 

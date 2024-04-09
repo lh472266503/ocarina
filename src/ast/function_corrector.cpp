@@ -58,7 +58,7 @@ void FunctionCorrector::visit_expr(const Expression *const &expression, Function
                 process_capture(const_cast<const Expression *&>(expression), cur_func);
                 break;
             case SplitParamStruct:
-                process_param_struct(const_cast<const Expression *&>(expression));
+                process_member_expr(const_cast<const Expression *&>(expression));
                 break;
         }
     } else {
@@ -234,6 +234,12 @@ void FunctionCorrector::visit(const MemberExpr *expr) {
     OC_ERROR_IF(_stage == ProcessCapture);
 }
 
+void FunctionCorrector::process_member_expr(const Expression *&expression) noexcept {
+    const Expression **expr_addr = &expression;
+    
+    process_param_struct(*expr_addr);
+}
+
 void FunctionCorrector::process_param_struct(const Expression *&expression) noexcept {
     const MemberExpr *member_expr = dynamic_cast<const MemberExpr *>(expression);
     const Expression *parent = member_expr->parent();
@@ -243,6 +249,11 @@ void FunctionCorrector::process_param_struct(const Expression *&expression) noex
         const MemberExpr *member_parent = dynamic_cast<const MemberExpr *>(parent);
         if (member_parent) {
             parent = member_parent->parent();
+            path.push_back(member_parent->member_index());
+        } else if (parent->tag() == Expression::Tag::SUBSCRIPT) {
+            const SubscriptExpr *subscript_expr = dynamic_cast<const SubscriptExpr *>(parent);
+            parent = subscript_expr->range();
+            member_parent = dynamic_cast<const MemberExpr *>(parent);
             path.push_back(member_parent->member_index());
         }
     } while (parent->is_member());
@@ -255,7 +266,6 @@ void FunctionCorrector::process_param_struct(const Expression *&expression) noex
         }
         case Expression::Tag::SUBSCRIPT: {
             const SubscriptExpr *subscript_expr = dynamic_cast<const SubscriptExpr *>(parent);
-
         }
         default:
             break;
