@@ -85,13 +85,13 @@ enum struct OCPixelStorage : oc_uint {
     UNKNOWN
 };
 
-template<typename T>
-inline T oc_atomicExch(T &a, T v) noexcept {
+template<typename T, typename U>
+inline T oc_atomicExch(T &a, U v) noexcept {
     return atomicExch(&a, v);
 }
 
-template<typename T, typename Index>
-inline T oc_atomicExch(OCBuffer<T> buffer, Index index, T val) noexcept {
+template<typename T, typename Index, typename U>
+inline T oc_atomicExch(OCBuffer<T> buffer, Index index, U val) noexcept {
     return oc_atomicExch(buffer[index], val);
 }
 
@@ -101,13 +101,13 @@ inline T oc_atomicExch(OCBuffer<oc_uchar> buffer, Offset offset, T val) noexcept
     return oc_atomicExch(ref[0], val);
 }
 
-template<typename T>
-inline T oc_atomicAdd(T &a, T v) noexcept {
+template<typename T, typename U>
+inline T oc_atomicAdd(T &a, U v) noexcept {
     return atomicAdd(&a, v);
 }
 
-template<typename T, typename Index>
-inline T oc_atomicAdd(OCBuffer<T> buffer, Index index, T val) noexcept {
+template<typename T, typename Index, typename U>
+inline T oc_atomicAdd(OCBuffer<T> buffer, Index index, U val) noexcept {
     return oc_atomicAdd(buffer[index], val);
 }
 
@@ -117,13 +117,13 @@ inline T oc_atomicAdd(OCBuffer<oc_uchar> buffer, Offset offset, T val) noexcept 
     return oc_atomicAdd(ref[0], val);
 }
 
-template<typename T>
-inline T oc_atomicSub(T &a, T v) noexcept {
+template<typename T, typename U>
+inline T oc_atomicSub(T &a, U v) noexcept {
     return atomicAdd(&a, -v);
 }
 
-template<typename T, typename Index>
-inline T oc_atomicSub(OCBuffer<T> buffer, Index index, T val) noexcept {
+template<typename T, typename Index,typename U>
+inline T oc_atomicSub(OCBuffer<T> buffer, Index index, U val) noexcept {
     return oc_atomicSub(buffer[index], val);
 }
 

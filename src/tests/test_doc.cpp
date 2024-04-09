@@ -369,6 +369,9 @@ void test_parameter_struct(Device &device, Stream &stream) {
             auto v = pp.pa.b.read(dispatch_id());
             $info("{} {} {}  -- ", v);
         };
+        atomic_add(pp.t.at(0).i, 5.6f);
+        atomic_sub(pp.t.at(0).j, 1);
+        atomic_exch(pp.t.at(dispatch_id()).k, dispatch_id() * 25 + 2);
         auto v =  pp.t.at(dispatch_id()) ;
         $info("{} {} {} ", v.i, v.j, v.k);
     };

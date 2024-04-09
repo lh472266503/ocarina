@@ -422,6 +422,33 @@ auto call(string_view func_name, Args &&...args) noexcept {
     }
 }
 
+template<typename A, typename B>
+requires concepts::plus_able<expr_value_t<A>, expr_value_t<B>>
+auto atomic_add(A &&a, B &&b) noexcept {
+    const Expression *expr = Function::current()->call_builtin(Type::of<expr_value_t<A>>(),
+                                                               CallOp::ATOMIC_ADD,
+                                                               {OC_EXPR(a), OC_EXPR(b)});
+    return eval<expr_value_t<A>>(expr);
+}
+
+template<typename A, typename B>
+requires concepts::minus_able<expr_value_t<A>, expr_value_t<B>>
+auto atomic_sub(A &&a, B &&b) noexcept {
+    const Expression *expr = Function::current()->call_builtin(Type::of<expr_value_t<A>>(),
+                                                               CallOp::ATOMIC_SUB,
+                                                               {OC_EXPR(a), OC_EXPR(b)});
+    return eval<expr_value_t<A>>(expr);
+}
+
+template<typename A, typename B>
+requires concepts::assign_able<expr_value_t<A>, expr_value_t<B>>
+auto atomic_exch(A &&a, B &&b) noexcept {
+    const Expression *expr = Function::current()->call_builtin(Type::of<expr_value_t<A>>(),
+                                                               CallOp::ATOMIC_EXCH,
+                                                               {OC_EXPR(a), OC_EXPR(b)});
+    return eval<expr_value_t<A>>(expr);
+}
+
 template<typename T>
 requires is_vector_v<expr_value_t<T>> || is_scalar_v<expr_value_t<T>>
 [[nodiscard]] T zero_if_nan(T t) noexcept {
