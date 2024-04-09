@@ -251,6 +251,21 @@ public:
         return captured_resource.expression();
     }
 
+    /// for dsl start
+    template<typename Index>
+    requires concepts::all_integral<expr_value_t<Index>>
+    OC_NODISCARD auto subscript(Index &&index) const noexcept {
+        auto expr = make_expr<Buffer<T>>(expression());
+        return expr.at(OC_FORWARD(index));
+    }
+
+    template<typename Index>
+    requires concepts::all_integral<expr_value_t<Index>>
+    OC_NODISCARD auto &subscript(Index &&index) noexcept {
+        auto expr = make_expr<Buffer<T>>(expression());
+        return expr.at(OC_FORWARD(index));
+    }
+
     template<typename Index>
     requires concepts::all_integral<expr_value_t<Index>>
     OC_NODISCARD auto
@@ -278,6 +293,7 @@ public:
     [[nodiscard]] detail::AtomicRef<T> atomic(Index &&index) const noexcept {
         return make_expr<Buffer<T>>(expression()).atomic(OC_FORWARD(index));
     }
+    /// for dsl end
 
     [[nodiscard]] size_t size() const noexcept { return _size; }
     [[nodiscard]] size_t size_in_byte() const noexcept { return _size * sizeof(T); }

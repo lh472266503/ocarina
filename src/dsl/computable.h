@@ -138,18 +138,6 @@ struct EnableReadAndWrite {
         return eval<element_type>(expr);
     }
 
-    template<typename Index>
-    requires concepts::integral<expr_value_t<Index>>
-    auto &ref_read(Index &&index) noexcept {
-        auto f = Function::current();
-        const SubscriptExpr *expr = f->subscript(Type::of<element_type>(),
-                                                 self()->expression(),
-                                                 OC_EXPR(index));
-        expr->mark(Usage::WRITE);
-        Var<element_type> *ret = f->template create_temp_obj<Var<element_type>>(expr);
-        return *ret;
-    }
-
     template<typename Index, typename Val>
     requires concepts::integral<expr_value_t<Index>> && concepts::is_same_v<element_type, expr_value_t<Val>>
     void write(Index &&index, Val &&elm, bool check_boundary = true) {
