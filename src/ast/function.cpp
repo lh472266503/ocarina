@@ -168,7 +168,7 @@ void Function::splitting_arguments() noexcept {
     std::swap(_arguments, _splitted_arguments);
 }
 
-Function::~Function() {
+Function::~Function() noexcept {
     for (auto &mem : _temp_memory) {
         delete_with_allocator(mem.first);
     }
