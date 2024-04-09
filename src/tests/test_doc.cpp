@@ -360,18 +360,20 @@ void test_parameter_struct(Device &device, Stream &stream) {
     p.t = tri.proxy();
     p.pa.b = vert.proxy();
 
-    Kernel kernel = [&](Var<Param> pp, Var<Pair> pa, Int i) {
+    Kernel kernel = [&](Var<Param> pp, Var<Pair> pa, BufferVar<float3> b3) {
+
+        b3.ref_read(dispatch_id()).x = 10.f;
 
         $outline{
             auto v = pp.pa.b.read(dispatch_id());
-            $info("{} {} {} {} -- ", v, i);
+            $info("{} {} {}  -- ", v);
         };
-        auto v = pa.b.read(dispatch_id());
+        auto v =  pp.b.ref_read(dispatch_id()) ;
         $info("{} {} {} ", v);
     };
     auto shader = device.compile(kernel, "param struct");
 
-    stream << shader(p, p.pa, 3).dispatch(2);
+    stream << shader(p, p.pa, vert).dispatch(2);
     stream << Env::printer().retrieve();
     stream << synchronize() << commit();
 }
