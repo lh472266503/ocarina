@@ -253,26 +253,11 @@ void FunctionCorrector::process_param_struct(const Expression *&expression) noex
         if (member_parent) {
             parent = member_parent->parent();
             path.push_back(member_parent->member_index());
-        } else if (parent->tag() == Expression::Tag::SUBSCRIPT) {
-            const SubscriptExpr *subscript_expr = dynamic_cast<const SubscriptExpr *>(parent);
-            parent = subscript_expr->range();
-            member_parent = dynamic_cast<const MemberExpr *>(parent);
-            path.push_back(member_parent->member_index());
         }
     } while (parent->is_member());
-    switch (parent->tag()) {
-        case Expression::Tag::REF: {
-            const RefExpr *ref_expr = dynamic_cast<const RefExpr *>(parent);
-            path.push_back(ref_expr->variable().uid());
-            std::reverse(path.begin(), path.end());
-            break;
-        }
-        case Expression::Tag::SUBSCRIPT: {
-            const SubscriptExpr *subscript_expr = dynamic_cast<const SubscriptExpr *>(parent);
-        }
-        default:
-            break;
-    }
+    const RefExpr *ref_expr = dynamic_cast<const RefExpr *>(parent);
+    path.push_back(ref_expr->variable().uid());
+    std::reverse(path.begin(), path.end());
     kernel()->replace_param_struct_member(path, expression);
 }
 
