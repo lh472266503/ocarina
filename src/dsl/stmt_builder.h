@@ -359,10 +359,12 @@ public:
         : _var(begin),
           _end(end),
           _step(step) {
-        const Expression *cmp = Function::current()->binary(Type::of<bool>(), BinaryOp::LESS,
+        const BinaryExpr *negative_step = Function::current()->binary(Type::of<bool>(), BinaryOp::LESS, _step.expression(), OC_EXPR(T(0)));
+        const BinaryExpr *condition = Function::current()->binary(Type::of<bool>(), BinaryOp::LESS,
                                                             _var.expression(), _end.expression());
+        condition = Function::current()->binary(Type::of<bool>(), BinaryOp::BIT_XOR, negative_step, condition);
         _for_stmt = Function::current()->for_(_var.expression(),
-                                              cmp,
+                                              condition,
                                               _step.expression());
     }
 
