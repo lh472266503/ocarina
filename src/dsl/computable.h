@@ -55,7 +55,7 @@ template<typename T>
 #define OC_EXPR(arg) ocarina::detail::extract_expression(OC_FORWARD(arg))
 
 template<typename T,
-         typename element_type = std::remove_cvref_t<decltype(std::declval<expr_value_t<T>>()[0])>>
+         typename element_type = std::remove_cvref_t<expr_value_t<decltype(std::declval<expr_value_t<T>>()[0])>>>
 struct EnableSubscriptAccess {
 
     [[nodiscard]] T *self() noexcept { return static_cast<T *>(this); }

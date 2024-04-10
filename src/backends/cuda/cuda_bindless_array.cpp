@@ -70,16 +70,16 @@ void CUDABindlessArray::remove_texture(handle_ty index) noexcept {
 
 void CUDABindlessArray::set_buffer(ocarina::handle_ty index, ocarina::handle_ty handle, size_t size_in_byte) noexcept {
     OC_ASSERT(index < _buffers.host_buffer().size());
-    _buffers.at(index) = {reinterpret_cast<std::byte *>(handle), size_in_byte};
+    _buffers.host_buffer().at(index) = {reinterpret_cast<std::byte *>(handle), size_in_byte};
 }
 
 ByteBufferProxy CUDABindlessArray::buffer_view(ocarina::uint index) const noexcept {
-    return _buffers.at(index);
+    return _buffers.host_buffer().at(index);
 }
 
 void CUDABindlessArray::set_texture(ocarina::handle_ty index, ocarina::handle_ty handle) noexcept {
     OC_ASSERT(index < _textures.host_buffer().size());
-    _textures.at(index) = handle;
+    _textures.host_buffer().at(index) = handle;
 }
 
 size_t CUDABindlessArray::buffer_num() const noexcept {

@@ -363,7 +363,7 @@ void test_parameter_struct(Device &device, Stream &stream) {
 
     Kernel kernel = [&](Var<Param> pp, Var<Pair> pa, BufferVar<float3> b3) {
         $info("{} ", pp.pa.b.at(dispatch_id()).x);
-        vert.subscript(dispatch_id()).x += 90;
+        vert.at(dispatch_id()).x += 90;
 
         $outline{
             auto v = pp.pa.b.read(dispatch_id());
@@ -409,8 +409,8 @@ int main(int argc, char *argv[]) {
     a = a + a;
     a = a + b;
 
-        test_compute_shader(device, stream);
-//    test_parameter_struct(device, stream);
+//        test_compute_shader(device, stream);
+    test_parameter_struct(device, stream);
     //        test_lambda(device, stream);
 
     //    test_poly();

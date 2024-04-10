@@ -268,6 +268,20 @@ public:
 
     template<typename Index>
     requires concepts::all_integral<expr_value_t<Index>>
+    OC_NODISCARD auto at(Index &&index) const noexcept {
+        auto expr = make_expr<Buffer<T>>(expression());
+        return expr.at(OC_FORWARD(index));
+    }
+
+    template<typename Index>
+    requires concepts::all_integral<expr_value_t<Index>>
+    OC_NODISCARD auto &at(Index &&index) noexcept {
+        auto expr = make_expr<Buffer<T>>(expression());
+        return expr.at(OC_FORWARD(index));
+    }
+
+    template<typename Index>
+    requires concepts::all_integral<expr_value_t<Index>>
     OC_NODISCARD auto
     read(Index &&index, bool check_boundary = true) const {
         auto expr = make_expr<Buffer<T>>(expression());
