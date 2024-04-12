@@ -133,8 +133,6 @@ void Function::replace_param_struct_member(const vector<int> &path, const Expres
         Usage usage = variable_usage(variable.uid());
         ref_expr->mark(usage);
         expression = ref_expr;
-    } else {
-        return;
     }
 }
 
