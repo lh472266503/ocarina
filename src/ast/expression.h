@@ -253,6 +253,7 @@ public:
     OC_MAKE_CHECK_CONTEXT(Expression, _parent)
     [[nodiscard]] auto member_index() const noexcept { return _member_index; }
     [[nodiscard]] bool is_swizzle() const noexcept { return _swizzle_size != 0; }
+    [[nodiscard]] Variable variable() const noexcept { return _variable; }
     [[nodiscard]] int swizzle_size() const noexcept { return _swizzle_size; }
     [[nodiscard]] int swizzle_index(int idx) const noexcept;
     [[nodiscard]] const Expression *parent() const noexcept { return _parent; }
