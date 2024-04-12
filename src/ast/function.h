@@ -198,6 +198,12 @@ public:
             visitor(f.get());
         }
     }
+
+    [[nodiscard]] Variable create_variable(const Type *type, Variable::Tag tag,
+                                           string name = "", string suffix = "") noexcept {
+        return {type, tag, _next_variable_uid(), ocarina::move(name), ocarina::move(suffix)};
+    }
+
     template<typename Visitor>
     void for_each_structure(Visitor &&visitor) const noexcept {
         for (const auto &type : _used_struct.struct_lst) {

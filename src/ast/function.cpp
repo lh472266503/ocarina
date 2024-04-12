@@ -349,11 +349,11 @@ const SubscriptExpr *Function::subscript(const Type *type, const Expression *ran
 
 const MemberExpr *Function::swizzle(const Type *type, const Expression *obj, uint16_t mask,
                                     uint16_t swizzle_size) noexcept {
-    return create_expression<MemberExpr>(type, obj, mask, swizzle_size);
+    return create_expression<MemberExpr>(type, obj, mask, swizzle_size, create_variable(type, Variable::Tag::MEMBER));
 }
 
 const MemberExpr *Function::member(const Type *type, const Expression *obj, int index) noexcept {
-    return create_expression<MemberExpr>(type, obj, index, 0);
+    return create_expression<MemberExpr>(type, obj, index, 0, create_variable(type, Variable::Tag::MEMBER));
 }
 
 const CallExpr *Function::call(const Type *type, SP<const Function> func,

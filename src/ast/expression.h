@@ -241,14 +241,15 @@ private:
     const Expression *_parent{nullptr};
     uint16_t _member_index{0};
     uint16_t _swizzle_size{0};
+    /// used for store usage
+    Variable _variable;
 
 private:
-    void _mark(Usage usage) const noexcept override { _parent->mark(usage); }
+    void _mark(Usage usage) const noexcept override;
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
-    MemberExpr(const Type *type, const Expression *parent, uint16_t index, uint16_t swizzle_size)
-        : Expression(Tag::MEMBER, type), _parent(parent), _member_index(index), _swizzle_size(swizzle_size) {}
+    MemberExpr(const Type *type, const Expression *parent, uint16_t index, uint16_t swizzle_size, Variable variable = {});
     OC_MAKE_CHECK_CONTEXT(Expression, _parent)
     [[nodiscard]] auto member_index() const noexcept { return _member_index; }
     [[nodiscard]] bool is_swizzle() const noexcept { return _swizzle_size != 0; }

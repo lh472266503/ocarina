@@ -18,6 +18,7 @@ public:
         // data
         LOCAL,
         SHARED,
+        MEMBER,
         UNIFORM,
 
         // reference

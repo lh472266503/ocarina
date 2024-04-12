@@ -54,6 +54,16 @@ uint64_t ConditionalExpr::_compute_hash() const noexcept {
     return ret;
 }
 
+MemberExpr::MemberExpr(const Type *type, const Expression *parent,
+                       uint16_t index, uint16_t swizzle_size, Variable variable)
+    : Expression(Tag::MEMBER, type), _parent(parent),
+      _member_index(index), _swizzle_size(swizzle_size),
+      _variable(ocarina::move(variable)) {}
+
+void MemberExpr::_mark(ocarina::Usage usage) const noexcept {
+    const_cast<Function *>(context())->mark_variable_usage(_variable.uid(), usage);
+}
+
 int MemberExpr::swizzle_index(int idx) const noexcept {
     int shift = (_swizzle_size - 1 - idx) * 4;
     auto org = 0xf << (_swizzle_size - 1) * 4;
