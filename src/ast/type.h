@@ -161,7 +161,8 @@ struct struct_member_tuple<Matrix<N>> {
         using offset = std::index_sequence<MAP_LIST(OC_TYPE_OFFSET_OF, ##__VA_ARGS__)>;           \
         static constexpr array offset_array = {MAP_LIST(OC_TYPE_OFFSET_OF, ##__VA_ARGS__)};       \
         static constexpr auto min_size = std::min({MAP_LIST(OC_TYPE_SIZE, ##__VA_ARGS__)});       \
-        static_assert(min_size >= 4, "Due to the memory alignment, min member size must >= 4");   \
+        static_assert(min_size >= 4 || ocarina::is_builtin_struct_v<S>,                           \
+                      "Due to the memory alignment, min member size must >= 4");                  \
         static_assert(is_valid_reflection_v<this_type, type, offset>,                             \
                       "may be order of members is wrong!");                                       \
         static_assert(sizeof(this_type) >= 4);                                                    \
