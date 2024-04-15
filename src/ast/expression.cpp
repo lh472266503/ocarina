@@ -77,7 +77,9 @@ int MemberExpr::swizzle_index(int idx) const noexcept {
 }
 
 uint64_t MemberExpr::_compute_hash() const noexcept {
-    return hash64(hash64(_member_index, _swizzle_size), _parent->hash());
+    return hash64(hash64(_member_index, _swizzle_size),
+                  _parent->hash(),
+                  _variable.hash());
 }
 
 CallExpr::CallExpr(const Type *type, const Function *func,
