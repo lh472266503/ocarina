@@ -249,7 +249,8 @@ private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
-    MemberExpr(const Type *type, const Expression *parent, uint16_t index, uint16_t swizzle_size, Variable variable = {});
+    MemberExpr(const Type *type, const Expression *parent, uint16_t index,
+               uint16_t swizzle_size, Variable variable);
     OC_MAKE_CHECK_CONTEXT(Expression, _parent)
     [[nodiscard]] auto member_index() const noexcept { return _member_index; }
     [[nodiscard]] bool is_swizzle() const noexcept { return _swizzle_size != 0; }

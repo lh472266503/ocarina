@@ -128,10 +128,7 @@ void Function::replace_param_struct_member(const vector<int> &path, const Expres
     string key = detail::path_key(path);
     if (_argument_map.contains(key)) {
         const RefExpr *ref_expr = _ref(_argument_map[key]);
-        const MemberExpr *member_expr = dynamic_cast<const MemberExpr *>(expression);
-        Variable variable = member_expr->variable();
-        Usage usage = variable_usage(variable.uid());
-        ref_expr->mark(usage);
+        ref_expr->mark(expression->usage());
         expression = ref_expr;
     }
 }
