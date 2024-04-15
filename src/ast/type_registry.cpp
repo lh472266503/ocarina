@@ -105,10 +105,16 @@ namespace detail {
     auto prev_token = str.find_first_of(l);
     constexpr auto token = ',';
     str = str.substr(prev_token + 1);
+    uint count = 0;
+    constexpr uint limit = 10000;
     while (true) {
         auto content = find_identifier(str);
         auto new_cursor = str.find_first_of(token) + 1;
         str = str.substr(new_cursor);
+        ++ count;
+        if (count > limit) {
+            OC_ERROR("The number of loops has exceeded the upper limit. Please check the code");
+        }
         ret.push_back(content);
         if (str[0] == r) {
             break;
