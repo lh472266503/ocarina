@@ -257,7 +257,7 @@ public:
     [[nodiscard]] int swizzle_size() const noexcept { return _swizzle_size; }
     [[nodiscard]] int swizzle_index(int idx) const noexcept;
     [[nodiscard]] const Expression *parent() const noexcept { return _parent; }
-    [[nodiscard]] Usage usage() const noexcept override { return parent()->usage(); }
+    [[nodiscard]] Usage usage() const noexcept override;
     OC_MAKE_EXPRESSION_COMMON
 };
 

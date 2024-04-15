@@ -64,6 +64,10 @@ void MemberExpr::_mark(ocarina::Usage usage) const noexcept {
     const_cast<Function *>(context())->mark_variable_usage(_variable.uid(), usage);
 }
 
+Usage MemberExpr::usage() const noexcept {
+    return const_cast<Function *>(context())->variable_usage(_variable.uid());
+}
+
 int MemberExpr::swizzle_index(int idx) const noexcept {
     int shift = (_swizzle_size - 1 - idx) * 4;
     auto org = 0xf << (_swizzle_size - 1) * 4;
