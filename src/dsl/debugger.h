@@ -25,7 +25,7 @@ OC_STRUCT(ocarina::DebugData, range, enabled){};
 
 namespace ocarina {
 
-using OCDebugData = Var<DebugData>;
+using DebugDataVar = Var<DebugData>;
 
 class Debugger {
 private:
@@ -58,7 +58,7 @@ protected:
     /// for dsl
     [[nodiscard]] Bool _is_enabled() const noexcept { return cast<bool>(_data.read(0).enabled); }
     /// for dsl
-    [[nodiscard]] OCDebugData _device_data() const noexcept { return _data.read(0); }
+    [[nodiscard]] DebugDataVar _device_data() const noexcept { return _data.read(0); }
 
 public:
     /// for dsl
