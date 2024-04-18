@@ -28,15 +28,15 @@ class Function;
 
 class ASTNode {
 protected:
-    Function *_context{};
+    Function *context_{};
 
 public:
-    OC_MAKE_MEMBER_GETTER_SETTER(context, )
+    OC_MAKE_MEMBER_GETTER_SETTER_(context, )
     virtual bool check_context(const Function *ctx) const noexcept {
-        if (ctx != _context) {
+        if (ctx != context_) {
             volatile int i = 0;
         }
-        return _context == ctx;
+        return context_ == ctx;
     }
 };
 

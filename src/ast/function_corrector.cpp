@@ -14,20 +14,20 @@ void FunctionCorrector::traverse(Function &function) noexcept {
 }
 
 void FunctionCorrector::apply(Function *function) noexcept {
-    _function_stack.push_back(function);
+    function_stack_.push_back(function);
     traverse(*current_function());
     if (current_function()->is_kernel()) {
         /// Split parameter structure into separate elements
-        _stage = SplitParamStruct;
+        stage_ = SplitParamStruct;
         current_function()->splitting_arguments();
         traverse(*current_function());
     }
-    _function_stack.pop_back();
+    function_stack_.pop_back();
 }
 
 bool FunctionCorrector::is_from_invoker(const Expression *expression) noexcept {
-    return std::find(_function_stack.begin(), _function_stack.end(),
-                     expression->context()) != _function_stack.end();
+    return std::find(function_stack_.begin(), function_stack_.end(),
+                     expression->context()) != function_stack_.end();
 }
 
 void FunctionCorrector::process_capture(const Expression *&expression, Function *cur_func) noexcept {
@@ -53,7 +53,7 @@ void FunctionCorrector::visit_expr(const Expression *const &expression, Function
     if (expression->is_ref()) {
         process_capture(const_cast<const Expression *&>(expression), cur_func);
     } else if (expression->is_member()) {
-        switch (_stage) {
+        switch (stage_) {
             case ProcessCapture:
                 process_capture(const_cast<const Expression *&>(expression), cur_func);
                 break;
@@ -109,13 +109,13 @@ void correct_usage(const CallExpr *expr) noexcept {
 
 void FunctionCorrector::visit(const CallExpr *const_expr) {
     CallExpr *expr = const_cast<CallExpr *>(const_expr);
-    for (const Expression *const &arg : expr->_arguments) {
+    for (const Expression *const &arg : expr->arguments_) {
         visit_expr(arg);
     }
-    if (!expr->_function) {
+    if (!expr->function_) {
         return;
     }
-    apply(const_cast<Function *>(expr->_function));
+    apply(const_cast<Function *>(expr->function_));
     detail::correct_usage(expr);
 }
 
@@ -170,25 +170,25 @@ void FunctionCorrector::visit(const ScopeStmt *scope) {
 }
 
 void FunctionCorrector::visit(const AssignStmt *stmt) {
-    visit_expr(stmt->_lhs);
+    visit_expr(stmt->lhs_);
     OC_ERROR_IF(stmt->lhs()->type()->is_resource());
     stmt->lhs()->mark(Usage::WRITE);
-    visit_expr(stmt->_rhs);
+    visit_expr(stmt->rhs_);
 }
 
 void FunctionCorrector::visit(const ExprStmt *stmt) {
-    visit_expr(stmt->_expression);
+    visit_expr(stmt->expression_);
 }
 
 void FunctionCorrector::visit(const ForStmt *stmt) {
-    visit_expr(stmt->_var);
-    visit_expr(stmt->_condition);
-    visit_expr(stmt->_step);
+    visit_expr(stmt->var_);
+    visit_expr(stmt->condition_);
+    visit_expr(stmt->step_);
     stmt->body()->accept(*this);
 }
 
 void FunctionCorrector::visit(const IfStmt *stmt) {
-    visit_expr(stmt->_condition);
+    visit_expr(stmt->condition_);
     stmt->true_branch()->accept(*this);
     stmt->false_branch()->accept(*this);
 }
@@ -198,16 +198,16 @@ void FunctionCorrector::visit(const LoopStmt *stmt) {
 }
 
 void FunctionCorrector::visit(const ReturnStmt *stmt) {
-    visit_expr(stmt->_expression);
+    visit_expr(stmt->expression_);
 }
 
 void FunctionCorrector::visit(const SwitchCaseStmt *stmt) {
-    visit_expr(stmt->_expr);
+    visit_expr(stmt->expr_);
     stmt->body()->accept(*this);
 }
 
 void FunctionCorrector::visit(const SwitchStmt *stmt) {
-    visit_expr(stmt->_expression);
+    visit_expr(stmt->expression_);
     stmt->body()->accept(*this);
 }
 
@@ -216,22 +216,22 @@ void FunctionCorrector::visit(const SwitchDefaultStmt *stmt) {
 }
 
 void FunctionCorrector::visit(const BinaryExpr *expr) {
-    visit_expr(expr->_lhs);
-    visit_expr(expr->_rhs);
+    visit_expr(expr->lhs_);
+    visit_expr(expr->rhs_);
 }
 
 void FunctionCorrector::visit(const CastExpr *expr) {
-    visit_expr(expr->_expression);
+    visit_expr(expr->expression_);
 }
 
 void FunctionCorrector::visit(const ConditionalExpr *expr) {
-    visit_expr(expr->_pred);
-    visit_expr(expr->_true);
-    visit_expr(expr->_false);
+    visit_expr(expr->pred_);
+    visit_expr(expr->true__);
+    visit_expr(expr->false__);
 }
 
 void FunctionCorrector::visit(const MemberExpr *expr) {
-    OC_ERROR_IF(_stage == ProcessCapture);
+    OC_ERROR_IF(stage_ == ProcessCapture);
 }
 
 void FunctionCorrector::process_member_expr(const Expression *&expression) noexcept {
@@ -239,7 +239,7 @@ void FunctionCorrector::process_member_expr(const Expression *&expression) noexc
     if (member_expr->parent()->type()->is_param_struct()) {
         process_param_struct(expression);
     } else {
-        visit_expr(member_expr->_parent);
+        visit_expr(member_expr->parent_);
     }
 }
 
@@ -262,14 +262,14 @@ void FunctionCorrector::process_param_struct(const Expression *&expression) noex
 }
 
 void FunctionCorrector::visit(const SubscriptExpr *expr) {
-    visit_expr(expr->_range);
-    for (const Expression *const &index : expr->_indexes) {
+    visit_expr(expr->range_);
+    for (const Expression *const &index : expr->indexes_) {
         visit_expr(index);
     }
 }
 
 void FunctionCorrector::visit(const UnaryExpr *expr) {
-    visit_expr(expr->_operand);
+    visit_expr(expr->operand_);
 }
 
 }// namespace ocarina

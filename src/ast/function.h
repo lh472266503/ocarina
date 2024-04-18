@@ -61,20 +61,20 @@ public:
     };
 
 private:
-    ocarina::vector<ocarina::unique_ptr<Expression>> _all_expressions;
-    ocarina::vector<ocarina::unique_ptr<Statement>> _all_statements;
+    ocarina::vector<ocarina::unique_ptr<Expression>> all_expressions_;
+    ocarina::vector<ocarina::unique_ptr<Statement>> all_statements_;
 
 private:
-    mutable string _description{};
-    const Type *_ret{nullptr};
+    mutable string description_{};
+    const Type *ret_{nullptr};
     const CallExpr *_call_expr{nullptr};
 
-    ocarina::map<const Expression *, uint> _expr_to_argument_index;
+    ocarina::map<const Expression *, uint> expr_to_argument_index_;
 
-    ocarina::vector<string_view> _headers;
+    ocarina::vector<string_view> headers_;
 
     /// appended argument for output
-    ocarina::vector<Variable> _appended_arguments;
+    ocarina::vector<Variable> appended_arguments_;
 
     /// key : expression from other function , value : expression belong current function
     /// use for kernel
@@ -83,23 +83,23 @@ private:
     ocarina::vector<Variable> _arguments;
 
     /// use for splitting parameter structure start
-    ocarina::map<string, Variable> _argument_map;
-    ocarina::vector<Variable> _splitted_arguments;
+    ocarina::map<string, Variable> argument_map_;
+    ocarina::vector<Variable> splitted_arguments_;
     /// use for splitting parameter structure end
 
-    ocarina::vector<CapturedResource> _captured_resources;
-    ocarina::vector<Variable> _builtin_vars;
-    ocarina::vector<Usage> _variable_usages;
-    ocarina::vector<ScopeStmt *> _scope_stack;
+    ocarina::vector<CapturedResource> captured_resources_;
+    ocarina::vector<Variable> builtin_vars_;
+    ocarina::vector<Usage> variable_usages_;
+    ocarina::vector<ScopeStmt *> scope_stack_;
     /// use for assignment subscript access
-    ocarina::vector<ocarina::pair<std::byte *, size_t>> _temp_memory;
-    ScopeStmt _body{true};
-    Tag _tag{Tag::CALLABLE};
-    ocarina::vector<SP<const Function>> _used_custom_func;
-    StructureSet _used_struct;
-    mutable bool _raytracing{false};
-    mutable uint3 _block_dim{make_uint3(0)};
-    mutable uint3 _grid_dim{make_uint3(0)};
+    ocarina::vector<ocarina::pair<std::byte *, size_t>> temp_memory_;
+    ScopeStmt body_{true};
+    Tag tag_{Tag::CALLABLE};
+    ocarina::vector<SP<const Function>> used_custom_func_;
+    StructureSet used_struct_;
+    mutable bool raytracing_{false};
+    mutable uint3 block_dim_{make_uint3(0)};
+    mutable uint3 grid_dim_{make_uint3(0)};
 
     friend class FunctionCorrector;
 
@@ -138,7 +138,7 @@ private:
         auto expr = ocarina::make_unique<Expr>(std::get<i>(OC_FORWARD(tuple))...);
         auto ret = expr.get();
         expr->set_context(this);
-        _all_expressions.push_back(std::move(expr));
+        all_expressions_.push_back(std::move(expr));
         return ret;
     }
 
@@ -157,7 +157,7 @@ private:
         auto stmt = ocarina::make_unique<Stmt>(std::get<i>(OC_FORWARD(tuple))...);
         auto ret = stmt.get();
         stmt->set_context(this);
-        _all_statements.push_back(std::move(stmt));
+        all_statements_.push_back(std::move(stmt));
         current_scope()->add_stmt(ret);
         return ret;
     }
@@ -170,31 +170,31 @@ private:
     }
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
     bool check_context() const noexcept {
-        return _body.check_context(this);
+        return body_.check_context(this);
     }
 
     class ScopeGuard {
     private:
-        ocarina::vector<ScopeStmt *> &_scope_stack;
+        ocarina::vector<ScopeStmt *> &scope_stack_;
 
     public:
         ScopeGuard(ocarina::vector<ScopeStmt *> &stack, ScopeStmt *scope)
-            : _scope_stack(stack) {
-            _scope_stack.push_back(scope);
+            : scope_stack_(stack) {
+            scope_stack_.push_back(scope);
         }
         ~ScopeGuard() {
-            _scope_stack.pop_back();
+            scope_stack_.pop_back();
         }
     };
 
 public:
     void set_call_expression(const CallExpr *call_expr) noexcept { _call_expr = call_expr; }
     [[nodiscard]] const CallExpr *call_expr() const noexcept { return _call_expr; }
-    void set_description(string desc) const noexcept { _description = ocarina::move(desc); }
-    [[nodiscard]] string &description() const noexcept { return _description; }
+    void set_description(string desc) const noexcept { description_ = ocarina::move(desc); }
+    [[nodiscard]] string &description() const noexcept { return description_; }
     template<typename Visitor>
     void for_each_custom_func(Visitor &&visitor) const noexcept {
-        for (const auto &f : _used_custom_func) {
+        for (const auto &f : used_custom_func_) {
             visitor(f.get());
         }
     }
@@ -206,26 +206,26 @@ public:
 
     template<typename Visitor>
     void for_each_structure(Visitor &&visitor) const noexcept {
-        for (const auto &type : _used_struct.struct_lst) {
+        for (const auto &type : used_struct_.struct_lst) {
             visitor(type);
         }
     }
 
     template<typename Func>
     void for_each_header(Func &&func) const noexcept {
-        std::for_each(_headers.begin(), _headers.end(), OC_FORWARD(func));
+        std::for_each(headers_.begin(), headers_.end(), OC_FORWARD(func));
     }
-    void add_used_structure(const Type *type) noexcept { _used_struct.add(type); }
+    void add_used_structure(const Type *type) noexcept { used_struct_.add(type); }
     [[nodiscard]] const Usage &variable_usage(uint uid) const noexcept;
     [[nodiscard]] Usage &variable_usage(uint uid) noexcept;
     const CapturedResource &get_captured_resource(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept;
     const CapturedResource &add_captured_resource(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept;
     [[nodiscard]] bool has_captured_resource(const void *handle) const noexcept;
-    [[nodiscard]] auto &captured_resources() const noexcept { return _captured_resources; }
+    [[nodiscard]] auto &captured_resources() const noexcept { return captured_resources_; }
     [[nodiscard]] const CapturedResource *get_captured_resource_by_handle(const void *handle) const noexcept;
     template<typename Visitor>
     void for_each_captured_resource(Visitor &&visitor) const noexcept {
-        for (const CapturedResource &var : _captured_resources) {
+        for (const CapturedResource &var : captured_resources_) {
             visitor(var);
         }
     }
@@ -237,14 +237,14 @@ public:
         return _define(Tag::CALLABLE, std::forward<Func>(func));
     }
     [[nodiscard]] const ScopeStmt *current_scope() const noexcept {
-        return _scope_stack.back();
+        return scope_stack_.back();
     }
     [[nodiscard]] ScopeStmt *current_scope() noexcept {
-        return _scope_stack.back();
+        return scope_stack_.back();
     }
     template<typename Func>
     decltype(auto) with(ScopeStmt *scope, Func &&func) noexcept {
-        ScopeGuard guard(_scope_stack, scope);
+        ScopeGuard guard(scope_stack_, scope);
         return func();
     }
     void mark_variable_usage(uint uid, Usage usage) noexcept;
@@ -261,20 +261,20 @@ public:
     template<typename T, typename... Args>
     T *create_temp_obj(Args &&...args) noexcept {
         T *ptr = new_with_allocator<T>(std::forward<Args>(args)...);
-        _temp_memory.emplace_back(reinterpret_cast<std::byte *>(ptr), sizeof(T));
+        temp_memory_.emplace_back(reinterpret_cast<std::byte *>(ptr), sizeof(T));
         return ptr;
     }
-    void set_block_dim(uint x, uint y = 1, uint z = 1) const noexcept { _block_dim = make_uint3(x, y, z); }
-    void set_block_dim(uint2 size) const noexcept { _block_dim = make_uint3(size, 1); }
-    void set_block_dim(uint3 size) const noexcept { _block_dim = size; }
-    [[nodiscard]] uint3 block_dim() const noexcept { return _block_dim; }
-    void set_grid_dim(uint x, uint y = 1, uint z = 1) const noexcept { _grid_dim = make_uint3(x, y, z); }
-    void set_grid_dim(uint2 size) const noexcept { _grid_dim = make_uint3(size, 1); }
-    void set_grid_dim(uint3 size) const noexcept { _grid_dim = size; }
-    [[nodiscard]] uint3 grid_dim() const noexcept { return _grid_dim; }
+    void set_block_dim(uint x, uint y = 1, uint z = 1) const noexcept { block_dim_ = make_uint3(x, y, z); }
+    void set_block_dim(uint2 size) const noexcept { block_dim_ = make_uint3(size, 1); }
+    void set_block_dim(uint3 size) const noexcept { block_dim_ = size; }
+    [[nodiscard]] uint3 block_dim() const noexcept { return block_dim_; }
+    void set_grid_dim(uint x, uint y = 1, uint z = 1) const noexcept { grid_dim_ = make_uint3(x, y, z); }
+    void set_grid_dim(uint2 size) const noexcept { grid_dim_ = make_uint3(size, 1); }
+    void set_grid_dim(uint3 size) const noexcept { grid_dim_ = size; }
+    [[nodiscard]] uint3 grid_dim() const noexcept { return grid_dim_; }
     void configure(uint3 grid_dim, uint3 block_dim) const noexcept {
-        _grid_dim = grid_dim;
-        _block_dim = block_dim;
+        grid_dim_ = grid_dim;
+        block_dim_ = block_dim;
     }
     [[nodiscard]] bool has_configure() const noexcept { return all(block_dim() != 0u) || all(grid_dim() != 0u); }
     [[nodiscard]] ocarina::string func_name(uint64_t ext_hash = 0u, string ext_name = "") const noexcept;
@@ -321,13 +321,13 @@ public:
     [[nodiscard]] ocarina::span<const Variable> arguments() const noexcept;
     [[nodiscard]] ocarina::span<const Variable> appended_arguments() const noexcept;
     [[nodiscard]] ocarina::span<const Variable> builtin_vars() const noexcept;
-    [[nodiscard]] constexpr Tag tag() const noexcept { return _tag; }
-    [[nodiscard]] constexpr bool is_callable() const noexcept { return _tag == Tag::CALLABLE; }
-    [[nodiscard]] constexpr bool is_kernel() const noexcept { return _tag == Tag::KERNEL; }
+    [[nodiscard]] constexpr Tag tag() const noexcept { return tag_; }
+    [[nodiscard]] constexpr bool is_callable() const noexcept { return tag_ == Tag::CALLABLE; }
+    [[nodiscard]] constexpr bool is_kernel() const noexcept { return tag_ == Tag::KERNEL; }
     [[nodiscard]] constexpr bool is_raytracing_kernel() const noexcept { return is_raytracing() && is_kernel(); }
     [[nodiscard]] constexpr bool is_general_kernel() const noexcept { return !is_raytracing() && is_kernel(); }
-    [[nodiscard]] constexpr bool is_raytracing() const noexcept { return _raytracing; }
-    [[nodiscard]] constexpr const Type *return_type() const noexcept { return _ret; }
-    constexpr void set_raytracing(bool val) const noexcept { _raytracing = val; }
+    [[nodiscard]] constexpr bool is_raytracing() const noexcept { return raytracing_; }
+    [[nodiscard]] constexpr const Type *return_type() const noexcept { return ret_; }
+    constexpr void set_raytracing(bool val) const noexcept { raytracing_ = val; }
 };
 }// namespace ocarina

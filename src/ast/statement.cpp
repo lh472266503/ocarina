@@ -9,65 +9,65 @@ namespace ocarina {
 
 uint64_t ScopeStmt::_compute_hash() const noexcept {
     auto h = Hash64::default_seed;
-    for (auto &v : _local_vars) { h = hash64(v.hash(), h); }
-    for (auto &&s : _statements) { h = hash64(s->hash(), h); }
+    for (auto &v : local_vars_) { h = hash64(v.hash(), h); }
+    for (auto &&s : statements_) { h = hash64(s->hash(), h); }
     return h;
 }
 uint64_t ReturnStmt::_compute_hash() const noexcept {
-    return hash64(_expression == nullptr ? 0ull : _expression->hash());
+    return hash64(expression_ == nullptr ? 0ull : expression_->hash());
 }
 uint64_t ExprStmt::_compute_hash() const noexcept {
-    return hash64(_expression == nullptr ? 0ull : _expression->hash());
+    return hash64(expression_ == nullptr ? 0ull : expression_->hash());
 }
 
 uint64_t AssignStmt::_compute_hash() const noexcept {
-    auto hl = _lhs->hash();
-    auto hr = _rhs->hash();
+    auto hl = lhs_->hash();
+    auto hr = rhs_->hash();
     return hash64(hl, hr);
 }
 uint64_t IfStmt::_compute_hash() const noexcept {
-    auto ret = _condition->hash();
+    auto ret = condition_->hash();
     ret = hash64(ret, true_branch()->hash());
     return hash64(ret, false_branch()->hash());
 }
 uint64_t CommentStmt::_compute_hash() const noexcept {
-    return hash64(_string);
+    return hash64(string_);
 }
 
 uint64_t SwitchStmt::_compute_hash() const noexcept {
-    auto ret = _expression->hash();
-    return hash64(ret, _body.hash());
+    auto ret = expression_->hash();
+    return hash64(ret, body_.hash());
 }
 
 SwitchCaseStmt::SwitchCaseStmt(const ocarina::Expression *expression)
     : Statement(Tag::SWITCH_CASE),
-      _expr(dynamic_cast<const LiteralExpr *>(expression)) {
-    OC_ASSERT(_expr != nullptr);
+      expr_(dynamic_cast<const LiteralExpr *>(expression)) {
+    OC_ASSERT(expr_ != nullptr);
 }
 
 uint64_t SwitchCaseStmt::_compute_hash() const noexcept {
-    auto ret = _expr->hash();
-    return hash64(ret, _body.hash());
+    auto ret = expr_->hash();
+    return hash64(ret, body_.hash());
 }
 
 uint64_t SwitchDefaultStmt::_compute_hash() const noexcept {
-    return _body.hash();
+    return body_.hash();
 }
 
 uint64_t ForStmt::_compute_hash() const noexcept {
-    auto ret = _var->hash();
-    ret = hash64(ret, _condition->hash());
-    ret = hash64(ret, _step->hash());
-    return hash64(ret, _body.hash());
+    auto ret = var_->hash();
+    ret = hash64(ret, condition_->hash());
+    ret = hash64(ret, step_->hash());
+    return hash64(ret, body_.hash());
 }
 
 uint64_t LoopStmt::_compute_hash() const noexcept {
-    return _body.hash();
+    return body_.hash();
 }
 
 uint64_t PrintStmt::_compute_hash() const noexcept {
-    uint64_t ret = hash64(_fmt);
-    for (const Expression *expr : _args) {
+    uint64_t ret = hash64(fmt_);
+    for (const Expression *expr : args_) {
         ret = hash64(ret, expr->hash());
     }
     return ret;

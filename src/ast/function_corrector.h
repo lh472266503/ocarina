@@ -10,14 +10,14 @@ namespace ocarina {
 
 class FunctionCorrector : public ExprVisitor, public StmtVisitor {
 private:
-    ocarina::deque<Function *> _function_stack;
+    ocarina::deque<Function *> function_stack_;
     enum Stage {
         /// process capture variable
         ProcessCapture,
         /// Split parameter structure into separate elements
         SplitParamStruct
     };
-    Stage _stage{ProcessCapture};
+    Stage stage_{ProcessCapture};
 
 private:
     void visit(const AssignStmt *stmt) override;
@@ -45,8 +45,8 @@ private:
     void visit(const SubscriptExpr *expr) override;
     void visit(const UnaryExpr *expr) override;
 
-    [[nodiscard]] Function *current_function() noexcept { return _function_stack.back(); }
-    [[nodiscard]] Function *kernel() noexcept { return _function_stack.front(); }
+    [[nodiscard]] Function *current_function() noexcept { return function_stack_.back(); }
+    [[nodiscard]] Function *kernel() noexcept { return function_stack_.front(); }
 
     void traverse(Function &function) noexcept;
     void process_capture(const Expression *&expression, Function *cur_func) noexcept;

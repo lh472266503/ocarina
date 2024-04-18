@@ -33,25 +33,25 @@ void Function::correct() noexcept {
 }
 
 void Function::mark_variable_usage(ocarina::uint uid, ocarina::Usage usage) noexcept {
-    OC_ASSERT(uid < _variable_usages.size());
-    auto old_usage = to_underlying(_variable_usages[uid]);
+    OC_ASSERT(uid < variable_usages_.size());
+    auto old_usage = to_underlying(variable_usages_[uid]);
     auto new_usage = to_underlying(usage);
     auto final_usage = old_usage | new_usage;
     if (final_usage != old_usage) {
-        _variable_usages[uid] = static_cast<Usage>(final_usage);
+        variable_usages_[uid] = static_cast<Usage>(final_usage);
     }
 }
 
 const RefExpr *Function::mapping_captured_argument(const Expression *outer_expr, bool *contain) noexcept {
-    *contain = _expr_to_argument_index.contains(outer_expr);
+    *contain = expr_to_argument_index_.contains(outer_expr);
     if (!*contain) {
-        uint arg_index = static_cast<uint>(_appended_arguments.size());
-        _expr_to_argument_index.insert(make_pair(outer_expr, arg_index));
+        uint arg_index = static_cast<uint>(appended_arguments_.size());
+        expr_to_argument_index_.insert(make_pair(outer_expr, arg_index));
         Variable variable(outer_expr->type(), Variable::Tag::REFERENCE, _next_variable_uid(), "", "outer");
-        _appended_arguments.push_back(variable);
+        appended_arguments_.push_back(variable);
     }
-    uint arg_index = _expr_to_argument_index.at(outer_expr);
-    const RefExpr *ret = _ref(_appended_arguments.at(arg_index));
+    uint arg_index = expr_to_argument_index_.at(outer_expr);
+    const RefExpr *ret = _ref(appended_arguments_.at(arg_index));
     return ret;
 }
 
@@ -76,35 +76,35 @@ const RefExpr *Function::outer_to_local(const Expression *invoked_func_expr) noe
 }
 
 const RefExpr *Function::outer_to_argument(const Expression *invoked_func_expr) noexcept {
-    OC_ASSERT(_expr_to_argument_index.contains(invoked_func_expr));
-    uint arg_index = _expr_to_argument_index.at(invoked_func_expr);
-    const RefExpr *ret = _ref(_appended_arguments.at(arg_index));
+    OC_ASSERT(expr_to_argument_index_.contains(invoked_func_expr));
+    uint arg_index = expr_to_argument_index_.at(invoked_func_expr);
+    const RefExpr *ret = _ref(appended_arguments_.at(arg_index));
     return ret;
 }
 
 const RefExpr *Function::mapping_output_argument(const Expression *invoked_func_expr, bool *contain) noexcept {
     if (contain) {
-        *contain = _expr_to_argument_index.contains(invoked_func_expr);
+        *contain = expr_to_argument_index_.contains(invoked_func_expr);
     }
-    if (!_expr_to_argument_index.contains(invoked_func_expr)) {
-        uint arg_index = static_cast<uint>(_appended_arguments.size());
+    if (!expr_to_argument_index_.contains(invoked_func_expr)) {
+        uint arg_index = static_cast<uint>(appended_arguments_.size());
         Variable variable(invoked_func_expr->type(), Variable::Tag::REFERENCE, _next_variable_uid(), "", "pass");
-        _expr_to_argument_index.insert(make_pair(invoked_func_expr, arg_index));
-        _appended_arguments.push_back(variable);
+        expr_to_argument_index_.insert(make_pair(invoked_func_expr, arg_index));
+        appended_arguments_.push_back(variable);
     }
     return outer_to_argument(invoked_func_expr);
 }
 
 void Function::append_output_argument(const Expression *expression, bool *contain) noexcept {
     if (contain) {
-        *contain = _expr_to_argument_index.contains(expression);
+        *contain = expr_to_argument_index_.contains(expression);
     }
-    if (_expr_to_argument_index.contains(expression)) {
+    if (expr_to_argument_index_.contains(expression)) {
         return;
     }
-    _expr_to_argument_index.insert(make_pair(expression, static_cast<uint>(_appended_arguments.size())));
+    expr_to_argument_index_.insert(make_pair(expression, static_cast<uint>(appended_arguments_.size())));
     Variable variable(expression->type(), Variable::Tag::REFERENCE, _next_variable_uid(), "", "output");
-    _appended_arguments.push_back(variable);
+    appended_arguments_.push_back(variable);
     const RefExpr *ref_expr = _ref(variable);
     OC_ERROR_IF(expression->type()->is_resource());
     with(body(), [&] {
@@ -126,8 +126,8 @@ namespace detail {
 
 void Function::replace_param_struct_member(const vector<int> &path, const Expression *&expression) noexcept {
     string key = detail::path_key(path);
-    if (_argument_map.contains(key)) {
-        const RefExpr *ref_expr = _ref(_argument_map[key]);
+    if (argument_map_.contains(key)) {
+        const RefExpr *ref_expr = _ref(argument_map_[key]);
         ref_expr->mark(expression->usage());
         expression = ref_expr;
     }
@@ -140,8 +140,8 @@ void Function::process_param_struct_member(const Variable &arg, const Type *type
     } else {
         string key = detail::path_key(path);
         Variable v(type, Variable::Tag::LOCAL, _next_variable_uid(), "", key);
-        _argument_map.insert(make_pair(key, v));
-        _splitted_arguments.push_back(v);
+        argument_map_.insert(make_pair(key, v));
+        splitted_arguments_.push_back(v);
     }
 }
 
@@ -161,14 +161,14 @@ void Function::splitting_arguments() noexcept {
             path.push_back(arg.uid());
             splitting_param_struct(arg, arg.type(), path);
         } else {
-            _splitted_arguments.push_back(arg);
+            splitted_arguments_.push_back(arg);
         }
     }
-    std::swap(_arguments, _splitted_arguments);
+    std::swap(_arguments, splitted_arguments_);
 }
 
 Function::~Function() noexcept {
-    for (auto &mem : _temp_memory) {
+    for (auto &mem : temp_memory_) {
         delete_with_allocator(mem.first);
     }
 }
@@ -177,10 +177,10 @@ void Function::correct_used_structures() noexcept {
     for (const Variable &arg : _arguments) {
         add_used_structure(arg.type());
     }
-    for (const Variable &arg : _appended_arguments) {
+    for (const Variable &arg : appended_arguments_) {
         add_used_structure(arg.type());
     }
-    for (const CapturedResource &resource : _captured_resources) {
+    for (const CapturedResource &resource : captured_resources_) {
         add_used_structure(resource.type());
     }
 }
@@ -199,55 +199,55 @@ const RefExpr *Function::_ref(const ocarina::Variable &variable) noexcept {
 }
 
 uint Function::_next_variable_uid() noexcept {
-    auto ret = _variable_usages.size();
-    _variable_usages.push_back(Usage::NONE);
+    auto ret = variable_usages_.size();
+    variable_usages_.push_back(Usage::NONE);
     return ret;
 }
 
 const Usage &Function::variable_usage(uint uid) const noexcept {
-    OC_ASSERT(uid < _variable_usages.size());
-    return _variable_usages[uid];
+    OC_ASSERT(uid < variable_usages_.size());
+    return variable_usages_[uid];
 }
 
 Usage &Function::variable_usage(uint uid) noexcept {
-    OC_ASSERT(uid < _variable_usages.size());
-    return _variable_usages[uid];
+    OC_ASSERT(uid < variable_usages_.size());
+    return variable_usages_[uid];
 }
 
 void Function::return_(const Expression *expression) noexcept {
     if (expression) {
-        _ret = expression->type();
+        ret_ = expression->type();
     }
     create_statement<ReturnStmt>(expression);
 }
 
 Function::Function(Function::Tag tag) noexcept
-    : _tag(tag) {}
+    : tag_(tag) {}
 
 const ScopeStmt *Function::body() const noexcept {
-    return &_body;
+    return &body_;
 }
 
 ScopeStmt *Function::body() noexcept {
-    return &_body;
+    return &body_;
 }
 
 const RefExpr *Function::_builtin(Variable::Tag tag, const Type *type) noexcept {
     Variable variable(type, tag, _next_variable_uid());
-    if (auto iter = std::find_if(_builtin_vars.begin(),
-                                 _builtin_vars.end(),
+    if (auto iter = std::find_if(builtin_vars_.begin(),
+                                 builtin_vars_.end(),
                                  [&](auto v) {
                                      return v.tag() == tag;
                                  });
-        iter != _builtin_vars.end()) {
+        iter != builtin_vars_.end()) {
         return _ref(*iter);
     }
-    _builtin_vars.push_back(variable);
+    builtin_vars_.push_back(variable);
     return _ref(variable);
 }
 
 const Function *Function::add_used_function(SP<const Function> func) noexcept {
-    _used_custom_func.push_back(func);
+    used_custom_func_.push_back(func);
     return func.get();
 }
 
@@ -376,31 +376,31 @@ const CallExpr *Function::call_builtin(const Type *type, CallOp op,
 }
 
 const CapturedResource &Function::get_captured_resource(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept {
-    if (auto iter = std::find_if(_captured_resources.begin(),
-                                 _captured_resources.end(),
+    if (auto iter = std::find_if(captured_resources_.begin(),
+                                 captured_resources_.end(),
                                  [&](auto v) {
                                      return v.handle_ptr() == block.address;
                                  });
-        iter != _captured_resources.end()) {
+        iter != captured_resources_.end()) {
         return *iter;
     }
     const RefExpr *expr = _ref(Variable(type, tag, _next_variable_uid()));
-    _captured_resources.emplace_back(expr, type, block);
-    return _captured_resources.back();
+    captured_resources_.emplace_back(expr, type, block);
+    return captured_resources_.back();
 }
 
 const CapturedResource &Function::add_captured_resource(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept {
     const RefExpr *expr = _ref(Variable(type, tag, _next_variable_uid(), "", "cap_res"));
-    _captured_resources.emplace_back(expr, type, block);
-    return _captured_resources.back();
+    captured_resources_.emplace_back(expr, type, block);
+    return captured_resources_.back();
 }
 
 bool Function::has_captured_resource(const void *handle) const noexcept {
-    bool ret = std::find_if(_captured_resources.begin(),
-                            _captured_resources.end(),
+    bool ret = std::find_if(captured_resources_.begin(),
+                            captured_resources_.end(),
                             [&](auto v) {
                                 return v.handle_ptr() == handle;
-                            }) != _captured_resources.end();
+                            }) != captured_resources_.end();
     return ret;
 }
 
@@ -428,7 +428,7 @@ vector<Variable> Function::all_arguments() const noexcept {
 
 const CapturedResource *Function::get_captured_resource_by_handle(const void *handle) const noexcept {
     const CapturedResource *var = nullptr;
-    for (const CapturedResource &v : _captured_resources) {
+    for (const CapturedResource &v : captured_resources_) {
         if (v.handle_ptr() == handle) {
             var = &v;
             break;
@@ -449,7 +449,7 @@ ScopeStmt *Function::scope() noexcept {
 }
 
 void Function::add_header(std::string_view fn) noexcept {
-    _headers.push_back(fn);
+    headers_.push_back(fn);
 }
 
 IfStmt *Function::if_(const Expression *expr) noexcept {
@@ -501,11 +501,11 @@ ocarina::span<const Variable> Function::arguments() const noexcept {
 }
 
 ocarina::span<const Variable> Function::appended_arguments() const noexcept {
-    return _appended_arguments;
+    return appended_arguments_;
 }
 
 ocarina::span<const Variable> Function::builtin_vars() const noexcept {
-    return _builtin_vars;
+    return builtin_vars_;
 }
 
 ocarina::string Function::func_name(uint64_t ext_hash, string ext_name) const noexcept {
@@ -526,7 +526,7 @@ void Function::assign(const Expression *lhs, const Expression *rhs) noexcept {
 }
 
 uint64_t Function::_compute_hash() const noexcept {
-    auto ret = _ret ? _ret->hash() : 0;
+    auto ret = ret_ ? ret_->hash() : 0;
     for_each_header([&](string_view fn) {
         ret = hash64(ret, fn);
     });
@@ -534,16 +534,16 @@ uint64_t Function::_compute_hash() const noexcept {
     for (const Variable &v : _arguments) {
         ret = hash64(ret, v.hash());
     }
-    for (const Variable &v : _appended_arguments) {
+    for (const Variable &v : appended_arguments_) {
         ret = hash64(ret, v.hash());
     }
-    for (const Variable &v : _builtin_vars) {
+    for (const Variable &v : builtin_vars_) {
         ret = hash64(ret, v.hash());
     }
-    for (const CapturedResource &v : _captured_resources) {
+    for (const CapturedResource &v : captured_resources_) {
         ret = hash64(ret, v.hash());
     }
-    ret = hash64(ret, _body.hash());
+    ret = hash64(ret, body_.hash());
     return ret;
 }
 

@@ -69,37 +69,37 @@ public:
     };
 
 private:
-    const Tag _tag;
+    const Tag tag_;
 
 public:
-    explicit Statement(Tag tag) noexcept : _tag{tag} {}
-    [[nodiscard]] auto tag() const noexcept { return _tag; }
+    explicit Statement(Tag tag) noexcept : tag_{tag} {}
+    [[nodiscard]] auto tag() const noexcept { return tag_; }
     virtual void accept(StmtVisitor &) const = 0;
     virtual ~Statement() noexcept = default;
 };
 
 class OC_AST_API ScopeStmt : public Statement {
 private:
-    ocarina::vector<Variable> _local_vars;
-    ocarina::vector<const Statement *> _statements;
-    bool _is_func_body{};
+    ocarina::vector<Variable> local_vars_;
+    ocarina::vector<const Statement *> statements_;
+    bool is_func_body_{};
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
     explicit ScopeStmt(bool is_func_body = false) noexcept
-        : _is_func_body(is_func_body), Statement(Tag::SCOPE) {}
+        : is_func_body_(is_func_body), Statement(Tag::SCOPE) {}
     bool check_context(const Function *ctx) const noexcept override {
-        return detail::check_context((_statements), ctx);
+        return detail::check_context((statements_), ctx);
     }
-    [[nodiscard]] ocarina::span<const Variable> local_vars() const noexcept { return _local_vars; }
-    [[nodiscard]] bool is_func_body() const noexcept { return _is_func_body; }
-    [[nodiscard]] ocarina::span<const Statement *const> statements() const noexcept { return _statements; }
-    [[nodiscard]] bool empty() const noexcept { return _statements.empty(); }
-    [[nodiscard]] auto size() const noexcept { return _statements.size(); }
-    void add_stmt(const Statement *stmt) noexcept { _statements.push_back(stmt); }
-    void add_var(const Variable &variable) noexcept { _local_vars.push_back(variable); }
+    [[nodiscard]] ocarina::span<const Variable> local_vars() const noexcept { return local_vars_; }
+    [[nodiscard]] bool is_func_body() const noexcept { return is_func_body_; }
+    [[nodiscard]] ocarina::span<const Statement *const> statements() const noexcept { return statements_; }
+    [[nodiscard]] bool empty() const noexcept { return statements_.empty(); }
+    [[nodiscard]] auto size() const noexcept { return statements_.size(); }
+    void add_stmt(const Statement *stmt) noexcept { statements_.push_back(stmt); }
+    void add_var(const Variable &variable) noexcept { local_vars_.push_back(variable); }
     OC_MAKE_STATEMENT_COMMON
 };
 
@@ -127,186 +127,186 @@ public:
 
 class OC_AST_API ReturnStmt : public Statement {
 private:
-    const Expression *_expression{nullptr};
+    const Expression *expression_{nullptr};
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
     explicit ReturnStmt(const Expression *expr = nullptr) noexcept
-        : Statement(Tag::RETURN), _expression(expr) {}
-    OC_MAKE_CHECK_CONTEXT(Statement, _expression)
-    [[nodiscard]] const Expression *expression() const noexcept { return _expression; }
+        : Statement(Tag::RETURN), expression_(expr) {}
+    OC_MAKE_CHECK_CONTEXT(Statement, expression_)
+    [[nodiscard]] const Expression *expression() const noexcept { return expression_; }
     OC_MAKE_STATEMENT_COMMON
 };
 
 class OC_AST_API ExprStmt : public Statement {
 private:
-    const Expression *_expression{nullptr};
+    const Expression *expression_{nullptr};
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
     explicit ExprStmt(const Expression *expr = nullptr) noexcept
-        : Statement(Tag::EXPR), _expression(expr) {}
-    OC_MAKE_CHECK_CONTEXT(Statement, _expression)
-    const Expression *expression() const { return _expression; }
+        : Statement(Tag::EXPR), expression_(expr) {}
+    OC_MAKE_CHECK_CONTEXT(Statement, expression_)
+    const Expression *expression() const { return expression_; }
     OC_MAKE_STATEMENT_COMMON
 };
 
 class OC_AST_API AssignStmt : public Statement {
 private:
-    const Expression *_lhs{nullptr};
-    const Expression *_rhs{nullptr};
+    const Expression *lhs_{nullptr};
+    const Expression *rhs_{nullptr};
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
     explicit AssignStmt(const Expression *lhs, const Expression *rhs)
-        : Statement(Tag::ASSIGN), _lhs(lhs), _rhs(rhs) {}
-    OC_MAKE_CHECK_CONTEXT(Statement, _lhs, _rhs)
-    [[nodiscard]] auto lhs() const noexcept { return _lhs; }
-    [[nodiscard]] auto rhs() const noexcept { return _rhs; }
+        : Statement(Tag::ASSIGN), lhs_(lhs), rhs_(rhs) {}
+    OC_MAKE_CHECK_CONTEXT(Statement, lhs_, rhs_)
+    [[nodiscard]] auto lhs() const noexcept { return lhs_; }
+    [[nodiscard]] auto rhs() const noexcept { return rhs_; }
     OC_MAKE_STATEMENT_COMMON
 };
 
 class OC_AST_API IfStmt : public Statement {
 private:
-    const Expression *_condition{nullptr};
-    ScopeStmt _true_branch{};
-    ScopeStmt _false_branch{};
+    const Expression *condition_{nullptr};
+    ScopeStmt true_branch_{};
+    ScopeStmt false_branch_{};
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
-    explicit IfStmt(const Expression *condition) : Statement(Tag::IF), _condition(condition) {}
-    OC_MAKE_CHECK_CONTEXT(Statement, _condition, _true_branch, _false_branch)
-    [[nodiscard]] const Expression *condition() const noexcept { return _condition; }
-    [[nodiscard]] const ScopeStmt *true_branch() const noexcept { return &_true_branch; }
-    [[nodiscard]] const ScopeStmt *false_branch() const noexcept { return &_false_branch; }
-    [[nodiscard]] ScopeStmt *true_branch() noexcept { return &_true_branch; }
-    [[nodiscard]] ScopeStmt *false_branch() noexcept { return &_false_branch; }
+    explicit IfStmt(const Expression *condition) : Statement(Tag::IF), condition_(condition) {}
+    OC_MAKE_CHECK_CONTEXT(Statement, condition_, true_branch_, false_branch_)
+    [[nodiscard]] const Expression *condition() const noexcept { return condition_; }
+    [[nodiscard]] const ScopeStmt *true_branch() const noexcept { return &true_branch_; }
+    [[nodiscard]] const ScopeStmt *false_branch() const noexcept { return &false_branch_; }
+    [[nodiscard]] ScopeStmt *true_branch() noexcept { return &true_branch_; }
+    [[nodiscard]] ScopeStmt *false_branch() noexcept { return &false_branch_; }
     OC_MAKE_STATEMENT_COMMON
 };
 
 class OC_AST_API CommentStmt : public Statement {
 private:
-    std::string _string;
+    std::string string_;
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
     explicit CommentStmt(const std::string &str)
-        : Statement(Tag::COMMENT), _string(str) {}
-    [[nodiscard]] std::string string() const noexcept { return _string; }
+        : Statement(Tag::COMMENT), string_(str) {}
+    [[nodiscard]] std::string string() const noexcept { return string_; }
     OC_MAKE_STATEMENT_COMMON
 };
 
 class OC_AST_API SwitchStmt : public Statement {
 private:
-    const Expression *_expression;
-    ScopeStmt _body;
+    const Expression *expression_;
+    ScopeStmt body_;
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
     explicit SwitchStmt(const Expression *expr)
-        : Statement(Tag::SWITCH), _expression(expr) {}
-    OC_MAKE_CHECK_CONTEXT(Statement, _expression, _body)
-    [[nodiscard]] auto expression() const noexcept { return _expression; }
-    [[nodiscard]] auto body() const noexcept { return &_body; }
-    [[nodiscard]] auto body() noexcept { return &_body; }
+        : Statement(Tag::SWITCH), expression_(expr) {}
+    OC_MAKE_CHECK_CONTEXT(Statement, expression_, body_)
+    [[nodiscard]] auto expression() const noexcept { return expression_; }
+    [[nodiscard]] auto body() const noexcept { return &body_; }
+    [[nodiscard]] auto body() noexcept { return &body_; }
     OC_MAKE_STATEMENT_COMMON
 };
 
 class OC_AST_API SwitchCaseStmt : public Statement {
 private:
-    const LiteralExpr *_expr;
-    ScopeStmt _body;
+    const LiteralExpr *expr_;
+    ScopeStmt body_;
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
     explicit SwitchCaseStmt(const Expression *expression);
-    OC_MAKE_CHECK_CONTEXT(Statement, _expr, _body)
-    [[nodiscard]] auto expression() const noexcept { return _expr; }
-    [[nodiscard]] auto body() const noexcept { return &_body; }
-    [[nodiscard]] auto body() noexcept { return &_body; }
+    OC_MAKE_CHECK_CONTEXT(Statement, expr_, body_)
+    [[nodiscard]] auto expression() const noexcept { return expr_; }
+    [[nodiscard]] auto body() const noexcept { return &body_; }
+    [[nodiscard]] auto body() noexcept { return &body_; }
     OC_MAKE_STATEMENT_COMMON
 };
 
 class OC_AST_API SwitchDefaultStmt : public Statement {
 private:
-    ScopeStmt _body;
+    ScopeStmt body_;
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
     SwitchDefaultStmt() : Statement(Tag::SWITCH_DEFAULT) {}
-    OC_MAKE_CHECK_CONTEXT(Statement, _body)
-    [[nodiscard]] auto body() const noexcept { return &_body; }
-    [[nodiscard]] auto body() noexcept { return &_body; }
+    OC_MAKE_CHECK_CONTEXT(Statement, body_)
+    [[nodiscard]] auto body() const noexcept { return &body_; }
+    [[nodiscard]] auto body() noexcept { return &body_; }
     OC_MAKE_STATEMENT_COMMON
 };
 
 class OC_AST_API ForStmt : public Statement {
 private:
-    const Expression *_var{};
-    const Expression *_condition{};
-    const Expression *_step{};
-    ScopeStmt _body;
+    const Expression *var_{};
+    const Expression *condition_{};
+    const Expression *step_{};
+    ScopeStmt body_;
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
     ForStmt(const Expression *var, const Expression *cond, const Expression *step)
-        : Statement(Tag::FOR), _var(var), _condition(cond), _step(step) {}
-    OC_MAKE_CHECK_CONTEXT(Statement, _var, _condition, _step, _body)
-    [[nodiscard]] auto var() const noexcept { return _var; }
-    [[nodiscard]] auto condition() const noexcept { return _condition; }
-    [[nodiscard]] auto step() const noexcept { return _step; }
-    [[nodiscard]] auto body() const noexcept { return &_body; }
-    [[nodiscard]] auto body() noexcept { return &_body; }
+        : Statement(Tag::FOR), var_(var), condition_(cond), step_(step) {}
+    OC_MAKE_CHECK_CONTEXT(Statement, var_, condition_, step_, body_)
+    [[nodiscard]] auto var() const noexcept { return var_; }
+    [[nodiscard]] auto condition() const noexcept { return condition_; }
+    [[nodiscard]] auto step() const noexcept { return step_; }
+    [[nodiscard]] auto body() const noexcept { return &body_; }
+    [[nodiscard]] auto body() noexcept { return &body_; }
     OC_MAKE_STATEMENT_COMMON
 };
 
 class OC_AST_API LoopStmt : public Statement {
 private:
-    ScopeStmt _body;
+    ScopeStmt body_;
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
     LoopStmt() : Statement(Tag::LOOP) {}
-    OC_MAKE_CHECK_CONTEXT(Statement, _body)
-    [[nodiscard]] auto body() const noexcept { return &_body; }
-    [[nodiscard]] auto body() noexcept { return &_body; }
+    OC_MAKE_CHECK_CONTEXT(Statement, body_)
+    [[nodiscard]] auto body() const noexcept { return &body_; }
+    [[nodiscard]] auto body() noexcept { return &body_; }
     OC_MAKE_STATEMENT_COMMON
 };
 
 class OC_AST_API PrintStmt : public Statement {
 private:
-    ocarina::string _fmt;
-    ocarina::vector<const Expression *> _args;
+    ocarina::string fmt_;
+    ocarina::vector<const Expression *> args_;
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
     explicit PrintStmt(string fmt, const vector<const Expression *> &args)
-        : Statement(Tag::PRINT), _fmt(fmt), _args(args) {}
-    OC_MAKE_CHECK_CONTEXT(Statement, _args)
-    [[nodiscard]] ocarina::string fmt() const noexcept { return _fmt; }
-    [[nodiscard]] span<const Expression *const> args() const noexcept { return _args; }
+        : Statement(Tag::PRINT), fmt_(fmt), args_(args) {}
+    OC_MAKE_CHECK_CONTEXT(Statement, args_)
+    [[nodiscard]] ocarina::string fmt() const noexcept { return fmt_; }
+    [[nodiscard]] span<const Expression *const> args() const noexcept { return args_; }
     OC_MAKE_STATEMENT_COMMON
 };
 

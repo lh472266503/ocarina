@@ -51,17 +51,17 @@ public:
     };
 
 private:
-    const Type *_type;
-    Tag _tag;
+    const Type *type_;
+    Tag tag_;
 
 protected:
     virtual void _mark(Usage usage) const noexcept {};
 
 public:
-    explicit Expression(Tag tag, const Type *type) noexcept : _type{type}, _tag{tag} {}
+    explicit Expression(Tag tag, const Type *type) noexcept : type_{type}, tag_{tag} {}
     virtual ~Expression() noexcept = default;
-    [[nodiscard]] auto type() const noexcept { return _type; }
-    [[nodiscard]] auto tag() const noexcept { return _tag; }
+    [[nodiscard]] auto type() const noexcept { return type_; }
+    [[nodiscard]] auto tag() const noexcept { return tag_; }
     [[nodiscard]] bool is_ref() const noexcept { return tag() == Tag::REF; }
     [[nodiscard]] bool is_member() const noexcept { return tag() == Tag::MEMBER; }
     [[nodiscard]] bool is_arithmetic() const noexcept {
@@ -80,49 +80,49 @@ public:
 
 class OC_AST_API UnaryExpr : public Expression {
 private:
-    const Expression *_operand;
-    UnaryOp _op;
+    const Expression *operand_;
+    UnaryOp op_;
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
     UnaryExpr(const Type *type, UnaryOp op, const Expression *expression)
-        : Expression(Tag::UNARY, type), _op(op), _operand(expression) {}
-    OC_MAKE_CHECK_CONTEXT(Expression, _operand)
-    [[nodiscard]] auto operand() const noexcept { return _operand; }
-    [[nodiscard]] auto op() const noexcept { return _op; }
-    [[nodiscard]] Usage usage() const noexcept override { return _operand->usage(); }
+        : Expression(Tag::UNARY, type), op_(op), operand_(expression) {}
+    OC_MAKE_CHECK_CONTEXT(Expression, operand_)
+    [[nodiscard]] auto operand() const noexcept { return operand_; }
+    [[nodiscard]] auto op() const noexcept { return op_; }
+    [[nodiscard]] Usage usage() const noexcept override { return operand_->usage(); }
     OC_MAKE_EXPRESSION_COMMON
 };
 
 class OC_AST_API BinaryExpr : public Expression {
 private:
-    const Expression *_lhs;
-    const Expression *_rhs;
-    BinaryOp _op;
+    const Expression *lhs_;
+    const Expression *rhs_;
+    BinaryOp op_;
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
     BinaryExpr(const Type *type, BinaryOp op, const Expression *lhs, const Expression *rhs) noexcept
-        : Expression{Tag::BINARY, type}, _lhs{lhs}, _rhs{rhs}, _op{op} {
-        _lhs->mark(Usage::READ);
-        _rhs->mark(Usage::READ);
+        : Expression{Tag::BINARY, type}, lhs_{lhs}, rhs_{rhs}, op_{op} {
+        lhs_->mark(Usage::READ);
+        rhs_->mark(Usage::READ);
     }
-    OC_MAKE_CHECK_CONTEXT(Expression, _lhs, _rhs)
-    [[nodiscard]] auto lhs() const noexcept { return _lhs; }
-    [[nodiscard]] auto rhs() const noexcept { return _rhs; }
-    [[nodiscard]] auto op() const noexcept { return _op; }
+    OC_MAKE_CHECK_CONTEXT(Expression, lhs_, rhs_)
+    [[nodiscard]] auto lhs() const noexcept { return lhs_; }
+    [[nodiscard]] auto rhs() const noexcept { return rhs_; }
+    [[nodiscard]] auto op() const noexcept { return op_; }
     OC_MAKE_EXPRESSION_COMMON
 };
 
 class OC_AST_API ConditionalExpr : public Expression {
 private:
-    const Expression *_pred{};
-    const Expression *_true{};
-    const Expression *_false{};
+    const Expression *pred_{};
+    const Expression *true__{};
+    const Expression *false__{};
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
@@ -131,15 +131,15 @@ public:
     ConditionalExpr(const Type *type, const Expression *pred,
                     const Expression *t, const Expression *f)
         : Expression(Tag::CONDITIONAL, type),
-          _pred(pred), _true(t), _false(f) {
-        _pred->mark(Usage::READ);
-        _true->mark(Usage::READ);
-        _false->mark(Usage::READ);
+          pred_(pred), true__(t), false__(f) {
+        pred_->mark(Usage::READ);
+        true__->mark(Usage::READ);
+        false__->mark(Usage::READ);
     }
-    OC_MAKE_CHECK_CONTEXT(Expression, _pred, _true, _false)
-    [[nodiscard]] const Expression *pred() const noexcept { return _pred; }
-    [[nodiscard]] const Expression *true_() const noexcept { return _true; }
-    [[nodiscard]] const Expression *false_() const noexcept { return _false; }
+    OC_MAKE_CHECK_CONTEXT(Expression, pred_, true__, false__)
+    [[nodiscard]] const Expression *pred() const noexcept { return pred_; }
+    [[nodiscard]] const Expression *true_() const noexcept { return true__; }
+    [[nodiscard]] const Expression *false_() const noexcept { return false__; }
     OC_MAKE_EXPRESSION_COMMON
 };
 
@@ -148,34 +148,34 @@ private:
     using IndexVector = vector<const Expression *>;
 
 private:
-    const Expression *_range{};
-    IndexVector _indexes;
+    const Expression *range_{};
+    IndexVector indexes_;
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
     void _mark(ocarina::Usage usage) const noexcept override {
-        _range->mark(usage);
+        range_->mark(usage);
     }
 
 public:
     SubscriptExpr(const Type *type, const Expression *range, const Expression *index)
-        : Expression(Tag::SUBSCRIPT, type), _range(range) {
-        _indexes.push_back(index);
+        : Expression(Tag::SUBSCRIPT, type), range_(range) {
+        indexes_.push_back(index);
     }
-    OC_MAKE_CHECK_CONTEXT(Expression, _range, _indexes)
+    OC_MAKE_CHECK_CONTEXT(Expression, range_, indexes_)
     SubscriptExpr(const Type *type, const Expression *range, IndexVector indexes)
-        : Expression(Tag::SUBSCRIPT, type), _range(range), _indexes(ocarina::move(indexes)) {
+        : Expression(Tag::SUBSCRIPT, type), range_(range), indexes_(ocarina::move(indexes)) {
     }
 
     template<typename Func>
     void for_each_index(Func &&func) const noexcept {
-        for (const Expression *index : _indexes) {
+        for (const Expression *index : indexes_) {
             func(index);
         }
     }
-    [[nodiscard]] Usage usage() const noexcept override { return _range->usage(); }
-    [[nodiscard]] const Expression *range() const noexcept { return _range; }
-    [[nodiscard]] const Expression *index(int i) const noexcept { return _indexes.at(i); }
+    [[nodiscard]] Usage usage() const noexcept override { return range_->usage(); }
+    [[nodiscard]] const Expression *range() const noexcept { return range_; }
+    [[nodiscard]] const Expression *index(int i) const noexcept { return indexes_.at(i); }
     OC_MAKE_EXPRESSION_COMMON
 };
 
@@ -184,22 +184,22 @@ public:
     using value_type = basic_literal_t;
 
 private:
-    value_type _value;
+    value_type value_;
 
 private:
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
     LiteralExpr(const Type *type, value_type value)
-        : Expression(Tag::LITERAL, type), _value(value) {}
-    [[nodiscard]] decltype(auto) value() const noexcept { return _value; }
+        : Expression(Tag::LITERAL, type), value_(value) {}
+    [[nodiscard]] decltype(auto) value() const noexcept { return value_; }
     bool check_context(const Function *ctx) const noexcept override { return true; }
     OC_MAKE_EXPRESSION_COMMON
 };
 
 class OC_AST_API RefExpr : public Expression {
 private:
-    Variable _variable;
+    Variable variable_;
 
 private:
     void _mark(Usage usage) const noexcept override;
@@ -207,42 +207,42 @@ private:
 
 public:
     explicit RefExpr(const Variable &v) noexcept
-        : Expression(Tag::REF, v.type()), _variable(v) {}
-    [[nodiscard]] auto variable() const noexcept { return _variable; }
+        : Expression(Tag::REF, v.type()), variable_(v) {}
+    [[nodiscard]] auto variable() const noexcept { return variable_; }
     [[nodiscard]] Usage usage() const noexcept override;
     OC_MAKE_EXPRESSION_COMMON
 };
 
 class OC_AST_API CastExpr : public Expression {
 private:
-    CastOp _cast_op;
-    const Expression *_expression;
+    CastOp cast_op_;
+    const Expression *expression_;
 
 private:
     void _mark(Usage) const noexcept override {}
     uint64_t _compute_hash() const noexcept override {
-        return hash64(_cast_op, _expression->hash());
+        return hash64(cast_op_, expression_->hash());
     }
 
 public:
     CastExpr(const Type *type, CastOp op, const Expression *expression) noexcept
-        : Expression(Tag::CAST, type), _cast_op(op), _expression(expression) {
-        _expression->mark(Usage::READ);
+        : Expression(Tag::CAST, type), cast_op_(op), expression_(expression) {
+        expression_->mark(Usage::READ);
     }
-    OC_MAKE_CHECK_CONTEXT(Expression, _expression)
-    [[nodiscard]] CastOp cast_op() const noexcept { return _cast_op; }
-    [[nodiscard]] const Expression *expression() const noexcept { return _expression; }
-    [[nodiscard]] Usage usage() const noexcept override { return _expression->usage(); }
+    OC_MAKE_CHECK_CONTEXT(Expression, expression_)
+    [[nodiscard]] CastOp cast_op() const noexcept { return cast_op_; }
+    [[nodiscard]] const Expression *expression() const noexcept { return expression_; }
+    [[nodiscard]] Usage usage() const noexcept override { return expression_->usage(); }
     OC_MAKE_EXPRESSION_COMMON
 };
 
 class OC_AST_API MemberExpr : public Expression {
 private:
-    const Expression *_parent{nullptr};
-    uint16_t _member_index{0};
-    uint16_t _swizzle_size{0};
+    const Expression *parent_{nullptr};
+    uint16_t member_index_{0};
+    uint16_t swizzle_size_{0};
     /// used for store usage
-    Variable _variable;
+    Variable variable_;
 
 private:
     void _mark(Usage usage) const noexcept override;
@@ -251,13 +251,13 @@ private:
 public:
     MemberExpr(const Type *type, const Expression *parent, uint16_t index,
                uint16_t swizzle_size, Variable variable);
-    OC_MAKE_CHECK_CONTEXT(Expression, _parent)
-    [[nodiscard]] auto member_index() const noexcept { return _member_index; }
-    [[nodiscard]] bool is_swizzle() const noexcept { return _swizzle_size != 0; }
-    [[nodiscard]] Variable variable() const noexcept { return _variable; }
-    [[nodiscard]] int swizzle_size() const noexcept { return _swizzle_size; }
+    OC_MAKE_CHECK_CONTEXT(Expression, parent_)
+    [[nodiscard]] auto member_index() const noexcept { return member_index_; }
+    [[nodiscard]] bool is_swizzle() const noexcept { return swizzle_size_ != 0; }
+    [[nodiscard]] Variable variable() const noexcept { return variable_; }
+    [[nodiscard]] int swizzle_size() const noexcept { return swizzle_size_; }
     [[nodiscard]] int swizzle_index(int idx) const noexcept;
-    [[nodiscard]] const Expression *parent() const noexcept { return _parent; }
+    [[nodiscard]] const Expression *parent() const noexcept { return parent_; }
     [[nodiscard]] Usage usage() const noexcept override;
     OC_MAKE_EXPRESSION_COMMON
 };
@@ -267,11 +267,11 @@ public:
     using Template = std::variant<const Type *, uint>;
 
 private:
-    ocarina::vector<const Expression *> _arguments;
-    const Function *_function{};
-    CallOp _call_op{CallOp::CUSTOM};
-    string_view _function_name{};
-    ocarina::vector<Template> _template_args;
+    ocarina::vector<const Expression *> arguments_;
+    const Function *function_{};
+    CallOp call_op_{CallOp::CUSTOM};
+    string_view function_name_{};
+    ocarina::vector<Template> template_args_;
 
 private:
     void _mark(Usage) const noexcept override {}
@@ -283,20 +283,20 @@ public:
     CallExpr(const Type *type, CallOp op,
              ocarina::vector<const Expression *> &&args,
              ocarina::vector<Template> &&t_args = {})
-        : Expression(Tag::CALL, type), _call_op(op),
-          _arguments(std::move(args)), _template_args(ocarina::move(t_args)) {}
+        : Expression(Tag::CALL, type), call_op_(op),
+          arguments_(std::move(args)), template_args_(ocarina::move(t_args)) {}
     CallExpr(const Type *type, string_view func_name,
              ocarina::vector<const Expression *> &&args)
-        : Expression(Tag::CALL, type), _function_name(ocarina::move(func_name)),
-          _arguments(ocarina::move(args)) {}
-    OC_MAKE_CHECK_CONTEXT(Expression, _arguments)
-    [[nodiscard]] ocarina::span<const Expression *const> arguments() const noexcept { return _arguments; }
-    [[nodiscard]] ocarina::span<const Template> template_args() const noexcept { return _template_args; }
-    OC_MAKE_MEMBER_GETTER(function_name, &)
+        : Expression(Tag::CALL, type), function_name_(ocarina::move(func_name)),
+          arguments_(ocarina::move(args)) {}
+    OC_MAKE_CHECK_CONTEXT(Expression, arguments_)
+    [[nodiscard]] ocarina::span<const Expression *const> arguments() const noexcept { return arguments_; }
+    [[nodiscard]] ocarina::span<const Template> template_args() const noexcept { return template_args_; }
+    OC_MAKE_MEMBER_GETTER_(function_name, &)
     void append_argument(const Expression *expression) noexcept;
     [[nodiscard]] vector<const Function *> call_chain() const noexcept;
-    [[nodiscard]] auto call_op() const noexcept { return _call_op; }
-    [[nodiscard]] auto function() const noexcept { return _function; }
+    [[nodiscard]] auto call_op() const noexcept { return call_op_; }
+    [[nodiscard]] auto function() const noexcept { return function_; }
     OC_MAKE_EXPRESSION_COMMON
 };
 
