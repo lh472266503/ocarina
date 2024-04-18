@@ -13,8 +13,8 @@ namespace ocarina {
 
 CUDAShader::CUDAShader(Device::Impl *device,
                        const Function &func)
-    : _device(dynamic_cast<CUDADevice *>(device)),
-      _function(func) {}
+    : device_(dynamic_cast<CUDADevice *>(device)),
+      function_(func) {}
 
 class CUDASimpleShader : public CUDAShader {
 private:
@@ -26,7 +26,7 @@ public:
                      const ocarina::string &ptx,
                      const Function &f) : CUDAShader(device, f) {
         OC_CU_CHECK(cuModuleLoadData(&_module, ptx.c_str()));
-        OC_CU_CHECK(cuModuleGetFunction(&_func_handle, _module, _function.func_name().c_str()));
+        OC_CU_CHECK(cuModuleGetFunction(&_func_handle, _module, function_.func_name().c_str()));
     }
     ~CUDASimpleShader() override {
         OC_CU_CHECK(cuModuleUnload(_module));
@@ -34,9 +34,9 @@ public:
     void launch(handle_ty stream, ShaderDispatchCommand *cmd) noexcept override {
         uint3 grid_dim = make_uint3(1);
         uint3 block_dim = make_uint3(1);
-        if (_function.has_configure()) {
-            grid_dim = _function.grid_dim();
-            block_dim = _function.block_dim();
+        if (function_.has_configure()) {
+            grid_dim = function_.grid_dim();
+            block_dim = function_.block_dim();
         } else {
             grid_dim = (cmd->dispatch_dim() + block_dim - 1u) / block_dim;
         }
@@ -45,14 +45,14 @@ public:
                                    0, reinterpret_cast<CUstream>(stream), cmd->args().data(), nullptr));
     }
     void compute_fit_size() noexcept override {
-        _device->use_context([&] {
+        device_->use_context([&] {
             int min_grid_size;
             int auto_block_size;
             OC_CU_CHECK(cuOccupancyMaxPotentialBlockSize(&min_grid_size, &auto_block_size,
                                                          _func_handle, 0, 0, 0));
 
-            _function.set_grid_dim(min_grid_size);
-            _function.set_block_dim(auto_block_size);
+            function_.set_grid_dim(min_grid_size);
+            function_.set_block_dim(auto_block_size);
         });
     }
 };
@@ -126,7 +126,7 @@ public:
         char log[2048];
         size_t log_size = sizeof(log);
         OC_OPTIX_CHECK_WITH_LOG(optixModuleCreateFromPTX(
-                                    _device->optix_device_context(),
+                                    device_->optix_device_context(),
                                     &module_compile_options,
                                     &_pipeline_compile_options,
                                     ptx_code.data(), ptx_code.size(),
@@ -180,7 +180,7 @@ public:
     }
 
     void build_sbt(ProgramGroupTable program_group_table) {
-        _sbt_records = Buffer<SBTRecord>(_device, 4, "OptixShader::_sbt_records");
+        _sbt_records = Buffer<SBTRecord>(device_, 4, "OptixShader::_sbt_records");
         SBTRecord sbt[4] = {};
         OC_OPTIX_CHECK(optixSbtRecordPackHeader(program_group_table.raygen_group, &sbt[0]));
         OC_OPTIX_CHECK(optixSbtRecordPackHeader(program_group_table.hit_closest_group, &sbt[1]));
@@ -272,16 +272,16 @@ public:
     OptixShader(Device::Impl *device,
                 const ocarina::string &ptx,
                 const Function &f) : CUDAShader(device, f) {
-        _device->init_optix_context();
+        device_->init_optix_context();
         init_module(ptx);
-        string raygen_entry = _function.func_name();
+        string raygen_entry = function_.func_name();
         ProgramName entries{
             raygen_entry.c_str(),
             "__closesthit__closest",
             "__closesthit__any"};
-        _program_group_table = create_program_groups(_device->optix_device_context(), entries);
+        _program_group_table = create_program_groups(device_->optix_device_context(), entries);
         build_sbt(_program_group_table);
-        build_pipeline(_device->optix_device_context());
+        build_pipeline(device_->optix_device_context());
     }
 
     void launch(handle_ty stream, ShaderDispatchCommand *cmd) noexcept override {
@@ -298,7 +298,7 @@ public:
 
             std::function<void()> func = [this, total_size]() {
                 _params.set_size(total_size);
-                _params.set_device(_device);
+                _params.set_device(device_);
             };
             auto ptr = new_with_allocator<std::function<void()>>(ocarina::move(func));
             OC_CU_CHECK(cuLaunchHostFunc(

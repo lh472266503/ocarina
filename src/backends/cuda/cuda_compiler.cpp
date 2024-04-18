@@ -15,7 +15,7 @@ namespace ocarina {
 static constexpr auto optix_include = OC_STRINGIFY(OPTIX_INCLUDE);
 
 CUDACompiler::CUDACompiler(CUDADevice *device)
-    : _device(device) {}
+    : device_(device) {}
 
 ocarina::string CUDACompiler::compile(const Function &function, int sm) const noexcept {
 
@@ -102,7 +102,7 @@ ocarina::string CUDACompiler::compile(const Function &function, int sm) const no
     ocarina::string ptx_fn = fn + ".ptx";
     string cu_fn = fn + ".cu";
     ocarina::string ptx;
-    FileManager *file_manager = _device->file_manager();
+    FileManager *file_manager = device_->file_manager();
     if (!file_manager->is_exist_cache(ptx_fn)) {
         OC_INFO_FORMAT("miss ptx file {}", ptx_fn);
         if (!file_manager->is_exist_cache(cu_fn)) {

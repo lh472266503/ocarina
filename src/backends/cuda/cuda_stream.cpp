@@ -10,18 +10,18 @@
 namespace ocarina {
 
 CUDAStream::CUDAStream(CUDADevice *device) noexcept
-    : _device(device) {
-    OC_CU_CHECK(cuStreamCreate(&_stream, CU_STREAM_NON_BLOCKING));
-    OC_CU_CHECK(cuEventCreate(&_event, CU_EVENT_DISABLE_TIMING));
+    : device_(device) {
+    OC_CU_CHECK(cuStreamCreate(&stream_, CU_STREAM_NON_BLOCKING));
+    OC_CU_CHECK(cuEventCreate(&event_, CU_EVENT_DISABLE_TIMING));
 }
 
 CUDAStream::~CUDAStream() noexcept {
-    OC_CU_CHECK(cuStreamDestroy(_stream));
-    OC_CU_CHECK(cuEventDestroy(_event));
+    OC_CU_CHECK(cuStreamDestroy(stream_));
+    OC_CU_CHECK(cuEventDestroy(event_));
 }
 
 void CUDAStream::commit(const Commit &commit) noexcept {
-    CUDACommandVisitor cmd_visitor{_device, _stream};
+    CUDACommandVisitor cmd_visitor{device_, stream_};
     for (auto &cmd : command_queue_) {
         cmd->accept(cmd_visitor);
     }
@@ -30,7 +30,7 @@ void CUDAStream::commit(const Commit &commit) noexcept {
 
 void CUDAStream::barrier() noexcept {
     constexpr CUevent_wait_flags_enum flags = CU_EVENT_WAIT_DEFAULT;
-    OC_CU_CHECK(cuEventRecord(_event, _stream));
-    OC_CU_CHECK(cuStreamWaitEvent(_stream, _event, flags));
+    OC_CU_CHECK(cuEventRecord(event_, stream_));
+    OC_CU_CHECK(cuStreamWaitEvent(stream_, event_, flags));
 }
 }// namespace ocarina

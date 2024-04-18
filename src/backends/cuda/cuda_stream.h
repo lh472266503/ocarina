@@ -12,9 +12,9 @@ namespace ocarina {
 class CUDADevice;
 class CUDAStream : public Stream::Impl {
 private:
-    CUstream _stream{};
-    CUevent _event{};
-    CUDADevice *_device{};
+    CUstream stream_{};
+    CUevent event_{};
+    CUDADevice *device_{};
 public:
     explicit CUDAStream(CUDADevice *device) noexcept;
 

@@ -55,12 +55,12 @@ public:
     }
 
 private:
-    CUdevice _cu_device{};
-    CUcontext _cu_ctx{};
-    OptixDeviceContext _optix_device_context{};
-    OptixPipeline _optix_pipeline{};
-    std::unique_ptr<CommandVisitor> _cmd_visitor;
-    uint32_t _compute_capability{};
+    CUdevice cu_device_{};
+    CUcontext cu_ctx_{};
+    OptixDeviceContext optix_device_context_{};
+    OptixPipeline optix_pipeline_{};
+    std::unique_ptr<CommandVisitor> cmd_visitor_;
+    uint32_t compute_capability_{};
 
     class ContextGuard {
     private:
@@ -87,14 +87,14 @@ public:
     void init_hardware_info();
     template<typename Func>
     decltype(auto) use_context(Func &&func) noexcept {
-        ContextGuard cg(_cu_ctx);
+        ContextGuard cg(cu_ctx_);
         return func();
     }
     template<typename Func>
     decltype(auto) use_context_sync(Func &&func) noexcept {
         std::mutex mutex;
         std::unique_lock lock(mutex);
-        ContextGuard cg(_cu_ctx);
+        ContextGuard cg(cu_ctx_);
         return func();
     }
 
@@ -111,7 +111,7 @@ public:
         return ret;
     }
     void init_optix_context() noexcept;
-    [[nodiscard]] OptixDeviceContext optix_device_context() const noexcept { return _optix_device_context; }
+    [[nodiscard]] OptixDeviceContext optix_device_context() const noexcept { return optix_device_context_; }
     [[nodiscard]] handle_ty create_buffer(size_t size, const string &desc) noexcept override;
     void destroy_buffer(handle_ty handle) noexcept override;
     [[nodiscard]] handle_ty create_texture(uint3 res, PixelStorage pixel_storage,

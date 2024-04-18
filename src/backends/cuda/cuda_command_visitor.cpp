@@ -13,13 +13,13 @@
 namespace ocarina {
 void CUDACommandVisitor::visit(const BufferUploadCommand *cmd) noexcept {
     OC_ASSERT((cmd->device_ptr() == 0) == (cmd->host_ptr() == 0));
-    if (cmd->async() && _stream) {
+    if (cmd->async() && stream_) {
         OC_CU_CHECK(cuMemcpyHtoDAsync(cmd->device_ptr(),
                                       cmd->host_ptr<const void *>(),
                                       cmd->size_in_bytes(),
-                                      _stream));
+                                      stream_));
     } else {
-        _device->use_context([&] {
+        device_->use_context([&] {
             OC_CU_CHECK(cuMemcpyHtoD(cmd->device_ptr(),
                                      cmd->host_ptr<const void *>(),
                                      cmd->size_in_bytes()));
@@ -28,10 +28,10 @@ void CUDACommandVisitor::visit(const BufferUploadCommand *cmd) noexcept {
 }
 
 void CUDACommandVisitor::visit(const BufferByteSetCommand *cmd) noexcept {
-    _device->use_context([&] {
-        if (cmd->async() && _stream) {
+    device_->use_context([&] {
+        if (cmd->async() && stream_) {
             OC_CU_CHECK(cuMemsetD8Async(cmd->device_ptr(), cmd->value(),
-                                        cmd->size_in_bytes(), _stream));
+                                        cmd->size_in_bytes(), stream_));
         } else {
             OC_CU_CHECK(cuMemsetD8(cmd->device_ptr(), cmd->value(),
                                    cmd->size_in_bytes()));
@@ -43,27 +43,27 @@ void CUDACommandVisitor::visit(const BufferCopyCommand *cmd) noexcept {
     auto src_buffer = cmd->src() + cmd->src_offset();
     auto dst_buffer = cmd->dst() + cmd->dst_offset();
     OC_ASSERT((cmd->src() == 0) == (cmd->dst() == 0));
-    if (cmd->async() && _stream) {
-        OC_CU_CHECK(cuMemcpyDtoDAsync(dst_buffer, src_buffer, cmd->size(), _stream));
+    if (cmd->async() && stream_) {
+        OC_CU_CHECK(cuMemcpyDtoDAsync(dst_buffer, src_buffer, cmd->size(), stream_));
     } else {
-        _device->use_context([&] {
+        device_->use_context([&] {
             OC_CU_CHECK(cuMemcpyDtoD(dst_buffer, src_buffer, cmd->size()));
         });
     }
 }
 
 void CUDACommandVisitor::visit(const BufferReallocateCommand *cmd) noexcept {
-    if (cmd->async() && _stream) {
+    if (cmd->async() && stream_) {
         RHIResource *rhi_resource = cmd->rhi_resource();
         if (rhi_resource->handle()) {
-            OC_CU_CHECK(cuMemFreeAsync(rhi_resource->handle(), _stream));
+            OC_CU_CHECK(cuMemFreeAsync(rhi_resource->handle(), stream_));
         }
         if (cmd->new_size() > 0) {
             OC_CU_CHECK(cuMemAllocAsync(reinterpret_cast<handle_ty *>(rhi_resource->handle_ptr()),
-                                        cmd->new_size(), _stream));
+                                        cmd->new_size(), stream_));
         }
     } else {
-        _device->use_context([&] {
+        device_->use_context([&] {
             RHIResource *rhi_resource = cmd->rhi_resource();
             if (rhi_resource->handle()) {
                 OC_CU_CHECK(cuMemFree(rhi_resource->handle()));
@@ -78,13 +78,13 @@ void CUDACommandVisitor::visit(const BufferReallocateCommand *cmd) noexcept {
 
 void CUDACommandVisitor::visit(const BufferDownloadCommand *cmd) noexcept {
     OC_ASSERT((cmd->device_ptr() == 0) == (cmd->host_ptr() == 0));
-    if (cmd->async() && _stream) {
+    if (cmd->async() && stream_) {
         OC_CU_CHECK(cuMemcpyDtoHAsync(cmd->host_ptr<void *>(),
                                       cmd->device_ptr(),
                                       cmd->size_in_bytes(),
-                                      _stream));
+                                      stream_));
     } else {
-        _device->use_context([&] {
+        device_->use_context([&] {
             OC_CU_CHECK(cuMemcpyDtoH(cmd->host_ptr<void *>(),
                                      cmd->device_ptr(),
                                      cmd->size_in_bytes()));
@@ -93,11 +93,11 @@ void CUDACommandVisitor::visit(const BufferDownloadCommand *cmd) noexcept {
 }
 
 void CUDACommandVisitor::visit(const SynchronizeCommand *cmd) noexcept {
-    OC_CU_CHECK(cuStreamSynchronize(_stream));
+    OC_CU_CHECK(cuStreamSynchronize(stream_));
 }
 
 void CUDACommandVisitor::visit(const ShaderDispatchCommand *cmd) noexcept {
-    cmd->entry<CUDAShader *>()->launch(handle_ty(_stream),
+    cmd->entry<CUDAShader *>()->launch(handle_ty(stream_),
                                        const_cast<ShaderDispatchCommand *>(cmd));
 }
 
@@ -105,7 +105,7 @@ void CUDACommandVisitor::visit(const ocarina::HostFunctionCommand *cmd) noexcept
     if (cmd->async()) {
         std::function<void()> *ptr = new_with_allocator<std::function<void()>>(ocarina::move(cmd->function()));
         OC_CU_CHECK(cuLaunchHostFunc(
-            _stream, [](void *ptr) {
+            stream_, [](void *ptr) {
                 auto func = reinterpret_cast<std::function<void()> *>(ptr);
                 (*func)();
                 delete_with_allocator(func);
@@ -135,14 +135,14 @@ namespace detail {
 }// namespace detail
 
 void CUDACommandVisitor::visit(const TextureUploadCommand *cmd) noexcept {
-    _device->use_context([&] {
+    device_->use_context([&] {
         CUDA_MEMCPY3D desc = detail::memcpy_desc(cmd);
         desc.srcMemoryType = CU_MEMORYTYPE_HOST;
         desc.srcHost = cmd->host_ptr<const void *>();
         desc.dstMemoryType = CU_MEMORYTYPE_ARRAY;
         desc.dstArray = cmd->device_ptr<CUarray>();
-        if (cmd->async() && _stream) {
-            OC_CU_CHECK(cuMemcpy3DAsync(&desc, _stream));
+        if (cmd->async() && stream_) {
+            OC_CU_CHECK(cuMemcpy3DAsync(&desc, stream_));
         } else {
             OC_CU_CHECK(cuMemcpy3D(&desc));
         }
@@ -150,14 +150,14 @@ void CUDACommandVisitor::visit(const TextureUploadCommand *cmd) noexcept {
 }
 
 void CUDACommandVisitor::visit(const TextureDownloadCommand *cmd) noexcept {
-    _device->use_context([&] {
+    device_->use_context([&] {
         CUDA_MEMCPY3D desc = detail::memcpy_desc(cmd);
         desc.srcMemoryType = CU_MEMORYTYPE_ARRAY;
         desc.dstMemoryType = CU_MEMORYTYPE_HOST;
         desc.srcArray = cmd->device_ptr<CUarray>();
         desc.dstHost = reinterpret_cast<void *>(cmd->host_ptr());
-        if (cmd->async() && _stream) {
-            OC_CU_CHECK(cuMemcpy3DAsync(&desc, _stream));
+        if (cmd->async() && stream_) {
+            OC_CU_CHECK(cuMemcpy3DAsync(&desc, stream_));
         } else {
             OC_CU_CHECK(cuMemcpy3D(&desc));
         }
@@ -165,7 +165,7 @@ void CUDACommandVisitor::visit(const TextureDownloadCommand *cmd) noexcept {
 }
 
 void CUDACommandVisitor::visit(const TextureCopyCommand *cmd) noexcept {
-    _device->use_context([&] {
+    device_->use_context([&] {
         CUDA_MEMCPY3D copy{};
         uint pitch = pixel_size(cmd->pixel_storage()) * cmd->resolution().x;
         copy.srcMemoryType = CU_MEMORYTYPE_ARRAY;
@@ -175,8 +175,8 @@ void CUDACommandVisitor::visit(const TextureCopyCommand *cmd) noexcept {
         copy.WidthInBytes = pitch;
         copy.Height = cmd->resolution().y;
         copy.Depth = cmd->resolution().z;
-        if (cmd->async() && _stream) {
-            OC_CU_CHECK(cuMemcpy3DAsync(&copy, _stream));
+        if (cmd->async() && stream_) {
+            OC_CU_CHECK(cuMemcpy3DAsync(&copy, stream_));
         } else {
             OC_CU_CHECK(cuMemcpy3D(&copy));
         }
@@ -184,7 +184,7 @@ void CUDACommandVisitor::visit(const TextureCopyCommand *cmd) noexcept {
 }
 
 void CUDACommandVisitor::visit(const ocarina::BufferToTextureCommand *cmd) noexcept {
-    _device->use_context([&] {
+    device_->use_context([&] {
         CUDA_MEMCPY3D copy{};
         copy.srcMemoryType = CU_MEMORYTYPE_DEVICE;
         copy.srcDevice = cmd->src() + cmd->buffer_offset();
@@ -195,8 +195,8 @@ void CUDACommandVisitor::visit(const ocarina::BufferToTextureCommand *cmd) noexc
         copy.WidthInBytes = cmd->width_in_bytes();
         copy.Height = cmd->height();
         copy.Depth = cmd->depth();
-        if (cmd->async() && _stream) {
-            OC_CU_CHECK(cuMemcpy3DAsync(&copy, _stream));
+        if (cmd->async() && stream_) {
+            OC_CU_CHECK(cuMemcpy3DAsync(&copy, stream_));
         } else {
             OC_CU_CHECK(cuMemcpy3D(&copy));
         }

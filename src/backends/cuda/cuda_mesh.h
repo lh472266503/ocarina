@@ -12,21 +12,21 @@ namespace ocarina {
 class CUDADevice;
 class CUDAMesh : public RHIMesh::Impl {
 private:
-    CUDADevice *_device;
-    MeshParams _params;
-    OptixTraversableHandle _blas_handle{};
-    Buffer<std::byte> _blas_buffer{};
-    OptixBuildInput _build_input{};
+    CUDADevice *device_;
+    MeshParams params_;
+    OptixTraversableHandle blas_handle_{};
+    Buffer<std::byte> blas_buffer_{};
+    OptixBuildInput build_input_{};
 
 public:
     CUDAMesh(CUDADevice *device, const MeshParams &params)
-        : _device(device), _params(params) {
+        : device_(device), params_(params) {
         init_build_input();
     }
     void init_build_input() noexcept;
-    [[nodiscard]] handle_ty blas_handle() const noexcept override { return _blas_handle; }
-    [[nodiscard]] uint vertex_num() const noexcept override { return _params.vert_num; }
-    [[nodiscard]] uint triangle_num() const noexcept override { return _params.tri_num; }
+    [[nodiscard]] handle_ty blas_handle() const noexcept override { return blas_handle_; }
+    [[nodiscard]] uint vertex_num() const noexcept override { return params_.vert_num; }
+    [[nodiscard]] uint triangle_num() const noexcept override { return params_.tri_num; }
     void build_bvh(const BLASBuildCommand *cmd) noexcept;
 };
 }// namespace ocarina

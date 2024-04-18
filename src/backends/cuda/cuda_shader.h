@@ -12,8 +12,8 @@ namespace ocarina {
 class CUDADevice;
 class CUDAShader : public Shader<>::Impl {
 protected:
-    const Function &_function;
-    CUDADevice *_device{};
+    const Function &function_;
+    CUDADevice *device_{};
 
 public:
     // todo Find out the difference cuda shader and optix shader

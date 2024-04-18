@@ -14,17 +14,17 @@ class CUDADevice;
 class CUDABindlessArray : public BindlessArray::Impl {
 
 private:
-    BindlessArrayProxy _slot_soa{};
-    CUDADevice *_device{};
-    Managed<ByteBufferProxy> _buffers;
-    Managed<CUtexObject> _textures;
+    BindlessArrayProxy slot_soa_{};
+    CUDADevice *device_{};
+    Managed<ByteBufferProxy> buffers_;
+    Managed<CUtexObject> textures_;
 
 public:
     explicit CUDABindlessArray(CUDADevice *device);
 
     /// for device side structure
     [[nodiscard]] const void *handle_ptr() const noexcept override {
-        return &_slot_soa;
+        return &slot_soa_;
     }
     [[nodiscard]] size_t max_member_size() const noexcept override { return sizeof(CUdeviceptr); }
     [[nodiscard]] size_t data_size() const noexcept override { return sizeof(BindlessArrayProxy); }

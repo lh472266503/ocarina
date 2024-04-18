@@ -13,33 +13,33 @@ namespace ocarina {
 class CUDADevice;
 class CUDATexture : public Texture::Impl {
 private:
-    TextureProxy _data;
-    CUDADevice *_device{};
-    uint3 _res{};
-    CUarray _array_handle{};
-    uint level_num{1u};
-    mutable cudaGraphicsResource *_gfx_resource{};
+    TextureProxy proxy_;
+    CUDADevice *device_{};
+    uint3 res_{};
+    CUarray array_handle_{};
+    uint level_num_{1u};
+    mutable cudaGraphicsResource *gfx_resource_{};
 
 public:
     CUDATexture(CUDADevice *device, uint3 res, PixelStorage pixel_storage, uint level_num);
     ~CUDATexture() override;
     void init();
-    [[nodiscard]] uint3 resolution() const noexcept override { return _res; }
+    [[nodiscard]] uint3 resolution() const noexcept override { return res_; }
     [[nodiscard]] handle_ty array_handle() const noexcept override {
-        return reinterpret_cast<handle_ty>(_array_handle);
+        return reinterpret_cast<handle_ty>(array_handle_);
     }
     [[nodiscard]] const handle_ty *array_handle_ptr() const noexcept override {
-        return reinterpret_cast<handle_ty *>(_array_handle);
+        return reinterpret_cast<handle_ty *>(array_handle_);
     }
     [[nodiscard]] handle_ty tex_handle() const noexcept override {
-        return _data.texture;
+        return proxy_.texture;
     }
     [[nodiscard]] const void *handle_ptr() const noexcept override {
-        return &_data;
+        return &proxy_;
     }
     [[nodiscard]] size_t data_size() const noexcept override;
     [[nodiscard]] size_t data_alignment() const noexcept override;
     [[nodiscard]] size_t max_member_size() const noexcept override;
-    [[nodiscard]] PixelStorage pixel_storage() const noexcept override { return _data.pixel_storage; }
+    [[nodiscard]] PixelStorage pixel_storage() const noexcept override { return proxy_.pixel_storage; }
 };
 }// namespace ocarina
