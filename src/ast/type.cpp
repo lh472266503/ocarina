@@ -20,26 +20,26 @@ const Type *Type::at(uint32_t uid) noexcept {
 }
 
 ocarina::span<const Type *const> Type::members() const noexcept {
-    return {_members};
+    return {members_};
 }
 
 const Type *Type::element() const noexcept {
-    return _members.front();
+    return members_.front();
 }
 
 void Type::set_cname(std::string s) const noexcept {
-    _cname = ocarina::move(s);
+    cname_ = ocarina::move(s);
 }
 
 ocarina::string Type::simple_cname() const noexcept {
-    return _cname.substr(_cname.find_last_of("::") + 1);
+    return cname_.substr(cname_.find_last_of("::") + 1);
 }
 
 bool Type::is_valid() const noexcept {
-    switch (_tag) {
+    switch (tag_) {
         case Tag::STRUCTURE: {
             bool ret = true;
-            for (auto member : _members) {
+            for (auto member : members_) {
                 ret = ret && member->is_valid();
             }
             return ret;
@@ -50,9 +50,9 @@ bool Type::is_valid() const noexcept {
 }
 
 const Type *Type::get_member(ocarina::string_view name) const noexcept {
-    for (int i = 0; i < _member_name.size(); ++i) {
-        if (_member_name[i] == name) {
-            return _members[i];
+    for (int i = 0; i < member_name_.size(); ++i) {
+        if (member_name_[i] == name) {
+            return members_[i];
         }
     }
     return nullptr;
@@ -60,26 +60,26 @@ const Type *Type::get_member(ocarina::string_view name) const noexcept {
 
 void Type::update_dynamic_member_length(ocarina::string_view member_name, uint length) const noexcept {
     Type *member = const_cast<Type *>(get_member(member_name));
-    member->_dimension = length;
-    member->_size = length * member->max_member_size();
+    member->dimension_ = length;
+    member->size_ = length * member->max_member_size();
     update_structure_alignment_and_size();
 }
 
 void Type::update_structure_alignment_and_size() const noexcept {
     vector<MemoryBlock> blocks;
-    for (const Type *member : _members) {
+    for (const Type *member : members_) {
         MemoryBlock block;
         block.max_member_size = member->max_member_size();
         block.size = member->size();
         block.alignment = member->alignment();
         blocks.push_back(block);
     }
-    const_cast<Type *>(this)->_alignment = structure_alignment(blocks);
-    const_cast<Type *>(this)->_size = structure_size(blocks);
+    const_cast<Type *>(this)->alignment_ = structure_alignment(blocks);
+    const_cast<Type *>(this)->size_ = structure_size(blocks);
 }
 
 size_t Type::max_member_size() const noexcept {
-    switch (_tag) {
+    switch (tag_) {
         case Tag::BOOL:
         case Tag::FLOAT:
         case Tag::INT:
@@ -91,7 +91,7 @@ size_t Type::max_member_size() const noexcept {
         case Tag::ARRAY: return element()->max_member_size();
         case Tag::STRUCTURE: {
             size_t size = 0;
-            for (const Type *member : _members) {
+            for (const Type *member : members_) {
                 if (member->max_member_size() > size) {
                     size = member->max_member_size();
                 }
@@ -107,21 +107,21 @@ void Type::for_each(TypeVisitor *visitor) {
     TypeRegistry::instance().for_each(visitor);
 }
 
-uint64_t Type::_compute_hash() const noexcept { return hash64(_description);}
+uint64_t Type::_compute_hash() const noexcept { return hash64(description_);}
 
 void Type::update_name(ocarina::string_view desc) noexcept {
-    switch (_tag) {
+    switch (tag_) {
         case Tag::NONE:
             OC_ASSERT(0);
             break;
         case Tag::VECTOR:
-            _name = ocarina::format("{}{}", element()->name(), dimension());
+            name_ = ocarina::format("{}{}", element()->name(), dimension());
             break;
         case Tag::MATRIX:
-            _name = ocarina::format("float{}x{}", dimension(), dimension());
+            name_ = ocarina::format("float{}x{}", dimension(), dimension());
             break;
         default:
-            _name = desc;
+            name_ = desc;
             break;
     }
 }

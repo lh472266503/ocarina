@@ -154,11 +154,11 @@ const Type *TypeRegistry::parse_type(ocarina::string_view desc, uint64_t ext_has
 
 #define OC_PARSE_BASIC_TYPE(T, TAG)    \
     if (desc == #T##sv) {              \
-        type->_size = sizeof(T);       \
-        type->_tag = Type::Tag::TAG;   \
-        type->_alignment = alignof(T); \
+        type->size_ = sizeof(T);       \
+        type->tag_ = Type::Tag::TAG;   \
+        type->alignment_ = alignof(T); \
         type->set_description(#T);     \
-        type->_dimension = 1;          \
+        type->dimension_ = 1;          \
     } else
 
     OC_PARSE_BASIC_TYPE(int, INT)
@@ -203,7 +203,7 @@ const Type *TypeRegistry::parse_type(ocarina::string_view desc, uint64_t ext_has
 }
 
 void TypeRegistry::parse_vector(Type *type, ocarina::string_view desc) noexcept {
-    type->_tag = Type::Tag::VECTOR;
+    type->tag_ = Type::Tag::VECTOR;
     auto [start, end] = detail::bracket_matching_far(desc, '<', '>');
     auto content = desc.substr(start + 1, end - start - 1);
     auto lst = string_split(content, ',');
@@ -211,29 +211,29 @@ void TypeRegistry::parse_vector(Type *type, ocarina::string_view desc) noexcept 
     auto type_str = lst[0];
     auto dimension_str = lst[1];
     auto dimension = std::stoi(string(dimension_str));
-    type->_dimension = dimension;
-    type->_members.push_back(parse_type(type_str));
-    auto member = type->_members.front();
+    type->dimension_ = dimension;
+    type->members_.push_back(parse_type(type_str));
+    auto member = type->members_.front();
     if (!member->is_scalar()) [[unlikely]] {
         OC_ERROR("invalid vector element: {}!", member->description());
     }
-    type->_size = member->size() * (dimension == 3 ? 4 : dimension);
-    type->_alignment = type->size();
+    type->size_ = member->size() * (dimension == 3 ? 4 : dimension);
+    type->alignment_ = type->size();
 }
 
 void TypeRegistry::parse_matrix(Type *type, ocarina::string_view desc) noexcept {
-    type->_tag = Type::Tag::MATRIX;
+    type->tag_ = Type::Tag::MATRIX;
     auto [start, end] = detail::bracket_matching_far(desc, '<', '>');
     auto dimension_str = desc.substr(start + 1, end - start - 1);
     auto dimension = std::stoi(string(dimension_str));
-    type->_dimension = dimension;
+    type->dimension_ = dimension;
     auto tmp_desc = ocarina::format("vector<float,{}>", dimension);
-    type->_members.push_back(parse_type((tmp_desc)));
+    type->members_.push_back(parse_type((tmp_desc)));
 
 #define OC_SIZE_ALIGN(dim)                       \
     if (dimension == (dim)) {                    \
-        type->_size = sizeof(Matrix<dim>);       \
-        type->_alignment = alignof(Matrix<dim>); \
+        type->size_ = sizeof(Matrix<dim>);       \
+        type->alignment_ = alignof(Matrix<dim>); \
     } else
     OC_SIZE_ALIGN(2)
     OC_SIZE_ALIGN(3)
@@ -244,72 +244,72 @@ void TypeRegistry::parse_matrix(Type *type, ocarina::string_view desc) noexcept 
 }
 
 void TypeRegistry::parse_struct(Type *type, string_view desc) noexcept {
-    type->_tag = Type::Tag::STRUCTURE;
+    type->tag_ = Type::Tag::STRUCTURE;
     uint64_t ext_hash = hash64(desc);
     auto lst = detail::find_content(desc);
     auto alignment_str = lst[0];
     bool is_builtin_struct = lst[1] == "true";
-    type->_builtin_struct = is_builtin_struct;
+    type->builtin_struct_ = is_builtin_struct;
     bool is_param_struct = lst[2] == "true";
-    type->_param_struct = is_param_struct;
+    type->param_struct_ = is_param_struct;
     auto alignment = std::stoi(string(alignment_str));
-    type->_alignment = alignment;
+    type->alignment_ = alignment;
     auto size = 0u;
     for (int i = 3; i < lst.size(); ++i) {
         auto type_str = lst[i];
-        type->_members.push_back(parse_type(type_str, hash64(ext_hash, i - 3)));
-        auto member = type->_members[i - 3];
+        type->members_.push_back(parse_type(type_str, hash64(ext_hash, i - 3)));
+        auto member = type->members_[i - 3];
         size = mem_offset(size, member->alignment());
         size += member->size();
     }
-    type->_size = mem_offset(size, type->alignment());
+    type->size_ = mem_offset(size, type->alignment());
 }
 
 void TypeRegistry::parse_bindless_array(Type *type, ocarina::string_view desc) noexcept {
-    type->_tag = Type::Tag::BINDLESS_ARRAY;
-    type->_alignment = alignof(BindlessArrayProxy);
+    type->tag_ = Type::Tag::BINDLESS_ARRAY;
+    type->alignment_ = alignof(BindlessArrayProxy);
 }
 
 void TypeRegistry::parse_buffer(Type *type, ocarina::string_view desc) noexcept {
-    type->_tag = Type::Tag::BUFFER;
+    type->tag_ = Type::Tag::BUFFER;
     auto lst = detail::find_content(desc);
     auto type_str = lst[0];
     const Type *element_type = parse_type(type_str);
-    type->_members.push_back(element_type);
+    type->members_.push_back(element_type);
     for (int i = 1; i < lst.size(); ++i) {
-        type->_dims.push_back(std::stoi(lst[i].data()));
+        type->dims_.push_back(std::stoi(lst[i].data()));
     }
-    type->_alignment = alignof(BufferProxy<>);
-    type->_size = sizeof(BufferProxy<>);
+    type->alignment_ = alignof(BufferProxy<>);
+    type->size_ = sizeof(BufferProxy<>);
 }
 
 void TypeRegistry::parse_texture(Type *type, ocarina::string_view desc) noexcept {
-    type->_tag = Type::Tag::TEXTURE;
-    type->_alignment = alignof(TextureProxy);
-    type->_size = sizeof(TextureProxy);
+    type->tag_ = Type::Tag::TEXTURE;
+    type->alignment_ = alignof(TextureProxy);
+    type->size_ = sizeof(TextureProxy);
 }
 
 void TypeRegistry::parse_accel(Type *type, ocarina::string_view desc) noexcept {
-    type->_tag = Type::Tag::ACCEL;
+    type->tag_ = Type::Tag::ACCEL;
 }
 
 void TypeRegistry::parse_byte_buffer(ocarina::Type *type, ocarina::string_view desc) noexcept {
-    type->_tag = Type::Tag::BYTE_BUFFER;
-    type->_alignment = alignof(BufferProxy<>);
+    type->tag_ = Type::Tag::BYTE_BUFFER;
+    type->alignment_ = alignof(BufferProxy<>);
 }
 
 void TypeRegistry::parse_array(Type *type, ocarina::string_view desc) noexcept {
-    type->_tag = Type::Tag::ARRAY;
+    type->tag_ = Type::Tag::ARRAY;
     auto lst = detail::find_content(desc);
     auto type_str = lst[0];
     auto len = std::stoi(string(lst[1]));
     const Type *element_type = parse_type(type_str);
-    type->_members.push_back(element_type);
+    type->members_.push_back(element_type);
     auto alignment = element_type->alignment();
     auto size = element_type->size() * len;
-    type->_alignment = alignment;
-    type->_dimension = len;
-    type->_size = size;
+    type->alignment_ = alignment;
+    type->dimension_ = len;
+    type->size_ = size;
 }
 
 void TypeRegistry::parse_dynamic_array(Type *type, ocarina::string_view desc) noexcept {
@@ -319,7 +319,7 @@ void TypeRegistry::parse_dynamic_array(Type *type, ocarina::string_view desc) no
 
 void TypeRegistry::add_type(ocarina::unique_ptr<Type> type) {
     _type_set.insert(type.get());
-    type->_index = _types.size();
+    type->index_ = _types.size();
     try_add_to_current_function(type.get());
     _types.push_back(std::move(type));
 }

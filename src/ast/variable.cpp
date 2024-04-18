@@ -8,23 +8,23 @@
 namespace ocarina {
 
 uint64_t Variable::_compute_hash() const noexcept {
-    auto u0 = static_cast<uint64_t>(_uid);
-    auto u1 = static_cast<uint64_t>(_tag);
+    auto u0 = static_cast<uint64_t>(uid_);
+    auto u1 = static_cast<uint64_t>(tag_);
     uint64_t ret = hash64(u0 | (u1 << 32u), type()->hash());
-    if (!_name.empty()) {
-        ret = hash64(ret, _name);
+    if (!name_.empty()) {
+        ret = hash64(ret, name_);
     }
-    if (!_suffix.empty()) {
-        ret = hash64(ret, _suffix);
+    if (!suffix_.empty()) {
+        ret = hash64(ret, suffix_);
     }
     return ret;
 }
 
 string Variable::name() const noexcept {
-    string raw_name = string(detail::variable_prefix(tag())) + detail::to_string(_uid);
-    if (!_name.empty()) { return _name; }
-    if (!_suffix.empty()) {
-        return raw_name + "_" + _suffix;
+    string raw_name = string(detail::variable_prefix(tag())) + detail::to_string(uid_);
+    if (!name_.empty()) { return name_; }
+    if (!suffix_.empty()) {
+        return raw_name + "_" + suffix_;
     }
     return raw_name;
 }

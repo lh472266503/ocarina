@@ -391,31 +391,31 @@ public:
     friend class TypeRegistry;
 
 private:
-    size_t _size{0};
-    size_t _index{0};
-    size_t _alignment{0};
-    uint32_t _dimension{0};
-    Tag _tag{Tag::NONE};
-    ocarina::string _description;
-    ocarina::string _name;
-    mutable ocarina::string _cname;
-    mutable ocarina::vector<string_view> _member_name;
-    ocarina::vector<const Type *> _members;
+    size_t size_{0};
+    size_t index_{0};
+    size_t alignment_{0};
+    uint32_t dimension_{0};
+    Tag tag_{Tag::NONE};
+    ocarina::string description_;
+    ocarina::string name_;
+    mutable ocarina::string cname_;
+    mutable ocarina::vector<string_view> member_name_;
+    ocarina::vector<const Type *> members_;
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
-    vector<int> _dims;
-    bool _builtin_struct{false};
-    bool _param_struct{false};
+    vector<int> dims_;
+    bool builtin_struct_{false};
+    bool param_struct_{false};
 
 private:
     void update_name(ocarina::string_view desc) noexcept;
     void set_description(ocarina::string_view desc) noexcept {
-        _description = desc;
+        description_ = desc;
         update_name(desc);
     }
     void update_member_name(const string_view *names, int num) noexcept {
-        _member_name.clear();
+        member_name_.clear();
         for (int i = 0; i < num; ++i) {
-            _member_name.push_back(names[i]);
+            member_name_.push_back(names[i]);
         }
     }
 
@@ -433,43 +433,43 @@ public:
     void update_dynamic_member_length(ocarina::string_view member_name, uint length) const noexcept;
     void update_structure_alignment_and_size() const noexcept;
     [[nodiscard]] const Type *get_member(ocarina::string_view name) const noexcept;
-    [[nodiscard]] ocarina::span<const string_view> member_name() const noexcept { return _member_name; }
+    [[nodiscard]] ocarina::span<const string_view> member_name() const noexcept { return member_name_; }
     [[nodiscard]] bool operator==(const Type &rhs) const noexcept { return hash() == rhs.hash(); }
     [[nodiscard]] bool operator!=(const Type &rhs) const noexcept { return !(*this == rhs); }
-    [[nodiscard]] bool operator<(const Type &rhs) const noexcept { return _index < rhs._index; }
-    [[nodiscard]] constexpr size_t index() const noexcept { return _index; }
-    [[nodiscard]] constexpr size_t size() const noexcept { return _size; }
-    [[nodiscard]] constexpr size_t alignment() const noexcept { return _alignment; }
-    [[nodiscard]] const vector<int> &dims() const noexcept { return _dims; }
-    [[nodiscard]] bool has_multi_dims() const noexcept { return !_dims.empty(); }
-    [[nodiscard]] constexpr Tag tag() const noexcept { return _tag; }
-    [[nodiscard]] auto description() const noexcept { return ocarina::string_view{_description}; }
-    [[nodiscard]] ocarina::string name() const noexcept { return _name; }
-    [[nodiscard]] ocarina::string cname() const noexcept { return _cname; }
+    [[nodiscard]] bool operator<(const Type &rhs) const noexcept { return index_ < rhs.index_; }
+    [[nodiscard]] constexpr size_t index() const noexcept { return index_; }
+    [[nodiscard]] constexpr size_t size() const noexcept { return size_; }
+    [[nodiscard]] constexpr size_t alignment() const noexcept { return alignment_; }
+    [[nodiscard]] const vector<int> &dims() const noexcept { return dims_; }
+    [[nodiscard]] bool has_multi_dims() const noexcept { return !dims_.empty(); }
+    [[nodiscard]] constexpr Tag tag() const noexcept { return tag_; }
+    [[nodiscard]] auto description() const noexcept { return ocarina::string_view{description_}; }
+    [[nodiscard]] ocarina::string name() const noexcept { return name_; }
+    [[nodiscard]] ocarina::string cname() const noexcept { return cname_; }
     void set_cname(string s) const noexcept;
     [[nodiscard]] ocarina::string simple_cname() const noexcept;
-    [[nodiscard]] constexpr int dimension() const noexcept { return _dimension; }
+    [[nodiscard]] constexpr int dimension() const noexcept { return dimension_; }
     [[nodiscard]] ocarina::span<const Type *const> members() const noexcept;
     [[nodiscard]] const Type *element() const noexcept;
     [[nodiscard]] bool is_valid() const noexcept;
     [[nodiscard]] constexpr bool is_scalar() const noexcept {
-        return _tag == Tag::BOOL || _tag == Tag::FLOAT || _tag == Tag::INT ||
-               _tag == Tag::UINT || _tag == Tag::UCHAR || _tag == Tag::CHAR ||
-               _tag == Tag::USHORT || _tag == Tag::SHORT;
+        return tag_ == Tag::BOOL || tag_ == Tag::FLOAT || tag_ == Tag::INT ||
+               tag_ == Tag::UINT || tag_ == Tag::UCHAR || tag_ == Tag::CHAR ||
+               tag_ == Tag::USHORT || tag_ == Tag::SHORT;
     }
     [[nodiscard]] size_t max_member_size() const noexcept;
-    [[nodiscard]] constexpr bool is_builtin_struct() const noexcept { return _builtin_struct; }
-    [[nodiscard]] constexpr bool is_param_struct() const noexcept { return _param_struct; }
+    [[nodiscard]] constexpr bool is_builtin_struct() const noexcept { return builtin_struct_; }
+    [[nodiscard]] constexpr bool is_param_struct() const noexcept { return param_struct_; }
     [[nodiscard]] constexpr bool is_basic() const noexcept { return is_scalar() || is_vector() || is_matrix(); }
-    [[nodiscard]] constexpr bool is_array() const noexcept { return _tag == Tag::ARRAY; }
-    [[nodiscard]] constexpr bool is_vector() const noexcept { return _tag == Tag::VECTOR; }
-    [[nodiscard]] constexpr bool is_matrix() const noexcept { return _tag == Tag::MATRIX; }
-    [[nodiscard]] constexpr bool is_structure() const noexcept { return _tag == Tag::STRUCTURE; }
-    [[nodiscard]] constexpr bool is_buffer() const noexcept { return _tag == Tag::BUFFER; }
-    [[nodiscard]] constexpr bool is_byte_buffer() const noexcept { return _tag == Tag::BYTE_BUFFER; }
-    [[nodiscard]] constexpr bool is_texture() const noexcept { return _tag == Tag::TEXTURE; }
-    [[nodiscard]] constexpr bool is_bindless_array() const noexcept { return _tag == Tag::BINDLESS_ARRAY; }
-    [[nodiscard]] constexpr bool is_accel() const noexcept { return _tag == Tag::ACCEL; }
+    [[nodiscard]] constexpr bool is_array() const noexcept { return tag_ == Tag::ARRAY; }
+    [[nodiscard]] constexpr bool is_vector() const noexcept { return tag_ == Tag::VECTOR; }
+    [[nodiscard]] constexpr bool is_matrix() const noexcept { return tag_ == Tag::MATRIX; }
+    [[nodiscard]] constexpr bool is_structure() const noexcept { return tag_ == Tag::STRUCTURE; }
+    [[nodiscard]] constexpr bool is_buffer() const noexcept { return tag_ == Tag::BUFFER; }
+    [[nodiscard]] constexpr bool is_byte_buffer() const noexcept { return tag_ == Tag::BYTE_BUFFER; }
+    [[nodiscard]] constexpr bool is_texture() const noexcept { return tag_ == Tag::TEXTURE; }
+    [[nodiscard]] constexpr bool is_bindless_array() const noexcept { return tag_ == Tag::BINDLESS_ARRAY; }
+    [[nodiscard]] constexpr bool is_accel() const noexcept { return tag_ == Tag::ACCEL; }
     [[nodiscard]] constexpr bool is_resource() const noexcept {
         return is_buffer() || is_byte_buffer() || is_texture() || is_accel() || is_bindless_array();
     }
