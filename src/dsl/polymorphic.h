@@ -41,16 +41,16 @@ public:
     using element_ty = T;
 
 protected:
-    Uint _tag{};
-    ocarina::unordered_map<uint64_t, uint> _tags;
+    Uint tag_{};
+    ocarina::unordered_map<uint64_t, uint> tags_;
 
 public:
     template<typename Derive>
     requires std::is_base_of_v<element_ty, Derive>
     Derive *link(uint64_t hash, UP<Derive> elm) noexcept {
-        auto [iter, first] = _tags.try_emplace(hash, static_cast<uint>(Super::size()));
-        _tag = _tags[hash];
-        uint index = _tags[hash];
+        auto [iter, first] = tags_.try_emplace(hash, static_cast<uint>(Super::size()));
+        tag_ = tags_[hash];
+        uint index = tags_[hash];
         Derive *ret = nullptr;
         if (first) {
             ret = elm.get();
@@ -65,7 +65,7 @@ public:
 
     void clear() noexcept {
         Super::clear();
-        _tags.clear();
+        tags_.clear();
     }
 
     template<typename Derive>
@@ -78,7 +78,7 @@ public:
     template<typename Func>
     void dispatch(Func &&func) const noexcept {
         comment(ocarina::format("PolyEvaluator dispatch {}, case num = {}", typeid(T).name(), Super::size()));
-        auto index = detail::correct_index(_tag, static_cast<uint>(Super::size()),
+        auto index = detail::correct_index(tag_, static_cast<uint>(Super::size()),
                                            ocarina::format("PolyEvaluator dispatch {}", typeid(*this).name()),
                                            traceback_string(1));
         if (Super::size() == 1) {
@@ -98,7 +98,7 @@ public:
     template<typename Func>
     void dispatch(Func &&func) noexcept {
         comment(ocarina::format("PolyEvaluator dispatch {}, case num = {}", typeid(T).name(), Super::size()));
-        auto index = detail::correct_index(_tag, static_cast<uint>(Super::size()),
+        auto index = detail::correct_index(tag_, static_cast<uint>(Super::size()),
                                            ocarina::format("PolyEvaluator dispatch {}", typeid(*this).name()),
                                            traceback_string(1));
         if (Super::size() == 1) {
@@ -244,45 +244,45 @@ protected:
 
         [[nodiscard]] bool empty() const noexcept { return type_map.empty(); }
         [[nodiscard]] auto size() const noexcept { return type_map.size(); }
-    } _type_mgr;
-    PolymorphicMode _mode{EInstance};
+    } type_mgr_;
+    PolymorphicMode mode_{EInstance};
 
 public:
     explicit Polymorphic(PolymorphicMode mode = EInstance)
-        : _mode(mode) {}
+        : mode_(mode) {}
 
     void push_back(T arg) noexcept {
-        _type_mgr.add_object(arg);
+        type_mgr_.add_object(arg);
         Super::push_back(arg);
     }
 
     Super::iterator erase(Super::iterator iter) noexcept {
-        _type_mgr.erase(*iter);
+        type_mgr_.erase(*iter);
         return Super::erase(iter);
     }
 
     void clear() {
         Super ::clear();
-        _type_mgr.clear();
+        type_mgr_.clear();
     }
 
     [[nodiscard]] uint all_instance_num() const noexcept { return Super::size(); }
     [[nodiscard]] uint instance_num(const ptr_type *object) const noexcept {
         uint64_t hash_code = object->type_hash();
-        return _type_mgr.type_map.at(hash_code).objects.size();
+        return type_mgr_.type_map.at(hash_code).objects.size();
     }
-    [[nodiscard]] uint type_num() const noexcept { return _type_mgr.size(); }
+    [[nodiscard]] uint type_num() const noexcept { return type_mgr_.size(); }
     [[nodiscard]] uint instance_num(uint type_idx) const noexcept {
-        uint64_t hash_code = _type_mgr.type_hash(type_idx);
-        return _type_mgr.type_map.at(hash_code).objects.size();
+        uint64_t hash_code = type_mgr_.type_hash(type_idx);
+        return type_mgr_.type_map.at(hash_code).objects.size();
     }
     [[nodiscard]] uint type_index(const ptr_type *object) const noexcept {
         uint64_t hash_code = object->type_hash();
-        return _type_mgr.type_index(hash_code);
+        return type_mgr_.type_index(hash_code);
     }
     [[nodiscard]] uint data_index(const ptr_type *object) const noexcept {
         uint64_t hash_code = object->type_hash();
-        return ocarina::get_index(_type_mgr.type_map.at(hash_code).objects, [&](auto obj) {
+        return ocarina::get_index(type_mgr_.type_map.at(hash_code).objects, [&](auto obj) {
             return object == raw_ptr(obj);
         });
     }
@@ -295,10 +295,10 @@ public:
         return {data_index * object->element_num() * uint(sizeof(U)), get_datas(object)};
     }
     [[nodiscard]] datas_type &get_datas(const ptr_type *object) noexcept {
-        return _type_mgr.type_map.at(object->type_hash()).data_set;
+        return type_mgr_.type_map.at(object->type_hash()).data_set;
     }
     [[nodiscard]] const datas_type &get_datas(const ptr_type *object) const noexcept {
-        return _type_mgr.type_map.at(object->type_hash()).data_set;
+        return type_mgr_.type_map.at(object->type_hash()).data_set;
     }
 
     template<typename Func>
@@ -324,7 +324,7 @@ public:
      * tips: Called on the host side code
      */
     void update() noexcept {
-        _type_mgr.for_each_type([&](TypeData &type_data) {
+        type_mgr_.for_each_type([&](TypeData &type_data) {
             if (type_data.data_set.empty()) {
                 return;
             }
@@ -336,12 +336,12 @@ public:
     }
 
     void set_datas(const ptr_type *object, datas_type &&datas) noexcept {
-        _type_mgr.type_map.at(object->type_hash()).data_set = ocarina::move(datas);
+        type_mgr_.type_map.at(object->type_hash()).data_set = ocarina::move(datas);
     }
-    void set_mode(PolymorphicMode mode) noexcept { _mode = mode; }
-    [[nodiscard]] PolymorphicMode mode() const noexcept { return _mode; }
+    void set_mode(PolymorphicMode mode) noexcept { mode_ = mode; }
+    [[nodiscard]] PolymorphicMode mode() const noexcept { return mode_; }
     [[nodiscard]] uint encode_id(uint id, const ptr_type *object) const noexcept {
-        switch (_mode) {
+        switch (mode_) {
             case EInstance:
                 return ocarina::encode_id<H>(id, type_index(object));
             case EType:
@@ -352,10 +352,10 @@ public:
     }
 
     void prepare(BindlessArray &bindless_array, Device &device) noexcept {
-        switch (_mode) {
+        switch (mode_) {
             case EInstance: break;
             case EType: {
-                _type_mgr.for_each_type([&](TypeData &type_data) {
+                type_mgr_.for_each_type([&](TypeData &type_data) {
                     type_data.data_set.set_bindless_array(bindless_array);
                     type_data.data_set.reserve(type_data.objects.size() * type_data.objects[0]->element_num());
                     for (ptr_type *object : type_data.objects) {
@@ -384,7 +384,7 @@ public:
     template<typename TypeID, typename InstanceID, typename Func>
     requires is_all_integral_expr_v<TypeID, InstanceID>
     void dispatch(TypeID &&type_id, InstanceID &&inst_id, const Func &func) const noexcept {
-        switch (_mode) {
+        switch (mode_) {
             case EInstance: {
                 dispatch_instance(OC_FORWARD(inst_id), [&](auto object) {
                     func(object);
@@ -432,7 +432,7 @@ public:
     template<typename Index>
     requires is_integral_expr_v<Index>
     void dispatch_representative(Index index, const std::function<void(const ptr_type *)> &func) const noexcept {
-        if (_type_mgr.empty()) [[unlikely]] {
+        if (type_mgr_.empty()) [[unlikely]] {
             return;
         }
         Uint corrected = detail::correct_index(index, type_num(),
@@ -440,14 +440,14 @@ public:
                                                traceback_string(1));
         comment(ocarina::format("const dispatch_representative, case num = {}", type_num()));
         comment(typeid(*this).name());
-        if (_type_mgr.size() == 1) {
-            ptr_type *elm = _type_mgr.type_map.begin()->second.objects[0];
+        if (type_mgr_.size() == 1) {
+            ptr_type *elm = type_mgr_.type_map.begin()->second.objects[0];
             comment(typeid(*elm).name());
             func(elm);
             return;
         }
         switch_(corrected, [&] {
-            _type_mgr.for_each_representative([&](ptr_type *elm, uint i) {
+            type_mgr_.for_each_representative([&](ptr_type *elm, uint i) {
                 comment(typeid(*elm).name());
                 case_(i, [&] {
                     func(elm);
@@ -491,12 +491,12 @@ public:
 
     template<typename Func>
     void for_each_representative(Func &&func) const noexcept {
-        _type_mgr.for_each_representative(OC_FORWARD(func));
+        type_mgr_.for_each_representative(OC_FORWARD(func));
     }
 
     template<typename Func>
     void for_each_representative(Func &&func) noexcept {
-        _type_mgr.for_each_representative(OC_FORWARD(func));
+        type_mgr_.for_each_representative(OC_FORWARD(func));
     }
 };
 

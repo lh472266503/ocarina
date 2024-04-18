@@ -20,18 +20,18 @@ public:
     using EndFrame = ocarina::function<void()>;
 
 protected:
-    MouseButtonCallback _mouse_button_callback;
-    CursorPositionCallback _cursor_position_callback;
-    WindowSizeCallback _window_size_callback;
-    KeyCallback _key_callback;
-    ScrollCallback _scroll_callback;
-    BeginFrame _begin_frame_callback;
-    EndFrame _end_frame_callback;
-    float4 _clear_color{make_float4(0, 0, 0, 0)};
-    bool _resizable{false};
-    Clock _clock;
-    double _dt{};
-    unique_ptr<Widgets> _widgets{};
+    MouseButtonCallback mouse_button_callback_;
+    CursorPositionCallback cursor_position_callback_;
+    WindowSizeCallback window_size_callback_;
+    KeyCallback key_callback_;
+    ScrollCallback scroll_callback_;
+    BeginFrame begin_frame_callback_;
+    EndFrame end_frame_callback_;
+    float4 clear_color_{make_float4(0, 0, 0, 0)};
+    bool resizable_{false};
+    Clock clock_;
+    double dt_{};
+    unique_ptr<Widgets> widgets_{};
 
 protected:
     virtual void _begin_frame() noexcept;
@@ -46,9 +46,9 @@ public:
     Window &operator=(Window &&) noexcept = delete;
     Window &operator=(const Window &) noexcept = delete;
     virtual ~Window() noexcept = default;
-    [[nodiscard]] Widgets *widgets() noexcept { return _widgets.get(); }
-    [[nodiscard]] const Widgets *widgets() const noexcept { return _widgets.get(); }
-    [[nodiscard]] double dt() const noexcept { return _dt; }
+    [[nodiscard]] Widgets *widgets() noexcept { return widgets_.get(); }
+    [[nodiscard]] const Widgets *widgets() const noexcept { return widgets_.get(); }
+    [[nodiscard]] double dt() const noexcept { return dt_; }
     [[nodiscard]] virtual uint2 size() const noexcept = 0;
     [[nodiscard]] virtual bool should_close() const noexcept = 0;
     [[nodiscard]] explicit operator bool() const noexcept { return !should_close(); }
@@ -70,7 +70,7 @@ public:
     void set_background(const Buffer<float4> &buffer) noexcept {
         set_background(buffer, size());
     }
-    void set_clear_color(float4 color) noexcept { _clear_color = color; }
+    void set_clear_color(float4 color) noexcept { clear_color_ = color; }
     virtual void set_background(const float4 *pixels, uint2 size) noexcept = 0;
     void set_background(const float4 *pixels) noexcept {
         set_background(pixels, size());

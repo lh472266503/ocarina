@@ -15,9 +15,9 @@ class GLFWContext;
 
 class GLWindow : public Window {
 private:
-    ocarina::shared_ptr<GLFWContext> _context;
-    GLFWwindow *_handle{nullptr};
-    mutable ocarina::unique_ptr<GLTexture> _texture;
+    ocarina::shared_ptr<GLFWContext> context_;
+    GLFWwindow *handle_{nullptr};
+    mutable ocarina::unique_ptr<GLTexture> texture_;
 
 private:
     void _begin_frame() noexcept override;
@@ -34,7 +34,7 @@ public:
     ~GLWindow() noexcept override;
     [[nodiscard]] uint2 size() const noexcept override;
     [[nodiscard]] bool should_close() const noexcept override;
-    [[nodiscard]] auto handle() const noexcept { return _handle; }
+    [[nodiscard]] auto handle() const noexcept { return handle_; }
     void set_background(const uchar4 *pixels, uint2 size) noexcept override;
     void set_background(const float4 *pixels, uint2 size) noexcept override;
     void gen_buffer(ocarina::uint &handle, ocarina::uint size_in_byte) const noexcept override;

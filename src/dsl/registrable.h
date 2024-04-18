@@ -13,32 +13,32 @@ namespace ocarina {
 
 class Registrable : public Serializable<serialize_element_ty> {
 protected:
-    Serial<uint> _index{InvalidUI32};
-    Serial<uint> _length{InvalidUI32};
-    BindlessArray *_bindless_array{};
+    Serial<uint> index_{InvalidUI32};
+    Serial<uint> length_{InvalidUI32};
+    BindlessArray *bindless_array_{};
 
 public:
     Registrable() = default;
     explicit Registrable(BindlessArray *bindless_array)
-        : _bindless_array(bindless_array) {}
-    OC_SERIALIZABLE_FUNC(Serializable<serialize_element_ty>, _index, _length)
+        : bindless_array_(bindless_array) {}
+    OC_SERIALIZABLE_FUNC(Serializable<serialize_element_ty>, index_, length_)
     void set_bindless_array(BindlessArray &bindless_array) noexcept {
-        _bindless_array = &bindless_array;
+        bindless_array_ = &bindless_array;
     }
     [[nodiscard]] BindlessArray *bindless_array() const noexcept {
-        return _bindless_array;
+        return bindless_array_;
     }
-    [[nodiscard]] bool has_registered() const noexcept { return _index.hv() != InvalidUI32; }
-    [[nodiscard]] const Serial<uint> &index() const noexcept { return _index; }
-    [[nodiscard]] const Serial<uint> &length() const noexcept { return _length; }
+    [[nodiscard]] bool has_registered() const noexcept { return index_.hv() != InvalidUI32; }
+    [[nodiscard]] const Serial<uint> &index() const noexcept { return index_; }
+    [[nodiscard]] const Serial<uint> &length() const noexcept { return length_; }
 
 protected:
     template<typename T, typename Index>
     requires concepts::all_integral<expr_value_t<Index>>
     OC_NODISCARD auto _read(Index &&index) const noexcept {
-        Uint buffer_index = *_index;
+        Uint buffer_index = *index_;
         Uint access_index = OC_FORWARD(index);
-        return _bindless_array->buffer_var<T>(buffer_index).read(access_index);
+        return bindless_array_->buffer_var<T>(buffer_index).read(access_index);
     }
 };
 
@@ -56,15 +56,15 @@ public:
 
     void register_self(size_t offset = 0, size_t size = 0) noexcept {
         BufferView<T> buffer_view = super().view(offset, size);
-        _index = _bindless_array->emplace(buffer_view);
-        _length = [=]() {
+        index_ = bindless_array_->emplace(buffer_view);
+        length_ = [=]() {
             return static_cast<uint>(buffer_view.size());
         };
     }
 
     uint register_view(size_t offset, size_t size = 0) {
         BufferView<T> buffer_view = super().view(offset, size);
-        return _bindless_array->emplace(buffer_view);
+        return bindless_array_->emplace(buffer_view);
     }
 
     [[nodiscard]] Super &super() noexcept { return *this; }
@@ -84,7 +84,7 @@ public:
         if (!has_registered()) {
             Super::write(OC_FORWARD(index), OC_FORWARD(elm));
         } else {
-            _bindless_array->buffer_var<T>(*_index).write(OC_FORWARD(index), OC_FORWARD(elm));
+            bindless_array_->buffer_var<T>(*index_).write(OC_FORWARD(index), OC_FORWARD(elm));
         }
     }
 };
@@ -100,24 +100,24 @@ public:
     explicit RegistrableManaged(BindlessArray &bindless_array) : Registrable(&bindless_array) {}
     void register_self() noexcept {
         if (has_registered()) {
-            _bindless_array->set_buffer(_index.hv(), Super::device_buffer());
+            bindless_array_->set_buffer(index_.hv(), Super::device_buffer());
         } else {
-            _index = _bindless_array->emplace(Super::device_buffer());
+            index_ = bindless_array_->emplace(Super::device_buffer());
         }
-        _length = [&]() {
+        length_ = [&]() {
             return static_cast<uint>(Super::device_buffer().size());
         };
     }
 
     uint register_view(size_t offset, size_t size = 0) {
         BufferView<T> buffer_view = Super::device_buffer().view(offset, size);
-        return _bindless_array->emplace(buffer_view);
+        return bindless_array_->emplace(buffer_view);
     }
 
     void unregister() noexcept {
         if (has_registered()) {
-            (*_bindless_array)->remove_buffer(_index.hv());
-            _index = InvalidUI32;
+            (*bindless_array_)->remove_buffer(index_.hv());
+            index_ = InvalidUI32;
         }
     }
 
@@ -134,14 +134,14 @@ public:
     requires is_integral_expr_v<Offset>
     OC_NODISCARD auto byte_read(Offset &&offset) const noexcept {
         OC_ASSERT(has_registered());
-        return _bindless_array->byte_buffer_var(*_index).template read<Target>(OC_FORWARD(offset));
+        return bindless_array_->byte_buffer_var(*index_).template read<Target>(OC_FORWARD(offset));
     }
 
     template<typename Elm, typename Offset>
     requires is_integral_expr_v<Offset>
     [[nodiscard]] DynamicArray<Elm> load_dynamic_array(uint size, Offset &&offset) const noexcept {
         OC_ASSERT(has_registered());
-        return _bindless_array->byte_buffer_var(*_index).template load_dynamic_array<Elm>(size, OC_FORWARD(offset));
+        return bindless_array_->byte_buffer_var(*index_).template load_dynamic_array<Elm>(size, OC_FORWARD(offset));
     }
 
     template<typename Index, typename Val>
@@ -150,7 +150,7 @@ public:
         if (!has_registered()) {
             Super::write(OC_FORWARD(index), OC_FORWARD(elm));
         } else {
-            _bindless_array->buffer_var<T>(*_index).write(OC_FORWARD(index), OC_FORWARD(elm));
+            bindless_array_->buffer_var<T>(*index_).write(OC_FORWARD(index), OC_FORWARD(elm));
         }
     }
 };
@@ -161,24 +161,24 @@ public:
     explicit RegistrableTexture(BindlessArray &bindless_array) : Registrable(&bindless_array) {}
     void register_self() noexcept {
         if (has_registered()) {
-            _bindless_array->set_texture(_index.hv(), *this);
+            bindless_array_->set_texture(index_.hv(), *this);
         } else {
-            _index = _bindless_array->emplace(*this);
+            index_ = bindless_array_->emplace(*this);
         }
-        _length = 0;
+        length_ = 0;
     }
 
     void unregister() noexcept {
         if (has_registered()) {
-            (*_bindless_array)->remove_texture(_index.hv());
-            _index = InvalidUI32;
+            (*bindless_array_)->remove_texture(index_.hv());
+            index_ = InvalidUI32;
         }
     }
 
     template<typename ...Args>
     OC_NODISCARD auto sample(uint channel_num, Args &&...args) const noexcept {
         if (has_registered()) {
-            return _bindless_array->tex_var(*_index).sample(channel_num, OC_FORWARD(args)...);
+            return bindless_array_->tex_var(*index_).sample(channel_num, OC_FORWARD(args)...);
         } else {
             return Texture::sample(channel_num, OC_FORWARD(args)...);
         }

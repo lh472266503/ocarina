@@ -22,7 +22,7 @@ mi_decl_externc size_t malloc_good_size(size_t size);
 #endif
 
 // helper definition for C override of C++ new
-typedef struct mi_nothrow_s { int _tag; } mi_nothrow_t;
+typedef struct mi_nothrow_s { int tag_; } mi_nothrow_t;
 
 // ------------------------------------------------------
 // Override system malloc

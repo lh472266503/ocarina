@@ -38,10 +38,10 @@ class Window;
 
 class Widgets {
 private:
-    Window *_window{nullptr};
+    Window *window_{nullptr};
 
 public:
-    explicit Widgets(Window *window = nullptr) : _window(window) {}
+    explicit Widgets(Window *window = nullptr) : window_(window) {}
 
     virtual void push_item_width(int width) noexcept = 0;
     virtual void pop_item_width() noexcept = 0;
@@ -67,7 +67,7 @@ public:
         image(tex_handle, size, make_float2(0), make_float2(1));
     }
 
-    OC_MAKE_MEMBER_GETTER(window, )
+    OC_MAKE_MEMBER_GETTER_(window, )
 
     template<typename Func>
     void use_tool_tip(Func &&func) noexcept {

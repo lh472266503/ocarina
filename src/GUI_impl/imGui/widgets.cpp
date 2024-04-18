@@ -16,10 +16,10 @@ uint64_t ImGuiWidgets::calculate_key(const ocarina::ImageView &image) noexcept {
 
 GLTexture *ImGuiWidgets::obtain_texture(const ocarina::ImageView &image) noexcept {
     uint64_t key = calculate_key(image);
-    if (!_texture_map.contains(key)) {
-        _texture_map.insert(make_pair(key, TextureVec{}));
+    if (!texture_map_.contains(key)) {
+        texture_map_.insert(make_pair(key, TextureVec{}));
     }
-    TextureVec &texture_vec = _texture_map.at(key);
+    TextureVec &texture_vec = texture_map_.at(key);
     uint unbinding_index = texture_vec.size();
     for (int i = 0; i < texture_vec.size(); ++i) {
         GLTexture *texture = texture_vec[i].get();

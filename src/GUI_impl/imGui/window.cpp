@@ -33,7 +33,7 @@ public:
 };
 
 void GLWindow::init_widgets() noexcept {
-    _widgets = make_unique<ImGuiWidgets>(this);
+    widgets_ = make_unique<ImGuiWidgets>(this);
 }
 
 void GLWindow::init(const char *name, uint2 initial_size, bool resizable) noexcept {
@@ -44,16 +44,16 @@ void GLWindow::init(const char *name, uint2 initial_size, bool resizable) noexce
     glfwWindowHint(GLFW_RESIZABLE, resizable);
 
     // Create window with graphics context
-    _handle = glfwCreateWindow(
+    handle_ = glfwCreateWindow(
         static_cast<int>(initial_size.x),
         static_cast<int>(initial_size.y),
         name, nullptr, nullptr);
-    if (_handle == nullptr) {
+    if (handle_ == nullptr) {
         const char *error = nullptr;
         glfwGetError(&error);
         OC_ERROR_FORMAT("Failed to create GLFW window: {}.", error);
     }
-    glfwMakeContextCurrent(_handle);
+    glfwMakeContextCurrent(handle_);
     glfwSwapInterval(0);// disable vsync
 
     if (!gladLoadGL()) { OC_ERROR("Failed to initialize GLAD."); }
@@ -63,11 +63,11 @@ void GLWindow::init(const char *name, uint2 initial_size, bool resizable) noexce
     init_widgets();
     ImGui::CreateContext();
     ImGui::StyleColorsDark();
-    ImGui_ImplGlfw_InitForOpenGL(_handle, true);
+    ImGui_ImplGlfw_InitForOpenGL(handle_, true);
     ImGui_ImplOpenGL3_Init("#version 330");
 
-    glfwSetWindowUserPointer(_handle, this);
-    glfwSetMouseButtonCallback(_handle, [](GLFWwindow *window, int button, int action, int mods) noexcept {
+    glfwSetWindowUserPointer(handle_, this);
+    glfwSetMouseButtonCallback(handle_, [](GLFWwindow *window, int button, int action, int mods) noexcept {
         if (ImGui::GetIO().WantCaptureMouse) {// ImGui is handling the mouse
             ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
         } else {
@@ -75,78 +75,78 @@ void GLWindow::init(const char *name, uint2 initial_size, bool resizable) noexce
             auto x = 0.0;
             auto y = 0.0;
             glfwGetCursorPos(self->handle(), &x, &y);
-            if (auto &&cb = self->_mouse_button_callback) {
+            if (auto &&cb = self->mouse_button_callback_) {
                 cb(button, action, make_float2(static_cast<float>(x), static_cast<float>(y)));
             }
         }
     });
-    glfwSetCursorPosCallback(_handle, [](GLFWwindow *window, double x, double y) noexcept {
+    glfwSetCursorPosCallback(handle_, [](GLFWwindow *window, double x, double y) noexcept {
         auto self = static_cast<GLWindow *>(glfwGetWindowUserPointer(window));
-        if (auto &&cb = self->_cursor_position_callback) { cb(make_float2(static_cast<float>(x), static_cast<float>(y))); }
+        if (auto &&cb = self->cursor_position_callback_) { cb(make_float2(static_cast<float>(x), static_cast<float>(y))); }
     });
-    glfwSetWindowSizeCallback(_handle, [](GLFWwindow *window, int width, int height) noexcept {
+    glfwSetWindowSizeCallback(handle_, [](GLFWwindow *window, int width, int height) noexcept {
         auto self = static_cast<GLWindow *>(glfwGetWindowUserPointer(window));
-        if (auto &&cb = self->_window_size_callback) { cb(make_uint2(width, height)); }
+        if (auto &&cb = self->window_size_callback_) { cb(make_uint2(width, height)); }
     });
-    glfwSetKeyCallback(_handle, [](GLFWwindow *window, int key, int scancode, int action, int mods) noexcept {
+    glfwSetKeyCallback(handle_, [](GLFWwindow *window, int key, int scancode, int action, int mods) noexcept {
         // ImGui is handling the keyboard
         ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
         if (!ImGui::GetIO().WantCaptureKeyboard) {
             auto self = static_cast<GLWindow *>(glfwGetWindowUserPointer(window));
-            if (auto &&cb = self->_key_callback) { cb(key, action); }
+            if (auto &&cb = self->key_callback_) { cb(key, action); }
         }
     });
-    glfwSetScrollCallback(_handle, [](GLFWwindow *window, double dx, double dy) noexcept {
+    glfwSetScrollCallback(handle_, [](GLFWwindow *window, double dx, double dy) noexcept {
         if (ImGui::GetIO().WantCaptureMouse) {// ImGui is handling the mouse
             ImGui_ImplGlfw_ScrollCallback(window, dx, dy);
         } else {
             auto self = static_cast<GLWindow *>(glfwGetWindowUserPointer(window));
-            if (auto &&cb = self->_scroll_callback) {
+            if (auto &&cb = self->scroll_callback_) {
                 cb(make_float2(static_cast<float>(dx), static_cast<float>(dy)));
             }
         }
     });
-    glfwSetCharCallback(_handle, ImGui_ImplGlfw_CharCallback);
+    glfwSetCharCallback(handle_, ImGui_ImplGlfw_CharCallback);
 }
 
 GLWindow::GLWindow(const char *name, uint2 initial_size, bool resizable) noexcept
-    : Window(resizable), _context{GLFWContext::retain()} {
+    : Window(resizable), context_{GLFWContext::retain()} {
     init(name, initial_size, resizable);
 }
 
 GLWindow::~GLWindow() noexcept {
-    glfwMakeContextCurrent(_handle);
-    _texture.reset();
-    _widgets.reset();
+    glfwMakeContextCurrent(handle_);
+    texture_.reset();
+    widgets_.reset();
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
-    glfwDestroyWindow(_handle);
+    glfwDestroyWindow(handle_);
 }
 
 uint2 GLWindow::size() const noexcept {
     auto width = 0;
     auto height = 0;
-    glfwGetWindowSize(_handle, &width, &height);
+    glfwGetWindowSize(handle_, &width, &height);
     return make_uint2(
         static_cast<uint>(width),
         static_cast<uint>(height));
 }
 
 bool GLWindow::should_close() const noexcept {
-    return glfwWindowShouldClose(_handle);
+    return glfwWindowShouldClose(handle_);
 }
 
 void GLWindow::set_background(const uchar4 *pixels, uint2 size) noexcept {
-    if (_texture == nullptr) { _texture = ocarina::make_unique<GLTexture>(); }
-    _texture->load(pixels, size);
+    if (texture_ == nullptr) { texture_ = ocarina::make_unique<GLTexture>(); }
+    texture_->load(pixels, size);
 }
 
 void GLWindow::set_background(const float4 *pixels, uint2 size) noexcept {
-    if (_texture == nullptr) {
-        _texture = ocarina::make_unique<GLTexture>();
+    if (texture_ == nullptr) {
+        texture_ = ocarina::make_unique<GLTexture>();
     }
-    _texture->load(pixels, size);
+    texture_->load(pixels, size);
 }
 
 void GLWindow::gen_buffer(ocarina::uint &handle, ocarina::uint size_in_byte) const noexcept {
@@ -165,10 +165,10 @@ void GLWindow::bind_buffer(ocarina::uint &handle, ocarina::uint size_in_byte) co
 }
 
 void GLWindow::set_background(const Buffer<ocarina::float4> &buffer, ocarina::uint2 size) noexcept {
-    if (_texture == nullptr) {
-        _texture = ocarina::make_unique<GLTexture>();
+    if (texture_ == nullptr) {
+        texture_ = ocarina::make_unique<GLTexture>();
     }
-    _texture->bind();
+    texture_->bind();
     bind_buffer(buffer.gl_handle(), buffer.size_in_byte());
 }
 
@@ -177,12 +177,12 @@ void GLWindow::unbind_buffer(ocarina::uint &handle) const noexcept {
 }
 
 void GLWindow::set_should_close() noexcept {
-    glfwSetWindowShouldClose(_handle, true);
+    glfwSetWindowShouldClose(handle_, true);
 }
 
 void GLWindow::_begin_frame() noexcept {
     if (!should_close()) {
-        glfwMakeContextCurrent(_handle);
+        glfwMakeContextCurrent(handle_);
         glfwPollEvents();
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -195,28 +195,28 @@ void GLWindow::_end_frame() noexcept {
     if (!should_close()) {
         Window::_end_frame();
         // background
-        if (_texture != nullptr) {
+        if (texture_ != nullptr) {
             ImVec2 background_size{
-                static_cast<float>(_texture->size().x),
-                static_cast<float>(_texture->size().y)};
+                static_cast<float>(texture_->size().x),
+                static_cast<float>(texture_->size().y)};
             ImGui::GetBackgroundDrawList()->AddImage(
-                reinterpret_cast<ImTextureID>(static_cast<uint64_t>(_texture->handle())), {}, background_size);
+                reinterpret_cast<ImTextureID>(static_cast<uint64_t>(texture_->handle())), {}, background_size);
         }
         // rendering
         ImGui::Render();
         int display_w, display_h;
-        glfwGetFramebufferSize(_handle, &display_w, &display_h);
+        glfwGetFramebufferSize(handle_, &display_w, &display_h);
         glViewport(0, 0, display_w, display_h);
-        glClearColor(_clear_color.x, _clear_color.y, _clear_color.z, _clear_color.w);
+        glClearColor(clear_color_.x, clear_color_.y, clear_color_.z, clear_color_.w);
         glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-        glfwSwapBuffers(_handle);
+        glfwSwapBuffers(handle_);
     }
 }
 
 void GLWindow::set_size(uint2 size) noexcept {
-    if (_resizable) {
-        glfwSetWindowSize(_handle, static_cast<int>(size.x), static_cast<int>(size.y));
+    if (resizable_) {
+        glfwSetWindowSize(handle_, static_cast<int>(size.x), static_cast<int>(size.y));
     } else {
         OC_WARNING("Ignoring resize on non-resizable window.");
     }
