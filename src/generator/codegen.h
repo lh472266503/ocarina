@@ -23,11 +23,11 @@ class OC_GENERATOR_API Codegen {
 protected:
     class OC_GENERATOR_API Scratch {
     private:
-        ocarina::string _buffer;
+        ocarina::string buffer_;
 
     public:
         Scratch() = default;
-        explicit Scratch(const string_view &str) noexcept { _buffer = str; }
+        explicit Scratch(const string_view &str) noexcept { buffer_ = str; }
         Scratch &operator<<(ocarina::string_view v) noexcept;
         Scratch &operator<<(const ocarina::string &v) noexcept;
         Scratch &operator<<(const char *v) noexcept;
@@ -47,35 +47,35 @@ protected:
     };
 
 private:
-    int _indent{};
-    Scratch _scratch;
-    ocarina::vector<Scratch *> _scratch_stack;
-    ocarina::vector<const Function *> _func_stack;
+    int indent_{};
+    Scratch scratch_;
+    ocarina::vector<Scratch *> scratch_stack_;
+    ocarina::vector<const Function *> func_stack_;
 
 protected:
-    bool _obfuscation{false};
+    bool obfuscation_{false};
 
 protected:
-    void indent_inc() noexcept { _indent += 1; }
-    void indent_dec() noexcept { _indent -= 1; }
-    void push(Scratch &scratch) noexcept { _scratch_stack.push_back(&scratch); }
+    void indent_inc() noexcept { indent_ += 1; }
+    void indent_dec() noexcept { indent_ -= 1; }
+    void push(Scratch &scratch) noexcept { scratch_stack_.push_back(&scratch); }
     void pop(Scratch &scratch) noexcept {
-        Scratch *back = _scratch_stack.back();
+        Scratch *back = scratch_stack_.back();
         if (&scratch != back) [[unlikely]] {
             OC_ERROR("Invalid scratch !");
         }
-        _scratch_stack.pop_back();
+        scratch_stack_.pop_back();
     }
-    Scratch &current_scratch() noexcept { return *_scratch_stack.back(); }
-    void push(const Function &function) noexcept { _func_stack.push_back(&function); }
+    Scratch &current_scratch() noexcept { return *scratch_stack_.back(); }
+    void push(const Function &function) noexcept { func_stack_.push_back(&function); }
     void pop(const Function &function) noexcept {
-        const Function *back = _func_stack.back();
+        const Function *back = func_stack_.back();
         if (&function != back) [[unlikely]] {
             OC_ERROR("Invalid scratch !");
         }
-        _func_stack.pop_back();
+        func_stack_.pop_back();
     }
-    const Function &current_function() noexcept { return *_func_stack.back(); }
+    const Function &current_function() noexcept { return *func_stack_.back(); }
     friend struct detail::LiteralPrinter;
 
     template<typename T>
@@ -107,14 +107,14 @@ protected:
     virtual void _emit_member_name(const Type *type, int index) noexcept;
 
 public:
-    explicit Codegen(bool obfuscation) : _obfuscation(obfuscation) { push(_scratch); }
+    explicit Codegen(bool obfuscation) : obfuscation_(obfuscation) { push(scratch_); }
     explicit Codegen(Scratch &scratch)
-        : _scratch(scratch) {
-        push(_scratch);
+        : scratch_(scratch) {
+        push(scratch_);
     }
     virtual void emit(const Function &func) = 0;
     Scratch &scratch() {
-        return _scratch;
+        return scratch_;
     }
 };
 

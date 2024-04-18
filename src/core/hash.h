@@ -41,12 +41,12 @@ public:
     static constexpr auto default_seed = 123456789ull;
 
 private:
-    uint64_t _seed;
+    uint64_t seed_;
 
 public:
     /// Constructor, set seed
     explicit constexpr Hash64(uint64_t seed = default_seed) noexcept
-        : _seed{seed} {}
+        : seed_{seed} {}
 
     template<typename T>
     [[nodiscard]] uint64_t operator()(T &&s) const noexcept {
@@ -56,10 +56,10 @@ public:
             return (*this)(std::forward<T>(s)->hash());
         } else if constexpr (concepts::string_viewable<T>) {
             std::string_view sv{std::forward<T>(s)};
-            return xxh3_hash64(sv.data(), sv.size(), _seed);
+            return xxh3_hash64(sv.data(), sv.size(), seed_);
         } else if constexpr (is_vector3_v<T>) {
             auto x = s;
-            return xxh3_hash64(&x, sizeof(vector_element_t<T>) * 3u, _seed);
+            return xxh3_hash64(&x, sizeof(vector_element_t<T>) * 3u, seed_);
         } else if constexpr (is_matrix3_v<T>) {
             auto x = ocarina::make_float4x4(s);
             return (*this)(x);
@@ -69,7 +69,7 @@ public:
             std::is_enum_v<std::remove_cvref_t<T>> ||
             is_basic_v<std::remove_cvref_t<T>>) {
             auto x = s;
-            return xxh3_hash64(&x, sizeof(x), _seed);
+            return xxh3_hash64(&x, sizeof(x), seed_);
         } else {
             static_assert(always_false_v<T>);
             return {};

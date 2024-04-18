@@ -341,19 +341,19 @@ void CppCodegen::_emit_types_define() noexcept {
 }
 
 bool CppCodegen::has_generated(const Type *type) const noexcept {
-    return _generated_struct.contains(type);
+    return generated_struct_.contains(type);
 }
 
 void CppCodegen::add_generated(const Type *type) noexcept {
-    _generated_struct.emplace(type);
+    generated_struct_.emplace(type);
 }
 
 bool CppCodegen::has_generated(const Function *func) const noexcept {
-    return _generated_func.contains(func->hash());
+    return generated_func_.contains(func->hash());
 }
 
 void CppCodegen::add_generated(const Function *func) noexcept {
-    _generated_func.emplace(func->hash());
+    generated_func_.emplace(func->hash());
 }
 
 void CppCodegen::_emit_variable_define(const Variable &v) noexcept {
@@ -482,7 +482,7 @@ void CppCodegen::_emit_body(const Function &f) noexcept {
 }
 
 void CppCodegen::_emit_comment(const std::string &content) noexcept {
-    if (_obfuscation) {
+    if (obfuscation_) {
         return;
     }
     current_scratch() << "/* " << content << " */";

@@ -51,45 +51,45 @@ private:
     uint _n;
     uint _counter;
     uint _phase;
-    std::condition_variable _cv;
-    std::mutex _mutex;
+    std::condition_variable cv_;
+    std::mutex mutex_;
 
 public:
     explicit Barrier(uint n) noexcept
         : _n{n}, _counter{n}, _phase{0u} {}
     void arrive_and_wait() noexcept {
-        std::unique_lock lock{_mutex};
+        std::unique_lock lock{mutex_};
         auto arrive_phase = _phase;
         if (--_counter == 0u) {
             _counter = _n;
             _phase++;
-            _cv.notify_all();
+            cv_.notify_all();
         }
         while (_phase <= arrive_phase) {
-            _cv.wait(lock);
+            cv_.wait(lock);
         }
     }
 };
 #endif
 
-ThreadPool::ThreadPool(size_t num_threads) noexcept : _should_stop{false} {
+ThreadPool::ThreadPool(size_t num_threads) noexcept : should_stop_{false} {
     if (num_threads == 0u) {
         num_threads = std::max(
             std::thread::hardware_concurrency(), 1u);
     }
-    _dispatch_barrier = make_unique<Barrier>(num_threads);
-    _synchronize_barrier = make_unique<Barrier>(num_threads + 1u /* main thread */);
-    _threads.reserve(num_threads);
+    dispatch_barrier_ = make_unique<Barrier>(num_threads);
+    synchronize_barrier_ = make_unique<Barrier>(num_threads + 1u /* main thread */);
+    threads_.reserve(num_threads);
     for (auto i = 0u; i < num_threads; i++) {
-        _threads.emplace_back(std::thread{[this, i] {
+        threads_.emplace_back(std::thread{[this, i] {
             detail::is_worker_thread() = true;
             detail::worker_thread_index() = i;
             for (;;) {
-                std::unique_lock lock{_mutex};
-                _cv.wait(lock, [this] { return !_tasks.empty() || _should_stop; });
-                if (_should_stop && _tasks.empty()) [[unlikely]] { break; }
-                auto task = std::move(_tasks.front());
-                _tasks.pop();
+                std::unique_lock lock{mutex_};
+                cv_.wait(lock, [this] { return !tasks_.empty() || should_stop_; });
+                if (should_stop_ && tasks_.empty()) [[unlikely]] { break; }
+                auto task = std::move(tasks_.front());
+                tasks_.pop();
                 lock.unlock();
                 task();
             }
@@ -101,43 +101,43 @@ ThreadPool::ThreadPool(size_t num_threads) noexcept : _should_stop{false} {
 
 void ThreadPool::barrier() noexcept {
     detail::check_not_in_worker_thread("barrier");
-    _dispatch_all([this] { _dispatch_barrier->arrive_and_wait(); });
+    _dispatch_all([this] { dispatch_barrier_->arrive_and_wait(); });
 }
 
 void ThreadPool::synchronize() noexcept {
     detail::check_not_in_worker_thread("synchronize");
     while (task_count() != 0u) {
-        _dispatch_all([this] { _synchronize_barrier->arrive_and_wait(); });
-        _synchronize_barrier->arrive_and_wait();
+        _dispatch_all([this] { synchronize_barrier_->arrive_and_wait(); });
+        synchronize_barrier_->arrive_and_wait();
     }
 }
 
 void ThreadPool::_dispatch(std::function<void()> task) noexcept {
     {
-        std::scoped_lock lock{_mutex};
-        _tasks.emplace(std::move(task));
+        std::scoped_lock lock{mutex_};
+        tasks_.emplace(std::move(task));
     }
-    _cv.notify_one();
+    cv_.notify_one();
 }
 
 void ThreadPool::_dispatch_all(std::function<void()> task, size_t max_threads) noexcept {
     {
-        std::scoped_lock lock{_mutex};
-        for (auto i = 0u; i < std::min(_threads.size(), max_threads) - 1u; i++) {
-            _tasks.emplace(task);
+        std::scoped_lock lock{mutex_};
+        for (auto i = 0u; i < std::min(threads_.size(), max_threads) - 1u; i++) {
+            tasks_.emplace(task);
         }
-        _tasks.emplace(std::move(task));
+        tasks_.emplace(std::move(task));
     }
-    _cv.notify_all();
+    cv_.notify_all();
 }
 
 ThreadPool::~ThreadPool() noexcept {
     {
-        std::scoped_lock lock{_mutex};
-        _should_stop = true;
+        std::scoped_lock lock{mutex_};
+        should_stop_ = true;
     }
-    _cv.notify_all();
-    for (auto &&t : _threads) { t.join(); }
+    cv_.notify_all();
+    for (auto &&t : threads_) { t.join(); }
 }
 
 ThreadPool &ThreadPool::instance() noexcept {
@@ -146,7 +146,7 @@ ThreadPool &ThreadPool::instance() noexcept {
 }
 
 uint ThreadPool::task_count() const noexcept {
-    return _task_count.load();
+    return task_count_.load();
 }
 
 uint ThreadPool::worker_thread_index() noexcept {

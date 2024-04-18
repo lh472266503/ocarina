@@ -24,25 +24,25 @@ def generate(file, dim):
 def dynamic_array_swizzle(file, dim):
     entries = ["x", "y", "z", "w"]
     for i,x in enumerate(entries):
-        str = f"[[nodiscard]] DynamicArray<T> {x}() const {{ OC_ASSERT(_size > {i}); return DynamicArray<T>::create(at({i})); }}"
+        str = f"[[nodiscard]] DynamicArray<T> {x}() const {{ OC_ASSERT(size_ > {i}); return DynamicArray<T>::create(at({i})); }}"
         print(str, file=file)
     print("", file=file)
     for i,x in enumerate(entries):
         for j,y in enumerate(entries):
-            str = f"[[nodiscard]] DynamicArray<T> {x}{y}() const {{ OC_ASSERT(_size > {max(i,j)}); return DynamicArray<T>::create(at({i}), at({j})); }}"
+            str = f"[[nodiscard]] DynamicArray<T> {x}{y}() const {{ OC_ASSERT(size_ > {max(i,j)}); return DynamicArray<T>::create(at({i}), at({j})); }}"
             print(str, file=file)
     print("", file=file)
     for i,x in enumerate(entries):
         for j,y in enumerate(entries):
             for k,z in enumerate(entries):
-                str = f"[[nodiscard]] DynamicArray<T> {x}{y}{z}() const {{ OC_ASSERT(_size > {max(i,j,k)}); return DynamicArray<T>::create(at({i}), at({j}), at({k})); }}"
+                str = f"[[nodiscard]] DynamicArray<T> {x}{y}{z}() const {{ OC_ASSERT(size_ > {max(i,j,k)}); return DynamicArray<T>::create(at({i}), at({j}), at({k})); }}"
                 print(str, file=file)
     print("", file=file)
     for i,x in enumerate(entries):
         for j,y in enumerate(entries):
             for k,z in enumerate(entries):
                 for l,w in enumerate(entries):
-                    str = f"[[nodiscard]] DynamicArray<T> {x}{y}{z}{w}() const {{ OC_ASSERT(_size > {max(i,j,k,l)}); return DynamicArray<T>::create(at({i}), at({j}), at({k}), at({l})); }}"
+                    str = f"[[nodiscard]] DynamicArray<T> {x}{y}{z}{w}() const {{ OC_ASSERT(size_ > {max(i,j,k,l)}); return DynamicArray<T>::create(at({i}), at({j}), at({k}), at({l})); }}"
                     print(str, file=file)
 
 def array_swizzle(file, dim):

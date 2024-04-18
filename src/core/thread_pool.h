@@ -22,14 +22,14 @@ class Barrier;
 
 class ThreadPool {
 private:
-    vector<std::thread> _threads;
-    queue<std::function<void()>> _tasks;
-    std::mutex _mutex;
-    unique_ptr<Barrier> _synchronize_barrier;
-    unique_ptr<Barrier> _dispatch_barrier;
-    std::condition_variable _cv;
-    std::atomic_uint _task_count;
-    bool _should_stop;
+    vector<std::thread> threads_;
+    queue<std::function<void()>> tasks_;
+    std::mutex mutex_;
+    unique_ptr<Barrier> synchronize_barrier_;
+    unique_ptr<Barrier> dispatch_barrier_;
+    std::condition_variable cv_;
+    std::atomic_uint task_count_;
+    bool should_stop_;
 
 private:
     void _dispatch(std::function<void()> task) noexcept;
@@ -48,7 +48,7 @@ public:
 public:
     void barrier() noexcept;
     void synchronize() noexcept;
-    [[nodiscard]] auto size() const noexcept { return _threads.size(); }
+    [[nodiscard]] auto size() const noexcept { return threads_.size(); }
     [[nodiscard]] uint task_count() const noexcept;
 
     template<typename F>
@@ -58,7 +58,7 @@ public:
         auto promise = make_shared<std::promise<R>>(
             std::allocator_arg, ocarina::allocator{});
         auto future = promise->get_future().share();
-        _task_count.fetch_add(1u);
+        task_count_.fetch_add(1u);
         _dispatch([promise = std::move(promise), future, f = std::move(f), this]() mutable noexcept {
             if constexpr (std::same_as<R, void>) {
                 f();
@@ -66,7 +66,7 @@ public:
             } else {
                 promise->set_value(f());
             }
-            _task_count.fetch_sub(1u);
+            task_count_.fetch_sub(1u);
         });
         return future;
     }
@@ -75,13 +75,13 @@ public:
     requires std::is_invocable_v<F, uint>
     void parallel(uint n, F f) noexcept {
         if (n > 0u) {
-            _task_count.fetch_add(1u);
+            task_count_.fetch_add(1u);
             auto counter = make_shared<std::atomic_uint>(0u);
             _dispatch_all(
                 [=, this]() mutable noexcept {
                     auto i = 0u;
                     while ((i = counter->fetch_add(1u)) < n) { f(i); }
-                    if (i == n) { _task_count.fetch_sub(1u); }
+                    if (i == n) { task_count_.fetch_sub(1u); }
                 },
                 n);
         }

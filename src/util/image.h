@@ -74,20 +74,20 @@ public:
     template<typename Func>
     void for_each_pixel(Func func) const {
         auto p = _pixel.get();
-        int stride = pixel_size(_pixel_storage);
+        int stride = pixel_size(pixel_storage_);
         for (int i = 0; i < pixel_num(); ++i) {
             const std::byte *pixel = p + stride * i;
-            func(pixel, i, _pixel_storage);
+            func(pixel, i, pixel_storage_);
         }
     }
 
     template<typename Func>
     void for_each_pixel(Func func) {
         auto p = _pixel.get();
-        int stride = pixel_size(_pixel_storage);
+        int stride = pixel_size(pixel_storage_);
         for (int i = 0; i < pixel_num(); ++i) {
             std::byte *pixel = const_cast<std::byte *>(p + stride * i);
-            func(pixel, i, _pixel_storage);
+            func(pixel, i, pixel_storage_);
         }
     }
 

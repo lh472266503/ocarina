@@ -328,7 +328,7 @@ Image Image::load_other(const fs::path &path, ColorSpace color_space, float3 sca
 }
 
 void Image::save(const fs::path &fn) const {
-    save_image(fn, _pixel_storage, resolution(), _pixel.get());
+    save_image(fn, pixel_storage_, resolution(), _pixel.get());
 }
 
 void Image::save_exr(const fs::path &fn, PixelStorage pixel_storage,
@@ -408,7 +408,7 @@ void Image::convert_to_8bit_image() {
         return;
     }
     auto [new_format, ptr] = convert_to_8bit(pixel_storage(), _pixel.get(), resolution());
-    _pixel_storage = new_format;
+    pixel_storage_ = new_format;
     _pixel.reset(ptr);
 }
 
@@ -417,7 +417,7 @@ void Image::convert_to_32bit_image() {
         return;
     }
     auto [new_format, ptr] = convert_to_32bit(pixel_storage(), _pixel.get(), resolution());
-    _pixel_storage = new_format;
+    pixel_storage_ = new_format;
     _pixel.reset(ptr);
 }
 

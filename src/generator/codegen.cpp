@@ -23,7 +23,7 @@ Codegen::Scratch &Codegen::Scratch::operator<<(bool v) noexcept {
     return *this << detail::to_string(v);
 }
 Codegen::Scratch &Codegen::Scratch::operator<<(ocarina::string_view v) noexcept {
-    _buffer.append(v);
+    buffer_.append(v);
     return *this;
 }
 Codegen::Scratch &Codegen::Scratch::operator<<(const ocarina::string &v) noexcept {
@@ -37,19 +37,19 @@ Codegen::Scratch &Codegen::Scratch::operator<<(const Codegen::Scratch &scratch) 
 }
 
 void Codegen::Scratch::clear() noexcept {
-    _buffer.clear();
+    buffer_.clear();
 }
 bool Codegen::Scratch::empty() const noexcept {
-    return _buffer.empty();
+    return buffer_.empty();
 }
 const char *Codegen::Scratch::c_str() const noexcept {
-    return _buffer.c_str();
+    return buffer_.c_str();
 }
 size_t Codegen::Scratch::size() const noexcept {
-    return _buffer.size();
+    return buffer_.size();
 }
 ocarina::string_view Codegen::Scratch::view() const noexcept {
-    return _buffer;
+    return buffer_;
 }
 Codegen::Scratch &Codegen::Scratch::operator<<(uint v) noexcept {
     return *this << detail::to_string(v) + "u";
@@ -58,27 +58,27 @@ Codegen::Scratch &Codegen::Scratch::operator<<(size_t v) noexcept {
     return *this << detail::to_string(v) + "ul";
 }
 void Codegen::Scratch::pop_back() noexcept {
-    _buffer.pop_back();
+    buffer_.pop_back();
 }
 
 void Codegen::Scratch::replace(string_view substr, string_view new_str) noexcept {
-    auto begin = _buffer.find(substr);
+    auto begin = buffer_.find(substr);
     auto size = substr.size();
-    _buffer.replace(begin, size, new_str);
+    buffer_.replace(begin, size, new_str);
 }
 
 void Codegen::_emit_newline() noexcept {
-    if (_obfuscation) {
+    if (obfuscation_) {
         return;
     }
     current_scratch() << "\n";
 }
 void Codegen::_emit_indent() noexcept {
-    if (_obfuscation) {
+    if (obfuscation_) {
         return;
     }
     static constexpr auto indent_str = "    ";
-    for (int i = 0; i < _indent; ++i) {
+    for (int i = 0; i < indent_; ++i) {
         current_scratch() << indent_str;
     }
 }

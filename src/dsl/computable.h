@@ -334,13 +334,13 @@ struct EnableTextureReadAndWrite {
 template<typename T>
 struct AtomicRef {
 private:
-    const Expression *_range{};
-    const Expression *_index{};
+    const Expression *range_{};
+    const Expression *index_{};
 
 public:
     explicit AtomicRef(const Expression *range,
                        const Expression *index)
-        : _range(range), _index(index) {}
+        : range_(range), index_(index) {}
     AtomicRef(AtomicRef &&) noexcept = delete;
     AtomicRef(const AtomicRef &) noexcept = delete;
     AtomicRef &operator=(AtomicRef &&) noexcept = delete;
@@ -349,24 +349,24 @@ public:
     Var<T> exchange(Var<T> value) noexcept {
         const Expression *expr = Function::current()->call_builtin(Type::of<T>(),
                                                                    CallOp::ATOMIC_EXCH,
-                                                                   {_range, _index, OC_EXPR(value)});
-        _range->mark(Usage::READ_WRITE);
+                                                                   {range_, index_, OC_EXPR(value)});
+        range_->mark(Usage::READ_WRITE);
         return eval<T>(expr);
     }
 
     Var<T> fetch_add(Var<T> value) noexcept {
         const Expression *expr = Function::current()->call_builtin(Type::of<T>(),
                                                                    CallOp::ATOMIC_ADD,
-                                                                   {_range, _index, OC_EXPR(value)});
-        _range->mark(Usage::READ_WRITE);
+                                                                   {range_, index_, OC_EXPR(value)});
+        range_->mark(Usage::READ_WRITE);
         return eval<T>(expr);
     }
 
     Var<T> fetch_sub(Var<T> value) noexcept {
         const Expression *expr = Function::current()->call_builtin(Type::of<T>(),
                                                                    CallOp::ATOMIC_SUB,
-                                                                   {_range, _index, OC_EXPR(value)});
-        _range->mark(Usage::READ_WRITE);
+                                                                   {range_, index_, OC_EXPR(value)});
+        range_->mark(Usage::READ_WRITE);
         return eval<T>(expr);
     }
 };
@@ -457,16 +457,16 @@ struct EnableBitwiseCast {
 
 #define OC_COMPUTABLE_COMMON(...)                                                       \
 private:                                                                                \
-    const Expression *_expression{nullptr};                                             \
+    const Expression *expression_{nullptr};                                             \
                                                                                         \
 public:                                                                                 \
-    [[nodiscard]] const Expression *expression() const noexcept { return _expression; } \
+    [[nodiscard]] const Expression *expression() const noexcept { return expression_; } \
     [[nodiscard]] bool is_valid() const noexcept {                                      \
         return expression()->check_context(Function::current());                        \
     }                                                                                   \
                                                                                         \
 protected:                                                                              \
-    explicit Computable(const Expression *e) noexcept : _expression{e} {}               \
+    explicit Computable(const Expression *e) noexcept : expression_{e} {}               \
     Computable(Computable &&) noexcept = default;                                       \
     Computable(const Computable &) noexcept = default;
 

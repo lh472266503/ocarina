@@ -18,18 +18,18 @@ public:
     using element_type = T;
 
 private:
-    uint _size{};
-    const Expression *_expression{};
+    uint size_{};
+    const Expression *expression_{};
 
 public:
     DynamicArray() = default;
 
     explicit DynamicArray(const Expression *expression)
-        : _size(expression->type()->dimension()), _expression(expression) {}
+        : size_(expression->type()->dimension()), expression_(expression) {}
 
     explicit DynamicArray(size_t num, const Expression *expression = nullptr)
-        : _size(num),
-          _expression(expression == nullptr ? Function::current()->local(type()) : expression) {}
+        : size_(num),
+          expression_(expression == nullptr ? Function::current()->local(type()) : expression) {}
 
     template<typename U>
     requires is_dsl_v<U> || is_basic_v<U>
@@ -57,21 +57,21 @@ public:
     }
 
     DynamicArray(const DynamicArray &other) noexcept
-        : _size{other._size}, _expression(Function::current()->local(type())) {
-        Function::current()->assign(_expression, other._expression);
+        : size_{other.size_}, expression_(Function::current()->local(type())) {
+        Function::current()->assign(expression_, other.expression_);
     }
     DynamicArray(DynamicArray &&) noexcept = default;
 
     void reset(const DynamicArray<T> &array) noexcept {
-        _size = array.size();
-        _expression = array.expression();
+        size_ = array.size();
+        expression_ = array.expression();
     }
     void invalidate() noexcept {
-        _size = 0;
-        _expression = nullptr;
+        size_ = 0;
+        expression_ = nullptr;
     }
 
-    [[nodiscard]] bool valid() const noexcept { return _size > 0; }
+    [[nodiscard]] bool valid() const noexcept { return size_ > 0; }
 
     [[nodiscard]] static const Type *type(uint size) noexcept {
         return Type::from(ocarina::format("array<{},{}>",
@@ -80,7 +80,7 @@ public:
     }
 
     [[nodiscard]] const Type *type() const noexcept {
-        return type(_size);
+        return type(size_);
     }
 
     template<typename U>
@@ -104,7 +104,7 @@ public:
 
     template<size_t N>
     [[nodiscard]] auto as_vec() const noexcept {
-        OC_ASSERT(N <= _size);
+        OC_ASSERT(N <= size_);
         if constexpr (N == 1) {
             return as_scalar();
         } else {
@@ -137,16 +137,16 @@ public:
 #include "swizzle_inl/dynamic_array_swizzle.inl.h"
 
     DynamicArray &operator=(const DynamicArray &rhs) noexcept {
-        OC_ASSERT(_size == rhs._size || rhs._size == 1);
+        OC_ASSERT(size_ == rhs.size_ || rhs.size_ == 1);
         if (&rhs == this) {
             return *this;
         }
-        if (rhs._size == 1) {
+        if (rhs.size_ == 1) {
             for (int i = 0; i < size(); ++i) {
                 (*this)[i] = rhs[0];
             }
         } else {
-            Function::current()->assign(_expression, rhs._expression);
+            Function::current()->assign(expression_, rhs.expression_);
         }
         return *this;
     }
@@ -168,8 +168,8 @@ public:
         return *this;
     }
 
-    [[nodiscard]] const Expression *expression() const noexcept { return _expression; }
-    [[nodiscard]] uint size() const noexcept { return _size; }
+    [[nodiscard]] const Expression *expression() const noexcept { return expression_; }
+    [[nodiscard]] uint size() const noexcept { return size_; }
 
     template<typename F>
     [[nodiscard]] DynamicArray<T> map(F &&f) const noexcept {

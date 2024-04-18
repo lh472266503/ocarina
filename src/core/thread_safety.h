@@ -12,13 +12,13 @@ template<typename Mutex = std::mutex>
 class thread_safety {
 
 private:
-    mutable Mutex _mutex{};
+    mutable Mutex mutex_{};
 
 public:
     thread_safety() = default;
     template<typename F>
     decltype(auto) with_lock(F &&f) const noexcept {
-        std::lock_guard lock{_mutex};
+        std::lock_guard lock{mutex_};
         return std::invoke(std::forward<F>(f));
     }
 };

@@ -19,13 +19,13 @@ private:
     static Env *s_env;
 
 private:
-    Printer _printer;
-    Debugger _debugger;
-    mutable ocarina::map<string, basic_variant_var_t> _global_vars;
+    Printer printer_;
+    Debugger debugger_;
+    mutable ocarina::map<string, basic_variant_var_t> global_vars_;
 
     /// Check if the array or buffer is over boundary
-    bool _valid_check{true};
-    bool _code_obfuscation{false};
+    bool valid_check_{true};
+    bool code_obfuscation_{false};
 
 public:
     [[nodiscard]] static Env &instance() noexcept;
@@ -33,12 +33,12 @@ public:
 
     template<typename T>
     void set(const string &key, const T &val) noexcept {
-        _global_vars.insert(make_pair(key, val));
+        global_vars_.insert(make_pair(key, val));
     }
 
     template<typename T>
     [[nodiscard]] T &get(const string &key) const noexcept {
-        return std::get<T>(_global_vars.at(key));
+        return std::get<T>(global_vars_.at(key));
     }
 
     template<typename T, typename Func>
@@ -50,18 +50,18 @@ public:
     }
 
     [[nodiscard]] bool has(const string &key) const noexcept {
-        return _global_vars.contains(key);
+        return global_vars_.contains(key);
     }
 
     void clear_global_vars() const noexcept {
-        _global_vars.clear();
+        global_vars_.clear();
     }
 
-    [[nodiscard]] static Printer &printer() noexcept { return instance()._printer; }
-    [[nodiscard]] static Debugger &debugger() noexcept { return instance()._debugger; }
+    [[nodiscard]] static Printer &printer() noexcept { return instance().printer_; }
+    [[nodiscard]] static Debugger &debugger() noexcept { return instance().debugger_; }
     void init(Device &device) {
-        _printer.init(device);
-        _debugger.init(device);
+        printer_.init(device);
+        debugger_.init(device);
     }
     [[nodiscard]] static bool is_printer_enabled() noexcept { return printer().enabled(); }
     template<typename T>
@@ -103,10 +103,10 @@ public:
         }
     }
     static void set_printer_enabled(bool enabled) noexcept { printer().set_enabled(enabled); }
-    [[nodiscard]] static bool valid_check() noexcept { return instance()._valid_check; }
-    static void set_valid_check(bool val) noexcept { instance()._valid_check = val; }
-    [[nodiscard]] static bool code_obfuscation() noexcept { return instance()._code_obfuscation; }
-    static void set_code_obfuscation(bool val) noexcept { instance()._code_obfuscation = val; }
+    [[nodiscard]] static bool valid_check() noexcept { return instance().valid_check_; }
+    static void set_valid_check(bool val) noexcept { instance().valid_check_ = val; }
+    [[nodiscard]] static bool code_obfuscation() noexcept { return instance().code_obfuscation_; }
+    static void set_code_obfuscation(bool val) noexcept { instance().code_obfuscation_ = val; }
 };
 
 }// namespace ocarina

@@ -29,8 +29,8 @@ using DebugDataVar = Var<DebugData>;
 
 class Debugger {
 private:
-    Managed<DebugData> _data;
-    mutable string _desc{};
+    Managed<DebugData> data_;
+    mutable string desc_{};
 
 private:
     Debugger() = default;
@@ -41,12 +41,12 @@ private:
     friend class Env;
 
 public:
-    void reset() noexcept { _data[0] = DebugData{}; }
-    void init(Device &device) noexcept { _data.reset_all(device, 1, "DebugData::_data"); }
-    [[nodiscard]] auto &host_data() const noexcept { return _data.host_buffer()[0]; }
-    [[nodiscard]] auto &host_data() noexcept { return _data.host_buffer()[0]; }
-    [[nodiscard]] Command *upload(bool async = true) const noexcept { return _data.upload(async); }
-    void upload_immediately() const noexcept { _data.upload_immediately(); }
+    void reset() noexcept { data_[0] = DebugData{}; }
+    void init(Device &device) noexcept { data_.reset_all(device, 1, "DebugData::data_"); }
+    [[nodiscard]] auto &host_data() const noexcept { return data_.host_buffer()[0]; }
+    [[nodiscard]] auto &host_data() noexcept { return data_.host_buffer()[0]; }
+    [[nodiscard]] Command *upload(bool async = true) const noexcept { return data_.upload(async); }
+    void upload_immediately() const noexcept { data_.upload_immediately(); }
     void filp_enabled() noexcept { host_data().enabled = !host_data().enabled; }
     [[nodiscard]] bool is_enabled() const noexcept { return host_data().enabled; }
     void disable() noexcept { host_data().enabled = false; }
@@ -56,16 +56,16 @@ public:
 
 protected:
     /// for dsl
-    [[nodiscard]] Bool _is_enabled() const noexcept { return cast<bool>(_data.read(0).enabled); }
+    [[nodiscard]] Bool _is_enabled() const noexcept { return cast<bool>(data_.read(0).enabled); }
     /// for dsl
-    [[nodiscard]] DebugDataVar _device_data() const noexcept { return _data.read(0); }
+    [[nodiscard]] DebugDataVar _device_data() const noexcept { return data_.read(0); }
 
 public:
     /// for dsl
     template<typename Func>
     void execute(Func &&func) const noexcept {
-        if (!_desc.empty()) {
-            comment(_desc);
+        if (!desc_.empty()) {
+            comment(desc_);
         }
         if_(_is_enabled(), [&] {
             Uint2 idx = dispatch_idx().xy();
@@ -77,11 +77,11 @@ public:
                 }
             });
         });
-        _desc = "";
+        desc_ = "";
     }
 
     Debugger &set_description(const string &desc) {
-        _desc = desc;
+        desc_ = desc;
         return *this;
     }
 

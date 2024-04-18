@@ -108,52 +108,52 @@ OC_NDSC_INLINE size_t channel_num(PixelStorage pixel_storage) {
 
 class ImageBase : public concepts::Noncopyable {
 protected:
-    PixelStorage _pixel_storage{PixelStorage::UNKNOWN};
-    uint2 _resolution{};
-    vector<float> _average{};
+    PixelStorage pixel_storage_{PixelStorage::UNKNOWN};
+    uint2 resolution_{};
+    vector<float> average_{};
 
 public:
     ImageBase(PixelStorage pixel_format, uint2 resolution)
-        : _pixel_storage(pixel_format),
-          _resolution(resolution) {
-        _average.resize(channel_num());
+        : pixel_storage_(pixel_format),
+          resolution_(resolution) {
+        average_.resize(channel_num());
     }
     ImageBase(ImageBase &&other) noexcept {
-        _pixel_storage = other._pixel_storage;
-        _resolution = other._resolution;
-        _average = ocarina::move(other._average);
+        pixel_storage_ = other.pixel_storage_;
+        resolution_ = other.resolution_;
+        average_ = ocarina::move(other.average_);
     }
     ImageBase() = default;
     ImageBase &operator=(ImageBase &&) = default;
-    [[nodiscard]] int channel_num() const { return ::ocarina::channel_num(_pixel_storage); }
-    [[nodiscard]] uint2 resolution() const { return _resolution; }
-    [[nodiscard]] uint width() const { return _resolution.x; }
-    [[nodiscard]] uint height() const { return _resolution.y; }
+    [[nodiscard]] int channel_num() const { return ::ocarina::channel_num(pixel_storage_); }
+    [[nodiscard]] uint2 resolution() const { return resolution_; }
+    [[nodiscard]] uint width() const { return resolution_.x; }
+    [[nodiscard]] uint height() const { return resolution_.y; }
 
     template<size_t N = 4>
     [[nodiscard]] const auto &average() const noexcept {
         OC_ASSERT(N <= channel_num());
         if constexpr (N == 1) {
-            return *(reinterpret_cast<const float *>(_average.data()));
+            return *(reinterpret_cast<const float *>(average_.data()));
         } else {
-            return *(reinterpret_cast<const Vector<float, N> *>(_average.data()));
+            return *(reinterpret_cast<const Vector<float, N> *>(average_.data()));
         }
     }
     template<size_t N = 4>
     [[nodiscard]] auto &average() noexcept {
         OC_ASSERT(N <= channel_num());
         if constexpr (N == 1) {
-            return *(reinterpret_cast<float *>(_average.data()));
+            return *(reinterpret_cast<float *>(average_.data()));
         } else {
-            return *(reinterpret_cast<Vector<float, N> *>(_average.data()));
+            return *(reinterpret_cast<Vector<float, N> *>(average_.data()));
         }
     }
-    [[nodiscard]] auto average_vector() const noexcept { return _average; }
-    [[nodiscard]] PixelStorage pixel_storage() const { return _pixel_storage; }
-    [[nodiscard]] size_t pitch_byte_size() const { return _resolution.x * pixel_size(_pixel_storage); }
-    [[nodiscard]] size_t pixel_num() const { return _resolution.x * _resolution.y; }
+    [[nodiscard]] auto average_vector() const noexcept { return average_; }
+    [[nodiscard]] PixelStorage pixel_storage() const { return pixel_storage_; }
+    [[nodiscard]] size_t pitch_byte_size() const { return resolution_.x * pixel_size(pixel_storage_); }
+    [[nodiscard]] size_t pixel_num() const { return resolution_.x * resolution_.y; }
     [[nodiscard]] size_t size_in_bytes() const {
-        return pixel_size(_pixel_storage) * pixel_num() * channel_num();
+        return pixel_size(pixel_storage_) * pixel_num() * channel_num();
     }
 };
 
