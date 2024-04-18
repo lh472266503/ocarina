@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <utility>
+
 #include "core/stl.h"
 #include "core/basic_types.h"
 #include "var.h"
@@ -192,12 +194,12 @@ auto create(Func &&func, ocarina::index_sequence<i...>) {
 
 class FuncWrapper {
 protected:
-    mutable ocarina::shared_ptr<Function> _function;
+    mutable ocarina::shared_ptr<Function> function_;
     FuncWrapper() = default;
-    explicit FuncWrapper(ocarina::shared_ptr<Function> f) : _function(f) {}
+    explicit FuncWrapper(ocarina::shared_ptr<Function> f) : function_(std::move(f)) {}
 
 public:
-    [[nodiscard]] ocarina::shared_ptr<Function> &function() const noexcept { return _function; }
+    [[nodiscard]] ocarina::shared_ptr<Function> &function() const noexcept { return function_; }
 };
 
 namespace detail {
@@ -240,15 +242,15 @@ public:
           }))) {}
 
     auto operator()(prototype_to_callable_invocation_t<Args>... args) const noexcept {
-        Function::current()->update_captured_resources(_function.get());
+        Function::current()->update_captured_resources(function_.get());
         vector<const Expression *> arguments{(OC_EXPR(args))...};
 
-        _function->for_each_captured_resource([&](const CapturedResource &captured_resource) {
+        function_->for_each_captured_resource([&](const CapturedResource &captured_resource) {
             const CapturedResource *var = Function::current()->get_captured_resource_by_handle(captured_resource.handle_ptr());
             arguments.push_back(var->expression());
         });
 
-        const CallExpr *expr = Function::current()->call(Type::of<Ret>(), _function, arguments);
+        const CallExpr *expr = Function::current()->call(Type::of<Ret>(), function_, arguments);
         comment(ocarina::format("call function {}", function()->description()));
         if constexpr (!std::is_same_v<std::remove_cvref_t<Ret>, void>) {
             return eval<Ret>(expr);

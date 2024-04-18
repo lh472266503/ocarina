@@ -26,14 +26,14 @@ void MemoryStats::destroy_instance() {
 }
 
 string MemoryStats::total_buffer_info() const noexcept {
-    return ocarina::format("total buffer memory is {} \n", bytes_string(_buffer_size));
+    return ocarina::format("total buffer memory is {} \n", bytes_string(buffer_size_));
 }
 
 string MemoryStats::buffer_detail_info() const noexcept {
     string ret;
-    for (const auto &item : _buffer_map) {
+    for (const auto &item : buffer_map_) {
         const BufferData &data = item.second;
-        double percent = double(data.size) / _buffer_size;
+        double percent = double(data.size) / buffer_size_;
         ret += ocarina::format("size {}, percent {:.2f} %, block {}\n", bytes_string(data.size),percent * 100, data.name);
     }
     return ret;
@@ -44,12 +44,12 @@ string MemoryStats::buffer_info() const noexcept {
 }
 
 string MemoryStats::total_tex_info() const noexcept {
-    return ocarina::format("total tex memory is {} \n", bytes_string(_tex_size));
+    return ocarina::format("total tex memory is {} \n", bytes_string(tex_size_));
 }
 
 string MemoryStats::tex_detail_info() const noexcept {
     string ret;
-    for (const auto &item : _tex_map) {
+    for (const auto &item : tex_map_) {
         const TexData &data = item.second;
         ret += ocarina::format("res ({}, {}), memory size {}, tex name {}\n",
                                data.res.x, data.res.y,
@@ -65,33 +65,33 @@ string MemoryStats::tex_info() const noexcept {
 
 void MemoryStats::on_buffer_allocate(ocarina::handle_ty handle, size_t size, std::string name) {
     with_lock([&] {
-        _buffer_size += size;
-        _buffer_map.insert(make_pair(handle, BufferData{name, size}));
+        buffer_size_ += size;
+        buffer_map_.insert(make_pair(handle, BufferData{name, size}));
     });
 }
 
 void MemoryStats::on_buffer_free(ocarina::handle_ty handle) {
-    if (!_buffer_map.contains(handle)) {
+    if (!buffer_map_.contains(handle)) {
         return;
     }
     with_lock([&] {
-        _buffer_size -= buffer_size(handle);
-        _buffer_map.erase(handle);
+        buffer_size_ -= buffer_size(handle);
+        buffer_map_.erase(handle);
     });
 }
 
 void MemoryStats::on_tex_allocate(ocarina::handle_ty handle, uint2 res, std::string name) {
     with_lock([&] {
-        _tex_size += res.x * res.y;
-        _tex_map.insert(make_pair(handle, TexData{name, res}));
+        tex_size_ += res.x * res.y;
+        tex_map_.insert(make_pair(handle, TexData{name, res}));
     });
 }
 
 void MemoryStats::on_tex_free(ocarina::handle_ty handle) {
     with_lock([&] {
         uint2 res = tex_res(handle);
-        _tex_size -= res.x * res.y;
-        _tex_map.erase(handle);
+        tex_size_ -= res.x * res.y;
+        tex_map_.erase(handle);
     });
 }
 

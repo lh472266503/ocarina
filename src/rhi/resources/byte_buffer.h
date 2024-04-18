@@ -16,27 +16,27 @@ class ByteBuffer;
 
 class ByteBufferView {
 private:
-    handle_ty _handle{};
-    size_t _offset{};
-    size_t _size{};
-    size_t _total_size{};
-    mutable BufferProxy<> _proxy{};
+    handle_ty handle_{};
+    size_t offset_{};
+    size_t size_{};
+    size_t total_size_{};
+    mutable BufferProxy<> proxy_{};
 
 public:
     ByteBufferView() = default;
 
     ByteBufferView(handle_ty handle, size_t offset, size_t size, size_t total_size)
-        : _handle(handle), _offset(offset), _size(size), _total_size(total_size) {}
+        : handle_(handle), offset_(offset), size_(size), total_size_(total_size) {}
 
     ByteBufferView(handle_ty handle, size_t total_size)
-        : _handle(handle), _offset(0), _size(total_size), _total_size(total_size) {}
+        : handle_(handle), offset_(0), size_(total_size), total_size_(total_size) {}
 
     inline ByteBufferView(const ByteBuffer &buffer);
 
     const BufferProxy<> &proxy() const noexcept {
-        _proxy.handle = reinterpret_cast<std::byte *>(head());
-        _proxy.size = _size;
-        return _proxy;
+        proxy_.handle = reinterpret_cast<std::byte *>(head());
+        proxy_.size = size_;
+        return proxy_;
     }
 
     const BufferProxy<> *proxy_ptr() const noexcept {
@@ -44,20 +44,20 @@ public:
     }
 
     [[nodiscard]] ByteBufferView subview(size_t offset, size_t size) const noexcept {
-        return {_handle, _offset + offset, size, _total_size};
+        return {handle_, offset_ + offset, size, total_size_};
     }
 
     template<typename T>
     [[nodiscard]] BufferView<T> view_as(size_t offset = 0, size_t size = 0) const noexcept {
-        size = size == 0 ? _size - offset : size;
-        return BufferView<T>(_handle, (_offset + offset) / sizeof(T),
-                             size / sizeof(T), _total_size / sizeof(T));
+        size = size == 0 ? size_ - offset : size;
+        return BufferView<T>(handle_, (offset_ + offset) / sizeof(T),
+                             size / sizeof(T), total_size_ / sizeof(T));
     }
 
-    [[nodiscard]] size_t size() const { return _size; }
+    [[nodiscard]] size_t size() const { return size_; }
     [[nodiscard]] size_t element_size() const noexcept { return 1; }
-    [[nodiscard]] size_t size_in_byte() const noexcept { return _size * element_size(); }
-    [[nodiscard]] handle_ty head() const { return _handle + _offset * element_size(); }
+    [[nodiscard]] size_t size_in_byte() const noexcept { return size_ * element_size(); }
+    [[nodiscard]] handle_ty head() const { return handle_ + offset_ * element_size(); }
 
     [[nodiscard]] BufferCopyCommand *copy_from(const ByteBufferView &src, bool async = true,
                                                uint dst_offset = 0) noexcept {
@@ -95,32 +95,32 @@ public:
 class ByteBuffer : public RHIResource {
 private:
     /// just for construct memory block
-    mutable BufferProxy<> _proxy{};
-    size_t _size{};
+    mutable BufferProxy<> proxy_{};
+    size_t size_{};
 
 public:
     ByteBuffer(Device::Impl *device, size_t size, const string &desc = "")
         : RHIResource(device, Tag::BUFFER, device->create_buffer(size, desc)),
-          _size(size) {}
+          size_(size) {}
 
     ByteBuffer(ByteBufferView buffer_view)
         : RHIResource(nullptr, Tag::BUFFER, buffer_view.head()),
-          _size(buffer_view.size()) {}
+          size_(buffer_view.size()) {}
 
     /// head of the buffer
     [[nodiscard]] handle_ty head() const noexcept { return handle(); }
-    [[nodiscard]] size_t size() const noexcept { return _size; }
+    [[nodiscard]] size_t size() const noexcept { return size_; }
     [[nodiscard]] size_t size_in_byte() const noexcept { return size(); }
 
     void destroy() override {
         _destroy();
-        _size = 0;
+        size_ = 0;
     }
 
     const BufferProxy<std::byte> &proxy() const noexcept {
-        _proxy.handle = reinterpret_cast<std::byte *>(_handle);
-        _proxy.size = _size;
-        return _proxy;
+        proxy_.handle = reinterpret_cast<std::byte *>(handle_);
+        proxy_.size = size_;
+        return proxy_;
     }
 
     const BufferProxy<std::byte> *proxy_ptr() const noexcept {
@@ -128,11 +128,11 @@ public:
     }
 
     [[nodiscard]] size_t data_alignment() const noexcept override {
-        return alignof(decltype(_proxy));
+        return alignof(decltype(proxy_));
     }
 
     [[nodiscard]] size_t data_size() const noexcept override {
-        return sizeof(_proxy);
+        return sizeof(proxy_);
     }
 
     [[nodiscard]] MemoryBlock memory_block() const noexcept override {
@@ -148,8 +148,8 @@ public:
     }
 
     [[nodiscard]] ByteBufferView view(size_t offset = 0, size_t size = 0) const noexcept {
-        size = size == 0 ? _size - offset : size;
-        return ByteBufferView(_handle, offset, size, _size);
+        size = size == 0 ? size_ - offset : size;
+        return ByteBufferView(handle_, offset, size, size_);
     }
 
     template<typename T>
@@ -159,23 +159,23 @@ public:
 
     template<typename... Args>
     [[nodiscard]] BufferCopyCommand *copy_from(Args &&...args) const noexcept {
-        return view(0, _size).copy_from(OC_FORWARD(args)...);
+        return view(0, size_).copy_from(OC_FORWARD(args)...);
     }
     template<typename... Args>
     [[nodiscard]] BufferDownloadCommand *download(Args &&...args) const noexcept {
-        return view(0, _size).download(OC_FORWARD(args)...);
+        return view(0, size_).download(OC_FORWARD(args)...);
     }
     template<typename... Args>
     [[nodiscard]] BufferUploadCommand *upload(Args &&...args) const noexcept {
-        return view(0, _size).upload(OC_FORWARD(args)...);
+        return view(0, size_).upload(OC_FORWARD(args)...);
     }
     template<typename... Args>
     [[nodiscard]] BufferByteSetCommand *byte_set(Args &&...args) const noexcept {
-        return view(0, _size).byte_set(OC_FORWARD(args)...);
+        return view(0, size_).byte_set(OC_FORWARD(args)...);
     }
     template<typename... Args>
     [[nodiscard]] BufferByteSetCommand *reset(Args &&...args) const noexcept {
-        return view(0, _size).reset(OC_FORWARD(args)...);
+        return view(0, size_).reset(OC_FORWARD(args)...);
     }
 
     /// for dsl start

@@ -12,7 +12,7 @@
 namespace ocarina {
 
 ByteBuffer Device::create_byte_buffer(size_t size, const std::string &name) const noexcept {
-    return ByteBuffer(_impl.get(), size, name);
+    return ByteBuffer(impl_.get(), size, name);
 }
 
 Stream Device::create_stream() noexcept {

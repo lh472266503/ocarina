@@ -10,18 +10,18 @@ void RHIResource::_destroy() {
     if (!valid()) {
         return;
     }
-    if (_handle == 0) {
+    if (handle_ == 0) {
         return;
     }
-    switch (_tag) {
-        case Tag::BUFFER: _device->destroy_buffer(_handle); break;
-        case Tag::TEXTURE: _device->destroy_texture(_handle); break;
-        case Tag::STREAM: _device->destroy_stream(_handle); break;
-        case Tag::SHADER: _device->destroy_shader(_handle); break;
-        case Tag::MESH: _device->destroy_mesh(_handle); break;
-        case Tag::ACCEL: _device->destroy_accel(_handle); break;
-        case Tag::BINDLESS_ARRAY: _device->destroy_bindless_array(_handle); break;
+    switch (tag_) {
+        case Tag::BUFFER: device_->destroy_buffer(handle_); break;
+        case Tag::TEXTURE: device_->destroy_texture(handle_); break;
+        case Tag::STREAM: device_->destroy_stream(handle_); break;
+        case Tag::SHADER: device_->destroy_shader(handle_); break;
+        case Tag::MESH: device_->destroy_mesh(handle_); break;
+        case Tag::ACCEL: device_->destroy_accel(handle_); break;
+        case Tag::BINDLESS_ARRAY: device_->destroy_bindless_array(handle_); break;
     }
-    _handle = 0;
+    handle_ = 0;
 }
 }// namespace ocarina

@@ -41,11 +41,11 @@ class Device : public concepts::Noncopyable {
 public:
     class Impl : public concepts::Noncopyable {
     protected:
-        FileManager *_context{};
+        FileManager *file_manager_{};
         friend class Device;
 
     public:
-        explicit Impl(FileManager *ctx) : _context(ctx) {}
+        explicit Impl(FileManager *ctx) : file_manager_(ctx) {}
         [[nodiscard]] virtual handle_ty create_buffer(size_t size, const string &desc) noexcept = 0;
         virtual void destroy_buffer(handle_ty handle) noexcept = 0;
         [[nodiscard]] virtual handle_ty create_texture(uint3 res, PixelStorage pixel_storage,
@@ -67,7 +67,7 @@ public:
         virtual void mapping_shared_tex(void *&shared_handle, handle_ty &handle) noexcept = 0;
         virtual void unmapping_shared(void *&shared_handle) noexcept = 0;
         virtual void unregister_shared(void *&shared_handle) noexcept = 0;
-        [[nodiscard]] FileManager *file_manager() noexcept { return _context; }
+        [[nodiscard]] FileManager *file_manager() noexcept { return file_manager_; }
         virtual void init_rtx() noexcept = 0;
         [[nodiscard]] virtual CommandVisitor *command_visitor() noexcept = 0;
     };
@@ -77,36 +77,36 @@ public:
     using Handle = ocarina::unique_ptr<Device::Impl, Device::Deleter *>;
 
 private:
-    Handle _impl;
+    Handle impl_;
     template<typename T, typename... Args>
     [[nodiscard]] auto _create(Args &&...args) const noexcept {
-        return T(this->_impl.get(), std::forward<Args>(args)...);
+        return T(this->impl_.get(), std::forward<Args>(args)...);
     }
 
 public:
-    explicit Device(Handle impl) : _impl(std::move(impl)) {}
-    [[nodiscard]] FileManager *file_manager() const noexcept { return _impl->_context; }
+    explicit Device(Handle impl) : impl_(std::move(impl)) {}
+    [[nodiscard]] FileManager *file_manager() const noexcept { return impl_->file_manager_; }
 
     template<typename T = std::byte, int... Dims>
     [[nodiscard]] Buffer<T, Dims...> create_buffer(size_t size, const string &name = "") const noexcept {
-        return Buffer<T, Dims...>(_impl.get(), size, name);
+        return Buffer<T, Dims...>(impl_.get(), size, name);
     }
 
     [[nodiscard]] ByteBuffer create_byte_buffer(size_t size, const string &name = "") const noexcept;
 
     template<typename T = std::byte, int... Dims>
     [[nodiscard]] Buffer<T, Dims...> create_buffer(size_t size, handle_ty stream) noexcept {
-        return Buffer<T, Dims...>(_impl.get(), size, stream);
+        return Buffer<T, Dims...>(impl_.get(), size, stream);
     }
 
     template<typename T = std::byte>
     [[nodiscard]] Managed<T> create_managed(size_t size) noexcept {
-        return Managed<T>(_impl.get(), size);
+        return Managed<T>(impl_.get(), size);
     }
 
     template<typename T = std::byte>
     [[nodiscard]] Managed<T> create_managed(size_t size, handle_ty stream) noexcept {
-        return Managed<T>(_impl.get(), size, stream);
+        return Managed<T>(impl_.get(), size, stream);
     }
 
     template<typename VBuffer, typename TBuffer>
@@ -117,7 +117,7 @@ public:
     [[nodiscard]] Stream create_stream() noexcept;
     [[nodiscard]] Accel create_accel() const noexcept;
     [[nodiscard]] BindlessArray create_bindless_array() const noexcept;
-    void init_rtx() noexcept { _impl->init_rtx(); }
+    void init_rtx() noexcept { impl_->init_rtx(); }
     [[nodiscard]] Texture create_texture(uint3 res, PixelStorage storage, const string &desc = "") const noexcept;
     [[nodiscard]] Texture create_texture(uint2 res, PixelStorage storage, const string &desc = "") const noexcept;
     template<typename T>

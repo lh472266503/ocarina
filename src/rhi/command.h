@@ -74,145 +74,145 @@ public:
 
 class Command {
 private:
-    bool _async{};
+    bool async_{};
 
 public:
-    explicit Command(bool async = true) : _async(async) {}
+    explicit Command(bool async = true) : async_(async) {}
     virtual ~Command() noexcept = default;
     virtual void accept(CommandVisitor &visitor) const noexcept = 0;
     virtual void recycle() noexcept = 0;
-    [[nodiscard]] bool async() const noexcept { return _async; }
+    [[nodiscard]] bool async() const noexcept { return async_; }
 };
 
 class BufferCommand : public Command {
 protected:
-    handle_ty _device_ptr{};
-    size_t _size_in_bytes{};
+    handle_ty device_ptr_{};
+    size_t size_in_bytes_{};
 
 public:
     BufferCommand(handle_ty dp, size_t size, bool async = true)
-        : Command(async), _device_ptr(dp), _size_in_bytes(size) {}
-    [[nodiscard]] size_t size_in_bytes() const noexcept { return _size_in_bytes; }
-    [[nodiscard]] handle_ty device_ptr() const noexcept { return _device_ptr; }
+        : Command(async), device_ptr_(dp), size_in_bytes_(size) {}
+    [[nodiscard]] size_t size_in_bytes() const noexcept { return size_in_bytes_; }
+    [[nodiscard]] handle_ty device_ptr() const noexcept { return device_ptr_; }
 };
 
 class DataCopyCommand : public Command {
 protected:
-    handle_ty _src{};
-    handle_ty _dst{};
+    handle_ty src_{};
+    handle_ty dst_{};
 
 public:
     DataCopyCommand(handle_ty src, handle_ty dst, bool async)
-        : Command(async), _src(src), _dst(dst) {}
+        : Command(async), src_(src), dst_(dst) {}
     template<typename T = handle_ty>
     [[nodiscard]] T src() const noexcept {
         if constexpr (std::is_same_v<std::remove_cvref_t<T>, handle_ty>) {
-            return _src;
+            return src_;
         } else {
-            return reinterpret_cast<T>(_src);
+            return reinterpret_cast<T>(src_);
         }
     }
     template<typename T = handle_ty>
     [[nodiscard]] T dst() const noexcept {
         if constexpr (std::is_same_v<std::remove_cvref_t<T>, handle_ty>) {
-            return _dst;
+            return dst_;
         } else {
-            return reinterpret_cast<T>(_dst);
+            return reinterpret_cast<T>(dst_);
         }
     }
 };
 
 class BufferCopyCommand : public DataCopyCommand {
 private:
-    size_t _src_offset;
-    size_t _dst_offset;
-    size_t _size;
+    size_t src_offset_;
+    size_t dst_offset_;
+    size_t size_;
 
 public:
     BufferCopyCommand(uint64_t src, uint64_t dst, size_t src_offset, size_t dst_offset, size_t size, bool async) noexcept
         : DataCopyCommand{src, dst, async},
-          _src_offset{src_offset}, _dst_offset{dst_offset}, _size{size} {}
-    [[nodiscard]] size_t src_offset() const noexcept { return _src_offset; }
-    [[nodiscard]] size_t dst_offset() const noexcept { return _dst_offset; }
-    [[nodiscard]] size_t size() const noexcept { return _size; }
+          src_offset_{src_offset}, dst_offset_{dst_offset}, size_{size} {}
+    [[nodiscard]] size_t src_offset() const noexcept { return src_offset_; }
+    [[nodiscard]] size_t dst_offset() const noexcept { return dst_offset_; }
+    [[nodiscard]] size_t size() const noexcept { return size_; }
     OC_MAKE_CMD_COMMON_FUNC(BufferCopyCommand)
 };
 
 class TextureCopyCommand : public DataCopyCommand {
 private:
-    PixelStorage _storage;
-    uint3 _res;
-    uint _src_level;
-    uint _dst_level;
+    PixelStorage storage_;
+    uint3 res_;
+    uint src_level_;
+    uint dst_level_;
 
 public:
     TextureCopyCommand(uint64_t src, uint64_t dst, uint3 res, PixelStorage pixel_storage,
                        uint src_level, uint dst_level, bool async) noexcept
         : DataCopyCommand{src, dst, async},
-          _res(res), _src_level(src_level),
-          _dst_level(dst_level),
-          _storage(pixel_storage) {}
+          res_(res), src_level_(src_level),
+          dst_level_(dst_level),
+          storage_(pixel_storage) {}
 
-    [[nodiscard]] uint src_level() const noexcept { return _src_level; }
-    [[nodiscard]] uint dst_level() const noexcept { return _dst_level; }
-    [[nodiscard]] PixelStorage pixel_storage() const noexcept { return _storage; }
-    [[nodiscard]] uint3 resolution() const noexcept { return _res; }
+    [[nodiscard]] uint src_level() const noexcept { return src_level_; }
+    [[nodiscard]] uint dst_level() const noexcept { return dst_level_; }
+    [[nodiscard]] PixelStorage pixel_storage() const noexcept { return storage_; }
+    [[nodiscard]] uint3 resolution() const noexcept { return res_; }
     OC_MAKE_CMD_COMMON_FUNC(TextureCopyCommand)
 };
 
 class DataOpCommand : public Command {
 protected:
-    handle_ty _host_ptr{};
-    handle_ty _device_ptr{};
+    handle_ty host_ptr_{};
+    handle_ty device_ptr_{};
 
 protected:
     DataOpCommand(handle_ty hp, handle_ty dp, bool async)
-        : Command(async), _host_ptr(hp), _device_ptr(dp) {}
+        : Command(async), host_ptr_(hp), device_ptr_(dp) {}
 
 public:
     template<typename T = handle_ty>
-    [[nodiscard]] T host_ptr() const noexcept { return reinterpret_cast<T>(_host_ptr); }
-    [[nodiscard]] handle_ty host_ptr() const noexcept { return _host_ptr; }
+    [[nodiscard]] T host_ptr() const noexcept { return reinterpret_cast<T>(host_ptr_); }
+    [[nodiscard]] handle_ty host_ptr() const noexcept { return host_ptr_; }
     template<typename T>
-    [[nodiscard]] T device_ptr() const noexcept { return reinterpret_cast<T>(_device_ptr); }
-    [[nodiscard]] handle_ty device_ptr() const noexcept { return _device_ptr; }
+    [[nodiscard]] T device_ptr() const noexcept { return reinterpret_cast<T>(device_ptr_); }
+    [[nodiscard]] handle_ty device_ptr() const noexcept { return device_ptr_; }
 };
 
 class BufferOpCommand : public DataOpCommand {
 private:
-    size_t _size_in_bytes{};
+    size_t size_in_bytes_{};
 
 protected:
     BufferOpCommand(handle_ty hp, handle_ty dp, size_t size, bool async)
-        : DataOpCommand(hp, dp, async), _size_in_bytes(size) {}
+        : DataOpCommand(hp, dp, async), size_in_bytes_(size) {}
 
 public:
-    [[nodiscard]] size_t size_in_bytes() const noexcept { return _size_in_bytes; }
+    [[nodiscard]] size_t size_in_bytes() const noexcept { return size_in_bytes_; }
 };
 
 class RHIResource;
 
 class BufferReallocateCommand : public Command {
 private:
-    RHIResource *_rhi_resource{};
-    size_t _new_size;
+    RHIResource *rhi_resource_{};
+    size_t new_size_;
 
 public:
     BufferReallocateCommand(RHIResource *rhi_resource, size_t new_size, bool async = true)
-        : Command(async), _new_size(new_size), _rhi_resource(rhi_resource) {}
-    [[nodiscard]] RHIResource *rhi_resource() const noexcept { return _rhi_resource; }
-    [[nodiscard]] size_t new_size() const noexcept { return _new_size; }
+        : Command(async), new_size_(new_size), rhi_resource_(rhi_resource) {}
+    [[nodiscard]] RHIResource *rhi_resource() const noexcept { return rhi_resource_; }
+    [[nodiscard]] size_t new_size() const noexcept { return new_size_; }
     OC_MAKE_CMD_COMMON_FUNC(BufferReallocateCommand)
 };
 
 class BufferByteSetCommand final : public BufferCommand {
 private:
-    uchar _val{};
+    uchar val_{};
 
 public:
     BufferByteSetCommand(handle_ty dp, size_t size, uchar val = 0, bool async = true)
-        : BufferCommand(dp, size, async), _val(val) {}
-    [[nodiscard]] uchar value() const noexcept { return _val; }
+        : BufferCommand(dp, size, async), val_(val) {}
+    [[nodiscard]] uchar value() const noexcept { return val_; }
     OC_MAKE_CMD_COMMON_FUNC(BufferByteSetCommand)
 };
 
@@ -225,26 +225,26 @@ public:
 
 class BufferToTextureCommand final : public DataCopyCommand {
 private:
-    PixelStorage _storage;
-    size_t _buffer_offset;
-    uint3 _res;
-    uint _level;
+    PixelStorage storage_;
+    size_t buffer_offset_;
+    uint3 res_;
+    uint level_;
 
 public:
     BufferToTextureCommand(handle_ty src, size_t buffer_offset,
                            handle_ty dst, PixelStorage ps,
                            uint3 res, size_t level, bool async)
-        : DataCopyCommand(src, dst, async), _storage(ps), _res(res),
-          _buffer_offset(buffer_offset), _level(level) {}
-    [[nodiscard]] PixelStorage pixel_storage() const noexcept { return _storage; }
-    [[nodiscard]] size_t buffer_offset() const noexcept { return _buffer_offset; }
-    [[nodiscard]] size_t width() const noexcept { return _res.x; }
-    [[nodiscard]] size_t height() const noexcept { return _res.y; }
-    [[nodiscard]] size_t depth() const noexcept { return _res.z; }
-    [[nodiscard]] size_t width_in_bytes() const noexcept { return pixel_size(_storage) * width(); }
+        : DataCopyCommand(src, dst, async), storage_(ps), res_(res),
+          buffer_offset_(buffer_offset), level_(level) {}
+    [[nodiscard]] PixelStorage pixel_storage() const noexcept { return storage_; }
+    [[nodiscard]] size_t buffer_offset() const noexcept { return buffer_offset_; }
+    [[nodiscard]] size_t width() const noexcept { return res_.x; }
+    [[nodiscard]] size_t height() const noexcept { return res_.y; }
+    [[nodiscard]] size_t depth() const noexcept { return res_.z; }
+    [[nodiscard]] size_t width_in_bytes() const noexcept { return pixel_size(storage_) * width(); }
     [[nodiscard]] size_t size_in_bytes() const noexcept { return height() * width_in_bytes(); }
-    [[nodiscard]] uint level() const noexcept { return _level; }
-    [[nodiscard]] uint3 resolution() const noexcept { return _res; }
+    [[nodiscard]] uint level() const noexcept { return level_; }
+    [[nodiscard]] uint3 resolution() const noexcept { return res_; }
     OC_MAKE_CMD_COMMON_FUNC(BufferToTextureCommand)
 };
 
@@ -257,21 +257,21 @@ public:
 
 class TextureOpCommand : public DataOpCommand {
 private:
-    PixelStorage _pixel_storage{};
-    uint3 _resolution{};
+    PixelStorage pixel_storage_{};
+    uint3 resolution_{};
 
 public:
     TextureOpCommand(handle_ty data, handle_ty device_ptr, uint2 resolution, PixelStorage storage, bool async)
-        : DataOpCommand(data, device_ptr, async), _pixel_storage(storage), _resolution(resolution.x, resolution.y, 1) {}
+        : DataOpCommand(data, device_ptr, async), pixel_storage_(storage), resolution_(resolution.x, resolution.y, 1) {}
     TextureOpCommand(handle_ty data, handle_ty device_ptr, uint3 resolution, PixelStorage storage, bool async)
-        : DataOpCommand(data, device_ptr, async), _pixel_storage(storage), _resolution(resolution) {}
-    [[nodiscard]] PixelStorage pixel_storage() const noexcept { return _pixel_storage; }
-    [[nodiscard]] size_t width() const noexcept { return _resolution.x; }
-    [[nodiscard]] size_t height() const noexcept { return _resolution.y; }
-    [[nodiscard]] size_t depth() const noexcept { return _resolution.z; }
-    [[nodiscard]] size_t width_in_bytes() const noexcept { return pixel_size(_pixel_storage) * width(); }
+        : DataOpCommand(data, device_ptr, async), pixel_storage_(storage), resolution_(resolution) {}
+    [[nodiscard]] PixelStorage pixel_storage() const noexcept { return pixel_storage_; }
+    [[nodiscard]] size_t width() const noexcept { return resolution_.x; }
+    [[nodiscard]] size_t height() const noexcept { return resolution_.y; }
+    [[nodiscard]] size_t depth() const noexcept { return resolution_.z; }
+    [[nodiscard]] size_t width_in_bytes() const noexcept { return pixel_size(pixel_storage_) * width(); }
     [[nodiscard]] size_t size_in_bytes() const noexcept { return height() * width_in_bytes(); }
-    [[nodiscard]] uint3 resolution() const noexcept { return _resolution; }
+    [[nodiscard]] uint3 resolution() const noexcept { return resolution_; }
 };
 
 class TextureUploadCommand final : public TextureOpCommand {
@@ -299,23 +299,23 @@ public:
 
 class BLASBuildCommand final : public Command {
 private:
-    handle_ty _mesh{};
+    handle_ty mesh_{};
 
 public:
-    explicit BLASBuildCommand(handle_ty mesh) : _mesh(mesh) {}
+    explicit BLASBuildCommand(handle_ty mesh) : mesh_(mesh) {}
     template<typename T>
-    [[nodiscard]] T *mesh() const { return reinterpret_cast<T *>(_mesh); }
+    [[nodiscard]] T *mesh() const { return reinterpret_cast<T *>(mesh_); }
     OC_MAKE_CMD_COMMON_FUNC(BLASBuildCommand)
 };
 
 class TLASBuildCommand final : public Command {
 private:
-    handle_ty _accel{};
+    handle_ty accel_{};
 
 public:
-    explicit TLASBuildCommand(handle_ty accel) : _accel(accel) {}
+    explicit TLASBuildCommand(handle_ty accel) : accel_(accel) {}
     template<typename T>
-    [[nodiscard]] T *accel() const { return reinterpret_cast<T *>(_accel); }
+    [[nodiscard]] T *accel() const { return reinterpret_cast<T *>(accel_); }
     OC_MAKE_CMD_COMMON_FUNC(TLASBuildCommand)
 };
 
@@ -323,30 +323,30 @@ class Function;
 class ArgumentList;
 class ShaderDispatchCommand final : public Command {
 private:
-    SP<ArgumentList> _argument_list;
-    uint3 _dispatch_dim;
-    handle_ty _entry{};
+    SP<ArgumentList> argument_list_;
+    uint3 dispatch_dim_;
+    handle_ty entry_{};
 
 public:
     ShaderDispatchCommand(handle_ty entry, SP<ArgumentList> argument_list, uint3 dim);
     [[nodiscard]] span<void *> args() noexcept;
     [[nodiscard]] span<const std::byte> argument_data() noexcept;
     [[nodiscard]] size_t params_size() noexcept;
-    [[nodiscard]] uint3 dispatch_dim() const noexcept { return _dispatch_dim; }
+    [[nodiscard]] uint3 dispatch_dim() const noexcept { return dispatch_dim_; }
 
     template<typename T>
-    [[nodiscard]] auto entry() const noexcept { return reinterpret_cast<T>(_entry); }
+    [[nodiscard]] auto entry() const noexcept { return reinterpret_cast<T>(entry_); }
     OC_MAKE_CMD_COMMON_FUNC(ShaderDispatchCommand)
 };
 
 class HostFunctionCommand : public Command {
 private:
-    std::function<void()> _function;
+    std::function<void()> function_;
 
 public:
     HostFunctionCommand(std::function<void()> f, bool async)
-        : Command(async), _function(ocarina::move(f)) {}
-    [[nodiscard]] std::function<void()> function() const noexcept { return _function; }
+        : Command(async), function_(ocarina::move(f)) {}
+    [[nodiscard]] std::function<void()> function() const noexcept { return function_; }
     OC_MAKE_CMD_COMMON_FUNC(HostFunctionCommand)
 };
 

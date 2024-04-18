@@ -27,11 +27,11 @@ public:
         : RHIResource(device, Tag::MESH,
                       device->create_mesh(params)) {}
 
-    [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(_handle); }
-    [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
+    [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(handle_); }
+    [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(handle_); }
     [[nodiscard]] uint vertex_num() const noexcept { return impl()->vertex_num(); }
     [[nodiscard]] uint triangle_num() const noexcept { return impl()->triangle_num(); }
-    [[nodiscard]] BLASBuildCommand *build_bvh() noexcept { return BLASBuildCommand::create(_handle); }
+    [[nodiscard]] BLASBuildCommand *build_bvh() noexcept { return BLASBuildCommand::create(handle_); }
 };
 
 template<typename VBuffer, typename TBuffer>

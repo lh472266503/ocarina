@@ -25,9 +25,9 @@ namespace detail {
 
 class Texture : public RHIResource {
 protected:
-    uint _channel_num{};
-    mutable uint _gl_handle{0};
-    mutable void *_gl_shared_handle{0};
+    uint channel_num_{};
+    mutable uint gl_handle_{0};
+    mutable void *gl_shared_handle_{0};
 
 public:
     class Impl {
@@ -54,9 +54,9 @@ public:
         : RHIResource(device, Tag::TEXTURE,
                       device->create_texture(res, pixel_storage,
                                              detail::compute_mip_level_num(res, level_num), desc)),
-          _channel_num(ocarina::channel_num(pixel_storage)) {}
+          channel_num_(ocarina::channel_num(pixel_storage)) {}
 
-    OC_MAKE_MEMBER_GETTER(channel_num, )
+    OC_MAKE_MEMBER_GETTER_(channel_num, )
 
     [[nodiscard]] uint pixel_num() const noexcept {
         uint3 res = impl()->resolution();
@@ -67,24 +67,24 @@ public:
         return pixel_num() * pixel_size();
     }
 
-    [[nodiscard]] uint &gl_handle() const noexcept { return _gl_handle; }
-    [[nodiscard]] void *&gl_shared_handle() const noexcept { return _gl_shared_handle; }
+    [[nodiscard]] uint &gl_handle() const noexcept { return gl_handle_; }
+    [[nodiscard]] void *&gl_shared_handle() const noexcept { return gl_shared_handle_; }
 
     void register_shared() const noexcept {
-        device()->register_shared_tex(_gl_shared_handle, _gl_handle);
+        device()->register_shared_tex(gl_shared_handle_, gl_handle_);
     }
 
     void mapping() const noexcept {
-        device()->mapping_shared_tex(_gl_shared_handle,
+        device()->mapping_shared_tex(gl_shared_handle_,
                                      *const_cast<handle_ty *>(impl()->array_handle_ptr()));
     }
 
     void unmapping() const noexcept {
-        device()->unmapping_shared(_gl_shared_handle);
+        device()->unmapping_shared(gl_shared_handle_);
     }
 
     void unregister_shared() const noexcept {
-        device()->unregister_shared(_gl_shared_handle);
+        device()->unregister_shared(gl_shared_handle_);
     }
 
     [[nodiscard]] uint pixel_size() const noexcept {
@@ -154,8 +154,8 @@ public:
         write(elm, xy.x, xy.y);
     }
 
-    [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
-    [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(_handle); }
+    [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(handle_); }
+    [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(handle_); }
     [[nodiscard]] Impl *operator->() noexcept { return impl(); }
     [[nodiscard]] const Impl *operator->() const noexcept { return impl(); }
     [[nodiscard]] handle_ty array_handle() const noexcept { return impl()->array_handle(); }
@@ -188,11 +188,11 @@ public:
     }
 
     void upload_immediately(const void *data) const noexcept {
-        upload_sync(data)->accept(*_device->command_visitor());
+        upload_sync(data)->accept(*device_->command_visitor());
     }
 
     void download_immediately(void *data) const noexcept {
-        download_sync(data)->accept(*_device->command_visitor());
+        download_sync(data)->accept(*device_->command_visitor());
     }
 };
 
@@ -211,7 +211,7 @@ public:
 
     template<typename... Args>
     [[nodiscard]] auto sample(Args &&...args) const noexcept {
-        return make_expr<Texture2D<T>>(expression()).sample(_channel_num, OC_FORWARD(args)...).template as_vec<Dim>();
+        return make_expr<Texture2D<T>>(expression()).sample(channel_num_, OC_FORWARD(args)...).template as_vec<Dim>();
     }
 
     template<typename... Args>

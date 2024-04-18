@@ -41,12 +41,12 @@ void OptixAccel::clear() noexcept {
 void OptixAccel::build_bvh(CUDACommandVisitor *visitor) noexcept {
     _device->use_context([&] {
         vector<OptixTraversableHandle> traversable_handles;
-        traversable_handles.reserve(_meshes.size());
-        for (const RHIMesh &mesh : _meshes) {
+        traversable_handles.reserve(meshes_.size());
+        for (const RHIMesh &mesh : meshes_) {
             const auto *cuda_mesh = dynamic_cast<const CUDAMesh *>(mesh.impl());
             traversable_handles.push_back(cuda_mesh->blas_handle());
         }
-        size_t instance_num = _meshes.size();
+        size_t instance_num = meshes_.size();
         OptixBuildInput instance_input = {};
         _instances = Buffer<OptixInstance>(_device, instance_num, "instance buffer");
         instance_input.type = OPTIX_BUILD_INPUT_TYPE_INSTANCES;
@@ -77,7 +77,7 @@ void OptixAccel::build_bvh(CUDACommandVisitor *visitor) noexcept {
         optix_instances.reserve(instance_num);
 
         for (int i = 0; i < instance_num; ++i) {
-            float4x4 transform = _transforms[i];
+            float4x4 transform = transforms_[i];
             OptixInstance optix_instance;
             optix_instance.traversableHandle = traversable_handles[i];
             optix_instance.flags = OPTIX_INSTANCE_FLAG_NONE;

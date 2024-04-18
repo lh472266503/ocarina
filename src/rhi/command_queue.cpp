@@ -34,18 +34,18 @@ void CommandList::recycle() noexcept {
 }
 
 void CommandQueue::recycle() noexcept {
-    for (Command *command : _commands) {
+    for (Command *command : commands_) {
         command->recycle();
     }
 }
 
 void CommandQueue::pop_back() {
-    _commands.pop_back();
+    commands_.pop_back();
 }
 
 void CommandQueue::clear() noexcept{
     recycle();
-    _commands.clear();
+    commands_.clear();
 }
 
 }// namespace ocarina

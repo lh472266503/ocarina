@@ -17,26 +17,26 @@ class Buffer;
 template<typename T, int... Dims>
 class BufferView {
 private:
-    size_t _element_size{Buffer<T>::calculate_size()};
-    handle_ty _handle{};
-    size_t _offset{};
-    size_t _size{};
-    size_t _total_size{};
+    size_t element_size_{Buffer<T>::calculate_size()};
+    handle_ty handle_{};
+    size_t offset_{};
+    size_t size_{};
+    size_t total_size_{};
 
-    mutable BufferProxy<T> _proxy{};
+    mutable BufferProxy<T> proxy_{};
 
 public:
     BufferView() = default;
     BufferView(const Buffer<T, Dims...> &buffer);
-    [[nodiscard]] handle_ty handle() const { return _handle; }
-    [[nodiscard]] size_t size() const { return _size; }
-    [[nodiscard]] size_t element_size() const noexcept { return _element_size; }
-    [[nodiscard]] size_t size_in_byte() const noexcept { return _size * element_size(); }
+    [[nodiscard]] handle_ty handle() const { return handle_; }
+    [[nodiscard]] size_t size() const { return size_; }
+    [[nodiscard]] size_t element_size() const noexcept { return element_size_; }
+    [[nodiscard]] size_t size_in_byte() const noexcept { return size_ * element_size(); }
 
     const BufferProxy<T> &proxy() const noexcept {
-        _proxy.handle = reinterpret_cast<T *>(head());
-        _proxy.size = _size;
-        return _proxy;
+        proxy_.handle = reinterpret_cast<T *>(head());
+        proxy_.size = size_;
+        return proxy_;
     }
 
     const BufferProxy<T> *proxy_ptr() const noexcept {
@@ -44,15 +44,15 @@ public:
     }
 
     BufferView(handle_ty handle, size_t offset, size_t size, size_t total_size)
-        : _handle(handle), _offset(offset), _size(size), _total_size(total_size) {}
+        : handle_(handle), offset_(offset), size_(size), total_size_(total_size) {}
 
     BufferView(handle_ty handle, size_t total_size)
-        : _handle(handle), _offset(0), _total_size(total_size), _size(total_size) {}
+        : handle_(handle), offset_(0), total_size_(total_size), size_(total_size) {}
 
-    [[nodiscard]] handle_ty head() const { return _handle + _offset * element_size(); }
+    [[nodiscard]] handle_ty head() const { return handle_ + offset_ * element_size(); }
 
     [[nodiscard]] BufferView<T> subview(size_t offset, size_t size) const noexcept {
-        return BufferView<T>(_handle, _offset + offset, size, _total_size);
+        return BufferView<T>(handle_, offset_ + offset, size, total_size_);
     }
 
     template<typename Arg>
@@ -106,27 +106,27 @@ public:
     static constexpr bool has_multi_dim() noexcept { return !dims.empty(); }
 
 protected:
-    size_t _size{};
-    size_t _element_size{0};
-    mutable uint _gl_handle{0};
-    mutable void *_gl_shared_handle{0};
-    mutable BufferProxy<T> _proxy{};
-    string _name;
+    size_t size_{};
+    size_t element_size_{0};
+    mutable uint gl_handle_{0};
+    mutable void *gl_shared_handle_{0};
+    mutable BufferProxy<T> proxy_{};
+    string name_;
 
 public:
-    Buffer() : _element_size(calculate_size()) {}
+    Buffer() : element_size_(calculate_size()) {}
 
     [[nodiscard]] size_t element_size() const noexcept {
-        return _element_size;
+        return element_size_;
     }
 
     Buffer(Device::Impl *device, size_t size, const string &desc = "")
         : RHIResource(device, Tag::BUFFER, device->create_buffer(size * calculate_size(), desc)),
-          _size(size), _element_size(calculate_size()), _name(desc) {
+          size_(size), element_size_(calculate_size()), name_(desc) {
         proxy_ptr();
     }
 
-    OC_MAKE_MEMBER_GETTER_SETTER(name, )
+    OC_MAKE_MEMBER_GETTER_SETTER_(name, )
 
     static size_t calculate_size() noexcept {
         if constexpr (is_struct_v<T>) {
@@ -137,63 +137,63 @@ public:
 
     Buffer(BufferView<T, Dims...> buffer_view)
         : RHIResource(nullptr, Tag::BUFFER, buffer_view.head()),
-          _size(buffer_view.size()), _element_size(calculate_size()) {
+          size_(buffer_view.size()), element_size_(calculate_size()) {
         proxy_ptr();
     }
 
-    [[nodiscard]] uint &gl_handle() const noexcept { return _gl_handle; }
-    [[nodiscard]] void *&gl_shared_handle() const noexcept { return _gl_shared_handle; }
+    [[nodiscard]] uint &gl_handle() const noexcept { return gl_handle_; }
+    [[nodiscard]] void *&gl_shared_handle() const noexcept { return gl_shared_handle_; }
 
     void destroy() override {
         _destroy();
-        _size = 0;
+        size_ = 0;
     }
 
     [[nodiscard]] BufferView<T> view(size_t offset = 0, size_t size = 0) const noexcept {
-        size = size == 0 ? _size - offset : size;
-        return BufferView<T>(_handle, offset, size, _size);
+        size = size == 0 ? size_ - offset : size;
+        return BufferView<T>(handle_, offset, size, size_);
     }
 
     void register_shared() const noexcept {
-        device()->register_shared_buffer(_gl_shared_handle, _gl_handle);
+        device()->register_shared_buffer(gl_shared_handle_, gl_handle_);
     }
 
     void mapping() const noexcept {
-        device()->mapping_shared_buffer(_gl_shared_handle, const_cast<handle_ty &>(_handle));
+        device()->mapping_shared_buffer(gl_shared_handle_, const_cast<handle_ty &>(handle_));
     }
 
     void unmapping() const noexcept {
-        device()->unmapping_shared(_gl_shared_handle);
+        device()->unmapping_shared(gl_shared_handle_);
     }
 
     void unregister_shared() const noexcept {
-        device()->unregister_shared(_gl_shared_handle);
+        device()->unregister_shared(gl_shared_handle_);
     }
 
     // Move constructor
     Buffer(Buffer &&other) noexcept
         : RHIResource(std::move(other)) {
-        this->_size = other._size;
-        this->_name = std::move(other._name);
-        this->_proxy = other._proxy;
-        this->_element_size = other._element_size;
+        this->size_ = other.size_;
+        this->name_ = std::move(other.name_);
+        this->proxy_ = other.proxy_;
+        this->element_size_ = other.element_size_;
     }
 
     // Move assignment
     Buffer &operator=(Buffer &&other) noexcept {
         destroy();
         RHIResource::operator=(std::move(other));
-        this->_size = other._size;
-        this->_name = std::move(other._name);
-        this->_proxy = other._proxy;
-        this->_element_size = other._element_size;
+        this->size_ = other.size_;
+        this->name_ = std::move(other.name_);
+        this->proxy_ = other.proxy_;
+        this->element_size_ = other.element_size_;
         return *this;
     }
 
     const BufferProxy<T> &proxy() const noexcept {
-        _proxy.handle = reinterpret_cast<T *>(_handle);
-        _proxy.size = _size;
-        return _proxy;
+        proxy_.handle = reinterpret_cast<T *>(handle_);
+        proxy_.size = size_;
+        return proxy_;
     }
 
     const BufferProxy<T> *proxy_ptr() const noexcept {
@@ -201,11 +201,11 @@ public:
     }
 
     [[nodiscard]] size_t data_alignment() const noexcept override {
-        return alignof(decltype(_proxy));
+        return alignof(decltype(proxy_));
     }
 
     [[nodiscard]] size_t data_size() const noexcept override {
-        return sizeof(_proxy);
+        return sizeof(proxy_);
     }
 
     [[nodiscard]] MemoryBlock memory_block() const noexcept override {
@@ -235,7 +235,7 @@ public:
         return (U)(handle() + offset * element_size());
     }
 
-    void set_size(size_t size) noexcept { _size = size; }
+    void set_size(size_t size) noexcept { size_ = size; }
 
     /// head of the buffer
     [[nodiscard]] handle_ty head() const noexcept { return handle(); }
@@ -295,31 +295,31 @@ public:
     }
     /// for dsl end
 
-    [[nodiscard]] size_t size() const noexcept { return _size; }
-    [[nodiscard]] size_t size_in_byte() const noexcept { return _size * sizeof(T); }
+    [[nodiscard]] size_t size() const noexcept { return size_; }
+    [[nodiscard]] size_t size_in_byte() const noexcept { return size_ * sizeof(T); }
 
     [[nodiscard]] CommandList reallocate(size_t size, bool async = true) {
         return {BufferReallocateCommand::create(this, size * element_size(), async),
                 HostFunctionCommand::create(
                     [this, size] {
-                        this->_size = size;
+                        this->size_ = size;
                     },
                     async)};
     }
 
     template<typename... Args>
     [[nodiscard]] BufferUploadCommand *upload(Args &&...args) const noexcept {
-        return view(0, _size).upload(OC_FORWARD(args)...);
+        return view(0, size_).upload(OC_FORWARD(args)...);
     }
 
     template<typename... Args>
     [[nodiscard]] BufferDownloadCommand *download(Args &&...args) const noexcept {
-        return view(0, _size).download(OC_FORWARD(args)...);
+        return view(0, size_).download(OC_FORWARD(args)...);
     }
 
     template<typename... Args>
     [[nodiscard]] BufferByteSetCommand *byte_set(Args &&...args) const noexcept {
-        return view(0, _size).byte_set(OC_FORWARD(args)...);
+        return view(0, size_).byte_set(OC_FORWARD(args)...);
     }
 
     [[nodiscard]] BufferByteSetCommand *reset(bool async = true) const noexcept {
@@ -328,38 +328,38 @@ public:
 
     template<typename... Args>
     [[nodiscard]] BufferCopyCommand *copy_from(Args &&...args) const noexcept {
-        return view(0, _size).copy_from(OC_FORWARD(args)...);
+        return view(0, size_).copy_from(OC_FORWARD(args)...);
     }
 
     template<typename... Args>
     [[nodiscard]] BufferCopyCommand *copy_to(Args &&...args) const noexcept {
-        return view(0, _size).copy_to(OC_FORWARD(args)...);
+        return view(0, size_).copy_to(OC_FORWARD(args)...);
     }
 
     template<typename... Args>
     [[nodiscard]] BufferUploadCommand *upload_sync(Args &&...args) const noexcept {
-        return view(0, _size).upload_sync(OC_FORWARD(args)...);
+        return view(0, size_).upload_sync(OC_FORWARD(args)...);
     }
 
     template<typename... Args>
     [[nodiscard]] BufferDownloadCommand *download_sync(Args &&...args) const noexcept {
-        return view(0, _size).download_sync(OC_FORWARD(args)...);
+        return view(0, size_).download_sync(OC_FORWARD(args)...);
     }
 
     void upload_immediately(const void *data) const noexcept {
-        upload_sync(data)->accept(*_device->command_visitor());
+        upload_sync(data)->accept(*device_->command_visitor());
     }
 
     void upload_immediately(const void *data, size_t offset, size_t size) const noexcept {
-        view(offset, size).upload_sync(data)->accept(*_device->command_visitor());
+        view(offset, size).upload_sync(data)->accept(*device_->command_visitor());
     }
 
     void download_immediately(void *data) const noexcept {
-        download_sync(data)->accept(*_device->command_visitor());
+        download_sync(data)->accept(*device_->command_visitor());
     }
 
     void reset_immediately() const noexcept {
-        reset(false)->accept(*_device->command_visitor());
+        reset(false)->accept(*device_->command_visitor());
     }
 };
 

@@ -21,7 +21,7 @@ public:
     ~CUDAStream() noexcept;
 
     void add_command(Command *cmd) noexcept override {
-        _command_queue.push_back(cmd);
+        command_queue_.push_back(cmd);
     }
 
     void barrier() noexcept override;

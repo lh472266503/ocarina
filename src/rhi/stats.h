@@ -29,20 +29,20 @@ private:
     MemoryStats operator=(MemoryStats &&) = delete;
 
 private:
-    size_t _buffer_size{};
-    size_t _tex_size{};
-    map<handle_ty, BufferData> _buffer_map;
-    map<handle_ty, TexData> _tex_map;
+    size_t buffer_size_{};
+    size_t tex_size_{};
+    map<handle_ty, BufferData> buffer_map_;
+    map<handle_ty, TexData> tex_map_;
 
 private:
     [[nodiscard]] size_t buffer_size(handle_ty handle) const noexcept {
-        OC_ASSERT(_buffer_map.contains(handle));
-        return _buffer_map.at(handle).size;
+        OC_ASSERT(buffer_map_.contains(handle));
+        return buffer_map_.at(handle).size;
     }
 
     [[nodiscard]] uint2 tex_res(handle_ty handle) const noexcept {
-        OC_ASSERT(_tex_map.contains(handle));
-        return _tex_map.at(handle).res;
+        OC_ASSERT(tex_map_.contains(handle));
+        return tex_map_.at(handle).res;
     }
 
 public:

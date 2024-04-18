@@ -24,23 +24,23 @@ public:
 class CommandQueue {
 
 private:
-    CommandList _commands{};
+    CommandList commands_{};
 
 public:
     CommandQueue() = default;
     ~CommandQueue() { recycle(); }
     template<typename... Args>
     auto push_back(Args &&...args) {
-        return _commands.push_back(OC_FORWARD(args)...);
+        return commands_.push_back(OC_FORWARD(args)...);
     }
     template<typename... Args>
     auto emplace_back(Args &&...args) {
-        return _commands.emplace_back(OC_FORWARD(args)...);
+        return commands_.emplace_back(OC_FORWARD(args)...);
     }
-    [[nodiscard]] auto begin() const noexcept { return _commands.begin(); }
-    [[nodiscard]] auto begin() noexcept { return _commands.begin(); }
-    [[nodiscard]] auto end() const noexcept { return _commands.end(); }
-    [[nodiscard]] auto end() noexcept { return _commands.end(); }
+    [[nodiscard]] auto begin() const noexcept { return commands_.begin(); }
+    [[nodiscard]] auto begin() noexcept { return commands_.begin(); }
+    [[nodiscard]] auto end() const noexcept { return commands_.end(); }
+    [[nodiscard]] auto end() noexcept { return commands_.end(); }
     void pop_back();
     void clear() noexcept;
     void recycle() noexcept;

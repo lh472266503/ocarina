@@ -12,20 +12,20 @@ namespace ocarina {
 OC_COMMAND_POOL_FUNCTIONS_IMPL
 
 ShaderDispatchCommand::ShaderDispatchCommand(handle_ty entry, SP<ArgumentList> argument_list, uint3 dim)
-    : Command(true), _entry(entry),
-      _argument_list(ocarina::move(argument_list)), _dispatch_dim(dim) {
+    : Command(true), entry_(entry),
+      argument_list_(ocarina::move(argument_list)), dispatch_dim_(dim) {
 }
 
 span<void *> ShaderDispatchCommand::args() noexcept {
-    return _argument_list->ptr();
+    return argument_list_->ptr();
 }
 
 span<const std::byte> ShaderDispatchCommand::argument_data() noexcept {
-    return _argument_list->argument_data();
+    return argument_list_->argument_data();
 }
 
 size_t ShaderDispatchCommand::params_size() noexcept {
-    return structure_size(_argument_list->blocks());
+    return structure_size(argument_list_->blocks());
 }
 
 }// namespace ocarina

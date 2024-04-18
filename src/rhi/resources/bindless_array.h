@@ -42,8 +42,8 @@ public:
 public:
     BindlessArray() = default;
     explicit BindlessArray(Device::Impl *device);
-    [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(_handle); }
-    [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
+    [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(handle_); }
+    [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(handle_); }
     [[nodiscard]] const Impl *operator->() const noexcept { return impl(); }
     [[nodiscard]] Impl *operator->() noexcept { return impl(); }
     void prepare_slotSOA(Device &device) noexcept { impl()->prepare_slotSOA(device); }

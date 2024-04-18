@@ -26,7 +26,7 @@ class Stream : public RHIResource {
 public:
     class Impl {
     protected:
-        CommandQueue _command_queue;
+        CommandQueue command_queue_;
 
     public:
         virtual void barrier() noexcept = 0;
@@ -36,15 +36,15 @@ public:
 
     private:
         [[nodiscard]] const CommandQueue &command_queue() const noexcept {
-            return _command_queue;
+            return command_queue_;
         }
         friend class Stream;
     };
 
 public:
     explicit Stream(Device::Impl *device);
-    [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(_handle); }
-    [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(_handle); }
+    [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(handle_); }
+    [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(handle_); }
     [[nodiscard]] const CommandQueue &command_queue() const noexcept {
         return impl()->command_queue();
     }
