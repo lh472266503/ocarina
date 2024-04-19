@@ -340,15 +340,15 @@ void CUDACodegen::_emit_arguments(const Function &f) noexcept {
         for (const auto &v : f.all_arguments()) {
             _emit_argument(v);
         }
-        Variable dispatch_dim(Type::of<uint3>(), Variable::Tag::LOCAL, -1, "d_dim");
+        Variable dispatch_dim = const_cast<Function &>(f).create_variable(Type::of<uint3>(), Variable::Tag::LOCAL, "d_dim");
         _emit_variable_define(dispatch_dim);
     } else if (f.is_callable()) {
         for (const auto &v : f.all_arguments()) {
             _emit_argument(v);
         }
-        Variable dispatch_dim(Type::of<uint3>(), Variable::Tag::LOCAL, -1, "d_dim");
+        Variable dispatch_dim = const_cast<Function &>(f).create_variable(Type::of<uint3>(), Variable::Tag::LOCAL, "d_dim");
         _emit_argument(dispatch_dim);
-        Variable dispatch_idx(Type::of<uint3>(), Variable::Tag::LOCAL, -1, "d_idx");
+        Variable dispatch_idx = const_cast<Function &>(f).create_variable(Type::of<uint3>(), Variable::Tag::LOCAL, "d_idx");
         _emit_variable_define(dispatch_idx);
     }
     current_scratch() << ")";

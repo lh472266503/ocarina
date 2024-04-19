@@ -204,6 +204,12 @@ uint Function::_next_variable_uid() noexcept {
     return ret;
 }
 
+Variable Function::create_variable(const Type *type, Variable::Tag tag, std::string name, std::string suffix) noexcept {
+    Variable ret{type, tag, _next_variable_uid(), ocarina::move(name), ocarina::move(suffix)};
+    ret._context = this;
+    return ret;
+}
+
 const Usage &Function::variable_usage(uint uid) const noexcept {
     OC_ASSERT(uid < variable_datas_.size());
     return variable_datas_[uid].usage;
@@ -306,8 +312,7 @@ const RefExpr *Function::reference_argument(const Type *type) noexcept {
 }
 
 const RefExpr *Function::local(const Type *type) noexcept {
-    auto ret = create_expression<RefExpr>(Variable(type, Variable::Tag::LOCAL,
-                                                   _next_variable_uid()));
+    auto ret = create_expression<RefExpr>(create_variable(type, Variable::Tag::LOCAL));
     body()->add_var(ret->variable());
     return ret;
 }
@@ -384,13 +389,13 @@ const CapturedResource &Function::get_captured_resource(const Type *type, Variab
         iter != captured_resources_.end()) {
         return *iter;
     }
-    const RefExpr *expr = _ref(Variable(type, tag, _next_variable_uid()));
+    const RefExpr *expr = _ref(create_variable(type, tag));
     captured_resources_.emplace_back(expr, type, block);
     return captured_resources_.back();
 }
 
 const CapturedResource &Function::add_captured_resource(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept {
-    const RefExpr *expr = _ref(Variable(type, tag, _next_variable_uid(), "", "cap_res"));
+    const RefExpr *expr = _ref(create_variable(type, tag, "", "cap_res"));
     captured_resources_.emplace_back(expr, type, block);
     return captured_resources_.back();
 }

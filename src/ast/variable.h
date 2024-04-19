@@ -22,6 +22,8 @@ enum struct Usage : uint32_t {
     return (to_underlying(usage) & to_underlying(Usage::WRITE)) == to_underlying(Usage::WRITE);
 }
 
+class Function;
+
 class OC_AST_API Variable : public Hashable {
 public:
     enum struct Tag : uint32_t {
@@ -52,16 +54,19 @@ public:
 
 private:
     const Type *type_{};
+    const Function *_context{nullptr};
     uint32_t uid_{};
     Tag tag_;
     string name_{};
     string suffix_{};
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+    friend class Function;
+    Variable(const Type *type, Tag tag, uint uid, string name = "", string suffix = "") noexcept
+        : type_(type), tag_(tag), uid_(uid), name_(std::move(name)), suffix_(std::move(suffix)) {}
 
 public:
     Variable() noexcept = default;
-    Variable(const Type *type, Tag tag, uint uid, string name = "", string suffix = "") noexcept
-        : type_(type), tag_(tag), uid_(uid), name_(std::move(name)), suffix_(std::move(suffix)) {}
+
     [[nodiscard]] constexpr const Type *type() const noexcept { return type_; }
     [[nodiscard]] constexpr Tag tag() const noexcept { return tag_; }
     [[nodiscard]] constexpr uint uid() const noexcept { return uid_; }

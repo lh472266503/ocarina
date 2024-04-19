@@ -503,7 +503,7 @@ void CppCodegen::_emit_arguments(const Function &f) noexcept {
         _emit_argument(var.expression()->variable());
     }
     if (f.is_kernel() && !f.is_raytracing()) {
-        Variable dispatch_dim(Type::of<uint3>(), Variable::Tag::LOCAL, -1, "d_dim");
+        Variable dispatch_dim = (const_cast<Function &>(f)).create_variable(Type::of<uint3>(), Variable::Tag::LOCAL, "d_dim");
         _emit_variable_define(dispatch_dim);
     } else {
         if (f.arguments().size() + f.captured_resources().size() > 0) {
