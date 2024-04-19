@@ -33,12 +33,12 @@ void Function::correct() noexcept {
 }
 
 void Function::mark_variable_usage(ocarina::uint uid, ocarina::Usage usage) noexcept {
-    OC_ASSERT(uid < variable_usages_.size());
-    auto old_usage = to_underlying(variable_usages_[uid].usage);
+    OC_ASSERT(uid < variable_datas_.size());
+    auto old_usage = to_underlying(variable_datas_[uid].usage);
     auto new_usage = to_underlying(usage);
     auto final_usage = old_usage | new_usage;
     if (final_usage != old_usage) {
-        variable_usages_[uid].usage = static_cast<Usage>(final_usage);
+        variable_datas_[uid].usage = static_cast<Usage>(final_usage);
     }
 }
 
@@ -199,19 +199,19 @@ const RefExpr *Function::_ref(const ocarina::Variable &variable) noexcept {
 }
 
 uint Function::_next_variable_uid() noexcept {
-    auto ret = variable_usages_.size();
-    variable_usages_.push_back(VariableData(Usage::NONE));
+    auto ret = variable_datas_.size();
+    variable_datas_.push_back(VariableData(Usage::NONE));
     return ret;
 }
 
 const Usage &Function::variable_usage(uint uid) const noexcept {
-    OC_ASSERT(uid < variable_usages_.size());
-    return variable_usages_[uid].usage;
+    OC_ASSERT(uid < variable_datas_.size());
+    return variable_datas_[uid].usage;
 }
 
 Usage &Function::variable_usage(uint uid) noexcept {
-    OC_ASSERT(uid < variable_usages_.size());
-    return variable_usages_[uid].usage;
+    OC_ASSERT(uid < variable_datas_.size());
+    return variable_datas_[uid].usage;
 }
 
 void Function::return_(const Expression *expression) noexcept {

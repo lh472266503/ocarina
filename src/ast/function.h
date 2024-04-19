@@ -89,7 +89,7 @@ private:
 
     ocarina::vector<CapturedResource> captured_resources_;
     ocarina::vector<Variable> builtin_vars_;
-    ocarina::vector<VariableData> variable_usages_;
+    ocarina::vector<VariableData> variable_datas_;
     ocarina::vector<ScopeStmt *> scope_stack_;
     /// use for assignment subscript access
     ocarina::vector<ocarina::pair<std::byte *, size_t>> temp_memory_;
