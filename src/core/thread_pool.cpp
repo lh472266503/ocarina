@@ -48,24 +48,24 @@ struct Barrier : std::barrier<> {
 // reference: https://github.com/yohhoy/yamc/blob/master/include/yamc_barrier.hpp
 class Barrier {
 private:
-    uint _n;
-    uint _counter;
-    uint _phase;
+    uint n_;
+    uint counter_;
+    uint phase_;
     std::condition_variable cv_;
     std::mutex mutex_;
 
 public:
     explicit Barrier(uint n) noexcept
-        : _n{n}, _counter{n}, _phase{0u} {}
+        : n_{n}, counter_{n}, phase_{0u} {}
     void arrive_and_wait() noexcept {
         std::unique_lock lock{mutex_};
-        auto arrive_phase = _phase;
-        if (--_counter == 0u) {
-            _counter = _n;
-            _phase++;
+        auto arrive_phase = phase_;
+        if (--counter_ == 0u) {
+            counter_ = n_;
+            phase_++;
             cv_.notify_all();
         }
-        while (_phase <= arrive_phase) {
+        while (phase_ <= arrive_phase) {
             cv_.wait(lock);
         }
     }
