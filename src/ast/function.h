@@ -89,7 +89,7 @@ private:
 
     ocarina::vector<CapturedResource> captured_resources_;
     ocarina::vector<Variable> builtin_vars_;
-    ocarina::vector<VariableData> variable_datas_;
+    ocarina::vector<Variable::Data> variable_datas_;
     ocarina::vector<ScopeStmt *> scope_stack_;
     /// use for assignment subscript access
     ocarina::vector<ocarina::pair<std::byte *, size_t>> temp_memory_;
@@ -102,13 +102,14 @@ private:
     mutable uint3 grid_dim_{make_uint3(0)};
 
     friend class FunctionCorrector;
+    friend class Variable;
 
 private:
     static ocarina::stack<Function *> &_function_stack() noexcept;
     static void _push(Function *f);
     static void _pop(Function *f);
     [[nodiscard]] uint _next_variable_uid() noexcept;
-
+    void mark_variable_usage(uint uid, Usage usage) noexcept;
     template<typename Func>
     static shared_ptr<Function> _define(Function::Tag tag, Func &&func) noexcept {
         shared_ptr<Function> ret = ocarina::make_shared<Function>(tag);
@@ -216,8 +217,8 @@ public:
     void add_used_structure(const Type *type) noexcept { used_struct_.add(type); }
     [[nodiscard]] const Usage &variable_usage(uint uid) const noexcept;
     [[nodiscard]] Usage &variable_usage(uint uid) noexcept;
-    [[nodiscard]] const VariableData& variable_data(uint uid) const noexcept;
-    [[nodiscard]] VariableData& variable_data(uint uid) noexcept;
+    [[nodiscard]] const Variable::Data& variable_data(uint uid) const noexcept;
+    [[nodiscard]] Variable::Data& variable_data(uint uid) noexcept;
     const CapturedResource &get_captured_resource(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept;
     const CapturedResource &add_captured_resource(const Type *type, Variable::Tag tag, MemoryBlock block) noexcept;
     [[nodiscard]] bool has_captured_resource(const void *handle) const noexcept;
@@ -247,7 +248,6 @@ public:
         ScopeGuard guard(scope_stack_, scope);
         return func();
     }
-    void mark_variable_usage(uint uid, Usage usage) noexcept;
     template<typename Func>
     static shared_ptr<Function> define_kernel(Func &&func) noexcept {
         shared_ptr<Function> function = _define(Tag::KERNEL, std::forward<Func>(func));

@@ -200,7 +200,7 @@ const RefExpr *Function::_ref(const ocarina::Variable &variable) noexcept {
 
 uint Function::_next_variable_uid() noexcept {
     auto ret = variable_datas_.size();
-    variable_datas_.push_back(VariableData(Usage::NONE));
+    variable_datas_.push_back(Variable::Data(Usage::NONE));
     return ret;
 }
 
@@ -219,12 +219,12 @@ Usage &Function::variable_usage(uint uid) noexcept {
     return variable_datas_[uid].usage;
 }
 
-VariableData &Function::variable_data(ocarina::uint uid) noexcept {
+Variable::Data &Function::variable_data(ocarina::uint uid) noexcept {
     OC_ASSERT(uid < variable_datas_.size());
     return variable_datas_[uid];
 }
 
-const VariableData &Function::variable_data(ocarina::uint uid) const noexcept {
+const Variable::Data &Function::variable_data(ocarina::uint uid) const noexcept {
     OC_ASSERT(uid < variable_datas_.size());
     return variable_datas_[uid];
 }

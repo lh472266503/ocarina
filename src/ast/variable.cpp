@@ -48,6 +48,10 @@ void Variable::set_suffix(std::string suffix) noexcept {
     const_cast<Function *>(_context)->variable_data(uid_).suffix = std::move(suffix);
 }
 
+void Variable::mark_usage(ocarina::Usage usage) const noexcept {
+    const_cast<Function *>(_context)->mark_variable_usage(uid_, usage);
+}
+
 Variable::Tag Variable::tag() const noexcept {
     return _context->variable_data(uid_).tag;
 }
@@ -68,4 +72,5 @@ string Variable::final_name() const noexcept {
     }
     return raw_name;
 }
+
 }// namespace ocarina

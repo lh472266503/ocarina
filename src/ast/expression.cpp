@@ -8,7 +8,7 @@
 namespace ocarina {
 
 void RefExpr::_mark(Usage usage) const noexcept {
-    const_cast<Function *>(context())->mark_variable_usage(variable_.uid(), usage);
+    variable_.mark_usage(usage);
 }
 
 uint64_t RefExpr::_compute_hash() const noexcept {
@@ -61,7 +61,7 @@ MemberExpr::MemberExpr(const Type *type, const Expression *parent,
       variable_(ocarina::move(variable)) {}
 
 void MemberExpr::_mark(ocarina::Usage usage) const noexcept {
-    const_cast<Function *>(context())->mark_variable_usage(variable_.uid(), usage);
+    variable_.mark_usage(usage);
 }
 
 Usage MemberExpr::usage() const noexcept {

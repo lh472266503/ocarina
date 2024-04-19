@@ -52,6 +52,20 @@ public:
         DISPATCH_DIM
     };
 
+    struct Data {
+    private:
+        Usage usage;
+        Variable::Tag tag{};
+        string name{};
+        string suffix{};
+        explicit Data(Usage u,
+                      Variable::Tag t = Variable::Tag::LOCAL)
+            : usage(u), tag(t) {}
+
+        friend class Function;
+        friend class Variable;
+    };
+
 private:
     const Type *type_{};
     const Function *_context{nullptr};
@@ -60,7 +74,8 @@ private:
     friend class Function;
     Variable(const Function *context,
              const Type *type, Tag tag, uint uid,
-             string name = "", string suffix = "") noexcept;
+             string name = "",
+             string suffix = "") noexcept;
 
 private:
     [[nodiscard]] string name() const noexcept;
@@ -71,23 +86,13 @@ public:
     [[nodiscard]] constexpr const Type *type() const noexcept { return type_; }
     [[nodiscard]] Tag tag() const noexcept;
     [[nodiscard]] constexpr uint uid() const noexcept { return uid_; }
-
     [[nodiscard]] constexpr bool operator==(const Variable &rhs) const noexcept { return uid_ == rhs.uid_; }
     [[nodiscard]] string final_name() const noexcept;
     [[nodiscard]] Usage usage() const noexcept;
     void set_tag(Tag tag) noexcept;
     void set_name(string name) noexcept;
     void set_suffix(string suffix) noexcept;
-};
-
-struct VariableData {
-    Usage usage;
-    Variable::Tag tag{};
-    string name{};
-    string suffix{};
-    explicit VariableData(Usage u,
-                          Variable::Tag t = Variable::Tag::LOCAL)
-        : usage(u), tag(t) {}
+    void mark_usage(Usage usage) const noexcept;
 };
 
 }// namespace ocarina
