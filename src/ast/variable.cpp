@@ -23,20 +23,20 @@ uint64_t Variable::_compute_hash() const noexcept {
     auto u0 = static_cast<uint64_t>(uid_);
     auto u1 = static_cast<uint64_t>(tag());
     uint64_t ret = hash64(u0 | (u1 << 32u), type()->hash());
-    if (!get_name().empty()) {
-        ret = hash64(ret, get_name());
+    if (!name().empty()) {
+        ret = hash64(ret, name());
     }
-    if (!get_suffix().empty()) {
-        ret = hash64(ret, get_suffix());
+    if (!suffix().empty()) {
+        ret = hash64(ret, suffix());
     }
     return ret;
 }
 
-string Variable::get_suffix() const noexcept {
+string Variable::suffix() const noexcept {
     return _context->variable_data(uid_).suffix;
 }
 
-string Variable::get_name() const noexcept {
+string Variable::name() const noexcept {
     return _context->variable_data(uid_).name;
 }
 
@@ -60,11 +60,11 @@ Usage Variable::usage() const noexcept {
     return _context->variable_data(uid_).usage;
 }
 
-string Variable::name() const noexcept {
+string Variable::final_name() const noexcept {
     string raw_name = string(detail::variable_prefix(tag())) + detail::to_string(uid_);
-    if (!get_name().empty()) { return get_name(); }
-    if (!get_suffix().empty()) {
-        return raw_name + "_" + get_suffix();
+    if (!name().empty()) { return name(); }
+    if (!suffix().empty()) {
+        return raw_name + "_" + suffix();
     }
     return raw_name;
 }

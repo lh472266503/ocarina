@@ -447,7 +447,7 @@ void CppCodegen::_emit_function(const Function &f) noexcept {
 }
 
 void CppCodegen::_emit_variable_name(Variable v) noexcept {
-    current_scratch() << v.name();
+    current_scratch() << v.final_name();
     //    if (v.uid() == InvalidUI32) {
     //        return;
     //    }

@@ -63,8 +63,8 @@ private:
              string name = "", string suffix = "") noexcept;
 
 private:
-    [[nodiscard]] string get_name() const noexcept;
-    [[nodiscard]] string get_suffix() const noexcept;
+    [[nodiscard]] string name() const noexcept;
+    [[nodiscard]] string suffix() const noexcept;
 
 public:
     Variable() noexcept = default;
@@ -73,7 +73,7 @@ public:
     [[nodiscard]] constexpr uint uid() const noexcept { return uid_; }
 
     [[nodiscard]] constexpr bool operator==(const Variable &rhs) const noexcept { return uid_ == rhs.uid_; }
-    [[nodiscard]] string name() const noexcept;
+    [[nodiscard]] string final_name() const noexcept;
     [[nodiscard]] Usage usage() const noexcept;
     void set_tag(Tag tag) noexcept;
     void set_name(string name) noexcept;
