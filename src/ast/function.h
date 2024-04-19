@@ -78,9 +78,9 @@ private:
 
     /// key : expression from other function , value : expression belong current function
     /// use for kernel
-    ocarina::map<const Expression *, const RefExpr *> _outer_to_local;
+    ocarina::map<const Expression *, const RefExpr *> outer_to_local_;
 
-    ocarina::vector<Variable> _arguments;
+    ocarina::vector<Variable> arguments_;
 
     /// use for splitting parameter structure start
     ocarina::map<string, Variable> argument_map_;
@@ -89,7 +89,7 @@ private:
 
     ocarina::vector<CapturedResource> captured_resources_;
     ocarina::vector<Variable> builtin_vars_;
-    ocarina::vector<Usage> variable_usages_;
+    ocarina::vector<VariableData> variable_usages_;
     ocarina::vector<ScopeStmt *> scope_stack_;
     /// use for assignment subscript access
     ocarina::vector<ocarina::pair<std::byte *, size_t>> temp_memory_;

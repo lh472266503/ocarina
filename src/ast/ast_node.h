@@ -12,18 +12,6 @@
 #include "op.h"
 
 namespace ocarina {
-
-enum struct Usage : uint32_t {
-    NONE = 0u,
-    READ = 1 << 0,
-    WRITE = 1 << 1,
-    READ_WRITE = READ | WRITE
-};
-
-[[nodiscard]] inline bool is_write(Usage usage) {
-    return (to_underlying(usage) & to_underlying(Usage::WRITE)) == to_underlying(Usage::WRITE);
-}
-
 class Function;
 
 class ASTNode {

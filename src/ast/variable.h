@@ -5,12 +5,22 @@
 #pragma once
 
 #include <utility>
-
 #include "core/stl.h"
 #include "core/hash.h"
 #include "type.h"
 
 namespace ocarina {
+
+enum struct Usage : uint32_t {
+    NONE = 0u,
+    READ = 1 << 0,
+    WRITE = 1 << 1,
+    READ_WRITE = READ | WRITE
+};
+
+[[nodiscard]] inline bool is_write(Usage usage) {
+    return (to_underlying(usage) & to_underlying(Usage::WRITE)) == to_underlying(Usage::WRITE);
+}
 
 class OC_AST_API Variable : public Hashable {
 public:
@@ -58,6 +68,11 @@ public:
     [[nodiscard]] constexpr bool operator==(const Variable &rhs) const noexcept { return uid_ == rhs.uid_; }
     [[nodiscard]] string name() const noexcept;
     void set_name(const char *name) noexcept { name_ = name; }
+};
+
+struct VariableData {
+    Usage usage;
+    explicit VariableData(Usage u) : usage(u) {}
 };
 
 }// namespace ocarina

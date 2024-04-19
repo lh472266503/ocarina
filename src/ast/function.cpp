@@ -34,11 +34,11 @@ void Function::correct() noexcept {
 
 void Function::mark_variable_usage(ocarina::uint uid, ocarina::Usage usage) noexcept {
     OC_ASSERT(uid < variable_usages_.size());
-    auto old_usage = to_underlying(variable_usages_[uid]);
+    auto old_usage = to_underlying(variable_usages_[uid].usage);
     auto new_usage = to_underlying(usage);
     auto final_usage = old_usage | new_usage;
     if (final_usage != old_usage) {
-        variable_usages_[uid] = static_cast<Usage>(final_usage);
+        variable_usages_[uid].usage = static_cast<Usage>(final_usage);
     }
 }
 
@@ -57,21 +57,21 @@ const RefExpr *Function::mapping_captured_argument(const Expression *outer_expr,
 
 const RefExpr *Function::mapping_local_variable(const Expression *invoked_func_expr, bool *contain) noexcept {
     if (contain) {
-        *contain = _outer_to_local.contains(invoked_func_expr);
+        *contain = outer_to_local_.contains(invoked_func_expr);
     }
-    if (!_outer_to_local.contains(invoked_func_expr)) {
+    if (!outer_to_local_.contains(invoked_func_expr)) {
         const RefExpr *ref_expr = local(invoked_func_expr->type());
-        _outer_to_local.insert(make_pair(invoked_func_expr, ref_expr));
+        outer_to_local_.insert(make_pair(invoked_func_expr, ref_expr));
     }
-    const RefExpr *ret = _outer_to_local.at(invoked_func_expr);
+    const RefExpr *ret = outer_to_local_.at(invoked_func_expr);
     return ret;
 }
 
 const RefExpr *Function::outer_to_local(const Expression *invoked_func_expr) noexcept {
-    if (!_outer_to_local.contains(invoked_func_expr)) {
+    if (!outer_to_local_.contains(invoked_func_expr)) {
         return nullptr;
     }
-    const RefExpr *ret = _outer_to_local.at(invoked_func_expr);
+    const RefExpr *ret = outer_to_local_.at(invoked_func_expr);
     return ret;
 }
 
@@ -155,7 +155,7 @@ void Function::splitting_param_struct(const ocarina::Variable &arg, const Type *
 }
 
 void Function::splitting_arguments() noexcept {
-    for (const Variable &arg : _arguments) {
+    for (const Variable &arg : arguments_) {
         if (arg.type()->is_param_struct()) {
             vector<int> path;
             path.push_back(arg.uid());
@@ -164,7 +164,7 @@ void Function::splitting_arguments() noexcept {
             splitted_arguments_.push_back(arg);
         }
     }
-    std::swap(_arguments, splitted_arguments_);
+    std::swap(arguments_, splitted_arguments_);
 }
 
 Function::~Function() noexcept {
@@ -174,7 +174,7 @@ Function::~Function() noexcept {
 }
 
 void Function::correct_used_structures() noexcept {
-    for (const Variable &arg : _arguments) {
+    for (const Variable &arg : arguments_) {
         add_used_structure(arg.type());
     }
     for (const Variable &arg : appended_arguments_) {
@@ -200,18 +200,18 @@ const RefExpr *Function::_ref(const ocarina::Variable &variable) noexcept {
 
 uint Function::_next_variable_uid() noexcept {
     auto ret = variable_usages_.size();
-    variable_usages_.push_back(Usage::NONE);
+    variable_usages_.push_back(VariableData(Usage::NONE));
     return ret;
 }
 
 const Usage &Function::variable_usage(uint uid) const noexcept {
     OC_ASSERT(uid < variable_usages_.size());
-    return variable_usages_[uid];
+    return variable_usages_[uid].usage;
 }
 
 Usage &Function::variable_usage(uint uid) noexcept {
     OC_ASSERT(uid < variable_usages_.size());
-    return variable_usages_[uid];
+    return variable_usages_[uid].usage;
 }
 
 void Function::return_(const Expression *expression) noexcept {
@@ -295,13 +295,13 @@ const RefExpr *Function::argument(const Type *type) noexcept {
             break;
     }
     Variable variable(type, tag, _next_variable_uid());
-    _arguments.push_back(variable);
+    arguments_.push_back(variable);
     return _ref(variable);
 }
 
 const RefExpr *Function::reference_argument(const Type *type) noexcept {
     Variable variable(type, Variable::Tag::REFERENCE, _next_variable_uid(), "", "ref");
-    _arguments.push_back(variable);
+    arguments_.push_back(variable);
     return _ref(variable);
 }
 
@@ -497,7 +497,7 @@ void Function::print(string fmt, const vector<const Expression *> &args) noexcep
 }
 
 ocarina::span<const Variable> Function::arguments() const noexcept {
-    return _arguments;
+    return arguments_;
 }
 
 ocarina::span<const Variable> Function::appended_arguments() const noexcept {
@@ -531,7 +531,7 @@ uint64_t Function::_compute_hash() const noexcept {
         ret = hash64(ret, fn);
     });
     ret = hash64(tag(), ret);
-    for (const Variable &v : _arguments) {
+    for (const Variable &v : arguments_) {
         ret = hash64(ret, v.hash());
     }
     for (const Variable &v : appended_arguments_) {
