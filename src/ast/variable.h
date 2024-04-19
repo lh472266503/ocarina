@@ -56,30 +56,38 @@ private:
     const Type *type_{};
     const Function *_context{nullptr};
     uint32_t uid_{};
-    Tag tag_;
-    string name_{};
-    string suffix_{};
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
     friend class Function;
-    Variable(const Type *type, Tag tag, uint uid,
-             string name = "", string suffix = "") noexcept
-        : type_(type), tag_(tag), uid_(uid),
-          name_(std::move(name)), suffix_(std::move(suffix)) {}
+    Variable(const Function *context,
+             const Type *type, Tag tag, uint uid,
+             string name = "", string suffix = "") noexcept;
+
+private:
+    [[nodiscard]] string get_name() const noexcept;
+    [[nodiscard]] string get_suffix() const noexcept;
 
 public:
     Variable() noexcept = default;
-
     [[nodiscard]] constexpr const Type *type() const noexcept { return type_; }
-    [[nodiscard]] constexpr Tag tag() const noexcept { return tag_; }
+    [[nodiscard]] Tag tag() const noexcept;
     [[nodiscard]] constexpr uint uid() const noexcept { return uid_; }
+
     [[nodiscard]] constexpr bool operator==(const Variable &rhs) const noexcept { return uid_ == rhs.uid_; }
     [[nodiscard]] string name() const noexcept;
-    void set_name(const char *name) noexcept { name_ = name; }
+    [[nodiscard]] Usage usage() const noexcept;
+    void set_tag(Tag tag) noexcept;
+    void set_name(string name) noexcept;
+    void set_suffix(string suffix) noexcept;
 };
 
 struct VariableData {
     Usage usage;
-    explicit VariableData(Usage u) : usage(u) {}
+    Variable::Tag tag{};
+    string name{};
+    string suffix{};
+    explicit VariableData(Usage u,
+                          Variable::Tag t = Variable::Tag::LOCAL)
+        : usage(u), tag(t) {}
 };
 
 }// namespace ocarina

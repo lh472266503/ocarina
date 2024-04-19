@@ -205,8 +205,7 @@ uint Function::_next_variable_uid() noexcept {
 }
 
 Variable Function::create_variable(const Type *type, Variable::Tag tag, std::string name, std::string suffix) noexcept {
-    Variable ret{type, tag, _next_variable_uid(), ocarina::move(name), ocarina::move(suffix)};
-    ret._context = this;
+    Variable ret{this, type, tag, _next_variable_uid(), ocarina::move(name), ocarina::move(suffix)};
     return ret;
 }
 
@@ -218,6 +217,16 @@ const Usage &Function::variable_usage(uint uid) const noexcept {
 Usage &Function::variable_usage(uint uid) noexcept {
     OC_ASSERT(uid < variable_datas_.size());
     return variable_datas_[uid].usage;
+}
+
+VariableData &Function::variable_data(ocarina::uint uid) noexcept {
+    OC_ASSERT(uid < variable_datas_.size());
+    return variable_datas_[uid];
+}
+
+const VariableData &Function::variable_data(ocarina::uint uid) const noexcept {
+    OC_ASSERT(uid < variable_datas_.size());
+    return variable_datas_[uid];
 }
 
 void Function::return_(const Expression *expression) noexcept {
@@ -306,7 +315,7 @@ const RefExpr *Function::argument(const Type *type) noexcept {
 }
 
 const RefExpr *Function::reference_argument(const Type *type) noexcept {
-    Variable variable(type, Variable::Tag::REFERENCE, _next_variable_uid(), "", "ref");
+    Variable variable = create_variable(type, Variable::Tag::REFERENCE, "", "ref");
     arguments_.push_back(variable);
     return _ref(variable);
 }
