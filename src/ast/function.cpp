@@ -47,7 +47,7 @@ const RefExpr *Function::mapping_captured_argument(const Expression *outer_expr,
     if (!*contain) {
         uint arg_index = static_cast<uint>(appended_arguments_.size());
         expr_to_argument_index_.insert(make_pair(outer_expr, arg_index));
-        Variable variable(outer_expr->type(), Variable::Tag::REFERENCE, _next_variable_uid(), "", "outer");
+        Variable variable = create_variable(outer_expr->type(), Variable::Tag::REFERENCE, "", "outer");
         appended_arguments_.push_back(variable);
     }
     uint arg_index = expr_to_argument_index_.at(outer_expr);
@@ -88,7 +88,7 @@ const RefExpr *Function::mapping_output_argument(const Expression *invoked_func_
     }
     if (!expr_to_argument_index_.contains(invoked_func_expr)) {
         uint arg_index = static_cast<uint>(appended_arguments_.size());
-        Variable variable(invoked_func_expr->type(), Variable::Tag::REFERENCE, _next_variable_uid(), "", "pass");
+        Variable variable = create_variable(invoked_func_expr->type(), Variable::Tag::REFERENCE, "", "pass");
         expr_to_argument_index_.insert(make_pair(invoked_func_expr, arg_index));
         appended_arguments_.push_back(variable);
     }
@@ -103,7 +103,7 @@ void Function::append_output_argument(const Expression *expression, bool *contai
         return;
     }
     expr_to_argument_index_.insert(make_pair(expression, static_cast<uint>(appended_arguments_.size())));
-    Variable variable(expression->type(), Variable::Tag::REFERENCE, _next_variable_uid(), "", "output");
+    Variable variable = create_variable(expression->type(), Variable::Tag::REFERENCE, "", "output");
     appended_arguments_.push_back(variable);
     const RefExpr *ref_expr = _ref(variable);
     OC_ERROR_IF(expression->type()->is_resource());
@@ -139,7 +139,7 @@ void Function::process_param_struct_member(const Variable &arg, const Type *type
         splitting_param_struct(arg, type, path);
     } else {
         string key = detail::path_key(path);
-        Variable v(type, Variable::Tag::LOCAL, _next_variable_uid(), "", key);
+        Variable v = create_variable(type, Variable::Tag::LOCAL, "", key);
         argument_map_.insert(make_pair(key, v));
         splitted_arguments_.push_back(v);
     }
@@ -239,7 +239,7 @@ ScopeStmt *Function::body() noexcept {
 }
 
 const RefExpr *Function::_builtin(Variable::Tag tag, const Type *type) noexcept {
-    Variable variable(type, tag, _next_variable_uid());
+    Variable variable = create_variable(type, tag);
     if (auto iter = std::find_if(builtin_vars_.begin(),
                                  builtin_vars_.end(),
                                  [&](auto v) {
@@ -300,7 +300,7 @@ const RefExpr *Function::argument(const Type *type) noexcept {
             tag = Variable::Tag::LOCAL;
             break;
     }
-    Variable variable(type, tag, _next_variable_uid());
+    Variable variable = create_variable(type, tag);
     arguments_.push_back(variable);
     return _ref(variable);
 }

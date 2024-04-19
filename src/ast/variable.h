@@ -61,8 +61,10 @@ private:
     string suffix_{};
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
     friend class Function;
-    Variable(const Type *type, Tag tag, uint uid, string name = "", string suffix = "") noexcept
-        : type_(type), tag_(tag), uid_(uid), name_(std::move(name)), suffix_(std::move(suffix)) {}
+    Variable(const Type *type, Tag tag, uint uid,
+             string name = "", string suffix = "") noexcept
+        : type_(type), tag_(tag), uid_(uid),
+          name_(std::move(name)), suffix_(std::move(suffix)) {}
 
 public:
     Variable() noexcept = default;
