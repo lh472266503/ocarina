@@ -54,10 +54,10 @@ public:
           v_address_{v_address},
           w_address_{v_address} {}
 
-    OC_MAKE_MEMBER_GETTER_SETTER_(filter,)
-    OC_MAKE_MEMBER_GETTER_SETTER_(u_address,)
-    OC_MAKE_MEMBER_GETTER_SETTER_(v_address,)
-    OC_MAKE_MEMBER_GETTER_SETTER_(w_address,)
+    OC_MAKE_MEMBER_GETTER_SETTER(filter,)
+    OC_MAKE_MEMBER_GETTER_SETTER(u_address,)
+    OC_MAKE_MEMBER_GETTER_SETTER(v_address,)
+    OC_MAKE_MEMBER_GETTER_SETTER(w_address,)
 
     [[nodiscard]] bool operator==(TextureSampler rhs) const noexcept {
         return hash() == rhs.hash();

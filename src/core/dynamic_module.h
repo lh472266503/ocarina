@@ -19,7 +19,7 @@ public:
     static void remove_search_path(fs::path path) noexcept;
     static void clear_search_path() noexcept;
     explicit DynamicModule(const string &name) noexcept;
-    OC_MAKE_MEMBER_GETTER_(handle, )
+    OC_MAKE_MEMBER_GETTER(handle, )
     DynamicModule(fs::path path, const string &name) noexcept;
     [[nodiscard]] void *function_ptr(const string &func_name) const noexcept;
 };

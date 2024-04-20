@@ -45,7 +45,7 @@ public:
     Image(const Image &other) = delete;
     Image &operator=(const Image &other) = delete;
     Image &operator=(Image &&other) noexcept;
-    OC_MAKE_MEMBER_GETTER_(path, &)
+    OC_MAKE_MEMBER_GETTER(path, &)
     template<typename T = std::byte>
     const T *pixel_ptr() const { return reinterpret_cast<const T *>(pixel_.get()); }
     template<typename T = std::byte>

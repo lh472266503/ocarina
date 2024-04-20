@@ -61,7 +61,7 @@ public:
     [[nodiscard]] Tag tag() const noexcept { return tag_; }
     [[nodiscard]] virtual handle_ty handle() const noexcept { return handle_; }
     virtual void set_device(Device::Impl *device) noexcept { device_ = device; }
-    OC_MAKE_MEMBER_GETTER_(device,)
+    OC_MAKE_MEMBER_GETTER(device,)
     [[nodiscard]] virtual const void *handle_ptr() const noexcept { return &handle_; }
     [[nodiscard]] virtual void *handle_ptr() noexcept { return &handle_; }
     // size of data on device side

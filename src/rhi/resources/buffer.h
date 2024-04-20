@@ -126,7 +126,7 @@ public:
         proxy_ptr();
     }
 
-    OC_MAKE_MEMBER_GETTER_SETTER_(name, )
+    OC_MAKE_MEMBER_GETTER_SETTER(name, )
 
     static size_t calculate_size() noexcept {
         if constexpr (is_struct_v<T>) {

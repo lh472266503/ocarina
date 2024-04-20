@@ -67,7 +67,7 @@ public:
         image(tex_handle, size, make_float2(0), make_float2(1));
     }
 
-    OC_MAKE_MEMBER_GETTER_(window, )
+    OC_MAKE_MEMBER_GETTER(window, )
 
     template<typename Func>
     void use_tool_tip(Func &&func) noexcept {

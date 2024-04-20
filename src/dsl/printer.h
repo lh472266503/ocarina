@@ -78,7 +78,7 @@ public:
         reset();
     }
 
-    OC_MAKE_MEMBER_GETTER_SETTER_(enabled, )
+    OC_MAKE_MEMBER_GETTER_SETTER(enabled, )
 
     Printer &set_description(const string &desc) noexcept {
         desc_ = desc;

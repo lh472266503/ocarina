@@ -19,7 +19,7 @@ protected:
     Function *context_{};
 
 public:
-    OC_MAKE_MEMBER_GETTER_SETTER_(context, )
+    OC_MAKE_MEMBER_GETTER_SETTER(context, )
     virtual bool check_context(const Function *ctx) const noexcept {
         if (ctx != context_) {
             volatile int i = 0;

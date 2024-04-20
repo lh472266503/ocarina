@@ -42,7 +42,7 @@ public:
 
     [[nodiscard]] auto handle() const noexcept { return handle_; }
     [[nodiscard]] auto size() const noexcept { return size_; }
-    OC_MAKE_MEMBER_GETTER_(binding, )
+    OC_MAKE_MEMBER_GETTER(binding, )
 
     void bind() const noexcept {
         binding_ = true;

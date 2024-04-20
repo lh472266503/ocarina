@@ -292,7 +292,7 @@ public:
     OC_MAKE_CHECK_CONTEXT(Expression, arguments_)
     [[nodiscard]] ocarina::span<const Expression *const> arguments() const noexcept { return arguments_; }
     [[nodiscard]] ocarina::span<const Template> template_args() const noexcept { return template_args_; }
-    OC_MAKE_MEMBER_GETTER_(function_name, &)
+    OC_MAKE_MEMBER_GETTER(function_name, &)
     void append_argument(const Expression *expression) noexcept;
     [[nodiscard]] vector<const Function *> call_chain() const noexcept;
     [[nodiscard]] auto call_op() const noexcept { return call_op_; }

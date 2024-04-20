@@ -56,7 +56,7 @@ public:
                                              detail::compute_mip_level_num(res, level_num), desc)),
           channel_num_(ocarina::channel_num(pixel_storage)) {}
 
-    OC_MAKE_MEMBER_GETTER_(channel_num, )
+    OC_MAKE_MEMBER_GETTER(channel_num, )
 
     [[nodiscard]] uint pixel_num() const noexcept {
         uint3 res = impl()->resolution();
