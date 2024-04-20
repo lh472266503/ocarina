@@ -89,8 +89,8 @@ public:
         return device_ty::upload(host_ty::data(), async);
     }
 
-    [[nodiscard]] BufferDownloadCommand *download() noexcept {
-        return device_ty::download(host_ty::data());
+    [[nodiscard]] BufferDownloadCommand *download(size_t offset = 0, size_t size = 0) noexcept {
+        return device_buffer().view(offset, size).download(host_ty::data() + offset);
     }
 
     void upload_immediately() const noexcept {
