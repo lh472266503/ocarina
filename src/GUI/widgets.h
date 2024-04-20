@@ -269,6 +269,9 @@ public:
     virtual bool drag_float3(const string &label, float3 *val, float speed, float min, float max) noexcept = 0;
     virtual bool drag_float4(const string &label, float4 *val, float speed, float min, float max) noexcept = 0;
 
+    bool drag_floatN(const string &label, float *val, uint size,
+                     float speed = 0.1, float min = 0, float max = 0) noexcept;
+
     virtual ~Widgets() = default;
 };
 

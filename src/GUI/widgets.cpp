@@ -87,4 +87,23 @@ bool Widgets::input_floatN(const std::string &label, float *val, ocarina::uint s
     }
     return false;
 }
+
+bool Widgets::drag_floatN(const std::string &label, float *val, ocarina::uint size,
+                          float speed, float min, float max) noexcept {
+    switch (size) {
+        case 1:
+            return drag_float(label, val, speed, min, max);
+        case 2:
+            return drag_float2(label, reinterpret_cast<float2 *>(val), speed, min, max);
+        case 3:
+            return drag_float3(label, reinterpret_cast<float3 *>(val), speed, min, max);
+        case 4:
+            return drag_float4(label, reinterpret_cast<float4 *>(val), speed, min, max);
+        default:
+            OC_ERROR("error");
+            break;
+    }
+    return false;
+}
+
 }// namespace ocarina
