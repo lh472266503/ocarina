@@ -48,11 +48,11 @@ public:
     };
 
 private:
-    Managed<uint> _buffer;
-    spdlog::logger _logger{logger()};
-    vector<Item> _items;
-    bool _enabled{true};
-    mutable string _desc;
+    Managed<uint> buffer_;
+    spdlog::logger logger_{logger()};
+    vector<Item> items_;
+    bool enabled_{true};
+    mutable string desc_;
 
 private:
     void _log_to_buffer(Uint offset, uint index) noexcept {}
@@ -74,23 +74,23 @@ private:
 public:
     void init(Device &device, size_t capacity = 16_mb) {
         capacity /= sizeof(uint);
-        _buffer.reset_all(device, capacity, "Printer::buffer_");
+        buffer_.reset_all(device, capacity, "Printer::buffer_");
         reset();
     }
 
-    OC_MAKE_MEMBER_GETTER_SETTER(enabled, )
+    OC_MAKE_MEMBER_GETTER_SETTER_(enabled, )
 
     Printer &set_description(const string &desc) noexcept {
-        _desc = desc;
+        desc_ = desc;
         return *this;
     }
-    [[nodiscard]] Managed<uint> &buffer() noexcept { return _buffer; }
-    [[nodiscard]] const Managed<uint> &buffer() const noexcept { return _buffer; }
-    [[nodiscard]] uint element_num() const noexcept { return _buffer.host_buffer().back(); }
+    [[nodiscard]] Managed<uint> &buffer() noexcept { return buffer_; }
+    [[nodiscard]] const Managed<uint> &buffer() const noexcept { return buffer_; }
+    [[nodiscard]] uint element_num() const noexcept { return buffer_.host_buffer().back(); }
 
     void reset() {
-        _buffer.device_buffer().reset_immediately();
-        _buffer.resize(_buffer.capacity());
+        buffer_.device_buffer().reset_immediately();
+        buffer_.resize(buffer_.capacity());
     }
 
 #define OC_MAKE_LOG_FUNC(level_name)                                                                          \
@@ -145,13 +145,13 @@ void Printer::_log_to_buffer(Uint offset, uint index, const Current &cur, const 
         if constexpr (std::is_same_v<uint64_t, type>) {
             Uint high_bits = cur >> 32;
             Uint low_bits = cur & 0xFFFFFFFF;
-            _buffer.write(offset + index, high_bits, false);
+            buffer_.write(offset + index, high_bits, false);
             index ++;
-            _buffer.write(offset + index, low_bits, false);
+            buffer_.write(offset + index, low_bits, false);
         } else if constexpr (is_integral_v<type> || is_boolean_v<type>) {
-            _buffer.write(offset + index, cast<uint>(cur), false);
+            buffer_.write(offset + index, cast<uint>(cur), false);
         } else if constexpr (is_floating_point_v<type>) {
-            _buffer.write(offset + index, as<uint>(cur), false);
+            buffer_.write(offset + index, as<uint>(cur), false);
         } else {
             static_assert(always_false_v<type>, "unsupported type for printing in kernel.");
         }
@@ -171,26 +171,26 @@ void Printer::_logs(spdlog::level::level_enum level, const string &fmt, const Ar
 
 template<typename... Args>
 void Printer::_log(spdlog::level::level_enum level, const string &fmt, const Args &...args) noexcept {
-    if (!_enabled) {
+    if (!enabled_) {
         return;
     }
 
-    if (!_desc.empty()) {
-        comment(_desc);
+    if (!desc_.empty()) {
+        comment(desc_);
     }
 
     constexpr array<uint, sizeof...(Args)> size_arr = {(is_dsl_v<Args> ? (sizeof(expr_value_t<Args>) / sizeof(uint)) : 0u)...};
 
     constexpr uint total_size = std::accumulate(size_arr.begin(), size_arr.end(), 0);
 
-    uint last = static_cast<uint>(_buffer.device_buffer().size() - 1);
-    Uint item_index = static_cast<uint>(_items.size());
+    uint last = static_cast<uint>(buffer_.device_buffer().size() - 1);
+    Uint item_index = static_cast<uint>(items_.size());
 
     comment("start log >>>>>>>>>> ");
     outline([&] {
-        Uint offset = _buffer.atomic(last).fetch_add(total_size + 1);
+        Uint offset = buffer_.atomic(last).fetch_add(total_size + 1);
         if_(offset < last, [&] {
-            _buffer.write(offset, item_index, false);
+            buffer_.write(offset, item_index, false);
         });
         if_(offset + total_size < last, [&] {
             _log_to_buffer(offset + 1, 0, OC_FORWARD(args)...);
@@ -198,7 +198,7 @@ void Printer::_log(spdlog::level::level_enum level, const string &fmt, const Arg
     },
             "log output");
     comment("end log <<<<<<<<<<");
-    _desc = "";
+    desc_ = "";
 
     uint offset = 0;
     uint cursor = 0;
@@ -243,10 +243,10 @@ void Printer::_log(spdlog::level::level_enum level, const string &fmt, const Arg
         if (func) {
             func(to_underlying(level), content.c_str());
         } else {
-            _logger.log(level, content);
+            logger_.log(level, content);
         }
     };
-    _items.push_back({decode, total_size});
+    items_.push_back({decode, total_size});
 }
 
 }// namespace ocarina

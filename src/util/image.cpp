@@ -21,33 +21,33 @@
 namespace ocarina {
 
 ImageView::ImageView(ocarina::PixelStorage pixel_storage, const std::byte *pixel, ocarina::uint2 res)
-    : ImageBase(pixel_storage, res), _pixel(pixel) {}
+    : ImageBase(pixel_storage, res), pixel_(pixel) {}
 
 Image::Image(PixelStorage pixel_storage, const std::byte *pixel, uint2 res, const fs::path &path)
     : ImageBase(pixel_storage, res),
-      _path(path) {
-    _pixel.reset(pixel);
+      path_(path) {
+    pixel_.reset(pixel);
 }
 
 ImageView Image::view() const noexcept {
-    return {pixel_storage(), _pixel.get(), resolution()};
+    return {pixel_storage(), pixel_.get(), resolution()};
 }
 
 Image::Image(PixelStorage pixel_storage, const std::byte *pixel, uint2 res)
     : ImageBase(pixel_storage, res) {
-    _pixel.reset(pixel);
+    pixel_.reset(pixel);
 }
 
 Image::Image(Image &&other) noexcept
     : ImageBase(ocarina::move(other)) {
-    _pixel = ocarina::move(other._pixel);
-    _path = ocarina::move(other._path);
+    pixel_ = ocarina::move(other.pixel_);
+    path_ = ocarina::move(other.path_);
 }
 
 Image &Image::operator=(Image &&rhs) noexcept {
     (*(ImageBase *)this) = std::forward<ImageBase>(rhs);
-    std::swap(this->_pixel, rhs._pixel);
-    std::swap(this->_path, rhs._path);
+    std::swap(this->pixel_, rhs.pixel_);
+    std::swap(this->path_, rhs.path_);
     return *this;
 }
 
@@ -87,7 +87,7 @@ Image Image::load(const fs::path &path, ColorSpace color_space, float3 scale) {
     } else {
         ret = load_other(path, color_space, scale);
     }
-    ret._path = path;
+    ret.path_ = path;
     return ret;
 }
 
@@ -328,7 +328,7 @@ Image Image::load_other(const fs::path &path, ColorSpace color_space, float3 sca
 }
 
 void Image::save(const fs::path &fn) const {
-    save_image(fn, pixel_storage_, resolution(), _pixel.get());
+    save_image(fn, pixel_storage_, resolution(), pixel_.get());
 }
 
 void Image::save_exr(const fs::path &fn, PixelStorage pixel_storage,
@@ -407,18 +407,18 @@ void Image::convert_to_8bit_image() {
     if (is_8bit(pixel_storage())) {
         return;
     }
-    auto [new_format, ptr] = convert_to_8bit(pixel_storage(), _pixel.get(), resolution());
+    auto [new_format, ptr] = convert_to_8bit(pixel_storage(), pixel_.get(), resolution());
     pixel_storage_ = new_format;
-    _pixel.reset(ptr);
+    pixel_.reset(ptr);
 }
 
 void Image::convert_to_32bit_image() {
     if (is_32bit(pixel_storage())) {
         return;
     }
-    auto [new_format, ptr] = convert_to_32bit(pixel_storage(), _pixel.get(), resolution());
+    auto [new_format, ptr] = convert_to_32bit(pixel_storage(), pixel_.get(), resolution());
     pixel_storage_ = new_format;
-    _pixel.reset(ptr);
+    pixel_.reset(ptr);
 }
 
 void Image::save_image(const fs::path &fn, PixelStorage pixel_storage,

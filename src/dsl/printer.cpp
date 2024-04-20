@@ -8,13 +8,13 @@ namespace ocarina {
 
 void Printer::output_log(const OutputFunc &func) noexcept {
     uint length = std::min(
-        static_cast<uint>(_buffer.host_buffer().size() - 1u),
-        _buffer.back());
-    bool truncated = _buffer.host_buffer().back() > length;
+        static_cast<uint>(buffer_.host_buffer().size() - 1u),
+        buffer_.back());
+    bool truncated = buffer_.host_buffer().back() > length;
     uint offset = 0u;
     while (offset < length) {
-        const uint *data = _buffer.host_buffer().data() + offset;
-        Item &item = _items[data[0]];
+        const uint *data = buffer_.host_buffer().data() + offset;
+        Item &item = items_[data[0]];
         offset += item.size + 1;
         if (offset > length) {
             truncated = true;
@@ -28,24 +28,24 @@ void Printer::output_log(const OutputFunc &func) noexcept {
 }
 
 CommandList Printer::retrieve(const OutputFunc &func) noexcept {
-    if (!_enabled) {
+    if (!enabled_) {
         return {};
     }
     CommandList ret;
-    ret << _buffer.download();
+    ret << buffer_.download();
     ret << [&]() {
         output_log(func);
-        _buffer.resize(_buffer.capacity());
+        buffer_.resize(buffer_.capacity());
     };
-    ret << _buffer.device_buffer().reset();
+    ret << buffer_.device_buffer().reset();
     return ret;
 }
 
 void Printer::retrieve_immediately(const OutputFunc &func) noexcept {
-    if (!_enabled) {
+    if (!enabled_) {
         return;
     }
-    _buffer.download_immediately();
+    buffer_.download_immediately();
     output_log(func);
     reset();
 }

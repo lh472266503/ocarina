@@ -10,7 +10,7 @@ namespace ocarina {
 
 class ImageView : public ImageBase {
 private:
-    const std::byte *_pixel{nullptr};
+    const std::byte *pixel_{nullptr};
 
 public:
     ImageView(PixelStorage pixel_storage, const std::byte *pixel, uint2 res);
@@ -22,16 +22,16 @@ public:
         : ImageView(PixelStorage::BYTE4,
                     reinterpret_cast<const std::byte *>(pixel), res) {}
     template<typename T = std::byte>
-    const T *pixel_ptr() const { return reinterpret_cast<const T *>(_pixel); }
+    const T *pixel_ptr() const { return reinterpret_cast<const T *>(pixel_); }
 
     template<typename T = std::byte>
-    T *pixel_ptr() { return reinterpret_cast<T *>(const_cast<std::byte *>(_pixel)); }
+    T *pixel_ptr() { return reinterpret_cast<T *>(const_cast<std::byte *>(pixel_)); }
 };
 
 class Image : public ImageBase {
 private:
-    fs::path _path;
-    std::unique_ptr<const std::byte[]> _pixel;
+    fs::path path_;
+    std::unique_ptr<const std::byte[]> pixel_;
 
 public:
     using foreach_signature = void(const std::byte *, int, PixelStorage);
@@ -45,11 +45,11 @@ public:
     Image(const Image &other) = delete;
     Image &operator=(const Image &other) = delete;
     Image &operator=(Image &&other) noexcept;
-    OC_MAKE_MEMBER_GETTER(path, &)
+    OC_MAKE_MEMBER_GETTER_(path, &)
     template<typename T = std::byte>
-    const T *pixel_ptr() const { return reinterpret_cast<const T *>(_pixel.get()); }
+    const T *pixel_ptr() const { return reinterpret_cast<const T *>(pixel_.get()); }
     template<typename T = std::byte>
-    T *pixel_ptr() { return reinterpret_cast<T *>(const_cast<std::byte *>(_pixel.get())); }
+    T *pixel_ptr() { return reinterpret_cast<T *>(const_cast<std::byte *>(pixel_.get())); }
     [[nodiscard]] static Image pure_color(float4 color, ColorSpace color_space, uint2 res = make_uint2(1u));
     [[nodiscard]] static Image load(const fs::path &fn, ColorSpace color_space, float3 scale = make_float3(1.f));
     [[nodiscard]] static Image load_hdr(const fs::path &fn, ColorSpace color_space, float3 scale = make_float3(1.f));
@@ -69,11 +69,11 @@ public:
     static Image load_other(const fs::path &fn, ColorSpace color_space,
                             float3 scale = make_float3(1.f));
 
-    void clear() noexcept { _pixel.reset(); }
+    void clear() noexcept { pixel_.reset(); }
 
     template<typename Func>
     void for_each_pixel(Func func) const {
-        auto p = _pixel.get();
+        auto p = pixel_.get();
         int stride = pixel_size(pixel_storage_);
         for (int i = 0; i < pixel_num(); ++i) {
             const std::byte *pixel = p + stride * i;
@@ -83,7 +83,7 @@ public:
 
     template<typename Func>
     void for_each_pixel(Func func) {
-        auto p = _pixel.get();
+        auto p = pixel_.get();
         int stride = pixel_size(pixel_storage_);
         for (int i = 0; i < pixel_num(); ++i) {
             std::byte *pixel = const_cast<std::byte *>(p + stride * i);
