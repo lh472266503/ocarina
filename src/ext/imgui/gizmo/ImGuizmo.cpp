@@ -2708,7 +2708,7 @@ namespace IMGUIZMO_NAMESPACE
       _freea(faces);
    }
 
-   void DrawGrid(const float* view, const float* projection, const float* matrix, const float gridSize)
+   void DrawGrid(const float* view, const float* projection, const float* matrix, float gridSize)
    {
       matrix_t viewProjection = *(matrix_t*)view * *(matrix_t*)projection;
       vec_t frustum[6];
