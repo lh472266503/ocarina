@@ -4,6 +4,7 @@
 
 #include "window.h"
 #include "widgets.h"
+#include "ext/imgui/gizmo/ImGuizmo.h"
 #include "core/logging.h"
 #include "rhi/common.h"
 
@@ -61,7 +62,7 @@ void GLWindow::init(const char *name, uint2 initial_size, bool resizable) noexce
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     init_widgets();
-    ImGui::CreateContext();
+    ImGuizmo::SetImGuiContext(ImGui::CreateContext());
     ImGui::StyleColorsDark();
     ImGui_ImplGlfw_InitForOpenGL(handle_, true);
     ImGui_ImplOpenGL3_Init("#version 330");
@@ -187,6 +188,7 @@ void GLWindow::_begin_frame() noexcept {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+        ImGuizmo::BeginFrame();
         Window::_begin_frame();
     }
 }
