@@ -68,7 +68,7 @@ public:
 
 private:
     const Type *type_{};
-    const Function *_context{nullptr};
+    const Function *context_{nullptr};
     uint32_t uid_{};
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
     friend class Function;

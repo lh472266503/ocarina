@@ -13,7 +13,7 @@ Variable::Variable(const Function *context,
                    Variable::Tag tag,
                    uint uid, std::string name,
                    std::string suffix) noexcept
-    : _context(context), type_(type), uid_(uid) {
+    : context_(context), type_(type), uid_(uid) {
     set_tag(tag);
     set_suffix(std::move(suffix));
     set_name(std::move(name));
@@ -33,35 +33,35 @@ uint64_t Variable::_compute_hash() const noexcept {
 }
 
 string Variable::suffix() const noexcept {
-    return _context->variable_data(uid_).suffix;
+    return context_->variable_data(uid_).suffix;
 }
 
 string Variable::name() const noexcept {
-    return _context->variable_data(uid_).name;
+    return context_->variable_data(uid_).name;
 }
 
 void Variable::set_name(string name) noexcept {
-    const_cast<Function *>(_context)->variable_data(uid_).name = std::move(name);
+    const_cast<Function *>(context_)->variable_data(uid_).name = std::move(name);
 }
 
 void Variable::set_suffix(std::string suffix) noexcept {
-    const_cast<Function *>(_context)->variable_data(uid_).suffix = std::move(suffix);
+    const_cast<Function *>(context_)->variable_data(uid_).suffix = std::move(suffix);
 }
 
 void Variable::mark_usage(ocarina::Usage usage) const noexcept {
-    const_cast<Function *>(_context)->mark_variable_usage(uid_, usage);
-}
-
-Variable::Tag Variable::tag() const noexcept {
-    return _context->variable_data(uid_).tag;
-}
-
-void Variable::set_tag(ocarina::Variable::Tag tag) noexcept {
-    const_cast<Function *>(_context)->variable_data(uid_).tag = tag;
+    const_cast<Function *>(context_)->mark_variable_usage(uid_, usage);
 }
 
 Usage Variable::usage() const noexcept {
-    return _context->variable_data(uid_).usage;
+    return context_->variable_data(uid_).usage;
+}
+
+Variable::Tag Variable::tag() const noexcept {
+    return context_->variable_data(uid_).tag;
+}
+
+void Variable::set_tag(ocarina::Variable::Tag tag) noexcept {
+    const_cast<Function *>(context_)->variable_data(uid_).tag = tag;
 }
 
 string Variable::final_name() const noexcept {
