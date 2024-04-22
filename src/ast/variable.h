@@ -80,6 +80,7 @@ private:
 private:
     [[nodiscard]] string name() const noexcept;
     [[nodiscard]] string suffix() const noexcept;
+    void set_tag(Tag tag) noexcept;
 
 public:
     Variable() noexcept = default;
@@ -89,7 +90,6 @@ public:
     [[nodiscard]] constexpr bool operator==(const Variable &rhs) const noexcept { return uid_ == rhs.uid_; }
     [[nodiscard]] string final_name() const noexcept;
     [[nodiscard]] Usage usage() const noexcept;
-    void set_tag(Tag tag) noexcept;
     void set_name(string name) noexcept;
     void set_suffix(string suffix) noexcept;
     void mark_usage(Usage usage) const noexcept;
