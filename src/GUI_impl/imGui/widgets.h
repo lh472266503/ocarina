@@ -176,6 +176,8 @@ public:
     bool drag_float2(const string &label, ocarina::float2 *val, float speed, float min, float max) noexcept override;
     bool drag_float3(const string &label, ocarina::float3 *val, float speed, float min, float max) noexcept override;
     bool drag_float4(const string &label, ocarina::float4 *val, float speed, float min, float max) noexcept override;
+
+    bool combo(const std::string &label, int *current_item, const char *const *items,int item_num) noexcept override;
 };
 
 }// namespace ocarina

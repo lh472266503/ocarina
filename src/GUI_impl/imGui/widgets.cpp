@@ -322,4 +322,8 @@ bool ImGuiWidgets::drag_float4(const string &label, ocarina::float4 *val, float 
     return ImGui::DragFloat4(label.c_str(), reinterpret_cast<float *>(val), speed, min, max);
 }
 
+bool ImGuiWidgets::combo(const std::string &label, int *current_item, const char *const *items, int item_num) noexcept {
+    return ImGui::Combo(label.c_str(), current_item, items, item_num);
+}
+
 }// namespace ocarina

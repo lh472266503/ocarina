@@ -272,6 +272,8 @@ public:
     bool drag_floatN(const string &label, float *val, uint size,
                      float speed = 0.1, float min = 0, float max = 0) noexcept;
 
+    virtual bool combo(const string &label, int *current_item, const char *const items[], int item_num) noexcept = 0;
+
     virtual ~Widgets() = default;
 };
 
