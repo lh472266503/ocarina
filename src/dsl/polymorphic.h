@@ -117,7 +117,6 @@ public:
 };
 
 template<typename T, typename U = float>
-requires is_ptr_v<T> && std::is_base_of_v<Serializable<U>, ptr_t<T>>
 class Polymorphic : public vector<T> {
 public:
     using Super = vector<T>;

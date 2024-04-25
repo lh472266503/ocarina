@@ -78,6 +78,12 @@ struct ptr_impl<shared_ptr<T>> {
 };
 
 template<typename T>
+requires std::is_pointer_v<std::remove_cvref_t<decltype(std::declval<T>().get())>>
+struct ptr_impl<T> {
+    using type = std::remove_pointer_t<std::remove_cvref_t<decltype(std::declval<T>().get())>>;
+};
+
+template<typename T>
 struct is_ptr_impl : std::false_type {};
 
 template<typename T>
@@ -88,6 +94,10 @@ struct is_ptr_impl<unique_ptr<T>> : std::true_type {};
 
 template<typename T>
 struct is_ptr_impl<shared_ptr<T>> : std::true_type {};
+
+template<typename T>
+requires std::is_pointer_v<std::remove_cvref_t<decltype(std::declval<T>().get())>>
+struct is_ptr_impl<T> : std::true_type {};
 
 }// namespace detail
 
