@@ -274,6 +274,10 @@ public:
 
     virtual bool combo(const string &label, int *current_item, const char *const items[], int item_num) noexcept = 0;
 
+    bool combo(const string &label, int *current_item, const vector<const char *> &items) noexcept {
+        return combo(label, current_item, items.data(), items.size());
+    }
+
     virtual ~Widgets() = default;
 };
 
