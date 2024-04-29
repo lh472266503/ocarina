@@ -227,6 +227,17 @@ MAKE_VECTOR_UNARY_FUNC(copysign)
         } else {                                                                                 \
             return Vector<T, N>(func(v.x, u), func(v.y, u), func(v.z, u), func(v.w, u));         \
         }                                                                                        \
+    }                                                                                            \
+                                                                                                 \
+    template<size_t N>                                                                           \
+    OC_NODISCARD auto func(const Matrix<N> &a, const Matrix<N> &b) noexcept {                    \
+        Matrix<N> ret;                                                                           \
+        for (int i = 0; i < N; ++i) {                                                            \
+            for (int j = 0; j < N; ++j) {                                                        \
+                ret[i][j] = func(a[i][j], b[i][j]);                                              \
+            }                                                                                    \
+        }                                                                                        \
+        return ret;                                                                              \
     }
 
 MAKE_VECTOR_BINARY_FUNC(pow)
