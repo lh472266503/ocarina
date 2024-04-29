@@ -142,22 +142,21 @@ requires is_all_scalar_v<T>
     return select(pred, t, arr);
 }
 
-#define OC_MAKE_TRIPLE_FUNC(func, tag)                                                                \
-    template<typename T, typename A, typename B>                                                      \
-    requires(any_dsl_v<T, A, B> && ocarina::is_same_expr_v<T, A, B> && none_dynamic_array_v<T, A, B>) \
-    OC_NODISCARD auto                                                                                 \
-    func(const T &t, const A &a, const B &b) noexcept {                                               \
-        auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),                    \
-                                                      CallOp::tag,                                    \
-                                                      {OC_EXPR(t), OC_EXPR(a), OC_EXPR(b)});          \
-        return eval<expr_value_t<T>>(expr);                                                           \
+#define OC_MAKE_TRIPLE_FUNC(func, tag)                                                                            \
+    template<typename T, typename A, typename B>                                                                  \
+    requires(any_dsl_v<T, A, B> && requires {                                                                     \
+        func(expr_value_t<T>{}, expr_value_t<A>{}, expr_value_t<B>{});                                            \
+    } && none_dynamic_array_v<T, A, B>)                                                                           \
+    OC_NODISCARD auto func(const T &t, const A &a, const B &b) noexcept {                                         \
+        auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),                                \
+                                                      CallOp::tag,                                                \
+                                                      {OC_EXPR(t), OC_EXPR(a), OC_EXPR(b)});                      \
+        return eval<expr_value_t<decltype(func(expr_value_t<T>{}, expr_value_t<A>{}, expr_value_t<B>{}))>>(expr); \
     }
 
-inline namespace dsl {
 OC_MAKE_TRIPLE_FUNC(clamp, CLAMP)
 OC_MAKE_TRIPLE_FUNC(lerp, LERP)
 OC_MAKE_TRIPLE_FUNC(fma, FMA)
-}// namespace dsl
 
 #undef OC_MAKE_TRIPLE_FUNC
 

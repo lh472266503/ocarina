@@ -197,6 +197,7 @@ using std::sinh;
 using std::sqrt;
 using std::tan;
 using std::tanh;
+using std::fma;
 
 [[nodiscard]] inline bool isnan(float x) noexcept {
     auto u = 0u;

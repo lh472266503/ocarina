@@ -190,47 +190,43 @@ MAKE_VECTOR_UNARY_FUNC(copysign)
 
 #undef MAKE_VECTOR_UNARY_FUNC
 
-#define MAKE_VECTOR_BINARY_FUNC(func)                                                 \
-    template<typename T>                                                              \
-    requires is_vector_v<T>                                                           \
-    OC_NODISCARD auto                                                                 \
-    func(const T &v, const T &u) noexcept {                                           \
-        static constexpr auto N = vector_dimension_v<T>;                              \
-        static_assert(N == 2 || N == 3 || N == 4);                                    \
-        if constexpr (N == 2) {                                                       \
-            return T{func(v.x, u.x), func(v.y, u.y)};                                 \
-        } else if constexpr (N == 3) {                                                \
-            return T(func(v.x, u.x), func(v.y, u.y), func(v.z, u.z));                 \
-        } else {                                                                      \
-            return T(func(v.x, u.x), func(v.y, u.y), func(v.z, u.z), func(v.w, u.w)); \
-        }                                                                             \
-    }                                                                                 \
-    template<typename T, typename U>                                                  \
-    requires is_scalar_v<T> && is_vector_v<U>                                         \
-    OC_NODISCARD auto                                                                 \
-    func(const T &t, const U &u) noexcept {                                           \
-        static constexpr auto N = vector_dimension_v<expr_value_t<U>>;                \
-        static_assert(N == 2 || N == 3 || N == 4);                                    \
-        if constexpr (N == 2) {                                                       \
-            return U{func(t, u.x), func(t, u.y)};                                     \
-        } else if constexpr (N == 3) {                                                \
-            return U(func(t, u.x), func(t, u.y), func(t, u.z));                       \
-        } else {                                                                      \
-            return U(func(t, u.x), func(t, u.y), func(t, u.z), func(t, u.w));         \
-        }                                                                             \
-    }                                                                                 \
-    template<typename T, typename U>                                                  \
-    requires is_vector_v<T> && is_scalar_v<U>                                         \
-    OC_NODISCARD auto func(const T &v, const U &u) noexcept {                         \
-        static constexpr auto N = vector_dimension_v<expr_value_t<T>>;                \
-        static_assert(N == 2 || N == 3 || N == 4);                                    \
-        if constexpr (N == 2) {                                                       \
-            return T{func(v.x, u), func(v.y, u)};                                     \
-        } else if constexpr (N == 3) {                                                \
-            return T(func(v.x, u), func(v.y, u), func(v.z, u));                       \
-        } else {                                                                      \
-            return T(func(v.x, u), func(v.y, u), func(v.z, u), func(v.w, u));         \
-        }                                                                             \
+#define MAKE_VECTOR_BINARY_FUNC(func)                                                            \
+    template<typename T, size_t N>                                                               \
+    requires is_all_number_v<T>                                                                  \
+    OC_NODISCARD auto func(const Vector<T, N> &v, const Vector<T, N> &u) noexcept {              \
+        if constexpr (N == 2) {                                                                  \
+            return Vector<T, N>{func(v.x, u.x), func(v.y, u.y)};                                 \
+        } else if constexpr (N == 3) {                                                           \
+            return Vector<T, N>(func(v.x, u.x), func(v.y, u.y), func(v.z, u.z));                 \
+        } else {                                                                                 \
+            return Vector<T, N>(func(v.x, u.x), func(v.y, u.y), func(v.z, u.z), func(v.w, u.w)); \
+        }                                                                                        \
+    }                                                                                            \
+                                                                                                 \
+    template<typename T, size_t N>                                                               \
+    requires is_all_number_v<T>                                                                  \
+    OC_NODISCARD auto                                                                            \
+    func(const T &t, const Vector<T, N> &u) noexcept {                                           \
+        static_assert(N == 2 || N == 3 || N == 4);                                               \
+        if constexpr (N == 2) {                                                                  \
+            return Vector<T, N>{func(t, u.x), func(t, u.y)};                                     \
+        } else if constexpr (N == 3) {                                                           \
+            return Vector<T, N>(func(t, u.x), func(t, u.y), func(t, u.z));                       \
+        } else {                                                                                 \
+            return Vector<T, N>(func(t, u.x), func(t, u.y), func(t, u.z), func(t, u.w));         \
+        }                                                                                        \
+    }                                                                                            \
+    template<typename T, size_t N>                                                               \
+    requires is_all_number_v<T>                                                                  \
+    OC_NODISCARD auto func(const Vector<T, N> &v, const T &u) noexcept {                         \
+        static_assert(N == 2 || N == 3 || N == 4);                                               \
+        if constexpr (N == 2) {                                                                  \
+            return Vector<T, N>{func(v.x, u), func(v.y, u)};                                     \
+        } else if constexpr (N == 3) {                                                           \
+            return Vector<T, N>(func(v.x, u), func(v.y, u), func(v.z, u));                       \
+        } else {                                                                                 \
+            return Vector<T, N>(func(v.x, u), func(v.y, u), func(v.z, u), func(v.w, u));         \
+        }                                                                                        \
     }
 
 MAKE_VECTOR_BINARY_FUNC(pow)
@@ -255,10 +251,7 @@ OC_NODISCARD constexpr ret_type Pow(const T &v) {
 }
 
 template<typename X, typename A, typename B>
-requires std::conjunction_v<
-    std::disjunction<is_scalar<X>, is_vector<X>>,
-    std::disjunction<is_scalar<A>, is_vector<A>>,
-    std::disjunction<is_scalar<B>, is_vector<B>>>
+requires is_all_basic_v<X, A, B>
 [[nodiscard]] constexpr auto clamp(X x, A a, B b) noexcept {
     return min(max(x, a), b);
 }
@@ -291,6 +284,18 @@ template<typename T, size_t N>
         return u.x * v.x + u.y * v.y + u.z * v.z;
     } else {
         return u.x * v.x + u.y * v.y + u.z * v.z + u.w * v.w;
+    }
+}
+
+template<typename T, size_t N>
+[[nodiscard]] Vector<T, N> fma(const Vector<T, N> &t, const Vector<T, N> &u, const Vector<T, N> &v) noexcept {
+    static_assert(N == 2 || N == 3 || N == 4);
+    if constexpr (N == 2) {
+        return Vector<T, N>(fma(t.x, u.x, v.x), fma(t.y, u.y, v.y));
+    } else if constexpr (N == 3) {
+        return Vector<T, N>(fma(t.x, u.x, v.x), fma(t.y, u.y, v.y), fma(t.z, u.z, v.z));
+    } else {
+        return Vector<T, N>(fma(t.x, u.x, v.x), fma(t.y, u.y, v.y), fma(t.z, u.z, v.z), fma(t.w, u.w, v.w));
     }
 }
 
