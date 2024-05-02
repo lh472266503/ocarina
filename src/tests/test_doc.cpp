@@ -21,7 +21,7 @@ struct Triple {
 };
 
 /// register a DSL struct, if you need upload a struct to device, be sure to register
-OC_STRUCT(Triple, i, j, k, h){
+OC_STRUCT(,Triple, i, j, k, h){
     [[nodiscard]] Uint sum() const noexcept {
         return i + j + k;
 }
@@ -37,7 +37,7 @@ struct Pair {
 };
 
 /// register a DSL struct, if you need upload a struct to device, be sure to register
-OC_PARAM_STRUCT(Pair, i, triple, b, t){
+OC_PARAM_STRUCT(,Pair, i, triple, b, t){
 
 };
 
@@ -50,7 +50,7 @@ struct Param {
 };
 
 /// register a DSL struct, if you need upload a struct to device, be sure to register
-OC_PARAM_STRUCT(Param, i, b, t,pa){
+OC_PARAM_STRUCT(,Param, i, b, t,pa){
 
 };
 

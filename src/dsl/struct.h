@@ -8,23 +8,23 @@
 #include "var.h"
 #include "soa.h"
 
-#define OC_STRUCT_IMPL(S, ...)                                            \
-    OC_MAKE_STRUCT_REFLECTION(S, ##__VA_ARGS__)                           \
-    OC_MAKE_STRUCT_DESC(S, ##__VA_ARGS__)                                 \
-    OC_MAKE_COMPUTABLE_BODY(S, ##__VA_ARGS__)                             \
-    OC_MAKE_STRUCT_SOA_VIEW(template<typename TBuffer>, S, ##__VA_ARGS__) \
-    OC_MAKE_PROXY(S)
+#define OC_STRUCT_IMPL(NS, S, ...)                                        \
+    OC_MAKE_STRUCT_REFLECTION(NS::S, ##__VA_ARGS__)                           \
+    OC_MAKE_STRUCT_DESC(NS::S, ##__VA_ARGS__)                                 \
+    OC_MAKE_COMPUTABLE_BODY(NS::S, ##__VA_ARGS__)                             \
+    OC_MAKE_STRUCT_SOA_VIEW(template<typename TBuffer>, NS::S, ##__VA_ARGS__) \
+    OC_MAKE_PROXY(NS::S)
 
-#define OC_STRUCT(S, ...) \
-    OC_STRUCT_IMPL(S, ##__VA_ARGS__)
+#define OC_STRUCT(NS, S, ...) \
+    OC_STRUCT_IMPL(NS, S, ##__VA_ARGS__)
 
-#define OC_BUILTIN_STRUCT(S, ...) \
-    OC_MAKE_BUILTIN_STRUCT(S)     \
-    OC_STRUCT_IMPL(S, ##__VA_ARGS__)
+#define OC_BUILTIN_STRUCT(NS,S, ...) \
+    OC_MAKE_BUILTIN_STRUCT(NS::S)     \
+    OC_STRUCT_IMPL(NS,S, ##__VA_ARGS__)
 
-#define OC_PARAM_STRUCT(S, ...)                 \
-    OC_MAKE_PARAM_STRUCT(S)                     \
-    OC_MAKE_STRUCT_REFLECTION(S, ##__VA_ARGS__) \
-    OC_MAKE_STRUCT_DESC(S, ##__VA_ARGS__)       \
-    OC_MAKE_COMPUTABLE_BODY(S, ##__VA_ARGS__)   \
-    OC_MAKE_PROXY(S)
+#define OC_PARAM_STRUCT(NS,S, ...)                 \
+    OC_MAKE_PARAM_STRUCT(NS::S)                     \
+    OC_MAKE_STRUCT_REFLECTION(NS::S, ##__VA_ARGS__) \
+    OC_MAKE_STRUCT_DESC(NS::S, ##__VA_ARGS__)       \
+    OC_MAKE_COMPUTABLE_BODY(NS::S, ##__VA_ARGS__)   \
+    OC_MAKE_PROXY(NS::S)

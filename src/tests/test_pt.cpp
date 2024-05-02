@@ -31,7 +31,7 @@ public:
     Triangle(uint i, uint j, uint k) : i(i), j(j), k(k) {}
     Triangle() = default;
 };
-OC_STRUCT(Triangle, i, j, k){};
+OC_STRUCT(,Triangle, i, j, k){};
 
 struct MeshHandle {
     uint tri_offset;
@@ -41,11 +41,11 @@ public:
     MeshHandle(uint o, uint n) : tri_offset(o), tri_num(n) {}
 };
 
-OC_STRUCT(MeshHandle, tri_offset, tri_num){};
+OC_STRUCT(,MeshHandle, tri_offset, tri_num){};
 
 // clang-format off
-OC_STRUCT(Material, albedo, emission) {};
-OC_STRUCT(Onb, tangent, binormal, normal) {
+OC_STRUCT(,Material, albedo, emission) {};
+OC_STRUCT(,Onb, tangent, binormal, normal) {
     [[nodiscard]] auto to_world(Var<float3> v) const noexcept {
         return v.x * tangent + v.y * binormal + v.z * normal;
     }

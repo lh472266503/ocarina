@@ -20,7 +20,7 @@ struct DebugData {
 }// namespace ocarina
 
 // clang-format off
-OC_STRUCT(ocarina::DebugData, range, enabled){};
+OC_STRUCT(ocarina,DebugData, range, enabled){};
 // clang-format on
 
 namespace ocarina {
