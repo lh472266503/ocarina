@@ -25,8 +25,6 @@ OC_STRUCT(ocarina,DebugData, range, enabled){};
 
 namespace ocarina {
 
-using DebugDataVar = Var<DebugData>;
-
 class Debugger {
 private:
     Managed<DebugData> data_;

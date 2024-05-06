@@ -161,9 +161,3 @@ OC_STRUCT(ocarina::math, Box2u, lower, upper) {
     }
 };
 // clang-format on
-
-namespace ocarina {
-inline namespace math {
-using OCBox2u = Var<Box2u>;
-}
-}// namespace ocarina::math
