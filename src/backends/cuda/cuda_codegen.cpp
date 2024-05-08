@@ -189,7 +189,6 @@ void CUDACodegen::visit(const MemberExpr *expr) noexcept {
             current_scratch() << xyzw[expr->swizzle_index(0)];
         } else {
             _emit_type_name(expr->type());
-            current_scratch() << swizzle_size;
             current_scratch() << "(";
             for (int i = 0; i < swizzle_size; ++i) {
                 expr->parent()->accept(*this);
