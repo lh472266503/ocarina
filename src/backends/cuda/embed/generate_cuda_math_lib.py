@@ -785,17 +785,17 @@ def convert_optix_device_header():
 
 def save_to_inl(var_name, content, fn):
     string = f"static const char {var_name}[] = " + "{\n    "
-    line_len = 20
-    for i,s in enumerate(content):
-        split = ", " if i != len(content) - 1 else ""
-        string += f"{format(ord(s), '#04x')}" + split
+    # line_len = 20
+    # for i,s in enumerate(content):
+    #     split = ", " if i != len(content) - 1 else ""
+    #     string += f"{format(ord(s), '#04x')}" + split
 
-        if i % line_len == line_len - 1:
-            string += "\n    "
-    string += ", 0x00};"
-    with open(fn, "w") as file:
-        file.write(file_head() + string)
-        file.close()
+    #     if i % line_len == line_len - 1:
+    #         string += "\n    "
+    # string += ", 0x00};"
+    # with open(fn, "w") as file:
+    #     file.write(file_head() + string)
+    #     file.close()
 
 def convert_cuda_math():
     curr_dir = dirname(realpath(__file__))
