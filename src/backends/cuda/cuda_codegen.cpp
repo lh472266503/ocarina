@@ -273,7 +273,8 @@ void CUDACodegen::_emit_builtin_vars_define(const Function &f) noexcept {
         _emit_indent();
         current_scratch() << "oc_uint3 d_dim = getLaunchDim();";
         _emit_newline();
-        for (const Variable &arg : f.arguments()) {
+
+        auto emit_arg = [&](const Variable &arg) {
             _emit_indent();
             current_scratch() << "auto ";
             _emit_variable_name(arg);
@@ -281,16 +282,14 @@ void CUDACodegen::_emit_builtin_vars_define(const Function &f) noexcept {
             _emit_variable_name(arg);
             current_scratch() << ";";
             _emit_newline();
+        };
+
+        for (const Variable &arg : f.arguments()) {
+            emit_arg(arg);
         }
 
         f.for_each_captured_resource([&](const CapturedResource &uniform) {
-            _emit_indent();
-            current_scratch() << "auto ";
-            _emit_variable_name(uniform.expression()->variable());
-            current_scratch() << " = params.";
-            _emit_variable_name(uniform.expression()->variable());
-            current_scratch() << ";";
-            _emit_newline();
+            emit_arg(uniform.expression()->variable());
         });
     } else if (f.is_callable()) {
     }
