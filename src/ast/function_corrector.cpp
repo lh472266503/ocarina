@@ -16,13 +16,13 @@ void FunctionCorrector::traverse(Function &function) noexcept {
 void FunctionCorrector::apply(Function *function) noexcept {
     function_stack_.push_back(function);
     traverse(*current_function());
-    if (current_function()->is_kernel()) {
-        /// Split parameter structure into separate elements
-        stage_ = SplitParamStruct;
-        current_function()->splitting_arguments();
-        traverse(*current_function());
+//    if (current_function()->is_kernel()) {
+//        /// Split parameter structure into separate elements
+//        stage_ = SplitParamStruct;
+//        current_function()->splitting_arguments();
+//        traverse(*current_function());
 //        stage_ = ProcessCapture;
-    }
+//    }
     function_stack_.pop_back();
 }
 
@@ -54,14 +54,14 @@ void FunctionCorrector::visit_expr(const Expression *const &expression, Function
     if (expression->is_ref()) {
         process_capture(const_cast<const Expression *&>(expression), cur_func);
     } else if (expression->is_member()) {
-        switch (stage_) {
-            case ProcessCapture:
-                process_capture(const_cast<const Expression *&>(expression), cur_func);
-                break;
-            case SplitParamStruct:
-                process_member_expr(const_cast<const Expression *&>(expression));
-                break;
-        }
+//        switch (stage_) {
+//            case ProcessCapture:
+//                process_capture(const_cast<const Expression *&>(expression), cur_func);
+//                break;
+//            case SplitParamStruct:
+                process_member_expr(const_cast<const Expression *&>(expression), cur_func);
+//                break;
+//        }
     } else {
         expression->accept(*this);
     }
@@ -235,13 +235,18 @@ void FunctionCorrector::visit(const MemberExpr *expr) {
     OC_ERROR_IF(stage_ == ProcessCapture);
 }
 
-void FunctionCorrector::process_member_expr(const Expression *&expression) noexcept {
+void FunctionCorrector::process_member_expr(const Expression *&expression,Function *cur_func) noexcept {
     auto member_expr = dynamic_cast<const MemberExpr *>(expression);
-    if (member_expr->parent()->type()->is_param_struct()) {
-        process_param_struct(expression);
+    if (member_expr->context() == cur_func) {
+        visit_expr(member_expr->parent_, cur_func);
     } else {
-        visit_expr(member_expr->parent_);
+        process_capture(expression, cur_func);
     }
+//    if (member_expr->parent()->type()->is_param_struct()) {
+//        process_param_struct(expression);
+//    } else {
+//        visit_expr(member_expr->parent_);
+//    }
 }
 
 void FunctionCorrector::process_param_struct(const Expression *&expression) noexcept {

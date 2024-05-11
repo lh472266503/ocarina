@@ -31,13 +31,13 @@ OC_STRUCT(,Triple, i, j, k, h){
 struct Pair {
     uint i{50};
     Triple triple;
-    BufferProxy<float3> b;
-    BufferProxy<Triple> t;
+//    BufferProxy<float3> b;
+//    BufferProxy<Triple> t;
     Pair() = default;
 };
 
 /// register a DSL struct, if you need upload a struct to device, be sure to register
-OC_PARAM_STRUCT(,Pair, i, triple, b, t){
+OC_STRUCT(,Pair, i, triple){
 
 };
 
@@ -120,7 +120,7 @@ void test_compute_shader(Device &device, Stream &stream) {
     };
     Pair pa;
 
-    pa.b = vert.proxy();
+//    pa.b = vert.proxy();
 
     //    Type::of<Hit>();
 
@@ -359,14 +359,15 @@ void test_parameter_struct(Device &device, Stream &stream) {
     Param p;
     p.b = vert.proxy();
     p.t = tri.proxy();
-    p.pa.b = vert.proxy();
+//    p.pa.b = vert.proxy();
 
-    Kernel kernel = [&](Var<Param> pp, Var<Pair> pa, BufferVar<float3> b3) {
+    Kernel kernel = [&]( Var<Pair> pa, BufferVar<float3> b3) {
 //        $info("{} ", pp.pa.b.at(dispatch_id()).x);
 //        vert.at(dispatch_id()).x += 90;
-        pa.triple.h.bary = make_float2(1.f);
+//        pa.triple.h.bary = make_float2(1.f);
         $outline{
             auto v = pa.triple.h.bary.xy();
+            int i = 0;
 //            auto v = pp.pa.b.read(dispatch_id());
 //            $info("{} {} {}  -- ", v);
         };
@@ -378,7 +379,7 @@ void test_parameter_struct(Device &device, Stream &stream) {
     };
     auto shader = device.compile(kernel, "param struct");
 
-    stream << shader(p, p.pa, vert).dispatch(2);
+    stream << shader( p.pa, vert).dispatch(2);
     stream << Env::printer().retrieve();
     stream << synchronize() << commit();
 }
