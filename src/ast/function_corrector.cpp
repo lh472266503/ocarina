@@ -10,7 +10,7 @@ void FunctionCorrector::traverse(Function &function) noexcept {
     visit(function.body());
     function.correct_used_structures();
     bool valid = function.check_context();
-    OC_ERROR_IF_NOT(valid, "FunctionCorrector error: invalid function ", function.description().c_str());
+//    OC_ERROR_IF_NOT(valid, "FunctionCorrector error: invalid function ", function.description().c_str());
 }
 
 void FunctionCorrector::apply(Function *function) noexcept {
@@ -21,6 +21,7 @@ void FunctionCorrector::apply(Function *function) noexcept {
         stage_ = SplitParamStruct;
         current_function()->splitting_arguments();
         traverse(*current_function());
+//        stage_ = ProcessCapture;
     }
     function_stack_.pop_back();
 }

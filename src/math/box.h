@@ -155,7 +155,7 @@ template<EPort p = D>
 }// namespace ocarina::math
 
 // clang-format off
-OC_STRUCT(ocarina::math, Box2u, lower, upper) {
+OC_STRUCT(ocarina, Box2u, lower, upper) {
     [[nodiscard]] Bool contains(const Uint2 &point) const noexcept {
         return ocarina::all(point >= lower) && ocarina::all(upper >= point);
     }

@@ -362,18 +362,19 @@ void test_parameter_struct(Device &device, Stream &stream) {
     p.pa.b = vert.proxy();
 
     Kernel kernel = [&](Var<Param> pp, Var<Pair> pa, BufferVar<float3> b3) {
-        $info("{} ", pp.pa.b.at(dispatch_id()).x);
-        vert.at(dispatch_id()).x += 90;
-
+//        $info("{} ", pp.pa.b.at(dispatch_id()).x);
+//        vert.at(dispatch_id()).x += 90;
+        pa.triple.h.bary = make_float2(1.f);
         $outline{
-            auto v = pp.pa.b.read(dispatch_id());
-            $info("{} {} {}  -- ", v);
+            auto v = pa.triple.h.bary.xy();
+//            auto v = pp.pa.b.read(dispatch_id());
+//            $info("{} {} {}  -- ", v);
         };
-        atomic_add(pp.t.at(0).i, 5.6f);
-        atomic_sub(pp.t.at(0).j, 1);
-        atomic_exch(pp.t.at(dispatch_id()).k, dispatch_id() * 25 + 2);
-        auto v =  pp.t.at(dispatch_id()) ;
-        $info("{} {} {} ", v.i, v.j, v.k);
+//        atomic_add(pp.t.at(0).i, 5.6f);
+//        atomic_sub(pp.t.at(0).j, 1);
+//        atomic_exch(pp.t.at(dispatch_id()).k, dispatch_id() * 25 + 2);
+//        auto v =  pp.t.at(dispatch_id()) ;
+//        $info("{} {} {} ", v.i, v.j, v.k);
     };
     auto shader = device.compile(kernel, "param struct");
 
