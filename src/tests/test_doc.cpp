@@ -364,7 +364,7 @@ void test_parameter_struct(Device &device, Stream &stream) {
     Kernel kernel = [&]( Var<Pair> pa, BufferVar<float3> b3) {
 //        $info("{} ", pp.pa.b.at(dispatch_id()).x);
 //        vert.at(dispatch_id()).x += 90;
-//        pa.triple.h.bary = make_float2(1.f);
+        pa.triple.h.bary = make_float2(1.f);
         $outline{
             auto v = pa.triple.h.bary.xy();
             int i = 0;

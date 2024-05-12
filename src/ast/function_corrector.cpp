@@ -10,19 +10,19 @@ void FunctionCorrector::traverse(Function &function) noexcept {
     visit(function.body());
     function.correct_used_structures();
     bool valid = function.check_context();
-//    OC_ERROR_IF_NOT(valid, "FunctionCorrector error: invalid function ", function.description().c_str());
+    OC_ERROR_IF_NOT(valid, "FunctionCorrector error: invalid function ", function.description().c_str());
 }
 
 void FunctionCorrector::apply(Function *function) noexcept {
     function_stack_.push_back(function);
     traverse(*current_function());
-//    if (current_function()->is_kernel()) {
-//        /// Split parameter structure into separate elements
-//        stage_ = SplitParamStruct;
-//        current_function()->splitting_arguments();
+    if (current_function()->is_kernel()) {
+        /// Split parameter structure into separate elements
+        stage_ = SplitParamStruct;
+        current_function()->splitting_arguments();
 //        traverse(*current_function());
-//        stage_ = ProcessCapture;
-//    }
+        stage_ = ProcessCapture;
+    }
     function_stack_.pop_back();
 }
 
@@ -237,16 +237,21 @@ void FunctionCorrector::visit(const MemberExpr *expr) {
 
 void FunctionCorrector::process_member_expr(const Expression *&expression,Function *cur_func) noexcept {
     auto member_expr = dynamic_cast<const MemberExpr *>(expression);
-    if (member_expr->context() == cur_func) {
-        visit_expr(member_expr->parent_, cur_func);
-    } else {
-        process_capture(expression, cur_func);
-    }
 //    if (member_expr->parent()->type()->is_param_struct()) {
 //        process_param_struct(expression);
 //    } else {
 //        visit_expr(member_expr->parent_);
 //    }
+    if (member_expr->context() == cur_func) {
+        visit_expr(member_expr->parent_, cur_func);
+    } else {
+        process_capture(expression, cur_func);
+    }
+    if (member_expr->parent()->type()->is_param_struct()) {
+        process_param_struct(expression);
+    } else {
+        visit_expr(member_expr->parent_);
+    }
 }
 
 void FunctionCorrector::process_param_struct(const Expression *&expression) noexcept {
