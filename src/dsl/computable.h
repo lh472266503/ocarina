@@ -16,7 +16,7 @@ namespace ocarina {
 
 namespace detail {
 template<typename Lhs, typename Rhs>
-requires (!is_param_struct_v<expr_value_t<Lhs>> && !is_param_struct_v<expr_value_t<Rhs>>)
+requires(!is_param_struct_v<expr_value_t<Lhs>> && !is_param_struct_v<expr_value_t<Rhs>>)
 void assign(Lhs &&lhs, Rhs &&rhs) noexcept;// implement in stmt_builder.h
 
 [[nodiscard]] Var<uint> correct_index(Var<uint> index, Var<uint> size, const string &desc,
@@ -498,8 +498,25 @@ struct Computable<Vector<T, 2>>
     OC_MAKE_ASSIGNMENT_FUNC
 
 public:
-    Var<T> x{Function::current()->swizzle(Type::of<T>(), expression(), 0, 1)};
-    Var<T> y{Function::current()->swizzle(Type::of<T>(), expression(), 1, 1)};
+    union {
+        struct {
+            Var<T> x;
+            Var<T> y;
+        };
+        std::array<Var<T>, 2> arr;
+    };
+
+private:
+    [[nodiscard]] bool initial() noexcept {
+        Var<T> x_tmp(Function::current()->swizzle(Type::of<T>(), expression(), 0, 1));
+        Var<T> y_tmp(Function::current()->swizzle(Type::of<T>(), expression(), 1, 1));
+        oc_memcpy(addressof(x), addressof(x_tmp), sizeof(x));
+        oc_memcpy(addressof(y), addressof(y_tmp), sizeof(y));
+        return true;
+    }
+    bool initialed_{initial()};
+
+public:
 #include "swizzle_inl/swizzle_2.inl.h"
 };
 
@@ -514,9 +531,28 @@ struct Computable<Vector<T, 3>>
     OC_MAKE_ASSIGNMENT_FUNC
 
 public:
-    Var<T> x{Function::current()->swizzle(Type::of<T>(), expression(), 0, 1)};
-    Var<T> y{Function::current()->swizzle(Type::of<T>(), expression(), 1, 1)};
-    Var<T> z{Function::current()->swizzle(Type::of<T>(), expression(), 2, 1)};
+    union {
+        struct {
+            Var<T> x;
+            Var<T> y;
+            Var<T> z;
+        };
+        std::array<Var<T>, 3> arr;
+    };
+
+private:
+    [[nodiscard]] bool initial() noexcept {
+        Var<T> x_tmp(Function::current()->swizzle(Type::of<T>(), expression(), 0, 1));
+        Var<T> y_tmp(Function::current()->swizzle(Type::of<T>(), expression(), 1, 1));
+        Var<T> z_tmp(Function::current()->swizzle(Type::of<T>(), expression(), 2, 1));
+        oc_memcpy(addressof(x), addressof(x_tmp), sizeof(x));
+        oc_memcpy(addressof(y), addressof(y_tmp), sizeof(y));
+        oc_memcpy(addressof(z), addressof(z_tmp), sizeof(z));
+        return true;
+    }
+    bool initialed_{initial()};
+
+public:
 #include "swizzle_inl/swizzle_3.inl.h"
 };
 
@@ -531,10 +567,31 @@ struct Computable<Vector<T, 4>>
     OC_MAKE_ASSIGNMENT_FUNC
 
 public:
-    Var<T> x{Function::current()->swizzle(Type::of<T>(), expression(), 0, 1)};
-    Var<T> y{Function::current()->swizzle(Type::of<T>(), expression(), 1, 1)};
-    Var<T> z{Function::current()->swizzle(Type::of<T>(), expression(), 2, 1)};
-    Var<T> w{Function::current()->swizzle(Type::of<T>(), expression(), 3, 1)};
+    union {
+        struct {
+            Var<T> x;
+            Var<T> y;
+            Var<T> z;
+            Var<T> w;
+        };
+        std::array<Var<T>, 4> arr;
+    };
+
+private:
+    [[nodiscard]] bool initial() noexcept {
+        Var<T> x_tmp(Function::current()->swizzle(Type::of<T>(), expression(), 0, 1));
+        Var<T> y_tmp(Function::current()->swizzle(Type::of<T>(), expression(), 1, 1));
+        Var<T> z_tmp(Function::current()->swizzle(Type::of<T>(), expression(), 2, 1));
+        Var<T> w_tmp(Function::current()->swizzle(Type::of<T>(), expression(), 3, 1));
+        oc_memcpy(addressof(x), addressof(x_tmp), sizeof(x));
+        oc_memcpy(addressof(y), addressof(y_tmp), sizeof(y));
+        oc_memcpy(addressof(z), addressof(z_tmp), sizeof(z));
+        oc_memcpy(addressof(w), addressof(w_tmp), sizeof(w));
+        return true;
+    }
+    bool initialed_{initial()};
+
+public:
 #include "swizzle_inl/swizzle_4.inl.h"
 };
 
