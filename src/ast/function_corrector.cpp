@@ -20,7 +20,7 @@ void FunctionCorrector::apply(Function *function) noexcept {
         /// Split parameter structure into separate elements
         stage_ = SplitParamStruct;
         current_function()->splitting_arguments();
-//        traverse(*current_function());
+        traverse(*current_function());
         stage_ = ProcessCapture;
     }
     function_stack_.pop_back();
@@ -54,14 +54,7 @@ void FunctionCorrector::visit_expr(const Expression *const &expression, Function
     if (expression->is_ref()) {
         process_capture(const_cast<const Expression *&>(expression), cur_func);
     } else if (expression->is_member()) {
-//        switch (stage_) {
-//            case ProcessCapture:
-//                process_capture(const_cast<const Expression *&>(expression), cur_func);
-//                break;
-//            case SplitParamStruct:
-                process_member_expr(const_cast<const Expression *&>(expression), cur_func);
-//                break;
-//        }
+        process_member_expr(const_cast<const Expression *&>(expression), cur_func);
     } else {
         expression->accept(*this);
     }
@@ -237,20 +230,23 @@ void FunctionCorrector::visit(const MemberExpr *expr) {
 
 void FunctionCorrector::process_member_expr(const Expression *&expression,Function *cur_func) noexcept {
     auto member_expr = dynamic_cast<const MemberExpr *>(expression);
-//    if (member_expr->parent()->type()->is_param_struct()) {
-//        process_param_struct(expression);
-//    } else {
-//        visit_expr(member_expr->parent_);
-//    }
-    if (member_expr->context() == cur_func) {
-        visit_expr(member_expr->parent_, cur_func);
-    } else {
-        process_capture(expression, cur_func);
-    }
-    if (member_expr->parent()->type()->is_param_struct()) {
-        process_param_struct(expression);
-    } else {
-        visit_expr(member_expr->parent_);
+    switch (stage_) {
+        case ProcessCapture:
+            if (member_expr->context() == cur_func) {
+                visit_expr(member_expr->parent_, cur_func);
+            } else {
+                process_capture(expression, cur_func);
+            }
+            break;
+        case SplitParamStruct:
+            if (member_expr->parent()->type()->is_param_struct()) {
+                process_param_struct(expression);
+            } else {
+                visit_expr(member_expr->parent_);
+            }
+            break;
+        default:
+            break;
     }
 }
 
