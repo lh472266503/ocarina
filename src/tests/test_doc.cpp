@@ -245,6 +245,12 @@ void test_lambda(Device &device, Stream &stream) {
         Float *p;
         HitVar *hit;
         Float b;
+
+        Float3 f3;
+
+        f3.x = 1;
+        f3.y = 2;
+
         $outline {
 
             Var<Triple> ttt;
@@ -412,8 +418,8 @@ int main(int argc, char *argv[]) {
     a = a + b;
 
 //        test_compute_shader(device, stream);
-    test_parameter_struct(device, stream);
-    //        test_lambda(device, stream);
+//    test_parameter_struct(device, stream);
+            test_lambda(device, stream);
 
     //    test_poly();
     return 0;
