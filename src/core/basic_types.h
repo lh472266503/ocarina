@@ -69,30 +69,43 @@ public:
         return *this;
     }
 
-    template<typename U>
-    requires ocarina::is_scalar_v<U>
-    vec_type operator+(const ocarina::Vector<U, num_component> &vec) const noexcept {
-        return to_vec() + vec;
+#define OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(op)                                                \
+    template<typename U>                                                                    \
+    requires ocarina::is_scalar_v<U>                                                        \
+    vec_type operator op(const ocarina::Vector<U, num_component> &vec) const noexcept {     \
+        return to_vec() op vec;                                                             \
+    }                                                                                       \
+                                                                                            \
+    template<typename U, size_t... OtherIndices>                                            \
+    requires ocarina::is_scalar_v<U>                                                        \
+    vec_type operator op(const swizzle_impl<U, N, OtherIndices...> &other) const noexcept { \
+        return to_vec() op other.to_vec();                                                  \
+    }                                                                                       \
+                                                                                            \
+    template<typename U>                                                                    \
+    requires ocarina::is_scalar_v<U>                                                        \
+    vec_type operator op(U val) const noexcept {                                            \
+        return to_vec() op val;                                                             \
+    }                                                                                       \
+                                                                                            \
+    template<typename Arg>                                                                  \
+    swizzle_impl &operator op##=(Arg && arg) noexcept {                                     \
+        auto tmp = *this;                                                                   \
+        *this = tmp op OC_FORWARD(arg);                                                     \
+        return *this;                                                                       \
     }
 
-    template<typename U, size_t... OtherIndices>
-    requires ocarina::is_scalar_v<U>
-    vec_type operator+(const swizzle_impl<U, N, OtherIndices...> &other) const noexcept {
-        return to_vec() + other.to_vec();
-    }
-
-    template<typename U>
-    requires ocarina::is_scalar_v<U>
-    vec_type operator+(U val) const noexcept {
-        return to_vec() + val;
-    }
-
-    template<typename Arg>
-    swizzle_impl &operator+=(Arg &&arg) noexcept {
-        auto tmp = *this;
-        *this = tmp + OC_FORWARD(arg);
-        return *this;
-    }
+    OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(+)
+    OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(-)
+    OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(*)
+    OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(/)
+    OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(%)
+    OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(>>)
+    OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(<<)
+    OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(|)
+    OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(&)
+    OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(^)
+#undef OC_MAKE_SWIZZLE_MEMBER_BINARY_OP
 
     [[nodiscard]] vec_type to_vec() const noexcept {
         ocarina::Vector<T, num_component> ret;
@@ -104,25 +117,6 @@ public:
     }
 };
 }// namespace ocarina::detail
-
-template<typename T, typename U, size_t N, size_t... Indices>
-requires ocarina::is_all_scalar_v<T, U>
-auto operator+(T lhs, ocarina::detail::swizzle_impl<U, N, Indices...> rhs) noexcept {
-    return lhs + rhs.to_vec();
-}
-
-template<typename T, typename U, size_t N, size_t... Indices>
-requires ocarina::is_all_scalar_v<T, U>
-auto operator+(ocarina::Vector<T, sizeof...(Indices)> lhs, ocarina::detail::swizzle_impl<U, N, Indices...> rhs) noexcept {
-    return lhs + rhs.to_vec();
-}
-
-template<typename T, typename U, size_t N, size_t... Indices>
-requires ocarina::is_all_scalar_v<T, U>
-auto operator+=(ocarina::Vector<T, sizeof...(Indices)> &lhs, ocarina::detail::swizzle_impl<U, N, Indices...> rhs) noexcept {
-    lhs += rhs.to_vec();
-    return lhs;
-}
 
 namespace ocarina {
 
@@ -534,6 +528,54 @@ OC_MAKE_VECTOR_LOGIC_OPERATOR(<=, ocarina::is_all_number_v<T>)
 OC_MAKE_VECTOR_LOGIC_OPERATOR(>=, ocarina::is_all_number_v<T>)
 
 #undef OC_MAKE_VECTOR_LOGIC_OPERATOR
+
+#define OC_MAKE_SWIZZLE_BINARY_OP(op)                                                       \
+    template<typename T, typename U, size_t N, size_t... Indices>                           \
+    requires ocarina::is_all_scalar_v<T, U>                                                 \
+    auto operator op(T lhs, ocarina::detail::swizzle_impl<U, N, Indices...> rhs) noexcept { \
+        return lhs op rhs.to_vec();                                                         \
+    }                                                                                       \
+                                                                                            \
+    template<typename T, typename U, size_t N, size_t... Indices>                           \
+    requires ocarina::is_all_scalar_v<T, U>                                                 \
+    auto operator op(ocarina::Vector<T, sizeof...(Indices)> lhs,                            \
+                     ocarina::detail::swizzle_impl<U, N, Indices...> rhs) noexcept {        \
+        return lhs op rhs.to_vec();                                                         \
+    }                                                                                       \
+                                                                                            \
+    template<typename T, typename U, size_t N, size_t... Indices>                           \
+    requires ocarina::is_all_scalar_v<T, U>                                                 \
+    auto operator op##=(ocarina::Vector<T, sizeof...(Indices)> &lhs,                        \
+                        ocarina::detail::swizzle_impl<U, N, Indices...> rhs) noexcept {     \
+        lhs op## = rhs.to_vec();                                                            \
+        return lhs;                                                                         \
+    }
+
+OC_MAKE_SWIZZLE_BINARY_OP(+)
+OC_MAKE_SWIZZLE_BINARY_OP(-)
+OC_MAKE_SWIZZLE_BINARY_OP(*)
+OC_MAKE_SWIZZLE_BINARY_OP(/)
+OC_MAKE_SWIZZLE_BINARY_OP(%)
+OC_MAKE_SWIZZLE_BINARY_OP(>>)
+OC_MAKE_SWIZZLE_BINARY_OP(<<)
+OC_MAKE_SWIZZLE_BINARY_OP(|)
+OC_MAKE_SWIZZLE_BINARY_OP(&)
+OC_MAKE_SWIZZLE_BINARY_OP(^)
+
+#undef OC_MAKE_SWIZZLE_BINARY_OP
+
+#define OC_MAKE_SWIZZLE_UNARY_OP(op)                                                 \
+    template<typename T, size_t N, size_t... Indices>                                \
+    requires ocarina::is_all_scalar_v<T>                                             \
+    auto operator op(ocarina::detail::swizzle_impl<T, N, Indices...> val) noexcept { \
+        return op val.to_vec();                                                      \
+    }
+OC_MAKE_SWIZZLE_UNARY_OP(+)
+OC_MAKE_SWIZZLE_UNARY_OP(-)
+OC_MAKE_SWIZZLE_UNARY_OP(!)
+OC_MAKE_SWIZZLE_UNARY_OP(~)
+
+#undef OC_MAKE_SWIZZLE_UNARY_OP
 
 [[nodiscard]] constexpr auto operator*(ocarina::float2x2 m, float s) noexcept {
     return ocarina::float2x2{m[0] * s, m[1] * s};

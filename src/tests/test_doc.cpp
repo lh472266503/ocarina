@@ -328,28 +328,33 @@ void test_lambda(Device &device, Stream &stream) {
     stream << vert.upload(vertices.data())
            << tri.upload(triangles.data());
 
-    float3 f3;
+    float3 f3 = make_float3(1,2,3);
 
-    auto sss = sizeof(float2);
+    float3 aa = -f3.xyy;
+//    f3 =  2.f + f3.xyz;
 
-    swizzle_type<int, 3, 0, 1, 2> xyz;
-    xyz.data_ = {3, 2, 1};
-    swizzle_type<float, 3, 2, 1, 0> zyx;
-    zyx.data_ = {3, 2, 1};
+    int aaa = 0;
 
-    f3 += xyz;
-
-    zyx += zyx;
-
-    zyx = f3 + zyx;
-
-    f3 = zyx + 5;
-
-    //    xyz = zyx;
-
-    float3 f2 = zyx.to_vec() + zyx.to_vec();
-
-    zyx = f2;
+//    auto sss = sizeof(float2);
+//
+//    swizzle_type<int, 3, 0, 1, 2> xyz;
+//    xyz.data_ = {3, 2, 1};
+//    swizzle_type<float, 3, 2, 1, 0> zyx;
+//    zyx.data_ = {3, 2, 1};
+//
+//    f3 += xyz;
+//
+//    zyx += zyx;
+//
+//    zyx = f3 + zyx;
+//
+//    f3 = zyx + 5;
+//
+//    //    xyz = zyx;
+//
+//    float3 f2 = zyx.to_vec() + zyx.to_vec();
+//
+//    zyx = f2;
 
     Kernel kernel = [&](Uint i) {
         Float *p;
