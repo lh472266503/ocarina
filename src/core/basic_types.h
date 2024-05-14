@@ -34,12 +34,13 @@ struct Vector {
 };
 
 namespace detail {
-template<typename T, size_t N, size_t... indices>
+template<typename T, size_t N, size_t... Indices>
 struct swizzle_impl {
-    static_assert(sizeof...(indices) <= 4 && std::max({indices...}) < N);
+    static constexpr uint num_component = sizeof...(Indices);
+    static_assert(num_component <= 4 && std::max({Indices...}) < N);
+    using vec_type = ocarina::Vector<T, num_component>;
 
-private:
-    static constexpr uint num_component = sizeof...(indices);
+public:
     ocarina::array<T, N> data_{};
 };
 }// namespace detail
@@ -57,6 +58,7 @@ public:
         struct {
             T x, y;
         };
+#include "swizzle_inl/swizzle2.inl.h"
     };
     Vector() : x{}, y{} {}
     explicit constexpr Vector(T s) noexcept : x{s}, y{s} {}
@@ -81,6 +83,7 @@ public:
         struct {
             T x, y, z;
         };
+#include "swizzle_inl/swizzle3.inl.h"
     };
     Vector() : x{}, y{}, z{} {}
     explicit constexpr Vector(T s) noexcept : x{s}, y{s}, z{s} {}
@@ -98,13 +101,14 @@ struct alignas(sizeof(T) * 4) Vector<T, 4> {
 
 public:
     template<size_t... index>
-    using swizzle_type = detail::swizzle_impl<T, 3, index...>;
+    using swizzle_type = detail::swizzle_impl<T, 4, index...>;
 
 public:
     union {
         struct {
             T x, y, z, w;
         };
+#include "swizzle_inl/swizzle4.inl.h"
     };
     Vector() : x{}, y{}, z{}, w{} {}
     explicit constexpr Vector(T s) noexcept : x{s}, y{s}, z{s}, w{s} {}

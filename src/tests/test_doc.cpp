@@ -330,6 +330,8 @@ void test_lambda(Device &device, Stream &stream) {
 
     float3 f3;
 
+    auto sss = sizeof(float2);
+
     swizzle_type<int, 3, 0, 1, 2> xyz;
     xyz.data_ = {3, 2, 1};
     swizzle_type<float, 3, 2, 1, 0> zyx;

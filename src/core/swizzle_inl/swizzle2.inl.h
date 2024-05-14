@@ -1,0 +1,30 @@
+swizzle_type<0, 0> xx, rr;
+swizzle_type<0, 1> xy, rg;
+swizzle_type<1, 0> yx, gr;
+swizzle_type<1, 1> yy, gg;
+
+swizzle_type<0, 0, 0> xxx, rrr;
+swizzle_type<0, 0, 1> xxy, rrg;
+swizzle_type<0, 1, 0> xyx, rgr;
+swizzle_type<0, 1, 1> xyy, rgg;
+swizzle_type<1, 0, 0> yxx, grr;
+swizzle_type<1, 0, 1> yxy, grg;
+swizzle_type<1, 1, 0> yyx, ggr;
+swizzle_type<1, 1, 1> yyy, ggg;
+
+swizzle_type<0, 0, 0, 0> xxxx, rrrr;
+swizzle_type<0, 0, 0, 1> xxxy, rrrg;
+swizzle_type<0, 0, 1, 0> xxyx, rrgr;
+swizzle_type<0, 0, 1, 1> xxyy, rrgg;
+swizzle_type<0, 1, 0, 0> xyxx, rgrr;
+swizzle_type<0, 1, 0, 1> xyxy, rgrg;
+swizzle_type<0, 1, 1, 0> xyyx, rggr;
+swizzle_type<0, 1, 1, 1> xyyy, rggg;
+swizzle_type<1, 0, 0, 0> yxxx, grrr;
+swizzle_type<1, 0, 0, 1> yxxy, grrg;
+swizzle_type<1, 0, 1, 0> yxyx, grgr;
+swizzle_type<1, 0, 1, 1> yxyy, grgg;
+swizzle_type<1, 1, 0, 0> yyxx, ggrr;
+swizzle_type<1, 1, 0, 1> yyxy, ggrg;
+swizzle_type<1, 1, 1, 0> yyyx, gggr;
+swizzle_type<1, 1, 1, 1> yyyy, gggg;

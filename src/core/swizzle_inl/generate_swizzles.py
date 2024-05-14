@@ -3,27 +3,27 @@ from os.path import realpath, dirname
 
 def generate(file, dim):
     entries = ["x", "y", "z", "w"][:dim]
-    for x in entries:
-        for y in entries:
-            print(f"[[nodiscard]] constexpr auto {x}{y}_() const noexcept {{ return Vector<T, 2>{{{x}, {y}}}; }}", file=file)
+    color_entries = ["r", "g", "b", "a"][:dim]
+    for i,x in enumerate(entries):
+        for j,y in enumerate(entries):
+            print(f"swizzle_type<{i}, {j}> {x}{y}, {color_entries[i]}{color_entries[j]};", file=file)
     print("", file=file)
-    for x in entries:
-        for y in entries:
-            for z in entries:
-                print(f"[[nodiscard]] constexpr auto {x}{y}{z}_() const noexcept {{ return Vector<T, 3>{{{x}, {y}, {z}}}; }}",
+    for i, x in enumerate(entries):
+        for j, y in enumerate(entries):
+            for k, z in enumerate(entries):
+                print(f"swizzle_type<{i}, {j}, {k}> {x}{y}{z}, {color_entries[i]}{color_entries[j]}{color_entries[k]};",
                       file=file)
     print("", file=file)    
-    for x in entries:
-        for y in entries:
-            for z in entries:
-                for w in entries:
-                    print(f"[[nodiscard]] constexpr auto {x}{y}{z}{w}_() const noexcept {{ " +
-                          f"return Vector<T, 4>{{{x}, {y}, {z}, {w}}}; }}",
+    for i, x in enumerate(entries):
+        for j, y in enumerate(entries):
+            for k, z in enumerate(entries):
+                for n, w in enumerate(entries):
+                    print(f"swizzle_type<{i}, {j}, {k}, {n}> {x}{y}{z}{w}, {color_entries[i]}{color_entries[j]}{color_entries[k]}{color_entries[n]};",
                           file=file)
 
 
 if __name__ == "__main__":
     base = dirname(realpath(__file__))
     for dim in range(2, 5):
-        with open(f"{base}/swizzle_{dim}.inl.h", "w") as file:
+        with open(f"{base}/swizzle{dim}.inl.h", "w") as file:
             generate(file, dim)
