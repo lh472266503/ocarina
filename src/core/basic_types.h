@@ -33,11 +33,32 @@ struct Vector {
     static_assert(always_false_v<T>, "Invalid vector storage");
 };
 
+namespace detail {
+template<typename T, size_t N, size_t... indices>
+struct swizzle_impl {
+    static_assert(sizeof...(indices) <= 4 && std::max({indices...}) < N);
+
+private:
+    static constexpr uint num_component = sizeof...(indices);
+    ocarina::array<T, N> data_{};
+};
+}// namespace detail
+
 template<typename T>
 struct alignas(sizeof(T) * 2) Vector<T, 2> {
     static_assert(valid_vector_v<T>, "Invalid vector type");
-    T x{}, y{};
-    Vector() = default;
+
+public:
+    template<size_t... index>
+    using swizzle_type = detail::swizzle_impl<T, 2, index...>;
+
+public:
+    union {
+        struct {
+            T x, y;
+        };
+    };
+    Vector() : x{}, y{} {}
     explicit constexpr Vector(T s) noexcept : x{s}, y{s} {}
     template<typename U>
     explicit constexpr Vector(U s) noexcept : Vector(static_cast<T>(s)) {}
@@ -50,8 +71,18 @@ struct alignas(sizeof(T) * 2) Vector<T, 2> {
 template<typename T>
 struct alignas(sizeof(T) * 4) Vector<T, 3> {
     static_assert(valid_vector_v<T>, "Invalid vector type");
-    T x{}, y{}, z{};
-    Vector() = default;
+
+public:
+    template<size_t... index>
+    using swizzle_type = detail::swizzle_impl<T, 3, index...>;
+
+public:
+    union {
+        struct {
+            T x, y, z;
+        };
+    };
+    Vector() : x{}, y{}, z{} {}
     explicit constexpr Vector(T s) noexcept : x{s}, y{s}, z{s} {}
     template<typename U>
     explicit constexpr Vector(U s) noexcept : Vector(static_cast<T>(s)) {}
@@ -64,8 +95,18 @@ struct alignas(sizeof(T) * 4) Vector<T, 3> {
 template<typename T>
 struct alignas(sizeof(T) * 4) Vector<T, 4> {
     static_assert(valid_vector_v<T>, "Invalid vector type");
-    T x{}, y{}, z{}, w{};
-    Vector() = default;
+
+public:
+    template<size_t... index>
+    using swizzle_type = detail::swizzle_impl<T, 3, index...>;
+
+public:
+    union {
+        struct {
+            T x, y, z, w;
+        };
+    };
+    Vector() : x{}, y{}, z{}, w{} {}
     explicit constexpr Vector(T s) noexcept : x{s}, y{s}, z{s}, w{s} {}
     template<typename U>
     explicit constexpr Vector(U s) noexcept : Vector(static_cast<T>(s)) {}

@@ -21,7 +21,7 @@ struct Triple {
 };
 
 /// register a DSL struct, if you need upload a struct to device, be sure to register
-OC_STRUCT(,Triple, i, j, k, h){
+OC_STRUCT(, Triple, i, j, k, h){
     [[nodiscard]] Uint sum() const noexcept {
         return i + j + k;
 }
@@ -31,13 +31,13 @@ OC_STRUCT(,Triple, i, j, k, h){
 struct Pair {
     uint i{50};
     Triple triple;
-//    BufferProxy<float3> b;
-//    BufferProxy<Triple> t;
+    //    BufferProxy<float3> b;
+    //    BufferProxy<Triple> t;
     Pair() = default;
 };
 
 /// register a DSL struct, if you need upload a struct to device, be sure to register
-OC_STRUCT(,Pair, i, triple){
+OC_STRUCT(, Pair, i, triple){
 
 };
 
@@ -50,7 +50,7 @@ struct Param {
 };
 
 /// register a DSL struct, if you need upload a struct to device, be sure to register
-OC_PARAM_STRUCT(,Param, i, b, t,pa){
+OC_PARAM_STRUCT(, Param, i, b, t, pa){
 
 };
 
@@ -120,7 +120,7 @@ void test_compute_shader(Device &device, Stream &stream) {
     };
     Pair pa;
 
-//    pa.b = vert.proxy();
+    //    pa.b = vert.proxy();
 
     //    Type::of<Hit>();
 
@@ -138,76 +138,76 @@ void test_compute_shader(Device &device, Stream &stream) {
 
     Kernel kernel = [&](Var<Pair> p, BufferVar<Triple> triangle,
                         ByteBufferVar byte_buffer_var, BufferVar<float3> vert_buffer) {
-//        $info("{}   ", p.i);
-//        Float3 ver = p.b.read(dispatch_id());
-//        $info("{}  {}  {}   {}", ver, p.b.size());
-//        HitVar hit;
-//
-//        Float l = 1.f;
-//        Float r = 2.f;
-//
-//        Float c = add(l, r);
-//
-//        /// Note the usage and implementation of DSL struct member function, e.g sum()
-//        Var t = triangle.read(dispatch_id());
-//        $info("triple  index {} : i = {}, j = {}, k = {},  sum: {} ", dispatch_id(), t.i, t.j, t.k, t->sum());
-//
-//        $info("vert from capture {} {} {}", vert.read(dispatch_id()));
-//        $info("vert_buffer  {} {} {}", vert_buffer.read(dispatch_id()));
-//
-//        $switch(dispatch_id()) {
-//            $case(1) {
-//                $info("dispatch_idx is {} {} {}", dispatch_idx());
-//            };
-//            $default {
-//                $info("switch default  dispatch_idx is {} {} {}", dispatch_idx());
-//            };
-//        };
-//
-//        $if(dispatch_id() == 1) {
-//            $info("if branch dispatch_idx is {} {} {}", dispatch_idx());
-//        }
-//        $elif(dispatch_id() == 2) {
-//            $info("if else branch dispatch_idx is {} {} {}", dispatch_idx());
-//        }
-//        $else {
-//            $info("else branch dispatch_idx is {} {} {}", dispatch_idx());
-//        };
-//
-//        Uint count = 2;
-//
-//        $for(i, count) {
-//            $info("count for statement dispatch_idx is {} {} {}, i = {} ", dispatch_idx(), i);
-//        };
-//
+        //        $info("{}   ", p.i);
+        //        Float3 ver = p.b.read(dispatch_id());
+        //        $info("{}  {}  {}   {}", ver, p.b.size());
+        //        HitVar hit;
+        //
+        //        Float l = 1.f;
+        //        Float r = 2.f;
+        //
+        //        Float c = add(l, r);
+        //
+        //        /// Note the usage and implementation of DSL struct member function, e.g sum()
+        //        Var t = triangle.read(dispatch_id());
+        //        $info("triple  index {} : i = {}, j = {}, k = {},  sum: {} ", dispatch_id(), t.i, t.j, t.k, t->sum());
+        //
+        //        $info("vert from capture {} {} {}", vert.read(dispatch_id()));
+        //        $info("vert_buffer  {} {} {}", vert_buffer.read(dispatch_id()));
+        //
+        //        $switch(dispatch_id()) {
+        //            $case(1) {
+        //                $info("dispatch_idx is {} {} {}", dispatch_idx());
+        //            };
+        //            $default {
+        //                $info("switch default  dispatch_idx is {} {} {}", dispatch_idx());
+        //            };
+        //        };
+        //
+        //        $if(dispatch_id() == 1) {
+        //            $info("if branch dispatch_idx is {} {} {}", dispatch_idx());
+        //        }
+        //        $elif(dispatch_id() == 2) {
+        //            $info("if else branch dispatch_idx is {} {} {}", dispatch_idx());
+        //        }
+        //        $else {
+        //            $info("else branch dispatch_idx is {} {} {}", dispatch_idx());
+        //        };
+        //
+        //        Uint count = 2;
+        //
+        //        $for(i, count) {
+        //            $info("count for statement dispatch_idx is {} {} {}, i = {} ", dispatch_idx(), i);
+        //        };
+        //
         Uint begin = 2;
         Uint end = 10;
         $for(i, begin, end) {
             $info("begin end for statement dispatch_idx is {} {} {}, i = {} ", dispatch_idx(), i);
         };
-//
-//        Uint step = 2;
+        //
+        //        Uint step = 2;
 
         $for(i, 10, 0, -2) {
             $info("begin end step for statement dispatch_idx is {} {} {}, i = {} ", dispatch_idx(), i);
         };
 
-//        SOAView soa = byte_buffer_var.soa_view<Elm>();
-//        soa.write(dispatch_id(), make_float4x4(1.f * dispatch_id()));
-//        Var a = soa.read(dispatch_id());
-//
-//        Uint2 aa = make_uint2(1);
-//        Float2 bb = make_float2(1.5f);
-//
-//        bb += bb + aa;
-//
-//        $info("\n {} {} {} {}  \n"
-//              "{} {} {} {}  \n"
-//              "{} {} {} {}  \n"
-//              "{} {} {} {}  \n",
-//              a[0], a[1], a[2], a[3]);
-//
-//        $info("{} {}   ", bb);
+        //        SOAView soa = byte_buffer_var.soa_view<Elm>();
+        //        soa.write(dispatch_id(), make_float4x4(1.f * dispatch_id()));
+        //        Var a = soa.read(dispatch_id());
+        //
+        //        Uint2 aa = make_uint2(1);
+        //        Float2 bb = make_float2(1.5f);
+        //
+        //        bb += bb + aa;
+        //
+        //        $info("\n {} {} {} {}  \n"
+        //              "{} {} {} {}  \n"
+        //              "{} {} {} {}  \n"
+        //              "{} {} {} {}  \n",
+        //              a[0], a[1], a[2], a[3]);
+        //
+        //        $info("{} {}   ", bb);
     };
     Triple triple1{1, 2, 3};
 
@@ -229,6 +229,64 @@ struct Test {
     Uint a;
 };
 
+template<typename T, size_t N, size_t... Indices>
+struct swizzle_type {
+    static constexpr uint num_component = sizeof...(Indices);
+    static_assert(num_component <= 4 && std::max({Indices...}) < N);
+    using vec_type = ocarina::Vector<T, num_component>;
+
+private:
+    template<size_t... index>
+    void assign_to(vec_type &vec, std::index_sequence<index...>) const noexcept {
+        ((vec[index] = data_[Indices]), ...);
+    }
+
+    template<typename U, size_t... index>
+    void assign_from(const ocarina::Vector<U, num_component> &vec, std::index_sequence<index...>) noexcept {
+        ((data_[Indices] = vec[index]), ...);
+    }
+
+public:
+    ocarina::array<T, N> data_{};
+
+public:
+    template<typename U, size_t... OtherIndices>
+    swizzle_type &operator=(const swizzle_type<U, N, OtherIndices...> &other) {
+        ((data_[Indices] = other.data_[OtherIndices]), ...);
+        return *this;
+    }
+
+    template<typename U>
+    swizzle_type &operator=(const ocarina::Vector<U, num_component> &vec) noexcept {
+        assign_from(vec, std::make_index_sequence<num_component>());
+        return *this;
+    }
+
+    template<typename U>
+    vec_type operator+(const ocarina::Vector<U, num_component> &vec) const noexcept {
+        return to_vec() + vec;
+    }
+
+    template<typename U, size_t... OtherIndices>
+    vec_type operator+(const swizzle_type<U, N, OtherIndices...> &other) const noexcept {
+        return to_vec() + other.to_vec();
+    }
+
+    template<typename U>
+    vec_type operator+(U val) const noexcept {
+        return to_vec() + val;
+    }
+
+    [[nodiscard]] vec_type to_vec() const noexcept {
+        ocarina::Vector<T, num_component> ret;
+        assign_to(ret, std::make_index_sequence<num_component>());
+        return ret;
+    }
+    operator vec_type() const noexcept {
+        return to_vec();
+    }
+};
+
 void test_lambda(Device &device, Stream &stream) {
     auto [vertices, triangles] = get_cube();
 
@@ -240,6 +298,21 @@ void test_lambda(Device &device, Stream &stream) {
     stream << bindless_array->upload_buffer_handles(true) << synchronize();
     stream << vert.upload(vertices.data())
            << tri.upload(triangles.data());
+
+    float3 f3;
+
+    swizzle_type<int, 3, 0, 1, 2> xyz;
+    xyz.data_ = {3, 2, 1};
+    swizzle_type<float, 3, 2, 1, 0> zyx;
+    zyx.data_ = {3, 2, 1};
+
+    f3 = zyx + 5;
+
+    //    xyz = zyx;
+
+    float3 f2 = zyx.to_vec() + zyx.to_vec();
+
+    zyx = f2;
 
     Kernel kernel = [&](Uint i) {
         Float *p;
@@ -365,27 +438,27 @@ void test_parameter_struct(Device &device, Stream &stream) {
     Param p;
     p.b = vert.proxy();
     p.t = tri.proxy();
-//    p.pa.b = vert.proxy();
+    //    p.pa.b = vert.proxy();
 
-    Kernel kernel = [&]( Var<Pair> pa, BufferVar<float3> b3) {
-//        $info("{} ", pp.pa.b.at(dispatch_id()).x);
-//        vert.at(dispatch_id()).x += 90;
+    Kernel kernel = [&](Var<Pair> pa, BufferVar<float3> b3) {
+        //        $info("{} ", pp.pa.b.at(dispatch_id()).x);
+        //        vert.at(dispatch_id()).x += 90;
         pa.triple.h.bary = make_float2(1.f);
-        $outline{
+        $outline {
             auto v = pa.triple.h.bary.xy();
             int i = 0;
-//            auto v = pp.pa.b.read(dispatch_id());
-//            $info("{} {} {}  -- ", v);
+            //            auto v = pp.pa.b.read(dispatch_id());
+            //            $info("{} {} {}  -- ", v);
         };
-//        atomic_add(pp.t.at(0).i, 5.6f);
-//        atomic_sub(pp.t.at(0).j, 1);
-//        atomic_exch(pp.t.at(dispatch_id()).k, dispatch_id() * 25 + 2);
-//        auto v =  pp.t.at(dispatch_id()) ;
-//        $info("{} {} {} ", v.i, v.j, v.k);
+        //        atomic_add(pp.t.at(0).i, 5.6f);
+        //        atomic_sub(pp.t.at(0).j, 1);
+        //        atomic_exch(pp.t.at(dispatch_id()).k, dispatch_id() * 25 + 2);
+        //        auto v =  pp.t.at(dispatch_id()) ;
+        //        $info("{} {} {} ", v.i, v.j, v.k);
     };
     auto shader = device.compile(kernel, "param struct");
 
-    stream << shader( p.pa, vert).dispatch(2);
+    stream << shader(p.pa, vert).dispatch(2);
     stream << Env::printer().retrieve();
     stream << synchronize() << commit();
 }
@@ -417,9 +490,9 @@ int main(int argc, char *argv[]) {
     a = a + a;
     a = a + b;
 
-//        test_compute_shader(device, stream);
-//    test_parameter_struct(device, stream);
-            test_lambda(device, stream);
+    //        test_compute_shader(device, stream);
+    //    test_parameter_struct(device, stream);
+    test_lambda(device, stream);
 
     //    test_poly();
     return 0;
