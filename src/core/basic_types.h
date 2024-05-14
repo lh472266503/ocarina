@@ -33,17 +33,98 @@ struct Vector {
     static_assert(always_false_v<T>, "Invalid vector storage");
 };
 
-namespace detail {
+}// namespace ocarina
+
+namespace ocarina::detail {
 template<typename T, size_t N, size_t... Indices>
 struct swizzle_impl {
     static constexpr uint num_component = sizeof...(Indices);
     static_assert(num_component <= 4 && std::max({Indices...}) < N);
     using vec_type = ocarina::Vector<T, num_component>;
 
+private:
+    template<size_t... index>
+    void assign_to(vec_type &vec, std::index_sequence<index...>) const noexcept {
+        ((vec[index] = data_[Indices]), ...);
+    }
+
+    template<typename U, size_t... index>
+    void assign_from(const ocarina::Vector<U, num_component> &vec, std::index_sequence<index...>) noexcept {
+        ((data_[Indices] = vec[index]), ...);
+    }
+
 public:
     ocarina::array<T, N> data_{};
+
+public:
+    template<typename U, size_t... OtherIndices>
+    swizzle_impl &operator=(const swizzle_impl<U, N, OtherIndices...> &other) {
+        ((data_[Indices] = other.data_[OtherIndices]), ...);
+        return *this;
+    }
+
+    template<typename U>
+    swizzle_impl &operator=(const ocarina::Vector<U, num_component> &vec) noexcept {
+        assign_from(vec, std::make_index_sequence<num_component>());
+        return *this;
+    }
+
+    template<typename U>
+    requires ocarina::is_scalar_v<U>
+    vec_type operator+(const ocarina::Vector<U, num_component> &vec) const noexcept {
+        return to_vec() + vec;
+    }
+
+    template<typename U, size_t... OtherIndices>
+    requires ocarina::is_scalar_v<U>
+    vec_type operator+(const swizzle_impl<U, N, OtherIndices...> &other) const noexcept {
+        return to_vec() + other.to_vec();
+    }
+
+    template<typename U>
+    requires ocarina::is_scalar_v<U>
+    vec_type operator+(U val) const noexcept {
+        return to_vec() + val;
+    }
+
+    template<typename Arg>
+    swizzle_impl &operator+=(Arg &&arg) noexcept {
+        auto tmp = *this;
+        *this = tmp + OC_FORWARD(arg);
+        return *this;
+    }
+
+    [[nodiscard]] vec_type to_vec() const noexcept {
+        ocarina::Vector<T, num_component> ret;
+        assign_to(ret, std::make_index_sequence<num_component>());
+        return ret;
+    }
+    operator vec_type() const noexcept {
+        return to_vec();
+    }
 };
-}// namespace detail
+}// namespace ocarina::detail
+
+template<typename T, typename U, size_t N, size_t... Indices>
+requires ocarina::is_all_scalar_v<T, U>
+auto operator+(T lhs, ocarina::detail::swizzle_impl<U, N, Indices...> rhs) noexcept {
+    return lhs + rhs.to_vec();
+}
+
+template<typename T, typename U, size_t N, size_t... Indices>
+requires ocarina::is_all_scalar_v<T, U>
+auto operator+(ocarina::Vector<T, sizeof...(Indices)> lhs, ocarina::detail::swizzle_impl<U, N, Indices...> rhs) noexcept {
+    return lhs + rhs.to_vec();
+}
+
+template<typename T, typename U, size_t N, size_t... Indices>
+requires ocarina::is_all_scalar_v<T, U>
+auto operator+=(ocarina::Vector<T, sizeof...(Indices)> &lhs, ocarina::detail::swizzle_impl<U, N, Indices...> rhs) noexcept {
+    lhs += rhs.to_vec();
+    return lhs;
+}
+
+namespace ocarina {
 
 template<typename T>
 struct alignas(sizeof(T) * 2) Vector<T, 2> {
