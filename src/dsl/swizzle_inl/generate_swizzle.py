@@ -5,44 +5,44 @@ def generate(file, dim):
     entries = ["x", "y", "z", "w"][:dim]
     for i,x in enumerate(entries):
         for j,y in enumerate(entries):
-            str = f"[[nodiscard]] auto {x}{y}() const {{ return eval<Vector<T, 2>>(Function::current()->swizzle(Type::of<Vector<T, 2>>(), expression(), 0x{i}{j}, 2)); }}"
+            str = f"[[nodiscard]] auto {x}{y}_() const {{ return eval<Vector<T, 2>>(Function::current()->swizzle(Type::of<Vector<T, 2>>(), expression(), 0x{i}{j}, 2)); }}"
             print(str, file=file)
     print("", file=file)
     for i,x in enumerate(entries):
         for j,y in enumerate(entries):
             for k,z in enumerate(entries):
-                str = f"[[nodiscard]] auto {x}{y}{z}() const {{ return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<Vector<T, 3>>(), expression(), 0x{i}{j}{k}, 3)); }}"
+                str = f"[[nodiscard]] auto {x}{y}{z}_() const {{ return eval<Vector<T, 3>>(Function::current()->swizzle(Type::of<Vector<T, 3>>(), expression(), 0x{i}{j}{k}, 3)); }}"
                 print(str, file=file)
     print("", file=file)
     for i,x in enumerate(entries):
         for j,y in enumerate(entries):
             for k,z in enumerate(entries):
                 for l,w in enumerate(entries):
-                    str = f"[[nodiscard]] auto {x}{y}{z}{w}() const {{ return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<Vector<T, 4>>(), expression(), 0x{i}{j}{k}{l}, 4)); }}"
+                    str = f"[[nodiscard]] auto {x}{y}{z}{w}_() const {{ return eval<Vector<T, 4>>(Function::current()->swizzle(Type::of<Vector<T, 4>>(), expression(), 0x{i}{j}{k}{l}, 4)); }}"
                     print(str, file=file)
 
 def dynamic_array_swizzle(file, dim):
     entries = ["x", "y", "z", "w"]
     for i,x in enumerate(entries):
-        str = f"[[nodiscard]] DynamicArray<T> {x}() const {{ OC_ASSERT(size_ > {i}); return DynamicArray<T>::create(at({i})); }}"
+        str = f"[[nodiscard]] DynamicArray<T> {x}_() const {{ OC_ASSERT(size_ > {i}); return DynamicArray<T>::create(at({i})); }}"
         print(str, file=file)
     print("", file=file)
     for i,x in enumerate(entries):
         for j,y in enumerate(entries):
-            str = f"[[nodiscard]] DynamicArray<T> {x}{y}() const {{ OC_ASSERT(size_ > {max(i,j)}); return DynamicArray<T>::create(at({i}), at({j})); }}"
+            str = f"[[nodiscard]] DynamicArray<T> {x}{y}_() const {{ OC_ASSERT(size_ > {max(i,j)}); return DynamicArray<T>::create(at({i}), at({j})); }}"
             print(str, file=file)
     print("", file=file)
     for i,x in enumerate(entries):
         for j,y in enumerate(entries):
             for k,z in enumerate(entries):
-                str = f"[[nodiscard]] DynamicArray<T> {x}{y}{z}() const {{ OC_ASSERT(size_ > {max(i,j,k)}); return DynamicArray<T>::create(at({i}), at({j}), at({k})); }}"
+                str = f"[[nodiscard]] DynamicArray<T> {x}{y}{z}_() const {{ OC_ASSERT(size_ > {max(i,j,k)}); return DynamicArray<T>::create(at({i}), at({j}), at({k})); }}"
                 print(str, file=file)
     print("", file=file)
     for i,x in enumerate(entries):
         for j,y in enumerate(entries):
             for k,z in enumerate(entries):
                 for l,w in enumerate(entries):
-                    str = f"[[nodiscard]] DynamicArray<T> {x}{y}{z}{w}() const {{ OC_ASSERT(size_ > {max(i,j,k,l)}); return DynamicArray<T>::create(at({i}), at({j}), at({k}), at({l})); }}"
+                    str = f"[[nodiscard]] DynamicArray<T> {x}{y}{z}{w}_() const {{ OC_ASSERT(size_ > {max(i,j,k,l)}); return DynamicArray<T>::create(at({i}), at({j}), at({k}), at({l})); }}"
                     print(str, file=file)
 
 def array_swizzle(file, dim):
@@ -51,20 +51,20 @@ def array_swizzle(file, dim):
     print("", file=file)
     for i,x in enumerate(entries):
         for j,y in enumerate(entries):
-            str = f"[[nodiscard]] auto {x}{y}() const {{ return as_vec2().{x}{y}(); }}"
+            str = f"[[nodiscard]] auto {x}{y}_() const {{ return as_vec2().{x}{y}_(); }}"
             print(str, file=file)
     print("", file=file)
     for i,x in enumerate(entries):
         for j,y in enumerate(entries):
             for k,z in enumerate(entries):
-                str = f"[[nodiscard]] auto {x}{y}{z}() const {{ return as_vec3().{x}{y}{z}(); }}"
+                str = f"[[nodiscard]] auto {x}{y}{z}_() const {{ return as_vec3().{x}{y}{z}_(); }}"
                 print(str, file=file)
     print("", file=file)
     for i,x in enumerate(entries):
         for j,y in enumerate(entries):
             for k,z in enumerate(entries):
                 for l,w in enumerate(entries):
-                    str = f"[[nodiscard]] auto {x}{y}{z}{w}() const {{ return as_vec4().{x}{y}{z}{w}(); }}"
+                    str = f"[[nodiscard]] auto {x}{y}{z}{w}_() const {{ return as_vec4().{x}{y}{z}{w}_(); }}"
                     print(str, file=file)
 
 if __name__ == "__main__":

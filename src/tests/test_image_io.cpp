@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
             };
         };
         var /= count.cast<float>();
-        image_out.write(var,dispatch_idx().xy());
+        image_out.write(var,dispatch_idx().xy_());
     };
     kernel.function()->set_raytracing(true);
 //    kernel.function()->set_raytracing(false);

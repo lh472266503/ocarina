@@ -480,7 +480,7 @@ void test_parameter_struct(Device &device, Stream &stream) {
         //        vert.at(dispatch_id()).x += 90;
         pa.triple.h.bary = make_float2(1.f);
         $outline {
-            auto v = pa.triple.h.bary.xy();
+            auto v = pa.triple.h.bary.xy_();
             int i = 0;
             //            auto v = pp.pa.b.read(dispatch_id());
             //            $info("{} {} {}  -- ", v);

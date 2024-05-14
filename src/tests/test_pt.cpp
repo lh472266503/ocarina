@@ -164,7 +164,7 @@ int main(int argc, char *argv[]) {
 
     Kernel raytracing = [&](Var<Texture> output) {
         //        Var ray = make_ray(make_float3(0), make_float3(0));
-//        Var coord = dispatch_idx().xy();
+//        Var coord = dispatch_idx().xy_();
         Var state = seed_buffer.read(dispatch_id());
         Var rx = lcg(state);
         Var ry = lcg(state);
