@@ -229,111 +229,6 @@ struct Test {
     Uint a;
 };
 
-template<typename T, size_t N, size_t... Indices>
-struct swizzle_type;
-
-template<typename T>
-struct is_swizzle : std::false_type {};
-
-template<typename T, size_t N, size_t... Indices>
-struct is_swizzle<swizzle_type<T, N, Indices...>> : std::true_type {};
-
-OC_DEFINE_TEMPLATE_VALUE(is_swizzle)
-
-template<typename T, size_t N, size_t... Indices>
-struct swizzle_type {
-    static constexpr uint num_component = sizeof...(Indices);
-    static_assert(num_component <= 4 && std::max({Indices...}) < N);
-
-    template<typename Scalar>
-    struct vec {
-        using type = ocarina::Vector<Scalar, num_component>;
-    };
-
-    template<typename Scalar>
-    struct vec<ocarina::Var<Scalar>> {
-        using type = ocarina::Var<ocarina::Vector<Scalar, num_component>>;
-    };
-
-    using vec_type = typename vec<T>::type;
-
-private:
-    template<typename U, size_t... index>
-    void assign_to(U &vec, std::index_sequence<index...>) const noexcept {
-        ((vec[index] = data_[Indices]), ...);
-    }
-
-    template<typename U, size_t... index>
-    void assign_from(const U &vec, std::index_sequence<index...>) noexcept {
-        ((data_[Indices] = vec[index]), ...);
-    }
-
-public:
-    ocarina::array<T, N> data_{};
-
-public:
-    template<typename U>
-    swizzle_type &operator=(const U &vec) noexcept {
-        assign_from(vec, std::make_index_sequence<num_component>());
-        return *this;
-    }
-
-    [[nodiscard]] vec_type to_vec() const noexcept {
-        vec_type ret;
-        assign_to(ret, std::make_index_sequence<num_component>());
-        return ret;
-    }
-
-    operator vec_type() const noexcept {
-        return to_vec();
-    }
-
-#define OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(op)            \
-                                                        \
-    template<typename Arg>                              \
-    vec_type operator op(Arg &&val) const noexcept {    \
-        if constexpr (is_swizzle_v<Arg>) {              \
-            return to_vec() op val.to_vec();            \
-        } else {                                        \
-            return to_vec() op OC_FORWARD(val);         \
-        }                                               \
-    }                                                   \
-                                                        \
-    template<typename Arg>                              \
-    swizzle_type &operator op##=(Arg && arg) noexcept { \
-        auto tmp = *this;                               \
-        *this = tmp op OC_FORWARD(arg);                 \
-        return *this;                                   \
-    }
-
-    template<typename Arg>
-    requires is_swizzle_v<Arg>
-    vec_type operator+(Arg &&val) const noexcept {
-        if constexpr (is_swizzle_v<Arg>) {
-            return to_vec() + val.to_vec();
-        } else {
-            return to_vec() + std::forward<decltype(val)>(val);
-        }
-    }
-    template<typename Arg>
-    swizzle_type &operator+=(Arg &&arg) noexcept {
-        auto tmp = *this;
-        *this = tmp + std::forward<decltype(arg)>(arg);
-        return *this;
-    }
-//    OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(+)
-    OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(-)
-    OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(*)
-    OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(/)
-    OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(%)
-    OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(>>)
-    OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(<<)
-    OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(|)
-    OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(&)
-    OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(^)
-#undef OC_MAKE_SWIZZLE_MEMBER_BINARY_OP
-};
-
 void test_lambda(Device &device, Stream &stream) {
     auto [vertices, triangles] = get_cube();
 
@@ -360,10 +255,6 @@ void test_lambda(Device &device, Stream &stream) {
 
     //    auto sss = sizeof(float2);
     //
-        swizzle_type<int, 3, 0, 1, 2> xyz;
-        xyz.data_ = {3, 2, 1};
-        swizzle_type<float, 3, 2, 1, 0> zyx;
-        zyx.data_ = {3, 2, 1};
     //
 //        f3 += xyz;
 
@@ -389,12 +280,11 @@ void test_lambda(Device &device, Stream &stream) {
         //        f3.x = 1;
         //        f3.y = 2;
 
-        swizzle_type<Var<float>, 3, 0, 1, 2> xyz;
-        decltype(xyz)::vec_type xx = make_float3(1, 2, 3);
-        xyz = xx;
-//         xyz + xyz;
-
-        $info("{} {}  {}---------", xx);
+        float3 f3 = make_float3(1,2,3);
+        Float3 aa = f3;
+        bool bbb = ocarina::is_scalar_v<Float3>;
+//        aa + aa.xzz;
+        $info("{} {} {}  ", aa);
         //        f3 = xyz;
 
         //        $outline {

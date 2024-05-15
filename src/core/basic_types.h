@@ -51,7 +51,8 @@ struct is_swizzle : std::false_type {};
 template<typename T, size_t N, size_t... Indices>
 struct is_swizzle<swizzle_impl<T, N, Indices...>> : std::true_type {};
 
-OC_DEFINE_TEMPLATE_VALUE(is_swizzle)
+template<typename T>
+constexpr auto is_swizzle_v = is_swizzle<std::remove_cvref_t<T>>::value;
 
 template<typename T, size_t N, size_t... Indices>
 struct swizzle_impl {
@@ -450,13 +451,17 @@ operator~(const ocarina::Vector<T, N> v) noexcept {
         }                                                                \
     }                                                                    \
     template<typename T, typename U, size_t N>                           \
-    requires requires { T{} op U{}; } && __VA_ARGS__                     \
+    requires requires { T{} op U{}; } &&                                 \
+             ocarina::is_scalar_v<U> &&                                  \
+             __VA_ARGS__                                                 \
     [[nodiscard]] constexpr auto                                         \
     operator op(ocarina::Vector<T, N> lhs, U rhs) noexcept {             \
         return lhs op ocarina::Vector<U, N>{rhs};                        \
     }                                                                    \
     template<typename T, typename U, size_t N>                           \
-    requires requires { T{} op U{}; } && __VA_ARGS__                     \
+    requires requires { T{} op U{}; } &&                                 \
+             ocarina::is_scalar_v<T> &&                                  \
+             __VA_ARGS__                                                 \
     [[nodiscard]] constexpr auto                                         \
     operator op(T lhs, ocarina::Vector<U, N> rhs) noexcept {             \
         return ocarina::Vector<T, N>{lhs} op rhs;                        \
