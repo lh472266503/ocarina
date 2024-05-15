@@ -545,8 +545,8 @@ OC_MAKE_VECTOR_LOGIC_OPERATOR(>=, ocarina::is_all_number_v<T>)
         return OC_FORWARD(lhs) op rhs.to_vec();                                                 \
     }                                                                                           \
                                                                                                 \
-    template<typename T, typename U, size_t N, size_t... Indices>                               \
-    auto operator op##=(ocarina::Vector<T, sizeof...(Indices)> &lhs,                            \
+    template<typename Lhs, typename U, size_t N, size_t... Indices>                             \
+    auto operator op##=(Lhs &lhs,                                                               \
                         ocarina::detail::swizzle_impl<U, N, Indices...> rhs) noexcept {         \
         lhs op## = rhs.to_vec();                                                                \
         return lhs;                                                                             \
