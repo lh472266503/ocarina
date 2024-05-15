@@ -108,6 +108,17 @@ public:
         return to_vec();
     }
 
+#define OC_MAKE_SWIZZLE_UNARY_OP(op)    \
+    auto operator op() const noexcept { \
+        return op to_vec();             \
+    }
+    OC_MAKE_SWIZZLE_UNARY_OP(+)
+    OC_MAKE_SWIZZLE_UNARY_OP(-)
+    OC_MAKE_SWIZZLE_UNARY_OP(!)
+    OC_MAKE_SWIZZLE_UNARY_OP(~)
+
+#undef OC_MAKE_SWIZZLE_UNARY_OP
+
 #define OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(op)            \
                                                         \
     template<typename Arg>                              \
@@ -581,18 +592,6 @@ OC_MAKE_SWIZZLE_BINARY_OP(&)
 OC_MAKE_SWIZZLE_BINARY_OP(^)
 
 #undef OC_MAKE_SWIZZLE_BINARY_OP
-
-#define OC_MAKE_SWIZZLE_UNARY_OP(op)                                                 \
-    template<typename T, size_t N, size_t... Indices>                                \
-    auto operator op(ocarina::detail::swizzle_impl<T, N, Indices...> val) noexcept { \
-        return op val.to_vec();                                                      \
-    }
-OC_MAKE_SWIZZLE_UNARY_OP(+)
-OC_MAKE_SWIZZLE_UNARY_OP(-)
-OC_MAKE_SWIZZLE_UNARY_OP(!)
-OC_MAKE_SWIZZLE_UNARY_OP(~)
-
-#undef OC_MAKE_SWIZZLE_UNARY_OP
 
 [[nodiscard]] constexpr auto operator*(ocarina::float2x2 m, float s) noexcept {
     return ocarina::float2x2{m[0] * s, m[1] * s};
