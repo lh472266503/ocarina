@@ -230,6 +230,17 @@ struct Test {
 };
 
 template<typename T, size_t N, size_t... Indices>
+struct swizzle_impl;
+
+template<typename T>
+struct is_swizzle : std::false_type {};
+
+template<typename T, size_t N, size_t... Indices>
+struct is_swizzle<swizzle_impl<T, N, Indices...>> : std::true_type {};
+
+OC_DEFINE_TEMPLATE_VALUE(is_swizzle)
+
+template<typename T, size_t N, size_t... Indices>
 struct swizzle_type {
     static constexpr uint num_component = sizeof...(Indices);
     static_assert(num_component <= 4 && std::max({Indices...}) < N);
@@ -250,71 +261,58 @@ public:
     ocarina::array<T, N> data_{};
 
 public:
-    template<typename U, size_t... OtherIndices>
-    swizzle_type &operator=(const swizzle_type<U, N, OtherIndices...> &other) {
-        ((data_[Indices] = other.data_[OtherIndices]), ...);
-        return *this;
-    }
-
     template<typename U>
     swizzle_type &operator=(const ocarina::Vector<U, num_component> &vec) noexcept {
         assign_from(vec, std::make_index_sequence<num_component>());
         return *this;
     }
 
-    template<typename U>
-    requires ocarina::is_scalar_v<U>
-    vec_type operator+(const ocarina::Vector<U, num_component> &vec) const noexcept {
-        return to_vec() + vec;
-    }
-
     template<typename U, size_t... OtherIndices>
-    requires ocarina::is_scalar_v<U>
-    vec_type operator+(const swizzle_type<U, N, OtherIndices...> &other) const noexcept {
-        return to_vec() + other.to_vec();
-    }
-
-    template<typename U>
-    requires ocarina::is_scalar_v<U>
-    vec_type operator+(U val) const noexcept {
-        return to_vec() + val;
-    }
-
-    template<typename Arg>
-    swizzle_type &operator+=(Arg &&arg) noexcept {
-        auto tmp = *this;
-        *this = tmp + OC_FORWARD(arg);
+    swizzle_type &operator=(const swizzle_type<U, N, OtherIndices...> &other) {
+        ((data_[Indices] = other.data_[OtherIndices]), ...);
         return *this;
     }
 
     [[nodiscard]] vec_type to_vec() const noexcept {
-        ocarina::Vector<T, num_component> ret;
+        vec_type ret;
         assign_to(ret, std::make_index_sequence<num_component>());
         return ret;
     }
+
     operator vec_type() const noexcept {
         return to_vec();
     }
+
+#define OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(op)            \
+                                                        \
+    template<typename Arg>                              \
+    vec_type operator op(Arg &&val) const noexcept {    \
+        if constexpr (is_swizzle_v<Arg>) {              \
+            return to_vec() op val.to_vec();            \
+        } else {                                        \
+            return to_vec() op OC_FORWARD(val);         \
+        }                                               \
+    }                                                   \
+                                                        \
+    template<typename Arg>                              \
+    swizzle_type &operator op##=(Arg && arg) noexcept { \
+        auto tmp = *this;                               \
+        *this = tmp op OC_FORWARD(arg);                 \
+        return *this;                                   \
+    }
+
+    OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(+)
+    OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(-)
+    OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(*)
+    OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(/)
+    OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(%)
+    OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(>>)
+    OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(<<)
+    OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(|)
+    OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(&)
+    OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(^)
+#undef OC_MAKE_SWIZZLE_MEMBER_BINARY_OP
 };
-
-template<typename T, typename U, size_t N, size_t... Indices>
-requires ocarina::is_all_scalar_v<T, U>
-auto operator+(T lhs, swizzle_type<U, N, Indices...> rhs) noexcept {
-    return lhs + rhs.to_vec();
-}
-
-template<typename T, typename U, size_t N, size_t... Indices>
-requires ocarina::is_all_scalar_v<T, U>
-auto operator+(ocarina::Vector<T, sizeof...(Indices)> lhs, swizzle_type<U, N, Indices...> rhs) noexcept {
-    return lhs + rhs.to_vec();
-}
-
-template<typename T, typename U, size_t N, size_t... Indices>
-requires ocarina::is_all_scalar_v<T, U>
-auto operator+=(ocarina::Vector<T, sizeof...(Indices)> &lhs, swizzle_type<U, N, Indices...> rhs) noexcept {
-    lhs += rhs.to_vec();
-    return lhs;
-}
 
 void test_lambda(Device &device, Stream &stream) {
     auto [vertices, triangles] = get_cube();
@@ -330,7 +328,7 @@ void test_lambda(Device &device, Stream &stream) {
 
     float3 f3 = make_float3(1,2,3);
 
-    float3 aa = f3.xyy + f3;
+    float3 aa = f3.xyy + 5;
 
     float3 bb = f3 + f3.xyz;
     float3 cc = 5 + f3.xyz;
@@ -370,6 +368,10 @@ void test_lambda(Device &device, Stream &stream) {
 
         f3.x = 1;
         f3.y = 2;
+
+        swizzle_type<Var<float>, 3, 0, 1, 2> xyz;
+
+//        f3 = xyz;
 
         $outline {
 

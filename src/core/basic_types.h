@@ -74,16 +74,26 @@ public:
     ocarina::array<T, N> data_{};
 
 public:
+    template<typename U>
+    swizzle_impl &operator=(const ocarina::Vector<U, num_component> &vec) noexcept {
+        assign_from(vec, std::make_index_sequence<num_component>());
+        return *this;
+    }
+
     template<typename U, size_t... OtherIndices>
     swizzle_impl &operator=(const swizzle_impl<U, N, OtherIndices...> &other) {
         ((data_[Indices] = other.data_[OtherIndices]), ...);
         return *this;
     }
 
-    template<typename U>
-    swizzle_impl &operator=(const ocarina::Vector<U, num_component> &vec) noexcept {
-        assign_from(vec, std::make_index_sequence<num_component>());
-        return *this;
+    [[nodiscard]] vec_type to_vec() const noexcept {
+        vec_type ret;
+        assign_to(ret, std::make_index_sequence<num_component>());
+        return ret;
+    }
+
+    operator vec_type() const noexcept {
+        return to_vec();
     }
 
 #define OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(op)            \
@@ -115,15 +125,6 @@ public:
     OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(&)
     OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(^)
 #undef OC_MAKE_SWIZZLE_MEMBER_BINARY_OP
-
-    [[nodiscard]] vec_type to_vec() const noexcept {
-        vec_type ret;
-        assign_to(ret, std::make_index_sequence<num_component>());
-        return ret;
-    }
-    operator vec_type() const noexcept {
-        return to_vec();
-    }
 };
 }// namespace detail
 }// namespace ocarina
