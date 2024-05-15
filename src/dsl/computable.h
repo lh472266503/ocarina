@@ -508,7 +508,7 @@ public:
             Var<T> x;
             Var<T> y;
         };
-        std::array<Var<T>, 2> arr;
+#include "core/swizzle_inl/swizzle2.inl.h"
     };
 
 private:
@@ -547,7 +547,7 @@ public:
             Var<T> y;
             Var<T> z;
         };
-        std::array<Var<T>, 3> arr;
+#include "core/swizzle_inl/swizzle3.inl.h"
     };
 
 private:
@@ -589,7 +589,7 @@ public:
             Var<T> z;
             Var<T> w;
         };
-        std::array<Var<T>, 4> arr;
+#include "core/swizzle_inl/swizzle4.inl.h"
     };
 
 private:
