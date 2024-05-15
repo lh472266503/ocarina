@@ -57,7 +57,18 @@ template<typename T, size_t N, size_t... Indices>
 struct swizzle_impl {
     static constexpr uint num_component = sizeof...(Indices);
     static_assert(num_component <= 4 && std::max({Indices...}) < N);
-    using vec_type = ocarina::Vector<T, num_component>;
+
+    template<typename Scalar>
+    struct vec {
+        using type = ocarina::Vector<Scalar, num_component>;
+    };
+
+    template<typename Scalar>
+    struct vec<ocarina::Var<Scalar>> {
+        using type = ocarina::Var<ocarina::Vector<Scalar, num_component>>;
+    };
+
+    using vec_type = typename vec<T>::type;
 
 private:
     template<size_t... index>
@@ -66,7 +77,7 @@ private:
     }
 
     template<typename U, size_t... index>
-    void assign_from(const ocarina::Vector<U, num_component> &vec, std::index_sequence<index...>) noexcept {
+    void assign_from(const U &vec, std::index_sequence<index...>) noexcept {
         ((data_[Indices] = vec[index]), ...);
     }
 
@@ -75,7 +86,7 @@ public:
 
 public:
     template<typename U>
-    swizzle_impl &operator=(const ocarina::Vector<U, num_component> &vec) noexcept {
+    swizzle_impl &operator=(const U &vec) noexcept {
         assign_from(vec, std::make_index_sequence<num_component>());
         return *this;
     }

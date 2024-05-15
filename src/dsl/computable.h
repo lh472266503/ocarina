@@ -493,7 +493,12 @@ struct Computable<Vector<T, 2>>
       detail::EnableBitwiseCast<Computable<Vector<T, 2>>>,
       detail::EnableGetMemberByIndex<Computable<Vector<T, 2>>>,
       detail::EnableSubscriptAccess<Computable<Vector<T, 2>>> {
+
     using this_type = Vector<T, 2>;
+
+    template<size_t... index>
+    using swizzle_type = detail::swizzle_impl<Var<T>, 2, index...>;
+
     OC_COMPUTABLE_COMMON(Computable<Vector<T, 2>>)
     OC_MAKE_ASSIGNMENT_FUNC
 
@@ -526,7 +531,12 @@ struct Computable<Vector<T, 3>>
       detail::EnableBitwiseCast<Computable<Vector<T, 3>>>,
       detail::EnableGetMemberByIndex<Computable<Vector<T, 3>>>,
       detail::EnableSubscriptAccess<Computable<Vector<T, 3>>> {
+
     using this_type = Vector<T, 3>;
+
+    template<size_t... index>
+    using swizzle_type = detail::swizzle_impl<Var<T>, 3, index...>;
+
     OC_COMPUTABLE_COMMON(Computable<Vector<T, 3>>)
     OC_MAKE_ASSIGNMENT_FUNC
 
@@ -562,7 +572,12 @@ struct Computable<Vector<T, 4>>
       detail::EnableBitwiseCast<Computable<Vector<T, 4>>>,
       detail::EnableGetMemberByIndex<Computable<Vector<T, 4>>>,
       detail::EnableSubscriptAccess<Computable<Vector<T, 4>>> {
+
     using this_type = Vector<T, 4>;
+
+    template<size_t... index>
+    using swizzle_type = detail::swizzle_impl<Var<T>, 4, index...>;
+
     OC_COMPUTABLE_COMMON(Computable<Vector<T, 4>>)
     OC_MAKE_ASSIGNMENT_FUNC
 

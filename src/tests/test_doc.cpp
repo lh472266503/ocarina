@@ -230,13 +230,13 @@ struct Test {
 };
 
 template<typename T, size_t N, size_t... Indices>
-struct swizzle_impl;
+struct swizzle_type;
 
 template<typename T>
 struct is_swizzle : std::false_type {};
 
 template<typename T, size_t N, size_t... Indices>
-struct is_swizzle<swizzle_impl<T, N, Indices...>> : std::true_type {};
+struct is_swizzle<swizzle_type<T, N, Indices...>> : std::true_type {};
 
 OC_DEFINE_TEMPLATE_VALUE(is_swizzle)
 
@@ -244,16 +244,27 @@ template<typename T, size_t N, size_t... Indices>
 struct swizzle_type {
     static constexpr uint num_component = sizeof...(Indices);
     static_assert(num_component <= 4 && std::max({Indices...}) < N);
-    using vec_type = ocarina::Vector<T, num_component>;
+
+    template<typename Scalar>
+    struct vec {
+        using type = ocarina::Vector<Scalar, num_component>;
+    };
+
+    template<typename Scalar>
+    struct vec<ocarina::Var<Scalar>> {
+        using type = ocarina::Var<ocarina::Vector<Scalar, num_component>>;
+    };
+
+    using vec_type = typename vec<T>::type;
 
 private:
-    template<size_t... index>
-    void assign_to(vec_type &vec, std::index_sequence<index...>) const noexcept {
+    template<typename U, size_t... index>
+    void assign_to(U &vec, std::index_sequence<index...>) const noexcept {
         ((vec[index] = data_[Indices]), ...);
     }
 
     template<typename U, size_t... index>
-    void assign_from(const ocarina::Vector<U, num_component> &vec, std::index_sequence<index...>) noexcept {
+    void assign_from(const U &vec, std::index_sequence<index...>) noexcept {
         ((data_[Indices] = vec[index]), ...);
     }
 
@@ -262,14 +273,8 @@ public:
 
 public:
     template<typename U>
-    swizzle_type &operator=(const ocarina::Vector<U, num_component> &vec) noexcept {
+    swizzle_type &operator=(const U &vec) noexcept {
         assign_from(vec, std::make_index_sequence<num_component>());
-        return *this;
-    }
-
-    template<typename U, size_t... OtherIndices>
-    swizzle_type &operator=(const swizzle_type<U, N, OtherIndices...> &other) {
-        ((data_[Indices] = other.data_[OtherIndices]), ...);
         return *this;
     }
 
@@ -301,7 +306,22 @@ public:
         return *this;                                   \
     }
 
-    OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(+)
+    template<typename Arg>
+    requires is_swizzle_v<Arg>
+    vec_type operator+(Arg &&val) const noexcept {
+        if constexpr (is_swizzle_v<Arg>) {
+            return to_vec() + val.to_vec();
+        } else {
+            return to_vec() + std::forward<decltype(val)>(val);
+        }
+    }
+    template<typename Arg>
+    swizzle_type &operator+=(Arg &&arg) noexcept {
+        auto tmp = *this;
+        *this = tmp + std::forward<decltype(arg)>(arg);
+        return *this;
+    }
+//    OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(+)
     OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(-)
     OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(*)
     OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(/)
@@ -326,81 +346,85 @@ void test_lambda(Device &device, Stream &stream) {
     stream << vert.upload(vertices.data())
            << tri.upload(triangles.data());
 
-    float3 f3 = make_float3(1,2,3);
+    float3 f3 = make_float3(1, 2, 3);
 
-    float3 aa = f3.xyy + 5;
+    float3 aa = f3.xyy + f3.xyy;
 
     float3 bb = f3 + f3.xyz;
     float3 cc = 5 + f3.xyz;
 
     aa.xy += 10;
-//    f3 =  2.f + f3.xyz;
+    //    f3 =  2.f + f3.xyz;
 
     int aaa = 0;
 
-//    auto sss = sizeof(float2);
-//
-//    swizzle_type<int, 3, 0, 1, 2> xyz;
-//    xyz.data_ = {3, 2, 1};
-//    swizzle_type<float, 3, 2, 1, 0> zyx;
-//    zyx.data_ = {3, 2, 1};
-//
-//    f3 += xyz;
-//
-//    zyx += zyx;
-//
-//    zyx = f3 + zyx;
-//
-//    f3 = zyx + 5;
-//
-//    //    xyz = zyx;
-//
-//    float3 f2 = zyx.to_vec() + zyx.to_vec();
-//
-//    zyx = f2;
+    //    auto sss = sizeof(float2);
+    //
+        swizzle_type<int, 3, 0, 1, 2> xyz;
+        xyz.data_ = {3, 2, 1};
+        swizzle_type<float, 3, 2, 1, 0> zyx;
+        zyx.data_ = {3, 2, 1};
+    //
+//        f3 += xyz;
+
+//        zyx + zyx;
+    //
+    //    zyx = f3 + zyx;
+    //
+    //    f3 = zyx + 5;
+    //
+    //    //    xyz = zyx;
+    //
+    //    float3 f2 = zyx.to_vec() + zyx.to_vec();
+    //
+    //    zyx = f2;
 
     Kernel kernel = [&](Uint i) {
-        Float *p;
-        HitVar *hit;
-        Float b;
-
-        Float3 f3;
-
-        f3.x = 1;
-        f3.y = 2;
+        //        Float *p;
+        //        HitVar *hit;
+        //        Float b;
+        //
+        //        Float3 f3;
+        //
+        //        f3.x = 1;
+        //        f3.y = 2;
 
         swizzle_type<Var<float>, 3, 0, 1, 2> xyz;
+        decltype(xyz)::vec_type xx = make_float3(1, 2, 3);
+        xyz = xx;
+//         xyz + xyz;
 
-//        f3 = xyz;
+        $info("{} {}  {}---------", xx);
+        //        f3 = xyz;
 
-        $outline {
-
-            Var<Triple> ttt;
-            Var<Hit> hit;
-
-            //            auto sn = hit.expression()->type()->simple_cname();
-
-            $outline {
-                b = 123;
-
-                $outline {
-                    p = new Float(15);
-                    //                    hit = new HitVar{};
-                    //                    *p = b;
-                    //                    b = 19;
-                };
-            };
-            //            $info("{}   i  ---   ", *p);
-        };
-        $outline {
-            //            Float a = *p;
-            //            //        Float bb = $outline {
-            //            //            return (*hit).inst_id;
-            //            //        };
-            ////            b = 10;
-
-            $info("{}    {}  ---   ", min(b, *p), call<float>("oc_max", b, *p));
-        };
+        //        $outline {
+        //
+        //            Var<Triple> ttt;
+        //            Var<Hit> hit;
+        //
+        //            //            auto sn = hit.expression()->type()->simple_cname();
+        //
+        //            $outline {
+        //                b = 123;
+        //
+        //                $outline {
+        //                    p = new Float(15);
+        //                    //                    hit = new HitVar{};
+        //                    //                    *p = b;
+        //                    //                    b = 19;
+        //                };
+        //            };
+        //            //            $info("{}   i  ---   ", *p);
+        //        };
+        //        $outline {
+        //            //            Float a = *p;
+        //            //            //        Float bb = $outline {
+        //            //            //            return (*hit).inst_id;
+        //            //            //        };
+        //            ////            b = 10;
+        //
+        //            $info("{}    {}  ---   ", min(b, *p), call<float>("oc_max", b, *p));
+        //        };
     };
     Shader shader = device.compile(kernel);
 
