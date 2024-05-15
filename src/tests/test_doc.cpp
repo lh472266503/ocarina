@@ -330,7 +330,12 @@ void test_lambda(Device &device, Stream &stream) {
 
     float3 f3 = make_float3(1,2,3);
 
-    float3 aa = -f3.xyy;
+    float3 aa = f3.xyy + f3;
+
+    float3 bb = f3 + f3.xyz;
+    float3 cc = 5 + f3.xyz;
+
+    aa.xy += 10;
 //    f3 =  2.f + f3.xyz;
 
     int aaa = 0;
