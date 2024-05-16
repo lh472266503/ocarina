@@ -166,6 +166,14 @@ using UP = unique_ptr<T>;
 template<typename T>
 using SP = shared_ptr<T>;
 
+inline void oc_memcpy(void *dst, const void *src, size_t size) {
+#ifdef _MSC_VER
+    std::memcpy(dst, src, size);
+#else
+    std::wmemcpy(reinterpret_cast<wchar_t *>(dst), reinterpret_cast<const wchar_t *>(src), size);
+#endif
+}
+
 struct MemoryBlock {
 public:
     const void *address{};

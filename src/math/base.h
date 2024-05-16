@@ -54,7 +54,6 @@ select(Vector<bool, N> pred, Vector<T, N> t, Vector<T, N> f) noexcept {
     }
 }
 
-
 #define MAKE_VECTOR_UNARY_FUNC(func)                                     \
     template<typename T>                                                 \
     requires is_vector_v<T>                                              \
@@ -177,12 +176,6 @@ OC_NODISCARD constexpr ret_type Pow(const T &v) {
     return n2 * n2 * Pow<n & 1>(v);
 }
 
-template<typename X, typename A, typename B>
-requires is_all_basic_v<X, A, B>
-[[nodiscard]] constexpr auto clamp(X x, A a, B b) noexcept {
-    return min(max(x, a), b);
-}
-
 template<typename F, typename A, typename B>
 requires none_dsl_v<F, A, B> || all_dynamic_array_v<F, A, B>
 OC_NODISCARD constexpr auto
@@ -200,6 +193,18 @@ template<typename T, size_t N>
     } else {
         return v.x * v.y * v.z * v.w;
     }
+}
+
+template<typename T, typename U>
+requires is_all_floating_point_expr_v<T, U>
+[[nodiscard]] condition_t<bool, T, U> is_close(T t, U u, float epsilon = 0.00001f) {
+    return abs(t - u) < epsilon;
+}
+
+template<typename T, typename U>
+requires ocarina::is_all_scalar_expr_v<T, U>
+auto divide(T &&t, U &&u) noexcept {
+    return OC_FORWARD(t) * rcp(OC_FORWARD(u));
 }
 
 template<typename T, size_t N>

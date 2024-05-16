@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include "basic_types.h"
-#include "dsl/type_trait.h"
+#include "basic_traits.h"
+#include "math/constants.h"
 #include "core/concepts.h"
 #include <numeric>
 
@@ -88,12 +88,6 @@ rcp(const T &v) {
     return 1.f / v;
 }
 
-template<typename T, typename U>
-requires ocarina::is_all_scalar_expr_v<T, U>
-auto divide(T &&t, U &&u) noexcept {
-    return OC_FORWARD(t) * rcp(OC_FORWARD(u));
-}
-
 template<typename T>
 requires is_scalar_v<T>
 [[nodiscard]] constexpr auto
@@ -112,12 +106,6 @@ fract(const T &v) {
     return x - y * floor(x / y);
 }
 
-template<typename T, typename U>
-requires is_all_floating_point_expr_v<T, U>
-[[nodiscard]] condition_t<bool, T, U> is_close(T t, U u, float epsilon = 0.00001f) {
-    return abs(t - u) < epsilon;
-}
-
 template<typename T>
 //requires is_scalar_v<T>
 [[nodiscard]] auto saturate(const T &f) { return min(1.f, max(0.f, f)); }
@@ -126,14 +114,6 @@ template<typename T>
 requires is_scalar_v<T>
 OC_NODISCARD constexpr auto sqr(const T &v) {
     return v * v;
-}
-
-inline void oc_memcpy(void *dst, const void *src, size_t size) {
-#ifdef _MSC_VER
-    std::memcpy(dst, src, size);
-#else
-    std::wmemcpy(reinterpret_cast<wchar_t *>(dst), reinterpret_cast<const wchar_t *>(src), size);
-#endif
 }
 
 [[nodiscard]] inline bool isnan(float x) noexcept {
@@ -148,6 +128,10 @@ inline void oc_memcpy(void *dst, const void *src, size_t size) {
     return (u & 0x7f800000u) == 0x7f800000u && (u & 0x007fffffu) == 0u;
 }
 
-
+template<typename X, typename A, typename B>
+requires is_all_basic_v<X, A, B>
+[[nodiscard]] constexpr auto clamp(X x, A a, B b) noexcept {
+    return min(max(x, a), b);
+}
 
 }// namespace ocarina
