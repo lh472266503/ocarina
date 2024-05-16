@@ -6,19 +6,19 @@ def generate(file, dim):
     color_entries = ["r", "g", "b", "a"][:dim]
     for i,x in enumerate(entries):
         for j,y in enumerate(entries):
-            print(f"swizzle_type<{i}, {j}> {x}{y}, {color_entries[i]}{color_entries[j]};", file=file)
+            print(f"swizzle_type<{i}, {j}>& {x}{y}() {{ return reinterpret_cast<swizzle_type<{i}, {j}>&>(arr); }};", file=file)
     print("", file=file)
     for i, x in enumerate(entries):
         for j, y in enumerate(entries):
             for k, z in enumerate(entries):
-                print(f"swizzle_type<{i}, {j}, {k}> {x}{y}{z}, {color_entries[i]}{color_entries[j]}{color_entries[k]};",
+                print(f"swizzle_type<{i}, {j}, {k}>& {x}{y}{z}() {{ return reinterpret_cast<swizzle_type<{i}, {j}, {k}>&>(arr); }};",
                       file=file)
     print("", file=file)    
     for i, x in enumerate(entries):
         for j, y in enumerate(entries):
             for k, z in enumerate(entries):
                 for n, w in enumerate(entries):
-                    print(f"swizzle_type<{i}, {j}, {k}, {n}> {x}{y}{z}{w}, {color_entries[i]}{color_entries[j]}{color_entries[k]}{color_entries[n]};",
+                    print(f"swizzle_type<{i}, {j}, {k}, {n}>& {x}{y}{z}{w}() {{ return reinterpret_cast<swizzle_type<{i}, {j}, {k}, {n}>&>(arr); }};",
                           file=file)
 
 

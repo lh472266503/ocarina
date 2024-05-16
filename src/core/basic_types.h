@@ -167,7 +167,7 @@ public:
         struct {
             T x, y;
         };
-#include "swizzle_inl/swizzle2.inl.h"
+        std::array<T, 2> arr;
     };
     Vector() : x{}, y{} {}
     explicit constexpr Vector(T s) noexcept : x{s}, y{s} {}
@@ -176,6 +176,7 @@ public:
     constexpr Vector(T x, T y) noexcept : x{x}, y{y} {}
     [[nodiscard]] constexpr T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
     [[nodiscard]] constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
+#include "swizzle_inl/swizzle2.inl.h"
 #include "swizzle_inl/swizzle_2.inl.h"
 };
 
@@ -192,7 +193,7 @@ public:
         struct {
             T x, y, z;
         };
-#include "swizzle_inl/swizzle3.inl.h"
+        std::array<T, 3> arr;
     };
     Vector() : x{}, y{}, z{} {}
     explicit constexpr Vector(T s) noexcept : x{s}, y{s}, z{s} {}
@@ -201,6 +202,7 @@ public:
     constexpr Vector(T x, T y, T z) noexcept : x{x}, y{y}, z{z} {}
     [[nodiscard]] constexpr T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
     [[nodiscard]] constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
+#include "swizzle_inl/swizzle3.inl.h"
 #include "swizzle_inl/swizzle_3.inl.h"
 };
 
@@ -217,7 +219,7 @@ public:
         struct {
             T x, y, z, w;
         };
-#include "swizzle_inl/swizzle4.inl.h"
+        std::array<T, 4> arr;
     };
     Vector() : x{}, y{}, z{}, w{} {}
     explicit constexpr Vector(T s) noexcept : x{s}, y{s}, z{s}, w{s} {}
@@ -226,6 +228,7 @@ public:
     constexpr Vector(T x, T y, T z, T w) noexcept : x{x}, y{y}, z{z}, w{w} {}
     [[nodiscard]] constexpr T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
     [[nodiscard]] constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
+#include "swizzle_inl/swizzle4.inl.h"
 #include "swizzle_inl/swizzle_4.inl.h"
 };
 

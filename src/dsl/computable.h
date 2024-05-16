@@ -508,7 +508,8 @@ public:
             Var<T> x;
             Var<T> y;
         };
-#include "core/swizzle_inl/swizzle2.inl.h"
+        std::array<Var<T>, 2> arr;
+//#include "core/swizzle_inl/swizzle2.inl.h"
     };
 
 private:
@@ -547,7 +548,8 @@ public:
             Var<T> y;
             Var<T> z;
         };
-#include "core/swizzle_inl/swizzle3.inl.h"
+        std::array<Var<T>, 3> arr;
+//#include "core/swizzle_inl/swizzle3.inl.h"
     };
 
 private:
@@ -589,7 +591,8 @@ public:
             Var<T> z;
             Var<T> w;
         };
-#include "core/swizzle_inl/swizzle4.inl.h"
+        std::array<Var<T>, 4> arr;
+//#include "core/swizzle_inl/swizzle4.inl.h"
     };
 
 private:
