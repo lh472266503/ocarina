@@ -6,7 +6,7 @@
 
 #include "core/stl.h"
 #include "core/concepts.h"
-#include "core/basic_traits.h"
+#include "math/basic_traits.h"
 #include "type_trait.h"
 #include "ast/function.h"
 #include <utility>

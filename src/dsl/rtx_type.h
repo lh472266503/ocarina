@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "core/basic_traits.h"
+#include "math/basic_traits.h"
 #include "dsl/operators.h"
 #include "dsl/struct.h"
 #include "dsl/func.h"

@@ -8,7 +8,7 @@
 #include <type_traits>
 #include "core/concepts.h"
 #include "ast/type.h"
-#include "core/basic_traits.h"
+#include "math/basic_traits.h"
 
 namespace ocarina {
 

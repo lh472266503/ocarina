@@ -4,7 +4,7 @@
 #include <utility>
 #include "ast/op.h"
 #include "core/concepts.h"
-#include "core/basic_traits.h"
+#include "math/basic_traits.h"
 #include "typeinfo"
 #include "core/hash.h"
 #include "core/string_util.h"

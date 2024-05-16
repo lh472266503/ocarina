@@ -5,7 +5,7 @@
 #pragma once
 
 #include "core/dynamic_module.h"
-#include "ocarina/src/rhi/device.h"
+#include "rhi/device.h"
 #include "core/platform.h"
 
 namespace ocarina {

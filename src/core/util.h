@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "basic_traits.h"
+#include "math/basic_traits.h"
 #include "concepts.h"
 #include "math/base.h"
 #include "logging.h"
