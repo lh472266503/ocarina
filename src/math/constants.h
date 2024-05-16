@@ -5,6 +5,7 @@
 #pragma once
 
 #include "core/header.h"
+#include "basic_traits.h"
 
 namespace ocarina {
 inline namespace constants {

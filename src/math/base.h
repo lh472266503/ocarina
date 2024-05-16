@@ -4,9 +4,8 @@
 
 #pragma once
 
-#include "basic_types.h"
-#include "core/concepts.h"
 #include "constants.h"
+#include "scalar_func.h"
 #include "dsl/operators.h"
 #include "dsl/type_trait.h"
 
@@ -40,11 +39,6 @@ MAKE_VECTOR_OP(/)
 
 namespace ocarina {
 
-template<typename T, typename F>
-[[nodiscard]] constexpr auto select(bool pred, T &&t, F &&f) noexcept {
-    return pred ? t : f;
-}
-
 template<typename T, size_t N>
 requires ocarina::is_scalar_v<T>
 [[nodiscard]] constexpr auto
@@ -60,84 +54,6 @@ select(Vector<bool, N> pred, Vector<T, N> t, Vector<T, N> f) noexcept {
     }
 }
 
-template<typename T>
-requires std::is_unsigned_v<T> && (sizeof(T) == 4u || sizeof(T) == 8u)
-[[nodiscard]] constexpr auto next_pow2(T v) noexcept {
-    v--;
-    v |= v >> 1u;
-    v |= v >> 2u;
-    v |= v >> 4u;
-    v |= v >> 8u;
-    v |= v >> 16u;
-    if constexpr (sizeof(T) == 8u) { v |= v >> 32u; }
-    return v + 1u;
-}
-
-template<typename T>
-requires is_scalar_v<T>
-[[nodiscard]] constexpr T sign(T val) {
-    return select(val >= 0, T(1), T(-1));
-}
-
-template<typename T>
-requires is_scalar_v<T>
-[[nodiscard]] constexpr auto
-radians(const T &deg) noexcept {
-    return deg * (constants::Pi / 180.0f);
-}
-
-template<typename T>
-requires is_scalar_v<T>
-[[nodiscard]] constexpr auto
-degrees(T rad) noexcept {
-    return rad * (constants::InvPi * 180.0f);
-}
-
-template<typename T>
-requires is_scalar_v<T>
-[[nodiscard]] constexpr auto
-rcp(const T &v) {
-    return 1.f / v;
-}
-
-template<typename T, typename U>
-requires ocarina::is_all_scalar_expr_v<T, U>
-auto divide(T &&t, U &&u) noexcept {
-    return OC_FORWARD(t) * rcp(OC_FORWARD(u));
-}
-
-template<typename T>
-requires is_scalar_v<T>
-[[nodiscard]] constexpr auto
-rsqrt(const T &v) {
-    return 1.f / sqrt(v);
-}
-
-template<typename T>
-requires is_floating_point_v<T>
-[[nodiscard]] constexpr auto
-fract(const T &v) {
-    return v - floorf(v);
-}
-
-[[nodiscard]] inline float mod(float x, float y) {
-    return x - y * floor(x / y);
-}
-
-template<typename T, typename U>
-requires is_all_floating_point_expr_v<T, U>
-[[nodiscard]] condition_t<bool, T, U> is_close(T t, U u, float epsilon = 0.00001f) {
-    return abs(t - u) < epsilon;
-}
-
-template<typename T>
-[[nodiscard]] auto saturate(const T &f) { return min(1.f, max(0.f, f)); }
-
-template<typename T>
-requires is_scalar_v<T>
-OC_NODISCARD constexpr auto sqr(const T &v) {
-    return v * v;
-}
 
 #define MAKE_VECTOR_UNARY_FUNC(func)                                     \
     template<typename T>                                                 \

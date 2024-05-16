@@ -26,7 +26,6 @@
 #include <filesystem>
 #include <EASTL/tuple.h>
 #include <EASTL/string.h>
-#include <numeric>
 
 #define OC_FORWARD(arg) std::forward<decltype(arg)>(arg)
 
@@ -166,58 +165,6 @@ template<typename T>
 using UP = unique_ptr<T>;
 template<typename T>
 using SP = shared_ptr<T>;
-
-// math
-using std::abs;
-using std::acos;
-using std::acosh;
-using std::asin;
-using std::asinh;
-using std::atan;
-using std::atan2;
-using std::atanh;
-using std::ceil;
-using std::copysign;
-using std::cos;
-using std::cosh;
-using std::exp;
-using std::exp2;
-using std::floor;
-using std::fmod;
-using std::log;
-using std::log10;
-using std::log2;
-using std::max;
-using std::min;
-using std::pow;
-using std::round;
-using std::roundf;
-using std::sin;
-using std::sinh;
-using std::sqrt;
-using std::tan;
-using std::tanh;
-using std::fma;
-
-[[nodiscard]] inline bool isnan(float x) noexcept {
-    auto u = 0u;
-    ::memcpy(&u, &x, sizeof(float));
-    return (u & 0x7f800000u) == 0x7f800000u && (u & 0x007fffffu) != 0u;
-}
-
-[[nodiscard]] inline bool isinf(float x) noexcept {
-    auto u = 0u;
-    ::memcpy(&u, &x, sizeof(float));
-    return (u & 0x7f800000u) == 0x7f800000u && (u & 0x007fffffu) == 0u;
-}
-
-inline void oc_memcpy(void *dst, const void *src, size_t size) {
-#ifdef _MSC_VER
-    std::memcpy(dst, src, size);
-#else
-    std::wmemcpy(reinterpret_cast<wchar_t *>(dst), reinterpret_cast<const wchar_t *>(src), size);
-#endif
-}
 
 struct MemoryBlock {
 public:
