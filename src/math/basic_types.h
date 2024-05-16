@@ -192,7 +192,30 @@ public:
     OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(|)
     OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(&)
     OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(^)
+
 #undef OC_MAKE_SWIZZLE_MEMBER_BINARY_OP
+
+#define OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(op)      \
+                                                 \
+    template<typename Arg>                       \
+    auto operator op(Arg &&val) const noexcept { \
+        if constexpr (is_swizzle_v<Arg>) {       \
+            return to_vec() op val.to_vec();     \
+        } else {                                 \
+            return to_vec() op OC_FORWARD(val);  \
+        }                                        \
+    }
+
+    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(||)
+    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(&&)
+    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(==)
+    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(!=)
+    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(<)
+    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(>)
+    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(<=)
+    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(>=)
+
+#undef OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP
 };
 }// namespace detail
 
@@ -594,19 +617,6 @@ OC_MAKE_SWIZZLE_BINARY_OP(^)
 #undef OC_MAKE_SWIZZLE_BINARY_OP
 
 #define OC_MAKE_SWIZZLE_LOGIC_OP(op, ...)                             \
-    template<typename T, size_t N, size_t... Indices,                 \
-             typename U, size_t M, size_t... OtherIndices>            \
-    requires requires { T{} op U{}; }                                 \
-    auto operator op(ocarina::Swizzle<T, N, Indices...> lhs,          \
-                     ocarina::Swizzle<U, M, OtherIndices...> rhs) {   \
-        return lhs.to_vec() op rhs.to_vec();                          \
-    }                                                                 \
-    template<typename T, size_t N, size_t... Indices, typename U>     \
-    requires requires { T{} op U{}; }                                 \
-    auto operator op(ocarina::Swizzle<T, N, Indices...> lhs, U rhs) { \
-        return lhs.to_vec() op rhs;                                   \
-    }                                                                 \
-                                                                      \
     template<typename U, typename T, size_t N, size_t... Indices>     \
     requires requires { T{} op U{}; }                                 \
     auto operator op(U lhs, ocarina::Swizzle<T, N, Indices...> rhs) { \
