@@ -198,6 +198,7 @@ public:
 
 namespace ocarina {
 
+namespace detail {
 template<typename T, size_t N>
 struct VectorStorage {
     static_assert(always_false_v<T>, "Invalid vector storage");
@@ -262,10 +263,12 @@ public:
     [[nodiscard]] constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
 #include "swizzle_inl/swizzle4.inl.h"
 };
+}// namespace detail
 
-template<typename T, size_t N>
-struct Vector : public VectorStorage<T, N> {
-    using VectorStorage<T, N>::VectorStorage;
+template<typename Scalar, size_t N>
+struct Vector : public detail::VectorStorage<Scalar, N> {
+    using detail::VectorStorage<Scalar, N>::VectorStorage;
+
 };
 
 #define OC_MAKE_VECTOR_TYPES(T) \
