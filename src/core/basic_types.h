@@ -194,6 +194,10 @@ public:
 #undef OC_MAKE_SWIZZLE_MEMBER_BINARY_OP
 };
 }// namespace detail
+
+template<typename T, size_t N, size_t... Indices>
+using Swizzle = detail::swizzle_impl<T, N, Indices...>;
+
 }// namespace ocarina
 
 namespace ocarina {
@@ -210,7 +214,7 @@ struct alignas(sizeof(T) * 2) VectorStorage<T, 2> {
 
 public:
     template<size_t... index>
-    using swizzle_type = detail::swizzle_impl<T, 2, index...>;
+    using swizzle_type = Swizzle<T, 2, index...>;
 
 public:
     T x{}, y{};
@@ -230,7 +234,7 @@ struct alignas(sizeof(T) * 4) VectorStorage<T, 3> {
 
 public:
     template<size_t... index>
-    using swizzle_type = detail::swizzle_impl<T, 3, index...>;
+    using swizzle_type = Swizzle<T, 3, index...>;
 
 public:
     T x{}, y{}, z{};
@@ -250,7 +254,7 @@ struct alignas(sizeof(T) * 4) VectorStorage<T, 4> {
 
 public:
     template<size_t... index>
-    using swizzle_type = detail::swizzle_impl<T, 4, index...>;
+    using swizzle_type = Swizzle<T, 4, index...>;
 
 public:
     T x{}, y{}, z{}, w{};
@@ -268,7 +272,6 @@ public:
 template<typename Scalar, size_t N>
 struct Vector : public detail::VectorStorage<Scalar, N> {
     using detail::VectorStorage<Scalar, N>::VectorStorage;
-
 };
 
 #define OC_MAKE_VECTOR_TYPES(T) \
@@ -550,14 +553,14 @@ OC_MAKE_VECTOR_ASSIGN_OPERATOR(^=, ocarina::is_all_integral_v<T, U>)
     operator op(T lhs, ocarina::Vector<U, N> rhs) noexcept {             \
         return ocarina::Vector<T, N>{lhs} op rhs;                        \
     }
-OC_MAKE_VECTOR_LOGIC_OPERATOR(||, ocarina::is_all_boolean_v<T>)
-OC_MAKE_VECTOR_LOGIC_OPERATOR(&&, ocarina::is_all_boolean_v<T>)
-OC_MAKE_VECTOR_LOGIC_OPERATOR(==, ocarina::is_all_number_v<T>)
-OC_MAKE_VECTOR_LOGIC_OPERATOR(!=, ocarina::is_all_number_v<T>)
-OC_MAKE_VECTOR_LOGIC_OPERATOR(<, ocarina::is_all_number_v<T>)
-OC_MAKE_VECTOR_LOGIC_OPERATOR(>, ocarina::is_all_number_v<T>)
-OC_MAKE_VECTOR_LOGIC_OPERATOR(<=, ocarina::is_all_number_v<T>)
-OC_MAKE_VECTOR_LOGIC_OPERATOR(>=, ocarina::is_all_number_v<T>)
+OC_MAKE_VECTOR_LOGIC_OPERATOR(||, ocarina::is_all_boolean_v<T, U>)
+OC_MAKE_VECTOR_LOGIC_OPERATOR(&&, ocarina::is_all_boolean_v<T, U>)
+OC_MAKE_VECTOR_LOGIC_OPERATOR(==, ocarina::is_all_number_v<T, U>)
+OC_MAKE_VECTOR_LOGIC_OPERATOR(!=, ocarina::is_all_number_v<T, U>)
+OC_MAKE_VECTOR_LOGIC_OPERATOR(<, ocarina::is_all_number_v<T, U>)
+OC_MAKE_VECTOR_LOGIC_OPERATOR(>, ocarina::is_all_number_v<T, U>)
+OC_MAKE_VECTOR_LOGIC_OPERATOR(<=, ocarina::is_all_number_v<T, U>)
+OC_MAKE_VECTOR_LOGIC_OPERATOR(>=, ocarina::is_all_number_v<T, U>)
 
 #undef OC_MAKE_VECTOR_LOGIC_OPERATOR
 
@@ -589,7 +592,25 @@ OC_MAKE_SWIZZLE_BINARY_OP(^)
 
 #undef OC_MAKE_SWIZZLE_BINARY_OP
 
-#define OC_MAKE_SWIZZLE_LOGIC_OP(op)
+#define OC_MAKE_SWIZZLE_LOGIC_OP(op, ...)                             \
+    template<typename T, size_t N, size_t... Indices,                 \
+             typename U, size_t M, size_t... OtherIndices>            \
+    requires requires { T{} op U{}; }                                 \
+    auto operator op(ocarina::Swizzle<T, N, Indices...> lhs,          \
+                     ocarina::Swizzle<U, M, OtherIndices...> rhs) {   \
+        return lhs.to_vec() op rhs.to_vec();                          \
+    }                                                                 \
+    template<typename T, size_t N, size_t... Indices, typename U>     \
+    requires requires { T{} op U{}; }                                 \
+    auto operator op(ocarina::Swizzle<T, N, Indices...> lhs, U rhs) { \
+        return lhs.to_vec() op rhs;                                   \
+    }                                                                 \
+                                                                      \
+    template<typename U, typename T, size_t N, size_t... Indices>     \
+    requires requires { T{} op U{}; }                                 \
+    auto operator op(U lhs, ocarina::Swizzle<T, N, Indices...> rhs) { \
+        return lhs op rhs.to_vec();                                   \
+    }
 
 OC_MAKE_SWIZZLE_LOGIC_OP(||)
 OC_MAKE_SWIZZLE_LOGIC_OP(&&)
