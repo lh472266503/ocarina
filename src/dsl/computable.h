@@ -522,7 +522,7 @@ private:
     bool initialed_{initial()};
 
 public:
-#include "swizzle_inl/swizzle_2.inl.h"
+// #include "swizzle_inl/swizzle_2.inl.h"
 #include "core/swizzle_inl/swizzle2.inl.h"
 };
 
@@ -564,7 +564,7 @@ private:
     bool initialed_{initial()};
 
 public:
-#include "swizzle_inl/swizzle_3.inl.h"
+// #include "swizzle_inl/swizzle_3.inl.h"
 #include "core/swizzle_inl/swizzle3.inl.h"
 };
 
@@ -609,7 +609,7 @@ private:
     bool initialed_{initial()};
 
 public:
-#include "swizzle_inl/swizzle_4.inl.h"
+// #include "swizzle_inl/swizzle_4.inl.h"
 #include "core/swizzle_inl/swizzle4.inl.h"
 };
 
