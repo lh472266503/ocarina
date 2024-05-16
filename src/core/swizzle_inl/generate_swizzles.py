@@ -6,23 +6,23 @@ def generate(file, dim):
     color_entries = ["r", "g", "b", "a"][:dim]
     for i,x in enumerate(entries):
         for j,y in enumerate(entries):
-            print(f"swizzle_type<{i}, {j}>& {x}{y}_() noexcept {{ return reinterpret_cast<swizzle_type<{i}, {j}>&>(arr); }};", file=file)
+            print(f"swizzle_type<{i}, {j}>& {x}{y}_() noexcept {{ return *reinterpret_cast<swizzle_type<{i}, {j}>*>(addressof(x)); }};", file=file)
 
     for i,x in enumerate(entries):
         for j,y in enumerate(entries):
-            print(f"auto {x}{y}() const noexcept {{ return reinterpret_cast<const swizzle_type<{i}, {j}>&>(arr).to_vec(); }};", file=file)
+            print(f"auto {x}{y}() const noexcept {{ return (*reinterpret_cast<const swizzle_type<{i}, {j}>*>(addressof(x))).to_vec(); }};", file=file)
 
     print("", file=file)
 
     for i, x in enumerate(entries):
         for j, y in enumerate(entries):
             for k, z in enumerate(entries):
-                print(f"swizzle_type<{i}, {j}, {k}>& {x}{y}{z}_() noexcept {{ return reinterpret_cast<swizzle_type<{i}, {j}, {k}>&>(arr); }};",
+                print(f"swizzle_type<{i}, {j}, {k}>& {x}{y}{z}_() noexcept {{ return *reinterpret_cast<swizzle_type<{i}, {j}, {k}>*>(addressof(x)); }};",
                       file=file)
     for i, x in enumerate(entries):
         for j, y in enumerate(entries):
             for k, z in enumerate(entries):
-                print(f"auto {x}{y}{z}() const noexcept {{ return reinterpret_cast<const swizzle_type<{i}, {j}, {k}>&>(arr).to_vec(); }};",
+                print(f"auto {x}{y}{z}() const noexcept {{ return (*reinterpret_cast<const swizzle_type<{i}, {j}, {k}>*>(addressof(x))).to_vec(); }};",
                       file=file)
     print("", file=file)
 
@@ -30,14 +30,14 @@ def generate(file, dim):
         for j, y in enumerate(entries):
             for k, z in enumerate(entries):
                 for n, w in enumerate(entries):
-                    print(f"swizzle_type<{i}, {j}, {k}, {n}>& {x}{y}{z}{w}_() noexcept {{ return reinterpret_cast<swizzle_type<{i}, {j}, {k}, {n}>&>(arr); }};",
+                    print(f"swizzle_type<{i}, {j}, {k}, {n}>& {x}{y}{z}{w}_() noexcept {{ return *reinterpret_cast<swizzle_type<{i}, {j}, {k}, {n}>*>(addressof(x)); }};",
                           file=file)
 
     for i, x in enumerate(entries):
         for j, y in enumerate(entries):
             for k, z in enumerate(entries):
                 for n, w in enumerate(entries):
-                    print(f"auto {x}{y}{z}{w}() const noexcept {{ return reinterpret_cast<const swizzle_type<{i}, {j}, {k}, {n}>&>(arr).to_vec(); }};",
+                    print(f"auto {x}{y}{z}{w}() const noexcept {{ return (*reinterpret_cast<const swizzle_type<{i}, {j}, {k}, {n}>*>(addressof(x))).to_vec(); }};",
                           file=file)
     
 

@@ -209,12 +209,7 @@ public:
     using swizzle_type = detail::swizzle_impl<T, 2, index...>;
 
 public:
-    union {
-        struct {
-            T x, y;
-        };
-        std::array<T, 2> arr;
-    };
+    T x{}, y{};
     Vector() : x{}, y{} {}
     explicit constexpr Vector(T s) noexcept : x{s}, y{s} {}
     template<typename U>
@@ -234,12 +229,7 @@ public:
     using swizzle_type = detail::swizzle_impl<T, 3, index...>;
 
 public:
-    union {
-        struct {
-            T x, y, z;
-        };
-        std::array<T, 3> arr;
-    };
+    T x{}, y{}, z{};
     Vector() : x{}, y{}, z{} {}
     explicit constexpr Vector(T s) noexcept : x{s}, y{s}, z{s} {}
     template<typename U>
@@ -259,12 +249,7 @@ public:
     using swizzle_type = detail::swizzle_impl<T, 4, index...>;
 
 public:
-    union {
-        struct {
-            T x, y, z, w;
-        };
-        std::array<T, 4> arr;
-    };
+    T x{}, y{}, z{}, w{};
     Vector() : x{}, y{}, z{}, w{} {}
     explicit constexpr Vector(T s) noexcept : x{s}, y{s}, z{s}, w{s} {}
     template<typename U>
