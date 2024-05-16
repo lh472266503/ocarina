@@ -35,6 +35,52 @@ struct Vector {
 
 }// namespace ocarina
 
+template<typename T, size_t N>
+requires ocarina::is_number_v<T>
+[[nodiscard]] constexpr auto
+operator+(const ocarina::Vector<T, N> v) noexcept {
+    return v;
+}
+
+template<typename T, size_t N>
+requires ocarina::is_number_v<T>
+[[nodiscard]] constexpr auto
+operator-(const ocarina::Vector<T, N> v) noexcept {
+    using R = ocarina::Vector<T, N>;
+    if constexpr (N == 2) {
+        return R{-v.x, -v.y};
+    } else if constexpr (N == 3) {
+        return R{-v.x, -v.y, -v.z};
+    } else {
+        return R{-v.x, -v.y, -v.z, -v.w};
+    }
+}
+
+template<typename T, size_t N>
+[[nodiscard]] constexpr auto operator!(const ocarina::Vector<T, N> v) noexcept {
+    if constexpr (N == 2u) {
+        return ocarina::Vector<T, N>{!v.x, !v.y};
+    } else if constexpr (N == 3u) {
+        return ocarina::Vector<T, N>{!v.x, !v.y, !v.z};
+    } else {
+        return ocarina::Vector<T, N>{!v.x, !v.y, !v.z, !v.w};
+    }
+}
+
+template<typename T, size_t N>
+requires ocarina::is_integral_v<T>
+[[nodiscard]] constexpr auto
+operator~(const ocarina::Vector<T, N> v) noexcept {
+    using R = ocarina::Vector<T, N>;
+    if constexpr (N == 2) {
+        return R{~v.x, ~v.y};
+    } else if constexpr (N == 3) {
+        return R{~v.x, ~v.y, ~v.z};
+    } else {
+        return R{~v.x, ~v.y, ~v.z, ~v.w};
+    }
+}
+
 namespace ocarina {
 
 template<typename T>
@@ -393,52 +439,6 @@ using texture_sample_t = typename detail::texture_sample_impl<std::remove_cvref_
 [[nodiscard]] constexpr bool none(const bool4 v) noexcept { return !any(v); }
 
 }// namespace ocarina
-
-template<typename T, size_t N>
-requires ocarina::is_number_v<T>
-[[nodiscard]] constexpr auto
-operator+(const ocarina::Vector<T, N> v) noexcept {
-    return v;
-}
-
-template<typename T, size_t N>
-requires ocarina::is_number_v<T>
-[[nodiscard]] constexpr auto
-operator-(const ocarina::Vector<T, N> v) noexcept {
-    using R = ocarina::Vector<T, N>;
-    if constexpr (N == 2) {
-        return R{-v.x, -v.y};
-    } else if constexpr (N == 3) {
-        return R{-v.x, -v.y, -v.z};
-    } else {
-        return R{-v.x, -v.y, -v.z, -v.w};
-    }
-}
-
-template<typename T, size_t N>
-[[nodiscard]] constexpr auto operator!(const ocarina::Vector<T, N> v) noexcept {
-    if constexpr (N == 2u) {
-        return ocarina::bool2{!v.x, !v.y};
-    } else if constexpr (N == 3u) {
-        return ocarina::bool3{!v.x, !v.y, !v.z};
-    } else {
-        return ocarina::bool3{!v.x, !v.y, !v.z, !v.w};
-    }
-}
-
-template<typename T, size_t N>
-requires ocarina::is_integral_v<T>
-[[nodiscard]] constexpr auto
-operator~(const ocarina::Vector<T, N> v) noexcept {
-    using R = ocarina::Vector<T, N>;
-    if constexpr (N == 2) {
-        return R{~v.x, ~v.y};
-    } else if constexpr (N == 3) {
-        return R{~v.x, ~v.y, ~v.z};
-    } else {
-        return R{~v.x, ~v.y, ~v.z, ~v.w};
-    }
-}
 
 #define OC_MAKE_VECTOR_BINARY_OPERATOR(op, ...)                          \
     template<typename T, typename U, size_t N>                           \
