@@ -8,7 +8,7 @@
 #include "computable.h"
 #include "ast/function.h"
 #include "expr.h"
-#include "core/basic_types.h"
+#include "math/basic_types.h"
 
 namespace ocarina {
 

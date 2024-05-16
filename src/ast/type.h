@@ -5,7 +5,7 @@
 #pragma once
 
 #include "core/header.h"
-#include "core/basic_types.h"
+#include "math/basic_types.h"
 #include "core/stl.h"
 #include "core/macro_map.h"
 #include "core/hash.h"

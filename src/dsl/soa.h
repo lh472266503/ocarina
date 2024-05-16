@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "core/basic_types.h"
+#include "math/basic_types.h"
 #include "builtin.h"
 #include "var.h"
 #include "type_trait.h"

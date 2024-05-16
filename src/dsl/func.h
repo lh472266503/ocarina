@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "core/stl.h"
-#include "core/basic_types.h"
+#include "math/basic_types.h"
 #include "var.h"
 #include "builtin.h"
 #include "expr.h"

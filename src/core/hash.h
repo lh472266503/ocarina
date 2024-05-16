@@ -7,7 +7,7 @@
 //#define XXH_INLINE_ALL   /* access definitions */
 #include "xxhash.h"
 #include "stl.h"
-#include "basic_types.h"
+#include "math/basic_types.h"
 #include "concepts.h"
 
 namespace ocarina {

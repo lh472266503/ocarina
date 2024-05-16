@@ -6,7 +6,7 @@
 
 #include <utility>
 #include "core/stl.h"
-#include "core/basic_types.h"
+#include "math/basic_types.h"
 #include "core/util.h"
 #include "util/image.h"
 #include "objbase.h"

@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "core/basic_types.h"
+#include "basic_types.h"
 #include "interval.h"
 #include "math/base.h"
 #include "dsl/var.h"

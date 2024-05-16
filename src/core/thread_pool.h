@@ -13,7 +13,7 @@
 #include <condition_variable>
 
 #include <core/stl.h>
-#include <core/basic_types.h>
+#include "math/basic_types.h"
 
 /// reference :https://github.com/LuisaGroup/LuisaCompute/src/core/thread_pool.h
 namespace ocarina {

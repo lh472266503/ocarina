@@ -17,7 +17,7 @@
 #include "dsl/rtx_type.h"
 #include "rhi/resources/stream.h"
 #include "math/base.h"
-#include "core/basic_types.h"
+#include "math/basic_types.h"
 
 using std::cout;
 using std::endl;

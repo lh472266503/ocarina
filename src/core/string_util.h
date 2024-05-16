@@ -13,7 +13,7 @@
 #include <regex>
 #include <filesystem>
 #include <fmt/format.h>
-#include "basic_types.h"
+#include "math/basic_types.h"
 #include "stl.h"
 
 namespace ocarina {

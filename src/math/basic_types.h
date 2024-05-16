@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "basic_traits.h"
+#include "ocarina/src/core/basic_traits.h"
 #include "math/constants.h"
 
 namespace ocarina {
