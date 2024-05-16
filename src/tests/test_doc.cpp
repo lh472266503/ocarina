@@ -253,76 +253,60 @@ void test_lambda(Device &device, Stream &stream) {
 
     int aaa = 0;
 
-    //    auto sss = sizeof(float2);
-    //
-    //
-//        f3 += xyz;
+    Kernel kernel = [&](Uint i) {
+        //        Float *p;
+        //        HitVar *hit;
+        //        Float b;
+        //
+        //        Float3 f3;
+        //
+        //        f3.x = 1;
+        //        f3.y = 2;
 
-//        zyx + zyx;
-    //
-    //    zyx = f3 + zyx;
-    //
-    //    f3 = zyx + 5;
-    //
-    //    //    xyz = zyx;
-    //
-    //    float3 f2 = zyx.to_vec() + zyx.to_vec();
-    //
-    //    zyx = f2;
-//
-//    Kernel kernel = [&](Uint i) {
-//        //        Float *p;
-//        //        HitVar *hit;
-//        //        Float b;
-//        //
-//        //        Float3 f3;
-//        //
-//        //        f3.x = 1;
-//        //        f3.y = 2;
-//
-//        float3 f3 = make_float3(1,2,3);
-//        Float3 aa = f3;
+        float3 f3 = make_float3(1,2,3);
+        Float3 aa = f3;
+        aa.xy() = aa.xy() + 1;
 //      aa.xy += 1;
-//      Float3 bbb = aa.xyz + aa;
-////        bool bbb = ocarina::is_scalar_v<Float3>;
-////        aa + aa.xzz;
-//        $info("{} {} {}  ", bbb);
-//        //        f3 = xyz;
-//
-//        //        $outline {
-//        //
-//        //            Var<Triple> ttt;
-//        //            Var<Hit> hit;
-//        //
-//        //            //            auto sn = hit.expression()->type()->simple_cname();
-//        //
-//        //            $outline {
-//        //                b = 123;
-//        //
-//        //                $outline {
-//        //                    p = new Float(15);
-//        //                    //                    hit = new HitVar{};
-//        //                    //                    *p = b;
-//        //                    //                    b = 19;
-//        //                };
-//        //            };
-//        //            //            $info("{}   i  ---   ", *p);
-//        //        };
-//        //        $outline {
-//        //            //            Float a = *p;
-//        //            //            //        Float bb = $outline {
-//        //            //            //            return (*hit).inst_id;
-//        //            //            //        };
-//        //            ////            b = 10;
-//        //
-//        //            $info("{}    {}  ---   ", min(b, *p), call<float>("oc_max", b, *p));
-//        //        };
-//    };
-//    Shader shader = device.compile(kernel);
-//
-//    stream << shader(1).dispatch(1)
-//           << Env::printer().retrieve()
-//           << synchronize() << commit();
+//      Float3 bbb = + aa.xyy();
+//        bool bbb = ocarina::is_scalar_v<Float3>;
+//        aa + aa.xzz;
+        $info("{} {} {}  ", bbb);
+        //        f3 = xyz;
+
+        //        $outline {
+        //
+        //            Var<Triple> ttt;
+        //            Var<Hit> hit;
+        //
+        //            //            auto sn = hit.expression()->type()->simple_cname();
+        //
+        //            $outline {
+        //                b = 123;
+        //
+        //                $outline {
+        //                    p = new Float(15);
+        //                    //                    hit = new HitVar{};
+        //                    //                    *p = b;
+        //                    //                    b = 19;
+        //                };
+        //            };
+        //            //            $info("{}   i  ---   ", *p);
+        //        };
+        //        $outline {
+        //            //            Float a = *p;
+        //            //            //        Float bb = $outline {
+        //            //            //            return (*hit).inst_id;
+        //            //            //        };
+        //            ////            b = 10;
+        //
+        //            $info("{}    {}  ---   ", min(b, *p), call<float>("oc_max", b, *p));
+        //        };
+    };
+    Shader shader = device.compile(kernel);
+
+    stream << shader(1).dispatch(1)
+           << Env::printer().retrieve()
+           << synchronize() << commit();
 }
 
 struct Base {
