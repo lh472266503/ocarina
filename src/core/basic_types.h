@@ -223,7 +223,6 @@ public:
     [[nodiscard]] constexpr T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
     [[nodiscard]] constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
 #include "swizzle_inl/swizzle2.inl.h"
-// #include "swizzle_inl/swizzle_2.inl.h"
 };
 
 template<typename T>
@@ -249,7 +248,6 @@ public:
     [[nodiscard]] constexpr T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
     [[nodiscard]] constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
 #include "swizzle_inl/swizzle3.inl.h"
-// #include "swizzle_inl/swizzle_3.inl.h"
 };
 
 template<typename T>
@@ -275,7 +273,6 @@ public:
     [[nodiscard]] constexpr T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
     [[nodiscard]] constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
 #include "swizzle_inl/swizzle4.inl.h"
-// #include "swizzle_inl/swizzle_4.inl.h"
 };
 
 #define OC_MAKE_VECTOR_TYPES(T) \
