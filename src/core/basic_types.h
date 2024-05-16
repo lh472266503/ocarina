@@ -448,7 +448,6 @@ using texture_sample_t = typename detail::texture_sample_impl<std::remove_cvref_
     }                                                                    \
     template<typename T, typename U, size_t N>                           \
     requires requires { T{} op U{}; } &&                                 \
-             ocarina::is_scalar_v<U> &&                                  \
              __VA_ARGS__                                                 \
     [[nodiscard]] constexpr auto                                         \
     operator op(ocarina::Vector<T, N> lhs, U rhs) noexcept {             \
@@ -456,7 +455,6 @@ using texture_sample_t = typename detail::texture_sample_impl<std::remove_cvref_
     }                                                                    \
     template<typename T, typename U, size_t N>                           \
     requires requires { T{} op U{}; } &&                                 \
-             ocarina::is_scalar_v<T> &&                                  \
              __VA_ARGS__                                                 \
     [[nodiscard]] constexpr auto                                         \
     operator op(T lhs, ocarina::Vector<U, N> rhs) noexcept {             \
@@ -579,6 +577,19 @@ OC_MAKE_SWIZZLE_BINARY_OP(&)
 OC_MAKE_SWIZZLE_BINARY_OP(^)
 
 #undef OC_MAKE_SWIZZLE_BINARY_OP
+
+#define OC_MAKE_SWIZZLE_LOGIC_OP(op)
+
+OC_MAKE_SWIZZLE_LOGIC_OP(||)
+OC_MAKE_SWIZZLE_LOGIC_OP(&&)
+OC_MAKE_SWIZZLE_LOGIC_OP(==)
+OC_MAKE_SWIZZLE_LOGIC_OP(!=)
+OC_MAKE_SWIZZLE_LOGIC_OP(<)
+OC_MAKE_SWIZZLE_LOGIC_OP(>)
+OC_MAKE_SWIZZLE_LOGIC_OP(<=)
+OC_MAKE_SWIZZLE_LOGIC_OP(>=)
+
+#undef OC_MAKE_SWIZZLE_LOGIC_OP
 
 [[nodiscard]] constexpr auto operator*(ocarina::float2x2 m, float s) noexcept {
     return ocarina::float2x2{m[0] * s, m[1] * s};
