@@ -29,9 +29,7 @@ template<typename T>
 static constexpr auto valid_vector_v = detail::valid_vector_impl<std::remove_cvref_t<T>>::value;
 
 template<typename T, size_t N>
-struct Vector {
-    static_assert(always_false_v<T>, "Invalid vector storage");
-};
+struct Vector;
 
 }// namespace ocarina
 
@@ -200,8 +198,13 @@ public:
 
 namespace ocarina {
 
+template<typename T, size_t N>
+struct VectorStorage {
+    static_assert(always_false_v<T>, "Invalid vector storage");
+};
+
 template<typename T>
-struct alignas(sizeof(T) * 2) Vector<T, 2> {
+struct alignas(sizeof(T) * 2) VectorStorage<T, 2> {
     static_assert(valid_vector_v<T>, "Invalid vector type");
 
 public:
@@ -210,18 +213,18 @@ public:
 
 public:
     T x{}, y{};
-    Vector() : x{}, y{} {}
-    explicit constexpr Vector(T s) noexcept : x{s}, y{s} {}
+    VectorStorage() : x{}, y{} {}
+    explicit constexpr VectorStorage(T s) noexcept : x{s}, y{s} {}
     template<typename U>
-    explicit constexpr Vector(U s) noexcept : Vector(static_cast<T>(s)) {}
-    constexpr Vector(T x, T y) noexcept : x{x}, y{y} {}
+    explicit constexpr VectorStorage(U s) noexcept : VectorStorage(static_cast<T>(s)) {}
+    constexpr VectorStorage(T x, T y) noexcept : x{x}, y{y} {}
     [[nodiscard]] constexpr T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
     [[nodiscard]] constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
 #include "swizzle_inl/swizzle2.inl.h"
 };
 
 template<typename T>
-struct alignas(sizeof(T) * 4) Vector<T, 3> {
+struct alignas(sizeof(T) * 4) VectorStorage<T, 3> {
     static_assert(valid_vector_v<T>, "Invalid vector type");
 
 public:
@@ -230,18 +233,18 @@ public:
 
 public:
     T x{}, y{}, z{};
-    Vector() : x{}, y{}, z{} {}
-    explicit constexpr Vector(T s) noexcept : x{s}, y{s}, z{s} {}
+    VectorStorage() : x{}, y{}, z{} {}
+    explicit constexpr VectorStorage(T s) noexcept : x{s}, y{s}, z{s} {}
     template<typename U>
-    explicit constexpr Vector(U s) noexcept : Vector(static_cast<T>(s)) {}
-    constexpr Vector(T x, T y, T z) noexcept : x{x}, y{y}, z{z} {}
+    explicit constexpr VectorStorage(U s) noexcept : VectorStorage(static_cast<T>(s)) {}
+    constexpr VectorStorage(T x, T y, T z) noexcept : x{x}, y{y}, z{z} {}
     [[nodiscard]] constexpr T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
     [[nodiscard]] constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
 #include "swizzle_inl/swizzle3.inl.h"
 };
 
 template<typename T>
-struct alignas(sizeof(T) * 4) Vector<T, 4> {
+struct alignas(sizeof(T) * 4) VectorStorage<T, 4> {
     static_assert(valid_vector_v<T>, "Invalid vector type");
 
 public:
@@ -250,14 +253,19 @@ public:
 
 public:
     T x{}, y{}, z{}, w{};
-    Vector() : x{}, y{}, z{}, w{} {}
-    explicit constexpr Vector(T s) noexcept : x{s}, y{s}, z{s}, w{s} {}
+    VectorStorage() : x{}, y{}, z{}, w{} {}
+    explicit constexpr VectorStorage(T s) noexcept : x{s}, y{s}, z{s}, w{s} {}
     template<typename U>
-    explicit constexpr Vector(U s) noexcept : Vector(static_cast<T>(s)) {}
-    constexpr Vector(T x, T y, T z, T w) noexcept : x{x}, y{y}, z{z}, w{w} {}
+    explicit constexpr VectorStorage(U s) noexcept : VectorStorage(static_cast<T>(s)) {}
+    constexpr VectorStorage(T x, T y, T z, T w) noexcept : x{x}, y{y}, z{z}, w{w} {}
     [[nodiscard]] constexpr T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
     [[nodiscard]] constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
 #include "swizzle_inl/swizzle4.inl.h"
+};
+
+template<typename T, size_t N>
+struct Vector : public VectorStorage<T, N> {
+    using VectorStorage<T, N>::VectorStorage;
 };
 
 #define OC_MAKE_VECTOR_TYPES(T) \

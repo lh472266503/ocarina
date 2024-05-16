@@ -248,6 +248,7 @@ void test_lambda(Device &device, Stream &stream) {
     float3 bb = f3 + f3.xyz();
     float3 cc = 5 + f3.xyz();
 
+
 //    aa.xy_() == 10;
     //    f3 =  2.f + f3.xyz;
 
