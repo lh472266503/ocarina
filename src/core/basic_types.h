@@ -571,14 +571,16 @@ OC_MAKE_VECTOR_LOGIC_OPERATOR(>=, ocarina::is_all_number_v<T>)
 #undef OC_MAKE_VECTOR_LOGIC_OPERATOR
 
 #define OC_MAKE_SWIZZLE_BINARY_OP(op)                                                           \
-    template<typename Lhs, typename U, size_t N, size_t... Indices>                             \
-    auto operator op(Lhs &&lhs, ocarina::detail::swizzle_impl<U, N, Indices...> rhs) noexcept { \
+    template<typename Lhs, typename T, size_t N, size_t... Indices>                             \
+    requires ocarina::is_basic_v<Lhs>                                                           \
+    auto operator op(Lhs &&lhs, ocarina::detail::swizzle_impl<T, N, Indices...> rhs) noexcept { \
         return OC_FORWARD(lhs) op rhs.to_vec();                                                 \
     }                                                                                           \
                                                                                                 \
-    template<typename Lhs, typename U, size_t N, size_t... Indices>                             \
+    template<typename Lhs, typename T, size_t N, size_t... Indices>                             \
+    requires ocarina::is_basic_v<Lhs>                                                           \
     auto operator op##=(Lhs &lhs,                                                               \
-                        ocarina::detail::swizzle_impl<U, N, Indices...> rhs) noexcept {         \
+                        ocarina::detail::swizzle_impl<T, N, Indices...> rhs) noexcept {         \
         lhs op## = rhs.to_vec();                                                                \
         return lhs;                                                                             \
     }

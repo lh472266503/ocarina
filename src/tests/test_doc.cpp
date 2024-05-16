@@ -265,12 +265,16 @@ void test_lambda(Device &device, Stream &stream) {
 
         float3 f3 = make_float3(1,2,3);
         Float3 aa = f3;
-        aa.xy() = aa.xy() + 1;
+        aa.xy() += 1;
+
 //      aa.xy += 1;
 //      Float3 bbb = + aa.xyy();
 //        bool bbb = ocarina::is_scalar_v<Float3>;
-//        aa + aa.xzz;
-        $info("{} {} {}  ", bbb);
+        $info("{} {} {}  ", aa);
+        aa = aa.zxx();
+        $info("{} {} {}  ", aa);
+        aa = aa + aa.xzz();
+        $info("{} {} {}  ", aa);
         //        f3 = xyz;
 
         //        $outline {
