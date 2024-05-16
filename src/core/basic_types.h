@@ -84,7 +84,7 @@ operator~(const ocarina::Vector<T, N> v) noexcept {
 namespace ocarina {
 
 template<typename T>
-class Var;
+struct Var;
 
 namespace detail {
 
