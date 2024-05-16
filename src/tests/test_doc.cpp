@@ -248,7 +248,7 @@ void test_lambda(Device &device, Stream &stream) {
     float3 bb = f3 + f3.xyz();
     float3 cc = 5 + f3.xyz();
 
-    aa.xy() += 10;
+    aa.xy_() += 10;
     //    f3 =  2.f + f3.xyz;
 
     int aaa = 0;
@@ -265,7 +265,7 @@ void test_lambda(Device &device, Stream &stream) {
 
         float3 f3 = make_float3(1,2,3);
         Float3 aa = f3;
-        aa.xy() += 1;
+        aa.xy_() += 1;
 
 //      aa.xy += 1;
 //      Float3 bbb = + aa.xyy();
@@ -398,7 +398,7 @@ void test_parameter_struct(Device &device, Stream &stream) {
         //        vert.at(dispatch_id()).x += 90;
         pa.triple.h.bary = make_float2(1.f);
         $outline {
-            auto v = pa.triple.h.bary.xy_();
+            auto v = pa.triple.h.bary.xy();
             int i = 0;
             //            auto v = pp.pa.b.read(dispatch_id());
             //            $info("{} {} {}  -- ", v);

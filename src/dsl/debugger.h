@@ -66,7 +66,7 @@ public:
             comment(desc_);
         }
         if_(_is_enabled(), [&] {
-            Uint2 idx = dispatch_idx().xy_();
+            Uint2 idx = dispatch_idx().xy();
             if_(_device_data()->range->contains(idx), [&] {
                 if constexpr (std::invocable<Func, Uint2>) {
                     func(idx);
