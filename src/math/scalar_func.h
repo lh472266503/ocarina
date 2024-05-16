@@ -11,6 +11,38 @@
 
 namespace ocarina {
 
+// math
+using std::abs;
+using std::acos;
+using std::acosh;
+using std::asin;
+using std::asinh;
+using std::atan;
+using std::atan2;
+using std::atanh;
+using std::ceil;
+using std::copysign;
+using std::cos;
+using std::cosh;
+using std::exp;
+using std::exp2;
+using std::floor;
+using std::fma;
+using std::fmod;
+using std::log;
+using std::log10;
+using std::log2;
+using std::max;
+using std::min;
+using std::pow;
+using std::round;
+using std::roundf;
+using std::sin;
+using std::sinh;
+using std::sqrt;
+using std::tan;
+using std::tanh;
+
 template<typename T, typename F>
 [[nodiscard]] constexpr auto select(bool pred, T &&t, F &&f) noexcept {
     return pred ? t : f;
@@ -87,7 +119,7 @@ requires is_all_floating_point_expr_v<T, U>
 }
 
 template<typename T>
-requires is_scalar_v<T>
+//requires is_scalar_v<T>
 [[nodiscard]] auto saturate(const T &f) { return min(1.f, max(0.f, f)); }
 
 template<typename T>
@@ -116,36 +148,6 @@ inline void oc_memcpy(void *dst, const void *src, size_t size) {
     return (u & 0x7f800000u) == 0x7f800000u && (u & 0x007fffffu) == 0u;
 }
 
-// math
-using std::abs;
-using std::acos;
-using std::acosh;
-using std::asin;
-using std::asinh;
-using std::atan;
-using std::atan2;
-using std::atanh;
-using std::ceil;
-using std::copysign;
-using std::cos;
-using std::cosh;
-using std::exp;
-using std::exp2;
-using std::floor;
-using std::fma;
-using std::fmod;
-using std::log;
-using std::log10;
-using std::log2;
-using std::max;
-using std::min;
-using std::pow;
-using std::round;
-using std::roundf;
-using std::sin;
-using std::sinh;
-using std::sqrt;
-using std::tan;
-using std::tanh;
+
 
 }// namespace ocarina
