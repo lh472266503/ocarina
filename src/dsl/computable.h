@@ -493,20 +493,15 @@ struct Computable<Vector<T, 2>>
       detail::EnableBitwiseCast<Computable<Vector<T, 2>>>,
       detail::EnableGetMemberByIndex<Computable<Vector<T, 2>>>,
       detail::EnableSubscriptAccess<Computable<Vector<T, 2>>> {
-
     using this_type = Vector<T, 2>;
-
     template<size_t... index>
     using swizzle_type = detail::swizzle_impl<Var<T>, 2, index...>;
-
     OC_COMPUTABLE_COMMON(Computable<Vector<T, 2>>)
     OC_MAKE_ASSIGNMENT_FUNC
 
 public:
     Var<T> x{Function::current()->swizzle(Type::of<T>(), expression(), 0, 1)};
     Var<T> y{Function::current()->swizzle(Type::of<T>(), expression(), 1, 1)};
-
-public:
 #include "core/swizzle_inl/swizzle2.inl.h"
 };
 
@@ -516,12 +511,9 @@ struct Computable<Vector<T, 3>>
       detail::EnableBitwiseCast<Computable<Vector<T, 3>>>,
       detail::EnableGetMemberByIndex<Computable<Vector<T, 3>>>,
       detail::EnableSubscriptAccess<Computable<Vector<T, 3>>> {
-
     using this_type = Vector<T, 3>;
-
     template<size_t... index>
     using swizzle_type = detail::swizzle_impl<Var<T>, 3, index...>;
-
     OC_COMPUTABLE_COMMON(Computable<Vector<T, 3>>)
     OC_MAKE_ASSIGNMENT_FUNC
 
@@ -529,8 +521,6 @@ public:
     Var<T> x{Function::current()->swizzle(Type::of<T>(), expression(), 0, 1)};
     Var<T> y{Function::current()->swizzle(Type::of<T>(), expression(), 1, 1)};
     Var<T> z{Function::current()->swizzle(Type::of<T>(), expression(), 2, 1)};
-
-public:
 #include "core/swizzle_inl/swizzle3.inl.h"
 };
 
@@ -540,12 +530,9 @@ struct Computable<Vector<T, 4>>
       detail::EnableBitwiseCast<Computable<Vector<T, 4>>>,
       detail::EnableGetMemberByIndex<Computable<Vector<T, 4>>>,
       detail::EnableSubscriptAccess<Computable<Vector<T, 4>>> {
-
     using this_type = Vector<T, 4>;
-
     template<size_t... index>
     using swizzle_type = detail::swizzle_impl<Var<T>, 4, index...>;
-
     OC_COMPUTABLE_COMMON(Computable<Vector<T, 4>>)
     OC_MAKE_ASSIGNMENT_FUNC
 
@@ -554,8 +541,6 @@ public:
     Var<T> y{Function::current()->swizzle(Type::of<T>(), expression(), 1, 1)};
     Var<T> z{Function::current()->swizzle(Type::of<T>(), expression(), 2, 1)};
     Var<T> w{Function::current()->swizzle(Type::of<T>(), expression(), 3, 1)};
-
-public:
 #include "core/swizzle_inl/swizzle4.inl.h"
 };
 
