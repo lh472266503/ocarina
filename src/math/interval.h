@@ -6,7 +6,7 @@
 
 #include "core/basic_types.h"
 #include "core/concepts.h"
-#include "core/constants.h"
+#include "constants.h"
 
 namespace ocarina {
 

@@ -4,6 +4,7 @@ file(GLOB_RECURSE SOURCE_FILES *.c*)
 add_library(ocarina-core SHARED ${SOURCE_FILES})
 target_link_libraries(ocarina-core PUBLIC
         ocarina-ext
+        ocarina-math
         $<$<PLATFORM_ID:Windows>:dbghelp>
         )
 target_compile_definitions(ocarina-core PRIVATE OC_CORE_EXPORT_DLL=1)
