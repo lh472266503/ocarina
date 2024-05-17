@@ -420,6 +420,8 @@ void test_parameter_struct(Device &device, Stream &stream) {
     stream << synchronize() << commit();
 }
 
+
+
 int main(int argc, char *argv[]) {
     fs::path path(argv[0]);
     FileManager file_manager(path.parent_path());
@@ -440,6 +442,11 @@ int main(int argc, char *argv[]) {
 
     /// create rtx file_manager if need
     device.init_rtx();
+
+//    ocarina::detail::Vector<float, 3> aaaaa;
+
+
+    AVector<float, 3> aaaa;
 
     float3 a;
     int3 b;

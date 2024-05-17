@@ -235,6 +235,61 @@ public:
 };
 }// namespace detail
 
+namespace detail {
+
+template<typename T, size_t... Indices>
+struct Vector_ : public VectorStorage<T, sizeof...(Indices)> {
+    static constexpr size_t N = sizeof...(Indices);
+
+    using detail::VectorStorage<T, N>::VectorStorage;
+    template<typename U>
+    explicit constexpr Vector_(U s) noexcept : Vector_(static_cast<T>(s)) {}
+    [[nodiscard]] constexpr T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
+    [[nodiscard]] constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
+    [[nodiscard]] constexpr T &at(size_t index) noexcept { return (&(this->x))[index]; }
+    [[nodiscard]] constexpr const T &at(size_t index) const noexcept { return (&(this->x))[index]; }
+
+#define OC_MAKE_UNARY_OP(op)                                         \
+    [[nodiscard]] constexpr auto operator op() noexcept {            \
+        using R = Vector_<decltype(op T{}), N>;                      \
+        return [&]<size_t... index>(std::index_sequence<index...>) { \
+            return R{op at(index)...};                               \
+        }(std::make_index_sequence<N>());                            \
+    }
+    OC_MAKE_UNARY_OP(+)
+    OC_MAKE_UNARY_OP(-)
+    OC_MAKE_UNARY_OP(~)
+    OC_MAKE_UNARY_OP(!)
+#undef OC_MAKE_UNARY_OP
+
+    template<typename U>
+    requires requires { T{} + U{}; } && ocarina::is_all_number_v<T, U>
+    [[nodiscard]] friend constexpr auto operator+(Vector_<T, N> lhs, Vector_<U, N> rhs) noexcept {
+        using ret_type = decltype(T{} + U{});
+        if constexpr (N == 2) {
+            return Vector_<ret_type, 2>{lhs.x + rhs.x, lhs.y + rhs.y};
+        } else if constexpr (N == 3) {
+            return Vector_<ret_type, 3>{lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z};
+        } else {
+            return Vector_<ret_type, 4>{lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z, lhs.w + rhs.w};
+        }
+    }
+    template<typename U>
+    requires ocarina::is_all_number_v<T, U>
+    [[nodiscard]] friend constexpr auto operator+(Vector_<T, N> lhs, U rhs) noexcept { return lhs + Vector_<U, N>{rhs}; }
+    template<typename U>
+    requires requires { T{} + U{}; } && ocarina::is_all_number_v<T, U>
+    [[nodiscard]] friend constexpr auto operator+(T lhs, Vector_<U, N> rhs) noexcept { return Vector_<T, N>{lhs} + rhs; }
+};
+
+template<template<typename, size_t...> typename TType, typename Scalar, size_t... Indices>
+Vector_<Scalar, Indices...> index_sequence_helper(std::index_sequence<Indices...>);
+
+}// namespace detail
+
+template<typename T, size_t N>
+using AVector = decltype(detail::index_sequence_helper<detail::Vector_,T>(std::make_index_sequence<N>()));
+
 template<typename T, size_t N>
 struct Vector : public detail::VectorStorage<T, N> {
     using detail::VectorStorage<T, N>::VectorStorage;
@@ -257,6 +312,25 @@ struct Vector : public detail::VectorStorage<T, N> {
     OC_MAKE_UNARY_OP(~)
     OC_MAKE_UNARY_OP(!)
 #undef OC_MAKE_UNARY_OP
+
+    template<typename U>
+    requires requires { T{} + U{}; } && ocarina::is_all_number_v<T, U>
+    [[nodiscard]] friend constexpr auto operator+(ocarina::Vector<T, N> lhs, ocarina::Vector<U, N> rhs) noexcept {
+        using ret_type = decltype(T{} + U{});
+        if constexpr (N == 2) {
+            return ocarina::Vector<ret_type, 2>{lhs.x + rhs.x, lhs.y + rhs.y};
+        } else if constexpr (N == 3) {
+            return ocarina::Vector<ret_type, 3>{lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z};
+        } else {
+            return ocarina::Vector<ret_type, 4>{lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z, lhs.w + rhs.w};
+        }
+    }
+    template<typename U>
+    requires ocarina::is_all_number_v<T, U>
+    [[nodiscard]] friend constexpr auto operator+(ocarina::Vector<T, N> lhs, U rhs) noexcept { return lhs + ocarina::Vector<U, N>{rhs}; }
+    template<typename U>
+    requires requires { T{} + U{}; } && ocarina::is_all_number_v<T, U>
+    [[nodiscard]] friend constexpr auto operator+(T lhs, ocarina::Vector<U, N> rhs) noexcept { return ocarina::Vector<T, N>{lhs} + rhs; }
 };
 
 #define OC_MAKE_VECTOR_TYPES(T) \
@@ -459,7 +533,27 @@ using texture_sample_t = typename detail::texture_sample_impl<std::remove_cvref_
     operator op(T lhs, ocarina::Vector<U, N> rhs) noexcept {             \
         return ocarina::Vector<T, N>{lhs} op rhs;                        \
     }
-OC_MAKE_VECTOR_BINARY_OPERATOR(+, ocarina::is_all_number_v<T, U>)
+//OC_MAKE_VECTOR_BINARY_OPERATOR(+, ocarina::is_all_number_v<T, U>)
+
+//template<typename T, typename U, size_t N>
+//requires requires { T{} + U{}; } && ocarina::is_all_number_v<T, U>
+//[[nodiscard]] constexpr auto operator+(ocarina::Vector<T, N> lhs, ocarina::Vector<U, N> rhs) noexcept {
+//    using ret_type = decltype(T{} + U{});
+//    if constexpr (N == 2) {
+//        return ocarina::Vector<ret_type, 2>{lhs.x + rhs.x, lhs.y + rhs.y};
+//    } else if constexpr (N == 3) {
+//        return ocarina::Vector<ret_type, 3>{lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z};
+//    } else {
+//        return ocarina::Vector<ret_type, 4>{lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z, lhs.w + rhs.w};
+//    }
+//}
+//template<typename T, typename U, size_t N>
+//requires requires { T{} + U{}; } && ocarina::is_all_number_v<T, U>
+//[[nodiscard]] constexpr auto operator+(ocarina::Vector<T, N> lhs, U rhs) noexcept { return lhs + ocarina::Vector<U, N>{rhs}; }
+//template<typename T, typename U, size_t N>
+//requires requires { T{} + U{}; } && ocarina::is_all_number_v<T, U>
+//[[nodiscard]] constexpr auto operator+(T lhs, ocarina::Vector<U, N> rhs) noexcept { return ocarina::Vector<T, N>{lhs} + rhs; }
+
 OC_MAKE_VECTOR_BINARY_OPERATOR(-, ocarina::is_all_number_v<T, U>)
 OC_MAKE_VECTOR_BINARY_OPERATOR(*, ocarina::is_all_number_v<T, U>)
 OC_MAKE_VECTOR_BINARY_OPERATOR(/, ocarina::is_all_number_v<T, U>)
