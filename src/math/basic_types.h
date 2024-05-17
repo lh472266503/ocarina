@@ -313,34 +313,44 @@ struct Vector : public detail::VectorStorage<T, N> {
     OC_MAKE_UNARY_OP(!)
 #undef OC_MAKE_UNARY_OP
 
-    template<typename U>
-    requires requires { T{} + U{}; } && ocarina::is_all_number_v<T, U>
-    [[nodiscard]] friend constexpr auto operator+(ocarina::Vector<T, N> lhs, ocarina::Vector<U, N> rhs) noexcept {
-        using ret_type = decltype(T{} + U{});
-        return [&]<size_t... index>(std::index_sequence<index...>) {
-            return Vector<ret_type, N>{(lhs[index] + rhs[index])...};
-        }(std::make_index_sequence<N>());
+#define OC_MAKE_VECTOR_OP(op, ...)                                                               \
+    template<typename U>                                                                         \
+    requires __VA_ARGS__                                                                         \
+    [[nodiscard]] friend constexpr auto operator op(ocarina::Vector<T, N> lhs,                   \
+                                                    ocarina::Vector<U, N> rhs) noexcept {        \
+        using ret_type = decltype(T {} op U{});                                                  \
+        return [&]<size_t... index>(std::index_sequence<index...>) {                             \
+            return Vector<ret_type, N>{(lhs[index] op rhs[index])...};                           \
+        }(std::make_index_sequence<N>());                                                        \
+    }                                                                                            \
+    template<typename U>                                                                         \
+    requires __VA_ARGS__                                                                         \
+    [[nodiscard]] friend constexpr auto operator op(ocarina::Vector<T, N> lhs, U rhs) noexcept { \
+        return lhs op ocarina::Vector<U, N>{rhs};                                                \
+    }                                                                                            \
+    template<typename U>                                                                         \
+    requires __VA_ARGS__                                                                         \
+    [[nodiscard]] friend constexpr auto operator op(T lhs, ocarina::Vector<U, N> rhs) noexcept { \
+        return ocarina::Vector<T, N>{lhs} op rhs;                                                \
+    }                                                                                            \
+                                                                                                 \
+    template<typename U>                                                                         \
+    requires __VA_ARGS__                                                                         \
+    constexpr decltype(auto) operator op##=(ocarina::Vector<U, N> rhs) noexcept {                \
+        [&]<size_t... index>(std::index_sequence<index...>) {                                    \
+            ((at(index) op## = rhs.at(index)), ...);                                             \
+        }(std::make_index_sequence<N>());                                                        \
+        return *this;                                                                            \
+    }                                                                                            \
+    template<typename U>                                                                         \
+    requires __VA_ARGS__                                                                         \
+    constexpr decltype(auto) operator op##=(U rhs) noexcept {                                    \
+        return (*this += ocarina::Vector<U, N>{rhs});                                            \
     }
-    template<typename U>
-    requires ocarina::is_all_number_v<T, U>
-    [[nodiscard]] friend constexpr auto operator+(ocarina::Vector<T, N> lhs, U rhs) noexcept { return lhs + ocarina::Vector<U, N>{rhs}; }
-    template<typename U>
-    requires requires { T{} + U{}; } && ocarina::is_all_number_v<T, U>
-    [[nodiscard]] friend constexpr auto operator+(T lhs, ocarina::Vector<U, N> rhs) noexcept { return ocarina::Vector<T, N>{lhs} + rhs; }
 
-    template<typename U>
-    requires ocarina::is_all_number_v<T, U>
-    constexpr decltype(auto) operator+=(ocarina::Vector<U, N> rhs) noexcept {
-        [&]<size_t...index>(std::index_sequence<index...>) {
-            ((at(index) += rhs.at(index)), ...);
-        }(std::make_index_sequence<N>());
-        return *this;
-    }
-    template<typename U>
-    requires ocarina::is_all_number_v<T, U>
-    constexpr decltype(auto) operator+=(U rhs) noexcept {
-        return (*this += ocarina::Vector<U, N>{rhs});
-    }
+    OC_MAKE_VECTOR_OP(+, ocarina::is_all_number_v<T, U>)
+
+#undef OC_MAKE_VECTOR_OP
 };
 
 #define OC_MAKE_VECTOR_TYPES(T) \
@@ -491,17 +501,22 @@ struct texture_sample_impl<uchar4> : public texture_sample_impl<float4> {};
 template<typename element_type>
 using texture_sample_t = typename detail::texture_sample_impl<std::remove_cvref_t<element_type>>::type;
 
-[[nodiscard]] constexpr bool any(const bool2 v) noexcept { return v.x || v.y; }
-[[nodiscard]] constexpr bool any(const bool3 v) noexcept { return v.x || v.y || v.z; }
-[[nodiscard]] constexpr bool any(const bool4 v) noexcept { return v.x || v.y || v.z || v.w; }
+template<size_t N>
+[[nodiscard]] constexpr bool any(Vector<bool, N> v) noexcept {
+    return [&]<size_t ...index>(std::index_sequence<index...>) {
+        return (v[index] || ...);
+    }(std::make_index_sequence<N>());
+}
 
-[[nodiscard]] constexpr bool all(const bool2 v) noexcept { return v.x && v.y; }
-[[nodiscard]] constexpr bool all(const bool3 v) noexcept { return v.x && v.y && v.z; }
-[[nodiscard]] constexpr bool all(const bool4 v) noexcept { return v.x && v.y && v.z && v.w; }
+template<size_t N>
+[[nodiscard]] constexpr bool all(Vector<bool, N> v) noexcept {
+    return [&]<size_t ...index>(std::index_sequence<index...>) {
+        return (v[index] && ...);
+    }(std::make_index_sequence<N>());
+}
 
-[[nodiscard]] constexpr bool none(const bool2 v) noexcept { return !any(v); }
-[[nodiscard]] constexpr bool none(const bool3 v) noexcept { return !any(v); }
-[[nodiscard]] constexpr bool none(const bool4 v) noexcept { return !any(v); }
+template<size_t N>
+[[nodiscard]] constexpr bool none(Vector<bool, N> v) noexcept { return !any(v); }
 
 }// namespace ocarina
 

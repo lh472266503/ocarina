@@ -454,7 +454,10 @@ int main(int argc, char *argv[]) {
     a = a + a;
     a += 1;
     a += a;
-    a = a + b;
+    a = 1 + a;
+    bool4 bool_4 = make_bool4(1,0,1,1);
+
+    auto b4 = all(bool_4);
 
     //        test_compute_shader(device, stream);
     //    test_parameter_struct(device, stream);
