@@ -34,52 +34,6 @@ struct Vector;
 
 }// namespace ocarina
 
-template<typename T, size_t N>
-requires ocarina::is_number_v<T>
-[[nodiscard]] constexpr auto
-operator+(const ocarina::Vector<T, N> v) noexcept {
-    return v;
-}
-
-template<typename T, size_t N>
-requires ocarina::is_number_v<T>
-[[nodiscard]] constexpr auto
-operator-(const ocarina::Vector<T, N> v) noexcept {
-    using R = ocarina::Vector<T, N>;
-    if constexpr (N == 2) {
-        return R{-v.x, -v.y};
-    } else if constexpr (N == 3) {
-        return R{-v.x, -v.y, -v.z};
-    } else {
-        return R{-v.x, -v.y, -v.z, -v.w};
-    }
-}
-
-template<typename T, size_t N>
-[[nodiscard]] constexpr auto operator!(const ocarina::Vector<T, N> v) noexcept {
-    if constexpr (N == 2u) {
-        return ocarina::Vector<T, N>{!v.x, !v.y};
-    } else if constexpr (N == 3u) {
-        return ocarina::Vector<T, N>{!v.x, !v.y, !v.z};
-    } else {
-        return ocarina::Vector<T, N>{!v.x, !v.y, !v.z, !v.w};
-    }
-}
-
-template<typename T, size_t N>
-requires ocarina::is_integral_v<T>
-[[nodiscard]] constexpr auto
-operator~(const ocarina::Vector<T, N> v) noexcept {
-    using R = ocarina::Vector<T, N>;
-    if constexpr (N == 2) {
-        return R{~v.x, ~v.y};
-    } else if constexpr (N == 3) {
-        return R{~v.x, ~v.y, ~v.z};
-    } else {
-        return R{~v.x, ~v.y, ~v.z, ~v.w};
-    }
-}
-
 namespace ocarina {
 
 template<typename T>
@@ -206,14 +160,14 @@ public:
         }                                        \
     }
 
-    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(||)
-    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(&&)
-    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(==)
-    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(!=)
-    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(<)
-    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(>)
-    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(<=)
-    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(>=)
+    //    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(||)
+    //    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(&&)
+    //    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(==)
+    //    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(!=)
+    //    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(<)
+    //    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(>)
+    //    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(<=)
+    //    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(>=)
 
 #undef OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP
 };
@@ -244,11 +198,7 @@ public:
     T x{}, y{};
     VectorStorage() : x{}, y{} {}
     explicit constexpr VectorStorage(T s) noexcept : x{s}, y{s} {}
-    template<typename U>
-    explicit constexpr VectorStorage(U s) noexcept : VectorStorage(static_cast<T>(s)) {}
     constexpr VectorStorage(T x, T y) noexcept : x{x}, y{y} {}
-    [[nodiscard]] constexpr T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
-    [[nodiscard]] constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
 #include "swizzle_inl/swizzle2.inl.h"
 };
 
@@ -264,11 +214,7 @@ public:
     T x{}, y{}, z{};
     VectorStorage() : x{}, y{}, z{} {}
     explicit constexpr VectorStorage(T s) noexcept : x{s}, y{s}, z{s} {}
-    template<typename U>
-    explicit constexpr VectorStorage(U s) noexcept : VectorStorage(static_cast<T>(s)) {}
     constexpr VectorStorage(T x, T y, T z) noexcept : x{x}, y{y}, z{z} {}
-    [[nodiscard]] constexpr T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
-    [[nodiscard]] constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
 #include "swizzle_inl/swizzle3.inl.h"
 };
 
@@ -284,18 +230,33 @@ public:
     T x{}, y{}, z{}, w{};
     VectorStorage() : x{}, y{}, z{}, w{} {}
     explicit constexpr VectorStorage(T s) noexcept : x{s}, y{s}, z{s}, w{s} {}
-    template<typename U>
-    explicit constexpr VectorStorage(U s) noexcept : VectorStorage(static_cast<T>(s)) {}
     constexpr VectorStorage(T x, T y, T z, T w) noexcept : x{x}, y{y}, z{z}, w{w} {}
-    [[nodiscard]] constexpr T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
-    [[nodiscard]] constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
 #include "swizzle_inl/swizzle4.inl.h"
 };
 }// namespace detail
 
-template<typename Scalar, size_t N>
-struct Vector : public detail::VectorStorage<Scalar, N> {
-    using detail::VectorStorage<Scalar, N>::VectorStorage;
+template<typename T, size_t N>
+struct Vector : public detail::VectorStorage<T, N> {
+    using detail::VectorStorage<T, N>::VectorStorage;
+    template<typename U>
+    explicit constexpr Vector(U s) noexcept : Vector(static_cast<T>(s)) {}
+    [[nodiscard]] constexpr T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
+    [[nodiscard]] constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
+    [[nodiscard]] constexpr T &at(size_t index) noexcept { return (&(this->x))[index]; }
+    [[nodiscard]] constexpr const T &at(size_t index) const noexcept { return (&(this->x))[index]; }
+
+#define OC_MAKE_UNARY_OP(op)                                         \
+    [[nodiscard]] constexpr auto operator op() noexcept {            \
+        using R = ocarina::Vector<decltype(op T{}), N>;              \
+        return [&]<size_t... index>(std::index_sequence<index...>) { \
+            return R{op at(index)...};                               \
+        }(std::make_index_sequence<N>());                            \
+    }
+    OC_MAKE_UNARY_OP(+)
+    OC_MAKE_UNARY_OP(-)
+    OC_MAKE_UNARY_OP(~)
+    OC_MAKE_UNARY_OP(!)
+#undef OC_MAKE_UNARY_OP
 };
 
 #define OC_MAKE_VECTOR_TYPES(T) \
