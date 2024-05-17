@@ -313,7 +313,7 @@ struct Vector : public detail::VectorStorage<T, N> {
     OC_MAKE_UNARY_OP(!)
 #undef OC_MAKE_UNARY_OP
 
-#define OC_MAKE_VECTOR_OP(op, ...)                                                               \
+#define OC_MAKE_VECTOR_BINARY_OPERATOR(op, ...)                                                  \
     template<typename U>                                                                         \
     requires __VA_ARGS__                                                                         \
     [[nodiscard]] friend constexpr auto operator op(ocarina::Vector<T, N> lhs,                   \
@@ -333,7 +333,6 @@ struct Vector : public detail::VectorStorage<T, N> {
     [[nodiscard]] friend constexpr auto operator op(T lhs, ocarina::Vector<U, N> rhs) noexcept { \
         return ocarina::Vector<T, N>{lhs} op rhs;                                                \
     }                                                                                            \
-                                                                                                 \
     template<typename U>                                                                         \
     requires __VA_ARGS__                                                                         \
     constexpr decltype(auto) operator op##=(ocarina::Vector<U, N> rhs) noexcept {                \
@@ -345,12 +344,21 @@ struct Vector : public detail::VectorStorage<T, N> {
     template<typename U>                                                                         \
     requires __VA_ARGS__                                                                         \
     constexpr decltype(auto) operator op##=(U rhs) noexcept {                                    \
-        return (*this += ocarina::Vector<U, N>{rhs});                                            \
+        return (*this op## = ocarina::Vector<U, N>{rhs});                                        \
     }
 
-    OC_MAKE_VECTOR_OP(+, ocarina::is_all_number_v<T, U>)
+    OC_MAKE_VECTOR_BINARY_OPERATOR(+, ocarina::is_all_number_v<T, U>)
+    OC_MAKE_VECTOR_BINARY_OPERATOR(-, ocarina::is_all_number_v<T, U>)
+    OC_MAKE_VECTOR_BINARY_OPERATOR(*, ocarina::is_all_number_v<T, U>)
+    OC_MAKE_VECTOR_BINARY_OPERATOR(/, ocarina::is_all_number_v<T, U>)
+    OC_MAKE_VECTOR_BINARY_OPERATOR(%, ocarina::is_all_number_v<T, U>)
+    OC_MAKE_VECTOR_BINARY_OPERATOR(>>, ocarina::is_all_integral_v<T, U>)
+    OC_MAKE_VECTOR_BINARY_OPERATOR(<<, ocarina::is_all_integral_v<T, U>)
+    OC_MAKE_VECTOR_BINARY_OPERATOR(|, ocarina::is_all_integral_v<T, U>)
+    OC_MAKE_VECTOR_BINARY_OPERATOR(&, ocarina::is_all_integral_v<T, U>)
+    OC_MAKE_VECTOR_BINARY_OPERATOR(^, ocarina::is_all_integral_v<T, U>)
 
-#undef OC_MAKE_VECTOR_OP
+#undef OC_MAKE_VECTOR_BINARY_OPERATOR
 };
 
 #define OC_MAKE_VECTOR_TYPES(T) \
@@ -503,14 +511,14 @@ using texture_sample_t = typename detail::texture_sample_impl<std::remove_cvref_
 
 template<size_t N>
 [[nodiscard]] constexpr bool any(Vector<bool, N> v) noexcept {
-    return [&]<size_t ...index>(std::index_sequence<index...>) {
+    return [&]<size_t... index>(std::index_sequence<index...>) {
         return (v[index] || ...);
     }(std::make_index_sequence<N>());
 }
 
 template<size_t N>
 [[nodiscard]] constexpr bool all(Vector<bool, N> v) noexcept {
-    return [&]<size_t ...index>(std::index_sequence<index...>) {
+    return [&]<size_t... index>(std::index_sequence<index...>) {
         return (v[index] && ...);
     }(std::make_index_sequence<N>());
 }
@@ -579,15 +587,15 @@ template<size_t N>
 //requires requires { T{} + U{}; } && ocarina::is_all_number_v<T, U>
 //[[nodiscard]] constexpr auto operator+(T lhs, ocarina::Vector<U, N> rhs) noexcept { return ocarina::Vector<T, N>{lhs} + rhs; }
 
-OC_MAKE_VECTOR_BINARY_OPERATOR(-, ocarina::is_all_number_v<T, U>)
-OC_MAKE_VECTOR_BINARY_OPERATOR(*, ocarina::is_all_number_v<T, U>)
-OC_MAKE_VECTOR_BINARY_OPERATOR(/, ocarina::is_all_number_v<T, U>)
-OC_MAKE_VECTOR_BINARY_OPERATOR(%, ocarina::is_all_number_v<T, U>)
-OC_MAKE_VECTOR_BINARY_OPERATOR(>>, ocarina::is_all_integral_v<T, U>)
-OC_MAKE_VECTOR_BINARY_OPERATOR(<<, ocarina::is_all_integral_v<T, U>)
-OC_MAKE_VECTOR_BINARY_OPERATOR(|, ocarina::is_all_integral_v<T, U>)
-OC_MAKE_VECTOR_BINARY_OPERATOR(&, ocarina::is_all_integral_v<T, U>)
-OC_MAKE_VECTOR_BINARY_OPERATOR(^, ocarina::is_all_integral_v<T, U>)
+//OC_MAKE_VECTOR_BINARY_OPERATOR(-, ocarina::is_all_number_v<T, U>)
+//OC_MAKE_VECTOR_BINARY_OPERATOR(*, ocarina::is_all_number_v<T, U>)
+//OC_MAKE_VECTOR_BINARY_OPERATOR(/, ocarina::is_all_number_v<T, U>)
+//OC_MAKE_VECTOR_BINARY_OPERATOR(%, ocarina::is_all_number_v<T, U>)
+//OC_MAKE_VECTOR_BINARY_OPERATOR(>>, ocarina::is_all_integral_v<T, U>)
+//OC_MAKE_VECTOR_BINARY_OPERATOR(<<, ocarina::is_all_integral_v<T, U>)
+//OC_MAKE_VECTOR_BINARY_OPERATOR(|, ocarina::is_all_integral_v<T, U>)
+//OC_MAKE_VECTOR_BINARY_OPERATOR(&, ocarina::is_all_integral_v<T, U>)
+//OC_MAKE_VECTOR_BINARY_OPERATOR(^, ocarina::is_all_integral_v<T, U>)
 
 #undef OC_MAKE_VECTOR_BINARY_OPERATOR
 
@@ -623,15 +631,15 @@ OC_MAKE_VECTOR_BINARY_OPERATOR(^, ocarina::is_all_integral_v<T, U>)
 //constexpr decltype(auto) operator+=(ocarina::Vector<T, N> &lhs, U rhs) noexcept { return (lhs += ocarina::Vector<U, N>{rhs}); }
 
 //OC_MAKE_VECTOR_ASSIGN_OPERATOR(+=, ocarina::is_all_number_v<T, U>)
-OC_MAKE_VECTOR_ASSIGN_OPERATOR(-=, ocarina::is_all_number_v<T, U>)
-OC_MAKE_VECTOR_ASSIGN_OPERATOR(*=, ocarina::is_all_number_v<T, U>)
-OC_MAKE_VECTOR_ASSIGN_OPERATOR(/=, ocarina::is_all_number_v<T, U>)
-OC_MAKE_VECTOR_ASSIGN_OPERATOR(%=, ocarina::is_all_number_v<T, U>)
-OC_MAKE_VECTOR_ASSIGN_OPERATOR(<<=, ocarina::is_all_integral_v<T, U>)
-OC_MAKE_VECTOR_ASSIGN_OPERATOR(>>=, ocarina::is_all_integral_v<T, U>)
-OC_MAKE_VECTOR_ASSIGN_OPERATOR(|=, ocarina::is_all_integral_v<T, U>)
-OC_MAKE_VECTOR_ASSIGN_OPERATOR(&=, ocarina::is_all_integral_v<T, U>)
-OC_MAKE_VECTOR_ASSIGN_OPERATOR(^=, ocarina::is_all_integral_v<T, U>)
+// OC_MAKE_VECTOR_ASSIGN_OPERATOR(-=, ocarina::is_all_number_v<T, U>)
+// OC_MAKE_VECTOR_ASSIGN_OPERATOR(*=, ocarina::is_all_number_v<T, U>)
+// OC_MAKE_VECTOR_ASSIGN_OPERATOR(/=, ocarina::is_all_number_v<T, U>)
+// OC_MAKE_VECTOR_ASSIGN_OPERATOR(%=, ocarina::is_all_number_v<T, U>)
+// OC_MAKE_VECTOR_ASSIGN_OPERATOR(<<=, ocarina::is_all_integral_v<T, U>)
+// OC_MAKE_VECTOR_ASSIGN_OPERATOR(>>=, ocarina::is_all_integral_v<T, U>)
+// OC_MAKE_VECTOR_ASSIGN_OPERATOR(|=, ocarina::is_all_integral_v<T, U>)
+// OC_MAKE_VECTOR_ASSIGN_OPERATOR(&=, ocarina::is_all_integral_v<T, U>)
+// OC_MAKE_VECTOR_ASSIGN_OPERATOR(^=, ocarina::is_all_integral_v<T, U>)
 
 #undef OC_MAKE_VECTOR_ASSIGN_OPERATOR
 

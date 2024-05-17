@@ -453,7 +453,7 @@ int main(int argc, char *argv[]) {
 
     a = a + a;
     a += 1;
-    a += a;
+    a *= a;
     a = 1 + a;
     bool4 bool_4 = make_bool4(1,0,1,1);
 
