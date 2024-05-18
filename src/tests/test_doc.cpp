@@ -244,7 +244,6 @@ void test_lambda(Device &device, Stream &stream) {
     float3 f3 = make_float3(1, 2, 3);
     auto f2 = make_int2(5,6);
 
-
     f3.xy_() += f2;
 
     _bstr_t _bstr;
@@ -461,7 +460,7 @@ int main(int argc, char *argv[]) {
     a *= a;
     a = 1 + a;
     bool4 bool_4 = make_bool4(1,0,1,1);
-    auto bbb = bool_4 || bool_4;
+    auto bbb = bool_4 || bool_4.xxxx_();
     auto b4 = all(bool_4);
 
     //        test_compute_shader(device, stream);

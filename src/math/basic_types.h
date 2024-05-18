@@ -155,25 +155,21 @@ public:
 
 #undef OC_MAKE_SWIZZLE_MEMBER_BINARY_OP
 
-#define OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(op)      \
-                                                 \
-    template<typename Arg>                       \
-    auto operator op(Arg &&val) const noexcept { \
-        if constexpr (is_swizzle_v<Arg>) {       \
-            return to_vec() op val.to_vec();     \
-        } else {                                 \
-            return to_vec() op OC_FORWARD(val);  \
-        }                                        \
+#define OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(op, ...)                                       \
+    template<typename U, size_t M, size_t... OtherIndices>                             \
+    requires __VA_ARGS__                                                               \
+    [[nodiscard]] auto operator op(swizzle_impl<U, M, OtherIndices...> rhs) noexcept { \
+        return to_vec() op rhs.to_vec();                                               \
     }
 
-    //    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(||)
-    //    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(&&)
-    //    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(==)
-    //    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(!=)
-    //    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(<)
-    //    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(>)
-    //    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(<=)
-    //    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(>=)
+    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(||, ocarina::is_all_boolean_v<T, U>)
+    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(&&, ocarina::is_all_boolean_v<T, U>)
+    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(==, ocarina::is_all_number_v<T, U>)
+    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(!=, ocarina::is_all_number_v<T, U>)
+    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(<, ocarina::is_all_number_v<T, U>)
+    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(>, ocarina::is_all_number_v<T, U>)
+    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(<=, ocarina::is_all_number_v<T, U>)
+    OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(>=, ocarina::is_all_number_v<T, U>)
 
 #undef OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP
 };
@@ -338,6 +334,18 @@ struct Vector : public detail::VectorStorage<T, N> {
         return [&]<size_t... index>(std::index_sequence<index...>) {                             \
             return ocarina::Vector<bool, N>{lhs[index] op rhs[index]...};                        \
         }(std::make_index_sequence<N>());                                                        \
+    }                                                                                            \
+    template<typename U, size_t M, size_t... Indices>                                            \
+    requires __VA_ARGS__                                                                         \
+    [[nodiscard]] friend constexpr auto operator op(Swizzle<U, M, Indices...> lhs,               \
+                                                    ocarina::Vector<T, N> rhs) noexcept {        \
+        return lhs.to_vec() op rhs;                                                              \
+    }                                                                                            \
+    template<typename U, size_t M, size_t... Indices>                                            \
+    requires __VA_ARGS__                                                                         \
+    [[nodiscard]] friend constexpr auto operator op(ocarina::Vector<T, N> lhs,                   \
+                                                    Swizzle<U, M, Indices...> rhs) noexcept {    \
+        return lhs op rhs.to_vec();                                                              \
     }                                                                                            \
     template<typename U>                                                                         \
     requires __VA_ARGS__                                                                         \
@@ -564,14 +572,14 @@ OC_MAKE_SWIZZLE_BINARY_OP(^)
         return lhs op rhs.to_vec();                                   \
     }
 
-OC_MAKE_SWIZZLE_LOGIC_OP(||)
-OC_MAKE_SWIZZLE_LOGIC_OP(&&)
-OC_MAKE_SWIZZLE_LOGIC_OP(==)
-OC_MAKE_SWIZZLE_LOGIC_OP(!=)
-OC_MAKE_SWIZZLE_LOGIC_OP(<)
-OC_MAKE_SWIZZLE_LOGIC_OP(>)
-OC_MAKE_SWIZZLE_LOGIC_OP(<=)
-OC_MAKE_SWIZZLE_LOGIC_OP(>=)
+//OC_MAKE_SWIZZLE_LOGIC_OP(||)
+//OC_MAKE_SWIZZLE_LOGIC_OP(&&)
+//OC_MAKE_SWIZZLE_LOGIC_OP(==)
+//OC_MAKE_SWIZZLE_LOGIC_OP(!=)
+//OC_MAKE_SWIZZLE_LOGIC_OP(<)
+//OC_MAKE_SWIZZLE_LOGIC_OP(>)
+//OC_MAKE_SWIZZLE_LOGIC_OP(<=)
+//OC_MAKE_SWIZZLE_LOGIC_OP(>=)
 
 #undef OC_MAKE_SWIZZLE_LOGIC_OP
 
