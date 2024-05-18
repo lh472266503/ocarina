@@ -261,6 +261,8 @@ void test_lambda(Device &device, Stream &stream) {
 
     int aaa = 0;
 
+    AVector<float, 4> af;
+
     Kernel kernel = [&](Uint i) {
         //        Float *p;
         //        HitVar *hit;

@@ -96,6 +96,20 @@ MAKE_ALL_TYPE_TRAITS(unsigned)
 template<typename T, size_t N>
 struct Vector_;
 
+template<typename T, size_t ...Indices>
+struct AVector_;
+
+
+namespace detail {
+
+template<template<typename, size_t...> typename TType, typename Scalar, size_t... Indices>
+TType<Scalar, Indices...> index_sequence_helper(std::index_sequence<Indices...>);
+
+}// namespace detail
+
+template<typename T, size_t N>
+using AVector = decltype(detail::index_sequence_helper<AVector_, T>(std::make_index_sequence<N>()));
+
 template<typename T, size_t N>
 using Vector = Vector_<T, N>;
 
