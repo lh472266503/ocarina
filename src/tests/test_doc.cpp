@@ -451,7 +451,7 @@ int main(int argc, char *argv[]) {
     float3 a = make_float3(1,2,3);
     int3 b = make_int3(4,5,6);
 
-    a = a + a;
+    a += a;
     a += 1;
     a *= a;
     a = 1 + a;
