@@ -5,11 +5,11 @@
 #pragma once
 
 #include "core/stl.h"
-#include "var.h"
 #include "expr.h"
 #include "operators.h"
 #include "math/base.h"
 #include "ast/expression.h"
+#include "var.h"
 
 namespace ocarina {
 
