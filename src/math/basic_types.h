@@ -29,9 +29,6 @@ struct valid_vector_impl : public std::disjunction<
 template<typename T>
 static constexpr auto valid_vector_v = detail::valid_vector_impl<std::remove_cvref_t<T>>::value;
 
-template<typename T, size_t N>
-struct Vector;
-
 }// namespace ocarina
 
 namespace ocarina {
@@ -85,7 +82,6 @@ public:
     ocarina::array<T, N> data_{};
 
 public:
-    template<typename T>
     swizzle_impl &operator=(const Vector<T, num_component> &vec) noexcept {
         assign_from(vec, std::make_index_sequence<num_component>());
         return *this;
@@ -524,64 +520,26 @@ template<size_t N>
         return (v[index] || ...);
     }(std::make_index_sequence<N>());
 }
-
 template<size_t N>
 [[nodiscard]] constexpr bool all(Vector<bool, N> v) noexcept {
     return [&]<size_t... index>(std::index_sequence<index...>) {
         return (v[index] && ...);
     }(std::make_index_sequence<N>());
 }
-
 template<size_t N>
 [[nodiscard]] constexpr bool none(Vector<bool, N> v) noexcept { return !any(v); }
 
+#define OC_MAKE_SWIZZLE_LOGIC_FUNC(func)                                         \
+    template<size_t N, size_t... Indices>                                        \
+    [[nodiscard]] constexpr bool func(Swizzle<bool, N, Indices...> v) noexcept { \
+        return func(v.to_vec());                                                 \
+    }
+OC_MAKE_SWIZZLE_LOGIC_FUNC(any)
+OC_MAKE_SWIZZLE_LOGIC_FUNC(all)
+OC_MAKE_SWIZZLE_LOGIC_FUNC(none)
+
+#undef OC_MAKE_SWIZZLE_LOGIC_FUNC
 }// namespace ocarina
-
-#define OC_MAKE_SWIZZLE_BINARY_OP(op)                                                           \
-    template<typename Lhs, typename T, size_t N, size_t... Indices>                             \
-    requires ocarina::is_basic_v<Lhs>                                                           \
-    auto operator op(Lhs &&lhs, ocarina::detail::swizzle_impl<T, N, Indices...> rhs) noexcept { \
-        return OC_FORWARD(lhs) op rhs.to_vec();                                                 \
-    }                                                                                           \
-                                                                                                \
-    template<typename Lhs, typename T, size_t N, size_t... Indices>                             \
-    requires ocarina::is_basic_v<Lhs>                                                           \
-    auto operator op##=(Lhs &lhs,                                                               \
-                        ocarina::detail::swizzle_impl<T, N, Indices...> rhs) noexcept {         \
-        lhs op## = rhs.to_vec();                                                                \
-        return lhs;                                                                             \
-    }
-
-//OC_MAKE_SWIZZLE_BINARY_OP(+)
-OC_MAKE_SWIZZLE_BINARY_OP(-)
-OC_MAKE_SWIZZLE_BINARY_OP(*)
-OC_MAKE_SWIZZLE_BINARY_OP(/)
-OC_MAKE_SWIZZLE_BINARY_OP(%)
-OC_MAKE_SWIZZLE_BINARY_OP(>>)
-OC_MAKE_SWIZZLE_BINARY_OP(<<)
-OC_MAKE_SWIZZLE_BINARY_OP(|)
-OC_MAKE_SWIZZLE_BINARY_OP(&)
-OC_MAKE_SWIZZLE_BINARY_OP(^)
-
-#undef OC_MAKE_SWIZZLE_BINARY_OP
-
-#define OC_MAKE_SWIZZLE_LOGIC_OP(op, ...)                             \
-    template<typename U, typename T, size_t N, size_t... Indices>     \
-    requires requires { T{} op U{}; }                                 \
-    auto operator op(U lhs, ocarina::Swizzle<T, N, Indices...> rhs) { \
-        return lhs op rhs.to_vec();                                   \
-    }
-
-//OC_MAKE_SWIZZLE_LOGIC_OP(||)
-//OC_MAKE_SWIZZLE_LOGIC_OP(&&)
-//OC_MAKE_SWIZZLE_LOGIC_OP(==)
-//OC_MAKE_SWIZZLE_LOGIC_OP(!=)
-//OC_MAKE_SWIZZLE_LOGIC_OP(<)
-//OC_MAKE_SWIZZLE_LOGIC_OP(>)
-//OC_MAKE_SWIZZLE_LOGIC_OP(<=)
-//OC_MAKE_SWIZZLE_LOGIC_OP(>=)
-
-#undef OC_MAKE_SWIZZLE_LOGIC_OP
 
 [[nodiscard]] constexpr auto
 operator*(ocarina::float2x2 m, float s) noexcept {
