@@ -94,7 +94,10 @@ MAKE_ALL_TYPE_TRAITS(unsigned)
 #undef MAKE_ALL_TYPE_TRAITS
 
 template<typename T, size_t N>
-struct Vector;
+struct Vector_;
+
+template<typename T, size_t N>
+using Vector = Vector_<T, N>;
 
 template<size_t N>
 struct Matrix;
@@ -340,6 +343,7 @@ private:
             return Vector<raw_type, N>{};
         }
     }
+
 public:
     using type = decltype(func());
 };
