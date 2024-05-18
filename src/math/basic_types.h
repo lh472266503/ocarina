@@ -57,12 +57,12 @@ struct swizzle_impl {
 
     template<typename Scalar>
     struct vec {
-        using type = ocarina::Vector<Scalar, num_component>;
+        using type = Vector<Scalar, num_component>;
     };
 
     template<typename Scalar>
     struct vec<ocarina::Var<Scalar>> {
-        using type = ocarina::Var<ocarina::Vector<Scalar, num_component>>;
+        using type = ocarina::Var<Vector<Scalar, num_component>>;
     };
 
     using vec_type = typename vec<T>::type;
@@ -263,50 +263,50 @@ struct Vector : public detail::VectorStorage<T, N> {
     OC_MAKE_UNARY_OP(!)
 #undef OC_MAKE_UNARY_OP
 
-#define OC_MAKE_VECTOR_BINARY_OPERATOR(op, ...)                                                             \
-    template<typename U>                                                                                    \
-    requires __VA_ARGS__                                                                                    \
-    [[nodiscard]] friend constexpr auto operator op(ocarina::Vector<T, N> lhs,                              \
-                                                    ocarina::Vector<U, N> rhs) noexcept {                   \
-        using ret_type = decltype(T {} op U{});                                                             \
-        return [&]<size_t... index>(std::index_sequence<index...>) {                                        \
-            return Vector<ret_type, N>{(lhs[index] op rhs[index])...};                                      \
-        }(std::make_index_sequence<N>());                                                                   \
-    }                                                                                                       \
-    template<typename U, size_t M, size_t... Indices>                                                       \
-    requires __VA_ARGS__                                                                                    \
-    [[nodiscard]] friend constexpr auto operator op(Swizzle<U, M, Indices...> lhs,                          \
-                                                    ocarina::Vector<T, N> rhs) noexcept {                   \
-        return lhs.to_vec() op rhs;                                                                         \
-    }                                                                                                       \
-    template<typename U, size_t M, size_t... Indices>                                                       \
-    requires __VA_ARGS__                                                                                    \
-    [[nodiscard]] friend constexpr auto operator op(ocarina::Vector<T, N> lhs,                              \
-                                                    Swizzle<U, M, Indices...> rhs) noexcept {               \
-        return lhs op rhs.to_vec();                                                                         \
-    }                                                                                                       \
-    template<typename U>                                                                                    \
-    requires __VA_ARGS__                                                                                    \
-    [[nodiscard]] friend constexpr auto operator op(ocarina::Vector<T, N> lhs, U rhs) noexcept {            \
-        return lhs op ocarina::Vector<U, N>{rhs};                                                           \
-    }                                                                                                       \
-    template<typename U>                                                                                    \
-    requires __VA_ARGS__                                                                                    \
-    [[nodiscard]] friend constexpr auto operator op(T lhs, ocarina::Vector<U, N> rhs) noexcept {            \
-        return ocarina::Vector<T, N>{lhs} op rhs;                                                           \
-    }                                                                                                       \
-    template<typename U>                                                                                    \
-    requires __VA_ARGS__                                                                                    \
-    constexpr friend auto &operator op##=(ocarina::Vector<T, N> &lhs, ocarina::Vector<U, N> rhs) noexcept { \
-        [&]<size_t... index>(std::index_sequence<index...>) {                                               \
-            ((lhs.at(index) op## = rhs.at(index)), ...);                                                    \
-        }(std::make_index_sequence<N>());                                                                   \
-        return lhs;                                                                                         \
-    }                                                                                                       \
-    template<typename U>                                                                                    \
-    requires __VA_ARGS__                                                                                    \
-    constexpr friend decltype(auto) operator op##=(ocarina::Vector<T, N> &lhs, U rhs) noexcept {            \
-        return (lhs op## = ocarina::Vector<U, N>{rhs});                                                     \
+#define OC_MAKE_VECTOR_BINARY_OPERATOR(op, ...)                                               \
+    template<typename U>                                                                      \
+    requires __VA_ARGS__                                                                      \
+    [[nodiscard]] friend constexpr auto operator op(Vector<T, N> lhs,                         \
+                                                    Vector<U, N> rhs) noexcept {              \
+        using ret_type = decltype(T {} op U{});                                               \
+        return [&]<size_t... index>(std::index_sequence<index...>) {                          \
+            return Vector<ret_type, N>{(lhs[index] op rhs[index])...};                        \
+        }(std::make_index_sequence<N>());                                                     \
+    }                                                                                         \
+    template<typename U, size_t M, size_t... Indices>                                         \
+    requires __VA_ARGS__                                                                      \
+    [[nodiscard]] friend constexpr auto operator op(Swizzle<U, M, Indices...> lhs,            \
+                                                    Vector<T, N> rhs) noexcept {              \
+        return lhs.to_vec() op rhs;                                                           \
+    }                                                                                         \
+    template<typename U, size_t M, size_t... Indices>                                         \
+    requires __VA_ARGS__                                                                      \
+    [[nodiscard]] friend constexpr auto operator op(Vector<T, N> lhs,                         \
+                                                    Swizzle<U, M, Indices...> rhs) noexcept { \
+        return lhs op rhs.to_vec();                                                           \
+    }                                                                                         \
+    template<typename U>                                                                      \
+    requires __VA_ARGS__                                                                      \
+    [[nodiscard]] friend constexpr auto operator op(Vector<T, N> lhs, U rhs) noexcept {       \
+        return lhs op Vector<U, N>{rhs};                                                      \
+    }                                                                                         \
+    template<typename U>                                                                      \
+    requires __VA_ARGS__                                                                      \
+    [[nodiscard]] friend constexpr auto operator op(T lhs, Vector<U, N> rhs) noexcept {       \
+        return Vector<T, N>{lhs} op rhs;                                                      \
+    }                                                                                         \
+    template<typename U>                                                                      \
+    requires __VA_ARGS__                                                                      \
+    constexpr friend auto &operator op##=(Vector<T, N> &lhs, Vector<U, N> rhs) noexcept {     \
+        [&]<size_t... index>(std::index_sequence<index...>) {                                 \
+            ((lhs.at(index) op## = rhs.at(index)), ...);                                      \
+        }(std::make_index_sequence<N>());                                                     \
+        return lhs;                                                                           \
+    }                                                                                         \
+    template<typename U>                                                                      \
+    requires __VA_ARGS__                                                                      \
+    constexpr friend decltype(auto) operator op##=(Vector<T, N> &lhs, U rhs) noexcept {       \
+        return (lhs op## = Vector<U, N>{rhs});                                                \
     }
 
     OC_MAKE_VECTOR_BINARY_OPERATOR(+, ocarina::is_all_number_v<T, U>)
@@ -322,36 +322,36 @@ struct Vector : public detail::VectorStorage<T, N> {
 
 #undef OC_MAKE_VECTOR_BINARY_OPERATOR
 
-#define OC_MAKE_VECTOR_LOGIC_OPERATOR(op, ...)                                                   \
-    template<typename U>                                                                         \
-    requires __VA_ARGS__                                                                         \
-    [[nodiscard]] friend constexpr auto operator op(ocarina::Vector<T, N> lhs,                   \
-                                                    ocarina::Vector<U, N> rhs) noexcept {        \
-        return [&]<size_t... index>(std::index_sequence<index...>) {                             \
-            return ocarina::Vector<bool, N>{lhs[index] op rhs[index]...};                        \
-        }(std::make_index_sequence<N>());                                                        \
-    }                                                                                            \
-    template<typename U, size_t M, size_t... Indices>                                            \
-    requires __VA_ARGS__                                                                         \
-    [[nodiscard]] friend constexpr auto operator op(Swizzle<U, M, Indices...> lhs,               \
-                                                    ocarina::Vector<T, N> rhs) noexcept {        \
-        return lhs.to_vec() op rhs;                                                              \
-    }                                                                                            \
-    template<typename U, size_t M, size_t... Indices>                                            \
-    requires __VA_ARGS__                                                                         \
-    [[nodiscard]] friend constexpr auto operator op(ocarina::Vector<T, N> lhs,                   \
-                                                    Swizzle<U, M, Indices...> rhs) noexcept {    \
-        return lhs op rhs.to_vec();                                                              \
-    }                                                                                            \
-    template<typename U>                                                                         \
-    requires __VA_ARGS__                                                                         \
-    [[nodiscard]] friend constexpr auto operator op(ocarina::Vector<T, N> lhs, U rhs) noexcept { \
-        return lhs op ocarina::Vector<U, N>{rhs};                                                \
-    }                                                                                            \
-    template<typename U>                                                                         \
-    requires __VA_ARGS__                                                                         \
-    [[nodiscard]] friend constexpr auto operator op(T lhs, ocarina::Vector<U, N> rhs) noexcept { \
-        return ocarina::Vector<T, N>{lhs} op rhs;                                                \
+#define OC_MAKE_VECTOR_LOGIC_OPERATOR(op, ...)                                                \
+    template<typename U>                                                                      \
+    requires __VA_ARGS__                                                                      \
+    [[nodiscard]] friend constexpr auto operator op(Vector<T, N> lhs,                         \
+                                                    Vector<U, N> rhs) noexcept {              \
+        return [&]<size_t... index>(std::index_sequence<index...>) {                          \
+            return Vector<bool, N>{lhs[index] op rhs[index]...};                              \
+        }(std::make_index_sequence<N>());                                                     \
+    }                                                                                         \
+    template<typename U, size_t M, size_t... Indices>                                         \
+    requires __VA_ARGS__                                                                      \
+    [[nodiscard]] friend constexpr auto operator op(Swizzle<U, M, Indices...> lhs,            \
+                                                    Vector<T, N> rhs) noexcept {              \
+        return lhs.to_vec() op rhs;                                                           \
+    }                                                                                         \
+    template<typename U, size_t M, size_t... Indices>                                         \
+    requires __VA_ARGS__                                                                      \
+    [[nodiscard]] friend constexpr auto operator op(Vector<T, N> lhs,                         \
+                                                    Swizzle<U, M, Indices...> rhs) noexcept { \
+        return lhs op rhs.to_vec();                                                           \
+    }                                                                                         \
+    template<typename U>                                                                      \
+    requires __VA_ARGS__                                                                      \
+    [[nodiscard]] friend constexpr auto operator op(Vector<T, N> lhs, U rhs) noexcept {       \
+        return lhs op Vector<U, N>{rhs};                                                      \
+    }                                                                                         \
+    template<typename U>                                                                      \
+    requires __VA_ARGS__                                                                      \
+    [[nodiscard]] friend constexpr auto operator op(T lhs, Vector<U, N> rhs) noexcept {       \
+        return Vector<T, N>{lhs} op rhs;                                                      \
     }
 
     OC_MAKE_VECTOR_LOGIC_OPERATOR(||, ocarina::is_all_boolean_v<T, U>)
