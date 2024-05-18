@@ -242,9 +242,14 @@ void test_lambda(Device &device, Stream &stream) {
            << tri.upload(triangles.data());
 
     float3 f3 = make_float3(1, 2, 3);
+    auto f2 = make_int2(5,6);
 
-    float3 aa = f3.xyy() + (+f3.xyy());
-    auto fcc = ~make_uint3(f3);
+
+    f3.xy_() += f2;
+
+    _bstr_t _bstr;
+////    float3 aa = f3.xyy_() + f3.xyy_();
+//    auto fcc = ~make_uint3(f3);
 //    1 == aa.xy_();
 //    float3 bb = f3 + f3.xyz();
 //    float3 cc = 5 + f3.xyz();
@@ -446,7 +451,7 @@ int main(int argc, char *argv[]) {
 //    ocarina::detail::Vector<float, 3> aaaaa;
 
 
-    AVector<float, 3> aaaa;
+//    AVector<float, 3> aaaa;
 
     float3 a = make_float3(1,2,3);
     int3 b = make_int3(4,5,6);

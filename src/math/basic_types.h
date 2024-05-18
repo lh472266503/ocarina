@@ -85,15 +85,15 @@ public:
     ocarina::array<T, N> data_{};
 
 public:
-    template<typename U>
-    swizzle_impl &operator=(const U &vec) noexcept {
+    template<typename T>
+    swizzle_impl &operator=(const Vector<T, num_component> &vec) noexcept {
         assign_from(vec, std::make_index_sequence<num_component>());
         return *this;
     }
 
-    template<typename U, size_t... OtherIndices>
-    swizzle_impl &operator=(const swizzle_impl<U, N, OtherIndices...> &other) {
-        ((data_[Indices] = other.data_[OtherIndices]), ...);
+    template<typename U, size_t M, size_t... OtherIndices>
+    swizzle_impl &operator=(const swizzle_impl<U, M, OtherIndices...> &other) {
+        *this = other.to_vec();
         return *this;
     }
 
@@ -104,6 +104,16 @@ public:
     }
 
     operator vec_type() const noexcept {
+        return to_vec();
+    }
+
+    [[nodiscard]] vec_type to_vec() noexcept {
+        vec_type ret;
+        assign_to(ret, std::make_index_sequence<num_component>());
+        return ret;
+    }
+
+    operator vec_type() noexcept {
         return to_vec();
     }
 
@@ -118,22 +128,18 @@ public:
 
 #undef OC_MAKE_SWIZZLE_UNARY_OP
 
-#define OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(op)            \
-                                                        \
-    template<typename Arg>                              \
-    vec_type operator op(Arg &&val) const noexcept {    \
-        if constexpr (is_swizzle_v<Arg>) {              \
-            return to_vec() op val.to_vec();            \
-        } else {                                        \
-            return to_vec() op OC_FORWARD(val);         \
-        }                                               \
-    }                                                   \
-                                                        \
-    template<typename Arg>                              \
-    swizzle_impl &operator op##=(Arg && arg) noexcept { \
-        auto tmp = *this;                               \
-        *this = tmp op OC_FORWARD(arg);                 \
-        return *this;                                   \
+#define OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(op)                                       \
+                                                                                   \
+    template<typename U, size_t M, size_t... OtherIndices>                         \
+    vec_type operator op(swizzle_impl<U, M, OtherIndices...> rhs) const noexcept { \
+        return to_vec() op rhs.to_vec();                                           \
+    }                                                                              \
+                                                                                   \
+    template<typename Arg>                                                         \
+    swizzle_impl &operator op##=(Arg && arg) noexcept {                            \
+        auto tmp = *this;                                                          \
+        *this = tmp op OC_FORWARD(arg);                                            \
+        return *this;                                                              \
     }
 
     OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(+)
@@ -237,58 +243,10 @@ public:
 
 namespace detail {
 
-template<typename T, size_t... Indices>
-struct Vector_ : public VectorStorage<T, sizeof...(Indices)> {
-    static constexpr size_t N = sizeof...(Indices);
-
-    using detail::VectorStorage<T, N>::VectorStorage;
-    template<typename U>
-    explicit constexpr Vector_(U s) noexcept : Vector_(static_cast<T>(s)) {}
-    [[nodiscard]] constexpr T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
-    [[nodiscard]] constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
-    [[nodiscard]] constexpr T &at(size_t index) noexcept { return (&(this->x))[index]; }
-    [[nodiscard]] constexpr const T &at(size_t index) const noexcept { return (&(this->x))[index]; }
-
-#define OC_MAKE_UNARY_OP(op)                                         \
-    [[nodiscard]] constexpr auto operator op() noexcept {            \
-        using R = Vector_<decltype(op T{}), N>;                      \
-        return [&]<size_t... index>(std::index_sequence<index...>) { \
-            return R{op at(index)...};                               \
-        }(std::make_index_sequence<N>());                            \
-    }
-    OC_MAKE_UNARY_OP(+)
-    OC_MAKE_UNARY_OP(-)
-    OC_MAKE_UNARY_OP(~)
-    OC_MAKE_UNARY_OP(!)
-#undef OC_MAKE_UNARY_OP
-
-    template<typename U>
-    requires requires { T{} + U{}; } && ocarina::is_all_number_v<T, U>
-    [[nodiscard]] friend constexpr auto operator+(Vector_<T, N> lhs, Vector_<U, N> rhs) noexcept {
-        using ret_type = decltype(T{} + U{});
-        if constexpr (N == 2) {
-            return Vector_<ret_type, 2>{lhs.x + rhs.x, lhs.y + rhs.y};
-        } else if constexpr (N == 3) {
-            return Vector_<ret_type, 3>{lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z};
-        } else {
-            return Vector_<ret_type, 4>{lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z, lhs.w + rhs.w};
-        }
-    }
-    template<typename U>
-    requires ocarina::is_all_number_v<T, U>
-    [[nodiscard]] friend constexpr auto operator+(Vector_<T, N> lhs, U rhs) noexcept { return lhs + Vector_<U, N>{rhs}; }
-    template<typename U>
-    requires requires { T{} + U{}; } && ocarina::is_all_number_v<T, U>
-    [[nodiscard]] friend constexpr auto operator+(T lhs, Vector_<U, N> rhs) noexcept { return Vector_<T, N>{lhs} + rhs; }
-};
-
 template<template<typename, size_t...> typename TType, typename Scalar, size_t... Indices>
 TType<Scalar, Indices...> index_sequence_helper(std::index_sequence<Indices...>);
 
 }// namespace detail
-
-template<typename T, size_t N>
-using AVector = decltype(detail::index_sequence_helper<detail::Vector_, T>(std::make_index_sequence<N>()));
 
 template<typename T, size_t N>
 struct Vector : public detail::VectorStorage<T, N> {
@@ -322,6 +280,18 @@ struct Vector : public detail::VectorStorage<T, N> {
         return [&]<size_t... index>(std::index_sequence<index...>) {                                        \
             return Vector<ret_type, N>{(lhs[index] op rhs[index])...};                                      \
         }(std::make_index_sequence<N>());                                                                   \
+    }                                                                                                       \
+    template<typename U, size_t M, size_t... Indices>                                                       \
+    requires __VA_ARGS__                                                                                    \
+    [[nodiscard]] friend constexpr auto operator op(Swizzle<U, M, Indices...> lhs,                          \
+                                                    ocarina::Vector<T, N> rhs) noexcept {                   \
+        return lhs.to_vec() op rhs;                                                                         \
+    }                                                                                                       \
+    template<typename U, size_t M, size_t... Indices>                                                       \
+    requires __VA_ARGS__                                                                                    \
+    [[nodiscard]] friend constexpr auto operator op(ocarina::Vector<T, N> lhs,                              \
+                                                    Swizzle<U, M, Indices...> rhs) noexcept {               \
+        return lhs op rhs.to_vec();                                                                         \
     }                                                                                                       \
     template<typename U>                                                                                    \
     requires __VA_ARGS__                                                                                    \
@@ -574,7 +544,7 @@ template<size_t N>
         return lhs;                                                                             \
     }
 
-OC_MAKE_SWIZZLE_BINARY_OP(+)
+//OC_MAKE_SWIZZLE_BINARY_OP(+)
 OC_MAKE_SWIZZLE_BINARY_OP(-)
 OC_MAKE_SWIZZLE_BINARY_OP(*)
 OC_MAKE_SWIZZLE_BINARY_OP(/)
