@@ -417,6 +417,14 @@ public:                                                                         
         return [&]<size_t... index>(std::index_sequence<index...>) {              \
             return ret_type{func(v[index], u[index])...};                         \
         }(std::make_index_sequence<N>());                                         \
+    }                                                                             \
+                                                                                  \
+    OC_NODISCARD static decltype(auto) func(const this_type &v, T u) noexcept {   \
+        return func##_impl(v, this_type{u});                                      \
+    }                                                                             \
+                                                                                  \
+    OC_NODISCARD static decltype(auto) func(const T &v, this_type u) noexcept {   \
+        return func##_impl(this_type{v}, u);                                      \
     }
 
     OC_MAKE_VECTOR_BINARY_FUNC(max)
