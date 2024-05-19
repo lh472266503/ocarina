@@ -36,19 +36,6 @@ namespace ocarina {
 template<typename T>
 struct Var;
 
-
-template<typename T, size_t N, size_t... Indices>
-struct Swizzle;
-
-template<typename T>
-struct is_swizzle : std::false_type {};
-
-template<typename T, size_t N, size_t... Indices>
-struct is_swizzle<Swizzle<T, N, Indices...>> : std::true_type {};
-
-template<typename T>
-constexpr auto is_swizzle_v = is_swizzle<std::remove_cvref_t<T>>::value;
-
 template<typename T, size_t N, size_t... Indices>
 struct Swizzle {
     static constexpr uint num_component = sizeof...(Indices);
@@ -124,18 +111,18 @@ public:
 
 #undef OC_MAKE_SWIZZLE_UNARY_OP
 
-#define OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(op)                                       \
-                                                                                   \
-    template<typename U, size_t M, size_t... OtherIndices>                         \
+#define OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(op)                                  \
+                                                                              \
+    template<typename U, size_t M, size_t... OtherIndices>                    \
     vec_type operator op(Swizzle<U, M, OtherIndices...> rhs) const noexcept { \
-        return to_vec() op rhs.to_vec();                                           \
-    }                                                                              \
-                                                                                   \
-    template<typename Arg>                                                         \
+        return to_vec() op rhs.to_vec();                                      \
+    }                                                                         \
+                                                                              \
+    template<typename Arg>                                                    \
     Swizzle &operator op##=(Arg && arg) noexcept {                            \
-        auto tmp = *this;                                                          \
-        *this = tmp op OC_FORWARD(arg);                                            \
-        return *this;                                                              \
+        auto tmp = *this;                                                     \
+        *this = tmp op OC_FORWARD(arg);                                       \
+        return *this;                                                         \
     }
 
     OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(+)
@@ -151,11 +138,11 @@ public:
 
 #undef OC_MAKE_SWIZZLE_MEMBER_BINARY_OP
 
-#define OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(op, ...)                                       \
-    template<typename U, size_t M, size_t... OtherIndices>                             \
-    requires __VA_ARGS__                                                               \
+#define OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(op, ...)                                  \
+    template<typename U, size_t M, size_t... OtherIndices>                        \
+    requires __VA_ARGS__                                                          \
     [[nodiscard]] auto operator op(Swizzle<U, M, OtherIndices...> rhs) noexcept { \
-        return to_vec() op rhs.to_vec();                                               \
+        return to_vec() op rhs.to_vec();                                          \
     }
 
     OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(||, ocarina::is_all_boolean_v<T, U>)
@@ -411,7 +398,8 @@ public:                                                                         
 #define OC_MAKE_VECTOR_BINARY_FUNC(func)                                               \
     OC_NODISCARD static decltype(auto) func##_impl(const this_type &v,                 \
                                                    const this_type &u) noexcept {      \
-        using ret_type = Vector_<decltype(func(v.x, u.x)), this_type::dimension>;      \
+        using ret_type = Vector_<std::remove_cvref_t<decltype(func(v.x, u.x))>,        \
+                                 this_type::dimension>;                                \
         return [&]<size_t... index>(std::index_sequence<index...>) {                   \
             return ret_type{func(v[index], u[index])...};                              \
         }(std::make_index_sequence<N>());                                              \
@@ -433,54 +421,25 @@ public:                                                                         
 #undef OC_APPLY_INDEX_SEQUENCE
 };
 
-namespace detail {
+#define OC_MAKE_VECTOR_BINARY_FUNC(func)                                \
+    template<typename T, typename U>                                    \
+    OC_NODISCARD decltype(auto) func(const T &t, const U &u) noexcept { \
+        using vec_type = op_vector_t<T, U>;                             \
+        return vec_type::func##_impl(t, u);                             \
+    }
 
-template<typename T>
-struct deduce_vec_helper {
-    using type = T;
-};
+//OC_MAKE_VECTOR_BINARY_FUNC(pow)
+//OC_MAKE_VECTOR_BINARY_FUNC(min)
+template<typename T, typename U>
+requires is_any_vector_or_swizzle_v<T, U>
+[[nodiscard]] decltype(auto) max_(const T &t, const U &u) noexcept {
+    using vec_type = op_vector_t<T, U>;
+    return vec_type::max_impl(t, u);
+}
+//OC_MAKE_VECTOR_BINARY_FUNC(max)
+//OC_MAKE_VECTOR_BINARY_FUNC(atan2)
 
-template<typename T, size_t N>
-struct deduce_vec_helper<Vector<T, N>> {
-    using type = Vector<T, N>::vec_type;
-};
-
-template<typename T, size_t N, size_t... Indices>
-struct deduce_vec_helper<Swizzle<T, N, Indices...>> {
-    using type = Swizzle<T, N, Indices...>::vec_type;
-};
-
-template<typename Lhs, typename Rhs>
-struct deduce_vector_impl {
-    static_assert(always_false_v<Lhs, Rhs>);
-};
-
-template<typename T, size_t N>
-struct deduce_vector_impl<Vector<T, N>, Vector<T, N>> {
-    using type = Vector<T, N>;
-};
-
-template<typename T, size_t N>
-struct deduce_vector_impl<typename Vector<T, N>::scalar_type, Vector<T, N>> {
-    using type = Vector<T, N>;
-};
-
-template<typename T, size_t N>
-struct deduce_vector_impl<Vector<T, N>, typename Vector<T, N>::scalar_type> {
-    using type = Vector<T, N>;
-};
-
-template<typename Lhs, typename Rhs>
-struct deduce_vector {
-    using type = typename deduce_vector_impl<typename deduce_vec_helper<Lhs>::type,
-                                             typename deduce_vec_helper<Rhs>::type>::type;
-};
-
-}// namespace detail
-
-template<typename Lhs, typename Rhs>
-using deduce_vector_t = typename detail::deduce_vector<std::remove_cvref_t<Lhs>,
-                                                       std::remove_cvref_t<Rhs>>::type;
+#undef OC_MAKE_VECTOR_BINARY_FUNC
 
 #define MAKE_VECTOR_BINARY_FUNC(func)                                                            \
     template<typename T, size_t N>                                                               \

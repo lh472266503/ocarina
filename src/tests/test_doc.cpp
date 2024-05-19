@@ -259,12 +259,13 @@ void test_lambda(Device &device, Stream &stream) {
 //    aa.xy_() == 10;
     //    f3 =  2.f + f3.xyz;
 
-    float4 f4 = make_float4(1,2,3,4);
+    float4 f4 = make_float4(1,2,666,4);
     float4 f = rcp(make_float4(-1,-2,-3,-4));
 
-    deduce_vector_t<decltype(f4.xxxx_()), float>  tff;
 
-    auto fm = f4.max_impl(f4, f);
+    auto fm = max_(f4.xyxz_(), 100.f);
+
+    auto bs = ocarina::detail::is_swizzle_impl<std::remove_cvref_t<decltype(f4.xyz_())>, 3>::value;
 
     auto fn = select(make_bool4(1,0,1,0), f4, f);
 

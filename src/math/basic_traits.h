@@ -93,12 +93,103 @@ MAKE_ALL_TYPE_TRAITS(unsigned)
 
 #undef MAKE_ALL_TYPE_TRAITS
 
+template<typename T, size_t N, size_t... Indices>
+struct Swizzle;
+
+namespace detail {
+
+template<typename T>
+struct swizzle_dimension_impl {
+    static constexpr size_t value = 1;
+};
+
+template<typename T, size_t N, size_t... Indices>
+struct swizzle_dimension_impl<Swizzle<T, N, Indices...>> {
+    static constexpr size_t value = sizeof...(Indices);
+};
+}// namespace detail
+
+template<typename T>
+using swizzle_dimension = detail::swizzle_dimension_impl<std::remove_cvref_t<T>>;
+OC_DEFINE_TEMPLATE_VALUE(swizzle_dimension)
+
+namespace detail {
+//todo bug of msvc
+template<typename T, size_t N = 0u>
+struct is_swizzle_impl : std::false_type {
+};
+
+template<typename T, size_t N, size_t... Indices>
+struct is_swizzle_impl<Swizzle<T, N, Indices...>, sizeof...(Indices)> : std::true_type {
+};
+
+template<typename T, size_t N, size_t... Indices>
+struct is_swizzle_impl<Swizzle<T, N, Indices...>, 0u> : std::true_type {};
+
+}// namespace detail
+
+template<typename T>
+using is_swizzle = detail::is_swizzle_impl<std::remove_cvref_t<T>>;
+
+OC_DEFINE_TEMPLATE_VALUE(is_swizzle)
+
 template<typename T, size_t N>
 struct Vector_;
 
 template<typename T, size_t N>
 using Vector = Vector_<T, N>;
 
+namespace detail {
+
+template<typename T>
+struct deduce_vec {
+    using type = T;
+};
+
+template<typename T, size_t N>
+struct deduce_vec<Vector<T, N>> {
+    using type = Vector<T, N>::vec_type;
+};
+
+template<typename T, size_t N, size_t... Indices>
+struct deduce_vec<Swizzle<T, N, Indices...>> {
+    using type = Swizzle<T, N, Indices...>::vec_type;
+};
+
+template<typename Lhs, typename Rhs>
+struct op_vector_impl {
+    static_assert(always_false_v<Lhs, Rhs>);
+};
+
+template<typename T, size_t N>
+struct op_vector_impl<Vector<T, N>, Vector<T, N>> {
+    using type = Vector<T, N>;
+};
+
+template<typename T, size_t N>
+struct op_vector_impl<typename Vector<T, N>::scalar_type, Vector<T, N>> {
+    using type = Vector<T, N>;
+};
+
+template<typename T, size_t N>
+struct op_vector_impl<Vector<T, N>, typename Vector<T, N>::scalar_type> {
+    using type = Vector<T, N>;
+};
+
+template<typename Lhs, typename Rhs>
+struct op_vector {
+    using type = typename op_vector_impl<typename deduce_vec<Lhs>::type,
+                                         typename deduce_vec<Rhs>::type>::type;
+};
+
+}// namespace detail
+
+template<typename T>
+using deduce_vec_t = typename detail::deduce_vec<std::remove_cvref_t<T>>::type;
+
+template<typename Lhs, typename Rhs>
+using op_vector_t = typename detail::op_vector<std::remove_cvref_t<Lhs>,
+                                               std::remove_cvref_t<Rhs>>::type;
 
 template<size_t N>
 struct Matrix;
@@ -223,6 +314,14 @@ using is_vector3 = is_vector<T, 3u>;
 
 template<typename T>
 using is_vector4 = is_vector<T, 4u>;
+
+template<typename T>
+using is_vector_or_swizzle = std::disjunction<is_vector<T>, is_swizzle<T>>;
+OC_DEFINE_TEMPLATE_VALUE(is_vector_or_swizzle)
+
+template<typename ...Ts>
+using is_any_vector_or_swizzle = std::disjunction<is_vector_or_swizzle<Ts>...>;
+OC_DEFINE_TEMPLATE_VALUE_MULTI(is_any_vector_or_swizzle)
 
 template<typename T, size_t N = 0u>
 constexpr auto is_vector_v = is_vector<T, N>::value;
