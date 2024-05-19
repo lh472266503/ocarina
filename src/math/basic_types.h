@@ -38,19 +38,19 @@ struct Var;
 
 
 template<typename T, size_t N, size_t... Indices>
-struct swizzle_impl;
+struct Swizzle;
 
 template<typename T>
 struct is_swizzle : std::false_type {};
 
 template<typename T, size_t N, size_t... Indices>
-struct is_swizzle<swizzle_impl<T, N, Indices...>> : std::true_type {};
+struct is_swizzle<Swizzle<T, N, Indices...>> : std::true_type {};
 
 template<typename T>
 constexpr auto is_swizzle_v = is_swizzle<std::remove_cvref_t<T>>::value;
 
 template<typename T, size_t N, size_t... Indices>
-struct swizzle_impl {
+struct Swizzle {
     static constexpr uint num_component = sizeof...(Indices);
     static_assert(num_component <= 4 && std::max({Indices...}) < N);
 
@@ -82,13 +82,13 @@ public:
     ocarina::array<T, N> data_{};
 
 public:
-    swizzle_impl &operator=(const Vector<T, num_component> &vec) noexcept {
+    Swizzle &operator=(const Vector<T, num_component> &vec) noexcept {
         assign_from(vec, std::make_index_sequence<num_component>());
         return *this;
     }
 
     template<typename U, size_t M, size_t... OtherIndices>
-    swizzle_impl &operator=(const swizzle_impl<U, M, OtherIndices...> &other) {
+    Swizzle &operator=(const Swizzle<U, M, OtherIndices...> &other) {
         *this = other.to_vec();
         return *this;
     }
@@ -127,12 +127,12 @@ public:
 #define OC_MAKE_SWIZZLE_MEMBER_BINARY_OP(op)                                       \
                                                                                    \
     template<typename U, size_t M, size_t... OtherIndices>                         \
-    vec_type operator op(swizzle_impl<U, M, OtherIndices...> rhs) const noexcept { \
+    vec_type operator op(Swizzle<U, M, OtherIndices...> rhs) const noexcept { \
         return to_vec() op rhs.to_vec();                                           \
     }                                                                              \
                                                                                    \
     template<typename Arg>                                                         \
-    swizzle_impl &operator op##=(Arg && arg) noexcept {                            \
+    Swizzle &operator op##=(Arg && arg) noexcept {                            \
         auto tmp = *this;                                                          \
         *this = tmp op OC_FORWARD(arg);                                            \
         return *this;                                                              \
@@ -154,7 +154,7 @@ public:
 #define OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(op, ...)                                       \
     template<typename U, size_t M, size_t... OtherIndices>                             \
     requires __VA_ARGS__                                                               \
-    [[nodiscard]] auto operator op(swizzle_impl<U, M, OtherIndices...> rhs) noexcept { \
+    [[nodiscard]] auto operator op(Swizzle<U, M, OtherIndices...> rhs) noexcept { \
         return to_vec() op rhs.to_vec();                                               \
     }
 
@@ -169,9 +169,6 @@ public:
 
 #undef OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP
 };
-
-template<typename T, size_t N, size_t... Indices>
-using Swizzle = swizzle_impl<T, N, Indices...>;
 
 }// namespace ocarina
 
