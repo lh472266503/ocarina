@@ -54,57 +54,6 @@ select(Vector<bool, N> pred, Vector<T, N> t, Vector<T, N> f) noexcept {
     }
 }
 
-#define MAKE_VECTOR_UNARY_FUNC(func)                                     \
-    template<typename T>                                                 \
-    requires is_vector_v<T>                                              \
-    OC_NODISCARD auto                                                    \
-    func(const T &v) noexcept {                                          \
-        static constexpr auto N = vector_dimension_v<T>;                 \
-        using ret_type = Vector<decltype(func(v.x)), N>;                 \
-        static_assert(N == 2 || N == 3 || N == 4);                       \
-        if constexpr (N == 2) {                                          \
-            return ret_type{func(v.x), func(v.y)};                       \
-        } else if constexpr (N == 3) {                                   \
-            return ret_type(func(v.x), func(v.y), func(v.z));            \
-        } else {                                                         \
-            return ret_type(func(v.x), func(v.y), func(v.z), func(v.w)); \
-        }                                                                \
-    }
-
-MAKE_VECTOR_UNARY_FUNC(rcp)
-MAKE_VECTOR_UNARY_FUNC(abs)
-MAKE_VECTOR_UNARY_FUNC(sqrt)
-MAKE_VECTOR_UNARY_FUNC(sqr)
-MAKE_VECTOR_UNARY_FUNC(sign)
-MAKE_VECTOR_UNARY_FUNC(cos)
-MAKE_VECTOR_UNARY_FUNC(sin)
-MAKE_VECTOR_UNARY_FUNC(tan)
-MAKE_VECTOR_UNARY_FUNC(cosh)
-MAKE_VECTOR_UNARY_FUNC(sinh)
-MAKE_VECTOR_UNARY_FUNC(tanh)
-MAKE_VECTOR_UNARY_FUNC(log)
-MAKE_VECTOR_UNARY_FUNC(log2)
-MAKE_VECTOR_UNARY_FUNC(log10)
-MAKE_VECTOR_UNARY_FUNC(exp)
-MAKE_VECTOR_UNARY_FUNC(exp2)
-MAKE_VECTOR_UNARY_FUNC(asin)
-MAKE_VECTOR_UNARY_FUNC(acos)
-MAKE_VECTOR_UNARY_FUNC(atan)
-MAKE_VECTOR_UNARY_FUNC(asinh)
-MAKE_VECTOR_UNARY_FUNC(acosh)
-MAKE_VECTOR_UNARY_FUNC(atanh)
-MAKE_VECTOR_UNARY_FUNC(floor)
-MAKE_VECTOR_UNARY_FUNC(ceil)
-MAKE_VECTOR_UNARY_FUNC(degrees)
-MAKE_VECTOR_UNARY_FUNC(radians)
-MAKE_VECTOR_UNARY_FUNC(round)
-MAKE_VECTOR_UNARY_FUNC(isnan)
-MAKE_VECTOR_UNARY_FUNC(isinf)
-MAKE_VECTOR_UNARY_FUNC(fract)
-MAKE_VECTOR_UNARY_FUNC(copysign)
-
-#undef MAKE_VECTOR_UNARY_FUNC
-
 #define MAKE_VECTOR_BINARY_FUNC(func)                                                            \
     template<typename T, size_t N>                                                               \
     requires is_all_number_v<T>                                                                  \

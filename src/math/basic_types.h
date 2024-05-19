@@ -237,12 +237,15 @@ template<typename T, size_t N>
 struct Vector_ : public detail::VectorStorage<T, N> {
     using detail::VectorStorage<T, N>::VectorStorage;
     using this_type = Vector_<T, N>;
+    static constexpr size_t dimension = N;
     template<typename U>
     explicit constexpr Vector_(U s) noexcept : Vector_(static_cast<T>(s)) {}
     [[nodiscard]] constexpr T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
     [[nodiscard]] constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
     [[nodiscard]] constexpr T &at(size_t index) noexcept { return (&(this->x))[index]; }
     [[nodiscard]] constexpr const T &at(size_t index) const noexcept { return (&(this->x))[index]; }
+
+#define OC_APPLY_INDEX_SEQUENCE(...) [&]<size_t... index>(std::index_sequence<index...>) { __VA_ARGS__; }(std::make_index_sequence<N>())
 
 #define OC_MAKE_UNARY_OP(op)                                                  \
     [[nodiscard]] friend constexpr auto operator op(this_type val) noexcept { \
@@ -358,6 +361,54 @@ struct Vector_ : public detail::VectorStorage<T, N> {
     OC_MAKE_VECTOR_LOGIC_OPERATOR(>=, ocarina::is_all_number_v<T, U>)
 
 #undef OC_MAKE_VECTOR_LOGIC_OPERATOR
+
+#define OC_MAKE_VECTOR_UNARY_FUNC(func)                                            \
+private:                                                                           \
+    [[nodiscard]] static decltype(auto) func##_impl(const this_type &v) noexcept { \
+        using ret_type = Vector_<decltype(func(v.x)), this_type::dimension>;       \
+        return OC_APPLY_INDEX_SEQUENCE(return ret_type{func(v.at(index))...});     \
+    }                                                                              \
+                                                                                   \
+public:                                                                            \
+    [[nodiscard]] friend decltype(auto) func(const this_type &v) noexcept {        \
+        return this_type::func##_impl(v);                                          \
+    }
+
+    OC_MAKE_VECTOR_UNARY_FUNC(rcp)
+    OC_MAKE_VECTOR_UNARY_FUNC(abs)
+    OC_MAKE_VECTOR_UNARY_FUNC(sqrt)
+    OC_MAKE_VECTOR_UNARY_FUNC(sqr)
+    OC_MAKE_VECTOR_UNARY_FUNC(sign)
+    OC_MAKE_VECTOR_UNARY_FUNC(cos)
+    OC_MAKE_VECTOR_UNARY_FUNC(sin)
+    OC_MAKE_VECTOR_UNARY_FUNC(tan)
+    OC_MAKE_VECTOR_UNARY_FUNC(cosh)
+    OC_MAKE_VECTOR_UNARY_FUNC(sinh)
+    OC_MAKE_VECTOR_UNARY_FUNC(tanh)
+    OC_MAKE_VECTOR_UNARY_FUNC(log)
+    OC_MAKE_VECTOR_UNARY_FUNC(log2)
+    OC_MAKE_VECTOR_UNARY_FUNC(log10)
+    OC_MAKE_VECTOR_UNARY_FUNC(exp)
+    OC_MAKE_VECTOR_UNARY_FUNC(exp2)
+    OC_MAKE_VECTOR_UNARY_FUNC(asin)
+    OC_MAKE_VECTOR_UNARY_FUNC(acos)
+    OC_MAKE_VECTOR_UNARY_FUNC(atan)
+    OC_MAKE_VECTOR_UNARY_FUNC(asinh)
+    OC_MAKE_VECTOR_UNARY_FUNC(acosh)
+    OC_MAKE_VECTOR_UNARY_FUNC(atanh)
+    OC_MAKE_VECTOR_UNARY_FUNC(floor)
+    OC_MAKE_VECTOR_UNARY_FUNC(ceil)
+    OC_MAKE_VECTOR_UNARY_FUNC(degrees)
+    OC_MAKE_VECTOR_UNARY_FUNC(radians)
+    OC_MAKE_VECTOR_UNARY_FUNC(round)
+    OC_MAKE_VECTOR_UNARY_FUNC(isnan)
+    OC_MAKE_VECTOR_UNARY_FUNC(isinf)
+    OC_MAKE_VECTOR_UNARY_FUNC(fract)
+    OC_MAKE_VECTOR_UNARY_FUNC(copysign)
+
+#undef OC_MAKE_VECTOR_UNARY_FUNC
+
+#undef OC_APPLY_INDEX_SEQUENCE
 };
 
 #define OC_MAKE_VECTOR_TYPES(T) \

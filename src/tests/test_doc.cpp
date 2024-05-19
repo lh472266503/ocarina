@@ -260,7 +260,11 @@ void test_lambda(Device &device, Stream &stream) {
     //    f3 =  2.f + f3.xyz;
 
     int aaa = 0;
+    float4 f4 = make_float4(-.05f);
 
+//    auto inv = int4::rcp_impl(f4);
+//    auto ab = float4::abs_impl(make_float4(-1).xxxx_());
+//    auto ab2 = absf(make_int4(-1));
 //    AVector<float, 4> af;
 //    Vector<float, 4> af1;
 //    bool abaa = ocarina::is_vector2_v<ocarina::detail::VectorStorage<int, 2>>;
