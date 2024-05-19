@@ -32,8 +32,6 @@ using std::fmod;
 using std::log;
 using std::log10;
 using std::log2;
-using std::max;
-using std::min;
 using std::pow;
 using std::round;
 using std::roundf;
@@ -42,6 +40,18 @@ using std::sinh;
 using std::sqrt;
 using std::tan;
 using std::tanh;
+
+template<typename T>
+requires ocarina::is_scalar_v<T>
+[[nodiscard]] constexpr auto max(T a, T b) noexcept {
+    return std::max(a, b);
+}
+
+template<typename T>
+requires ocarina::is_scalar_v<T>
+[[nodiscard]] constexpr auto min(T a, T b) noexcept {
+    return std::min(a, b);
+}
 
 template<typename T, typename F>
 [[nodiscard]] constexpr auto select(bool pred, T &&t, F &&f) noexcept {
