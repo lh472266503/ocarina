@@ -48,62 +48,6 @@ select(Vector<bool, N> pred, Vector<T, N> t, Vector<T, N> f) noexcept {
     }(std::make_index_sequence<N>());
 }
 
-#define MAKE_VECTOR_BINARY_FUNC(func)                                                            \
-    template<typename T, size_t N>                                                               \
-    requires is_all_number_v<T>                                                                  \
-    OC_NODISCARD auto func(const Vector<T, N> &v, const Vector<T, N> &u) noexcept {              \
-        if constexpr (N == 2) {                                                                  \
-            return Vector<T, N>{func(v.x, u.x), func(v.y, u.y)};                                 \
-        } else if constexpr (N == 3) {                                                           \
-            return Vector<T, N>(func(v.x, u.x), func(v.y, u.y), func(v.z, u.z));                 \
-        } else {                                                                                 \
-            return Vector<T, N>(func(v.x, u.x), func(v.y, u.y), func(v.z, u.z), func(v.w, u.w)); \
-        }                                                                                        \
-    }                                                                                            \
-                                                                                                 \
-    template<typename T, size_t N>                                                               \
-    requires is_all_number_v<T>                                                                  \
-    OC_NODISCARD auto                                                                            \
-    func(const T &t, const Vector<T, N> &u) noexcept {                                           \
-        static_assert(N == 2 || N == 3 || N == 4);                                               \
-        if constexpr (N == 2) {                                                                  \
-            return Vector<T, N>{func(t, u.x), func(t, u.y)};                                     \
-        } else if constexpr (N == 3) {                                                           \
-            return Vector<T, N>(func(t, u.x), func(t, u.y), func(t, u.z));                       \
-        } else {                                                                                 \
-            return Vector<T, N>(func(t, u.x), func(t, u.y), func(t, u.z), func(t, u.w));         \
-        }                                                                                        \
-    }                                                                                            \
-    template<typename T, size_t N>                                                               \
-    requires is_all_number_v<T>                                                                  \
-    OC_NODISCARD auto func(const Vector<T, N> &v, const T &u) noexcept {                         \
-        static_assert(N == 2 || N == 3 || N == 4);                                               \
-        if constexpr (N == 2) {                                                                  \
-            return Vector<T, N>{func(v.x, u), func(v.y, u)};                                     \
-        } else if constexpr (N == 3) {                                                           \
-            return Vector<T, N>(func(v.x, u), func(v.y, u), func(v.z, u));                       \
-        } else {                                                                                 \
-            return Vector<T, N>(func(v.x, u), func(v.y, u), func(v.z, u), func(v.w, u));         \
-        }                                                                                        \
-    }                                                                                            \
-                                                                                                 \
-    template<size_t N>                                                                           \
-    OC_NODISCARD auto func(const Matrix<N> &a, const Matrix<N> &b) noexcept {                    \
-        Matrix<N> ret;                                                                           \
-        for (int i = 0; i < N; ++i) {                                                            \
-            for (int j = 0; j < N; ++j) {                                                        \
-                ret[i][j] = func(a[i][j], b[i][j]);                                              \
-            }                                                                                    \
-        }                                                                                        \
-        return ret;                                                                              \
-    }
-
-MAKE_VECTOR_BINARY_FUNC(pow)
-MAKE_VECTOR_BINARY_FUNC(min)
-MAKE_VECTOR_BINARY_FUNC(max)
-MAKE_VECTOR_BINARY_FUNC(atan2)
-
-#undef MAKE_VECTOR_BINARY_FUNC
 
 template<int n, typename T, typename ret_type = condition_t<expr_value_t<T>, T>>
 requires requires(T a, T b) { a *b; }

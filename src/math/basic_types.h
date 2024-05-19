@@ -66,6 +66,7 @@ struct swizzle_impl {
     };
 
     using vec_type = typename vec<T>::type;
+    using scalar_type = T;
 
 private:
     template<size_t... index>
@@ -237,6 +238,8 @@ template<typename T, size_t N>
 struct Vector_ : public detail::VectorStorage<T, N> {
     using detail::VectorStorage<T, N>::VectorStorage;
     using this_type = Vector_<T, N>;
+    using vec_type = this_type;
+    using scalar_type = T;
     static constexpr size_t dimension = N;
     template<typename U>
     explicit constexpr Vector_(U s) noexcept : Vector_(static_cast<T>(s)) {}
@@ -410,21 +413,19 @@ public:                                                                         
 
 #undef OC_MAKE_VECTOR_UNARY_FUNC
 
-#define OC_MAKE_VECTOR_BINARY_FUNC(func)                                          \
-    OC_NODISCARD static decltype(auto) func##_impl(const this_type &v,            \
-                                                   const this_type &u) noexcept { \
-        using ret_type = Vector_<decltype(func(v.x, u.x)), this_type::dimension>; \
-        return [&]<size_t... index>(std::index_sequence<index...>) {              \
-            return ret_type{func(v[index], u[index])...};                         \
-        }(std::make_index_sequence<N>());                                         \
-    }                                                                             \
-                                                                                  \
-    OC_NODISCARD static decltype(auto) func(const this_type &v, T u) noexcept {   \
-        return func##_impl(v, this_type{u});                                      \
-    }                                                                             \
-                                                                                  \
-    OC_NODISCARD static decltype(auto) func(const T &v, this_type u) noexcept {   \
-        return func##_impl(this_type{v}, u);                                      \
+#define OC_MAKE_VECTOR_BINARY_FUNC(func)                                               \
+    OC_NODISCARD static decltype(auto) func##_impl(const this_type &v,                 \
+                                                   const this_type &u) noexcept {      \
+        using ret_type = Vector_<decltype(func(v.x, u.x)), this_type::dimension>;      \
+        return [&]<size_t... index>(std::index_sequence<index...>) {                   \
+            return ret_type{func(v[index], u[index])...};                              \
+        }(std::make_index_sequence<N>());                                              \
+    }                                                                                  \
+    OC_NODISCARD static decltype(auto) func##_impl(const this_type &v, T u) noexcept { \
+        return func##_impl(v, this_type{u});                                           \
+    }                                                                                  \
+    OC_NODISCARD static decltype(auto) func##_impl(const T &v, this_type u) noexcept { \
+        return func##_impl(this_type{v}, u);                                           \
     }
 
     OC_MAKE_VECTOR_BINARY_FUNC(max)
@@ -436,6 +437,101 @@ public:                                                                         
 
 #undef OC_APPLY_INDEX_SEQUENCE
 };
+
+namespace detail {
+
+template<typename T>
+struct deduce_vec_helper {
+    using type = T;
+};
+
+template<typename T, size_t N>
+struct deduce_vec_helper<Vector<T, N>> {
+    using type = Vector<T, N>::vec_type;
+};
+
+template<typename T, size_t N, size_t... Indices>
+struct deduce_vec_helper<Swizzle<T, N, Indices...>> {
+    using type = Swizzle<T, N, Indices...>::vec_type;
+};
+
+template<typename Lhs, typename Rhs>
+struct deduce_vector_impl {
+    static_assert(always_false_v<Lhs, Rhs>);
+};
+
+template<typename T, size_t N>
+struct deduce_vector_impl<Vector<T, N>, Vector<T, N>> {
+    using type = Vector<T, N>;
+};
+
+template<typename T, size_t N>
+struct deduce_vector_impl<typename Vector<T, N>::scalar_type, Vector<T, N>> {
+    using type = Vector<T, N>;
+};
+
+template<typename T, size_t N>
+struct deduce_vector_impl<Vector<T, N>, typename Vector<T, N>::scalar_type> {
+    using type = Vector<T, N>;
+};
+
+template<typename Lhs, typename Rhs>
+struct deduce_vector {
+    using type = typename deduce_vector_impl<typename deduce_vec_helper<Lhs>::type,
+                                             typename deduce_vec_helper<Rhs>::type>::type;
+};
+
+}// namespace detail
+
+template<typename Lhs, typename Rhs>
+using deduce_vector_t = typename detail::deduce_vector<std::remove_cvref_t<Lhs>,
+                                                       std::remove_cvref_t<Rhs>>::type;
+
+#define MAKE_VECTOR_BINARY_FUNC(func)                                                            \
+    template<typename T, size_t N>                                                               \
+    requires is_all_number_v<T>                                                                  \
+    OC_NODISCARD auto func(const Vector<T, N> &v, const Vector<T, N> &u) noexcept {              \
+        if constexpr (N == 2) {                                                                  \
+            return Vector<T, N>{func(v.x, u.x), func(v.y, u.y)};                                 \
+        } else if constexpr (N == 3) {                                                           \
+            return Vector<T, N>(func(v.x, u.x), func(v.y, u.y), func(v.z, u.z));                 \
+        } else {                                                                                 \
+            return Vector<T, N>(func(v.x, u.x), func(v.y, u.y), func(v.z, u.z), func(v.w, u.w)); \
+        }                                                                                        \
+    }                                                                                            \
+                                                                                                 \
+    template<typename T, size_t N>                                                               \
+    requires is_all_number_v<T>                                                                  \
+    OC_NODISCARD auto                                                                            \
+    func(const T &t, const Vector<T, N> &u) noexcept {                                           \
+        static_assert(N == 2 || N == 3 || N == 4);                                               \
+        if constexpr (N == 2) {                                                                  \
+            return Vector<T, N>{func(t, u.x), func(t, u.y)};                                     \
+        } else if constexpr (N == 3) {                                                           \
+            return Vector<T, N>(func(t, u.x), func(t, u.y), func(t, u.z));                       \
+        } else {                                                                                 \
+            return Vector<T, N>(func(t, u.x), func(t, u.y), func(t, u.z), func(t, u.w));         \
+        }                                                                                        \
+    }                                                                                            \
+    template<typename T, size_t N>                                                               \
+    requires is_all_number_v<T>                                                                  \
+    OC_NODISCARD auto func(const Vector<T, N> &v, const T &u) noexcept {                         \
+        static_assert(N == 2 || N == 3 || N == 4);                                               \
+        if constexpr (N == 2) {                                                                  \
+            return Vector<T, N>{func(v.x, u), func(v.y, u)};                                     \
+        } else if constexpr (N == 3) {                                                           \
+            return Vector<T, N>(func(v.x, u), func(v.y, u), func(v.z, u));                       \
+        } else {                                                                                 \
+            return Vector<T, N>(func(v.x, u), func(v.y, u), func(v.z, u), func(v.w, u));         \
+        }                                                                                        \
+    }
+
+MAKE_VECTOR_BINARY_FUNC(pow)
+MAKE_VECTOR_BINARY_FUNC(min)
+MAKE_VECTOR_BINARY_FUNC(max)
+MAKE_VECTOR_BINARY_FUNC(atan2)
+
+#undef MAKE_VECTOR_BINARY_FUNC
 
 #define OC_MAKE_VECTOR_TYPES(T) \
     using T##2 = Vector<T, 2>;  \
