@@ -262,6 +262,8 @@ void test_lambda(Device &device, Stream &stream) {
     int aaa = 0;
 
     AVector<float, 4> af;
+//    Vector<float, 4> af1;
+//    bool abaa = ocarina::is_vector2_v<ocarina::detail::VectorStorage<int, 2>>;
 
     Kernel kernel = [&](Uint i) {
         //        Float *p;
