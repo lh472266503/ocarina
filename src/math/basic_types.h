@@ -366,7 +366,9 @@ struct Vector_ : public detail::VectorStorage<T, N> {
 private:                                                                           \
     [[nodiscard]] static decltype(auto) func##_impl(const this_type &v) noexcept { \
         using ret_type = Vector_<decltype(func(v.x)), this_type::dimension>;       \
-        return OC_APPLY_INDEX_SEQUENCE(return ret_type{func(v.at(index))...});     \
+        return [&]<size_t... index>(std::index_sequence<index...>) {               \
+            return ret_type{func(v.at(index))...};                                 \
+        }(std::make_index_sequence<N>());                                          \
     }                                                                              \
                                                                                    \
 public:                                                                            \
@@ -407,6 +409,22 @@ public:                                                                         
     OC_MAKE_VECTOR_UNARY_FUNC(copysign)
 
 #undef OC_MAKE_VECTOR_UNARY_FUNC
+
+#define OC_MAKE_VECTOR_BINARY_FUNC(func)                                          \
+    OC_NODISCARD static decltype(auto) func##_impl(const this_type &v,            \
+                                                   const this_type &u) noexcept { \
+        using ret_type = Vector_<decltype(func(v.x, u.x)), this_type::dimension>; \
+        return [&]<size_t... index>(std::index_sequence<index...>) {              \
+            return ret_type{func(v[index], u[index])...};                         \
+        }(std::make_index_sequence<N>());                                         \
+    }
+
+    OC_MAKE_VECTOR_BINARY_FUNC(max)
+    OC_MAKE_VECTOR_BINARY_FUNC(min)
+    OC_MAKE_VECTOR_BINARY_FUNC(pow)
+    OC_MAKE_VECTOR_BINARY_FUNC(atan2)
+
+#undef OC_MAKE_VECTOR_BINARY_FUNC
 
 #undef OC_APPLY_INDEX_SEQUENCE
 };

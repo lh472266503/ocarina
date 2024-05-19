@@ -43,15 +43,9 @@ template<typename T, size_t N>
 requires ocarina::is_scalar_v<T>
 [[nodiscard]] constexpr auto
 select(Vector<bool, N> pred, Vector<T, N> t, Vector<T, N> f) noexcept {
-    static_assert(N == 2 || N == 3 || N == 4);
-    if constexpr (N == 2) {
-        return Vector<T, N>{select(pred.x, t.x, f.x), select(pred.y, t.y, f.y)};
-    } else if constexpr (N == 3) {
-        return Vector<T, N>{select(pred.x, t.x, f.x), select(pred.y, t.y, f.y), select(pred.z, t.z, f.z)};
-    } else {
-        return Vector<T, N>{select(pred.x, t.x, f.x), select(pred.y, t.y, f.y), select(pred.z, t.z, f.z),
-                            select(pred.w, t.w, f.w)};
-    }
+    return [&]<size_t ...index>(std::index_sequence<index...>) {
+        return Vector<T, N>{select(pred[index], t[index], f[index])...};
+    }(std::make_index_sequence<N>());
 }
 
 #define MAKE_VECTOR_BINARY_FUNC(func)                                                            \

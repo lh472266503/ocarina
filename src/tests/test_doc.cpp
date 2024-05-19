@@ -259,8 +259,14 @@ void test_lambda(Device &device, Stream &stream) {
 //    aa.xy_() == 10;
     //    f3 =  2.f + f3.xyz;
 
+    float4 f4 = make_float4(1,2,3,4);
+    float4 f = rcp(make_float4(-1,-2,-3,-4));
+
+    auto fm = f4.max_impl(f4, f);
+
+    auto fn = select(make_bool4(1,0,1,0), f4, f);
+
     int aaa = 0;
-    float4 f4 = make_float4(-.05f);
 
 //    auto inv = int4::rcp_impl(f4);
 //    auto ab = float4::abs_impl(make_float4(-1).xxxx_());
