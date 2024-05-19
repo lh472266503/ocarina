@@ -36,7 +36,6 @@ namespace ocarina {
 template<typename T>
 struct Var;
 
-namespace detail {
 
 template<typename T, size_t N, size_t... Indices>
 struct swizzle_impl;
@@ -170,10 +169,9 @@ public:
 
 #undef OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP
 };
-}// namespace detail
 
 template<typename T, size_t N, size_t... Indices>
-using Swizzle = detail::swizzle_impl<T, N, Indices...>;
+using Swizzle = swizzle_impl<T, N, Indices...>;
 
 }// namespace ocarina
 
