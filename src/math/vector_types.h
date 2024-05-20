@@ -485,11 +485,11 @@ requires is_vector_or_swizzle_v<T>
     return deduce_vec_t<T>::call_volume(val);
 }
 
-template<typename T, typename U>
-requires is_vector_or_swizzle_v<T>
-[[nodiscard]] constexpr auto dot(T t, U u) noexcept {
-    return deduce_vec_t<T>::call_dot(t, u);
-}
+//template<typename T, typename U>
+//requires is_vector_or_swizzle_v<T>
+//[[nodiscard]] constexpr auto dot(T t, U u) noexcept {
+//    return deduce_vec_t<T>::call_dot(t, u);
+//}
 
 template<typename T, typename U, typename V>
 requires is_all_vector_or_swizzle_v<T, U, V>
