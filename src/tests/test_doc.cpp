@@ -301,10 +301,10 @@ void test_lambda(Device &device, Stream &stream) {
 //      Float3 bbb = + aa.xyy();
 //        bool bbb = ocarina::is_scalar_v<Float3>;
         $info("{} {} {}  ", aa);
-        aa = aa.zxx();
+        aa = aa.zxx_();
         $info("{} {} {}  ", aa);
-        aa = aa + aa.xzz();
-        $info("{} {} {}  ", aa);
+        auto at = aa >= aa.yyy_();
+        $info("{} {} {}  ", make_uint3(at));
         //        f3 = xyz;
 
         //        $outline {

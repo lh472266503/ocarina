@@ -58,9 +58,9 @@ struct SOAView {
                                                                                           \
     private:                                                                              \
         ocarina::BufferStorage<TBuffer> buffer_{};                                        \
-        ocarina::Uint _view_size{};                                                       \
-        ocarina::Uint _offset{};                                                          \
-        ocarina::uint _stride{};                                                          \
+        ocarina::Uint view_size_{};                                                       \
+        ocarina::Uint offset_{};                                                          \
+        ocarina::uint stride_{};                                                          \
                                                                                           \
     public:                                                                               \
         SOAView() = default;                                                              \
@@ -68,26 +68,26 @@ struct SOAView {
                          const ocarina::Uint &view_size = ocarina::InvalidUI32,           \
                          const ocarina::Uint &ofs = 0u, ocarina::uint stride = type_size) \
             : buffer_(buffer),                                                            \
-              _view_size(ocarina::min(view_size,                                          \
+              view_size_(ocarina::min(view_size,                                          \
                                       buffer.template size_in_byte<ocarina::uint>())),    \
-              _offset(ofs), _stride(stride) {}                                            \
+              offset_(ofs), stride_(stride) {}                                            \
                                                                                           \
         template<typename Index>                                                          \
         requires ocarina::is_integral_expr_v<Index>                                       \
         [[nodiscard]] ocarina::Var<atomic_type> read(Index &&index) const noexcept {      \
-            return buffer_->template load_as<atomic_type>(_offset +                       \
+            return buffer_->template load_as<atomic_type>(offset_ +                       \
                                                           OC_FORWARD(index) * type_size); \
         }                                                                                 \
                                                                                           \
         template<typename Index>                                                          \
         requires ocarina::is_integral_expr_v<Index>                                       \
         void write(Index &&index, const ocarina::Var<atomic_type> &val) noexcept {        \
-            buffer_->store(_offset + OC_FORWARD(index) * type_size, val);                 \
+            buffer_->store(offset_ + OC_FORWARD(index) * type_size, val);                 \
         }                                                                                 \
                                                                                           \
         template<typename int_type = ocarina::uint>                                       \
         [[nodiscard]] ocarina::Var<int_type> size_in_byte() const noexcept {              \
-            return _view_size / _stride * type_size;                                      \
+            return view_size_ / stride_ * type_size;                                      \
         }                                                                                 \
     };
 

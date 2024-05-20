@@ -23,6 +23,7 @@ template<typename T>
 struct Var : public Computable<T> {
     using this_type = T;
     using Super = Computable<T>;
+    using dsl_type = Var<T>;
     explicit Var(const ocarina::Expression *expression) noexcept
         : ocarina::detail::Computable<this_type>(expression) {}
     Var() noexcept
@@ -57,6 +58,8 @@ struct Var : public Computable<T> {
     }
     void operator=(const Var &other) { ocarina::detail::assign(*this, other); }
     OC_MAKE_GET_PROXY
+
+
 };
 
 template<typename T>

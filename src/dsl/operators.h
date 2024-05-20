@@ -160,19 +160,14 @@ OC_MAKE_DSL_ASSIGN_OP(>>)
 OC_MAKE_DSL_ASSIGN_OP(<<)
 OC_MAKE_DSL_ASSIGN_OP(^)
 
-#define OC_MAKE_SWIZZLE_BINARY_OP(op)                                                   \
-    template<typename Lhs, typename T, size_t N, size_t... Indices>                     \
-    requires ocarina::is_dsl_v<Lhs>                                                     \
+
+#undef OC_MAKE_DSL_ASSIGN_OP
+
+#define OC_MAKE_SWIZZLE_BINARY_OP(op)                                              \
+    template<typename Lhs, typename T, size_t N, size_t... Indices>                \
+    requires ocarina::is_dsl_v<Lhs>                                                \
     auto operator op(Lhs &&lhs, ocarina::Swizzle<T, N, Indices...> rhs) noexcept { \
-        return OC_FORWARD(lhs) op rhs.to_vec();                                         \
-    }                                                                                   \
-                                                                                        \
-    template<typename Lhs, typename T, size_t N, size_t... Indices>                     \
-    requires ocarina::is_dsl_v<Lhs>                                                     \
-    auto operator op##=(Lhs &lhs,                                                       \
-                        ocarina::Swizzle<T, N, Indices...> rhs) noexcept {         \
-        lhs op## = rhs.to_vec();                                                        \
-        return lhs;                                                                     \
+        return OC_FORWARD(lhs) op rhs.to_vec();                                    \
     }
 
 OC_MAKE_SWIZZLE_BINARY_OP(+)
@@ -180,12 +175,41 @@ OC_MAKE_SWIZZLE_BINARY_OP(-)
 OC_MAKE_SWIZZLE_BINARY_OP(*)
 OC_MAKE_SWIZZLE_BINARY_OP(/)
 OC_MAKE_SWIZZLE_BINARY_OP(%)
-OC_MAKE_SWIZZLE_BINARY_OP(>>)
-OC_MAKE_SWIZZLE_BINARY_OP(<<)
-OC_MAKE_SWIZZLE_BINARY_OP(|)
 OC_MAKE_SWIZZLE_BINARY_OP(&)
+OC_MAKE_SWIZZLE_BINARY_OP(|)
 OC_MAKE_SWIZZLE_BINARY_OP(^)
+OC_MAKE_SWIZZLE_BINARY_OP(<<)
+OC_MAKE_SWIZZLE_BINARY_OP(>>)
+OC_MAKE_SWIZZLE_BINARY_OP(&&)
+OC_MAKE_SWIZZLE_BINARY_OP(||)
+OC_MAKE_SWIZZLE_BINARY_OP(==)
+OC_MAKE_SWIZZLE_BINARY_OP(!=)
+OC_MAKE_SWIZZLE_BINARY_OP(<)
+OC_MAKE_SWIZZLE_BINARY_OP(<=)
+OC_MAKE_SWIZZLE_BINARY_OP(>)
+OC_MAKE_SWIZZLE_BINARY_OP(>=)
 
 #undef OC_MAKE_SWIZZLE_BINARY_OP
 
-#undef OC_MAKE_DSL_ASSIGN_OP
+#define OC_MAKE_DSL_SWIZZLE_ASSIGN_OP(op)                                  \
+                                                                           \
+    template<typename Lhs, typename T, size_t N, size_t... Indices>        \
+    requires ocarina::is_dsl_v<Lhs>                                        \
+    auto operator op##=(Lhs &lhs,                                          \
+                        ocarina::Swizzle<T, N, Indices...> rhs) noexcept { \
+        lhs op## = rhs.to_vec();                                           \
+        return lhs;                                                        \
+    }
+
+OC_MAKE_DSL_SWIZZLE_ASSIGN_OP(+)
+OC_MAKE_DSL_SWIZZLE_ASSIGN_OP(-)
+OC_MAKE_DSL_SWIZZLE_ASSIGN_OP(*)
+OC_MAKE_DSL_SWIZZLE_ASSIGN_OP(/)
+OC_MAKE_DSL_SWIZZLE_ASSIGN_OP(|)
+OC_MAKE_DSL_SWIZZLE_ASSIGN_OP(%)
+OC_MAKE_DSL_SWIZZLE_ASSIGN_OP(&)
+OC_MAKE_DSL_SWIZZLE_ASSIGN_OP(>>)
+OC_MAKE_DSL_SWIZZLE_ASSIGN_OP(<<)
+OC_MAKE_DSL_SWIZZLE_ASSIGN_OP(^)
+
+#undef OC_MAKE_DSL_SWIZZLE_ASSIGN_OP
