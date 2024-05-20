@@ -103,6 +103,11 @@ struct expr_value_impl<DynamicArray<T>> {
     using type = vector<T>;
 };
 
+template<typename T, size_t N, size_t... Indices>
+struct expr_value_impl<Swizzle<Var<T>, N, Indices...>> {
+    using type = Swizzle<T, N, Indices...>;
+};
+
 }// namespace detail
 
 template<typename T>
@@ -129,6 +134,16 @@ namespace detail {
 template<typename T>
 struct dsl_impl {
     using type = Var<T>;
+};
+
+template<>
+struct dsl_impl<void> {
+    using type = void;
+};
+
+template<typename T, size_t N, size_t... Indices>
+struct dsl_impl<Swizzle<T, N, Indices...>> {
+    using type = Swizzle<Var<T>, N, Indices...>;
 };
 
 template<typename T>
@@ -183,6 +198,9 @@ struct is_dsl_impl<Computable<T>> : std::true_type {};
 
 template<typename T>
 struct is_dsl_impl<Var<T>> : std::true_type {};
+
+template<typename T, size_t N, size_t... Indices>
+struct is_dsl_impl<Swizzle<Var<T>, N, Indices...>> : std::true_type {};
 
 template<typename T>
 struct is_dsl_impl<DynamicArray<T>> : std::true_type {};
