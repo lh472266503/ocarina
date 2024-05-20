@@ -117,6 +117,18 @@ public:
         return to_vec() op rhs.to_vec();                                      \
     }                                                                         \
                                                                               \
+    template<typename U>                                                      \
+    requires is_scalar_v<U>                                                   \
+    vec_type operator op(U rhs) const noexcept {                              \
+        return to_vec() op rhs;                                               \
+    }                                                                         \
+                                                                              \
+    template<typename U>                                                      \
+    requires is_scalar_v<U>                                                   \
+    friend vec_type operator op(U lhs, Swizzle<T, N, Indices...> rhs) {       \
+        return lhs op rhs.to_vec();                                           \
+    }                                                                         \
+                                                                              \
     template<typename Arg>                                                    \
     Swizzle &operator op##=(Arg && arg) noexcept {                            \
         auto tmp = *this;                                                     \
@@ -142,6 +154,11 @@ public:
     requires __VA_ARGS__                                                          \
     [[nodiscard]] auto operator op(Swizzle<U, M, OtherIndices...> rhs) noexcept { \
         return to_vec() op rhs.to_vec();                                          \
+    }                                                                             \
+    template<typename U>                                                          \
+    requires __VA_ARGS__                                                          \
+    [[nodiscard]] auto operator op(U rhs) const noexcept {                        \
+        return to_vec() op rhs;                                                   \
     }
 
     OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(||, ocarina::is_all_boolean_v<T, U>)

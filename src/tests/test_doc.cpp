@@ -475,6 +475,7 @@ int main(int argc, char *argv[]) {
 //    AVector<float, 3> aaaa;
 
     float3 a = make_float3(1,2,3);
+    auto la =  a.xz_() < 1.5f;
     int3 b = make_int3(4,5,6);
 
     a += a;

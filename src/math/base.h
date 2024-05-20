@@ -82,18 +82,6 @@ auto divide(T &&t, U &&u) noexcept {
     return OC_FORWARD(t) * rcp(OC_FORWARD(u));
 }
 
-template<typename T, size_t N>
-[[nodiscard]] Vector<T, N> fma(const Vector<T, N> &t, const Vector<T, N> &u, const Vector<T, N> &v) noexcept {
-    static_assert(N == 2 || N == 3 || N == 4);
-    if constexpr (N == 2) {
-        return Vector<T, N>(fma(t.x, u.x, v.x), fma(t.y, u.y, v.y));
-    } else if constexpr (N == 3) {
-        return Vector<T, N>(fma(t.x, u.x, v.x), fma(t.y, u.y, v.y), fma(t.z, u.z, v.z));
-    } else {
-        return Vector<T, N>(fma(t.x, u.x, v.x), fma(t.y, u.y, v.y), fma(t.z, u.z, v.z), fma(t.w, u.w, v.w));
-    }
-}
-
 template<typename U, typename V>
 [[nodiscard]] constexpr auto abs_dot(const U &u, const V &v) noexcept {
     return abs(dot(u, v));
