@@ -9,6 +9,7 @@
 #include "ast/function.h"
 #include "expr.h"
 #include "math/basic_types.h"
+#include "type_trait.h"
 
 namespace ocarina {
 
@@ -59,7 +60,20 @@ struct Var : public Computable<T> {
     void operator=(const Var &other) { ocarina::detail::assign(*this, other); }
     OC_MAKE_GET_PROXY
 
+#define OC_MAKE_VAR_LOGIC_FUNC(func, tag)                                           \
+    template<typename U>                                                            \
+    requires is_bool_vector_expr_v<U>                                               \
+    [[nodiscard]] static auto call_##func(const U &val) noexcept {                  \
+        auto expr = Function::current()->call_builtin(Type::of<bool>(),             \
+                                                      CallOp::tag, {OC_EXPR(val)}); \
+        return eval<bool>(expr);                                                    \
+    }
 
+    OC_MAKE_VAR_LOGIC_FUNC(all, ALL)
+    OC_MAKE_VAR_LOGIC_FUNC(any, ANY)
+    OC_MAKE_VAR_LOGIC_FUNC(none, NONE)
+
+#undef OC_MAKE_VAR_LOGIC_FUNC
 };
 
 template<typename T>

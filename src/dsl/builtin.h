@@ -49,7 +49,7 @@ requires ocarina::is_integral_expr_v<DispatchId>
 
 #define OC_MAKE_LOGIC_FUNC(func, tag)                                             \
     template<typename T>                                                          \
-    requires is_bool_vector_expr_v<T> || is_dynamic_array_v<T>                    \
+    requires is_bool_vector_expr_v<T>                                             \
     OC_NODISCARD auto                                                             \
     func(const T &t) noexcept {                                                   \
         auto expr = Function::current()->call_builtin(Type::of<bool>(),           \

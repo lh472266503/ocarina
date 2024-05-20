@@ -304,7 +304,7 @@ void test_lambda(Device &device, Stream &stream) {
         aa = aa.zxx_();
         $info("{} {} {}  ", aa);
         auto at = aa >= aa.yyy_();
-        $info("{} {} {}  ", make_uint3(at));
+        $info("{} {} {}  {}  ", make_uint3(at), none(at).cast<int>());
         //        f3 = xyz;
 
         //        $outline {
