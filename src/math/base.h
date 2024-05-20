@@ -70,18 +70,6 @@ lerp(F t, A a, B b) noexcept {
     return a + t * (b - a);
 }
 
-template<typename T, size_t N>
-[[nodiscard]] constexpr auto volume(Vector<T, N> v) noexcept {
-    static_assert(N == 2 || N == 3 || N == 4);
-    if constexpr (N == 2) {
-        return v.x * v.y;
-    } else if constexpr (N == 3) {
-        return v.x * v.y * v.z;
-    } else {
-        return v.x * v.y * v.z * v.w;
-    }
-}
-
 template<typename T, typename U>
 requires is_all_floating_point_expr_v<T, U>
 [[nodiscard]] condition_t<bool, T, U> is_close(T t, U u, float epsilon = 0.00001f) {
@@ -92,18 +80,6 @@ template<typename T, typename U>
 requires ocarina::is_all_scalar_expr_v<T, U>
 auto divide(T &&t, U &&u) noexcept {
     return OC_FORWARD(t) * rcp(OC_FORWARD(u));
-}
-
-template<typename T, size_t N>
-[[nodiscard]] auto dot(const Vector<T, N> &u, const Vector<T, N> &v) noexcept {
-    static_assert(N == 2 || N == 3 || N == 4);
-    if constexpr (N == 2) {
-        return u.x * v.x + u.y * v.y;
-    } else if constexpr (N == 3) {
-        return u.x * v.x + u.y * v.y + u.z * v.z;
-    } else {
-        return u.x * v.x + u.y * v.y + u.z * v.z + u.w * v.w;
-    }
 }
 
 template<typename T, size_t N>

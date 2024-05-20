@@ -260,9 +260,9 @@ void test_lambda(Device &device, Stream &stream) {
     //    f3 =  2.f + f3.xyz;
 
     float4 f4 = make_float4(1,2,666,4);
-    float4 f = rcp(make_float4(-1,-2,-3,-4).xyzw_());
+    float4 f = (make_float4(-1,-2,-3,-4).xyzw_());
 
-    float fe= 0;
+    float fe= dot(f, f.zwww_());
 
 //    max(fe, fe);
 

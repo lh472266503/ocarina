@@ -229,8 +229,6 @@ struct Vector_ : public detail::VectorStorage<T, N> {
     [[nodiscard]] constexpr T &at(size_t index) noexcept { return (&(this->x))[index]; }
     [[nodiscard]] constexpr const T &at(size_t index) const noexcept { return (&(this->x))[index]; }
 
-#define OC_APPLY_INDEX_SEQUENCE(...) [&]<size_t... index>(std::index_sequence<index...>) { __VA_ARGS__; }(std::make_index_sequence<N>())
-
 #define OC_MAKE_UNARY_OP(op)                                                  \
     [[nodiscard]] friend constexpr auto operator op(this_type val) noexcept { \
         using R = Vector_<decltype(op T{}), N>;                               \
@@ -344,12 +342,12 @@ struct Vector_ : public detail::VectorStorage<T, N> {
 
 #undef OC_MAKE_VECTOR_LOGIC_OPERATOR
 
-#define OC_MAKE_VECTOR_UNARY_FUNC(func)                                            \
-    [[nodiscard]] static decltype(auto) call_##func(const this_type &v) noexcept { \
-        using ret_type = Vector_<decltype(func(v.x)), this_type::dimension>;       \
-        return [&]<size_t... index>(std::index_sequence<index...>) {               \
-            return ret_type{func(v.at(index))...};                                 \
-        }(std::make_index_sequence<N>());                                          \
+#define OC_MAKE_VECTOR_UNARY_FUNC(func)                                                      \
+    [[nodiscard]] static constexpr decltype(auto) call_##func(const this_type &v) noexcept { \
+        using ret_type = Vector_<decltype(func(v.x)), this_type::dimension>;                 \
+        return [&]<size_t... index>(std::index_sequence<index...>) {                         \
+            return ret_type{func(v.at(index))...};                                           \
+        }(std::make_index_sequence<N>());                                                    \
     }
 
     OC_MAKE_VECTOR_UNARY_FUNC(rcp)
@@ -386,20 +384,20 @@ struct Vector_ : public detail::VectorStorage<T, N> {
 
 #undef OC_MAKE_VECTOR_UNARY_FUNC
 
-#define OC_MAKE_VECTOR_BINARY_FUNC(func)                                               \
-    OC_NODISCARD static decltype(auto) call_##func(const this_type &v,                 \
-                                                   const this_type &u) noexcept {      \
-        using ret_type = Vector_<std::remove_cvref_t<decltype(func(v.x, u.x))>,        \
-                                 this_type::dimension>;                                \
-        return [&]<size_t... index>(std::index_sequence<index...>) {                   \
-            return ret_type{func(v[index], u[index])...};                              \
-        }(std::make_index_sequence<N>());                                              \
-    }                                                                                  \
-    OC_NODISCARD static decltype(auto) call_##func(const this_type &v, T u) noexcept { \
-        return call_##func(v, this_type{u});                                           \
-    }                                                                                  \
-    OC_NODISCARD static decltype(auto) call_##func(const T &v, this_type u) noexcept { \
-        return call_##func(this_type{v}, u);                                           \
+#define OC_MAKE_VECTOR_BINARY_FUNC(func)                                                         \
+    OC_NODISCARD static constexpr decltype(auto) call_##func(const this_type &v,                 \
+                                                             const this_type &u) noexcept {      \
+        using ret_type = Vector_<std::remove_cvref_t<decltype(func(v.x, u.x))>,                  \
+                                 this_type::dimension>;                                          \
+        return [&]<size_t... index>(std::index_sequence<index...>) {                             \
+            return ret_type{func(v[index], u[index])...};                                        \
+        }(std::make_index_sequence<N>());                                                        \
+    }                                                                                            \
+    OC_NODISCARD static constexpr decltype(auto) call_##func(const this_type &v, T u) noexcept { \
+        return call_##func(v, this_type{u});                                                     \
+    }                                                                                            \
+    OC_NODISCARD static constexpr decltype(auto) call_##func(const T &v, this_type u) noexcept { \
+        return call_##func(this_type{v}, u);                                                     \
     }
     OC_MAKE_VECTOR_BINARY_FUNC(max)
     OC_MAKE_VECTOR_BINARY_FUNC(min)
@@ -407,7 +405,17 @@ struct Vector_ : public detail::VectorStorage<T, N> {
     OC_MAKE_VECTOR_BINARY_FUNC(atan2)
 #undef OC_MAKE_VECTOR_BINARY_FUNC
 
-#undef OC_APPLY_INDEX_SEQUENCE
+    [[nodiscard]] static constexpr auto call_volume(this_type v) noexcept {
+        return [&]<size_t... index>(std::index_sequence<index...>) {
+            return ((v[index] * ...));
+        }(std::make_index_sequence<N>());
+    }
+
+    [[nodiscard]] static constexpr auto call_dot(this_type u, this_type v) noexcept {
+        return [&]<size_t... index>(std::index_sequence<index...>) {
+            return ((v[index] * u[index]) + ...);
+        }(std::make_index_sequence<N>());
+    }
 };
 
 #define OC_MAKE_VECTOR_UNARY_FUNC(func)                      \
@@ -464,6 +472,19 @@ OC_MAKE_VECTOR_BINARY_FUNC(max)
 OC_MAKE_VECTOR_BINARY_FUNC(atan2)
 
 #undef OC_MAKE_VECTOR_BINARY_FUNC
+
+template<typename T>
+requires is_vector_or_swizzle_v<T>
+[[nodiscard]] constexpr auto volume(T val) noexcept {
+    return deduce_vec_t<T>::call_volume(val);
+}
+
+template<typename T, typename U>
+requires is_vector_or_swizzle_v<T>
+[[nodiscard]] constexpr auto dot(T t, U u) noexcept {
+    return deduce_vec_t<T>::call_dot(t, u);
+}
+
 
 #define OC_MAKE_VECTOR_TYPES(T) \
     using T##2 = Vector<T, 2>;  \
