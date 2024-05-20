@@ -262,7 +262,7 @@ void test_lambda(Device &device, Stream &stream) {
     float4 f4 = make_float4(1,2,666,4);
     float4 f = (make_float4(-1,-2,-3,-4).xyzw_());
 
-//    float fe= dot(f.xxx_(), f.zww_());
+    float fe= dot(f.xxx_(), f.zww_());
 
     auto bnan = ocarina::cross(f.zyx_(),f.zxx());
 

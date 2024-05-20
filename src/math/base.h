@@ -83,18 +83,6 @@ auto divide(T &&t, U &&u) noexcept {
 }
 
 template<typename T, size_t N>
-[[nodiscard]] auto dot(const Vector<T, N> &u, const Vector<T, N> &v) noexcept {
-    static_assert(N == 2 || N == 3 || N == 4);
-    if constexpr (N == 2) {
-        return u.x * v.x + u.y * v.y;
-    } else if constexpr (N == 3) {
-        return u.x * v.x + u.y * v.y + u.z * v.z;
-    } else {
-        return u.x * v.x + u.y * v.y + u.z * v.z + u.w * v.w;
-    }
-}
-
-template<typename T, size_t N>
 [[nodiscard]] Vector<T, N> fma(const Vector<T, N> &t, const Vector<T, N> &u, const Vector<T, N> &v) noexcept {
     static_assert(N == 2 || N == 3 || N == 4);
     if constexpr (N == 2) {
@@ -125,16 +113,6 @@ template<typename T>
 [[nodiscard]] constexpr T safe_asin(const T &t) noexcept {
     return asin(clamp(t, -1.f, 1.f));
 }
-
-//template<typename T, size_t N>
-//[[nodiscard]] constexpr auto distance(Vector<T, N> u, Vector<T, N> v) noexcept {
-//    return length(u - v);
-//}
-//
-//template<typename T, size_t N>
-//[[nodiscard]] constexpr auto distance_squared(Vector<T, N> u, Vector<T, N> v) noexcept {
-//    return length_squared(u - v);
-//}
 
 template<typename T, size_t N>
 [[nodiscard]] auto triangle_area(Vector<T, N> p0, Vector<T, N> p1, Vector<T, N> p2) noexcept {
