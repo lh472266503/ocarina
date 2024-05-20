@@ -462,7 +462,7 @@ struct Vector : public detail::VectorStorage<T, N> {
 
 #undef OC_MAKE_VECTOR_BINARY_FUNC
 
-    [[nodiscard]] this_type call_fma(const this_type &t, const this_type &u, const this_type &v) noexcept {
+    [[nodiscard]] static this_type call_fma(const this_type &t, const this_type &u, const this_type &v) noexcept {
         return [&]<size_t... index>(std::index_sequence<index...>) {
             return this_type{fma(t[index], u[index], v[index])...};
         }(std::make_index_sequence<N>());
