@@ -348,17 +348,11 @@ struct Vector_ : public detail::VectorStorage<T, N> {
 #undef OC_MAKE_VECTOR_LOGIC_OPERATOR
 
 #define OC_MAKE_VECTOR_UNARY_FUNC(func)                                            \
-private:                                                                           \
-    [[nodiscard]] static decltype(auto) func##_impl(const this_type &v) noexcept { \
+    [[nodiscard]] static decltype(auto) call_##func(const this_type &v) noexcept { \
         using ret_type = Vector_<decltype(func(v.x)), this_type::dimension>;       \
         return [&]<size_t... index>(std::index_sequence<index...>) {               \
             return ret_type{func(v.at(index))...};                                 \
         }(std::make_index_sequence<N>());                                          \
-    }                                                                              \
-                                                                                   \
-public:                                                                            \
-    [[nodiscard]] friend decltype(auto) func(const this_type &v) noexcept {        \
-        return this_type::func##_impl(v);                                          \
     }
 
     OC_MAKE_VECTOR_UNARY_FUNC(rcp)
@@ -396,7 +390,7 @@ public:                                                                         
 #undef OC_MAKE_VECTOR_UNARY_FUNC
 
 #define OC_MAKE_VECTOR_BINARY_FUNC(func)                                               \
-    OC_NODISCARD static decltype(auto) func##_impl(const this_type &v,                 \
+    OC_NODISCARD static decltype(auto) call_##func(const this_type &v,                 \
                                                    const this_type &u) noexcept {      \
         using ret_type = Vector_<std::remove_cvref_t<decltype(func(v.x, u.x))>,        \
                                  this_type::dimension>;                                \
@@ -404,28 +398,68 @@ public:                                                                         
             return ret_type{func(v[index], u[index])...};                              \
         }(std::make_index_sequence<N>());                                              \
     }                                                                                  \
-    OC_NODISCARD static decltype(auto) func##_impl(const this_type &v, T u) noexcept { \
-        return func##_impl(v, this_type{u});                                           \
+    OC_NODISCARD static decltype(auto) call_##func(const this_type &v, T u) noexcept { \
+        return call_##func(v, this_type{u});                                           \
     }                                                                                  \
-    OC_NODISCARD static decltype(auto) func##_impl(const T &v, this_type u) noexcept { \
-        return func##_impl(this_type{v}, u);                                           \
+    OC_NODISCARD static decltype(auto) call_##func(const T &v, this_type u) noexcept { \
+        return call_##func(this_type{v}, u);                                           \
     }
-
     OC_MAKE_VECTOR_BINARY_FUNC(max)
     OC_MAKE_VECTOR_BINARY_FUNC(min)
     OC_MAKE_VECTOR_BINARY_FUNC(pow)
     OC_MAKE_VECTOR_BINARY_FUNC(atan2)
-
 #undef OC_MAKE_VECTOR_BINARY_FUNC
 
 #undef OC_APPLY_INDEX_SEQUENCE
 };
 
+
+#define OC_MAKE_VECTOR_UNARY_FUNC(func)                      \
+    template<typename T>                                     \
+    requires is_vector_or_swizzle_v<T>                       \
+    [[nodiscard]] decltype(auto) func(const T &v) noexcept { \
+        return deduce_vec_t<T>::call_##func(v);              \
+    }
+
+OC_MAKE_VECTOR_UNARY_FUNC(rcp)
+OC_MAKE_VECTOR_UNARY_FUNC(abs)
+OC_MAKE_VECTOR_UNARY_FUNC(sqrt)
+OC_MAKE_VECTOR_UNARY_FUNC(sqr)
+OC_MAKE_VECTOR_UNARY_FUNC(sign)
+OC_MAKE_VECTOR_UNARY_FUNC(cos)
+OC_MAKE_VECTOR_UNARY_FUNC(sin)
+OC_MAKE_VECTOR_UNARY_FUNC(tan)
+OC_MAKE_VECTOR_UNARY_FUNC(cosh)
+OC_MAKE_VECTOR_UNARY_FUNC(sinh)
+OC_MAKE_VECTOR_UNARY_FUNC(tanh)
+OC_MAKE_VECTOR_UNARY_FUNC(log)
+OC_MAKE_VECTOR_UNARY_FUNC(log2)
+OC_MAKE_VECTOR_UNARY_FUNC(log10)
+OC_MAKE_VECTOR_UNARY_FUNC(exp)
+OC_MAKE_VECTOR_UNARY_FUNC(exp2)
+OC_MAKE_VECTOR_UNARY_FUNC(asin)
+OC_MAKE_VECTOR_UNARY_FUNC(acos)
+OC_MAKE_VECTOR_UNARY_FUNC(atan)
+OC_MAKE_VECTOR_UNARY_FUNC(asinh)
+OC_MAKE_VECTOR_UNARY_FUNC(acosh)
+OC_MAKE_VECTOR_UNARY_FUNC(atanh)
+OC_MAKE_VECTOR_UNARY_FUNC(floor)
+OC_MAKE_VECTOR_UNARY_FUNC(ceil)
+OC_MAKE_VECTOR_UNARY_FUNC(degrees)
+OC_MAKE_VECTOR_UNARY_FUNC(radians)
+OC_MAKE_VECTOR_UNARY_FUNC(round)
+OC_MAKE_VECTOR_UNARY_FUNC(isnan)
+OC_MAKE_VECTOR_UNARY_FUNC(isinf)
+OC_MAKE_VECTOR_UNARY_FUNC(fract)
+OC_MAKE_VECTOR_UNARY_FUNC(copysign)
+
+#undef OC_MAKE_VECTOR_UNARY_FUNC
+
 #define OC_MAKE_VECTOR_BINARY_FUNC(func)                                \
     template<typename T, typename U>                                    \
     OC_NODISCARD decltype(auto) func(const T &t, const U &u) noexcept { \
         using vec_type = op_vector_t<T, U>;                             \
-        return vec_type::func##_impl(t, u);                             \
+        return vec_type::call_##func(t, u);                             \
     }
 
 OC_MAKE_VECTOR_BINARY_FUNC(pow)
