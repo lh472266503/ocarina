@@ -126,37 +126,15 @@ template<typename T>
     return asin(clamp(t, -1.f, 1.f));
 }
 
-template<typename T, size_t N>
-[[nodiscard]] constexpr auto length(Vector<T, N> u) noexcept {
-    return sqrt(dot(u, u));
-}
-
-template<typename T, size_t N>
-[[nodiscard]] constexpr auto length_squared(Vector<T, N> u) noexcept {
-    return dot(u, u);
-}
-
-template<typename T, size_t N>
-[[nodiscard]] constexpr auto normalize(Vector<T, N> u) noexcept {
-    return u * (1.0f / length(u));
-}
-
-template<typename T, size_t N>
-[[nodiscard]] constexpr auto distance(Vector<T, N> u, Vector<T, N> v) noexcept {
-    return length(u - v);
-}
-
-template<typename T, size_t N>
-[[nodiscard]] constexpr auto distance_squared(Vector<T, N> u, Vector<T, N> v) noexcept {
-    return length_squared(u - v);
-}
-
-template<typename T>
-[[nodiscard]] constexpr auto cross(Vector<T, 3> u, Vector<T, 3> v) noexcept {
-    return Vector<T, 3>(u.y * v.z - v.y * u.z,
-                        u.z * v.x - v.z * u.x,
-                        u.x * v.y - v.x * u.y);
-}
+//template<typename T, size_t N>
+//[[nodiscard]] constexpr auto distance(Vector<T, N> u, Vector<T, N> v) noexcept {
+//    return length(u - v);
+//}
+//
+//template<typename T, size_t N>
+//[[nodiscard]] constexpr auto distance_squared(Vector<T, N> u, Vector<T, N> v) noexcept {
+//    return length_squared(u - v);
+//}
 
 template<typename T, size_t N>
 [[nodiscard]] auto triangle_area(Vector<T, N> p0, Vector<T, N> p1, Vector<T, N> p2) noexcept {

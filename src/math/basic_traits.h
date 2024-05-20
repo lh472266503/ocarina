@@ -134,10 +134,7 @@ using is_swizzle = detail::is_swizzle_impl<std::remove_cvref_t<T>>;
 OC_DEFINE_TEMPLATE_VALUE(is_swizzle)
 
 template<typename T, size_t N>
-struct Vector_;
-
-template<typename T, size_t N>
-using Vector = Vector_<T, N>;
+struct Vector;
 
 namespace detail {
 

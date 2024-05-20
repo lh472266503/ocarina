@@ -216,14 +216,14 @@ public:
 }// namespace detail
 
 template<typename T, size_t N>
-struct Vector_ : public detail::VectorStorage<T, N> {
+struct Vector : public detail::VectorStorage<T, N> {
     using detail::VectorStorage<T, N>::VectorStorage;
-    using this_type = Vector_<T, N>;
+    using this_type = Vector<T, N>;
     using vec_type = this_type;
     using scalar_type = T;
     static constexpr size_t dimension = N;
     template<typename U>
-    explicit constexpr Vector_(U s) noexcept : Vector_(static_cast<T>(s)) {}
+    explicit constexpr Vector(U s) noexcept : Vector(static_cast<T>(s)) {}
     [[nodiscard]] constexpr T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
     [[nodiscard]] constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
     [[nodiscard]] constexpr T &at(size_t index) noexcept { return (&(this->x))[index]; }
@@ -231,7 +231,7 @@ struct Vector_ : public detail::VectorStorage<T, N> {
 
 #define OC_MAKE_UNARY_OP(op)                                                  \
     [[nodiscard]] friend constexpr auto operator op(this_type val) noexcept { \
-        using R = Vector_<decltype(op T{}), N>;                               \
+        using R = Vector<decltype(op T{}), N>;                                \
         return [&]<size_t... index>(std::index_sequence<index...>) {          \
             return R{op val.at(index)...};                                    \
         }(std::make_index_sequence<N>());                                     \
@@ -246,10 +246,10 @@ struct Vector_ : public detail::VectorStorage<T, N> {
     template<typename U>                                                                      \
     requires __VA_ARGS__                                                                      \
     [[nodiscard]] friend constexpr auto operator op(this_type lhs,                            \
-                                                    Vector_<U, N> rhs) noexcept {             \
+                                                    Vector<U, N> rhs) noexcept {              \
         using ret_type = decltype(T {} op U{});                                               \
         return [&]<size_t... index>(std::index_sequence<index...>) {                          \
-            return Vector_<ret_type, N>{(lhs[index] op rhs[index])...};                       \
+            return Vector<ret_type, N>{(lhs[index] op rhs[index])...};                        \
         }(std::make_index_sequence<N>());                                                     \
     }                                                                                         \
     template<typename U, size_t M, size_t... Indices>                                         \
@@ -267,23 +267,23 @@ struct Vector_ : public detail::VectorStorage<T, N> {
     template<typename U>                                                                      \
     requires __VA_ARGS__                                                                      \
     [[nodiscard]] friend constexpr auto operator op(this_type lhs, U rhs) noexcept {          \
-        return lhs op Vector_<U, N>{rhs};                                                     \
+        return lhs op Vector<U, N>{rhs};                                                      \
     }                                                                                         \
     template<typename U>                                                                      \
     requires __VA_ARGS__                                                                      \
-    [[nodiscard]] friend constexpr auto operator op(T lhs, Vector_<U, N> rhs) noexcept {      \
+    [[nodiscard]] friend constexpr auto operator op(T lhs, Vector<U, N> rhs) noexcept {       \
         return this_type{lhs} op rhs;                                                         \
     }                                                                                         \
     template<typename U>                                                                      \
     requires __VA_ARGS__                                                                      \
-    constexpr friend auto &operator op##=(this_type & lhs, Vector_<U, N> rhs) noexcept {      \
+    constexpr friend auto &operator op##=(this_type & lhs, Vector<U, N> rhs) noexcept {       \
         lhs = lhs op rhs;                                                                     \
         return lhs;                                                                           \
     }                                                                                         \
     template<typename U>                                                                      \
     requires __VA_ARGS__                                                                      \
     constexpr friend decltype(auto) operator op##=(this_type &lhs, U rhs) noexcept {          \
-        return (lhs op## = Vector_<U, N>{rhs});                                               \
+        return (lhs op## = Vector<U, N>{rhs});                                                \
     }
 
     OC_MAKE_VECTOR_BINARY_OPERATOR(+, ocarina::is_all_number_v<T, U>)
@@ -303,9 +303,9 @@ struct Vector_ : public detail::VectorStorage<T, N> {
     template<typename U>                                                                      \
     requires __VA_ARGS__                                                                      \
     [[nodiscard]] friend constexpr auto operator op(this_type lhs,                            \
-                                                    Vector_<U, N> rhs) noexcept {             \
+                                                    Vector<U, N> rhs) noexcept {              \
         return [&]<size_t... index>(std::index_sequence<index...>) {                          \
-            return Vector_<bool, N>{lhs[index] op rhs[index]...};                             \
+            return Vector<bool, N>{lhs[index] op rhs[index]...};                              \
         }(std::make_index_sequence<N>());                                                     \
     }                                                                                         \
     template<typename U, size_t M, size_t... Indices>                                         \
@@ -323,11 +323,11 @@ struct Vector_ : public detail::VectorStorage<T, N> {
     template<typename U>                                                                      \
     requires __VA_ARGS__                                                                      \
     [[nodiscard]] friend constexpr auto operator op(this_type lhs, U rhs) noexcept {          \
-        return lhs op Vector_<U, N>{rhs};                                                     \
+        return lhs op Vector<U, N>{rhs};                                                      \
     }                                                                                         \
     template<typename U>                                                                      \
     requires __VA_ARGS__                                                                      \
-    [[nodiscard]] friend constexpr auto operator op(T lhs, Vector_<U, N> rhs) noexcept {      \
+    [[nodiscard]] friend constexpr auto operator op(T lhs, Vector<U, N> rhs) noexcept {       \
         return this_type{lhs} op rhs;                                                         \
     }
 
@@ -344,7 +344,7 @@ struct Vector_ : public detail::VectorStorage<T, N> {
 
 #define OC_MAKE_VECTOR_UNARY_FUNC(func)                                                      \
     [[nodiscard]] static constexpr decltype(auto) call_##func(const this_type &v) noexcept { \
-        using ret_type = Vector_<decltype(func(v.x)), this_type::dimension>;                 \
+        using ret_type = Vector<decltype(func(v.x)), this_type::dimension>;                  \
         return [&]<size_t... index>(std::index_sequence<index...>) {                         \
             return ret_type{func(v.at(index))...};                                           \
         }(std::make_index_sequence<N>());                                                    \
@@ -393,7 +393,7 @@ struct Vector_ : public detail::VectorStorage<T, N> {
     }
 
     [[nodiscard]] static constexpr auto call_length(this_type u) noexcept {
-        return sqrt(call_length_squared(u, u));
+        return sqrt(call_length_squared(u));
     }
 
     [[nodiscard]] static constexpr auto call_normalize(this_type u) noexcept {
@@ -405,8 +405,8 @@ struct Vector_ : public detail::VectorStorage<T, N> {
 #define OC_MAKE_VECTOR_BINARY_FUNC(func)                                                         \
     OC_NODISCARD static constexpr decltype(auto) call_##func(const this_type &v,                 \
                                                              const this_type &u) noexcept {      \
-        using ret_type = Vector_<std::remove_cvref_t<decltype(func(v.x, u.x))>,                  \
-                                 this_type::dimension>;                                          \
+        using ret_type = Vector<std::remove_cvref_t<decltype(func(v.x, u.x))>,                   \
+                                this_type::dimension>;                                           \
         return [&]<size_t... index>(std::index_sequence<index...>) {                             \
             return ret_type{func(v[index], u[index])...};                                        \
         }(std::make_index_sequence<N>());                                                        \
@@ -421,6 +421,13 @@ struct Vector_ : public detail::VectorStorage<T, N> {
     OC_MAKE_VECTOR_BINARY_FUNC(min)
     OC_MAKE_VECTOR_BINARY_FUNC(pow)
     OC_MAKE_VECTOR_BINARY_FUNC(atan2)
+
+    [[nodiscard]] static constexpr auto call_cross(this_type u, this_type v) noexcept {
+        static_assert(N == 3);
+        return this_type(u.y * v.z - v.y * u.z,
+                         u.z * v.x - v.z * u.x,
+                         u.x * v.y - v.x * u.y);
+    }
 
     [[nodiscard]] static constexpr auto call_dot(this_type u, this_type v) noexcept {
         return [&]<size_t... index>(std::index_sequence<index...>) {
@@ -485,8 +492,9 @@ OC_MAKE_VECTOR_UNARY_FUNC(fract)
 OC_MAKE_VECTOR_UNARY_FUNC(copysign)
 
 OC_MAKE_VECTOR_UNARY_FUNC(volume)
-//OC_MAKE_VECTOR_UNARY_FUNC(length)
-//OC_MAKE_VECTOR_UNARY_FUNC(copysign)
+OC_MAKE_VECTOR_UNARY_FUNC(length)
+OC_MAKE_VECTOR_UNARY_FUNC(normalize)
+OC_MAKE_VECTOR_UNARY_FUNC(length_squared)
 
 #undef OC_MAKE_VECTOR_UNARY_FUNC
 
@@ -501,6 +509,10 @@ OC_MAKE_VECTOR_BINARY_FUNC(pow)
 OC_MAKE_VECTOR_BINARY_FUNC(min)
 OC_MAKE_VECTOR_BINARY_FUNC(max)
 OC_MAKE_VECTOR_BINARY_FUNC(atan2)
+OC_MAKE_VECTOR_BINARY_FUNC(cross)
+
+OC_MAKE_VECTOR_BINARY_FUNC(distance)
+OC_MAKE_VECTOR_BINARY_FUNC(distance_squared)
 
 #undef OC_MAKE_VECTOR_BINARY_FUNC
 
