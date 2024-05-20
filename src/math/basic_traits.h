@@ -319,9 +319,13 @@ template<typename T>
 using is_vector_or_swizzle = std::disjunction<is_vector<T>, is_swizzle<T>>;
 OC_DEFINE_TEMPLATE_VALUE(is_vector_or_swizzle)
 
-template<typename ...Ts>
+template<typename... Ts>
 using is_any_vector_or_swizzle = std::disjunction<is_vector_or_swizzle<Ts>...>;
 OC_DEFINE_TEMPLATE_VALUE_MULTI(is_any_vector_or_swizzle)
+
+template<typename... Ts>
+using is_all_vector_or_swizzle = std::conjunction<is_vector_or_swizzle<Ts>...>;
+OC_DEFINE_TEMPLATE_VALUE_MULTI(is_all_vector_or_swizzle)
 
 template<typename T, size_t N = 0u>
 constexpr auto is_vector_v = is_vector<T, N>::value;

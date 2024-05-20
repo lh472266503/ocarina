@@ -416,6 +416,12 @@ struct Vector_ : public detail::VectorStorage<T, N> {
             return ((v[index] * u[index]) + ...);
         }(std::make_index_sequence<N>());
     }
+
+    [[nodiscard]] this_type call_fma(const this_type &t, const this_type &u, const this_type &v) noexcept {
+        return [&]<size_t... index>(std::index_sequence<index...>) {
+            return this_type{fma(t[index], u[index], v[index])...};
+        }(std::make_index_sequence<N>());
+    }
 };
 
 #define OC_MAKE_VECTOR_UNARY_FUNC(func)                      \
@@ -485,6 +491,11 @@ requires is_vector_or_swizzle_v<T>
     return deduce_vec_t<T>::call_dot(t, u);
 }
 
+template<typename T, typename U, typename V>
+requires is_all_vector_or_swizzle_v<T, U, V>
+[[nodiscard]] auto fma(T t, U u, V v) noexcept {
+    return deduce_vec_t<T>::call_fma(t, u, v);
+}
 
 #define OC_MAKE_VECTOR_TYPES(T) \
     using T##2 = Vector<T, 2>;  \
