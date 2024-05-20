@@ -382,6 +382,24 @@ struct Vector_ : public detail::VectorStorage<T, N> {
     OC_MAKE_VECTOR_UNARY_FUNC(fract)
     OC_MAKE_VECTOR_UNARY_FUNC(copysign)
 
+    [[nodiscard]] static constexpr auto call_volume(this_type v) noexcept {
+        return [&]<size_t... index>(std::index_sequence<index...>) {
+            return ((v[index] * ...));
+        }(std::make_index_sequence<N>());
+    }
+
+    [[nodiscard]] static constexpr auto call_length_squared(this_type v) noexcept {
+        return call_dot(v, v);
+    }
+
+    [[nodiscard]] static constexpr auto call_length(this_type u) noexcept {
+        return sqrt(call_length_squared(u, u));
+    }
+
+    [[nodiscard]] static constexpr auto call_normalize(this_type u) noexcept {
+        return u * (1.0f / call_length(u));
+    }
+
 #undef OC_MAKE_VECTOR_UNARY_FUNC
 
 #define OC_MAKE_VECTOR_BINARY_FUNC(func)                                                         \
@@ -403,19 +421,22 @@ struct Vector_ : public detail::VectorStorage<T, N> {
     OC_MAKE_VECTOR_BINARY_FUNC(min)
     OC_MAKE_VECTOR_BINARY_FUNC(pow)
     OC_MAKE_VECTOR_BINARY_FUNC(atan2)
-#undef OC_MAKE_VECTOR_BINARY_FUNC
-
-    [[nodiscard]] static constexpr auto call_volume(this_type v) noexcept {
-        return [&]<size_t... index>(std::index_sequence<index...>) {
-            return ((v[index] * ...));
-        }(std::make_index_sequence<N>());
-    }
 
     [[nodiscard]] static constexpr auto call_dot(this_type u, this_type v) noexcept {
         return [&]<size_t... index>(std::index_sequence<index...>) {
             return ((v[index] * u[index]) + ...);
         }(std::make_index_sequence<N>());
     }
+
+    [[nodiscard]] static constexpr auto call_distance_squared(this_type u, this_type v) noexcept {
+        return call_length_squared(u - v);
+    }
+
+    [[nodiscard]] static constexpr auto call_distance(this_type u, this_type v) noexcept {
+        return call_length(u - v);
+    }
+
+#undef OC_MAKE_VECTOR_BINARY_FUNC
 
     [[nodiscard]] this_type call_fma(const this_type &t, const this_type &u, const this_type &v) noexcept {
         return [&]<size_t... index>(std::index_sequence<index...>) {
@@ -463,6 +484,10 @@ OC_MAKE_VECTOR_UNARY_FUNC(isinf)
 OC_MAKE_VECTOR_UNARY_FUNC(fract)
 OC_MAKE_VECTOR_UNARY_FUNC(copysign)
 
+OC_MAKE_VECTOR_UNARY_FUNC(volume)
+//OC_MAKE_VECTOR_UNARY_FUNC(length)
+//OC_MAKE_VECTOR_UNARY_FUNC(copysign)
+
 #undef OC_MAKE_VECTOR_UNARY_FUNC
 
 #define OC_MAKE_VECTOR_BINARY_FUNC(func)                                \
@@ -478,18 +503,6 @@ OC_MAKE_VECTOR_BINARY_FUNC(max)
 OC_MAKE_VECTOR_BINARY_FUNC(atan2)
 
 #undef OC_MAKE_VECTOR_BINARY_FUNC
-
-template<typename T>
-requires is_vector_or_swizzle_v<T>
-[[nodiscard]] constexpr auto volume(T val) noexcept {
-    return deduce_vec_t<T>::call_volume(val);
-}
-
-//template<typename T, typename U>
-//requires is_vector_or_swizzle_v<T>
-//[[nodiscard]] constexpr auto dot(T t, U u) noexcept {
-//    return deduce_vec_t<T>::call_dot(t, u);
-//}
 
 template<typename T, typename U, typename V>
 requires is_all_vector_or_swizzle_v<T, U, V>

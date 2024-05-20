@@ -264,7 +264,7 @@ void test_lambda(Device &device, Stream &stream) {
 
 //    float fe= dot(f.xxx_(), f.zww_());
 
-    auto bnan = ocarina::isinf(f.zyx_());
+    auto bnan = ocarina::volume(f.zyx_());
 
 //    max(fe, fe);
 
