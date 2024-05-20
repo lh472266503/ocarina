@@ -131,6 +131,10 @@ struct dsl_impl {
     using type = Var<T>;
 };
 
+template<>
+struct dsl_impl<void> {
+    using type = void;
+};
 
 template<typename T>
 struct dsl_impl<vector<T>> {
