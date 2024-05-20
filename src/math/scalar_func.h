@@ -54,6 +54,7 @@ requires ocarina::is_scalar_v<T>
 }
 
 template<typename T, typename F>
+requires (type_dimension_v<T> == type_dimension_v<F>)
 [[nodiscard]] constexpr auto select(bool pred, T &&t, F &&f) noexcept {
     return pred ? t : f;
 }

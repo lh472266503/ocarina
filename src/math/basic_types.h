@@ -280,9 +280,7 @@ struct Vector_ : public detail::VectorStorage<T, N> {
     template<typename U>                                                                      \
     requires __VA_ARGS__                                                                      \
     constexpr friend auto &operator op##=(this_type & lhs, Vector_<U, N> rhs) noexcept {      \
-        [&]<size_t... index>(std::index_sequence<index...>) {                                 \
-            ((lhs.at(index) op## = rhs.at(index)), ...);                                      \
-        }(std::make_index_sequence<N>());                                                     \
+        lhs = lhs op rhs;                                                                     \
         return lhs;                                                                           \
     }                                                                                         \
     template<typename U>                                                                      \
@@ -412,7 +410,6 @@ struct Vector_ : public detail::VectorStorage<T, N> {
 
 #undef OC_APPLY_INDEX_SEQUENCE
 };
-
 
 #define OC_MAKE_VECTOR_UNARY_FUNC(func)                      \
     template<typename T>                                     \
