@@ -60,20 +60,58 @@ struct Var : public Computable<T> {
     void operator=(const Var &other) { ocarina::detail::assign(*this, other); }
     OC_MAKE_GET_PROXY
 
-#define OC_MAKE_VAR_LOGIC_FUNC(func, tag)                                           \
-    template<typename U>                                                            \
-    requires is_bool_vector_expr_v<U>                                               \
-    [[nodiscard]] static auto call_##func(const U &val) noexcept {                  \
+#define OC_MAKE_VAR_UNARY_FUNC(func, tag)                                           \
+    [[nodiscard]] static auto call_##func(const dsl_type &val) noexcept {           \
         auto expr = Function::current()->call_builtin(Type::of<bool>(),             \
                                                       CallOp::tag, {OC_EXPR(val)}); \
         return eval<bool>(expr);                                                    \
     }
 
-    OC_MAKE_VAR_LOGIC_FUNC(all, ALL)
-    OC_MAKE_VAR_LOGIC_FUNC(any, ANY)
-    OC_MAKE_VAR_LOGIC_FUNC(none, NONE)
+    OC_MAKE_VAR_UNARY_FUNC(all, ALL)
+    OC_MAKE_VAR_UNARY_FUNC(any, ANY)
+    OC_MAKE_VAR_UNARY_FUNC(none, NONE)
+
+    OC_MAKE_VAR_UNARY_FUNC(rcp, RCP)
+    OC_MAKE_VAR_UNARY_FUNC(abs, ABS)
+    OC_MAKE_VAR_UNARY_FUNC(sqrt, SQRT)
+    OC_MAKE_VAR_UNARY_FUNC(sqr, SQR)
+    OC_MAKE_VAR_UNARY_FUNC(exp, EXP)
+    OC_MAKE_VAR_UNARY_FUNC(exp2, EXP2)
+    OC_MAKE_VAR_UNARY_FUNC(exp10, EXP10)
+    OC_MAKE_VAR_UNARY_FUNC(log, LOG)
+    OC_MAKE_VAR_UNARY_FUNC(log2, LOG2)
+    OC_MAKE_VAR_UNARY_FUNC(log10, LOG10)
+    OC_MAKE_VAR_UNARY_FUNC(cos, COS)
+    OC_MAKE_VAR_UNARY_FUNC(sin, SIN)
+    OC_MAKE_VAR_UNARY_FUNC(tan, TAN)
+    OC_MAKE_VAR_UNARY_FUNC(cosh, COSH)
+    OC_MAKE_VAR_UNARY_FUNC(sinh, SINH)
+    OC_MAKE_VAR_UNARY_FUNC(tanh, TANH)
+    OC_MAKE_VAR_UNARY_FUNC(acos, ACOS)
+    OC_MAKE_VAR_UNARY_FUNC(asin, ASIN)
+    OC_MAKE_VAR_UNARY_FUNC(atan, ATAN)
+    OC_MAKE_VAR_UNARY_FUNC(asinh, ASINH)
+    OC_MAKE_VAR_UNARY_FUNC(acosh, ACOSH)
+    OC_MAKE_VAR_UNARY_FUNC(atanh, ATANH)
+    OC_MAKE_VAR_UNARY_FUNC(degrees, DEGREES)
+    OC_MAKE_VAR_UNARY_FUNC(radians, RADIANS)
+    OC_MAKE_VAR_UNARY_FUNC(ceil, CEIL)
+    OC_MAKE_VAR_UNARY_FUNC(round, ROUND)
+    OC_MAKE_VAR_UNARY_FUNC(floor, FLOOR)
+    OC_MAKE_VAR_UNARY_FUNC(rsqrt, RSQRT)
+    OC_MAKE_VAR_UNARY_FUNC(isinf, IS_INF)
+    OC_MAKE_VAR_UNARY_FUNC(isnan, IS_NAN)
+    OC_MAKE_VAR_UNARY_FUNC(fract, FRACT)
+    OC_MAKE_VAR_UNARY_FUNC(saturate, SATURATE)
+    OC_MAKE_VAR_UNARY_FUNC(copysign, COPYSIGN)
+    OC_MAKE_VAR_UNARY_FUNC(normalize, NORMALIZE)
+    OC_MAKE_VAR_UNARY_FUNC(length, LENGTH)
+    OC_MAKE_VAR_UNARY_FUNC(length_squared, LENGTH_SQUARED)
 
 #undef OC_MAKE_VAR_LOGIC_FUNC
+
+//    template<typename U>
+//    OC_NODISCARD static auto call_max()
 };
 
 template<typename T>

@@ -142,6 +142,12 @@ requires is_all_scalar_v<T>
     return select(pred, t, arr);
 }
 
+/*
+ * 1.一元函数，标量，向量，swizzle
+ * 2.二元函数，向量跟标量，向量，要么维度相同，要么标量跟向量
+ * 3.三元函数，向量跟标量，向量，要么维度相同，要么标量跟向量，只可能存在两个维度
+ */
+
 #define OC_MAKE_TRIPLE_FUNC(func, tag)                                                                            \
     template<typename T, typename A, typename B>                                                                  \
     requires(any_dsl_v<T, A, B> && requires {                                                                     \

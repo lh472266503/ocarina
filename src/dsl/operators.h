@@ -195,7 +195,7 @@ OC_MAKE_SWIZZLE_BINARY_OP(>=)
                                                                            \
     template<typename Lhs, typename T, size_t N, size_t... Indices>        \
     requires ocarina::is_dsl_v<Lhs>                                        \
-    auto operator op##=(Lhs &lhs,                                          \
+    void operator op##=(Lhs &lhs,                                          \
                         ocarina::Swizzle<T, N, Indices...> rhs) noexcept { \
         lhs op## = rhs.to_vec();                                           \
         return lhs;                                                        \
