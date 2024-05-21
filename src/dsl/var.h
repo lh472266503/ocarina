@@ -63,9 +63,10 @@ struct Var : public Computable<T> {
 
 #define OC_MAKE_VAR_UNARY_FUNC(func, tag)                                           \
     [[nodiscard]] static auto call_##func(const dsl_type &val) noexcept {           \
-        auto expr = Function::current()->call_builtin(Type::of<bool>(),             \
+        using ret_type = decltype(func(std::declval<T>()));                         \
+        auto expr = Function::current()->call_builtin(Type::of<ret_type>(),         \
                                                       CallOp::tag, {OC_EXPR(val)}); \
-        return eval<bool>(expr);                                                    \
+        return eval<ret_type>(expr);                                                \
     }
 
     OC_MAKE_VAR_UNARY_FUNC(all, ALL)
@@ -118,22 +119,44 @@ struct Var : public Computable<T> {
         auto expr = Function::current()->call_builtin(Type::of<T>(),                 \
                                                       CallOp::tag,                   \
                                                       {OC_EXPR(lhs), OC_EXPR(rhs)}); \
-        return eval<expr_value_t<ret_type>>(expr);                                   \
+        return eval<ret_type>(expr);                                                 \
     }
 
     OC_MAKE_VAR_BINARY_FUNC(max, MAX)
-    OC_MAKE_VAR_BINARY_FUNC(min, MAX)
+    OC_MAKE_VAR_BINARY_FUNC(min, MIN)
     OC_MAKE_VAR_BINARY_FUNC(pow, POW)
     OC_MAKE_VAR_BINARY_FUNC(fmod, FMOD)
     OC_MAKE_VAR_BINARY_FUNC(mod, MOD)
     OC_MAKE_VAR_BINARY_FUNC(copysign, COPYSIGN)
     OC_MAKE_VAR_BINARY_FUNC(atan2, ATAN2)
 
+    OC_MAKE_VAR_BINARY_FUNC(cross, CROSS)
     OC_MAKE_VAR_BINARY_FUNC(dot, DOT)
     OC_MAKE_VAR_BINARY_FUNC(distance, DISTANCE)
     OC_MAKE_VAR_BINARY_FUNC(distance_squared, DISTANCE_SQUARED)
 
 #undef OC_MAKE_VAR_BINARY_FUNC
+
+#define OC_MAKE_VAR_TRIPLE_FUNC(func, tag)                             \
+    OC_NODISCARD static auto call_##func(const dsl_type &a,            \
+                                         const dsl_type &b,            \
+                                         const dsl_type &c) noexcept { \
+        using ret_type = decltype(func(std::declval<T>(),              \
+                                       std::declval<T>(),              \
+                                       std::declval<T>()));            \
+        auto expr = Function::current()->call_builtin(Type::of<T>(),   \
+                                                      CallOp::tag,     \
+                                                      {OC_EXPR(a),     \
+                                                       OC_EXPR(b),     \
+                                                       OC_EXPR(c)});   \
+        return eval<ret_type>(expr);                                   \
+    }
+
+    OC_MAKE_VAR_TRIPLE_FUNC(clamp, CLAMP)
+    OC_MAKE_VAR_TRIPLE_FUNC(lerp, LERP)
+    OC_MAKE_VAR_TRIPLE_FUNC(fma, FMA)
+
+#undef OC_MAKE_VAR_TRIPLE_FUNC
 };
 
 template<typename T>
