@@ -105,7 +105,7 @@ struct Var : public Computable<T> {
     OC_MAKE_VAR_UNARY_FUNC(isnan, IS_NAN)
     OC_MAKE_VAR_UNARY_FUNC(fract, FRACT)
     OC_MAKE_VAR_UNARY_FUNC(saturate, SATURATE)
-    OC_MAKE_VAR_UNARY_FUNC(copysign, COPYSIGN)
+    OC_MAKE_VAR_UNARY_FUNC(sign, SIGN)
     OC_MAKE_VAR_UNARY_FUNC(normalize, NORMALIZE)
     OC_MAKE_VAR_UNARY_FUNC(length, LENGTH)
     OC_MAKE_VAR_UNARY_FUNC(length_squared, LENGTH_SQUARED)

@@ -110,6 +110,43 @@ OC_DEFINE_TEMPLATE_TYPE(deduce_var)
 OC_MAKE_DSL_UNARY_FUNC(all)
 OC_MAKE_DSL_UNARY_FUNC(any)
 OC_MAKE_DSL_UNARY_FUNC(none)
+OC_MAKE_DSL_UNARY_FUNC(rcp)
+OC_MAKE_DSL_UNARY_FUNC(abs)
+OC_MAKE_DSL_UNARY_FUNC(sign)
+OC_MAKE_DSL_UNARY_FUNC(sqr)
+OC_MAKE_DSL_UNARY_FUNC(normalize)
+OC_MAKE_DSL_UNARY_FUNC(length)
+OC_MAKE_DSL_UNARY_FUNC(length_squared)
+
+// OC_MAKE_FLOATING_BUILTIN_FUNC(exp, EXP)
+// OC_MAKE_FLOATING_BUILTIN_FUNC(exp2, EXP2)
+// OC_MAKE_FLOATING_BUILTIN_FUNC(exp10, EXP10)
+// OC_MAKE_FLOATING_BUILTIN_FUNC(log, LOG)
+// OC_MAKE_FLOATING_BUILTIN_FUNC(log2, LOG2)
+// OC_MAKE_FLOATING_BUILTIN_FUNC(log10, LOG10)
+// OC_MAKE_FLOATING_BUILTIN_FUNC(cos, COS)
+// OC_MAKE_FLOATING_BUILTIN_FUNC(sin, SIN)
+// OC_MAKE_FLOATING_BUILTIN_FUNC(tan, TAN)
+// OC_MAKE_FLOATING_BUILTIN_FUNC(cosh, COSH)
+// OC_MAKE_FLOATING_BUILTIN_FUNC(sinh, SINH)
+// OC_MAKE_FLOATING_BUILTIN_FUNC(tanh, TANH)
+// OC_MAKE_FLOATING_BUILTIN_FUNC(acos, ACOS)
+// OC_MAKE_FLOATING_BUILTIN_FUNC(asin, ASIN)
+// OC_MAKE_FLOATING_BUILTIN_FUNC(atan, ATAN)
+// OC_MAKE_FLOATING_BUILTIN_FUNC(asinh, ASINH)
+// OC_MAKE_FLOATING_BUILTIN_FUNC(acosh, ACOSH)
+// OC_MAKE_FLOATING_BUILTIN_FUNC(atanh, ATANH)
+// OC_MAKE_FLOATING_BUILTIN_FUNC(degrees, DEGREES)
+// OC_MAKE_FLOATING_BUILTIN_FUNC(radians, RADIANS)
+// OC_MAKE_FLOATING_BUILTIN_FUNC(ceil, CEIL)
+// OC_MAKE_FLOATING_BUILTIN_FUNC(round, ROUND)
+// OC_MAKE_FLOATING_BUILTIN_FUNC(floor, FLOOR)
+// OC_MAKE_FLOATING_BUILTIN_FUNC(sqrt, SQRT)
+// OC_MAKE_FLOATING_BUILTIN_FUNC(rsqrt, RSQRT)
+// OC_MAKE_FLOATING_BUILTIN_FUNC(isinf, IS_INF)
+// OC_MAKE_FLOATING_BUILTIN_FUNC(isnan, IS_NAN)
+// OC_MAKE_FLOATING_BUILTIN_FUNC(fract, FRACT)
+// OC_MAKE_FLOATING_BUILTIN_FUNC(saturate, SATURATE)
 
 #undef OC_MAKE_DSL_UNARY_FUNC
 
@@ -210,38 +247,6 @@ OC_MAKE_TRIPLE_FUNC(fma, FMA)
 
 #undef OC_MAKE_TRIPLE_FUNC
 
-template<typename T>
-requires(is_dsl_v<T> && is_signed_element_v<expr_value_t<T>>)
-OC_NODISCARD auto abs(const T &t) noexcept {
-    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
-                                                  CallOp::ABS, {OC_EXPR(t)});
-    return eval<expr_value_t<T>>(expr);
-}
-
-template<typename T>
-requires(is_dsl_v<T> && is_signed_element_v<expr_value_t<T>>)
-OC_NODISCARD auto sign(const T &t) noexcept {
-    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
-                                                  CallOp::SIGN, {OC_EXPR(t)});
-    return eval<expr_value_t<T>>(expr);
-}
-
-template<typename T>
-requires(is_dsl_v<T>)
-OC_NODISCARD auto rcp(const T &t) noexcept {
-    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
-                                                  CallOp::RCP, {OC_EXPR(t)});
-    return eval<expr_value_t<T>>(expr);
-}
-
-template<typename T>
-requires(is_dsl_v<T>)
-OC_NODISCARD auto sqr(const T &t) noexcept {
-    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
-                                                  CallOp::SQR, {OC_EXPR(t)});
-    return eval<expr_value_t<T>>(expr);
-}
-
 #define OC_MAKE_ARRAY_UNARY_FUNC(func, tag)                                                                        \
     template<typename T>                                                                                           \
     requires is_basic_v<T>                                                                                         \
@@ -256,23 +261,6 @@ OC_MAKE_ARRAY_UNARY_FUNC(sign, SIGN)
 OC_MAKE_ARRAY_UNARY_FUNC(sqr, SQR)
 
 #undef OC_MAKE_ARRAY_UNARY_FUNC
-
-#define OC_MAKE_UNARY_VECTOR_FUNC(func, tag)                                       \
-    template<typename T>                                                           \
-    requires(is_dsl_v<T> && is_vector_v<expr_value_t<T>>)                          \
-    OC_NODISCARD auto                                                              \
-    func(const T &t) noexcept {                                                    \
-        using ret_type = decltype(func(std::declval<expr_value_t<T>>()));          \
-        auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(), \
-                                                      CallOp::tag, {OC_EXPR(t)});  \
-        return eval<ret_type>(expr);                                               \
-    }
-
-OC_MAKE_UNARY_VECTOR_FUNC(normalize, NORMALIZE)
-OC_MAKE_UNARY_VECTOR_FUNC(length, LENGTH)
-OC_MAKE_UNARY_VECTOR_FUNC(length_squared, LENGTH_SQUARED)
-
-#undef OC_MAKE_UNARY_VECTOR_FUNC
 
 #define OC_MAKE_MATRIX_FUNC(func, tag)                                                    \
     template<typename T>                                                                  \
