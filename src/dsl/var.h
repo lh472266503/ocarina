@@ -24,6 +24,7 @@ template<typename T>
 struct Var : public Computable<T> {
     using this_type = T;
     using Super = Computable<T>;
+    using Computable<T>::Computable;
     using dsl_type = Var<T>;
     explicit Var(const ocarina::Expression *expression) noexcept
         : ocarina::detail::Computable<this_type>(expression) {}
