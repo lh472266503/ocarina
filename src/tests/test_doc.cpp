@@ -246,7 +246,7 @@ void test_lambda(Device &device, Stream &stream) {
 
     f3.xy_() += f2;
 
-    auto f34 = make_float2(f3.xy());
+    auto f34 = make_float2(f3.xy_());
 
     _bstr_t _bstr;
 ////    float3 aa = f3.xyy_() + f3.xyy_();

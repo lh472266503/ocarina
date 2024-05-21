@@ -594,6 +594,11 @@ OC_MAKE_SWIZZLE_LOGIC_FUNC(none)
             static_cast<type>(v.x),                                                                                          \
             static_cast<type>(v.y));                                                                                         \
     }                                                                                                                        \
+    template<typename T, size_t N, size_t... Indices>                                                                        \
+    requires(sizeof...(Indices) >= 2)                                                                                        \
+    [[nodiscard]] constexpr auto make_##type##2(ocarina::Swizzle<T, N, Indices...> v) noexcept {                             \
+        return make_##type##2(v.to_vec());                                                                                   \
+    }                                                                                                                        \
     template<typename T, size_t N>                                                                                           \
     requires(N >= 2)                                                                                                         \
     [[nodiscard]] constexpr auto make_##type##2(ocarina::array<T, N> v) noexcept {                                           \
@@ -613,6 +618,11 @@ OC_MAKE_SWIZZLE_LOGIC_FUNC(none)
             static_cast<type>(v.x),                                                                                          \
             static_cast<type>(v.y),                                                                                          \
             static_cast<type>(v.z));                                                                                         \
+    }                                                                                                                        \
+    template<typename T, size_t N, size_t... Indices>                                                                        \
+    requires(sizeof...(Indices) >= 3)                                                                                        \
+    [[nodiscard]] constexpr auto make_##type##3(ocarina::Swizzle<T, N, Indices...> v) noexcept {                             \
+        return make_##type##3(v.to_vec());                                                                                   \
     }                                                                                                                        \
     template<typename T, size_t N>                                                                                           \
     requires(N >= 3)                                                                                                         \
@@ -636,6 +646,11 @@ OC_MAKE_SWIZZLE_LOGIC_FUNC(none)
             static_cast<type>(v.y),                                                                                          \
             static_cast<type>(v.z),                                                                                          \
             static_cast<type>(v.w));                                                                                         \
+    }                                                                                                                        \
+    template<typename T, size_t N, size_t... Indices>                                                                        \
+    requires(sizeof...(Indices) >= 4)                                                                                        \
+    [[nodiscard]] constexpr auto make_##type##4(ocarina::Swizzle<T, N, Indices...> v) noexcept {                             \
+        return make_##type##4(v.to_vec());                                                                                   \
     }                                                                                                                        \
     template<typename T, size_t N>                                                                                           \
     requires(N == 4)                                                                                                         \
