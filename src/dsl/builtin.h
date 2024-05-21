@@ -68,24 +68,50 @@ struct match_dsl_unary_func_impl<Swizzle<T, N, Indices...>> : std::true_type {};
 
 template<typename T>
 using match_dsl_unary_func = detail::match_dsl_unary_func_impl<std::remove_cvref_t<T>>;
-
 OC_DEFINE_TEMPLATE_VALUE(match_dsl_unary_func)
 
-#define OC_MAKE_LOGIC_FUNC(func, tag)                                             \
-    template<typename T>                                                          \
-    requires is_bool_vector_expr_v<T>                                             \
-    OC_NODISCARD auto                                                             \
-    func(const T &t) noexcept {                                                   \
-        auto expr = Function::current()->call_builtin(Type::of<bool>(),           \
-                                                      CallOp::tag, {OC_EXPR(t)}); \
-        return eval<bool>(expr);                                                  \
+namespace detail {
+template<typename T>
+struct deduce_var_impl {};
+
+template<typename T>
+struct deduce_var_impl<Computable<T>> {
+    using type = Var<T>;
+};
+
+template<typename T>
+struct deduce_var_impl<Expr<T>> {
+    using type = Var<T>;
+};
+
+template<typename T>
+struct deduce_var_impl<Var<T>> {
+    using type = Var<T>;
+};
+
+template<typename T, size_t N, size_t... Indices>
+struct deduce_var_impl<Swizzle<Var<T>, N, Indices...>> {
+    using type = typename Swizzle<Var<T>, N, Indices...>::vec_type;
+};
+
+}// namespace detail
+
+template<typename T>
+using deduce_var = detail::deduce_var_impl<std::remove_cvref_t<T>>;
+OC_DEFINE_TEMPLATE_TYPE(deduce_var)
+
+#define OC_MAKE_DSL_UNARY_FUNC(func)                \
+    template<typename T>                            \
+    requires match_dsl_unary_func_v<T>              \
+    OC_NODISCARD auto func(const T &arg) noexcept { \
+        return deduce_var_t<T>::call_##func(arg);   \
     }
 
-OC_MAKE_LOGIC_FUNC(all, ALL)
-OC_MAKE_LOGIC_FUNC(any, ANY)
-OC_MAKE_LOGIC_FUNC(none, NONE)
+OC_MAKE_DSL_UNARY_FUNC(all)
+OC_MAKE_DSL_UNARY_FUNC(any)
+OC_MAKE_DSL_UNARY_FUNC(none)
 
-#undef OC_MAKE_LOGIC_FUNC
+#undef OC_MAKE_DSL_UNARY_FUNC
 
 /// used for dsl scalar vector or matrix
 template<typename U, typename T, typename F>

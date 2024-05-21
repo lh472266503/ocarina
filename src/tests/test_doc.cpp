@@ -274,7 +274,7 @@ void test_lambda(Device &device, Stream &stream) {
 
     auto fn = select(make_bool4(1,0,1,0), f4, f);
 
-    int aaa = 0;
+    bool aaa = match_dsl_unary_func_v<decltype(f.xyz_())>;
 
 //    auto inv = int4::rcp_impl(f4);
 //    auto ab = float4::abs_impl(make_float4(-1).xxxx_());
@@ -307,7 +307,7 @@ void test_lambda(Device &device, Stream &stream) {
         aa = aa.zxx_();
         $info("{} {} {}  ", aa);
         auto at = aa >= aa.yyy_();
-        $info("{} {} {}  {}  ", make_uint3(at), none(at).cast<int>());
+        $info("{} {} {}  {}  ", make_uint3(at), none(at.xyz_()).cast<int>());
 //        Float3 aac = 19.f;
 
         int fdgsi = 0;
