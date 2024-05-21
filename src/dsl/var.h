@@ -110,8 +110,29 @@ struct Var : public Computable<T> {
 
 #undef OC_MAKE_VAR_LOGIC_FUNC
 
-//    template<typename U>
-//    OC_NODISCARD static auto call_max()
+#define OC_MAKE_VAR_BINARY_FUNC(func, tag)                                           \
+    OC_NODISCARD static auto call_##func(const dsl_type &lhs,                        \
+                                         const dsl_type &rhs) noexcept {             \
+        using ret_type = decltype(func(std::declval<T>(), std::declval<T>()));       \
+        auto expr = Function::current()->call_builtin(Type::of<T>(),                 \
+                                                      CallOp::tag,                   \
+                                                      {OC_EXPR(lhs), OC_EXPR(rhs)}); \
+        return eval<expr_value_t<ret_type>>(expr);                                   \
+    }
+
+    OC_MAKE_VAR_BINARY_FUNC(max, MAX)
+    OC_MAKE_VAR_BINARY_FUNC(min, MAX)
+    OC_MAKE_VAR_BINARY_FUNC(pow, POW)
+    OC_MAKE_VAR_BINARY_FUNC(fmod, FMOD)
+    OC_MAKE_VAR_BINARY_FUNC(mod, MOD)
+    OC_MAKE_VAR_BINARY_FUNC(copysign, COPYSIGN)
+    OC_MAKE_VAR_BINARY_FUNC(atan2, ATAN2)
+
+    OC_MAKE_VAR_BINARY_FUNC(dot, DOT)
+    OC_MAKE_VAR_BINARY_FUNC(distance, DISTANCE)
+    OC_MAKE_VAR_BINARY_FUNC(distance_squared, DISTANCE_SQUARED)
+
+#undef OC_MAKE_VAR_BINARY_FUNC
 };
 
 template<typename T>
