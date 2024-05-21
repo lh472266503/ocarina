@@ -110,6 +110,10 @@ struct Var : public Computable<T> {
     OC_MAKE_VAR_UNARY_FUNC(length, LENGTH)
     OC_MAKE_VAR_UNARY_FUNC(length_squared, LENGTH_SQUARED)
 
+    OC_MAKE_VAR_UNARY_FUNC(determinant, DETERMINANT)
+    OC_MAKE_VAR_UNARY_FUNC(transpose, TRANSPOSE)
+    OC_MAKE_VAR_UNARY_FUNC(inverse, INVERSE)
+
 #undef OC_MAKE_VAR_LOGIC_FUNC
 
 #define OC_MAKE_VAR_BINARY_FUNC(func, tag)                                           \

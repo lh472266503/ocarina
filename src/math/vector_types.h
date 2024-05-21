@@ -240,6 +240,7 @@ struct Vector : public detail::VectorStorage<T, N> {
     using scalar_type = T;
     static constexpr size_t dimension = N;
     template<typename U>
+    requires is_scalar_v<U>
     explicit constexpr Vector(U s) noexcept : Vector(static_cast<T>(s)) {}
     [[nodiscard]] constexpr T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
     [[nodiscard]] constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }

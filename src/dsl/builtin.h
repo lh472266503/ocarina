@@ -155,6 +155,10 @@ OC_MAKE_DSL_UNARY_FUNC(isnan, IS_NAN)
 OC_MAKE_DSL_UNARY_FUNC(fract, FRACT)
 OC_MAKE_DSL_UNARY_FUNC(saturate, SATURATE)
 
+OC_MAKE_DSL_UNARY_FUNC(determinant, DETERMINANT)
+OC_MAKE_DSL_UNARY_FUNC(transpose, TRANSPOSE)
+OC_MAKE_DSL_UNARY_FUNC(inverse, INVERSE)
+
 #undef OC_MAKE_DSL_UNARY_FUNC
 
 /// used for dsl scalar vector or matrix
@@ -253,23 +257,6 @@ OC_MAKE_TRIPLE_FUNC(lerp, LERP)
 OC_MAKE_TRIPLE_FUNC(fma, FMA)
 
 #undef OC_MAKE_TRIPLE_FUNC
-
-#define OC_MAKE_MATRIX_FUNC(func, tag)                                                    \
-    template<typename T>                                                                  \
-    requires(is_dsl_v<T> && is_matrix_v<expr_value_t<T>>)                                 \
-    OC_NODISCARD auto                                                                     \
-    func(const T &m) noexcept {                                                           \
-        using ret_type = decltype(func(std::declval<expr_value_t<T>>()));                 \
-        auto expr = Function::current()->call_builtin(Type::of<expr_value_t<ret_type>>(), \
-                                                      CallOp::tag, {OC_EXPR(m)});         \
-        return eval<expr_value_t<ret_type>>(expr);                                        \
-    }
-
-OC_MAKE_MATRIX_FUNC(determinant, DETERMINANT)
-OC_MAKE_MATRIX_FUNC(transpose, TRANSPOSE)
-OC_MAKE_MATRIX_FUNC(inverse, INVERSE)
-
-#undef OC_MAKE_MATRIX_FUNC
 
 template<typename T, typename U>
 requires(any_dsl_v<T, U> && is_vector3_v<expr_value_t<T>> && is_vector3_v<expr_value_t<U>>)
