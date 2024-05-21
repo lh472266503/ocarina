@@ -294,6 +294,9 @@ void test_lambda(Device &device, Stream &stream) {
         //        f3.y = 2;
 
         float3 f3 = make_float3(1,2,3);
+
+        auto fm = f3.call_max(1.f, f3);
+
         Float3 aa = f3;
 //        aa.xy_() == aa.xy();
 
@@ -305,11 +308,11 @@ void test_lambda(Device &device, Stream &stream) {
         $info("{} {} {}  ", aa);
         auto at = aa >= aa.yyy_();
         $info("{} {} {}  {}  ", make_uint3(at), none(at).cast<int>());
-        Float3 aac = 19.f;
+//        Float3 aac = 19.f;
 
         int fdgsi = 0;
         auto ax = aa.x.call_rcp(aa.x);
-        $info("{} {} {}  ", aac.call_min(aac, -19.f));
+//        $info("{} {} {}  ", aac.call_min(aac, -19.f));
         $info("{}   ", aa.x.call_min(aa.x, aa.y));
         //        f3 = xyz;
 

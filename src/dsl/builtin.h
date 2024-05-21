@@ -47,6 +47,12 @@ requires ocarina::is_integral_expr_v<DispatchId>
 
 #undef OC_MAKE_BUILTIN_FUNC
 
+namespace detail {
+
+//template<typename T>
+
+}
+
 #define OC_MAKE_LOGIC_FUNC(func, tag)                                             \
     template<typename T>                                                          \
     requires is_bool_vector_expr_v<T>                                             \
