@@ -49,9 +49,27 @@ requires ocarina::is_integral_expr_v<DispatchId>
 
 namespace detail {
 
-//template<typename T>
+template<typename T>
+struct match_dsl_unary_func_impl : std::false_type {};
 
-}
+template<typename T>
+struct match_dsl_unary_func_impl<Computable<T>> : std::true_type {};
+
+template<typename T>
+struct match_dsl_unary_func_impl<Var<T>> : std::true_type {};
+
+template<typename T>
+struct match_dsl_unary_func_impl<Expr<T>> : std::true_type {};
+
+template<typename T, size_t N, size_t... Indices>
+struct match_dsl_unary_func_impl<Swizzle<T, N, Indices...>> : std::true_type {};
+
+}// namespace detail
+
+template<typename T>
+using match_dsl_unary_func = detail::match_dsl_unary_func_impl<std::remove_cvref_t<T>>;
+
+OC_DEFINE_TEMPLATE_VALUE(match_dsl_unary_func)
 
 #define OC_MAKE_LOGIC_FUNC(func, tag)                                             \
     template<typename T>                                                          \
