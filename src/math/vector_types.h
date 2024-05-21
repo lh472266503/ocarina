@@ -583,4 +583,82 @@ OC_MAKE_SWIZZLE_LOGIC_FUNC(all)
 OC_MAKE_SWIZZLE_LOGIC_FUNC(none)
 
 #undef OC_MAKE_SWIZZLE_LOGIC_FUNC
+
+#define OC_MAKE_TYPE_N(type)                                                                                                 \
+    [[nodiscard]] constexpr auto make_##type##2(type s = {}) noexcept { return type##2(s); }                                 \
+    [[nodiscard]] constexpr auto make_##type##2(type x, type y) noexcept { return type##2(x, y); }                           \
+    template<typename T, size_t N>                                                                                           \
+    requires(N >= 2)                                                                                                         \
+    [[nodiscard]] constexpr auto make_##type##2(Vector<T, N> v) noexcept {                                                   \
+        return type##2(                                                                                                      \
+            static_cast<type>(v.x),                                                                                          \
+            static_cast<type>(v.y));                                                                                         \
+    }                                                                                                                        \
+    template<typename T, size_t N>                                                                                           \
+    requires(N >= 2)                                                                                                         \
+    [[nodiscard]] constexpr auto make_##type##2(ocarina::array<T, N> v) noexcept {                                           \
+        return type##2(                                                                                                      \
+            static_cast<type>(v[0]),                                                                                         \
+            static_cast<type>(v[1]));                                                                                        \
+    }                                                                                                                        \
+    [[nodiscard]] constexpr auto make_##type##2(type##3 v) noexcept { return type##2(v.x, v.y); }                            \
+    [[nodiscard]] constexpr auto make_##type##2(type##4 v) noexcept { return type##2(v.x, v.y); }                            \
+                                                                                                                             \
+    [[nodiscard]] constexpr auto make_##type##3(type s = {}) noexcept { return type##3(s); }                                 \
+    [[nodiscard]] constexpr auto make_##type##3(type x, type y, type z) noexcept { return type##3(x, y, z); }                \
+    template<typename T, size_t N>                                                                                           \
+    requires(N >= 3)                                                                                                         \
+    [[nodiscard]] constexpr auto make_##type##3(Vector<T, N> v) noexcept {                                                   \
+        return type##3(                                                                                                      \
+            static_cast<type>(v.x),                                                                                          \
+            static_cast<type>(v.y),                                                                                          \
+            static_cast<type>(v.z));                                                                                         \
+    }                                                                                                                        \
+    template<typename T, size_t N>                                                                                           \
+    requires(N >= 3)                                                                                                         \
+    [[nodiscard]] constexpr auto make_##type##3(ocarina::array<T, N> v) noexcept {                                           \
+        return type##3(                                                                                                      \
+            static_cast<type>(v[0]),                                                                                         \
+            static_cast<type>(v[1]),                                                                                         \
+            static_cast<type>(v[2]));                                                                                        \
+    }                                                                                                                        \
+    [[nodiscard]] constexpr auto make_##type##3(type##2 v, type z) noexcept { return type##3(v.x, v.y, z); }                 \
+    [[nodiscard]] constexpr auto make_##type##3(type x, type##2 v) noexcept { return type##3(x, v.x, v.y); }                 \
+    [[nodiscard]] constexpr auto make_##type##3(type##4 v) noexcept { return type##3(v.x, v.y, v.z); }                       \
+                                                                                                                             \
+    [[nodiscard]] constexpr auto make_##type##4(type s = {}) noexcept { return type##4(s); }                                 \
+    [[nodiscard]] constexpr auto make_##type##4(type x, type y, type z, type w) noexcept { return type##4(x, y, z, w); }     \
+    template<typename T, size_t N>                                                                                           \
+    requires(N == 4)                                                                                                         \
+    [[nodiscard]] constexpr auto make_##type##4(Vector<T, N> v) noexcept {                                                   \
+        return type##4(                                                                                                      \
+            static_cast<type>(v.x),                                                                                          \
+            static_cast<type>(v.y),                                                                                          \
+            static_cast<type>(v.z),                                                                                          \
+            static_cast<type>(v.w));                                                                                         \
+    }                                                                                                                        \
+    template<typename T, size_t N>                                                                                           \
+    requires(N == 4)                                                                                                         \
+    [[nodiscard]] constexpr auto make_##type##4(ocarina::array<T, N> v) noexcept {                                           \
+        return type##4(                                                                                                      \
+            static_cast<type>(v[0]),                                                                                         \
+            static_cast<type>(v[1]),                                                                                         \
+            static_cast<type>(v[2]),                                                                                         \
+            static_cast<type>(v[3]));                                                                                        \
+    }                                                                                                                        \
+    [[nodiscard]] constexpr auto make_##type##4(type##2 v, type z, type w) noexcept { return type##4(v.x, v.y, z, w); }      \
+    [[nodiscard]] constexpr auto make_##type##4(type x, type##2 v, type w) noexcept { return type##4(x, v.x, v.y, w); }      \
+    [[nodiscard]] constexpr auto make_##type##4(type x, type y, type##2 v) noexcept { return type##4(x, y, v.x, v.y); }      \
+    [[nodiscard]] constexpr auto make_##type##4(type##2 xy, type##2 zw) noexcept { return type##4(xy.x, xy.y, zw.x, zw.y); } \
+    [[nodiscard]] constexpr auto make_##type##4(type##3 v, type w) noexcept { return type##4(v.x, v.y, v.z, w); }            \
+    [[nodiscard]] constexpr auto make_##type##4(type x, type##3 v) noexcept { return type##4(x, v.x, v.y, v.z); }
+
+OC_MAKE_TYPE_N(bool)
+OC_MAKE_TYPE_N(float)
+OC_MAKE_TYPE_N(int)
+OC_MAKE_TYPE_N(uint)
+OC_MAKE_TYPE_N(uchar)
+OC_MAKE_TYPE_N(char)
+#undef OC_MAKE_TYPE_N
+
 }// namespace ocarina
