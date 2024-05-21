@@ -100,53 +100,60 @@ template<typename T>
 using deduce_var = detail::deduce_var_impl<std::remove_cvref_t<T>>;
 OC_DEFINE_TEMPLATE_TYPE(deduce_var)
 
-#define OC_MAKE_DSL_UNARY_FUNC(func)                \
-    template<typename T>                            \
-    requires match_dsl_unary_func_v<T>              \
-    OC_NODISCARD auto func(const T &arg) noexcept { \
-        return deduce_var_t<T>::call_##func(arg);   \
+#define OC_MAKE_DSL_UNARY_FUNC(func, tag)                                              \
+    template<typename T>                                                               \
+    requires match_dsl_unary_func_v<T>                                                 \
+    OC_NODISCARD auto func(const T &arg) noexcept {                                    \
+        return deduce_var_t<T>::call_##func(arg);                                      \
+    }                                                                                  \
+    template<typename T>                                                               \
+    requires is_basic_v<T>                                                             \
+    OC_NODISCARD DynamicArray<T> func(const DynamicArray<T> &t) noexcept {             \
+        auto expr = Function::current()->call_builtin(DynamicArray<T>::type(t.size()), \
+                                                      CallOp::tag, {OC_EXPR(t)});      \
+        return eval_dynamic_array(DynamicArray<T>(t.size(), expr));                    \
     }
 
-OC_MAKE_DSL_UNARY_FUNC(all)
-OC_MAKE_DSL_UNARY_FUNC(any)
-OC_MAKE_DSL_UNARY_FUNC(none)
-OC_MAKE_DSL_UNARY_FUNC(rcp)
-OC_MAKE_DSL_UNARY_FUNC(abs)
-OC_MAKE_DSL_UNARY_FUNC(sign)
-OC_MAKE_DSL_UNARY_FUNC(sqr)
-OC_MAKE_DSL_UNARY_FUNC(normalize)
-OC_MAKE_DSL_UNARY_FUNC(length)
-OC_MAKE_DSL_UNARY_FUNC(length_squared)
+OC_MAKE_DSL_UNARY_FUNC(all, ALL)
+OC_MAKE_DSL_UNARY_FUNC(any, ANY)
+OC_MAKE_DSL_UNARY_FUNC(none, NONE)
+OC_MAKE_DSL_UNARY_FUNC(rcp, RCP)
+OC_MAKE_DSL_UNARY_FUNC(abs, ABS)
+OC_MAKE_DSL_UNARY_FUNC(sign, SIGN)
+OC_MAKE_DSL_UNARY_FUNC(sqr, SQR)
+OC_MAKE_DSL_UNARY_FUNC(normalize, NORMALIZE)
+OC_MAKE_DSL_UNARY_FUNC(length, LENGTH)
+OC_MAKE_DSL_UNARY_FUNC(length_squared, LENGTH_SQUARED)
 
-// OC_MAKE_FLOATING_BUILTIN_FUNC(exp, EXP)
-// OC_MAKE_FLOATING_BUILTIN_FUNC(exp2, EXP2)
-// OC_MAKE_FLOATING_BUILTIN_FUNC(exp10, EXP10)
-// OC_MAKE_FLOATING_BUILTIN_FUNC(log, LOG)
-// OC_MAKE_FLOATING_BUILTIN_FUNC(log2, LOG2)
-// OC_MAKE_FLOATING_BUILTIN_FUNC(log10, LOG10)
-// OC_MAKE_FLOATING_BUILTIN_FUNC(cos, COS)
-// OC_MAKE_FLOATING_BUILTIN_FUNC(sin, SIN)
-// OC_MAKE_FLOATING_BUILTIN_FUNC(tan, TAN)
-// OC_MAKE_FLOATING_BUILTIN_FUNC(cosh, COSH)
-// OC_MAKE_FLOATING_BUILTIN_FUNC(sinh, SINH)
-// OC_MAKE_FLOATING_BUILTIN_FUNC(tanh, TANH)
-// OC_MAKE_FLOATING_BUILTIN_FUNC(acos, ACOS)
-// OC_MAKE_FLOATING_BUILTIN_FUNC(asin, ASIN)
-// OC_MAKE_FLOATING_BUILTIN_FUNC(atan, ATAN)
-// OC_MAKE_FLOATING_BUILTIN_FUNC(asinh, ASINH)
-// OC_MAKE_FLOATING_BUILTIN_FUNC(acosh, ACOSH)
-// OC_MAKE_FLOATING_BUILTIN_FUNC(atanh, ATANH)
-// OC_MAKE_FLOATING_BUILTIN_FUNC(degrees, DEGREES)
-// OC_MAKE_FLOATING_BUILTIN_FUNC(radians, RADIANS)
-// OC_MAKE_FLOATING_BUILTIN_FUNC(ceil, CEIL)
-// OC_MAKE_FLOATING_BUILTIN_FUNC(round, ROUND)
-// OC_MAKE_FLOATING_BUILTIN_FUNC(floor, FLOOR)
-// OC_MAKE_FLOATING_BUILTIN_FUNC(sqrt, SQRT)
-// OC_MAKE_FLOATING_BUILTIN_FUNC(rsqrt, RSQRT)
-// OC_MAKE_FLOATING_BUILTIN_FUNC(isinf, IS_INF)
-// OC_MAKE_FLOATING_BUILTIN_FUNC(isnan, IS_NAN)
-// OC_MAKE_FLOATING_BUILTIN_FUNC(fract, FRACT)
-// OC_MAKE_FLOATING_BUILTIN_FUNC(saturate, SATURATE)
+OC_MAKE_DSL_UNARY_FUNC(exp, EXP)
+OC_MAKE_DSL_UNARY_FUNC(exp2, EXP2)
+OC_MAKE_DSL_UNARY_FUNC(exp10, EXP10)
+OC_MAKE_DSL_UNARY_FUNC(log, LOG)
+OC_MAKE_DSL_UNARY_FUNC(log2, LOG2)
+OC_MAKE_DSL_UNARY_FUNC(log10, LOG10)
+OC_MAKE_DSL_UNARY_FUNC(cos, COS)
+OC_MAKE_DSL_UNARY_FUNC(sin, SIN)
+OC_MAKE_DSL_UNARY_FUNC(tan, TAN)
+OC_MAKE_DSL_UNARY_FUNC(cosh, COSH)
+OC_MAKE_DSL_UNARY_FUNC(sinh, SINH)
+OC_MAKE_DSL_UNARY_FUNC(tanh, TANH)
+OC_MAKE_DSL_UNARY_FUNC(acos, ACOS)
+OC_MAKE_DSL_UNARY_FUNC(asin, ASIN)
+OC_MAKE_DSL_UNARY_FUNC(atan, ATAN)
+OC_MAKE_DSL_UNARY_FUNC(asinh, ASINH)
+OC_MAKE_DSL_UNARY_FUNC(acosh, ACOSH)
+OC_MAKE_DSL_UNARY_FUNC(atanh, ATANH)
+OC_MAKE_DSL_UNARY_FUNC(degrees, DEGREES)
+OC_MAKE_DSL_UNARY_FUNC(radians, RADIANS)
+OC_MAKE_DSL_UNARY_FUNC(ceil, CEIL)
+OC_MAKE_DSL_UNARY_FUNC(round, ROUND)
+OC_MAKE_DSL_UNARY_FUNC(floor, FLOOR)
+OC_MAKE_DSL_UNARY_FUNC(sqrt, SQRT)
+OC_MAKE_DSL_UNARY_FUNC(rsqrt, RSQRT)
+OC_MAKE_DSL_UNARY_FUNC(isinf, IS_INF)
+OC_MAKE_DSL_UNARY_FUNC(isnan, IS_NAN)
+OC_MAKE_DSL_UNARY_FUNC(fract, FRACT)
+OC_MAKE_DSL_UNARY_FUNC(saturate, SATURATE)
 
 #undef OC_MAKE_DSL_UNARY_FUNC
 
@@ -247,21 +254,6 @@ OC_MAKE_TRIPLE_FUNC(fma, FMA)
 
 #undef OC_MAKE_TRIPLE_FUNC
 
-#define OC_MAKE_ARRAY_UNARY_FUNC(func, tag)                                                                        \
-    template<typename T>                                                                                           \
-    requires is_basic_v<T>                                                                                         \
-    [[nodiscard]] DynamicArray<T> func(const DynamicArray<T> &t) noexcept {                                        \
-        auto expr = Function::current()->call_builtin(DynamicArray<T>::type(t.size()), CallOp::tag, {OC_EXPR(t)}); \
-        return eval_dynamic_array(DynamicArray<T>(t.size(), expr));                                                \
-    }
-
-OC_MAKE_ARRAY_UNARY_FUNC(abs, ABS)
-OC_MAKE_ARRAY_UNARY_FUNC(rcp, RCP)
-OC_MAKE_ARRAY_UNARY_FUNC(sign, SIGN)
-OC_MAKE_ARRAY_UNARY_FUNC(sqr, SQR)
-
-#undef OC_MAKE_ARRAY_UNARY_FUNC
-
 #define OC_MAKE_MATRIX_FUNC(func, tag)                                                    \
     template<typename T>                                                                  \
     requires(is_dsl_v<T> && is_matrix_v<expr_value_t<T>>)                                 \
@@ -322,55 +314,6 @@ void coordinate_system(const A &a, Var<float3> &b, Var<float3> &c) noexcept {
                                                   CallOp::COORDINATE_SYSTEM, {OC_EXPR(a), OC_EXPR(b), OC_EXPR(c)});
     Function::current()->expr_statement(expr);
 }
-
-#define OC_MAKE_FLOATING_BUILTIN_FUNC(func, tag)                                                                   \
-    template<typename T>                                                                                           \
-    requires(is_dsl_v<T> && is_float_element_expr_v<T>)                                                            \
-    OC_NODISCARD auto                                                                                              \
-    func(const T &t) noexcept {                                                                                    \
-        using ret_type = decltype(func(std::declval<expr_value_t<T>>()));                                          \
-        auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),                                 \
-                                                      CallOp::tag, {OC_EXPR(t)});                                  \
-        return eval<expr_value_t<ret_type>>(expr);                                                                 \
-    }                                                                                                              \
-    template<typename T>                                                                                           \
-    requires is_basic_v<T>                                                                                         \
-    OC_NODISCARD DynamicArray<T> func(const DynamicArray<T> &t) noexcept {                                         \
-        auto expr = Function::current()->call_builtin(DynamicArray<T>::type(t.size()), CallOp::tag, {OC_EXPR(t)}); \
-        return eval_dynamic_array(DynamicArray<T>(t.size(), expr));                                                \
-    }
-
-OC_MAKE_FLOATING_BUILTIN_FUNC(exp, EXP)
-OC_MAKE_FLOATING_BUILTIN_FUNC(exp2, EXP2)
-OC_MAKE_FLOATING_BUILTIN_FUNC(exp10, EXP10)
-OC_MAKE_FLOATING_BUILTIN_FUNC(log, LOG)
-OC_MAKE_FLOATING_BUILTIN_FUNC(log2, LOG2)
-OC_MAKE_FLOATING_BUILTIN_FUNC(log10, LOG10)
-OC_MAKE_FLOATING_BUILTIN_FUNC(cos, COS)
-OC_MAKE_FLOATING_BUILTIN_FUNC(sin, SIN)
-OC_MAKE_FLOATING_BUILTIN_FUNC(tan, TAN)
-OC_MAKE_FLOATING_BUILTIN_FUNC(cosh, COSH)
-OC_MAKE_FLOATING_BUILTIN_FUNC(sinh, SINH)
-OC_MAKE_FLOATING_BUILTIN_FUNC(tanh, TANH)
-OC_MAKE_FLOATING_BUILTIN_FUNC(acos, ACOS)
-OC_MAKE_FLOATING_BUILTIN_FUNC(asin, ASIN)
-OC_MAKE_FLOATING_BUILTIN_FUNC(atan, ATAN)
-OC_MAKE_FLOATING_BUILTIN_FUNC(asinh, ASINH)
-OC_MAKE_FLOATING_BUILTIN_FUNC(acosh, ACOSH)
-OC_MAKE_FLOATING_BUILTIN_FUNC(atanh, ATANH)
-OC_MAKE_FLOATING_BUILTIN_FUNC(degrees, DEGREES)
-OC_MAKE_FLOATING_BUILTIN_FUNC(radians, RADIANS)
-OC_MAKE_FLOATING_BUILTIN_FUNC(ceil, CEIL)
-OC_MAKE_FLOATING_BUILTIN_FUNC(round, ROUND)
-OC_MAKE_FLOATING_BUILTIN_FUNC(floor, FLOOR)
-OC_MAKE_FLOATING_BUILTIN_FUNC(sqrt, SQRT)
-OC_MAKE_FLOATING_BUILTIN_FUNC(rsqrt, RSQRT)
-OC_MAKE_FLOATING_BUILTIN_FUNC(isinf, IS_INF)
-OC_MAKE_FLOATING_BUILTIN_FUNC(isnan, IS_NAN)
-OC_MAKE_FLOATING_BUILTIN_FUNC(fract, FRACT)
-OC_MAKE_FLOATING_BUILTIN_FUNC(saturate, SATURATE)
-
-#undef OC_MAKE_FLOATING_BUILTIN_FUNC
 
 #define OC_MAKE_BINARY_BUILTIN_FUNC(func, tag)                                                             \
     template<typename A, typename B>                                                                       \
