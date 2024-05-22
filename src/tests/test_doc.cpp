@@ -328,6 +328,8 @@ void test_lambda(Device &device, Stream &stream) {
             Float3 t = make_float3(1.f);
             Float3 a = make_float3(2, 4, 6);
             float3 b = make_float3(1, 2, 3);
+
+//            static_assert(ocarina::is_same_type_dimension_v<float3,float3, float2>);
 //            $info("{} {}  {}  call_lerp ", lerp(t, b.xyz_(),a));
         }
         //        f3 = xyz;

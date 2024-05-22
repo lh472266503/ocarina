@@ -214,6 +214,10 @@ requires(ocarina::is_same_v<type_element_t<First>, type_element_t<Ts>...> &&
          ((type_dimension_v<First> == type_dimension_v<Ts>) && ...))
 struct match_triple_func_impl<First, Ts...> : std::true_type {};
 
+//template<typename... Ts>
+//struct match_triple_func_impl : std::conjunction<is_same_type_dimension<Ts...>,
+//                                                 is_same_type_element<Ts...>> {};
+
 }// namespace detail
 
 template<typename... Ts>
