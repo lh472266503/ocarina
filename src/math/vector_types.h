@@ -542,8 +542,10 @@ OC_MAKE_VECTOR_BINARY_FUNC(distance_squared)
 #undef OC_MAKE_VECTOR_BINARY_FUNC
 
 template<typename T, typename U, typename V>
-requires is_all_vector_or_swizzle_v<T, U, V>
-[[nodiscard]] auto fma(T t, U u, V v) noexcept {
+requires(is_all_vector_or_swizzle_v<T, U, V> &&
+         type_dimension_v<T> == type_dimension_v<U> &&
+         type_dimension_v<T> == type_dimension_v<V>)
+[[nodiscard]] auto fma(const T &t, const U &u, const V &v) noexcept {
     return deduce_vec_t<T>::call_fma(t, u, v);
 }
 

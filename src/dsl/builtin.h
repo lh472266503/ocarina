@@ -196,6 +196,24 @@ template<typename... Ts>
 using match_dsl_triple_func = std::conjunction<match_triple_func<remove_device_t<Ts>...>, any_device_type<Ts...>>;
 OC_DEFINE_TEMPLATE_VALUE_MULTI(match_dsl_triple_func)
 
+#define OC_MAKE_DSL_TRIPLE_FUNC(func, tag)                                      \
+    template<typename A, typename B, typename C>                                \
+    requires match_dsl_triple_func_v<A, B, C>                                   \
+    [[nodiscard]] auto func(const A &a, const B &b, const C &c) noexcept {      \
+        static constexpr auto dimension = type_dimension_v<remove_device_t<A>>; \
+        using scalar_type = type_element_t<remove_device_t<A>>;                 \
+        using var_type = Var<general_vector_t<scalar_type, dimension>>;         \
+        return var_type::call_##func(static_cast<swizzle_decay_t<A>>(a),        \
+                                     static_cast<swizzle_decay_t<B>>(b),        \
+                                     static_cast<swizzle_decay_t<C>>(c));       \
+    }
+
+OC_MAKE_DSL_TRIPLE_FUNC(clamp, CLAMP)
+OC_MAKE_DSL_TRIPLE_FUNC(lerp, LERP)
+OC_MAKE_DSL_TRIPLE_FUNC(fma, FMA)
+
+#undef OC_MAKE_TRIPLE_FUNC
+
 /// used for dsl scalar vector or matrix
 template<typename U, typename T, typename F>
 requires(any_dsl_v<U, T, F> && std::is_same_v<expr_value_t<T>, expr_value_t<F>> &&
@@ -287,10 +305,10 @@ requires is_all_scalar_v<T>
         return eval<expr_value_t<decltype(func(expr_value_t<T>{}, expr_value_t<A>{}, expr_value_t<B>{}))>>(expr); \
     }
 
-OC_MAKE_TRIPLE_FUNC(clamp, CLAMP)
-OC_MAKE_TRIPLE_FUNC(lerp, LERP)
-OC_MAKE_TRIPLE_FUNC(fma, FMA)
-
+//OC_MAKE_TRIPLE_FUNC(clamp, CLAMP)
+//OC_MAKE_TRIPLE_FUNC(lerp, LERP)
+//OC_MAKE_TRIPLE_FUNC(fma, FMA)
+//
 #undef OC_MAKE_TRIPLE_FUNC
 
 template<typename... Args>

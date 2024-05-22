@@ -232,11 +232,10 @@ struct Test {
 void test_lambda(Device &device, Stream &stream) {
     auto [vertices, triangles] = get_cube();
 
-
     {
-        float3 a,b;
+        float3 a, b;
         bool bb = match_dsl_binary_func_v<decltype(a), decltype(b.xy())>;
-        static_assert(match_dsl_triple_func_v<decltype(a), decltype(Float2().xyy_()), float3>);
+        static_assert(match_dsl_triple_func_v<ocarina::DynamicArray<float>, ocarina::DynamicArray<float>>);
     }
 
     Buffer<float3> vert = device.create_buffer<float3>(vertices.size());
@@ -249,48 +248,47 @@ void test_lambda(Device &device, Stream &stream) {
            << tri.upload(triangles.data());
 
     float3 f3 = make_float3(1, 2, 3);
-    auto f2 = make_int2(5,6);
+    auto f2 = make_int2(5, 6);
 
     f3.xy_() += f2;
 
     auto f34 = make_float2(f3.xy_());
 
     _bstr_t _bstr;
-////    float3 aa = f3.xyy_() + f3.xyy_();
-//    auto fcc = ~make_uint3(f3);
-//    1 == aa.xy_();
-//    float3 bb = f3 + f3.xyz();
-//    float3 cc = 5 + f3.xyz();
+    ////    float3 aa = f3.xyy_() + f3.xyy_();
+    //    auto fcc = ~make_uint3(f3);
+    //    1 == aa.xy_();
+    //    float3 bb = f3 + f3.xyz();
+    //    float3 cc = 5 + f3.xyz();
 
-//    std::remove_cvref_t<decltype(f3.xyy_())>::vec_type __a;
+    //    std::remove_cvref_t<decltype(f3.xyy_())>::vec_type __a;
 
-
-//    aa.xy_() == 10;
+    //    aa.xy_() == 10;
     //    f3 =  2.f + f3.xyz;
 
-    float4 f4 = make_float4(1,2,666,4);
-    float4 f = (make_float4(-1,-2,-3,-4).xyzw_());
+    float4 f4 = make_float4(1, 2, 666, 4);
+    float4 f = (make_float4(-1, -2, -3, -4).xyzw_());
 
-    float fe= dot(f.xxx_(), f.zww_());
+    float fe = dot(f.xxx_(), f.zww_());
 
-    auto bnan = ocarina::cross(f.zyx_(),f.zxx());
+    auto bnan = ocarina::cross(f.zyx_(), f.zxx());
 
-//    max(fe, fe);
+    //    max(fe, fe);
 
-//    auto fm = max(f4.xyxz_(), f4.xyxz_());
+    //    auto fm = max(f4.xyxz_(), f4.xyxz_());
 
     auto bs = ocarina::detail::is_swizzle_impl<std::remove_cvref_t<decltype(f4.xyz_())>, 3>::value;
 
-    auto fn = select(make_bool4(1,0,1,0), f4, f);
+    auto fn = select(make_bool4(1, 0, 1, 0), f4, f);
 
     bool aaa = match_dsl_unary_func_v<decltype(f.xyz_())>;
 
-//    auto inv = int4::rcp_impl(f4);
-//    auto ab = float4::abs_impl(make_float4(-1).xxxx_());
-//    auto ab2 = absf(make_int4(-1));
-//    AVector<float, 4> af;
-//    Vector<float, 4> af1;
-//    bool abaa = ocarina::is_vector2_v<ocarina::detail::VectorStorage<int, 2>>;
+    //    auto inv = int4::rcp_impl(f4);
+    //    auto ab = float4::abs_impl(make_float4(-1).xxxx_());
+    //    auto ab2 = absf(make_int4(-1));
+    //    AVector<float, 4> af;
+    //    Vector<float, 4> af1;
+    //    bool abaa = ocarina::is_vector2_v<ocarina::detail::VectorStorage<int, 2>>;
 
     Kernel kernel = [&](Uint i) {
         //        Float *p;
@@ -302,31 +300,36 @@ void test_lambda(Device &device, Stream &stream) {
         //        f3.x = 1;
         //        f3.y = 2;
 
-        float3 f3 = make_float3(1,2,3);
+        float3 f3 = make_float3(1, 2, 3);
 
         auto fm = f3.call_max(1.f, f3);
 
         Float3 aa = f3;
-//        aa.xy_() == aa.xy();
+        //        aa.xy_() == aa.xy();
 
-//      aa.xy += 1;
-//      Float3 bbb = + aa.xyy();
-//        bool bbb = ocarina::is_scalar_v<Float3>;
+        //      aa.xy += 1;
+        //      Float3 bbb = + aa.xyy();
+        //        bool bbb = ocarina::is_scalar_v<Float3>;
         $info("{} {} {}  ", aa);
         aa = aa.zxx_();
         $info("{} {} {}  ", aa);
         auto at = aa >= aa.yyy_();
         $info("{} {} {}  {}  ", make_uint3(at), none(at.xyz_()).cast<int>());
-//        Float3 aac = 19.f;
+        //        Float3 aac = 19.f;
 
         auto ma = max(f3.xyz_(), 2.f);
 
         int fdgsi = 0;
         auto ax = aa.x.call_rcp(aa.x);
-//        $info("{} {} {}  ", aac.call_min(aac, -19.f));
+        //        $info("{} {} {}  ", aac.call_min(aac, -19.f));
         $info("{} max_  ", max(aa.x, aa.y));
         $info("{} {}  {}  ", aa);
-        $info("{} {}  {}  ", max(f3.xxx_(),aa));
+        {
+            Float3 t = make_float3(1.f);
+            Float3 a = make_float3(2, 4, 6);
+            float3 b = make_float3(1, 2, 3);
+            $info("{} {}  {}  call_lerp ", lerp(t, b.xyz_(),a));
+        }
         //        f3 = xyz;
 
         //        $outline {
@@ -468,8 +471,6 @@ void test_parameter_struct(Device &device, Stream &stream) {
     stream << synchronize() << commit();
 }
 
-
-
 int main(int argc, char *argv[]) {
     fs::path path(argv[0]);
     FileManager file_manager(path.parent_path());
@@ -491,23 +492,21 @@ int main(int argc, char *argv[]) {
     /// create rtx file_manager if need
     device.init_rtx();
 
-//    ocarina::detail::Vector<float, 3> aaaaa;
+    //    ocarina::detail::Vector<float, 3> aaaaa;
 
+    //    AVector<float, 3> aaaa;
 
-//    AVector<float, 3> aaaa;
-
-    float3 a = make_float3(1,2,3);
-    auto la =  a.xz_() < 1.5f;
-    int3 b = make_int3(4,5,6);
+    float3 a = make_float3(1, 2, 3);
+    auto la = a.xz_() < 1.5f;
+    int3 b = make_int3(4, 5, 6);
 
     a += a;
     a += 1;
     a *= a;
     a = 1 + a;
-    bool4 bool_4 = make_bool4(1,0,1,1);
+    bool4 bool_4 = make_bool4(1, 0, 1, 1);
     auto bbb = bool_4 || bool_4.xxxx_();
     auto b4 = all(bool_4.ww_());
-
 
     //        test_compute_shader(device, stream);
     //    test_parameter_struct(device, stream);
