@@ -79,7 +79,7 @@ public:
     }
 
     template<typename Index, typename Val>
-    requires concepts::integral<expr_value_t<Index>> && concepts::is_same_v<T, expr_value_t<Val>>
+    requires concepts::integral<expr_value_t<Index>> && ocarina::is_same_v<T, expr_value_t<Val>>
     void write(Index &&index, Val &&elm) {
         if (!has_registered()) {
             Super::write(OC_FORWARD(index), OC_FORWARD(elm));
@@ -145,7 +145,7 @@ public:
     }
 
     template<typename Index, typename Val>
-    requires concepts::integral<expr_value_t<Index>> && concepts::is_same_v<T, expr_value_t<Val>>
+    requires concepts::integral<expr_value_t<Index>> && ocarina::is_same_v<T, expr_value_t<Val>>
     void write(Index &&index, Val &&elm) {
         if (!has_registered()) {
             Super::write(OC_FORWARD(index), OC_FORWARD(elm));

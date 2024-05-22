@@ -93,6 +93,20 @@ MAKE_ALL_TYPE_TRAITS(unsigned)
 
 #undef MAKE_ALL_TYPE_TRAITS
 
+namespace detail {
+template<typename... T>
+struct all_same_impl : std::true_type {};
+
+template<typename First, typename... Other>
+struct all_same_impl<First, Other...> : std::conjunction<std::is_same<First, Other>...> {};
+}// namespace detail
+
+template<typename... T>
+using is_same = detail::all_same_impl<T...>;
+
+template<typename... T>
+constexpr auto is_same_v = is_same<T...>::value;
+
 template<typename T, size_t N, size_t... Indices>
 struct Swizzle;
 
@@ -294,6 +308,19 @@ using type_dimension = detail::type_dimension_impl<std::remove_cvref_t<T>>;
 OC_DEFINE_TEMPLATE_VALUE(type_dimension)
 
 namespace detail {
+template<typename... Ts>
+struct is_same_type_dimension_impl : std::false_type {};
+
+template<typename A, typename B>
+requires(type_dimension_v<A> == type_dimension_v<B>)
+struct is_same_type_dimension_impl<A, B> : std::true_type {};
+
+template<typename T, typename... Ts>
+struct is_same_type_dimension_impl<T, Ts...> : std::conjunction<is_same_type_dimension_impl<T, Ts>...> {};
+
+}// namespace detail
+
+namespace detail {
 template<typename T>
 struct vector_element_impl {
     using type = T;
@@ -331,6 +358,20 @@ struct type_element_impl<Swizzle<T, N, Indices...>> {
 template<typename T>
 using type_element = detail::type_element_impl<std::remove_cvref_t<T>>;
 OC_DEFINE_TEMPLATE_TYPE(type_element)
+
+template<typename... Ts>
+using is_same_type_dimension = detail::is_same_type_dimension_impl<std::remove_cvref_t<Ts>...>;
+OC_DEFINE_TEMPLATE_VALUE_MULTI(is_same_type_dimension)
+
+namespace detail {
+template<typename... Ts>
+struct is_same_type_element_impl : ocarina::is_same<type_element_t<Ts>...> {};
+
+}// namespace detail
+
+template<typename ...Ts>
+using is_same_type_element = detail::is_same_type_element_impl<std::remove_cvref_t<Ts>...>;
+OC_DEFINE_TEMPLATE_VALUE_MULTI(is_same_type_element)
 
 namespace detail {
 
@@ -509,6 +550,5 @@ public:
 
 template<typename T, size_t N>
 using general_vector_t = typename general_vector<T, N>::type;
-
 
 }// namespace ocarina

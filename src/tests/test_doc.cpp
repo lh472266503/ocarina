@@ -328,7 +328,7 @@ void test_lambda(Device &device, Stream &stream) {
             Float3 t = make_float3(1.f);
             Float3 a = make_float3(2, 4, 6);
             float3 b = make_float3(1, 2, 3);
-            $info("{} {}  {}  call_lerp ", lerp(t, b.xyz_(),a));
+//            $info("{} {}  {}  call_lerp ", lerp(t, b.xyz_(),a));
         }
         //        f3 = xyz;
 

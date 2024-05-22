@@ -186,7 +186,7 @@ template<typename... T>
 constexpr auto is_vector_expr_same_dimension_v = is_vector_expr_same_dimension<T...>::value;
 
 template<typename... T>
-using is_vector_expr_same_element = concepts::is_same<vector_expr_element_t<T>...>;
+using is_vector_expr_same_element = ocarina::is_same<vector_expr_element_t<T>...>;
 
 template<typename... T>
 constexpr auto is_vector_expr_same_element_v = is_vector_expr_same_element<T...>::value;
@@ -320,7 +320,7 @@ template<typename T>
 using dynamic_array_element_t = typename detail::dynamic_array_element_impl<std::remove_cvref_t<T>>::type;
 
 template<typename... T>
-using is_same_expr = concepts::is_same<expr_value_t<T>...>;
+using is_same_expr = ocarina::is_same<expr_value_t<T>...>;
 
 template<typename... T>
 constexpr auto is_same_expr_v = is_same_expr<T...>::value;

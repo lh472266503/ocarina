@@ -139,7 +139,7 @@ struct EnableReadAndWrite {
     }
 
     template<typename Index, typename Val>
-    requires concepts::integral<expr_value_t<Index>> && concepts::is_same_v<element_type, expr_value_t<Val>>
+    requires concepts::integral<expr_value_t<Index>> && ocarina::is_same_v<element_type, expr_value_t<Val>>
     void write(Index &&index, Val &&elm, bool check_boundary = true) {
         Var<expr_value_t<Index>> new_index = OC_FORWARD(index);
         if (check_boundary) {
@@ -155,7 +155,7 @@ struct EnableReadAndWrite {
 
     template<typename Index, typename Val>
     requires is_integral_expr_v<Index> &&
-             concepts::is_same_v<element_type, expr_value_t<Val>>
+             ocarina::is_same_v<element_type, expr_value_t<Val>>
     void write_and_check(Index &&index, Val &&elm, uint size, const string &desc) {
         if constexpr (is_integral_v<Index>) {
             OC_ASSERT(index <= size);
@@ -774,7 +774,7 @@ public:
     }
 
     template<typename Index, typename Val>
-    requires concepts::integral<expr_value_t<Index>> && concepts::is_same_v<T, expr_value_t<Val>>
+    requires concepts::integral<expr_value_t<Index>> && ocarina::is_same_v<T, expr_value_t<Val>>
     void write(Index index, Val &&elm) {
         if constexpr (is_dsl_v<Index>) {
             index = detail::correct_index(index, size(), typeid(*this).name(), traceback_string());

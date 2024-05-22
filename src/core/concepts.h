@@ -120,19 +120,7 @@ concept matrix4 = is_matrix4_v<T>;
 template<typename T>
 concept basic = is_basic_v<T>;
 
-namespace detail {
-template<typename... T>
-struct all_same_impl : std::true_type {};
 
-template<typename First, typename... Other>
-struct all_same_impl<First, Other...> : std::conjunction<std::is_same<First, Other>...> {};
-}// namespace detail
-
-template<typename... T>
-using is_same = detail::all_same_impl<T...>;
-
-template<typename... T>
-constexpr auto is_same_v = is_same<T...>::value;
 
 template<typename... T>
 concept same = is_same_v<T...>;
@@ -222,7 +210,7 @@ template<typename... Ts>
 struct match_triple_func_impl : std::false_type {};
 
 template<typename First, typename... Ts>
-requires(concepts::is_same_v<type_element_t<First>, type_element_t<Ts>...> &&
+requires(ocarina::is_same_v<type_element_t<First>, type_element_t<Ts>...> &&
          ((type_dimension_v<First> == type_dimension_v<Ts>) && ...))
 struct match_triple_func_impl<First, Ts...> : std::true_type {};
 
