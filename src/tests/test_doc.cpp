@@ -236,7 +236,7 @@ void test_lambda(Device &device, Stream &stream) {
     {
         float3 a,b;
         bool bb = match_dsl_binary_func_v<decltype(a), decltype(b.xy())>;
-//        static_assert(match_dsl_binary_func_v<decltype(a), decltype(float2().xyy_())>);
+        static_assert(match_dsl_triple_func_v<decltype(a), decltype(Float2().xyy_()), float3>);
     }
 
     Buffer<float3> vert = device.create_buffer<float3>(vertices.size());

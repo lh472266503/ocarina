@@ -219,6 +219,14 @@ struct match_triple_func_impl<First, Ts...> : std::true_type {};
 
 }// namespace detail
 
+template<typename... Ts>
+using match_triple_func = detail::match_triple_func_impl<std::remove_cvref_t<Ts>...>;
+OC_DEFINE_TEMPLATE_VALUE_MULTI(match_triple_func)
+
+template<typename... Ts>
+using match_dsl_triple_func = std::conjunction<match_triple_func<remove_device_t<Ts>...>, any_device_type<Ts...>>;
+OC_DEFINE_TEMPLATE_VALUE_MULTI(match_dsl_triple_func)
+
 /// used for dsl scalar vector or matrix
 template<typename U, typename T, typename F>
 requires(any_dsl_v<U, T, F> && std::is_same_v<expr_value_t<T>, expr_value_t<F>> &&
