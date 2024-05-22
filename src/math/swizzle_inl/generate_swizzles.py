@@ -10,7 +10,7 @@ def generate(file, dim):
 
     for i,x in enumerate(entries):
         for j,y in enumerate(entries):
-            print(f"auto {x}{y}() const noexcept {{ return (*reinterpret_cast<const swizzle_type<{i}, {j}>*>(addressof(x))).to_vec(); }};", file=file)
+            print(f"auto {x}{y}() const noexcept {{ return (*reinterpret_cast<const swizzle_type<{i}, {j}>*>(addressof(x))).decay(); }};", file=file)
 
     print("", file=file)
 
@@ -22,7 +22,7 @@ def generate(file, dim):
     for i, x in enumerate(entries):
         for j, y in enumerate(entries):
             for k, z in enumerate(entries):
-                print(f"auto {x}{y}{z}() const noexcept {{ return (*reinterpret_cast<const swizzle_type<{i}, {j}, {k}>*>(addressof(x))).to_vec(); }};",
+                print(f"auto {x}{y}{z}() const noexcept {{ return (*reinterpret_cast<const swizzle_type<{i}, {j}, {k}>*>(addressof(x))).decay(); }};",
                       file=file)
     print("", file=file)
 
@@ -37,7 +37,7 @@ def generate(file, dim):
         for j, y in enumerate(entries):
             for k, z in enumerate(entries):
                 for n, w in enumerate(entries):
-                    print(f"auto {x}{y}{z}{w}() const noexcept {{ return (*reinterpret_cast<const swizzle_type<{i}, {j}, {k}, {n}>*>(addressof(x))).to_vec(); }};",
+                    print(f"auto {x}{y}{z}{w}() const noexcept {{ return (*reinterpret_cast<const swizzle_type<{i}, {j}, {k}, {n}>*>(addressof(x))).decay(); }};",
                           file=file)
     
 

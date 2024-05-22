@@ -167,7 +167,7 @@ OC_MAKE_DSL_ASSIGN_OP(^)
     template<typename Lhs, typename T, size_t N, size_t... Indices>                \
     requires ocarina::is_dsl_v<Lhs>                                                \
     auto operator op(Lhs &&lhs, ocarina::Swizzle<T, N, Indices...> rhs) noexcept { \
-        return OC_FORWARD(lhs) op rhs.to_vec();                                    \
+        return OC_FORWARD(lhs) op rhs.decay();                                    \
     }
 
 OC_MAKE_SWIZZLE_BINARY_OP(+)
@@ -197,7 +197,7 @@ OC_MAKE_SWIZZLE_BINARY_OP(>=)
     requires ocarina::is_dsl_v<Lhs>                                        \
     void operator op##=(Lhs &lhs,                                          \
                         ocarina::Swizzle<T, N, Indices...> rhs) noexcept { \
-        lhs op## = rhs.to_vec();                                           \
+        lhs op## = rhs.decay();                                           \
         return lhs;                                                        \
     }
 

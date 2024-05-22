@@ -326,7 +326,7 @@ void test_lambda(Device &device, Stream &stream) {
 //        $info("{} {} {}  ", aac.call_min(aac, -19.f));
         $info("{} max_  ", max_(aa.x, aa.y));
         $info("{} {}  {}  ", aa);
-        $info("{} {}  {}  ", max_(aa, f3.xxx_()));
+        $info("{} {}  {}  ", max_(f3.xxx_(),aa));
         //        f3 = xyz;
 
         //        $outline {

@@ -132,6 +132,31 @@ template<typename T>
 using is_swizzle = detail::is_swizzle_impl<std::remove_cvref_t<T>>;
 OC_DEFINE_TEMPLATE_VALUE(is_swizzle)
 
+template<typename T>
+struct Var;
+
+namespace detail {
+template<typename T>
+struct swizzle_decay_impl {
+    using type = T;
+};
+
+template<typename T, size_t N, size_t... Indices>
+struct swizzle_decay_impl<Swizzle<T, N, Indices...>> {
+    using type = Swizzle<T, N, Indices...>::vec_type;
+};
+
+template<typename T, size_t N, size_t... Indices>
+struct swizzle_decay_impl<Swizzle<Var<T>, N, Indices...>> {
+    using type = Swizzle<Var<T>, N, Indices...>::vec_type;
+};
+
+}// namespace detail
+
+template<typename T>
+using swizzle_decay = detail::swizzle_decay_impl<std::remove_cvref_t<T>>;
+OC_DEFINE_TEMPLATE_TYPE(swizzle_decay)
+
 template<typename T, size_t N>
 struct Vector;
 
@@ -301,7 +326,7 @@ struct type_element_impl<Vector<T, N>> {
     using type = T;
 };
 
-template<typename T, size_t N, size_t ...Indices>
+template<typename T, size_t N, size_t... Indices>
 struct type_element_impl<Swizzle<T, N, Indices...>> {
     using type = T;
 };

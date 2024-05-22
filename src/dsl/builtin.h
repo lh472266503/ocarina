@@ -188,7 +188,7 @@ OC_NODISCARD auto max_(const Lhs &lhs, const Rhs &rhs) noexcept {
     static constexpr auto dimension = type_dimension_v<remove_device_t<Lhs>>;
     using scalar_type = type_element_t<remove_device_t<Lhs>>;
     using var_type = Var<general_vector_t<scalar_type, dimension>>;
-    return lhs;
+    return var_type::call_max(static_cast<swizzle_decay_t<Lhs>>(lhs), swizzle_decay_t<Rhs>(rhs));
 }
 
 #undef OC_MAKE_DSL_BINARY_FUNC
