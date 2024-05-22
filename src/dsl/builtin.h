@@ -187,8 +187,8 @@ OC_DEFINE_TEMPLATE_VALUE_MULTI(match_dsl_binary_func)
         static constexpr auto dimension = type_dimension_v<remove_device_t<Lhs>>; \
         using scalar_type = type_element_t<remove_device_t<Lhs>>;                 \
         using var_type = Var<general_vector_t<scalar_type, dimension>>;           \
-        return var_type::call_##func((lhs),      \
-                                     (rhs));     \
+        return var_type::call_##func(static_cast<swizzle_decay_t<Lhs>>(lhs),      \
+                                     static_cast<swizzle_decay_t<Rhs>>(rhs));     \
     }
 
 OC_MAKE_DSL_BINARY_FUNC(max, MAX)
