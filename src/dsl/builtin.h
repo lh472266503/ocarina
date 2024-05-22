@@ -180,16 +180,29 @@ template<typename... Ts>
 using match_dsl_binary_func = std::conjunction<match_binary_func<remove_device_t<Ts>...>, any_device_type<Ts...>>;
 OC_DEFINE_TEMPLATE_VALUE_MULTI(match_dsl_binary_func)
 
-#define OC_MAKE_DSL_BINARY_FUNC(func, tag)
+#define OC_MAKE_DSL_BINARY_FUNC(func, tag)                                        \
+    template<typename Lhs, typename Rhs>                                          \
+    requires match_dsl_binary_func_v<Lhs, Rhs>                                    \
+    OC_NODISCARD auto func(const Lhs &lhs, const Rhs &rhs) noexcept {             \
+        static constexpr auto dimension = type_dimension_v<remove_device_t<Lhs>>; \
+        using scalar_type = type_element_t<remove_device_t<Lhs>>;                 \
+        using var_type = Var<general_vector_t<scalar_type, dimension>>;           \
+        return var_type::call_##func((lhs),      \
+                                     (rhs));     \
+    }
 
-template<typename Lhs, typename Rhs>
-requires match_dsl_binary_func_v<Lhs, Rhs>
-OC_NODISCARD auto max_(const Lhs &lhs, const Rhs &rhs) noexcept {
-    static constexpr auto dimension = type_dimension_v<remove_device_t<Lhs>>;
-    using scalar_type = type_element_t<remove_device_t<Lhs>>;
-    using var_type = Var<general_vector_t<scalar_type, dimension>>;
-    return var_type::call_max(static_cast<swizzle_decay_t<Lhs>>(lhs), swizzle_decay_t<Rhs>(rhs));
-}
+OC_MAKE_DSL_BINARY_FUNC(max, MAX)
+OC_MAKE_DSL_BINARY_FUNC(min, MIN)
+OC_MAKE_DSL_BINARY_FUNC(pow, POW)
+OC_MAKE_DSL_BINARY_FUNC(fmod, FMOD)
+OC_MAKE_DSL_BINARY_FUNC(mod, MOD)
+OC_MAKE_DSL_BINARY_FUNC(copysign, COPYSIGN)
+OC_MAKE_DSL_BINARY_FUNC(atan2, ATAN2)
+
+OC_MAKE_DSL_BINARY_FUNC(cross, CROSS)
+OC_MAKE_DSL_BINARY_FUNC(dot, DOT)
+OC_MAKE_DSL_BINARY_FUNC(distance, DISTANCE)
+OC_MAKE_DSL_BINARY_FUNC(distance_squared, DISTANCE_SQUARED)
 
 #undef OC_MAKE_DSL_BINARY_FUNC
 
@@ -290,30 +303,6 @@ OC_MAKE_TRIPLE_FUNC(fma, FMA)
 
 #undef OC_MAKE_TRIPLE_FUNC
 
-template<typename T, typename U>
-requires(any_dsl_v<T, U> && is_vector3_v<expr_value_t<T>> && is_vector3_v<expr_value_t<U>>)
-OC_NODISCARD auto cross(const T &t, const U &u) noexcept {
-    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
-                                                  CallOp::CROSS, {OC_EXPR(t), OC_EXPR(u)});
-    return eval<expr_value_t<T>>(expr);
-}
-
-#define OC_MAKE_BINARY_VECTOR_FUNC(func, tag)                                                              \
-    template<typename T, typename U>                                                                       \
-    requires(any_dsl_v<T, U> && is_vector_same_dimension_v<expr_value_t<U>, expr_value_t<T>>)              \
-    OC_NODISCARD auto                                                                                      \
-    func(const T &t, const U &u) noexcept {                                                                \
-        using ret_type = decltype(func(std::declval<expr_value_t<T>>(), std::declval<expr_value_t<U>>())); \
-        auto expr = Function::current()->call_builtin(Type::of<expr_value_t<ret_type>>(),                  \
-                                                      CallOp::tag, {OC_EXPR(t), OC_EXPR(u)});              \
-        return eval<expr_value_t<ret_type>>(expr);                                                         \
-    }
-OC_MAKE_BINARY_VECTOR_FUNC(dot, DOT)
-OC_MAKE_BINARY_VECTOR_FUNC(distance, DISTANCE)
-OC_MAKE_BINARY_VECTOR_FUNC(distance_squared, DISTANCE_SQUARED)
-
-#undef OC_MAKE_BINARY_VECTOR_FUNC
-
 template<typename... Args>
 requires(any_dsl_v<Args...> &&
          is_all_float_element_expr_v<Args...> &&
@@ -333,39 +322,6 @@ void coordinate_system(const A &a, Var<float3> &b, Var<float3> &c) noexcept {
                                                   CallOp::COORDINATE_SYSTEM, {OC_EXPR(a), OC_EXPR(b), OC_EXPR(c)});
     Function::current()->expr_statement(expr);
 }
-
-#define OC_MAKE_BINARY_BUILTIN_FUNC(func, tag)                                                             \
-    template<typename A, typename B>                                                                       \
-    requires(any_dsl_v<A, B> &&                                                                            \
-             is_basic_v<expr_value_t<A>> &&                                                                \
-             is_basic_v<expr_value_t<B>> &&                                                                \
-             is_same_expr_v<A, B>)                                                                         \
-    OC_NODISCARD auto                                                                                      \
-    func(const A &a, const B &b) noexcept {                                                                \
-        using ret_type = decltype(func(std::declval<expr_value_t<A>>(), std::declval<expr_value_t<B>>())); \
-        auto expr = Function::current()->call_builtin(Type::of<expr_value_t<A>>(),                         \
-                                                      CallOp::tag, {OC_EXPR(a), OC_EXPR(b)});              \
-        return eval<expr_value_t<ret_type>>(expr);                                                         \
-    }                                                                                                      \
-    template<typename T>                                                                                   \
-    requires(is_dsl_v<T>)                                                                                  \
-    OC_NODISCARD auto                                                                                      \
-    func(const T &a, const T &b) noexcept {                                                                \
-        using ret_type = decltype(func(std::declval<expr_value_t<T>>(), std::declval<expr_value_t<T>>())); \
-        auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),                         \
-                                                      CallOp::tag, {OC_EXPR(a), OC_EXPR(b)});              \
-        return eval<expr_value_t<ret_type>>(expr);                                                         \
-    }
-
-OC_MAKE_BINARY_BUILTIN_FUNC(max, MAX)
-OC_MAKE_BINARY_BUILTIN_FUNC(min, MIN)
-OC_MAKE_BINARY_BUILTIN_FUNC(pow, POW)
-OC_MAKE_BINARY_BUILTIN_FUNC(fmod, FMOD)
-OC_MAKE_BINARY_BUILTIN_FUNC(mod, MOD)
-OC_MAKE_BINARY_BUILTIN_FUNC(copysign, COPYSIGN)
-OC_MAKE_BINARY_BUILTIN_FUNC(atan2, ATAN2)
-
-#undef OC_MAKE_BINARY_BUILTIN_FUNC
 
 #define OC_MAKE_VEC_MAKER_DIM(type, tag, dim)                                  \
     template<typename... Args>                                                 \
