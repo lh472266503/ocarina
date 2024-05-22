@@ -127,6 +127,22 @@ constexpr bool is_valid_dsl_type_v = is_valid_dsl_type<T>::value;
 
 namespace detail {
 template<typename T>
+struct remove_device_impl {
+    using type = expr_value_t<T>;
+};
+
+template<typename T, size_t N, size_t... Indices>
+struct remove_device_impl<Swizzle<Var<T>, N, Indices...>> {
+    using type = Swizzle<T, N, Indices...>;
+};
+}// namespace detail
+
+template<typename T>
+using remove_device = detail::remove_device_impl<std::remove_cvref_t<T>>;
+OC_DEFINE_TEMPLATE_TYPE(remove_device)
+
+namespace detail {
+template<typename T>
 struct dsl_impl {
     using type = Var<T>;
 };
@@ -200,20 +216,43 @@ using is_dsl = typename detail::is_dsl_impl<std::remove_cvref_t<T>>::type;
 template<typename T>
 constexpr auto is_dsl_v = is_dsl<T>::value;
 
-template<typename... T>
-using any_dsl = std::disjunction<is_dsl<T>...>;
+template<typename... Ts>
+using any_dsl = std::disjunction<is_dsl<Ts>...>;
 
-template<typename... T>
-constexpr auto any_dsl_v = any_dsl<T...>::value;
+template<typename... Ts>
+constexpr auto any_dsl_v = any_dsl<Ts...>::value;
 
-template<typename... T>
-constexpr auto none_dsl_v = !any_dsl_v<T...>;
+template<typename... Ts>
+constexpr auto none_dsl_v = !any_dsl_v<Ts...>;
 
-template<typename... T>
-using all_dsl = std::conjunction<is_dsl<T>...>;
+template<typename... Ts>
+using all_dsl = std::conjunction<is_dsl<Ts>...>;
 
-template<typename... T>
-constexpr auto all_dsl_v = all_dsl<T...>::value;
+template<typename... Ts>
+constexpr auto all_dsl_v = all_dsl<Ts...>::value;
+
+namespace detail {
+template<typename T>
+struct is_device_type_impl : is_dsl_impl<T> {};
+
+template<typename T, size_t N, size_t... Indices>
+struct is_device_type_impl<Swizzle<Var<T>, N, Indices...>> : std::true_type {};
+}// namespace detail
+
+template<typename T>
+using is_device_type = detail::is_device_type_impl<std::remove_cvref_t<T>>;
+OC_DEFINE_TEMPLATE_TYPE(is_device_type)
+
+template<typename... Ts>
+using any_device_type = std::disjunction<is_device_type<Ts>...>;
+OC_DEFINE_TEMPLATE_VALUE_MULTI(any_device_type)
+
+template<typename... Ts>
+using all_device_type = std::conjunction<is_device_type<Ts>...>;
+OC_DEFINE_TEMPLATE_VALUE_MULTI(all_device_type)
+
+template<typename... Ts>
+static constexpr auto none_device_type_v = !any_device_type_v<Ts...>;
 
 namespace detail {
 template<typename T>
@@ -734,7 +773,5 @@ OC_MAKE_VAR_MAT(4)
 #undef OC_MAKE_VAR_MAT
 #undef OC_MAKE_VAR_TYPE
 #undef OC_MAKE_VAR_TYPE_IMPL
-
-
 
 }// namespace ocarina
