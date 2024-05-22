@@ -153,29 +153,29 @@ struct deduce_vec<Swizzle<T, N, Indices...>> {
 };
 
 template<typename Lhs, typename Rhs>
-struct op_vector_impl {
+struct deduce_binary_op_vec_impl {
     static_assert(always_false_v<Lhs, Rhs>);
 };
 
 template<typename T, size_t N>
-struct op_vector_impl<Vector<T, N>, Vector<T, N>> {
+struct deduce_binary_op_vec_impl<Vector<T, N>, Vector<T, N>> {
     using type = Vector<T, N>;
 };
 
 template<typename T, size_t N>
-struct op_vector_impl<typename Vector<T, N>::scalar_type, Vector<T, N>> {
+struct deduce_binary_op_vec_impl<typename Vector<T, N>::scalar_type, Vector<T, N>> {
     using type = Vector<T, N>;
 };
 
 template<typename T, size_t N>
-struct op_vector_impl<Vector<T, N>, typename Vector<T, N>::scalar_type> {
+struct deduce_binary_op_vec_impl<Vector<T, N>, typename Vector<T, N>::scalar_type> {
     using type = Vector<T, N>;
 };
 
 template<typename Lhs, typename Rhs>
-struct op_vector {
-    using type = typename op_vector_impl<typename deduce_vec<Lhs>::type,
-                                         typename deduce_vec<Rhs>::type>::type;
+struct deduce_binary_op_vec {
+    using type = typename deduce_binary_op_vec_impl<typename deduce_vec<Lhs>::type,
+                                                    typename deduce_vec<Rhs>::type>::type;
 };
 
 }// namespace detail
@@ -184,8 +184,8 @@ template<typename T>
 using deduce_vec_t = typename detail::deduce_vec<std::remove_cvref_t<T>>::type;
 
 template<typename Lhs, typename Rhs>
-using op_vector_t = typename detail::op_vector<std::remove_cvref_t<Lhs>,
-                                               std::remove_cvref_t<Rhs>>::type;
+using deduce_binary_op_vec_t = typename detail::deduce_binary_op_vec<std::remove_cvref_t<Lhs>,
+                                                                     std::remove_cvref_t<Rhs>>::type;
 
 template<size_t N>
 struct Matrix;

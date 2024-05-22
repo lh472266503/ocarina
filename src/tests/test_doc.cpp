@@ -312,6 +312,8 @@ void test_lambda(Device &device, Stream &stream) {
         $info("{} {} {}  {}  ", make_uint3(at), none(at.xyz_()).cast<int>());
 //        Float3 aac = 19.f;
 
+        auto ma = max(f3.xyz_(), 2.f);
+
         int fdgsi = 0;
         auto ax = aa.x.call_rcp(aa.x);
 //        $info("{} {} {}  ", aac.call_min(aac, -19.f));

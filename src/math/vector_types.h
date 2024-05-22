@@ -519,7 +519,7 @@ OC_MAKE_VECTOR_UNARY_FUNC(length_squared)
 #define OC_MAKE_VECTOR_BINARY_FUNC(func)                                \
     template<typename T, typename U>                                    \
     OC_NODISCARD decltype(auto) func(const T &t, const U &u) noexcept { \
-        using vec_type = op_vector_t<T, U>;                             \
+        using vec_type = deduce_binary_op_vec_t<T, U>;                  \
         return vec_type::call_##func(t, u);                             \
     }
 
