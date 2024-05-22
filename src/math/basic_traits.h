@@ -187,9 +187,6 @@ template<typename Lhs, typename Rhs>
 using deduce_binary_op_vec_t = typename detail::deduce_binary_op_vec<std::remove_cvref_t<Lhs>,
                                                                      std::remove_cvref_t<Rhs>>::type;
 
-template<size_t N>
-struct Matrix;
-
 namespace detail {
 
 template<typename T>
@@ -228,8 +225,10 @@ using vector_dimension = detail::vector_dimension_impl<std::remove_cvref_t<T>>;
 template<typename T>
 constexpr auto vector_dimension_v = vector_dimension<T>::value;
 
-namespace detail {
+template<size_t N>
+struct Matrix;
 
+namespace detail {
 template<typename T>
 struct matrix_dimension_impl {
     static constexpr auto value = static_cast<size_t>(1u);
@@ -239,7 +238,6 @@ template<size_t N>
 struct matrix_dimension_impl<Matrix<N>> {
     static constexpr auto value = N;
 };
-
 }// namespace detail
 
 template<typename T>
@@ -291,6 +289,23 @@ struct vector_element_impl<Vector<T, N>> {
 template<typename T>
 using vector_element = detail::vector_element_impl<std::remove_cvref_t<T>>;
 OC_DEFINE_TEMPLATE_TYPE(vector_element)
+
+namespace detail {
+template<typename T>
+struct type_element_impl {
+    using type = T;
+};
+
+template<typename T, size_t N>
+struct type_element_impl<Vector<T, N>> {
+    using type = T;
+};
+
+}// namespace detail
+
+template<typename T>
+using type_element = detail::type_element_impl<std::remove_cvref_t<T>>;
+OC_DEFINE_TEMPLATE_TYPE(type_element)
 
 namespace detail {
 
