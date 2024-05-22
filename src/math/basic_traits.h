@@ -194,15 +194,6 @@ struct Matrix;
 namespace detail {
 
 template<typename T, size_t N = 0u>
-struct is_vector_impl : std::false_type {};
-
-template<typename T, size_t N>
-struct is_vector_impl<Vector<T, N>, N> : std::true_type {};
-
-template<typename T, size_t N>
-struct is_vector_impl<Vector<T, N>, 0u> : std::true_type {};
-
-template<typename T, size_t N = 0u>
 struct is_matrix_impl : std::false_type {};
 
 template<size_t N>
@@ -210,16 +201,6 @@ struct is_matrix_impl<Matrix<N>, N> : std::true_type {};
 
 template<size_t N>
 struct is_matrix_impl<Matrix<N>, 0u> : std::true_type {};
-
-template<typename T>
-struct vector_element_impl {
-    using type = T;
-};
-
-template<typename T, size_t N>
-struct vector_element_impl<Vector<T, N>> {
-    using type = T;
-};
 
 template<typename T>
 struct vector_dimension_impl {
@@ -289,15 +270,46 @@ struct type_dimension_impl<Matrix<N>> {
     static constexpr size_t value = N;
 };
 
+template<typename T, size_t N, size_t... Indices>
+struct type_dimension_impl<Swizzle<T, N, Indices...>> {
+    static constexpr size_t value = swizzle_dimension_v<Swizzle<T, N, Indices...>>;
+};
+
 }// namespace detail
 
 template<typename T>
 using type_dimension = detail::type_dimension_impl<std::remove_cvref_t<T>>;
 OC_DEFINE_TEMPLATE_VALUE(type_dimension)
 
+namespace detail {
+template<typename T>
+struct vector_element_impl {
+    using type = T;
+};
+
+template<typename T, size_t N>
+struct vector_element_impl<Vector<T, N>> {
+    using type = T;
+};
+
+}// namespace detail
+
 template<typename T>
 using vector_element = detail::vector_element_impl<std::remove_cvref_t<T>>;
 OC_DEFINE_TEMPLATE_TYPE(vector_element)
+
+namespace detail {
+
+template<typename T, size_t N = 0u>
+struct is_vector_impl : std::false_type {};
+
+template<typename T, size_t N>
+struct is_vector_impl<Vector<T, N>, N> : std::true_type {};
+
+template<typename T, size_t N>
+struct is_vector_impl<Vector<T, N>, 0u> : std::true_type {};
+
+}// namespace detail
 
 //todo clear up the trait
 template<typename T, size_t N = 0u>

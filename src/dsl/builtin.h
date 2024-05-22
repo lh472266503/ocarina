@@ -161,6 +161,16 @@ OC_MAKE_DSL_UNARY_FUNC(inverse, INVERSE)
 
 #undef OC_MAKE_DSL_UNARY_FUNC
 
+namespace detail {
+
+//template<typename ...Ts>
+//struct is_same_dimension_impl<Ts...> : std::false_type {};
+//
+//template<typename First, typename ...Rest>
+//struct
+
+}
+
 /// used for dsl scalar vector or matrix
 template<typename U, typename T, typename F>
 requires(any_dsl_v<U, T, F> && std::is_same_v<expr_value_t<T>, expr_value_t<F>> &&
