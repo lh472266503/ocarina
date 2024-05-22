@@ -177,8 +177,21 @@ using match_binary_func = detail::match_binary_func_impl<std::remove_cvref_t<T>.
 OC_DEFINE_TEMPLATE_VALUE_MULTI(match_binary_func)
 
 template<typename... Ts>
-using match_dsl_binary_func = std::conjunction<match_binary_func<Ts...>>;
+using match_dsl_binary_func = std::conjunction<match_binary_func<remove_device_t<Ts>...>, any_device_type<Ts...>>;
 OC_DEFINE_TEMPLATE_VALUE_MULTI(match_dsl_binary_func)
+
+#define OC_MAKE_DSL_BINARY_FUNC(func, tag)
+
+template<typename Lhs, typename Rhs>
+requires match_dsl_binary_func_v<Lhs, Rhs>
+OC_NODISCARD auto max_(const Lhs &lhs, const Rhs &rhs) noexcept {
+    static constexpr auto dimension = type_dimension_v<remove_device_t<Lhs>>;
+    using scalar_type = type_element_t<remove_device_t<Lhs>>;
+    using var_type = Var<general_vector_t<scalar_type, dimension>>;
+    return lhs;
+}
+
+#undef OC_MAKE_DSL_BINARY_FUNC
 
 /// used for dsl scalar vector or matrix
 template<typename U, typename T, typename F>

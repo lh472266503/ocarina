@@ -236,7 +236,7 @@ void test_lambda(Device &device, Stream &stream) {
     {
         float3 a,b;
         bool bb = match_dsl_binary_func_v<decltype(a), decltype(b.xy())>;
-//        static_assert(match_dsl_binary_func_v<decltype(a), decltype(b.xyz_())>);
+//        static_assert(match_dsl_binary_func_v<decltype(a), decltype(float2().xyy_())>);
     }
 
     Buffer<float3> vert = device.create_buffer<float3>(vertices.size());
@@ -324,7 +324,9 @@ void test_lambda(Device &device, Stream &stream) {
         int fdgsi = 0;
         auto ax = aa.x.call_rcp(aa.x);
 //        $info("{} {} {}  ", aac.call_min(aac, -19.f));
-        $info("{}   ", aa.x.call_min(aa.x, aa.y));
+        $info("{} max_  ", max_(aa.x, aa.y));
+        $info("{} {}  {}  ", aa);
+        $info("{} {}  {}  ", max_(aa, f3.xxx_()));
         //        f3 = xyz;
 
         //        $outline {

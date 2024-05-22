@@ -472,7 +472,7 @@ template<typename T>
 static constexpr bool is_std_vector_v = detail::is_std_vector_impl<std::remove_cvref_t<T>>::value;
 
 template<typename T, size_t N>
-struct scalar_or_vector {
+struct general_vector {
 private:
     [[nodiscard]] constexpr static auto func() noexcept {
         using raw_type = std::remove_cvref_t<T>;
@@ -488,6 +488,6 @@ public:
 };
 
 template<typename T, size_t N>
-using scalar_or_vector_t = typename scalar_or_vector<T, N>::type;
+using general_vector_t = typename general_vector<T, N>::type;
 
 }// namespace ocarina
