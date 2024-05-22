@@ -163,13 +163,22 @@ OC_MAKE_DSL_UNARY_FUNC(inverse, INVERSE)
 
 namespace detail {
 
-//template<typename ...Ts>
-//struct is_same_dimension_impl<Ts...> : std::false_type {};
-//
-//template<typename First, typename ...Rest>
-//struct
+template<typename Lhs, typename Rhs>
+struct match_binary_func_impl : std::false_type {};
 
-}
+template<typename Lhs, typename Rhs>
+requires(type_dimension_v<Lhs> == type_dimension_v<Rhs> && std::is_same_v<type_element_t<Lhs>, type_element_t<Rhs>>)
+struct match_binary_func_impl<Lhs, Rhs> : std::true_type {};
+
+}// namespace detail
+
+template<typename... T>
+using match_binary_func = detail::match_binary_func_impl<std::remove_cvref_t<T>...>;
+OC_DEFINE_TEMPLATE_VALUE_MULTI(match_binary_func)
+
+template<typename... Ts>
+using match_dsl_binary_func = std::conjunction<match_binary_func<Ts...>>;
+OC_DEFINE_TEMPLATE_VALUE_MULTI(match_dsl_binary_func)
 
 /// used for dsl scalar vector or matrix
 template<typename U, typename T, typename F>

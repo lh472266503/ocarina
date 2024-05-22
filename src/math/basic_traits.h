@@ -301,6 +301,11 @@ struct type_element_impl<Vector<T, N>> {
     using type = T;
 };
 
+template<typename T, size_t N, size_t ...Indices>
+struct type_element_impl<Swizzle<T, N, Indices...>> {
+    using type = T;
+};
+
 }// namespace detail
 
 template<typename T>

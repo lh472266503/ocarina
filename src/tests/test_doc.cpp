@@ -232,6 +232,13 @@ struct Test {
 void test_lambda(Device &device, Stream &stream) {
     auto [vertices, triangles] = get_cube();
 
+
+    {
+        float3 a,b;
+        bool bb = match_dsl_binary_func_v<decltype(a), decltype(b.xy())>;
+//        static_assert(match_dsl_binary_func_v<decltype(a), decltype(b.xyz_())>);
+    }
+
     Buffer<float3> vert = device.create_buffer<float3>(vertices.size());
     Buffer tri = device.create_buffer<Triple>(triangles.size());
 
