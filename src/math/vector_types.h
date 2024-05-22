@@ -98,7 +98,7 @@ public:
 
 #define OC_MAKE_SWIZZLE_UNARY_OP(op)    \
     auto operator op() const noexcept { \
-        return op decay();             \
+        return op decay();              \
     }
     OC_MAKE_SWIZZLE_UNARY_OP(+)
     OC_MAKE_SWIZZLE_UNARY_OP(-)
@@ -111,19 +111,19 @@ public:
                                                                               \
     template<typename U, size_t M, size_t... OtherIndices>                    \
     vec_type operator op(Swizzle<U, M, OtherIndices...> rhs) const noexcept { \
-        return decay() op rhs.decay();                                      \
+        return decay() op rhs.decay();                                        \
     }                                                                         \
                                                                               \
     template<typename U>                                                      \
     requires is_scalar_v<U>                                                   \
     vec_type operator op(U rhs) const noexcept {                              \
-        return decay() op rhs;                                               \
+        return decay() op rhs;                                                \
     }                                                                         \
                                                                               \
     template<typename U>                                                      \
     requires is_scalar_v<U>                                                   \
     friend vec_type operator op(U lhs, Swizzle<T, N, Indices...> rhs) {       \
-        return lhs op rhs.decay();                                           \
+        return lhs op rhs.decay();                                            \
     }                                                                         \
                                                                               \
     template<typename Arg>                                                    \
@@ -150,12 +150,12 @@ public:
     template<typename U, size_t M, size_t... OtherIndices>                        \
     requires __VA_ARGS__                                                          \
     [[nodiscard]] auto operator op(Swizzle<U, M, OtherIndices...> rhs) noexcept { \
-        return decay() op rhs.decay();                                          \
+        return decay() op rhs.decay();                                            \
     }                                                                             \
     template<typename U>                                                          \
     requires __VA_ARGS__                                                          \
     [[nodiscard]] auto operator op(U rhs) const noexcept {                        \
-        return decay() op rhs;                                                   \
+        return decay() op rhs;                                                    \
     }
 
     OC_MAKE_SWIZZLE_MEMBER_LOGIC_OP(||, ocarina::is_all_boolean_v<T, U>)
@@ -271,13 +271,13 @@ struct Vector : public detail::VectorStorage<T, N> {
     requires __VA_ARGS__                                                                      \
     [[nodiscard]] friend constexpr auto operator op(Swizzle<U, M, Indices...> lhs,            \
                                                     this_type rhs) noexcept {                 \
-        return lhs.decay() op rhs;                                                           \
+        return lhs.decay() op rhs;                                                            \
     }                                                                                         \
     template<typename U, size_t M, size_t... Indices>                                         \
     requires __VA_ARGS__                                                                      \
     [[nodiscard]] friend constexpr auto operator op(this_type lhs,                            \
                                                     Swizzle<U, M, Indices...> rhs) noexcept { \
-        return lhs op rhs.decay();                                                           \
+        return lhs op rhs.decay();                                                            \
     }                                                                                         \
     template<typename U>                                                                      \
     requires __VA_ARGS__                                                                      \
@@ -327,13 +327,13 @@ struct Vector : public detail::VectorStorage<T, N> {
     requires __VA_ARGS__                                                                      \
     [[nodiscard]] friend constexpr auto operator op(Swizzle<U, M, Indices...> lhs,            \
                                                     this_type rhs) noexcept {                 \
-        return lhs.decay() op rhs;                                                           \
+        return lhs.decay() op rhs;                                                            \
     }                                                                                         \
     template<typename U, size_t M, size_t... Indices>                                         \
     requires __VA_ARGS__                                                                      \
     [[nodiscard]] friend constexpr auto operator op(this_type lhs,                            \
                                                     Swizzle<U, M, Indices...> rhs) noexcept { \
-        return lhs op rhs.decay();                                                           \
+        return lhs op rhs.decay();                                                            \
     }                                                                                         \
     template<typename U>                                                                      \
     requires __VA_ARGS__                                                                      \
@@ -460,11 +460,20 @@ struct Vector : public detail::VectorStorage<T, N> {
 
 #undef OC_MAKE_VECTOR_BINARY_FUNC
 
-    [[nodiscard]] static this_type call_fma(const this_type &t, const this_type &u, const this_type &v) noexcept {
-        return [&]<size_t... index>(std::index_sequence<index...>) {
-            return this_type{fma(t[index], u[index], v[index])...};
-        }(std::make_index_sequence<N>());
+#define OC_MAKE_VECTOR_TRIPLE_FUNC(func)                                      \
+    [[nodiscard]] static this_type call_##func(const this_type &t,            \
+                                               const this_type &u,            \
+                                               const this_type &v) noexcept { \
+        return [&]<size_t... index>(std::index_sequence<index...>) {          \
+            return this_type{func(t[index], u[index], v[index])...};          \
+        }(std::make_index_sequence<N>());                                     \
     }
+
+    OC_MAKE_VECTOR_TRIPLE_FUNC(fma)
+    OC_MAKE_VECTOR_TRIPLE_FUNC(clamp)
+    OC_MAKE_VECTOR_TRIPLE_FUNC(lerp)
+
+#undef OC_MAKE_VECTOR_TRIPLE_FUNC
 };
 
 #define OC_MAKE_VECTOR_UNARY_FUNC(func)                      \
@@ -573,7 +582,7 @@ template<size_t N>
 #define OC_MAKE_SWIZZLE_LOGIC_FUNC(func)                                         \
     template<size_t N, size_t... Indices>                                        \
     [[nodiscard]] constexpr bool func(Swizzle<bool, N, Indices...> v) noexcept { \
-        return func(v.decay());                                                 \
+        return func(v.decay());                                                  \
     }
 OC_MAKE_SWIZZLE_LOGIC_FUNC(any)
 OC_MAKE_SWIZZLE_LOGIC_FUNC(all)
@@ -594,7 +603,7 @@ OC_MAKE_SWIZZLE_LOGIC_FUNC(none)
     template<typename T, size_t N, size_t... Indices>                                                                        \
     requires(sizeof...(Indices) >= 2)                                                                                        \
     [[nodiscard]] constexpr auto make_##type##2(ocarina::Swizzle<T, N, Indices...> v) noexcept {                             \
-        return make_##type##2(v.decay());                                                                                   \
+        return make_##type##2(v.decay());                                                                                    \
     }                                                                                                                        \
     template<typename T, size_t N>                                                                                           \
     requires(N >= 2)                                                                                                         \
@@ -619,7 +628,7 @@ OC_MAKE_SWIZZLE_LOGIC_FUNC(none)
     template<typename T, size_t N, size_t... Indices>                                                                        \
     requires(sizeof...(Indices) >= 3)                                                                                        \
     [[nodiscard]] constexpr auto make_##type##3(ocarina::Swizzle<T, N, Indices...> v) noexcept {                             \
-        return make_##type##3(v.decay());                                                                                   \
+        return make_##type##3(v.decay());                                                                                    \
     }                                                                                                                        \
     template<typename T, size_t N>                                                                                           \
     requires(N >= 3)                                                                                                         \
@@ -647,7 +656,7 @@ OC_MAKE_SWIZZLE_LOGIC_FUNC(none)
     template<typename T, size_t N, size_t... Indices>                                                                        \
     requires(sizeof...(Indices) >= 4)                                                                                        \
     [[nodiscard]] constexpr auto make_##type##4(ocarina::Swizzle<T, N, Indices...> v) noexcept {                             \
-        return make_##type##4(v.decay());                                                                                   \
+        return make_##type##4(v.decay());                                                                                    \
     }                                                                                                                        \
     template<typename T, size_t N>                                                                                           \
     requires(N == 4)                                                                                                         \

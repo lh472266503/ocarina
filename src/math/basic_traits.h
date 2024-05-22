@@ -510,4 +510,5 @@ public:
 template<typename T, size_t N>
 using general_vector_t = typename general_vector<T, N>::type;
 
+
 }// namespace ocarina

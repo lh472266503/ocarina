@@ -161,7 +161,7 @@ OC_MAKE_UNARY_CHECK(bit_not, ~)
 #undef OC_MAKE_UNARY_CHECK
 
 #define OC_MAKE_BINARY_CHECK(concept_name, op) \
-    template<typename A, typename B>      \
+    template<typename A, typename B>           \
     concept concept_name##_able = requires(A a, B b) { a op b; };
 
 OC_MAKE_BINARY_CHECK(plus, +)
@@ -197,5 +197,38 @@ OC_MAKE_BINARY_CHECK(right_left_assgin, >>=)
 
 #undef OC_MAKE_BINARY_CHECK
 
-
 }// namespace ocarina::concepts
+
+namespace ocarina {
+namespace detail {
+
+template<typename Lhs, typename Rhs>
+struct match_binary_func_impl : std::false_type {};
+
+template<typename Lhs, typename Rhs>
+requires(type_dimension_v<Lhs> == type_dimension_v<Rhs> &&
+         std::is_same_v<type_element_t<Lhs>, type_element_t<Rhs>>)
+struct match_binary_func_impl<Lhs, Rhs> : std::true_type {};
+
+}// namespace detail
+
+template<typename... T>
+using match_binary_func = detail::match_binary_func_impl<std::remove_cvref_t<T>...>;
+OC_DEFINE_TEMPLATE_VALUE_MULTI(match_binary_func)
+
+namespace detail {
+
+template<typename... Ts>
+struct match_triple_func_impl : std::false_type {};
+
+template<typename First, typename... Ts>
+requires(concepts::is_same_v<type_element_t<First>, type_element_t<Ts>...> &&
+         ((type_dimension_v<First> == type_dimension_v<Ts>) && ...))
+struct match_triple_func_impl<First, Ts...> : std::true_type {};
+
+}// namespace detail
+
+template<typename... Ts>
+using match_triple_func = detail::match_triple_func_impl<std::remove_cvref_t<Ts>...>;
+OC_DEFINE_TEMPLATE_VALUE_MULTI(match_triple_func)
+}// namespace ocarina

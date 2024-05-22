@@ -162,21 +162,6 @@ OC_MAKE_DSL_UNARY_FUNC(inverse, INVERSE)
 
 #undef OC_MAKE_DSL_UNARY_FUNC
 
-namespace detail {
-
-template<typename Lhs, typename Rhs>
-struct match_binary_func_impl : std::false_type {};
-
-template<typename Lhs, typename Rhs>
-requires(type_dimension_v<Lhs> == type_dimension_v<Rhs> && std::is_same_v<type_element_t<Lhs>, type_element_t<Rhs>>)
-struct match_binary_func_impl<Lhs, Rhs> : std::true_type {};
-
-}// namespace detail
-
-template<typename... T>
-using match_binary_func = detail::match_binary_func_impl<std::remove_cvref_t<T>...>;
-OC_DEFINE_TEMPLATE_VALUE_MULTI(match_binary_func)
-
 template<typename... Ts>
 using match_dsl_binary_func = std::conjunction<match_binary_func<remove_device_t<Ts>...>, any_device_type<Ts...>>;
 OC_DEFINE_TEMPLATE_VALUE_MULTI(match_dsl_binary_func)
@@ -206,22 +191,6 @@ OC_MAKE_DSL_BINARY_FUNC(distance, DISTANCE)
 OC_MAKE_DSL_BINARY_FUNC(distance_squared, DISTANCE_SQUARED)
 
 #undef OC_MAKE_DSL_BINARY_FUNC
-
-namespace detail {
-
-template<typename... Ts>
-struct match_triple_func_impl : std::false_type {};
-
-template<typename First, typename... Ts>
-requires(concepts::is_same_v<type_element_t<First>, type_element_t<Ts>...> &&
-         ((type_dimension_v<First> == type_dimension_v<Ts>) && ...))
-struct match_triple_func_impl<First, Ts...> : std::true_type {};
-
-}// namespace detail
-
-template<typename... Ts>
-using match_triple_func = detail::match_triple_func_impl<std::remove_cvref_t<Ts>...>;
-OC_DEFINE_TEMPLATE_VALUE_MULTI(match_triple_func)
 
 template<typename... Ts>
 using match_dsl_triple_func = std::conjunction<match_triple_func<remove_device_t<Ts>...>, any_device_type<Ts...>>;
