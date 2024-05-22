@@ -130,7 +130,6 @@ struct is_swizzle_impl<Swizzle<T, N, Indices...>, 0u> : std::true_type {};
 
 template<typename T>
 using is_swizzle = detail::is_swizzle_impl<std::remove_cvref_t<T>>;
-
 OC_DEFINE_TEMPLATE_VALUE(is_swizzle)
 
 template<typename T, size_t N>
@@ -193,15 +192,6 @@ struct Matrix;
 
 namespace detail {
 
-template<typename T, size_t N = 0u>
-struct is_matrix_impl : std::false_type {};
-
-template<size_t N>
-struct is_matrix_impl<Matrix<N>, N> : std::true_type {};
-
-template<size_t N>
-struct is_matrix_impl<Matrix<N>, 0u> : std::true_type {};
-
 template<typename T>
 struct vector_dimension_impl {
     static constexpr auto value = static_cast<size_t>(1u);
@@ -209,16 +199,6 @@ struct vector_dimension_impl {
 
 template<typename T, size_t N>
 struct vector_dimension_impl<Vector<T, N>> {
-    static constexpr auto value = N;
-};
-
-template<typename T>
-struct matrix_dimension_impl {
-    static constexpr auto value = static_cast<size_t>(1u);
-};
-
-template<size_t N>
-struct matrix_dimension_impl<Matrix<N>> {
     static constexpr auto value = N;
 };
 
@@ -247,6 +227,20 @@ using vector_dimension = detail::vector_dimension_impl<std::remove_cvref_t<T>>;
 
 template<typename T>
 constexpr auto vector_dimension_v = vector_dimension<T>::value;
+
+namespace detail {
+
+template<typename T>
+struct matrix_dimension_impl {
+    static constexpr auto value = static_cast<size_t>(1u);
+};
+
+template<size_t N>
+struct matrix_dimension_impl<Matrix<N>> {
+    static constexpr auto value = N;
+};
+
+}// namespace detail
 
 template<typename T>
 using matrix_dimension = detail::matrix_dimension_impl<std::remove_cvref_t<T>>;
@@ -382,6 +376,18 @@ OC_MAKE_IS_TYPE_VECTOR(char)
 #undef OC_MAKE_IS_TYPE_VECTOR
 
 #undef OC_MAKE_IS_TYPE_VECTOR_DIM
+
+namespace detail {
+
+template<typename T, size_t N = 0u>
+struct is_matrix_impl : std::false_type {};
+
+template<size_t N>
+struct is_matrix_impl<Matrix<N>, N> : std::true_type {};
+
+template<size_t N>
+struct is_matrix_impl<Matrix<N>, 0u> : std::true_type {};
+}// namespace detail
 
 template<typename T, size_t N = 0u>
 using is_matrix = detail::is_matrix_impl<std::remove_cvref_t<T>, N>;
