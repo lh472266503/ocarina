@@ -282,11 +282,6 @@ struct type_dimension_impl<Vector<T, N>> {
     static constexpr size_t value = N;
 };
 
-template<size_t N>
-struct type_dimension_impl<Matrix<N>> {
-    static constexpr size_t value = N;
-};
-
 template<typename T, size_t N, size_t... Indices>
 struct type_dimension_impl<Swizzle<T, N, Indices...>> {
     static constexpr size_t value = swizzle_dimension_v<Swizzle<T, N, Indices...>>;

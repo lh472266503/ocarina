@@ -7,6 +7,7 @@
 #include "core/stl.h"
 #include "expr.h"
 #include "operators.h"
+#include "core/concepts.h"
 #include "math/base.h"
 #include "ast/expression.h"
 #include "var.h"
@@ -205,6 +206,18 @@ OC_MAKE_DSL_BINARY_FUNC(distance, DISTANCE)
 OC_MAKE_DSL_BINARY_FUNC(distance_squared, DISTANCE_SQUARED)
 
 #undef OC_MAKE_DSL_BINARY_FUNC
+
+namespace detail {
+
+template<typename... Ts>
+struct match_triple_func_impl : std::false_type {};
+
+template<typename First, typename... Ts>
+requires(concepts::is_same_v<type_element_t<First>, type_element_t<Ts>...> &&
+         ((type_dimension_v<First> == type_dimension_v<Ts>) && ...))
+struct match_triple_func_impl<First, Ts...> : std::true_type {};
+
+}// namespace detail
 
 /// used for dsl scalar vector or matrix
 template<typename U, typename T, typename F>
