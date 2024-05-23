@@ -331,11 +331,11 @@ void test_lambda(Device &device, Stream &stream) {
             Uint3 ui = make_uint3(7,8,9);
 
             Float3 t2 = make_float3(t.zyx_());
-
-            DynamicArray<float> fa{123.f};
+//
+//            DynamicArray<float> fa{123.f};
 
             $info("{} {}  {}  call_lerp ", lerp(t, b.xyz_(),a));
-            $info("{} {}  {}  {} ", t2, fa[0]);
+//            $info("{} {}  {}  {} ", t2, fa[0]);
         }
         //        f3 = xyz;
 
