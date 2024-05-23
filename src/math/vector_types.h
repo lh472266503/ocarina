@@ -474,11 +474,23 @@ struct Vector : public detail::VectorStorage<T, N> {
     OC_MAKE_VECTOR_TRIPLE_FUNC(lerp)
 
 #undef OC_MAKE_VECTOR_TRIPLE_FUNC
+
+    [[nodiscard]] static this_type call_select(bool pred, this_type t, this_type f) {
+        return [&]<size_t... index>(std::index_sequence<index...>) {
+            return this_type{select(pred, t[index], f[index])...};
+        }(std::make_index_sequence<N>());
+    }
+
+    [[nodiscard]] static this_type call_select(Vector<bool, N> pred, this_type t, this_type f) {
+        return [&]<size_t... index>(std::index_sequence<index...>) {
+            return this_type{select(pred[index], t[index], f[index])...};
+        }(std::make_index_sequence<N>());
+    }
 };
 
 #define OC_MAKE_VECTOR_UNARY_FUNC(func)                      \
     template<typename T>                                     \
-    requires is_vector_or_swizzle_v<T>                       \
+    requires is_general_vector_v<T>                          \
     [[nodiscard]] decltype(auto) func(const T &v) noexcept { \
         return deduce_vec_t<T>::call_##func(v);              \
     }
@@ -524,6 +536,7 @@ OC_MAKE_VECTOR_UNARY_FUNC(length_squared)
 
 #define OC_MAKE_VECTOR_BINARY_FUNC(func)                                \
     template<typename T, typename U>                                    \
+    requires is_all_general_basic_v<T, U>                               \
     OC_NODISCARD decltype(auto) func(const T &t, const U &u) noexcept { \
         using vec_type = deduce_binary_op_vec_t<T, U>;                  \
         return vec_type::call_##func(t, u);                             \
@@ -539,10 +552,17 @@ OC_MAKE_VECTOR_BINARY_FUNC(dot)
 OC_MAKE_VECTOR_BINARY_FUNC(distance)
 OC_MAKE_VECTOR_BINARY_FUNC(distance_squared)
 
+template<typename Pred, typename T, typename U>
+requires is_all_general_vector_v<T, U>
+[[nodiscard]] decltype(auto) select(const Pred &pred, const T &t, const U &u) noexcept {
+    using vec_type = deduce_binary_op_vec_t<T, U>;
+    return vec_type::call_select(pred, t, u);
+}
+
 #undef OC_MAKE_VECTOR_BINARY_FUNC
 
 template<typename T, typename U, typename V>
-requires(is_all_vector_or_swizzle_v<T, U, V> &&
+requires(is_all_general_vector_v<T, U, V> &&
          type_dimension_v<T> == type_dimension_v<U> &&
          type_dimension_v<T> == type_dimension_v<V>)
 [[nodiscard]] auto fma(const T &t, const U &u, const V &v) noexcept {

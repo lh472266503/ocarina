@@ -39,16 +39,6 @@ MAKE_VECTOR_OP(/)
 
 namespace ocarina {
 
-template<typename T, size_t N>
-requires ocarina::is_scalar_v<T>
-[[nodiscard]] constexpr auto
-select(Vector<bool, N> pred, Vector<T, N> t, Vector<T, N> f) noexcept {
-    return [&]<size_t ...index>(std::index_sequence<index...>) {
-        return Vector<T, N>{select(pred[index], t[index], f[index])...};
-    }(std::make_index_sequence<N>());
-}
-
-
 template<int n, typename T, typename ret_type = condition_t<expr_value_t<T>, T>>
 requires requires(T a, T b) { a *b; }
 OC_NODISCARD constexpr ret_type Pow(const T &v) {
