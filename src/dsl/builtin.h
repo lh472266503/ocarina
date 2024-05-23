@@ -210,6 +210,15 @@ OC_MAKE_DSL_TRIPLE_FUNC(fma, FMA)
 
 #undef OC_MAKE_TRIPLE_FUNC
 
+template<typename U, typename T, typename F>
+requires match_dsl_basic_func_v<T, F>
+[[nodiscard]] auto select(const U &u, const T &t, const F &f) noexcept {
+    static constexpr auto dimension = type_dimension_v<remove_device_t<T>>;
+    using scalar_type = type_element_t<remove_device_t<T>>;
+    using var_type = Var<general_vector_t<scalar_type, dimension>>;
+    return var_type::call_select(u, t, f);
+}
+
 /// used for dsl scalar vector or matrix
 template<typename U, typename T, typename F>
 requires(any_device_type_v<U, T, F> && std::is_same_v<remove_device_t<T>, remove_device_t<F>> &&

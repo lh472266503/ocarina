@@ -174,6 +174,13 @@ struct Var : public Computable<T> {
         return eval<T>(expr);
     }
 
+    template<size_t N>
+    requires(N == vector_dimension_v<T>)
+    OC_NODISCARD static auto call_select(const Vector<bool, N> &pred,
+                                         const dsl_type &t, const dsl_type &f) noexcept {
+        return call_select(Var<Vector<bool, N>>(pred), t, f);
+    }
+
     static auto call_select(const Var<bool> &pred, const dsl_type &t, const dsl_type &f) noexcept {
         return call_select(Var<Vector<bool, vector_dimension_v<T>>>(pred), t, f);
     }
