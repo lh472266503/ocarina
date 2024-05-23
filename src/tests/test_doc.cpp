@@ -234,8 +234,7 @@ void test_lambda(Device &device, Stream &stream) {
 
     {
         float3 a, b;
-        bool bb = match_dsl_binary_func_v<decltype(a), decltype(b.xy())>;
-        static_assert(match_dsl_triple_func_v<ocarina::DynamicArray<float>, ocarina::DynamicArray<float>>);
+        static_assert(match_basic_func_v<float, float>);
     }
 
     Buffer<float3> vert = device.create_buffer<float3>(vertices.size());
@@ -330,7 +329,6 @@ void test_lambda(Device &device, Stream &stream) {
             float3 b = make_float3(1, 2, 3);
             float3 rgb = clamp(b, 0.f, 1.f);
 
-            static_assert(ocarina::match_triple_func_v<float3,float3, float3>);
 //            $info("{} {}  {}  call_lerp ", lerp(t, b.xyz_(),a));
         }
         //        f3 = xyz;

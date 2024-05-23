@@ -553,29 +553,14 @@ template<typename T, size_t N>
 using general_vector_t = typename general_vector<T, N>::type;
 
 namespace detail {
-
-template<typename Lhs, typename Rhs>
-struct match_binary_func_impl : std::false_type {};
-
-template<typename Lhs, typename Rhs>
-requires(type_dimension_v<Lhs> == type_dimension_v<Rhs> &&
-         std::is_same_v<type_element_t<Lhs>, type_element_t<Rhs>>)
-struct match_binary_func_impl<Lhs, Rhs> : std::true_type {};
-
-}// namespace detail
-
-template<typename... T>
-using match_binary_func = detail::match_binary_func_impl<std::remove_cvref_t<T>...>;
-OC_DEFINE_TEMPLATE_VALUE_MULTI(match_binary_func)
-
-namespace detail {
 template<typename... Ts>
-struct match_triple_func_impl : std::conjunction<is_same_type_dimension<Ts...>,
-                                                 is_same_type_element<Ts...>> {};
+struct match_basic_func_impl : std::conjunction<is_same_type_dimension<Ts...>,
+                                                is_all_basic<Ts...>,
+                                                is_same_type_element<Ts...>> {};
 }// namespace detail
 
 template<typename... Ts>
-using match_triple_func = detail::match_triple_func_impl<std::remove_cvref_t<Ts>...>;
-OC_DEFINE_TEMPLATE_VALUE_MULTI(match_triple_func)
+using match_basic_func = detail::match_basic_func_impl<std::remove_cvref_t<Ts>...>;
+OC_DEFINE_TEMPLATE_VALUE_MULTI(match_basic_func)
 
 }// namespace ocarina

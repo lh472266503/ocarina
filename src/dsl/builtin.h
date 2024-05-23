@@ -163,12 +163,12 @@ OC_MAKE_DSL_UNARY_FUNC(inverse, INVERSE)
 #undef OC_MAKE_DSL_UNARY_FUNC
 
 template<typename... Ts>
-using match_dsl_binary_func = std::conjunction<match_binary_func<remove_device_t<Ts>...>, any_device_type<Ts...>>;
-OC_DEFINE_TEMPLATE_VALUE_MULTI(match_dsl_binary_func)
+using match_dsl_basic_func = std::conjunction<any_device_type<Ts...>, match_basic_func<remove_device_t<Ts>...>>;
+OC_DEFINE_TEMPLATE_VALUE_MULTI(match_dsl_basic_func)
 
 #define OC_MAKE_DSL_BINARY_FUNC(func, tag)                                        \
     template<typename Lhs, typename Rhs>                                          \
-    requires match_dsl_binary_func_v<Lhs, Rhs>                                    \
+    requires match_dsl_basic_func_v<Lhs, Rhs>                                     \
     OC_NODISCARD auto func(const Lhs &lhs, const Rhs &rhs) noexcept {             \
         static constexpr auto dimension = type_dimension_v<remove_device_t<Lhs>>; \
         using scalar_type = type_element_t<remove_device_t<Lhs>>;                 \
@@ -192,13 +192,9 @@ OC_MAKE_DSL_BINARY_FUNC(distance_squared, DISTANCE_SQUARED)
 
 #undef OC_MAKE_DSL_BINARY_FUNC
 
-template<typename... Ts>
-using match_dsl_triple_func = std::conjunction<any_device_type<Ts...>, match_triple_func<remove_device_t<Ts>...>>;
-OC_DEFINE_TEMPLATE_VALUE_MULTI(match_dsl_triple_func)
-
 #define OC_MAKE_DSL_TRIPLE_FUNC(func, tag)                                      \
     template<typename A, typename B, typename C>                                \
-    requires match_dsl_triple_func_v<A, B, C>                                   \
+    requires match_dsl_basic_func_v<A, B, C>                                    \
     [[nodiscard]] auto func(const A &a, const B &b, const C &c) noexcept {      \
         static constexpr auto dimension = type_dimension_v<remove_device_t<A>>; \
         using scalar_type = type_element_t<remove_device_t<A>>;                 \
@@ -209,7 +205,7 @@ OC_DEFINE_TEMPLATE_VALUE_MULTI(match_dsl_triple_func)
     }
 
 OC_MAKE_DSL_TRIPLE_FUNC(clamp, CLAMP)
-//OC_MAKE_DSL_TRIPLE_FUNC(lerp, LERP)
+OC_MAKE_DSL_TRIPLE_FUNC(lerp, LERP)
 OC_MAKE_DSL_TRIPLE_FUNC(fma, FMA)
 
 #undef OC_MAKE_TRIPLE_FUNC
@@ -292,24 +288,6 @@ requires is_all_scalar_v<T>
     arr = f;
     return select(pred, t, arr);
 }
-
-#define OC_MAKE_TRIPLE_FUNC(func, tag)                                                                            \
-    template<typename T, typename A, typename B>                                                                  \
-    requires(any_dsl_v<T, A, B> && requires {                                                                     \
-        func(expr_value_t<T>{}, expr_value_t<A>{}, expr_value_t<B>{});                                            \
-    } && none_dynamic_array_v<T, A, B>)                                                                           \
-    OC_NODISCARD auto func(const T &t, const A &a, const B &b) noexcept {                                         \
-        auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),                                \
-                                                      CallOp::tag,                                                \
-                                                      {OC_EXPR(t), OC_EXPR(a), OC_EXPR(b)});                      \
-        return eval<expr_value_t<decltype(func(expr_value_t<T>{}, expr_value_t<A>{}, expr_value_t<B>{}))>>(expr); \
-    }
-
-//OC_MAKE_TRIPLE_FUNC(clamp, CLAMP)
-OC_MAKE_TRIPLE_FUNC(lerp, LERP)
-//OC_MAKE_TRIPLE_FUNC(fma, FMA)
-//
-#undef OC_MAKE_TRIPLE_FUNC
 
 template<typename... Args>
 requires(any_dsl_v<Args...> &&
