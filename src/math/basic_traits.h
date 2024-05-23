@@ -316,7 +316,7 @@ requires(type_dimension_v<A> == type_dimension_v<B>)
 struct is_same_type_dimension_impl<A, B> : std::true_type {};
 
 template<typename T, typename... Ts>
-requires (sizeof...(Ts) > 1)
+requires(sizeof...(Ts) > 1)
 struct is_same_type_dimension_impl<T, Ts...> : std::conjunction<is_same_type_dimension_impl<T, Ts>...> {};
 
 }// namespace detail
@@ -370,7 +370,7 @@ struct is_same_type_element_impl : ocarina::is_same<type_element_t<Ts>...> {};
 
 }// namespace detail
 
-template<typename ...Ts>
+template<typename... Ts>
 using is_same_type_element = detail::is_same_type_element_impl<std::remove_cvref_t<Ts>...>;
 OC_DEFINE_TEMPLATE_VALUE_MULTI(is_same_type_element)
 
@@ -551,5 +551,31 @@ public:
 
 template<typename T, size_t N>
 using general_vector_t = typename general_vector<T, N>::type;
+
+namespace detail {
+
+template<typename Lhs, typename Rhs>
+struct match_binary_func_impl : std::false_type {};
+
+template<typename Lhs, typename Rhs>
+requires(type_dimension_v<Lhs> == type_dimension_v<Rhs> &&
+         std::is_same_v<type_element_t<Lhs>, type_element_t<Rhs>>)
+struct match_binary_func_impl<Lhs, Rhs> : std::true_type {};
+
+}// namespace detail
+
+template<typename... T>
+using match_binary_func = detail::match_binary_func_impl<std::remove_cvref_t<T>...>;
+OC_DEFINE_TEMPLATE_VALUE_MULTI(match_binary_func)
+
+namespace detail {
+template<typename... Ts>
+struct match_triple_func_impl : std::conjunction<is_same_type_dimension<Ts...>,
+                                                 is_same_type_element<Ts...>> {};
+}// namespace detail
+
+template<typename... Ts>
+using match_triple_func = detail::match_triple_func_impl<std::remove_cvref_t<Ts>...>;
+OC_DEFINE_TEMPLATE_VALUE_MULTI(match_triple_func)
 
 }// namespace ocarina
