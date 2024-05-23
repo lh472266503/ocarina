@@ -161,6 +161,22 @@ struct Var : public Computable<T> {
     OC_MAKE_VAR_TRIPLE_FUNC(fma, FMA)
 
 #undef OC_MAKE_VAR_TRIPLE_FUNC
+
+    template<size_t N>
+    requires(N == vector_dimension_v<T>)
+    OC_NODISCARD static auto call_select(const Var<Vector<bool, N>> &pred,
+                                         const dsl_type &t, const dsl_type &f) noexcept {
+        const Expression *expr = Function::current()->call_builtin(Type::of<T>(),
+                                                                   CallOp::SELECT,
+                                                                   {OC_EXPR(pred),
+                                                                    OC_EXPR(f),
+                                                                    OC_EXPR(f)});
+        return eval<T>(expr);
+    }
+
+    static auto call_select(const Var<bool> &pred, const dsl_type &t, const dsl_type &f) noexcept {
+        return call_select(Var<Vector<bool, vector_dimension_v<T>>>(pred), t, f);
+    }
 };
 
 template<typename T>
