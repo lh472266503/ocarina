@@ -316,6 +316,7 @@ requires(type_dimension_v<A> == type_dimension_v<B>)
 struct is_same_type_dimension_impl<A, B> : std::true_type {};
 
 template<typename T, typename... Ts>
+requires (sizeof...(Ts) > 1)
 struct is_same_type_dimension_impl<T, Ts...> : std::conjunction<is_same_type_dimension_impl<T, Ts>...> {};
 
 }// namespace detail
