@@ -335,11 +335,11 @@ void test_lambda(Device &device, Stream &stream) {
 //            DynamicArray<float> fa{123.f};
             auto axyz = a.xyz_();
 //            auto axy = select(make_bool2(true), make_float2(1),make_float2(2).xy_());
-            Float3 sel = select(Bool3(make_bool3(1,0,1)), a, b);
+            Float3 sel = select((make_bool3(1,0,1)), a.xyz_(), b);
 
 
 
-//            max(a.xyz_(), b);
+            max(a.xyz_(), b);
                 $info("{} {}  {}  call_select ", sel);
             $info("{} {}  {}  call_lerp ", lerp(t, b.xyz_(),a));
 //            $info("{} {}  {}  {} ", t2, fa[0]);

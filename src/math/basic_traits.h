@@ -150,6 +150,38 @@ template<typename T>
 struct Var;
 
 namespace detail {
+
+template<typename T>
+struct is_host_swizzle_impl : std::false_type {};
+
+template<typename T, size_t N, size_t... Indices>
+struct is_host_swizzle_impl<Swizzle<T, N, Indices...>> : std::true_type {};
+
+template<typename T, size_t N, size_t... Indices>
+struct is_host_swizzle_impl<Swizzle<Var<T>, N, Indices...>> : std::false_type {};
+
+}// namespace detail
+
+template<typename T>
+using is_host_swizzle = detail::is_host_swizzle_impl<std::remove_cvref_t<T>>;
+OC_DEFINE_TEMPLATE_VALUE(is_host_swizzle)
+
+namespace detail {
+template<typename T>
+struct is_device_swizzle_impl : std::false_type {};
+
+template<typename T, size_t N, size_t... Indices>
+struct is_device_swizzle_impl<Swizzle<T, N, Indices...>> : std::false_type {};
+
+template<typename T, size_t N, size_t... Indices>
+struct is_device_swizzle_impl<Swizzle<Var<T>, N, Indices...>> : std::true_type {};
+}// namespace detail
+
+template<typename T>
+using is_device_swizzle = detail::is_device_swizzle_impl<std::remove_cvref_t<T>>;
+OC_DEFINE_TEMPLATE_VALUE(is_device_swizzle)
+
+namespace detail {
 template<typename T>
 struct swizzle_decay_impl {
     using type = T;
@@ -401,7 +433,7 @@ template<typename T>
 using is_vector4 = is_vector<T, 4u>;
 
 template<typename T>
-using is_general_vector = std::disjunction<is_vector<T>, is_swizzle<T>>;
+using is_general_vector = std::disjunction<is_vector<T>, is_host_swizzle<T>>;
 OC_DEFINE_TEMPLATE_VALUE(is_general_vector)
 
 template<typename... Ts>
@@ -512,7 +544,7 @@ using is_all_basic = std::conjunction<is_basic<Ts>...>;
 OC_DEFINE_TEMPLATE_VALUE_MULTI(is_all_basic)
 
 template<typename T>
-using is_general_basic = std::disjunction<is_basic<T>, is_swizzle<T>>;
+using is_general_basic = std::disjunction<is_basic<T>, is_host_swizzle<T>>;
 OC_DEFINE_TEMPLATE_VALUE(is_general_basic)
 
 template<typename... Ts>
