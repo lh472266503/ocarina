@@ -324,12 +324,16 @@ void test_lambda(Device &device, Stream &stream) {
         $info("{} max_  ", max(aa.x, aa.y));
         $info("{} {}  {}  ", aa);
         {
-            Float3 t = make_float3(1.f);
+            Float3 t = make_float3(7,8,9);
             Float3 a = make_float3(2, 4, 6);
             float3 b = make_float3(1, 2, 3);
             float3 rgb = clamp(b, 0.f, 1.f);
+            Uint3 ui = make_uint3(7,8,9);
+
+            Float3 t2 = make_float3(t.zy_());
 
             $info("{} {}  {}  call_lerp ", lerp(t, b.xyz_(),a));
+            $info("{} {}  {}  call_lerp ", t2);
         }
         //        f3 = xyz;
 
