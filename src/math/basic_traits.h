@@ -503,7 +503,7 @@ template<typename T>
 constexpr auto is_matrix4_v = is_matrix4<T>::value;
 
 template<typename T>
-using is_basic = std::disjunction<is_scalar<T>, is_vector<T>, is_matrix<T>>;
+using is_basic = std::disjunction<is_scalar<T>, is_vector<T>, is_swizzle<T>, is_matrix<T>>;
 
 template<typename T>
 constexpr auto is_basic_v = is_basic<T>::value;

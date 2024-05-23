@@ -329,7 +329,7 @@ void test_lambda(Device &device, Stream &stream) {
             float3 b = make_float3(1, 2, 3);
             float3 rgb = clamp(b, 0.f, 1.f);
 
-//            $info("{} {}  {}  call_lerp ", lerp(t, b.xyz_(),a));
+            $info("{} {}  {}  call_lerp ", lerp(t, b.xyz_(),a));
         }
         //        f3 = xyz;
 
