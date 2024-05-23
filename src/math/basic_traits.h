@@ -503,15 +503,20 @@ template<typename T>
 constexpr auto is_matrix4_v = is_matrix4<T>::value;
 
 template<typename T>
-using is_basic = std::disjunction<is_scalar<T>, is_vector<T>, is_swizzle<T>, is_matrix<T>>;
-
-template<typename T>
-constexpr auto is_basic_v = is_basic<T>::value;
+using is_basic = std::disjunction<is_scalar<T>, is_vector<T>, is_matrix<T>>;
+OC_DEFINE_TEMPLATE_VALUE(is_basic)
 
 template<typename... Ts>
 using is_all_basic = std::conjunction<is_basic<Ts>...>;
-
 OC_DEFINE_TEMPLATE_VALUE_MULTI(is_all_basic)
+
+template<typename T>
+using is_general_basic = std::disjunction<is_basic<T>, is_swizzle<T>>;
+OC_DEFINE_TEMPLATE_VALUE(is_general_basic)
+
+template<typename... Ts>
+using is_all_general_basic = std::conjunction<is_general_basic<Ts>...>;
+OC_DEFINE_TEMPLATE_VALUE(is_all_general_basic)
 
 template<typename T>
 using is_simple_type = std::conjunction<
@@ -555,7 +560,7 @@ using general_vector_t = typename general_vector<T, N>::type;
 namespace detail {
 template<typename... Ts>
 struct match_basic_func_impl : std::conjunction<is_same_type_dimension<Ts...>,
-                                                is_all_basic<Ts...>,
+                                                is_all_general_basic<Ts...>,
                                                 is_same_type_element<Ts...>> {};
 }// namespace detail
 

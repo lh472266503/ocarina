@@ -33,7 +33,7 @@ public:
 
     template<typename U>
     requires is_dsl_v<U> || is_basic_v<U>
-    explicit DynamicArray(size_t num, U &&u)
+    DynamicArray(U &&u, size_t num = 1)
         : DynamicArray(num, nullptr) {
         for (int i = 0; i < num; ++i) {
             (*this)[i] = u;
