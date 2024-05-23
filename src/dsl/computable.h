@@ -498,7 +498,7 @@ struct Computable<Vector<T, 2>>
     using swizzle_type = Swizzle<Var<T>, 2, index...>;
     OC_COMPUTABLE_COMMON(Computable<Vector<T, 2>>)
     OC_MAKE_ASSIGNMENT_FUNC
-protected:
+public:
     explicit Computable(const Var<T> &arg) noexcept
         : expression_(ocarina::Function::current()->local(ocarina::Type::of<this_type>())) {
         x = arg;
@@ -524,7 +524,7 @@ struct Computable<Vector<T, 3>>
     using swizzle_type = Swizzle<Var<T>, 3, index...>;
     OC_COMPUTABLE_COMMON(Computable<Vector<T, 3>>)
     OC_MAKE_ASSIGNMENT_FUNC
-protected:
+public:
     explicit Computable(const Var<T> &arg) noexcept
         : expression_(ocarina::Function::current()->local(ocarina::Type::of<this_type>())) {
         x = arg;
@@ -552,7 +552,7 @@ struct Computable<Vector<T, 4>>
     using swizzle_type = Swizzle<Var<T>, 4, index...>;
     OC_COMPUTABLE_COMMON(Computable<Vector<T, 4>>)
     OC_MAKE_ASSIGNMENT_FUNC
-protected:
+public:
     explicit Computable(const Var<T> &arg) noexcept
         : expression_(ocarina::Function::current()->local(ocarina::Type::of<this_type>())) {
         x = arg;

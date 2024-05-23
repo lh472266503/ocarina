@@ -329,6 +329,10 @@ template<typename... Ts>
 using is_all_basic_expr = is_all_basic<expr_value_t<Ts>...>;
 OC_DEFINE_TEMPLATE_VALUE_MULTI(is_all_basic_expr)
 
+template<typename... Ts>
+using is_all_general_basic_expr = is_all_general_basic<remove_device_t<Ts>...>;
+OC_DEFINE_TEMPLATE_VALUE_MULTI(is_all_general_basic_expr)
+
 #define EXPR_TYPE_TRAITS(type)                                                    \
     template<typename T>                                                          \
     using is_##type##_expr = is_##type<expr_value_t<T>>;                          \

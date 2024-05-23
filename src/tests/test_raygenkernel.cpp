@@ -204,7 +204,7 @@ int main(int argc, char *argv[]) {
 
         p[1] = 1;
 
-        DynamicArray<float> r = select(p, t, f);
+//        DynamicArray<float> r = select(p, t, f);
 //        r = t +f;
         DynamicArray<float3> rr{3};
         rr[0] = make_float3(-9);

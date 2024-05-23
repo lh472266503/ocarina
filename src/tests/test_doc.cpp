@@ -333,7 +333,9 @@ void test_lambda(Device &device, Stream &stream) {
             Float3 t2 = make_float3(t.zyx_());
 //
 //            DynamicArray<float> fa{123.f};
-
+            auto axyz = a.xyz_();
+            Float3 sel = ocarina::select(make_bool3(1,0,1), a, b);
+                $info("{} {}  {}  call_select ", sel);
             $info("{} {}  {}  call_lerp ", lerp(t, b.xyz_(),a));
 //            $info("{} {}  {}  {} ", t2, fa[0]);
         }

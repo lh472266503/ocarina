@@ -169,7 +169,7 @@ struct Var : public Computable<T> {
         const Expression *expr = Function::current()->call_builtin(Type::of<T>(),
                                                                    CallOp::SELECT,
                                                                    {OC_EXPR(pred),
-                                                                    OC_EXPR(f),
+                                                                    OC_EXPR(t),
                                                                     OC_EXPR(f)});
         return eval<T>(expr);
     }
