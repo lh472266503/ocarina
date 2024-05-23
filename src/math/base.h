@@ -64,7 +64,7 @@ OC_NODISCARD constexpr ret_type Pow(const T &v) {
 }
 
 template<typename F, typename A, typename B>
-requires none_dsl_v<F, A, B> || all_dynamic_array_v<F, A, B>
+requires none_dsl_v<F, A, B>
 OC_NODISCARD constexpr auto
 lerp(F t, A a, B b) noexcept {
     return a + t * (b - a);

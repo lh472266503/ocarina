@@ -193,7 +193,7 @@ OC_MAKE_DSL_BINARY_FUNC(distance_squared, DISTANCE_SQUARED)
 #undef OC_MAKE_DSL_BINARY_FUNC
 
 template<typename... Ts>
-using match_dsl_triple_func = std::conjunction<match_triple_func<remove_device_t<Ts>...>, any_device_type<Ts...>>;
+using match_dsl_triple_func = std::conjunction<any_device_type<Ts...>, match_triple_func<remove_device_t<Ts>...>>;
 OC_DEFINE_TEMPLATE_VALUE_MULTI(match_dsl_triple_func)
 
 #define OC_MAKE_DSL_TRIPLE_FUNC(func, tag)                                      \

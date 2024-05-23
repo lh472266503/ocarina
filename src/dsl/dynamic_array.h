@@ -224,6 +224,13 @@ public:
 };
 
 template<typename T>
+OC_NODISCARD constexpr auto
+lerp(const DynamicArray<T> &t, const DynamicArray<T> &a,
+     const DynamicArray<T> &b) noexcept {
+    return a + t * (b - a);
+}
+
+template<typename T>
 class Container : public DynamicArray<T> {
 private:
     Uint _count{0u};
