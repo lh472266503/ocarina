@@ -604,7 +604,16 @@ def define_binary_func(func_name, param):
                 body2 += f"{prefix}_{func_name}(lhs.{field_name}, rhs.{field_name})" + split
             func = f"__device__ {ret_type} {prefix}_{func_name}({ret_type} lhs, {ret_type} rhs) {{ {body2} }}\n"
             content += func
-    content += "\n"      
+    string = f"""template<oc_uint N>
+oc_array<{prefix}_{scalar}, N> {prefix}_{func_name}(oc_array<{prefix}_{scalar}, N> lhs, oc_array<{prefix}_{scalar}, N> rhs) {{
+    oc_array<{prefix}_{scalar}, N> ret;
+    for(oc_uint i = 0; i < N; ++i) {{
+        ret[i] = {prefix}_{func_name}(lhs[i], rhs[i]);
+    }}
+    return ret;
+}}\n
+"""      
+    content += string
 
 
 def define_binary_funcs():
@@ -639,6 +648,16 @@ def define_triple_func(tab):
                 vec_body += f"{prefix}_{func_name}(v0.{field_name}, v1.{field_name}, v2.{field_name})" + split
             vec_func = f"__device__ {vec_ret_type} {prefix}_{func_name}({arg_type}{dim} v0, {arg_type}{dim} v1, {arg_type}{dim} v2) {{ {vec_body} }}\n"
             content += vec_func
+        string = f"""template<oc_uint N>
+oc_array<{prefix}_{scalar}, N> {prefix}_{func_name}(oc_array<{prefix}_{scalar}, N> v0, oc_array<{prefix}_{scalar}, N> v1, oc_array<{prefix}_{scalar}, N> v2) {{
+    oc_array<{prefix}_{scalar}, N> ret;
+    for(oc_uint i = 0; i < N; ++i) {{
+        ret[i] = {prefix}_{func_name}(v0[i], v1[i], v2[i]);
+    }}
+    return ret;
+}}\n
+"""      
+        content += string
     content += "\n"
 
 def define_triple_funcs():
