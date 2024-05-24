@@ -222,18 +222,6 @@ requires (match_basic_func_v<remove_device_t<T>, remove_device_t<F>> &&
                                  static_cast<swizzle_decay_t<F>>(f));
 }
 
-///// used for dsl scalar vector or matrix
-//template<typename U, typename T, typename F>
-//requires(any_device_type_v<U, T, F> && std::is_same_v<remove_device_t<T>, remove_device_t<F>> &&
-//         type_dimension_v<expr_value_t<T>> == type_dimension_v<expr_value_t<F>> &&
-//         is_all_general_basic_expr_v<U, T, F>)
-//OC_NODISCARD auto select(U &&pred, T &&t, F &&f) noexcept {
-//    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
-//                                                  CallOp::SELECT,
-//                                                  {OC_EXPR(pred), OC_EXPR(t), OC_EXPR(f)});
-//    return eval<T>(expr);
-//}
-
 /// used for dsl structure
 template<typename U, typename T, typename F>
 requires(std::is_same_v<expr_value_t<U>, bool> &&
@@ -244,62 +232,6 @@ OC_NODISCARD auto select(U &&pred, T &&t, F &&f) noexcept {
     auto expr = Function::current()->conditional(Type::of<expr_value_t<T>>(), OC_EXPR(pred), OC_EXPR(t), OC_EXPR(f));
     return eval<T>(expr);
 }
-
-///// used for dynamic array
-//template<typename P, typename T>
-//requires is_all_scalar_v<P, T>
-//[[nodiscard]] DynamicArray<T> select(const DynamicArray<P> &pred, const DynamicArray<T> &t, const DynamicArray<T> &f) noexcept {
-//    OC_ASSERT(t.size() == f.size() && t.size() == pred.size());
-//    auto expr = Function::current()->call_builtin(DynamicArray<T>::type(pred.size()),
-//                                                  CallOp::SELECT, {OC_EXPR(pred), OC_EXPR(t), OC_EXPR(f)});
-//    return eval_dynamic_array(DynamicArray<T>(pred.size(), expr));
-//}
-//
-///// used for dynamic array
-//template<typename P, typename T>
-//requires is_all_scalar_v<T>
-//[[nodiscard]] DynamicArray<T> select(const Var<P> &pred, const DynamicArray<T> &t, const DynamicArray<T> &f) noexcept {
-//    OC_ASSERT(t.size() == f.size());
-//    DynamicArray<P> pred_arr{t.size()};
-//    pred_arr = pred;
-//    return select(pred_arr, t, f);
-//}
-
-///// used for dynamic array
-//template<typename P, typename T>
-//requires is_all_scalar_v<T>
-//[[nodiscard]] DynamicArray<T> select(const Var<P> &pred, const Var<T> &t, const DynamicArray<T> &f) noexcept {
-//    DynamicArray<T> arr(f.size());
-//    arr = t;
-//    return select(pred, arr, f);
-//}
-//
-///// used for dynamic array
-//template<typename P, typename T>
-//requires is_all_scalar_v<T>
-//[[nodiscard]] DynamicArray<T> select(const Var<P> &pred, const T &t, const DynamicArray<T> &f) noexcept {
-//    DynamicArray<T> arr(f.size());
-//    arr = t;
-//    return select(pred, arr, f);
-//}
-//
-///// used for dynamic array
-//template<typename P, typename T>
-//requires is_all_scalar_v<T>
-//[[nodiscard]] DynamicArray<T> select(const Var<P> &pred, const DynamicArray<T> &t, const Var<T> &f) noexcept {
-//    DynamicArray<T> arr(t.size());
-//    arr = f;
-//    return select(pred, t, arr);
-//}
-
-///// used for dynamic array
-//template<typename P, typename T>
-//requires is_all_scalar_v<T>
-//[[nodiscard]] DynamicArray<T> select(const Var<P> &pred, const DynamicArray<T> &t, const T &f) noexcept {
-//    DynamicArray<T> arr(t.size());
-//    arr = f;
-//    return select(pred, t, arr);
-//}
 
 template<typename... Args>
 requires(any_dsl_v<Args...> &&
