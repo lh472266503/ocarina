@@ -335,7 +335,7 @@ void test_lambda(Device &device, Stream &stream) {
 //            DynamicArray<float> fa{123.f};
             auto axyz = a.xyz_();
 //            auto axy = select(make_bool2(true), make_float2(1),make_float2(2).xy_());
-            Float3 sel = Float3::call_select(true, a, b);
+            Float3 sel = select(make_bool3(1,0,0).xyz_(), a.xyz_(), b.xyz_());
 
 
 
