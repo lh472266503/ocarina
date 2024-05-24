@@ -211,25 +211,28 @@ OC_MAKE_DSL_TRIPLE_FUNC(fma, FMA)
 #undef OC_MAKE_TRIPLE_FUNC
 
 template<typename U, typename T, typename F>
-requires match_dsl_basic_func_v<T, F>
+requires (match_basic_func_v<remove_device_t<T>, remove_device_t<F>> &&
+         any_device_type_v<U,T,F>)
 [[nodiscard]] auto select(const U &u, const T &t, const F &f) noexcept {
     static constexpr auto dimension = type_dimension_v<remove_device_t<T>>;
     using scalar_type = type_element_t<remove_device_t<T>>;
     using var_type = Var<general_vector_t<scalar_type, dimension>>;
-    return var_type::call_select(u, t, f);
+    return var_type::call_select(static_cast<swizzle_decay_t<U>>(u),
+                                 static_cast<swizzle_decay_t<T>>(t),
+                                 static_cast<swizzle_decay_t<F>>(f));
 }
 
-/// used for dsl scalar vector or matrix
-template<typename U, typename T, typename F>
-requires(any_device_type_v<U, T, F> && std::is_same_v<remove_device_t<T>, remove_device_t<F>> &&
-         type_dimension_v<expr_value_t<T>> == type_dimension_v<expr_value_t<F>> &&
-         is_all_general_basic_expr_v<U, T, F>)
-OC_NODISCARD auto select(U &&pred, T &&t, F &&f) noexcept {
-    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
-                                                  CallOp::SELECT,
-                                                  {OC_EXPR(pred), OC_EXPR(t), OC_EXPR(f)});
-    return eval<T>(expr);
-}
+///// used for dsl scalar vector or matrix
+//template<typename U, typename T, typename F>
+//requires(any_device_type_v<U, T, F> && std::is_same_v<remove_device_t<T>, remove_device_t<F>> &&
+//         type_dimension_v<expr_value_t<T>> == type_dimension_v<expr_value_t<F>> &&
+//         is_all_general_basic_expr_v<U, T, F>)
+//OC_NODISCARD auto select(U &&pred, T &&t, F &&f) noexcept {
+//    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
+//                                                  CallOp::SELECT,
+//                                                  {OC_EXPR(pred), OC_EXPR(t), OC_EXPR(f)});
+//    return eval<T>(expr);
+//}
 
 /// used for dsl structure
 template<typename U, typename T, typename F>
