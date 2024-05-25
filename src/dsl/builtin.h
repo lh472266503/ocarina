@@ -163,7 +163,8 @@ OC_MAKE_DSL_UNARY_FUNC(inverse, INVERSE)
 #undef OC_MAKE_DSL_UNARY_FUNC
 
 template<typename... Ts>
-using match_dsl_basic_func = std::conjunction<any_device_type<Ts...>, match_basic_func<remove_device_t<Ts>...>>;
+using match_dsl_basic_func = std::conjunction<any_device_type<Ts...>,
+                                              match_basic_func<remove_device_t<Ts>...>>;
 OC_DEFINE_TEMPLATE_VALUE_MULTI(match_dsl_basic_func)
 
 #define OC_MAKE_DSL_BINARY_FUNC(func, tag)                                        \
@@ -211,8 +212,8 @@ OC_MAKE_DSL_TRIPLE_FUNC(fma, FMA)
 #undef OC_MAKE_TRIPLE_FUNC
 
 template<typename U, typename T, typename F>
-requires (match_basic_func_v<remove_device_t<T>, remove_device_t<F>> &&
-         any_device_type_v<U,T,F>)
+requires(match_basic_func_v<remove_device_t<T>, remove_device_t<F>> &&
+         any_device_type_v<U, T, F>)
 [[nodiscard]] auto select(const U &u, const T &t, const F &f) noexcept {
     static constexpr auto dimension = type_dimension_v<remove_device_t<T>>;
     using scalar_type = type_element_t<remove_device_t<T>>;
@@ -233,7 +234,7 @@ OC_NODISCARD auto select(U &&pred, T &&t, F &&f) noexcept {
     return eval<T>(expr);
 }
 
-template<typename ...Args>
+template<typename... Args>
 requires(any_device_type_v<Args...>)
 OC_NODISCARD auto face_forward(Args &&...args) noexcept {
     return Float3::call_face_forward(swizzle_decay_t<Args>(args)...);

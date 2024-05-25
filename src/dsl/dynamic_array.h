@@ -23,6 +23,7 @@ private:
 
 public:
     DynamicArray() = default;
+    DynamicArray(DynamicArray &&) noexcept = default;
 
     explicit DynamicArray(const Expression *expression)
         : size_(expression->type()->dimension()), expression_(expression) {}
@@ -60,12 +61,12 @@ public:
         : size_{other.size_}, expression_(Function::current()->local(type())) {
         Function::current()->assign(expression_, other.expression_);
     }
-    DynamicArray(DynamicArray &&) noexcept = default;
 
     void reset(const DynamicArray<T> &array) noexcept {
         size_ = array.size();
         expression_ = array.expression();
     }
+    
     void invalidate() noexcept {
         size_ = 0;
         expression_ = nullptr;
