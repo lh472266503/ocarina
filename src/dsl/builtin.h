@@ -233,15 +233,10 @@ OC_NODISCARD auto select(U &&pred, T &&t, F &&f) noexcept {
     return eval<T>(expr);
 }
 
-template<typename... Args>
-requires(any_dsl_v<Args...> &&
-         is_all_float_element_expr_v<Args...> &&
-         is_vector_same_dimension_v<expr_value_t<Args>...>)
+template<typename ...Args>
+requires(any_device_type_v<Args...>)
 OC_NODISCARD auto face_forward(Args &&...args) noexcept {
-    using ret_ty = decltype(face_forward(std::declval<expr_value_t<Args>>()...));
-    auto expr = Function::current()->call_builtin(Type::of<ret_ty>(),
-                                                  CallOp::FACE_FORWARD, {OC_EXPR(args)...});
-    return eval<ret_ty>(expr);
+    return Float3::call_face_forward(swizzle_decay_t<Args>(args)...);
 }
 
 template<typename A>

@@ -189,6 +189,17 @@ struct Var : public Computable<T> {
                                                                     OC_EXPR(f)});
         return eval<T>(expr);
     }
+
+    template<typename... Args>
+    requires((sizeof...(Args) == 1 || sizeof...(Args) == 2) &&
+             is_all_float_vector3_v<remove_device_t<Args>...>)
+    static auto call_face_forward(const dsl_type &n, Args &&...args) {
+        const Expression *expr = Function::current()->call_builtin(Type::of<T>(),
+                                                                   CallOp::FACE_FORWARD,
+                                                                   {OC_EXPR(n),
+                                                                    OC_EXPR(args)...});
+        return eval<T>(expr);
+    }
 };
 
 template<typename T>

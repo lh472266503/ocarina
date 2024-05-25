@@ -337,7 +337,7 @@ void test_lambda(Device &device, Stream &stream) {
 //            auto axy = select(make_bool2(true), make_float2(1),make_float2(2).xy_());
             Float3 sel = select(make_bool3(1,0,0).xyz_(), a.xyz_(), b.xyz_());
 
-
+            sel = face_forward(a, b.xyz_(),a.xyz_());
 
             max(a.xyz_(), b);
                 $info("{} {}  {}  call_select ", sel);
