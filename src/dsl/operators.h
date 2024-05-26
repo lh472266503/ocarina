@@ -39,26 +39,30 @@ OC_MAKE_DSL_UNARY_OPERATOR(~, BIT_NOT)
 #undef OC_MAKE_DSL_UNARY_OPERATOR
 
 #define OC_MAKE_DSL_BINARY_OPERATOR(op, tag, trait)                                                       \
-    template<typename Lhs, typename Rhs>                                                                  \
-    requires ocarina::any_dsl_v<Lhs, Rhs> &&                                                              \
-             ocarina::is_basic_v<ocarina::expr_value_t<Lhs>> &&                                           \
-             ocarina::is_basic_v<ocarina::expr_value_t<Rhs>>                                              \
+    template<typename L, typename R>                                                                      \
+    requires ocarina::any_device_type_v<L, R> &&                                                          \
+             ocarina::is_general_basic_v<ocarina::remove_device_t<L>> &&                                  \
+             ocarina::is_general_basic_v<ocarina::remove_device_t<R>>                                     \
     [[nodiscard]] inline auto                                                                             \
-    operator op(Lhs &&lhs, Rhs &&rhs) noexcept {                                                          \
-        using namespace std::string_view_literals;                                                        \
-        static constexpr bool is_logic_op = #op == "||"sv || #op == "&&"sv;                               \
-        static constexpr bool is_bit_op = #op == "|"sv || #op == "&"sv || #op == "^"sv;                   \
-        static constexpr bool is_bool_lhs = ocarina::is_boolean_expr_v<Lhs>;                              \
-        static constexpr bool is_bool_rhs = ocarina::is_boolean_expr_v<Rhs>;                              \
-        using NormalRet = std::remove_cvref_t<                                                            \
-            decltype(std::declval<ocarina::expr_value_t<Lhs>>() op                                        \
-                         std::declval<ocarina::expr_value_t<Rhs>>())>;                                    \
-        using Ret = std::conditional_t<is_bool_lhs && is_logic_op, bool, NormalRet>;                      \
-        return ocarina::eval<Ret>(ocarina::Function::current()->binary(                                   \
-            ocarina::Type::of<Ret>(),                                                                     \
-            ocarina::BinaryOp::tag,                                                                       \
-            ocarina::detail::extract_expression(std::forward<Lhs>(lhs)),                                  \
-            ocarina::detail::extract_expression(std::forward<Rhs>(rhs))));                                \
+    operator op(L &&lhs, R &&rhs) noexcept {                                                              \
+        auto impl = []<typename Lhs, typename Rhs>(const Lhs &lhs, const Rhs &rhs) {                      \
+            using namespace std::string_view_literals;                                                    \
+            static constexpr bool is_logic_op = #op == "||"sv || #op == "&&"sv;                           \
+            static constexpr bool is_bit_op = #op == "|"sv || #op == "&"sv || #op == "^"sv;               \
+            static constexpr bool is_bool_lhs = ocarina::is_boolean_v<ocarina::remove_device_t<Lhs>>;     \
+            static constexpr bool is_bool_rhs = ocarina::is_boolean_v<ocarina::remove_device_t<Rhs>>;     \
+            using NormalRet = std::remove_cvref_t<                                                        \
+                decltype(std::declval<ocarina::remove_device_t<Lhs>>() op                                 \
+                             std::declval<ocarina::remove_device_t<Rhs>>())>;                             \
+            using Ret = std::conditional_t<is_bool_lhs && is_logic_op, bool, NormalRet>;                  \
+            return ocarina::eval<Ret>(ocarina::Function::current()->binary(                               \
+                ocarina::Type::of<Ret>(),                                                                 \
+                ocarina::BinaryOp::tag,                                                                   \
+                OC_EXPR(lhs),                                                                             \
+                OC_EXPR(rhs)));                                                                           \
+        };                                                                                                \
+        return impl(static_cast<ocarina::swizzle_decay_t<L>>(OC_FORWARD(lhs)),                            \
+                    static_cast<ocarina::swizzle_decay_t<R>>(OC_FORWARD(rhs)));                           \
     }                                                                                                     \
                                                                                                           \
     template<typename T, typename U,                                                                      \
@@ -132,21 +136,21 @@ OC_MAKE_DSL_BINARY_OPERATOR(>=, GREATER_EQUAL, greater_equal)
 
 #undef OC_MAKE_DSL_BINARY_OPERATOR
 
-#define OC_MAKE_DSL_ASSIGN_OP(op)                                                \
-    template<typename Lhs, typename Rhs>                                         \
-    requires requires {                                                          \
-        std::declval<Lhs &>() op## = std::declval<ocarina::expr_value_t<Rhs>>(); \
-    }                                                                            \
-    void operator op##=(const ocarina::Var<Lhs> &lhs, Rhs &&rhs) {               \
-        auto x = lhs op OC_FORWARD(rhs);                                         \
-        ocarina::Function::current()->assign(lhs.expression(), x.expression());  \
-    }                                                                            \
-    template<typename T, typename U>                                             \
-    requires ocarina::is_dynamic_array_v<U> ||                                   \
-             ocarina::is_scalar_v<ocarina::expr_value_t<U>>                      \
-    void operator op##=(const ocarina::DynamicArray<T> &lhs, U &&rhs) noexcept { \
-        auto x = lhs op OC_FORWARD(rhs);                                         \
-        ocarina::Function::current()->assign(lhs.expression(), x.expression());  \
+#define OC_MAKE_DSL_ASSIGN_OP(op)                                                   \
+    template<typename Lhs, typename Rhs>                                            \
+    requires requires {                                                             \
+        std::declval<Lhs &>() op## = std::declval<ocarina::remove_device_t<Rhs>>(); \
+    }                                                                               \
+    void operator op##=(const ocarina::Var<Lhs> &lhs, Rhs &&rhs) {                  \
+        auto x = lhs op OC_FORWARD(rhs);                                            \
+        ocarina::Function::current()->assign(lhs.expression(), x.expression());     \
+    }                                                                               \
+    template<typename T, typename U>                                                \
+    requires ocarina::is_dynamic_array_v<U> ||                                      \
+             ocarina::is_scalar_v<ocarina::expr_value_t<U>>                         \
+    void operator op##=(const ocarina::DynamicArray<T> &lhs, U &&rhs) noexcept {    \
+        auto x = lhs op OC_FORWARD(rhs);                                            \
+        ocarina::Function::current()->assign(lhs.expression(), x.expression());     \
     }
 
 OC_MAKE_DSL_ASSIGN_OP(+)
@@ -160,36 +164,35 @@ OC_MAKE_DSL_ASSIGN_OP(>>)
 OC_MAKE_DSL_ASSIGN_OP(<<)
 OC_MAKE_DSL_ASSIGN_OP(^)
 
-
 #undef OC_MAKE_DSL_ASSIGN_OP
 
-#define OC_MAKE_SWIZZLE_BINARY_OP(op)                                              \
-    template<typename Lhs, typename T, size_t N, size_t... Indices>                \
-    requires ocarina::is_dsl_v<Lhs>                                                \
-    auto operator op(Lhs &&lhs, ocarina::Swizzle<T, N, Indices...> rhs) noexcept { \
-        return OC_FORWARD(lhs) op rhs.decay();                                    \
-    }
-
-OC_MAKE_SWIZZLE_BINARY_OP(+)
-OC_MAKE_SWIZZLE_BINARY_OP(-)
-OC_MAKE_SWIZZLE_BINARY_OP(*)
-OC_MAKE_SWIZZLE_BINARY_OP(/)
-OC_MAKE_SWIZZLE_BINARY_OP(%)
-OC_MAKE_SWIZZLE_BINARY_OP(&)
-OC_MAKE_SWIZZLE_BINARY_OP(|)
-OC_MAKE_SWIZZLE_BINARY_OP(^)
-OC_MAKE_SWIZZLE_BINARY_OP(<<)
-OC_MAKE_SWIZZLE_BINARY_OP(>>)
-OC_MAKE_SWIZZLE_BINARY_OP(&&)
-OC_MAKE_SWIZZLE_BINARY_OP(||)
-OC_MAKE_SWIZZLE_BINARY_OP(==)
-OC_MAKE_SWIZZLE_BINARY_OP(!=)
-OC_MAKE_SWIZZLE_BINARY_OP(<)
-OC_MAKE_SWIZZLE_BINARY_OP(<=)
-OC_MAKE_SWIZZLE_BINARY_OP(>)
-OC_MAKE_SWIZZLE_BINARY_OP(>=)
-
-#undef OC_MAKE_SWIZZLE_BINARY_OP
+//#define OC_MAKE_SWIZZLE_BINARY_OP(op)                                              \
+//    template<typename Lhs, typename T, size_t N, size_t... Indices>                \
+//    requires ocarina::is_dsl_v<Lhs>                                                \
+//    auto operator op(Lhs &&lhs, ocarina::Swizzle<T, N, Indices...> rhs) noexcept { \
+//        return OC_FORWARD(lhs) op rhs.decay();                                     \
+//    }
+//
+//OC_MAKE_SWIZZLE_BINARY_OP(+)
+//OC_MAKE_SWIZZLE_BINARY_OP(-)
+//OC_MAKE_SWIZZLE_BINARY_OP(*)
+//OC_MAKE_SWIZZLE_BINARY_OP(/)
+//OC_MAKE_SWIZZLE_BINARY_OP(%)
+//OC_MAKE_SWIZZLE_BINARY_OP(&)
+//OC_MAKE_SWIZZLE_BINARY_OP(|)
+//OC_MAKE_SWIZZLE_BINARY_OP(^)
+//OC_MAKE_SWIZZLE_BINARY_OP(<<)
+//OC_MAKE_SWIZZLE_BINARY_OP(>>)
+//OC_MAKE_SWIZZLE_BINARY_OP(&&)
+//OC_MAKE_SWIZZLE_BINARY_OP(||)
+//OC_MAKE_SWIZZLE_BINARY_OP(==)
+//OC_MAKE_SWIZZLE_BINARY_OP(!=)
+//OC_MAKE_SWIZZLE_BINARY_OP(<)
+//OC_MAKE_SWIZZLE_BINARY_OP(<=)
+//OC_MAKE_SWIZZLE_BINARY_OP(>)
+//OC_MAKE_SWIZZLE_BINARY_OP(>=)
+//
+//#undef OC_MAKE_SWIZZLE_BINARY_OP
 
 #define OC_MAKE_DSL_SWIZZLE_ASSIGN_OP(op)                                  \
                                                                            \
@@ -197,19 +200,18 @@ OC_MAKE_SWIZZLE_BINARY_OP(>=)
     requires ocarina::is_dsl_v<Lhs>                                        \
     void operator op##=(Lhs &lhs,                                          \
                         ocarina::Swizzle<T, N, Indices...> rhs) noexcept { \
-        lhs op## = rhs.decay();                                           \
-        return lhs;                                                        \
+        lhs op## = rhs.decay();                                            \
     }
 
-OC_MAKE_DSL_SWIZZLE_ASSIGN_OP(+)
-OC_MAKE_DSL_SWIZZLE_ASSIGN_OP(-)
-OC_MAKE_DSL_SWIZZLE_ASSIGN_OP(*)
-OC_MAKE_DSL_SWIZZLE_ASSIGN_OP(/)
-OC_MAKE_DSL_SWIZZLE_ASSIGN_OP(|)
-OC_MAKE_DSL_SWIZZLE_ASSIGN_OP(%)
-OC_MAKE_DSL_SWIZZLE_ASSIGN_OP(&)
-OC_MAKE_DSL_SWIZZLE_ASSIGN_OP(>>)
-OC_MAKE_DSL_SWIZZLE_ASSIGN_OP(<<)
-OC_MAKE_DSL_SWIZZLE_ASSIGN_OP(^)
+//OC_MAKE_DSL_SWIZZLE_ASSIGN_OP(+)
+//OC_MAKE_DSL_SWIZZLE_ASSIGN_OP(-)
+//OC_MAKE_DSL_SWIZZLE_ASSIGN_OP(*)
+//OC_MAKE_DSL_SWIZZLE_ASSIGN_OP(/)
+//OC_MAKE_DSL_SWIZZLE_ASSIGN_OP(|)
+//OC_MAKE_DSL_SWIZZLE_ASSIGN_OP(%)
+//OC_MAKE_DSL_SWIZZLE_ASSIGN_OP(&)
+//OC_MAKE_DSL_SWIZZLE_ASSIGN_OP(>>)
+//OC_MAKE_DSL_SWIZZLE_ASSIGN_OP(<<)
+//OC_MAKE_DSL_SWIZZLE_ASSIGN_OP(^)
 
 #undef OC_MAKE_DSL_SWIZZLE_ASSIGN_OP
