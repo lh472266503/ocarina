@@ -171,7 +171,7 @@ template<typename T>
 }
 
 template<typename T>
-[[nodiscard]] scalar_t<T> luminance(const T &v) {
+[[nodiscard]] auto luminance(const T &v) {
     return dot(make_float3(0.212671f, 0.715160f, 0.072169f), v);
 }
 
