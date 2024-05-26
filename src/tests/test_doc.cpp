@@ -338,6 +338,11 @@ void test_lambda(Device &device, Stream &stream) {
             Float3 sel = select(make_bool3(1,0,0).xyz_(), a.xyz_(), b.xyz_());
 
             sel = face_forward(a, b.xyz_(),a.xyz_());
+            auto mf = make_float4(a.xyz_(), t.x);
+
+//            using tp = decltype(make_float4(remove_device_t<std::remove_cvref_t<decltype(a.xyz_())>>{}, remove_device_t<Float>{}));
+
+//            a.xyz_() * t.x;
 
             max(a.xyz_(), b);
                 $info("{} {}  {}  call_select ", sel);

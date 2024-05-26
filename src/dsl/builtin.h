@@ -249,16 +249,19 @@ void coordinate_system(const A &a, Var<float3> &b, Var<float3> &c) noexcept {
     Function::current()->expr_statement(expr);
 }
 
-#define OC_MAKE_VEC_MAKER_DIM(type, tag, dim)                                  \
-    template<typename... Args>                                                 \
-    requires(any_dsl_v<Args...> && requires {                                  \
-        make_##type##dim(expr_value_t<Args>{}...);                             \
-    })                                                                         \
-    OC_NODISCARD auto make_##type##dim(const Args &...args) noexcept {         \
-        auto expr = Function::current()->call_builtin(Type::of<type##dim>(),   \
-                                                      CallOp::MAKE_##tag##dim, \
-                                                      {OC_EXPR(args)...});     \
-        return eval<type##dim>(expr);                                          \
+#define OC_MAKE_VEC_MAKER_DIM(type, tag, dim)                                      \
+    template<typename... Args>                                                     \
+    requires(any_device_type_v<Args...> && requires {                              \
+        make_##type##dim(remove_device_t<Args>{}...);                              \
+    })                                                                             \
+    OC_NODISCARD auto make_##type##dim(const Args &...args) noexcept {             \
+        auto impl = [&]<typename... As>(const As &...as) {                         \
+            auto expr = Function::current()->call_builtin(Type::of<type##dim>(),   \
+                                                          CallOp::MAKE_##tag##dim, \
+                                                          {OC_EXPR(as)...});       \
+            return eval<type##dim>(expr);                                          \
+        };                                                                         \
+        return impl(static_cast<swizzle_decay_t<Args>>(args)...);                  \
     }
 
 #define OC_MAKE_VEC_MAKER(type, tag)    \

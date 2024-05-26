@@ -115,13 +115,13 @@ public:
     }                                                                         \
                                                                               \
     template<typename U>                                                      \
-    requires is_scalar_v<U>                                                   \
+    requires requires { vec_type{} op U{}; }                                  \
     vec_type operator op(U rhs) const noexcept {                              \
         return decay() op rhs;                                                \
     }                                                                         \
                                                                               \
     template<typename U>                                                      \
-    requires is_scalar_v<U>                                                   \
+    requires requires { U{} op vec_type{}; }                                  \
     friend vec_type operator op(U lhs, Swizzle<T, N, Indices...> rhs) {       \
         return lhs op rhs.decay();                                            \
     }                                                                         \
