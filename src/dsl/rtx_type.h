@@ -69,9 +69,9 @@ public:
         dir_max.z = direction.z;
     }
 
-    [[nodiscard]] auto origin() const noexcept { return org_min.xyz(); }
-    [[nodiscard]] auto direction() const noexcept { return dir_max.xyz(); }
-    [[nodiscard]] auto at(float t) const noexcept { return origin() + direction() * t; }
+    [[nodiscard]] float3 origin() const noexcept { return org_min.xyz(); }
+    [[nodiscard]] float3 direction() const noexcept { return dir_max.xyz(); }
+    [[nodiscard]] float3 at(float t) const noexcept { return origin() + direction() * t; }
     [[nodiscard]] auto t_max() const noexcept { return dir_max.w; }
     [[nodiscard]] auto t_min() const noexcept { return org_min.w; }
 };
@@ -99,9 +99,9 @@ OC_BUILTIN_STRUCT(ocarina,Ray, org_min, dir_max) {
         dir_max.z = direction.z;
     }
 
-    [[nodiscard]] auto origin() const noexcept { return org_min.xyz(); }
-    [[nodiscard]] auto direction() const noexcept { return dir_max.xyz(); }
-    [[nodiscard]] auto at(Float t) const noexcept { return origin() + direction() * t; }
+    [[nodiscard]] Float3 origin() const noexcept { return org_min.xyz(); }
+    [[nodiscard]] Float3 direction() const noexcept { return dir_max.xyz(); }
+    [[nodiscard]] Float3 at(Float t) const noexcept { return origin() + direction() * t; }
     [[nodiscard]] auto t_max() const noexcept { return dir_max.w; }
     [[nodiscard]] auto t_min() const noexcept { return org_min.w; }
 };

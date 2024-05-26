@@ -12,7 +12,7 @@
 
 #define OC_MAKE_DSL_UNARY_OPERATOR(op, tag)                                                                          \
     template<typename T>                                                                                             \
-    requires ocarina::is_dsl_v<T>                                                                                    \
+    requires ocarina::is_device_type_v<T>                                                                            \
     OC_NODISCARD inline auto                                                                                         \
     operator op(T &&expr) noexcept {                                                                                 \
         if constexpr (ocarina::is_dynamic_array_v<T>) {                                                              \
@@ -22,12 +22,14 @@
                                                                   expr.expression());                                \
             return ocarina::DynamicArray<element_t>(expr.size(), expression);                                        \
         } else {                                                                                                     \
-            using Ret = std::remove_cvref_t<decltype(op std::declval<ocarina::expr_value_t<T>>())>;                  \
-            return ocarina::eval<Ret>(                                                                               \
-                ocarina::Function::current()->unary(                                                                 \
-                    ocarina::Type::of<Ret>(),                                                                        \
-                    ocarina::UnaryOp::tag,                                                                           \
-                    ocarina::detail::extract_expression(std::forward<T>(expr))));                                    \
+            return []<typename Arg>(const Arg &arg) {                                                                \
+                using Ret = std::remove_cvref_t<decltype(op std::declval<ocarina::remove_device_t<Arg>>())>;         \
+                return ocarina::eval<Ret>(                                                                           \
+                    ocarina::Function::current()->unary(                                                             \
+                        ocarina::Type::of<Ret>(),                                                                    \
+                        ocarina::UnaryOp::tag,                                                                       \
+                        OC_EXPR(arg)));                                                                              \
+            }(static_cast<ocarina::swizzle_decay_t<T>>(OC_FORWARD(expr)));                                           \
         }                                                                                                            \
     }
 
@@ -38,82 +40,65 @@ OC_MAKE_DSL_UNARY_OPERATOR(~, BIT_NOT)
 
 #undef OC_MAKE_DSL_UNARY_OPERATOR
 
-#define OC_MAKE_DSL_BINARY_OPERATOR(op, tag, trait)                                                       \
-    template<typename L, typename R>                                                                      \
-    requires ocarina::any_device_type_v<L, R> &&                                                          \
-             ocarina::is_general_basic_v<ocarina::remove_device_t<L>> &&                                  \
-             ocarina::is_general_basic_v<ocarina::remove_device_t<R>>                                     \
-    [[nodiscard]] inline auto                                                                             \
-    operator op(L &&lhs, R &&rhs) noexcept {                                                              \
-        auto impl = []<typename Lhs, typename Rhs>(const Lhs &lhs, const Rhs &rhs) {                      \
-            using namespace std::string_view_literals;                                                    \
-            static constexpr bool is_logic_op = #op == "||"sv || #op == "&&"sv;                           \
-            static constexpr bool is_bit_op = #op == "|"sv || #op == "&"sv || #op == "^"sv;               \
-            static constexpr bool is_bool_lhs = ocarina::is_boolean_v<ocarina::remove_device_t<Lhs>>;     \
-            static constexpr bool is_bool_rhs = ocarina::is_boolean_v<ocarina::remove_device_t<Rhs>>;     \
-            using NormalRet = std::remove_cvref_t<                                                        \
-                decltype(std::declval<ocarina::remove_device_t<Lhs>>() op                                 \
-                             std::declval<ocarina::remove_device_t<Rhs>>())>;                             \
-            using Ret = std::conditional_t<is_bool_lhs && is_logic_op, bool, NormalRet>;                  \
-            return ocarina::eval<Ret>(ocarina::Function::current()->binary(                               \
-                ocarina::Type::of<Ret>(),                                                                 \
-                ocarina::BinaryOp::tag,                                                                   \
-                OC_EXPR(lhs),                                                                             \
-                OC_EXPR(rhs)));                                                                           \
-        };                                                                                                \
-        return impl(static_cast<ocarina::swizzle_decay_t<L>>(OC_FORWARD(lhs)),                            \
-                    static_cast<ocarina::swizzle_decay_t<R>>(OC_FORWARD(rhs)));                           \
-    }                                                                                                     \
-                                                                                                          \
-    template<typename T, typename U,                                                                      \
-             typename NormalRet = std::remove_cvref_t<decltype(std::declval<T>() op std::declval<U>())>>  \
-    [[nodiscard]] inline auto operator op(const ocarina::DynamicArray<T> &lhs,                            \
-                                          const ocarina::DynamicArray<U> &rhs) noexcept {                 \
-        using namespace std::string_view_literals;                                                        \
-        static constexpr bool is_logic_op = #op == "||"sv || #op == "&&"sv;                               \
-        static constexpr bool is_bit_op = #op == "|"sv || #op == "&"sv || #op == "^"sv;                   \
-        static constexpr bool is_bool_lhs = ocarina::is_boolean_expr_v<T>;                                \
-        static constexpr bool is_bool_rhs = ocarina::is_boolean_expr_v<U>;                                \
-        OC_ASSERT(lhs.size() == rhs.size() || std::min(lhs.size(), rhs.size()) == 1);                     \
-        auto size = std::max(lhs.size(), rhs.size());                                                     \
-        using Ret = std::conditional_t<is_bool_lhs && is_logic_op, bool, NormalRet>;                      \
-        auto expression = ocarina::Function::current()->binary(ocarina::DynamicArray<Ret>::type(size),    \
-                                                               ocarina::BinaryOp::tag, lhs.expression(),  \
-                                                               rhs.expression());                         \
-        return ocarina::DynamicArray<Ret>(size, expression);                                              \
-    }                                                                                                     \
-    template<typename T, typename U>                                                                      \
-    requires ocarina::is_scalar_v<ocarina::expr_value_t<U>>                                               \
-    [[nodiscard]] inline auto operator op(const ocarina::DynamicArray<T> &lhs, U &&rhs) noexcept {        \
-        ocarina::DynamicArray<ocarina::expr_value_t<U>> arr(1u);                                          \
-        arr[0] = OC_FORWARD(rhs);                                                                         \
-        return lhs op arr;                                                                                \
-    }                                                                                                     \
-                                                                                                          \
-    template<typename T, typename U>                                                                      \
-    requires ocarina::is_scalar_v<ocarina::expr_value_t<T>>                                               \
-    [[nodiscard]] inline auto operator op(T &&lhs, const ocarina::DynamicArray<U> &rhs) noexcept {        \
-        ocarina::DynamicArray<ocarina::expr_value_t<U>> arr(1u);                                          \
-        arr[0] = OC_FORWARD(lhs);                                                                         \
-        return arr op rhs;                                                                                \
-    }                                                                                                     \
-                                                                                                          \
-    namespace ocarina {                                                                                   \
-    namespace detail {                                                                                    \
-    template<typename Lhs, typename Rhs>                                                                  \
-    requires none_dsl_v<Lhs, Rhs>                                                                         \
-    decltype(std::declval<Lhs>() op std::declval<Rhs>()) trait##_func();                                  \
-    template<typename Lhs, typename Rhs>                                                                  \
-    requires any_dsl_v<Lhs, Rhs>                                                                          \
-    Var<decltype(std::declval<expr_value_t<Lhs>>() op std::declval<expr_value_t<Rhs>>())> trait##_func(); \
-    template<typename Lhs, typename Rhs>                                                                  \
-    struct trait {                                                                                        \
-        using type = decltype(detail::trait##_func<Lhs, Rhs>());                                          \
-    };                                                                                                    \
-    }                                                                                                     \
-    template<typename... T>                                                                               \
-    using trait##_t = typename detail::trait<T...>::type;                                                 \
-    };// namespace ocarina
+#define OC_MAKE_DSL_BINARY_OPERATOR(op, tag, trait)                                                      \
+    template<typename L, typename R>                                                                     \
+    requires ocarina::any_device_type_v<L, R> &&                                                         \
+             ocarina::is_general_basic_v<ocarina::remove_device_t<L>> &&                                 \
+             ocarina::is_general_basic_v<ocarina::remove_device_t<R>>                                    \
+    [[nodiscard]] inline auto                                                                            \
+    operator op(L &&lhs, R &&rhs) noexcept {                                                             \
+        auto impl = []<typename Lhs, typename Rhs>(const Lhs &lhs, const Rhs &rhs) {                     \
+            using namespace std::string_view_literals;                                                   \
+            static constexpr bool is_logic_op = #op == "||"sv || #op == "&&"sv;                          \
+            static constexpr bool is_bit_op = #op == "|"sv || #op == "&"sv || #op == "^"sv;              \
+            static constexpr bool is_bool_lhs = ocarina::is_boolean_v<ocarina::remove_device_t<Lhs>>;    \
+            static constexpr bool is_bool_rhs = ocarina::is_boolean_v<ocarina::remove_device_t<Rhs>>;    \
+            using NormalRet = std::remove_cvref_t<                                                       \
+                decltype(std::declval<ocarina::remove_device_t<Lhs>>() op                                \
+                             std::declval<ocarina::remove_device_t<Rhs>>())>;                            \
+            using Ret = std::conditional_t<is_bool_lhs && is_logic_op, bool, NormalRet>;                 \
+            return ocarina::eval<Ret>(ocarina::Function::current()->binary(                              \
+                ocarina::Type::of<Ret>(),                                                                \
+                ocarina::BinaryOp::tag,                                                                  \
+                OC_EXPR(lhs),                                                                            \
+                OC_EXPR(rhs)));                                                                          \
+        };                                                                                               \
+        return impl(static_cast<ocarina::swizzle_decay_t<L>>(OC_FORWARD(lhs)),                           \
+                    static_cast<ocarina::swizzle_decay_t<R>>(OC_FORWARD(rhs)));                          \
+    }                                                                                                    \
+                                                                                                         \
+    template<typename T, typename U,                                                                     \
+             typename NormalRet = std::remove_cvref_t<decltype(std::declval<T>() op std::declval<U>())>> \
+    [[nodiscard]] inline auto operator op(const ocarina::DynamicArray<T> &lhs,                           \
+                                          const ocarina::DynamicArray<U> &rhs) noexcept {                \
+        using namespace std::string_view_literals;                                                       \
+        static constexpr bool is_logic_op = #op == "||"sv || #op == "&&"sv;                              \
+        static constexpr bool is_bit_op = #op == "|"sv || #op == "&"sv || #op == "^"sv;                  \
+        static constexpr bool is_bool_lhs = ocarina::is_boolean_expr_v<T>;                               \
+        static constexpr bool is_bool_rhs = ocarina::is_boolean_expr_v<U>;                               \
+        OC_ASSERT(lhs.size() == rhs.size() || std::min(lhs.size(), rhs.size()) == 1);                    \
+        auto size = std::max(lhs.size(), rhs.size());                                                    \
+        using Ret = std::conditional_t<is_bool_lhs && is_logic_op, bool, NormalRet>;                     \
+        auto expression = ocarina::Function::current()->binary(ocarina::DynamicArray<Ret>::type(size),   \
+                                                               ocarina::BinaryOp::tag, lhs.expression(), \
+                                                               rhs.expression());                        \
+        return ocarina::DynamicArray<Ret>(size, expression);                                             \
+    }                                                                                                    \
+    template<typename T, typename U>                                                                     \
+    requires ocarina::is_scalar_v<ocarina::expr_value_t<U>>                                              \
+    [[nodiscard]] inline auto operator op(const ocarina::DynamicArray<T> &lhs, U &&rhs) noexcept {       \
+        ocarina::DynamicArray<ocarina::expr_value_t<U>> arr(1u);                                         \
+        arr[0] = OC_FORWARD(rhs);                                                                        \
+        return lhs op arr;                                                                               \
+    }                                                                                                    \
+                                                                                                         \
+    template<typename T, typename U>                                                                     \
+    requires ocarina::is_scalar_v<ocarina::expr_value_t<T>>                                              \
+    [[nodiscard]] inline auto operator op(T &&lhs, const ocarina::DynamicArray<U> &rhs) noexcept {       \
+        ocarina::DynamicArray<ocarina::expr_value_t<U>> arr(1u);                                         \
+        arr[0] = OC_FORWARD(lhs);                                                                        \
+        return arr op rhs;                                                                               \
+    }
 
 OC_MAKE_DSL_BINARY_OPERATOR(+, ADD, add)
 OC_MAKE_DSL_BINARY_OPERATOR(-, SUB, sub)

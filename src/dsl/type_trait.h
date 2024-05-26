@@ -237,7 +237,7 @@ struct is_device_type_impl<Swizzle<Var<T>, N, Indices...>> : std::true_type {};
 
 template<typename T>
 using is_device_type = detail::is_device_type_impl<std::remove_cvref_t<T>>;
-OC_DEFINE_TEMPLATE_TYPE(is_device_type)
+OC_DEFINE_TEMPLATE_VALUE(is_device_type)
 
 template<typename... Ts>
 using any_device_type = std::disjunction<is_device_type<Ts>...>;
