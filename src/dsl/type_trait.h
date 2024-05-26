@@ -137,10 +137,6 @@ struct remove_device_impl<Swizzle<Var<T>, N, Indices...>> {
 };
 }// namespace detail
 
-template<typename T>
-using remove_device = detail::remove_device_impl<std::remove_cvref_t<T>>;
-OC_DEFINE_TEMPLATE_TYPE(remove_device)
-
 namespace detail {
 template<typename T>
 struct dsl_impl {

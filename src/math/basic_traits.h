@@ -168,6 +168,15 @@ OC_DEFINE_TEMPLATE_VALUE(is_host_swizzle)
 
 namespace detail {
 template<typename T>
+struct remove_device_impl;
+}
+
+template<typename T>
+using remove_device = detail::remove_device_impl<std::remove_cvref_t<T>>;
+OC_DEFINE_TEMPLATE_TYPE(remove_device)
+
+namespace detail {
+template<typename T>
 struct is_device_swizzle_impl : std::false_type {};
 
 template<typename T, size_t N, size_t... Indices>
