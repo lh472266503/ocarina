@@ -299,17 +299,33 @@ void test_lambda(Device &device, Stream &stream) {
         //        f3.x = 1;
         //        f3.y = 2;
 
+
         float3 f3 = make_float3(1, 2, 3);
 
         auto fm = f3.call_max(1.f, f3);
 
         Float3 aa = f3;
-        //        aa.xy_() == aa.xy();
+
+        auto func = []<typename Arg>(Arg &arg) {
+            arg.xyz_() = make_float3(5,6,7);
+            arg.xy_() += arg.z;
+            arg.xy_() += arg.yz_();
+            arg.xy_() += arg.yz();
+            arg.xy_() = arg.xy_() + arg.x;
+            arg.xy_() = arg.x + arg.xy_();
+            arg.xy_() = arg.xy() + arg.xy_();
+            arg.xy_() = arg.xy_() + arg.xy();
+
+            int i = 0;
+        };
+        func(f3);
+        func(aa);
+      //        aa.xy_() == aa.xy();
 
         //      aa.xy += 1;
         //      Float3 bbb = + aa.xyy();
         //        bool bbb = ocarina::is_scalar_v<Float3>;
-        $info("{} {} {}  ", aa);
+        $info("{} {} {} func ", aa);
         aa = aa.zxx_();
         $info("{} {} {}  ", aa);
         auto at = aa >= aa.yyy_();
