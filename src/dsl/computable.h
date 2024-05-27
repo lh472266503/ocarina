@@ -282,7 +282,7 @@ struct EnableTextureReadAndWrite {
              is_uint_vector2_v<expr_value_t<XY>> &&
                  (is_uchar_element_expr_v<Target> || is_float_element_expr_v<Target>))
     OC_NODISCARD auto read(const XY &xy) const noexcept {
-        return []<typename Arg>(const Arg &arg) {
+        return [&]<typename Arg>(const Arg &arg) {
             return read<Target>(arg.x, arg.y);
         }(decay_swizzle(xy));
     }
@@ -292,7 +292,7 @@ struct EnableTextureReadAndWrite {
              is_uint_vector3_v<expr_value_t<XYZ>> &&
                  (is_uchar_element_expr_v<Target> || is_float_element_expr_v<Target>))
     OC_NODISCARD auto read(const XYZ &xyz) const noexcept {
-        return []<typename Arg>(const Arg &arg) {
+        return [&]<typename Arg>(const Arg &arg) {
             return read<Target>(arg.x, arg.y, arg.z);
         }(decay_swizzle(xyz));
     }
