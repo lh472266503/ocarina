@@ -35,6 +35,7 @@ namespace ocarina {
 template<typename T, size_t N, size_t... Indices>
 struct Swizzle {
     static constexpr uint num_component = sizeof...(Indices);
+    static constexpr std::array index_array = {Indices...};
     static_assert(num_component <= 4 && std::max({Indices...}) < N);
 
     template<typename Scalar>
@@ -94,6 +95,22 @@ public:
 
     operator vec_type() noexcept {
         return decay();
+    }
+
+    [[nodiscard]] const T &at(uint i) const noexcept {
+        return data_[index_array[i]];
+    }
+
+    [[nodiscard]] T &at(uint i) noexcept {
+        return data_[index_array[i]];
+    }
+
+    [[nodiscard]] const T &operator[](uint i) const noexcept {
+        return at(i);
+    }
+
+    [[nodiscard]] T &operator[](uint i) noexcept {
+        return at(i);
     }
 
 #define OC_MAKE_SWIZZLE_UNARY_OP(op)    \

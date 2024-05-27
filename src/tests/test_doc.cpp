@@ -326,7 +326,7 @@ void test_lambda(Device &device, Stream &stream) {
         //      aa.xy += 1;
         //      Float3 bbb = + aa.xyy();
         //        bool bbb = ocarina::is_scalar_v<Float3>;
-        $info("{} {} {} func ", aa);
+        $info("{} {} {} {} func ", aa, aa.zyx()[0]);
         aa = aa.zxx();
         $info("{} {} {}  ", aa);
         auto at = aa >= aa.yyy();
