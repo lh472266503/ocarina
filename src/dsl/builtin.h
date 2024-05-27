@@ -174,8 +174,8 @@ OC_DEFINE_TEMPLATE_VALUE_MULTI(match_dsl_basic_func)
         static constexpr auto dimension = type_dimension_v<remove_device_t<Lhs>>; \
         using scalar_type = type_element_t<remove_device_t<Lhs>>;                 \
         using var_type = Var<general_vector_t<scalar_type, dimension>>;           \
-        return var_type::call_##func(static_cast<swizzle_decay_t<Lhs>>(lhs),      \
-                                     static_cast<swizzle_decay_t<Rhs>>(rhs));     \
+        return var_type::call_##func(decay_swizzle(lhs),                          \
+                                     decay_swizzle(rhs));                         \
     }
 
 OC_MAKE_DSL_BINARY_FUNC(max, MAX)
@@ -200,9 +200,9 @@ OC_MAKE_DSL_BINARY_FUNC(distance_squared, DISTANCE_SQUARED)
         static constexpr auto dimension = type_dimension_v<remove_device_t<A>>; \
         using scalar_type = type_element_t<remove_device_t<A>>;                 \
         using var_type = Var<general_vector_t<scalar_type, dimension>>;         \
-        return var_type::call_##func(static_cast<swizzle_decay_t<A>>(a),        \
-                                     static_cast<swizzle_decay_t<B>>(b),        \
-                                     static_cast<swizzle_decay_t<C>>(c));       \
+        return var_type::call_##func(decay_swizzle(a),                          \
+                                     decay_swizzle(b),                          \
+                                     decay_swizzle(c));                         \
     }
 
 OC_MAKE_DSL_TRIPLE_FUNC(clamp, CLAMP)
@@ -218,9 +218,9 @@ requires(match_basic_func_v<remove_device_t<T>, remove_device_t<F>> &&
     static constexpr auto dimension = type_dimension_v<remove_device_t<T>>;
     using scalar_type = type_element_t<remove_device_t<T>>;
     using var_type = Var<general_vector_t<scalar_type, dimension>>;
-    return var_type::call_select(static_cast<swizzle_decay_t<U>>(u),
-                                 static_cast<swizzle_decay_t<T>>(t),
-                                 static_cast<swizzle_decay_t<F>>(f));
+    return var_type::call_select(decay_swizzle(u),
+                                 decay_swizzle(t),
+                                 decay_swizzle(f));
 }
 
 /// used for dsl structure
@@ -237,7 +237,7 @@ OC_NODISCARD auto select(U &&pred, T &&t, F &&f) noexcept {
 template<typename... Args>
 requires(any_device_type_v<Args...>)
 OC_NODISCARD auto face_forward(Args &&...args) noexcept {
-    return Float3::call_face_forward(swizzle_decay_t<Args>(args)...);
+    return Float3::call_face_forward(decay_swizzle(OC_FORWARD(args))...);
 }
 
 template<typename A>
@@ -261,7 +261,7 @@ void coordinate_system(const A &a, Var<float3> &b, Var<float3> &c) noexcept {
                                                           {OC_EXPR(as)...});       \
             return eval<type##dim>(expr);                                          \
         };                                                                         \
-        return impl(static_cast<swizzle_decay_t<Args>>(args)...);                  \
+        return impl(decay_swizzle(args)...);                                       \
     }
 
 #define OC_MAKE_VEC_MAKER(type, tag)    \

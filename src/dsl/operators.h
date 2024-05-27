@@ -29,7 +29,7 @@
                         ocarina::Type::of<Ret>(),                                                                    \
                         ocarina::UnaryOp::tag,                                                                       \
                         OC_EXPR(arg)));                                                                              \
-            }(static_cast<ocarina::swizzle_decay_t<T>>(OC_FORWARD(expr)));                                           \
+            }(ocarina::decay_swizzle(OC_FORWARD(expr)));                                                             \
         }                                                                                                            \
     }
 
@@ -63,8 +63,8 @@ OC_MAKE_DSL_UNARY_OPERATOR(~, BIT_NOT)
                 OC_EXPR(lhs),                                                                            \
                 OC_EXPR(rhs)));                                                                          \
         };                                                                                               \
-        return impl(static_cast<ocarina::swizzle_decay_t<L>>(OC_FORWARD(lhs)),                           \
-                    static_cast<ocarina::swizzle_decay_t<R>>(OC_FORWARD(rhs)));                          \
+        return impl(ocarina::decay_swizzle(OC_FORWARD(lhs)),                                             \
+                    ocarina::decay_swizzle(OC_FORWARD(rhs)));                                            \
     }                                                                                                    \
                                                                                                          \
     template<typename T, typename U,                                                                     \
