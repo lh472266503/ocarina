@@ -129,22 +129,27 @@ OC_DEFINE_TEMPLATE_VALUE(swizzle_dimension)
 
 namespace detail {
 //todo bug of msvc
-template<typename T, size_t N = 0u>
+template<typename T>
 struct is_swizzle_impl : std::false_type {
 };
 
 template<typename T, size_t N, size_t... Indices>
-struct is_swizzle_impl<Swizzle<T, N, Indices...>, sizeof...(Indices)> : std::true_type {
+struct is_swizzle_impl<Swizzle<T, N, Indices...>> : std::true_type {
 };
 
-template<typename T, size_t N, size_t... Indices>
-struct is_swizzle_impl<Swizzle<T, N, Indices...>, 0u> : std::true_type {};
+/// fuck !!! work around bug of msvc
+template<typename T, size_t N = 0u>
+struct is_swizzle_dim_impl {
+    static constexpr bool value = is_swizzle_impl<T>::value &&
+                                  (swizzle_dimension_v<T> == N || N == 0);
+};
 
 }// namespace detail
 
-template<typename T>
-using is_swizzle = detail::is_swizzle_impl<std::remove_cvref_t<T>>;
-OC_DEFINE_TEMPLATE_VALUE(is_swizzle)
+template<typename T, size_t N = 0>
+using is_swizzle = detail::is_swizzle_dim_impl<std::remove_cvref_t<T>, N>;
+template<typename T, size_t N = 0>
+constexpr auto is_swizzle_v = is_swizzle<T, N>::value;
 
 template<typename T>
 struct Var;
@@ -160,11 +165,20 @@ struct is_host_swizzle_impl<Swizzle<T, N, Indices...>> : std::true_type {};
 template<typename T, size_t N, size_t... Indices>
 struct is_host_swizzle_impl<Swizzle<Var<T>, N, Indices...>> : std::false_type {};
 
+/// fuck !!! work around bug of msvc
+template<typename T, size_t N = 0u>
+struct is_host_swizzle_dim_impl {
+    static constexpr bool value = is_host_swizzle_impl<T>::value &&
+                                  (swizzle_dimension_v<T> == N || N == 0);
+};
+
 }// namespace detail
 
-template<typename T>
-using is_host_swizzle = detail::is_host_swizzle_impl<std::remove_cvref_t<T>>;
-OC_DEFINE_TEMPLATE_VALUE(is_host_swizzle)
+template<typename T, size_t N = 0u>
+using is_host_swizzle = detail::is_host_swizzle_dim_impl<std::remove_cvref_t<T>, N>;
+template<typename T, size_t N = 0u>
+constexpr auto is_host_swizzle_v = is_host_swizzle<T, N>::value;
+
 
 namespace detail {
 template<typename T>
@@ -184,11 +198,21 @@ struct is_device_swizzle_impl<Swizzle<T, N, Indices...>> : std::false_type {};
 
 template<typename T, size_t N, size_t... Indices>
 struct is_device_swizzle_impl<Swizzle<Var<T>, N, Indices...>> : std::true_type {};
+
+/// fuck !!! work around bug of msvc
+template<typename T, size_t N = 0u>
+struct is_device_swizzle_dim_impl {
+    static constexpr bool value = is_device_swizzle_impl<T>::value &&
+                                  (swizzle_dimension_v<T> == N || N == 0);
+};
+
 }// namespace detail
 
-template<typename T>
-using is_device_swizzle = detail::is_device_swizzle_impl<std::remove_cvref_t<T>>;
-OC_DEFINE_TEMPLATE_VALUE(is_device_swizzle)
+template<typename T, size_t N = 0u>
+using is_device_swizzle = detail::is_device_swizzle_dim_impl<std::remove_cvref_t<T>, N>;
+template<typename T, size_t N = 0u>
+constexpr auto is_device_swizzle_v = is_device_swizzle<T, N>::value;
+
 
 namespace detail {
 template<typename T>
@@ -441,9 +465,10 @@ using is_vector3 = is_vector<T, 3u>;
 template<typename T>
 using is_vector4 = is_vector<T, 4u>;
 
-template<typename T>
-using is_general_vector = std::disjunction<is_vector<T>, is_host_swizzle<T>>;
-OC_DEFINE_TEMPLATE_VALUE(is_general_vector)
+template<typename T, size_t N = 0u>
+using is_general_vector = std::disjunction<is_vector<T, N>, is_host_swizzle<T, N>>;
+template<typename T, size_t N = 0u>
+constexpr auto is_general_vector_v = is_general_vector<T, N>::value;
 
 template<typename... Ts>
 using is_any_general_vector = std::disjunction<is_general_vector<Ts>...>;

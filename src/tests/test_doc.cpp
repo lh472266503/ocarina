@@ -249,41 +249,42 @@ void test_lambda(Device &device, Stream &stream) {
     float3 f3 = make_float3(1, 2, 3);
     auto f2 = make_int2(5, 6);
 
-    f3.xy_() += f2;
+    f3.xy() += f2;
+    static_assert(is_device_swizzle<Swizzle<Var<float>, 3, 0,1>,2>::value);
 
-    auto f34 = make_float2(f3.xy_());
+    auto f34 = make_float2(f3.xy());
 
     _bstr_t _bstr;
-    ////    float3 aa = f3.xyy_() + f3.xyy_();
+    ////    float3 aa = f3.xyy() + f3.xyy();
     //    auto fcc = ~make_uint3(f3);
-    //    1 == aa.xy_();
+    //    1 == aa.xy();
     //    float3 bb = f3 + f3.xyz();
     //    float3 cc = 5 + f3.xyz();
 
-    //    std::remove_cvref_t<decltype(f3.xyy_())>::vec_type __a;
+    //    std::remove_cvref_t<decltype(f3.xyy())>::vec_type __a;
 
-    //    aa.xy_() == 10;
+    //    aa.xy() == 10;
     //    f3 =  2.f + f3.xyz;
 
     float4 f4 = make_float4(1, 2, 666, 4);
-    float4 f = (make_float4(-1, -2, -3, -4).xyzw_());
+    float4 f = (make_float4(-1, -2, -3, -4).xyzw());
 
-    float fe = dot(f.xxx_(), f.zww_());
+    float fe = dot(f.xxx(), f.zww());
 
-    auto bnan = ocarina::cross(f.zyx_(), f.zxx());
+    auto bnan = ocarina::cross(f.zyx(), f.zxx());
 
     //    max(fe, fe);
 
-    //    auto fm = max(f4.xyxz_(), f4.xyxz_());
+    //    auto fm = max(f4.xyxz(), f4.xyxz());
 
-    auto bs = ocarina::detail::is_swizzle_impl<std::remove_cvref_t<decltype(f4.xyz_())>, 3>::value;
+    auto bs = ocarina::detail::is_swizzle_impl<std::remove_cvref_t<decltype(f4.xyz())>>::value;
 
     auto fn = select(make_bool4(1, 0, 1, 0), f4, f);
 
-    bool aaa = match_dsl_unary_func_v<decltype(f.xyz_())>;
+    bool aaa = match_dsl_unary_func_v<decltype(f.xyz())>;
 
     //    auto inv = int4::rcp_impl(f4);
-    //    auto ab = float4::abs_impl(make_float4(-1).xxxx_());
+    //    auto ab = float4::abs_impl(make_float4(-1).xxxx());
     //    auto ab2 = absf(make_int4(-1));
     //    AVector<float, 4> af;
     //    Vector<float, 4> af1;
@@ -307,32 +308,32 @@ void test_lambda(Device &device, Stream &stream) {
         Float3 aa = f3;
 
         auto func = []<typename Arg>(Arg &arg) {
-            arg.xyz_() = make_float3(5,6,7);
-            arg.xy_() += arg.z;
-            arg.xy_() += arg.yz_();
-            arg.xy_() += arg.yz();
-            arg.xy_() = arg.xy_() + arg.x;
-            arg.xy_() = arg.x + arg.xy_();
-            arg.xy_() = arg.xy() + arg.xy_();
-            arg.xy_() = arg.xy_() + arg.xy();
+            arg.xyz() = make_float3(5,6,7);
+            arg.xy() += arg.z;
+            arg.xy() += arg.yz();
+            arg.xy() += arg.yz();
+            arg.xy() = arg.xy() + arg.x;
+            arg.xy() = arg.x + arg.xy();
+            arg.xy() = arg.xy() + arg.xy();
+            arg.xy() = arg.xy() + arg.xy();
 
             int i = 0;
         };
         func(f3);
         func(aa);
-      //        aa.xy_() == aa.xy();
+      //        aa.xy() == aa.xy();
 
         //      aa.xy += 1;
         //      Float3 bbb = + aa.xyy();
         //        bool bbb = ocarina::is_scalar_v<Float3>;
         $info("{} {} {} func ", aa);
-        aa = aa.zxx_();
+        aa = aa.zxx();
         $info("{} {} {}  ", aa);
-        auto at = aa >= aa.yyy_();
-        $info("{} {} {}  {}  ", make_uint3(at), none(at.xyz_()).cast<int>());
+        auto at = aa >= aa.yyy();
+        $info("{} {} {}  {}  ", make_uint3(at), none(at.xyz()).cast<int>());
         //        Float3 aac = 19.f;
 
-        auto ma = max(f3.xyz_(), 2.f);
+        auto ma = max(f3.xyz(), 2.f);
 
         int fdgsi = 0;
         auto ax = aa.x.call_rcp(aa.x);
@@ -346,26 +347,26 @@ void test_lambda(Device &device, Stream &stream) {
             float3 rgb = clamp(b, 0.f, 1.f);
             Uint3 ui = make_uint3(7,8,9);
 
-             a = -a.xyz_() ;
+             a = -a.xyz() ;
             $info("{} {}  {}  aa ", a);
 
-            Float3 t2 = make_float3(t.zyx_());
+            Float3 t2 = make_float3(t.zyx());
 //
 //            DynamicArray<float> fa{123.f};
-            auto axyz = a.xyz_();
-//            auto axy = select(make_bool2(true), make_float2(1),make_float2(2).xy_());
-            Float3 sel = select(make_bool3(1,0,0).xyz_(), a.xyz_(), b.xyz_());
+            auto axyz = a.xyz();
+//            auto axy = select(make_bool2(true), make_float2(1),make_float2(2).xy());
+            Float3 sel = select(make_bool3(1,0,0).xyz(), a.xyz(), b.xyz());
 
-            sel = face_forward(a, b.xyz_(),a.xyz_());
-            auto mf = make_float4(a.xyz_(), t.x);
+            sel = face_forward(a, b.xyz(),a.xyz());
+            auto mf = make_float4(a.xyz(), t.x);
 
-//            using tp = decltype(make_float4(remove_device_t<std::remove_cvref_t<decltype(a.xyz_())>>{}, remove_device_t<Float>{}));
+//            using tp = decltype(make_float4(remove_device_t<std::remove_cvref_t<decltype(a.xyz())>>{}, remove_device_t<Float>{}));
 
-//            a.xyz_() * t.x;
+//            a.xyz() * t.x;
 
-            max(a.xyz_(), b);
+            max(a.xyz(), b);
                 $info("{} {}  {}  call_select ", sel);
-            $info("{} {}  {}  call_lerp ", lerp(t, b.xyz_(),a));
+            $info("{} {}  {}  call_lerp ", lerp(t, b.xyz(),a));
 //            $info("{} {}  {}  {} ", t2, fa[0]);
         }
         //        f3 = xyz;
@@ -535,7 +536,7 @@ int main(int argc, char *argv[]) {
     //    AVector<float, 3> aaaa;
 
     float3 a = make_float3(1, 2, 3);
-    auto la = a.xz_() < 1.5f;
+    auto la = a.xz() < 1.5f;
     int3 b = make_int3(4, 5, 6);
 
     a += a;
@@ -543,8 +544,8 @@ int main(int argc, char *argv[]) {
     a *= a;
     a = 1 + a;
     bool4 bool_4 = make_bool4(1, 0, 1, 1);
-    auto bbb = bool_4 || bool_4.xxxx_();
-    auto b4 = all(bool_4.ww_());
+    auto bbb = bool_4 || bool_4.xxxx();
+    auto b4 = all(bool_4.ww());
 
     //        test_compute_shader(device, stream);
     //    test_parameter_struct(device, stream);

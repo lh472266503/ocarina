@@ -148,9 +148,8 @@ public:
         make_expr<Texture>(expression()).write(elm, x, y);
     }
 
-    template<typename XY, typename Val>
-    requires(is_uint_vector2_v<expr_value_t<XY>>)
-    void write(const Val &elm, const XY &xy) noexcept {
+    template< typename Val>
+    void write(const Val &elm, const Uint2 &xy) noexcept {
         write(elm, xy.x, xy.y);
     }
 
