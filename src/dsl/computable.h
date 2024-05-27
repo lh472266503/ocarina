@@ -282,7 +282,9 @@ struct EnableTextureReadAndWrite {
              is_uint_vector2_v<expr_value_t<XY>> &&
                  (is_uchar_element_expr_v<Target> || is_float_element_expr_v<Target>))
     OC_NODISCARD auto read(const XY &xy) const noexcept {
-        return read<Target>(xy.x, xy.y);
+        return []<typename Arg>(const Arg &arg) {
+            return read<Target>(arg.x, arg.y);
+        }(decay_swizzle(xy));
     }
 
     template<typename Target, typename XYZ>
@@ -290,7 +292,9 @@ struct EnableTextureReadAndWrite {
              is_uint_vector3_v<expr_value_t<XYZ>> &&
                  (is_uchar_element_expr_v<Target> || is_float_element_expr_v<Target>))
     OC_NODISCARD auto read(const XYZ &xyz) const noexcept {
-        return read<Target>(xyz.x, xyz.y, xyz.z);
+        return []<typename Arg>(const Arg &arg) {
+            return read<Target>(arg.x, arg.y, arg.z);
+        }(decay_swizzle(xyz));
     }
 
     template<typename X, typename Y, typename Val>
@@ -321,13 +325,17 @@ struct EnableTextureReadAndWrite {
     template<typename XYZ, typename Val>
     requires(is_uint_vector3_v<expr_value_t<XYZ>>)
     void write(const Val &elm, const XYZ &xyz) noexcept {
-        write(elm, xyz.x, xyz.y, xyz.z);
+        [&]<typename Arg>(const Arg &arg) {
+            write(elm, arg.x, arg.y, arg.z);
+        }(decay_swizzle(xyz));
     }
 
     template<typename XY, typename Val>
     requires(is_uint_vector2_v<expr_value_t<XY>>)
     void write(const Val &elm, const XY &xy) noexcept {
-        write(elm, xy.x, xy.y);
+        [&]<typename Arg>(const Arg &arg) {
+            write(elm, arg.x, arg.y);
+        }(decay_swizzle(xy));
     }
 };
 

@@ -179,7 +179,6 @@ using is_host_swizzle = detail::is_host_swizzle_dim_impl<std::remove_cvref_t<T>,
 template<typename T, size_t N = 0u>
 constexpr auto is_host_swizzle_v = is_host_swizzle<T, N>::value;
 
-
 namespace detail {
 template<typename T>
 struct remove_device_impl;
@@ -213,7 +212,6 @@ using is_device_swizzle = detail::is_device_swizzle_dim_impl<std::remove_cvref_t
 template<typename T, size_t N = 0u>
 constexpr auto is_device_swizzle_v = is_device_swizzle<T, N>::value;
 
-
 namespace detail {
 template<typename T>
 struct swizzle_decay_impl {
@@ -235,6 +233,11 @@ struct swizzle_decay_impl<Swizzle<Var<T>, N, Indices...>> {
 template<typename T>
 using swizzle_decay = detail::swizzle_decay_impl<std::remove_cvref_t<T>>;
 OC_DEFINE_TEMPLATE_TYPE(swizzle_decay)
+
+template<typename T>
+[[nodiscard]] auto decay_swizzle(const T &t) noexcept {
+    return static_cast<swizzle_decay_t<T>>(t);
+}
 
 template<typename T, size_t N>
 struct Vector;
@@ -466,19 +469,6 @@ template<typename T>
 using is_vector4 = is_vector<T, 4u>;
 
 template<typename T, size_t N = 0u>
-using is_general_vector = std::disjunction<is_vector<T, N>, is_host_swizzle<T, N>>;
-template<typename T, size_t N = 0u>
-constexpr auto is_general_vector_v = is_general_vector<T, N>::value;
-
-template<typename... Ts>
-using is_any_general_vector = std::disjunction<is_general_vector<Ts>...>;
-OC_DEFINE_TEMPLATE_VALUE_MULTI(is_any_general_vector)
-
-template<typename... Ts>
-using is_all_general_vector = std::conjunction<is_general_vector<Ts>...>;
-OC_DEFINE_TEMPLATE_VALUE_MULTI(is_all_general_vector)
-
-template<typename T, size_t N = 0u>
 constexpr auto is_vector_v = is_vector<T, N>::value;
 
 template<typename T>
@@ -490,6 +480,38 @@ constexpr auto is_vector3_v = is_vector3<T>::value;
 template<typename T>
 constexpr auto is_vector4_v = is_vector4<T>::value;
 
+template<typename T, size_t N = 0u>
+using is_general_vector = std::disjunction<is_vector<T, N>, is_host_swizzle<T, N>>;
+
+template<typename T>
+using is_general_vector2 = is_general_vector<T, 2u>;
+
+template<typename T>
+using is_general_vector3 = is_general_vector<T, 3u>;
+
+template<typename T>
+using is_general_vector4 = is_general_vector<T, 4u>;
+
+template<typename T, size_t N = 0u>
+constexpr auto is_general_vector_v = is_general_vector<T, N>::value;
+
+template<typename T>
+constexpr auto is_general_vector2_v = is_general_vector2<T>::value;
+
+template<typename T>
+constexpr auto is_general_vector3_v = is_general_vector3<T>::value;
+
+template<typename T>
+constexpr auto is_general_vector4_v = is_general_vector4<T>::value;
+
+template<typename... Ts>
+using is_any_general_vector = std::disjunction<is_general_vector<Ts>...>;
+OC_DEFINE_TEMPLATE_VALUE_MULTI(is_any_general_vector)
+
+template<typename... Ts>
+using is_all_general_vector = std::conjunction<is_general_vector<Ts>...>;
+OC_DEFINE_TEMPLATE_VALUE_MULTI(is_all_general_vector)
+
 #define OC_MAKE_IS_ALL_CLS(cls, dim)                                  \
     template<typename... Ts>                                          \
     using is_all_##cls##dim = std::conjunction<is_##cls##dim<Ts>...>; \
@@ -500,14 +522,20 @@ OC_MAKE_IS_ALL_CLS(vector, 2)
 OC_MAKE_IS_ALL_CLS(vector, 3)
 OC_MAKE_IS_ALL_CLS(vector, 4)
 
-#define OC_MAKE_IS_TYPE_VECTOR_DIM(type, dim)                                                  \
-    template<typename T>                                                                       \
-    using is_##type##_vector##dim = std::conjunction<is_vector##dim<T>,                        \
-                                                     std::is_same<vector_element_t<T>, type>>; \
-    OC_DEFINE_TEMPLATE_VALUE(is_##type##_vector##dim)                                          \
-    template<typename... T>                                                                    \
-    using is_all_##type##_vector##dim = std::conjunction<is_##type##_vector##dim<T>...>;       \
-    OC_DEFINE_TEMPLATE_VALUE_MULTI(is_all_##type##_vector##dim)
+#define OC_MAKE_IS_TYPE_VECTOR_DIM(type, dim)                                                            \
+    template<typename T>                                                                                 \
+    using is_##type##_vector##dim = std::conjunction<is_vector##dim<T>,                                  \
+                                                     std::is_same<vector_element_t<T>, type>>;           \
+    OC_DEFINE_TEMPLATE_VALUE(is_##type##_vector##dim)                                                    \
+    template<typename... T>                                                                              \
+    using is_all_##type##_vector##dim = std::conjunction<is_##type##_vector##dim<T>...>;                 \
+    OC_DEFINE_TEMPLATE_VALUE_MULTI(is_all_##type##_vector##dim)                                          \
+    template<typename T>                                                                                 \
+    using is_##type##_general_vector##dim = std::conjunction<is_general_vector##dim<T>,                  \
+                                                             std::is_same<type_element_t<T>, type>>;     \
+    template<typename... T>                                                                              \
+    using is_all_##type##_general_vector##dim = std::conjunction<is_##type##_general_vector##dim<T>...>; \
+    OC_DEFINE_TEMPLATE_VALUE_MULTI(is_all_##type##_general_vector##dim)
 
 #define OC_MAKE_IS_TYPE_VECTOR(type)    \
     OC_MAKE_IS_TYPE_VECTOR_DIM(type, )  \

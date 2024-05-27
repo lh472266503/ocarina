@@ -66,7 +66,7 @@ public:
         size_ = array.size();
         expression_ = array.expression();
     }
-    
+
     void invalidate() noexcept {
         size_ = 0;
         expression_ = nullptr;
@@ -315,7 +315,9 @@ template<typename UVW>
 requires(is_float_vector3_v<expr_value_t<UVW>>)
 DynamicArray<float> EnableTextureSample<T>::sample(uint channel_num, const UVW &uvw)
     const noexcept {
-    return sample(channel_num, uvw.x, uvw.y, uvw.z);
+    return [&]<typename Arg>(const Arg &arg) {
+        return sample(channel_num, arg.x, arg.y, arg.z);
+    }(decay_swizzle(uvw));
 }
 
 template<typename T>
@@ -323,7 +325,9 @@ template<typename UV>
 requires(is_float_vector2_v<expr_value_t<UV>>)
 DynamicArray<float> EnableTextureSample<T>::sample(uint channel_num, const UV &uv)
     const noexcept {
-    return sample(channel_num, uv.x, uv.y);
+    return [&]<typename Arg>(const Arg &arg) {
+        return sample(channel_num, arg.x, arg.y);
+    }(decay_swizzle(uv));
 }
 
 }// namespace detail
@@ -365,14 +369,18 @@ template<typename UVW>
 requires(is_float_vector3_v<expr_value_t<UVW>>)
 DynamicArray<float> BindlessArrayTexture::sample(uint channel_num, const UVW &uvw)
     const noexcept {
-    return sample(channel_num, uvw.x, uvw.y, uvw.z);
+    return [&]<typename Arg>(const Arg &arg) {
+        return sample(channel_num, arg.x, arg.y, arg.z);
+    }(decay_swizzle(uvw));
 }
 
 template<typename UV>
 requires(is_float_vector2_v<expr_value_t<UV>>)
 DynamicArray<float> BindlessArrayTexture::sample(uint channel_num, const UV &uv)
     const noexcept {
-    return sample(channel_num, uv.x, uv.y);
+    return [&]<typename Arg>(const Arg &arg) {
+        return sample(channel_num, arg.x, arg.y);
+    }(decay_swizzle(uv));
 }
 
 }// namespace ocarina
