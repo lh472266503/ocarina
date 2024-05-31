@@ -275,37 +275,37 @@ auto callable_wrap(Func &&func, const string &desc = "") {
 template<typename F>
 class Lambda {
 private:
-    string _desc;
-    std::function<F> _func;
+    string desc_;
+    std::function<F> func_;
 
 public:
     template<typename Func>
     Lambda(Func &&f) noexcept
-        : _func(std::forward<Func>(f)) {}
+        : func_(std::forward<Func>(f)) {}
     template<typename Func>
     Lambda(Func &&f, const string &str) noexcept
-        : _func(std::forward<F>(f)), _desc(str) {}
+        : func_(std::forward<F>(f)), desc_(str) {}
     Lambda(Lambda &&) noexcept = default;
     Lambda(const Lambda &) noexcept = default;
     Lambda &operator=(Lambda &&) noexcept = default;
     Lambda &operator=(const Lambda &) noexcept = default;
-    void set_description(const string &desc) noexcept { _desc = desc; }
+    void set_description(const string &desc) noexcept { desc_ = desc; }
 
     template<typename... Args>
     requires std::is_invocable_v<F, Args...>
     auto operator()(Args &&...args) const noexcept {
-        using ret_type = decltype(_func(OC_FORWARD(args)...));
+        using ret_type = decltype(func_(OC_FORWARD(args)...));
         if constexpr (std::is_same_v<ret_type, void>) {
             detail::callable_wrap([&] {
-                _func(OC_FORWARD(args)...);
+                func_(OC_FORWARD(args)...);
             },
-                                  _desc);
+                                  desc_);
         } else {
             optional<ret_type> ret;
             detail::callable_wrap([&] {
-                ret.emplace(_func(OC_FORWARD(args)...));
+                ret.emplace(func_(OC_FORWARD(args)...));
             },
-                                  _desc);
+                                  desc_);
             return ret.value();
         }
     }
