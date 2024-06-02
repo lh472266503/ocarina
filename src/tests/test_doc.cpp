@@ -336,7 +336,7 @@ void test_lambda(Device &device, Stream &stream) {
         auto ma = max(f3.xyz(), 2.f);
 
         int fdgsi = 0;
-        auto ax = aa.x.call_rcp(aa.x);
+        auto ax = rcp(aa.x);
         //        $info("{} {} {}  ", aac.call_min(aac, -19.f));
         $info("{} max_  ", max(aa.x, aa.y));
         $info("{} {}  {}  ", aa);

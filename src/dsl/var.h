@@ -63,7 +63,7 @@ struct Var : public Computable<T> {
     }
     void operator=(const Var &other) { ocarina::detail::assign(*this, other); }
     OC_MAKE_GET_PROXY
-
+private:
 #define OC_MAKE_VAR_UNARY_FUNC(func, tag)                                           \
     [[nodiscard]] static auto call_##func(const dsl_type &val) noexcept {           \
         using ret_type = decltype(func(std::declval<T>()));                         \
@@ -280,6 +280,7 @@ public:
     OC_MAKE_ACCESSOR_FUNC(lerp)
     OC_MAKE_ACCESSOR_FUNC(fma)
     OC_MAKE_ACCESSOR_FUNC(select)
+    OC_MAKE_ACCESSOR_FUNC(face_forward)
 
 #undef OC_MAKE_ACCESSOR_FUNC
 };
