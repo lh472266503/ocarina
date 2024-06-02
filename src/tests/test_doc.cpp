@@ -303,7 +303,7 @@ void test_lambda(Device &device, Stream &stream) {
 
         float3 f3 = make_float3(1, 2, 3);
 
-        auto fm = f3.call_max(1.f, f3);
+        auto fm = max(1.f, f3);
 
         Float3 aa = f3;
 

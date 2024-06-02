@@ -105,7 +105,7 @@ OC_DEFINE_TEMPLATE_TYPE(deduce_var)
     template<typename T>                                                               \
     requires match_dsl_unary_func_v<T>                                                 \
     OC_NODISCARD auto func(const T &arg) noexcept {                                    \
-        return VarAccessor::func<deduce_var_t<T>>(arg);                                \
+        return MemberAccessor::func<deduce_var_t<T>>(arg);                             \
     }                                                                                  \
     template<typename T>                                                               \
     requires is_basic_v<T>                                                             \
@@ -174,8 +174,8 @@ OC_DEFINE_TEMPLATE_VALUE_MULTI(match_dsl_basic_func)
         static constexpr auto dimension = type_dimension_v<remove_device_t<Lhs>>; \
         using scalar_type = type_element_t<remove_device_t<Lhs>>;                 \
         using var_type = Var<general_vector_t<scalar_type, dimension>>;           \
-        return VarAccessor::func<var_type>(decay_swizzle(lhs),                    \
-                                           decay_swizzle(rhs));                   \
+        return MemberAccessor::func<var_type>(decay_swizzle(lhs),                 \
+                                              decay_swizzle(rhs));                \
     }
 
 OC_MAKE_DSL_BINARY_FUNC(max, MAX)
@@ -200,9 +200,9 @@ OC_MAKE_DSL_BINARY_FUNC(distance_squared, DISTANCE_SQUARED)
         static constexpr auto dimension = type_dimension_v<remove_device_t<A>>; \
         using scalar_type = type_element_t<remove_device_t<A>>;                 \
         using var_type = Var<general_vector_t<scalar_type, dimension>>;         \
-        return VarAccessor::func<var_type>(decay_swizzle(a),                    \
-                                           decay_swizzle(b),                    \
-                                           decay_swizzle(c));                   \
+        return MemberAccessor::func<var_type>(decay_swizzle(a),                 \
+                                              decay_swizzle(b),                 \
+                                              decay_swizzle(c));                \
     }
 
 OC_MAKE_DSL_TRIPLE_FUNC(clamp, CLAMP)
@@ -218,9 +218,9 @@ requires(match_basic_func_v<remove_device_t<T>, remove_device_t<F>> &&
     static constexpr auto dimension = type_dimension_v<remove_device_t<T>>;
     using scalar_type = type_element_t<remove_device_t<T>>;
     using var_type = Var<general_vector_t<scalar_type, dimension>>;
-    return VarAccessor::select<var_type>(decay_swizzle(u),
-                                         decay_swizzle(t),
-                                         decay_swizzle(f));
+    return MemberAccessor::select<var_type>(decay_swizzle(u),
+                                            decay_swizzle(t),
+                                            decay_swizzle(f));
 }
 
 /// used for dsl structure
@@ -237,7 +237,7 @@ OC_NODISCARD auto select(U &&pred, T &&t, F &&f) noexcept {
 template<typename... Args>
 requires(any_device_type_v<Args...>)
 OC_NODISCARD auto face_forward(Args &&...args) noexcept {
-    return VarAccessor::face_forward<Float3>(decay_swizzle(OC_FORWARD(args))...);
+    return MemberAccessor::face_forward<Float3>(decay_swizzle(OC_FORWARD(args))...);
 }
 
 template<typename A>

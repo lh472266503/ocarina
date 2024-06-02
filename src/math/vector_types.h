@@ -246,6 +246,8 @@ public:
 };
 }// namespace detail
 
+struct MemberAccessor;
+
 template<typename T, size_t N>
 struct Vector : public detail::VectorStorage<T, N> {
     using detail::VectorStorage<T, N>::VectorStorage;
@@ -253,6 +255,7 @@ struct Vector : public detail::VectorStorage<T, N> {
     using vec_type = this_type;
     using scalar_type = T;
     static constexpr size_t dimension = N;
+    friend struct MemberAccessor;
     template<typename U>
     requires is_scalar_v<U>
     explicit constexpr Vector(U s) noexcept : Vector(static_cast<T>(s)) {}
@@ -387,7 +390,7 @@ struct Vector : public detail::VectorStorage<T, N> {
             return ret_type{func(v.at(index))...};                                           \
         }(std::make_index_sequence<N>());                                                    \
     }
-
+private:
     OC_MAKE_VECTOR_UNARY_FUNC(rcp)
     OC_MAKE_VECTOR_UNARY_FUNC(abs)
     OC_MAKE_VECTOR_UNARY_FUNC(sqrt)
@@ -511,11 +514,92 @@ struct Vector : public detail::VectorStorage<T, N> {
     }
 };
 
+struct MemberAccessor {
+public:
+#define OC_MAKE_ACCESSOR_FUNC(func)                                     \
+    template<typename T, typename... Args>                              \
+    requires requires {                                                 \
+        T::call_##func(std::declval<Args>()...);                        \
+    }                                                                   \
+    [[nodiscard]] static decltype(auto) func(Args &&...args) noexcept { \
+        return T::call_##func(OC_FORWARD(args)...);                     \
+    }
+    /// unary functions
+    OC_MAKE_ACCESSOR_FUNC(all)
+    OC_MAKE_ACCESSOR_FUNC(any)
+    OC_MAKE_ACCESSOR_FUNC(none)
+
+    OC_MAKE_ACCESSOR_FUNC(rcp)
+    OC_MAKE_ACCESSOR_FUNC(abs)
+    OC_MAKE_ACCESSOR_FUNC(sqrt)
+    OC_MAKE_ACCESSOR_FUNC(sqr)
+    OC_MAKE_ACCESSOR_FUNC(exp)
+    OC_MAKE_ACCESSOR_FUNC(exp2)
+    OC_MAKE_ACCESSOR_FUNC(exp10)
+    OC_MAKE_ACCESSOR_FUNC(log)
+    OC_MAKE_ACCESSOR_FUNC(log2)
+    OC_MAKE_ACCESSOR_FUNC(log10)
+    OC_MAKE_ACCESSOR_FUNC(cos)
+    OC_MAKE_ACCESSOR_FUNC(sin)
+    OC_MAKE_ACCESSOR_FUNC(tan)
+    OC_MAKE_ACCESSOR_FUNC(cosh)
+    OC_MAKE_ACCESSOR_FUNC(sinh)
+    OC_MAKE_ACCESSOR_FUNC(tanh)
+    OC_MAKE_ACCESSOR_FUNC(acos)
+    OC_MAKE_ACCESSOR_FUNC(asin)
+    OC_MAKE_ACCESSOR_FUNC(atan)
+    OC_MAKE_ACCESSOR_FUNC(asinh)
+    OC_MAKE_ACCESSOR_FUNC(acosh)
+    OC_MAKE_ACCESSOR_FUNC(atanh)
+    OC_MAKE_ACCESSOR_FUNC(degrees)
+    OC_MAKE_ACCESSOR_FUNC(radians)
+    OC_MAKE_ACCESSOR_FUNC(ceil)
+    OC_MAKE_ACCESSOR_FUNC(round)
+    OC_MAKE_ACCESSOR_FUNC(floor)
+    OC_MAKE_ACCESSOR_FUNC(rsqrt)
+    OC_MAKE_ACCESSOR_FUNC(isinf)
+    OC_MAKE_ACCESSOR_FUNC(isnan)
+    OC_MAKE_ACCESSOR_FUNC(fract)
+    OC_MAKE_ACCESSOR_FUNC(saturate)
+    OC_MAKE_ACCESSOR_FUNC(sign)
+    OC_MAKE_ACCESSOR_FUNC(normalize)
+    OC_MAKE_ACCESSOR_FUNC(length)
+    OC_MAKE_ACCESSOR_FUNC(volume)
+    OC_MAKE_ACCESSOR_FUNC(length_squared)
+
+    OC_MAKE_ACCESSOR_FUNC(determinant)
+    OC_MAKE_ACCESSOR_FUNC(transpose)
+    OC_MAKE_ACCESSOR_FUNC(inverse)
+
+    /// binary functions
+    OC_MAKE_ACCESSOR_FUNC(max)
+    OC_MAKE_ACCESSOR_FUNC(min)
+    OC_MAKE_ACCESSOR_FUNC(pow)
+    OC_MAKE_ACCESSOR_FUNC(fmod)
+    OC_MAKE_ACCESSOR_FUNC(mod)
+    OC_MAKE_ACCESSOR_FUNC(copysign)
+    OC_MAKE_ACCESSOR_FUNC(atan2)
+
+    OC_MAKE_ACCESSOR_FUNC(cross)
+    OC_MAKE_ACCESSOR_FUNC(dot)
+    OC_MAKE_ACCESSOR_FUNC(distance)
+    OC_MAKE_ACCESSOR_FUNC(distance_squared)
+
+    /// triple functions
+    OC_MAKE_ACCESSOR_FUNC(clamp)
+    OC_MAKE_ACCESSOR_FUNC(lerp)
+    OC_MAKE_ACCESSOR_FUNC(fma)
+    OC_MAKE_ACCESSOR_FUNC(select)
+    OC_MAKE_ACCESSOR_FUNC(face_forward)
+
+#undef OC_MAKE_ACCESSOR_FUNC
+};
+
 #define OC_MAKE_VECTOR_UNARY_FUNC(func)                      \
     template<typename T>                                     \
     requires is_general_vector_v<T>                          \
     [[nodiscard]] decltype(auto) func(const T &v) noexcept { \
-        return deduce_vec_t<T>::call_##func(v);              \
+        return MemberAccessor::func<deduce_vec_t<T>>(v);     \
     }
 
 OC_MAKE_VECTOR_UNARY_FUNC(rcp)
@@ -562,7 +646,7 @@ OC_MAKE_VECTOR_UNARY_FUNC(length_squared)
     requires is_all_general_basic_v<T, U>                               \
     OC_NODISCARD decltype(auto) func(const T &t, const U &u) noexcept { \
         using vec_type = deduce_binary_op_vec_t<T, U>;                  \
-        return vec_type::call_##func(t, u);                             \
+        return MemberAccessor::func<vec_type>(t, u);                             \
     }
 
 OC_MAKE_VECTOR_BINARY_FUNC(pow)
@@ -579,7 +663,7 @@ template<typename Pred, typename T, typename U>
 requires is_all_general_vector_v<T, U>
 [[nodiscard]] decltype(auto) select(const Pred &pred, const T &t, const U &u) noexcept {
     using vec_type = deduce_binary_op_vec_t<T, U>;
-    return vec_type::call_select(pred, t, u);
+    return MemberAccessor::select<vec_type>(pred, t, u);
 }
 
 #undef OC_MAKE_VECTOR_BINARY_FUNC
@@ -589,7 +673,7 @@ requires(is_all_general_vector_v<T, U, V> &&
          type_dimension_v<T> == type_dimension_v<U> &&
          type_dimension_v<T> == type_dimension_v<V>)
 [[nodiscard]] auto fma(const T &t, const U &u, const V &v) noexcept {
-    return deduce_vec_t<T>::call_fma(t, u, v);
+    return MemberAccessor::fma<deduce_vec_t<T>>(t, u, v);
 }
 
 #define OC_MAKE_VECTOR_TYPES(T) \
