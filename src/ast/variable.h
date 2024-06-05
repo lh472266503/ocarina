@@ -58,6 +58,7 @@ public:
         Variable::Tag tag{};
         string name{};
         string suffix{};
+        bool used{false};
         explicit Data(Usage u,
                       Variable::Tag t = Variable::Tag::LOCAL)
             : usage(u), tag(t) {}

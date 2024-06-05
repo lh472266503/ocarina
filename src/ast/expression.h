@@ -197,22 +197,6 @@ public:
     OC_MAKE_EXPRESSION_COMMON
 };
 
-class OC_AST_API RefExpr : public Expression {
-private:
-    Variable variable_;
-
-private:
-    void _mark(Usage usage) const noexcept override;
-    uint64_t _compute_hash() const noexcept override;
-
-public:
-    explicit RefExpr(const Variable &v) noexcept
-        : Expression(Tag::REF, v.type()), variable_(v) {}
-    [[nodiscard]] auto variable() const noexcept { return variable_; }
-    [[nodiscard]] Usage usage() const noexcept override;
-    OC_MAKE_EXPRESSION_COMMON
-};
-
 class OC_AST_API CastExpr : public Expression {
 private:
     CastOp cast_op_;
@@ -233,6 +217,28 @@ public:
     [[nodiscard]] CastOp cast_op() const noexcept { return cast_op_; }
     [[nodiscard]] const Expression *expression() const noexcept { return expression_; }
     [[nodiscard]] Usage usage() const noexcept override { return expression_->usage(); }
+    OC_MAKE_EXPRESSION_COMMON
+};
+
+class VariableExpr : public Expression {
+protected:
+    Variable variable_;
+
+protected:
+    void _mark(Usage usage) const noexcept override;
+    uint64_t _compute_hash() const noexcept override;
+
+public:
+    VariableExpr(Tag tag, const Type *type, Variable variable)
+        : Expression(tag, type), variable_(std::move(variable)) {}
+    [[nodiscard]] auto variable() const noexcept { return variable_; }
+    [[nodiscard]] Usage usage() const noexcept override;
+};
+
+class OC_AST_API RefExpr : public VariableExpr {
+public:
+    explicit RefExpr(const Variable &v) noexcept
+        : VariableExpr(Tag::REF, v.type(), v) {}
     OC_MAKE_EXPRESSION_COMMON
 };
 

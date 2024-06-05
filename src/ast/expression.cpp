@@ -7,15 +7,15 @@
 
 namespace ocarina {
 
-void RefExpr::_mark(Usage usage) const noexcept {
+void VariableExpr::_mark(Usage usage) const noexcept {
     variable_.mark_usage(usage);
 }
 
-uint64_t RefExpr::_compute_hash() const noexcept {
+uint64_t VariableExpr::_compute_hash() const noexcept {
     return hash64(variable_.hash(), to_underlying(usage()));
 }
 
-Usage RefExpr::usage() const noexcept {
+Usage VariableExpr::usage() const noexcept {
     return context()->variable_usage(variable_.uid());
 }
 
