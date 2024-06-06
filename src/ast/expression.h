@@ -242,16 +242,13 @@ public:
     OC_MAKE_EXPRESSION_COMMON
 };
 
-class OC_AST_API MemberExpr : public Expression {
+class OC_AST_API MemberExpr : public VariableExpr {
 private:
     const Expression *parent_{nullptr};
     uint16_t member_index_{0};
     uint16_t swizzle_size_{0};
-    /// used for store usage
-    Variable variable_;
 
 private:
-    void _mark(Usage usage) const noexcept override;
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
 
 public:
@@ -260,11 +257,9 @@ public:
     OC_MAKE_CHECK_CONTEXT(Expression, parent_)
     [[nodiscard]] auto member_index() const noexcept { return member_index_; }
     [[nodiscard]] bool is_swizzle() const noexcept { return swizzle_size_ != 0; }
-    [[nodiscard]] Variable variable() const noexcept { return variable_; }
     [[nodiscard]] int swizzle_size() const noexcept { return swizzle_size_; }
     [[nodiscard]] int swizzle_index(int idx) const noexcept;
     [[nodiscard]] const Expression *parent() const noexcept { return parent_; }
-    [[nodiscard]] Usage usage() const noexcept override;
     OC_MAKE_EXPRESSION_COMMON
 };
 
