@@ -52,8 +52,10 @@ void FunctionCorrector::visit_expr(const Expression *const &expression, Function
         return;
     }
     if (expression->is_ref()) {
+        static_cast<const VariableExpr *>(expression)->variable().mark_used();
         process_capture(const_cast<const Expression *&>(expression), cur_func);
     } else if (expression->is_member()) {
+        static_cast<const VariableExpr *>(expression)->variable().mark_used();
         process_member_expr(const_cast<const Expression *&>(expression), cur_func);
     } else {
         expression->accept(*this);
