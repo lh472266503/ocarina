@@ -390,6 +390,7 @@ struct Vector : public detail::VectorStorage<T, N> {
             return ret_type{func(v.at(index))...};                                           \
         }(std::make_index_sequence<N>());                                                    \
     }
+
 private:
     OC_MAKE_VECTOR_UNARY_FUNC(rcp)
     OC_MAKE_VECTOR_UNARY_FUNC(abs)
@@ -646,7 +647,7 @@ OC_MAKE_VECTOR_UNARY_FUNC(length_squared)
     requires is_all_general_basic_v<T, U>                               \
     OC_NODISCARD decltype(auto) func(const T &t, const U &u) noexcept { \
         using vec_type = deduce_binary_op_vec_t<T, U>;                  \
-        return MemberAccessor::func<vec_type>(t, u);                             \
+        return MemberAccessor::func<vec_type>(t, u);                    \
     }
 
 OC_MAKE_VECTOR_BINARY_FUNC(pow)
