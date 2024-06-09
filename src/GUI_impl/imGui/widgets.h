@@ -95,6 +95,8 @@ public:
     void begin_tool_tip() noexcept override;
     void end_tool_tip() noexcept override;
 
+    bool radio_button(const std::string &label, bool active) noexcept override;
+
     void image(uint tex_handle, uint2 size, float2 uv0, float2 uv1) noexcept override;
     void image(const Image &image) noexcept override;
     void image(const ImageView &image_view) noexcept override;

@@ -168,6 +168,15 @@ public:
         return ret;
     }
 
+    virtual bool radio_button(const string &label, bool active) noexcept = 0;
+
+    template<typename Func>
+    void use_radio_button(const string &label, Func &&func) noexcept {
+        push_window(label);
+        func();
+        pop_window();
+    }
+
     virtual void text(const char *format, ...) noexcept = 0;
     void text(const string &str) noexcept {
         text(str.c_str());
@@ -284,6 +293,7 @@ public:
     bool combo(const string &label, int *current_item, const vector<const char *> &items) noexcept {
         return combo(label, current_item, items.data(), items.size());
     }
+
 
     virtual ~Widgets() = default;
 };
