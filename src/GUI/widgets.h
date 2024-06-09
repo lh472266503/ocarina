@@ -169,6 +169,9 @@ public:
     }
 
     virtual void text(const char *format, ...) noexcept = 0;
+    void text(const string &str) noexcept {
+        text(str.c_str());
+    }
     virtual void text_wrapped(const char *format, ...) noexcept = 0;
     virtual bool check_box(const string &label, bool *val) noexcept = 0;
 
@@ -274,6 +277,9 @@ public:
 
     virtual bool combo(const string &label, int *current_item,
                        const char *const items[], int item_num) noexcept = 0;
+
+    virtual bool is_item_hovered() noexcept = 0;
+    virtual float2 mouse_pos() noexcept = 0;
 
     bool combo(const string &label, int *current_item, const vector<const char *> &items) noexcept {
         return combo(label, current_item, items.data(), items.size());

@@ -10,6 +10,10 @@ ImVec2 to_ImVec2(const T &t) noexcept {
     return ImVec2(t.x, t.y);
 }
 
+float2 from_ImVec2(ImVec2 v) noexcept {
+    return make_float2(v.x, v.y);
+}
+
 uint64_t ImGuiWidgets::calculate_key(const ocarina::ImageView &image) noexcept {
     return hash64(image.resolution(), image.pixel_storage());
 }
@@ -324,6 +328,14 @@ bool ImGuiWidgets::drag_float4(const string &label, ocarina::float4 *val, float 
 
 bool ImGuiWidgets::combo(const std::string &label, int *current_item, const char *const *items, int item_num) noexcept {
     return ImGui::Combo(label.c_str(), current_item, items, item_num);
+}
+
+bool ImGuiWidgets::is_item_hovered() noexcept {
+    return ImGui::IsItemHovered();
+}
+
+float2 ImGuiWidgets::mouse_pos() noexcept {
+    return from_ImVec2(ImGui::GetMousePos());
 }
 
 }// namespace ocarina
