@@ -52,8 +52,8 @@ void Variable::mark_usage(ocarina::Usage usage) const noexcept {
     const_cast<Function *>(context_)->mark_variable_usage(uid_, usage);
 }
 
-void Variable::mark_used() const noexcept {
-    const_cast<Function *>(context_)->variable_data(uid_).used = true;
+void Variable::mark_used(bool used) const noexcept {
+    const_cast<Function *>(context_)->variable_data(uid_).used = used;
 }
 
 bool Variable::used() const noexcept {

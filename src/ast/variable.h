@@ -94,7 +94,7 @@ public:
     void set_name(string name) noexcept;
     void set_suffix(string suffix) noexcept;
     void mark_usage(Usage usage) const noexcept;
-    void mark_used() const noexcept;
+    void mark_used(bool uesd = true) const noexcept;
     [[nodiscard]] bool used() const noexcept;
 };
 
