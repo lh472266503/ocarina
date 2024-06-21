@@ -220,12 +220,12 @@ struct swizzle_decay_impl {
 
 template<typename T, size_t N, size_t... Indices>
 struct swizzle_decay_impl<Swizzle<T, N, Indices...>> {
-    using type = Swizzle<T, N, Indices...>::vec_type;
+    using type = typename Swizzle<T, N, Indices...>::vec_type;
 };
 
 template<typename T, size_t N, size_t... Indices>
 struct swizzle_decay_impl<Swizzle<Var<T>, N, Indices...>> {
-    using type = Swizzle<Var<T>, N, Indices...>::vec_type;
+    using type = typename Swizzle<Var<T>, N, Indices...>::vec_type;
 };
 
 }// namespace detail
@@ -251,12 +251,12 @@ struct deduce_vec {
 
 template<typename T, size_t N>
 struct deduce_vec<Vector<T, N>> {
-    using type = Vector<T, N>::vec_type;
+    using type = typename Vector<T, N>::vec_type;
 };
 
 template<typename T, size_t N, size_t... Indices>
 struct deduce_vec<Swizzle<T, N, Indices...>> {
-    using type = Swizzle<T, N, Indices...>::vec_type;
+    using type = typename Swizzle<T, N, Indices...>::vec_type;
 };
 
 template<typename Lhs, typename Rhs>
