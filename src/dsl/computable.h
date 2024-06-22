@@ -750,12 +750,12 @@ class BindlessArrayBuffer {
     static_assert(is_valid_buffer_element_v<T>);
 
 private:
-    const Expression *_bindless_array{nullptr};
-    const Expression *_index{nullptr};
+    const Expression *bindless_array_{nullptr};
+    const Expression *index_{nullptr};
 
 public:
     BindlessArrayBuffer(const Expression *array, const Expression *index) noexcept
-        : _bindless_array{array}, _index{index} {}
+        : bindless_array_{array}, index_{index} {}
 
     template<typename Index>
     requires concepts::integral<expr_value_t<Index>>
@@ -764,14 +764,14 @@ public:
             index = detail::correct_index(index, size(), typeid(*this).name(), traceback_string());
         }
         const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::BINDLESS_ARRAY_BUFFER_READ,
-                                                                 {_bindless_array, _index, OC_EXPR(index)});
+                                                                 {bindless_array_, index_, OC_EXPR(index)});
         return eval<T>(expr);
     }
 
     template<typename Size = uint>
     [[nodiscard]] Var<Size> size_in_byte() const noexcept {
         const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::BINDLESS_ARRAY_BUFFER_SIZE,
-                                                                 {_bindless_array, _index});
+                                                                 {bindless_array_, index_});
         return eval<Size>(expr);
     }
 
@@ -788,25 +788,25 @@ public:
             index = detail::correct_index(index, size(), typeid(*this).name(), traceback_string());
         }
         const CallExpr *expr = Function::current()->call_builtin(nullptr, CallOp::BINDLESS_ARRAY_BUFFER_WRITE,
-                                                                 {_bindless_array, _index, OC_EXPR(index), OC_EXPR(elm)});
+                                                                 {bindless_array_, index_, OC_EXPR(index), OC_EXPR(elm)});
         Function::current()->expr_statement(expr);
     }
 };
 
 class BindlessArrayByteBuffer {
 private:
-    const Expression *_bindless_array{nullptr};
-    const Expression *_index{nullptr};
+    const Expression *bindless_array_{nullptr};
+    const Expression *index_{nullptr};
 
 public:
     BindlessArrayByteBuffer(const Expression *array, const Expression *index) noexcept
-        : _bindless_array{array}, _index{index} {}
+        : bindless_array_{array}, index_{index} {}
 
     template<typename T, typename Offset>
     requires concepts::integral<expr_value_t<Offset>>
     [[nodiscard]] Var<T> load_as(Offset &&offset) const noexcept {
         const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::BINDLESS_ARRAY_BYTE_BUFFER_READ,
-                                                                 {_bindless_array, _index, OC_EXPR(offset)});
+                                                                 {bindless_array_, index_, OC_EXPR(offset)});
         return eval<T>(expr);
     }
 
@@ -817,7 +817,7 @@ public:
             offset = detail::correct_index(offset, size_in_byte<Size>(), typeid(*this).name(), traceback_string());
         }
         const CallExpr *expr = Function::current()->call_builtin(nullptr, CallOp::BINDLESS_ARRAY_BYTE_BUFFER_WRITE,
-                                                                 {_bindless_array, _index,
+                                                                 {bindless_array_, index_,
                                                                   OC_EXPR(offset), OC_EXPR(val)});
         Function::current()->expr_statement(expr);
     }
@@ -825,7 +825,7 @@ public:
     template<typename T = float, typename Size = uint>
     [[nodiscard]] Var<Size> size_in_byte() const noexcept {
         const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::BINDLESS_ARRAY_BUFFER_SIZE,
-                                                                 {_bindless_array, _index});
+                                                                 {bindless_array_, index_});
         return eval<Size>(expr);
     }
 
@@ -847,12 +847,12 @@ public:
 
 class BindlessArrayTexture {
 private:
-    const Expression *_bindless_array{nullptr};
-    const Expression *_index{nullptr};
+    const Expression *bindless_array_{nullptr};
+    const Expression *index_{nullptr};
 
 public:
     BindlessArrayTexture(const Expression *array, const Expression *index) noexcept
-        : _bindless_array{array}, _index{index} {}
+        : bindless_array_{array}, index_{index} {}
 
     template<typename U, typename V, typename W>
     requires(is_all_floating_point_expr_v<U, V, W>)

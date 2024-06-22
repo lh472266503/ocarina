@@ -339,7 +339,7 @@ template<typename T, typename Offset>
     }
     const CallExpr *expr = Function::current()->call_builtin(DynamicArray<T>::type(array_size),
                                                              CallOp::BINDLESS_ARRAY_BYTE_BUFFER_READ,
-                                                             {_bindless_array, _index, OC_EXPR(offset)});
+                                                             {bindless_array_, index_, OC_EXPR(offset)});
     return detail::eval_dynamic_array(DynamicArray<T>(array_size, expr));
 }
 
@@ -349,7 +349,7 @@ DynamicArray<float> BindlessArrayTexture::sample(uint channel_num, const U &u, c
     const noexcept {
     const CallExpr *expr = Function::current()->call_builtin(DynamicArray<float>::type(channel_num),
                                                              CallOp::BINDLESS_ARRAY_TEX_SAMPLE,
-                                                             {_bindless_array, _index, OC_EXPR(u), OC_EXPR(v)},
+                                                             {bindless_array_, index_, OC_EXPR(u), OC_EXPR(v)},
                                                              {channel_num});
     return detail::eval_dynamic_array(DynamicArray<float>(channel_num, expr));
 }
@@ -360,7 +360,7 @@ DynamicArray<float> BindlessArrayTexture::sample(uint channel_num, const U &u, c
     const noexcept {
     const CallExpr *expr = Function::current()->call_builtin(DynamicArray<float>::type(channel_num),
                                                              CallOp::BINDLESS_ARRAY_TEX_SAMPLE,
-                                                             {_bindless_array, _index, OC_EXPR(u), OC_EXPR(v), OC_EXPR(w)},
+                                                             {bindless_array_, index_, OC_EXPR(u), OC_EXPR(v), OC_EXPR(w)},
                                                              {channel_num});
     return detail::eval_dynamic_array(DynamicArray<float>(channel_num, expr));
 }
