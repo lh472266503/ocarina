@@ -39,6 +39,13 @@ string MemoryStats::buffer_detail_info() const noexcept {
     return ret;
 }
 
+void MemoryStats::foreach_buffer_info(const std::function<void(BufferData)> &func) const noexcept {
+    for (const auto &item : buffer_map_) {
+        const BufferData &data = item.second;
+        func(data);
+    }
+}
+
 string MemoryStats::buffer_info() const noexcept {
     return buffer_detail_info() + total_buffer_info();
 }

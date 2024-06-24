@@ -50,6 +50,7 @@ public:
     static void destroy_instance();
     void on_buffer_allocate(handle_ty handle, size_t size, string name = "");
     void on_buffer_free(handle_ty handle);
+    void foreach_buffer_info(const std::function<void(BufferData)> &func) const noexcept;
     void on_tex_allocate(handle_ty handle, uint2 res, string name = "");
     void on_tex_free(handle_ty handle);
     [[nodiscard]] string total_buffer_info() const noexcept;
