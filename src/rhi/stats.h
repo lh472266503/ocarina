@@ -48,6 +48,8 @@ private:
 public:
     static MemoryStats &instance();
     static void destroy_instance();
+    OC_MAKE_MEMBER_GETTER(buffer_size, )
+    OC_MAKE_MEMBER_GETTER(tex_size, )
     void on_buffer_allocate(handle_ty handle, size_t size, string name = "");
     void on_buffer_free(handle_ty handle);
     void foreach_buffer_info(const std::function<void(BufferData)> &func) const noexcept;
