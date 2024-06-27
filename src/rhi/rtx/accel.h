@@ -28,6 +28,7 @@ public:
         }
         [[nodiscard]] virtual handle_ty handle() const noexcept = 0;
         [[nodiscard]] virtual const void *handle_ptr() const noexcept = 0;
+        [[nodiscard]] size_t mesh_num() const noexcept { return meshes_.size(); }
         [[nodiscard]] virtual size_t data_size() const noexcept = 0;
         virtual void clear() noexcept {
             meshes_.clear();
@@ -50,6 +51,8 @@ public:
         vertex_num_ += mesh.vertex_num();
         impl()->add_instance(ocarina::move(mesh), transform);
     }
+
+    [[nodiscard]] size_t mesh_num() const noexcept { return impl()->mesh_num(); }
 
     void clear() noexcept {
         if (impl()) {
