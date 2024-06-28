@@ -87,19 +87,26 @@ void MemoryStats::on_buffer_free(ocarina::handle_ty handle) {
     });
 }
 
-void MemoryStats::on_tex_allocate(ocarina::handle_ty handle, uint2 res, std::string name) {
+void MemoryStats::on_tex_allocate(ocarina::handle_ty handle, uint3 res,PixelStorage storage, std::string name) {
     with_lock([&] {
-        tex_size_ += res.x * res.y;
-        tex_map_.insert(make_pair(handle, TexData{name, res}));
+        auto data = TexData{name, res, storage};
+        tex_size_ += data.size();
+        tex_map_.insert(make_pair(handle, data));
     });
 }
 
 void MemoryStats::on_tex_free(ocarina::handle_ty handle) {
     with_lock([&] {
-        uint2 res = tex_res(handle);
-        tex_size_ -= res.x * res.y;
+        tex_size_ -= tex_size(handle);
         tex_map_.erase(handle);
     });
+}
+
+void MemoryStats::foreach_tex_info(const std::function<void(TexData)> &func) const noexcept {
+    for (const auto &item : tex_map_) {
+        const TexData &data = item.second;
+        func(data);
+    }
 }
 
 }// namespace ocarina

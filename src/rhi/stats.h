@@ -6,6 +6,7 @@
 
 #include "core/stl.h"
 #include "math/basic_types.h"
+#include "util/image.h"
 #include "core/thread_safety.h"
 
 namespace ocarina {
@@ -17,7 +18,11 @@ class MemoryStats : public thread_safety<> {
     };
     struct TexData {
         string name;
-        uint2 res;
+        uint3 res;
+        PixelStorage storage;
+        [[nodiscard]] size_t size() const noexcept {
+            return res.x * res.y * res.z * pixel_size(storage);
+        }
     };
 
 private:
@@ -40,9 +45,15 @@ private:
         return buffer_map_.at(handle).size;
     }
 
-    [[nodiscard]] uint2 tex_res(handle_ty handle) const noexcept {
+    [[nodiscard]] uint3 tex_res(handle_ty handle) const noexcept {
         OC_ASSERT(tex_map_.contains(handle));
         return tex_map_.at(handle).res;
+    }
+
+    [[nodiscard]] size_t tex_size(handle_ty handle) const noexcept {
+        OC_ASSERT(tex_map_.contains(handle));
+        TexData data = tex_map_.at(handle);
+        return data.size();
     }
 
 public:
@@ -53,8 +64,9 @@ public:
     void on_buffer_allocate(handle_ty handle, size_t size, string name = "");
     void on_buffer_free(handle_ty handle);
     void foreach_buffer_info(const std::function<void(BufferData)> &func) const noexcept;
-    void on_tex_allocate(handle_ty handle, uint2 res, string name = "");
+    void on_tex_allocate(handle_ty handle, uint3 res, PixelStorage storage, string name = "");
     void on_tex_free(handle_ty handle);
+    void foreach_tex_info(const std::function<void(TexData)> &func) const noexcept;
     [[nodiscard]] string total_buffer_info() const noexcept;
     [[nodiscard]] string buffer_detail_info() const noexcept;
     [[nodiscard]] string buffer_info() const noexcept;
