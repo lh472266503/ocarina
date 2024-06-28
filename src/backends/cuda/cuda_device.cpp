@@ -91,6 +91,8 @@ handle_ty CUDADevice::create_texture(uint3 res, PixelStorage pixel_storage,
                                      const string &desc) noexcept {
     return use_context([&] {
         auto texture = ocarina::new_with_allocator<CUDATexture>(this, res, pixel_storage, level_num);
+        MemoryStats::instance().on_tex_allocate(reinterpret_cast<handle_ty>(texture),
+                                                res, pixel_storage, desc);
         return reinterpret_cast<handle_ty>(texture);
     });
 }
@@ -163,7 +165,7 @@ void CUDADevice::unmapping_shared(void *&shared_handle) noexcept {
 }
 
 void CUDADevice::unregister_shared(void *&shared_handle) noexcept {
-    if(shared_handle == nullptr){
+    if (shared_handle == nullptr) {
         return;
     }
     OC_CUDA_CHECK(cudaGraphicsUnregisterResource(reinterpret_cast<cudaGraphicsResource_t>(shared_handle)));
