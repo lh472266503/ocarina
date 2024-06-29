@@ -28,7 +28,7 @@ BindlessArray Device::create_bindless_array() const noexcept {
 }
 
 Texture Device::create_texture(uint3 res, PixelStorage storage, const string &desc) const noexcept {
-    return _create<Texture>(res, storage);
+    return _create<Texture>(res, storage, 1, desc);
 }
 
 Texture Device::create_texture(uint2 res, PixelStorage storage, const string &desc) const noexcept {
