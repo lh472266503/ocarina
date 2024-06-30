@@ -94,19 +94,22 @@ __device__ inline Hit getClosestHit() {
 }
 
 template<typename T = Hit>
-__device__ inline T *getPRD() {
+__device__ inline T *getPayloadPtr() {
     const unsigned int u0 = optixGetPayload_0();
     const unsigned int u1 = optixGetPayload_1();
     return reinterpret_cast<T *>(unpack_pointer(u0, u1));
 }
 
+template<typename T = Hit>
+__device__ inline T &getPayload() {
+    return *getPayloadPtr();
+}
+
 extern "C" __global__ void __closesthit__closest() {
-    Hit *hit = getPRD<Hit>();
-    *hit = getClosestHit();
+    Hit &hit = getPayload<Hit>();
+    hit = getClosestHit();
 }
 
 extern "C" __global__ void __closesthit__any() {
     setPayloadOcclusion(true);
 }
-
-
