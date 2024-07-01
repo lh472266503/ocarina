@@ -12,9 +12,9 @@ namespace ocarina {
 template<typename T>
 class RegistrableManaged;
 
-using serialize_element_ty = float;
+using encoded_ty = float;
 
-template<typename U = serialize_element_ty>
+template<typename U = encoded_ty>
 requires(sizeof(U) == sizeof(float))
 struct DataAccessor {
     mutable Uint offset;
@@ -36,8 +36,8 @@ struct DataAccessor {
 };
 
 namespace detail {
-template<typename T = serialize_element_ty>
-class Serializable_impl {
+template<typename T = encoded_ty>
+class encodable_impl {
 public:
     /// for host
     virtual void encode(RegistrableManaged<T> &data) const noexcept {}
@@ -52,12 +52,12 @@ public:
 };
 }// namespace detail
 
-template<typename T = serialize_element_ty>
-class Serializable : public detail::Serializable_impl<T> {};
+template<typename T = encoded_ty>
+class Encodable : public detail::encodable_impl<T> {};
 
-template<typename value_ty, typename T = serialize_element_ty>
+template<typename value_ty, typename T = encoded_ty>
 requires(is_std_vector_v<value_ty> && is_scalar_v<typename value_ty::value_type>) || is_basic_v<value_ty>
-struct Serial : public Serializable<T> {
+struct EncodedData : public Encodable<T> {
 private:
     using host_ty = std::variant<value_ty, std::function<value_ty()>>;
     host_ty _host_value{};
@@ -67,14 +67,14 @@ private:
     mutable RegistrableManaged<T> *_data{nullptr};
 
 public:
-    explicit Serial(value_ty val = value_ty{}) : _host_value(std::move(val)) {}
+    explicit EncodedData(value_ty val = value_ty{}) : _host_value(std::move(val)) {}
 
-    Serial &operator=(const value_ty &val) {
+    EncodedData &operator=(const value_ty &val) {
         _host_value = val;
         return *this;
     }
 
-    Serial &operator=(const std::function<value_ty()> &val) {
+    EncodedData &operator=(const std::function<value_ty()> &val) {
         _host_value = val;
         return *this;
     }
@@ -248,28 +248,28 @@ OC_MAKE_AUTO_MEMBER_FUNC(element_num)
 #define OC_VALID_ELEMENT(name) &&ocarina::detail::has_device_value(name)
 #define OC_SIZE_ELEMENT(name) +ocarina::detail::element_num(name)
 
-#define OC_SERIALIZABLE_FUNC(Super, ...)                                                   \
-    [[nodiscard]] uint element_num() const noexcept override {                             \
-        return Super::element_num() MAP(OC_SIZE_ELEMENT, __VA_ARGS__);                     \
-    }                                                                                      \
-    void encode(RegistrableManaged<serialize_element_ty> &datas) const noexcept override { \
-        Super::encode(datas);                                                              \
-        MAP(OC_ENCODE_ELEMENT, __VA_ARGS__)                                                \
-    }                                                                                      \
-    void update(RegistrableManaged<serialize_element_ty> &datas) const noexcept override { \
-        Super::update(datas);                                                              \
-        MAP(OC_UPDATE_ELEMENT, __VA_ARGS__)                                                \
-    }                                                                                      \
-    void decode(const DataAccessor<serialize_element_ty> *da) const noexcept override {    \
-        Super::decode(da);                                                                 \
-        MAP(OC_DECODE_ELEMENT, __VA_ARGS__)                                                \
-    }                                                                                      \
-    void reset_device_value() const noexcept override {                                    \
-        Super::reset_device_value();                                                       \
-        MAP(OC_INVALIDATE_ELEMENT, __VA_ARGS__)                                            \
-    }                                                                                      \
-    [[nodiscard]] bool has_device_value() const noexcept override {                        \
-        return Super::has_device_value() MAP(OC_VALID_ELEMENT, __VA_ARGS__);               \
+#define OC_SERIALIZABLE_FUNC(Super, ...)                                         \
+    [[nodiscard]] uint element_num() const noexcept override {                   \
+        return Super::element_num() MAP(OC_SIZE_ELEMENT, __VA_ARGS__);           \
+    }                                                                            \
+    void encode(RegistrableManaged<encoded_ty> &datas) const noexcept override { \
+        Super::encode(datas);                                                    \
+        MAP(OC_ENCODE_ELEMENT, __VA_ARGS__)                                      \
+    }                                                                            \
+    void update(RegistrableManaged<encoded_ty> &datas) const noexcept override { \
+        Super::update(datas);                                                    \
+        MAP(OC_UPDATE_ELEMENT, __VA_ARGS__)                                      \
+    }                                                                            \
+    void decode(const DataAccessor<encoded_ty> *da) const noexcept override {    \
+        Super::decode(da);                                                       \
+        MAP(OC_DECODE_ELEMENT, __VA_ARGS__)                                      \
+    }                                                                            \
+    void reset_device_value() const noexcept override {                          \
+        Super::reset_device_value();                                             \
+        MAP(OC_INVALIDATE_ELEMENT, __VA_ARGS__)                                  \
+    }                                                                            \
+    [[nodiscard]] bool has_device_value() const noexcept override {              \
+        return Super::has_device_value() MAP(OC_VALID_ELEMENT, __VA_ARGS__);     \
     }
 
 }// namespace ocarina

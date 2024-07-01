@@ -13,28 +13,28 @@
 
 using namespace ocarina;
 
-struct Data : public Serializable<float>{
-    Serial<float> f;
-    Serial<float4> f4;
+struct Data : public Encodable<float>{
+    EncodedData<float> f;
+    EncodedData<float4> f4;
 
-    OC_SERIALIZABLE_FUNC(Serializable<float>,f, f4)
+    OC_SERIALIZABLE_FUNC(Encodable<float>,f, f4)
 };
 
 struct Data2 : public Data {
-    Serial<float3> f3;
-    OC_SERIALIZABLE_FUNC(Serializable<float>, f3)
+    EncodedData<float3> f3;
+    OC_SERIALIZABLE_FUNC(Encodable<float>, f3)
 };
 
-struct Test : public Serializable<float>{
-    Serial<float2> a;
-    Serial<int3> b;
-    Serial<float> c;
-    Serial<int> d;
-    Serial<vector<float>> e;
-    Serial<float3x3> f;
+struct Test : public Encodable<float>{
+    EncodedData<float2> a;
+    EncodedData<int3> b;
+    EncodedData<float> c;
+    EncodedData<int> d;
+    EncodedData<vector<float>> e;
+    EncodedData<float3x3> f;
     RegistrableManaged<float> mw;
     Data2 data;
-    OC_SERIALIZABLE_FUNC(Serializable<float>,a, b, c, d, e, f,mw, data)
+    OC_SERIALIZABLE_FUNC(Encodable<float>,a, b, c, d, e, f,mw, data)
 };
 
 union oc_scalar{

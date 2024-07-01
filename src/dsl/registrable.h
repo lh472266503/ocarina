@@ -11,17 +11,17 @@
 
 namespace ocarina {
 
-class Registrable : public Serializable<serialize_element_ty> {
+class Registrable : public Encodable<encoded_ty> {
 protected:
-    Serial<uint> index_{InvalidUI32};
-    Serial<uint> length_{InvalidUI32};
+    EncodedData<uint> index_{InvalidUI32};
+    EncodedData<uint> length_{InvalidUI32};
     BindlessArray *bindless_array_{};
 
 public:
     Registrable() = default;
     explicit Registrable(BindlessArray *bindless_array)
         : bindless_array_(bindless_array) {}
-    OC_SERIALIZABLE_FUNC(Serializable<serialize_element_ty>, index_, length_)
+    OC_SERIALIZABLE_FUNC(Encodable<encoded_ty>, index_, length_)
     void set_bindless_array(BindlessArray &bindless_array) noexcept {
         bindless_array_ = &bindless_array;
     }
@@ -29,8 +29,8 @@ public:
         return bindless_array_;
     }
     [[nodiscard]] bool has_registered() const noexcept { return index_.hv() != InvalidUI32; }
-    [[nodiscard]] const Serial<uint> &index() const noexcept { return index_; }
-    [[nodiscard]] const Serial<uint> &length() const noexcept { return length_; }
+    [[nodiscard]] const EncodedData<uint> &index() const noexcept { return index_; }
+    [[nodiscard]] const EncodedData<uint> &length() const noexcept { return length_; }
 
 protected:
     template<typename T, typename Index>
