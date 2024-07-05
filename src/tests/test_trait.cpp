@@ -17,12 +17,12 @@ struct Data : public Encodable<float>{
     EncodedData<float> f;
     EncodedData<float4> f4;
 
-    OC_SERIALIZABLE_FUNC(Encodable<float>,f, f4)
+    OC_ENCODABLE_FUNC(Encodable<float>,f, f4)
 };
 
 struct Data2 : public Data {
     EncodedData<float3> f3;
-    OC_SERIALIZABLE_FUNC(Encodable<float>, f3)
+    OC_ENCODABLE_FUNC(Encodable<float>, f3)
 };
 
 struct Test : public Encodable<float>{
@@ -34,7 +34,7 @@ struct Test : public Encodable<float>{
     EncodedData<float3x3> f;
     RegistrableManaged<float> mw;
     Data2 data;
-    OC_SERIALIZABLE_FUNC(Encodable<float>,a, b, c, d, e, f,mw, data)
+    OC_ENCODABLE_FUNC(Encodable<float>,a, b, c, d, e, f,mw, data)
 };
 
 union oc_scalar{

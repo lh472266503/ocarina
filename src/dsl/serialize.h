@@ -248,7 +248,7 @@ OC_MAKE_AUTO_MEMBER_FUNC(element_num)
 #define OC_VALID_ELEMENT(name) &&ocarina::detail::has_device_value(name)
 #define OC_SIZE_ELEMENT(name) +ocarina::detail::element_num(name)
 
-#define OC_SERIALIZABLE_FUNC(Super, ...)                                         \
+#define OC_ENCODABLE_FUNC(Super, ...)                                            \
     [[nodiscard]] uint element_num() const noexcept override {                   \
         return Super::element_num() MAP(OC_SIZE_ELEMENT, __VA_ARGS__);           \
     }                                                                            \
