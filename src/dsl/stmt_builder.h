@@ -17,7 +17,7 @@ inline void comment(const ocarina::string &str) noexcept {
 
 namespace detail {
 template<typename Lhs, typename Rhs>
-requires (!is_param_struct_v<expr_value_t<Lhs>> && !is_param_struct_v<expr_value_t<Rhs>>)
+requires(!is_param_struct_v<expr_value_t<Lhs>> && !is_param_struct_v<expr_value_t<Rhs>>)
 inline void assign(Lhs &&lhs, Rhs &&rhs) noexcept {
     if constexpr (concepts::assign_able<expr_value_t<Lhs>, expr_value_t<Rhs>>) {
         Function::current()->assign(
@@ -84,7 +84,7 @@ private:
     string _str{};
 
 public:
-    ScopeStmtBuilder(const string &str) : _str(str) {}
+    explicit ScopeStmtBuilder(const string &str) : _str(str) {}
     template<typename Body>
     void operator+(Body &&body) noexcept {
         comment("start " + _str);
@@ -346,22 +346,23 @@ void while_(Condition &&cond, Body &&body) noexcept {
 }
 
 namespace detail {
-template<typename T = int>
+template<typename T = int, typename U = T, typename V = U>
 class ForStmtBuilder {
 private:
     Var<T> _var;
-    Var<T> _end;
-    Var<T> _step;
+    Var<U> _end;
+    Var<V> _step;
     ForStmt *_for_stmt;
 
 public:
-    ForStmtBuilder(const Var<T> &begin, const Var<T> &end, const Var<T> &step)
+    ForStmtBuilder(const Var<T> &begin, const Var<U> &end, const Var<V> &step)
         : _var(begin),
           _end(end),
           _step(step) {
-        const BinaryExpr *negative_step = Function::current()->binary(Type::of<bool>(), BinaryOp::LESS, _step.expression(), OC_EXPR(T(0)));
+        const BinaryExpr *negative_step = Function::current()->binary(Type::of<bool>(), BinaryOp::LESS,
+                                                                      _step.expression(), OC_EXPR(T(0)));
         const BinaryExpr *condition = Function::current()->binary(Type::of<bool>(), BinaryOp::LESS,
-                                                            _var.expression(), _end.expression());
+                                                                  _var.expression(), _end.expression());
         condition = Function::current()->binary(Type::of<bool>(), BinaryOp::BIT_XOR, negative_step, condition);
         _for_stmt = Function::current()->for_(_var.expression(),
                                               condition,
@@ -419,50 +420,33 @@ void prints(ocarina::string f, Args &&...args) {
 
 namespace detail {
 template<typename Count>
-requires concepts::integral<expr_value_t<Count>>
+requires ocarina::is_all_integral_expr_v<Count>
 auto range(Count &&count) noexcept {
     return detail::ForStmtBuilder<expr_value_t<Count>>(0, make_expr(std::forward<Count>(count)), 1);
 }
 
 template<typename Begin, typename End>
-requires concepts::integral<expr_value_t<Begin>>
+requires ocarina::is_all_integral_expr_v<Begin, End>
 auto range(Begin &&begin, End &&end) noexcept {
-    return detail::ForStmtBuilder<expr_value_t<End>>(make_expr(std::forward<Begin>(begin)),
+    return detail::ForStmtBuilder<expr_value_t<Begin>,
+                                  expr_value_t<End>>(make_expr(std::forward<Begin>(begin)),
                                                      make_expr(std::forward<End>(end)),
                                                      1);
 }
 
 template<typename Begin, typename End, typename Step>
-requires concepts::integral<expr_value_t<Begin>>
+requires ocarina::is_all_integral_expr_v<Begin, End, Step>
 auto range(Begin &&begin, End &&end, Step &&step) noexcept {
-    return detail::ForStmtBuilder<expr_value_t<End>>(make_expr(std::forward<Begin>(begin)),
-                                                     make_expr(std::forward<End>(end)),
-                                                     make_expr(std::forward<Step>(step)));
+    return detail::ForStmtBuilder<expr_value_t<Begin>, expr_value_t<End>,
+                                  expr_value_t<Step>>(make_expr(std::forward<Begin>(begin)),
+                                                      make_expr(std::forward<End>(end)),
+                                                      make_expr(std::forward<Step>(step)));
 }
 
-template<typename Count>
-requires concepts::integral<expr_value_t<Count>>
-auto range_with_source_location(const string &str, Count &&count) noexcept {
+template<typename ...Args>
+auto range_with_source_location(const string &str, Args &&...args) noexcept {
     comment(str);
-    return detail::ForStmtBuilder<expr_value_t<Count>>(0, make_expr(std::forward<Count>(count)), 1);
-}
-
-template<typename Begin, typename End>
-requires concepts::integral<expr_value_t<Begin>>
-auto range_with_source_location(const string &str, Begin &&begin, End &&end) noexcept {
-    comment(str);
-    return detail::ForStmtBuilder<expr_value_t<End>>(make_expr(std::forward<Begin>(begin)),
-                                                     make_expr(std::forward<End>(end)),
-                                                     1);
-}
-
-template<typename Begin, typename End, typename Step>
-requires concepts::integral<expr_value_t<Begin>>
-auto range_with_source_location(const string &str, Begin &&begin, End &&end, Step &&step) noexcept {
-    comment(str);
-    return detail::ForStmtBuilder<expr_value_t<End>>(make_expr(std::forward<Begin>(begin)),
-                                                     make_expr(std::forward<End>(end)),
-                                                     make_expr(std::forward<Step>(step)));
+    return range(OC_FORWARD(args)...);
 }
 
 }// namespace detail
