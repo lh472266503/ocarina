@@ -238,10 +238,10 @@ public:
         return _define(Tag::CALLABLE, std::forward<Func>(func));
     }
     [[nodiscard]] const ScopeStmt *current_scope() const noexcept {
-        return scope_stack_.back();
+        return scope_stack_.empty() ? body() : scope_stack_.back();
     }
     [[nodiscard]] ScopeStmt *current_scope() noexcept {
-        return scope_stack_.back();
+        return scope_stack_.empty() ? body() : scope_stack_.back();
     }
     template<typename Func>
     decltype(auto) with(ScopeStmt *scope, Func &&func) noexcept {
