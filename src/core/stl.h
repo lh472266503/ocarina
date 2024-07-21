@@ -307,6 +307,14 @@ using std::variant;
 using std::visit;
 namespace fs = std::filesystem;
 
+[[nodiscard]] inline fs::path parent_path(const fs::path &p, int levels) {
+    fs::path cur_path = p;
+    for (int i = 0; i < levels; ++i) {
+        cur_path = cur_path.parent_path();
+    }
+    return cur_path;
+}
+
 template<typename T>
 struct deep_copy_shared_ptr {
 private:
