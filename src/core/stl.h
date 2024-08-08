@@ -316,6 +316,21 @@ namespace fs = std::filesystem;
     return cur_path;
 }
 
+inline void clear_directory(const std::filesystem::path &dir_path) {
+    try {
+        if (std::filesystem::exists(dir_path) && std::filesystem::is_directory(dir_path)) {
+            for (const auto &entry : std::filesystem::directory_iterator(dir_path)) {
+                std::filesystem::remove_all(entry.path());
+            }
+            std::cout << "Directory cleared: " << dir_path << std::endl;
+        } else {
+            std::cout << "Directory does not exist: " << dir_path << std::endl;
+        }
+    } catch (const std::filesystem::filesystem_error &e) {
+        std::cerr << "Error clearing directory: " << e.what() << std::endl;
+    }
+}
+
 template<typename T>
 struct deep_copy_shared_ptr {
 private:
