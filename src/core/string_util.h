@@ -16,8 +16,7 @@
 #include "math/basic_types.h"
 #include "stl.h"
 
-namespace ocarina {
-inline namespace core {
+namespace ocarina::inline core {
 template<typename... Args>
 inline std::string serialize(Args &&...args) noexcept {
     std::ostringstream ss;
@@ -225,5 +224,4 @@ template<typename T>
     }
 }
 
-}
-}// namespace ocarina::core
+}// namespace ocarina::inline core
