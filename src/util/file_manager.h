@@ -26,7 +26,13 @@ public:
     static void destroy_instance();
 
 private:
-    struct Impl;
+    struct Impl {
+        fs::path runtime_directory;
+        fs::path cache_directory;
+        bool use_cache{true};
+        ocarina::map<string, DynamicModule> modules;
+        Impl() = default;
+    };
     ocarina::unique_ptr<Impl> _impl;
 
 public:
@@ -68,9 +74,3 @@ public:
 }
 
 }// namespace ocarina
-
-#ifndef NDEBUG
-
-#include "file_manager_impl.h"
-
-#endif

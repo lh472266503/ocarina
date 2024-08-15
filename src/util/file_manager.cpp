@@ -3,12 +3,9 @@
 //
 
 #include "file_manager.h"
-
-#ifdef NDEBUG
-
-#include "file_manager_impl.h"
-
-#endif
+#include "core/dynamic_module.h"
+#include "rhi/device.h"
+#include "core/platform.h"
 
 namespace ocarina {
 
