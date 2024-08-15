@@ -54,7 +54,7 @@ OC_STRUCT(,Onb, tangent, binormal, normal) {
 
 int main(int argc, char *argv[]) {
     fs::path path(argv[0]);
-    FileManager file_manager(path.parent_path());
+    FileManager &file_manager = FileManager::instance();
     file_manager.clear_cache();
     Device device = file_manager.create_device("cuda");
     device.init_rtx();

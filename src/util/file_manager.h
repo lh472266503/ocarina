@@ -30,7 +30,6 @@ private:
     ocarina::unique_ptr<Impl> _impl;
 
 public:
-    explicit FileManager(const fs::path &path, string_view cache_dir = ".cache");
     FileManager &init(const fs::path &path, string_view cache_dir = ".cache");
     virtual ~FileManager() noexcept;
     [[nodiscard]] const fs::path &runtime_directory() const noexcept;

@@ -512,7 +512,7 @@ void test_parameter_struct(Device &device, Stream &stream) {
 
 int main(int argc, char *argv[]) {
     fs::path path(argv[0]);
-    FileManager file_manager(path.parent_path());
+    FileManager &file_manager = FileManager::instance();
 
     /**
      * Conventional scheme

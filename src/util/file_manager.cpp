@@ -51,10 +51,6 @@ bool create_directory_if_necessary(const fs::path &path) {
 }
 }// namespace detail
 
-FileManager::FileManager(const fs::path &path, string_view cache_dir) {
-    init(path, cache_dir);
-}
-
 FileManager &FileManager::init(const fs::path &path, std::string_view cache_dir) {
     _impl = std::move(ocarina::make_unique<Impl>());
     _impl->runtime_directory = detail::create_runtime_directory(path);
@@ -69,6 +65,7 @@ FileManager *FileManager::s_file_manager = nullptr;
 FileManager &FileManager::instance() noexcept {
     if (s_file_manager == nullptr) {
         s_file_manager = new FileManager();
+        s_file_manager->init(fs::current_path());
     }
     return *s_file_manager;
 }
