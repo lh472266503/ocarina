@@ -22,5 +22,9 @@ public:
     OC_MAKE_MEMBER_GETTER(handle, )
     DynamicModule(fs::path path, const string &name) noexcept;
     [[nodiscard]] void *function_ptr(const string &func_name) const noexcept;
+    template<typename T>
+    [[nodiscard]] T function(const string &func_name) const noexcept {
+        return reinterpret_cast<T>(function_ptr(func_name));
+    }
 };
 }// namespace ocarina
