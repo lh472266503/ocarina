@@ -12,8 +12,7 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 
-namespace ocarina {
-inline namespace core {
+namespace ocarina::inline core {
 OC_CORE_API spdlog::logger &logger() noexcept;
 
 OC_CORE_API void log_level_debug() noexcept;
@@ -47,7 +46,7 @@ inline void warning_if_not(bool predicate, Args &&...args) noexcept {
 }
 
 template<typename... Args>
-[[noreturn]]inline void exception(Args &&...args) {
+[[noreturn]] inline void exception(Args &&...args) {
     throw std::runtime_error{serialize(std::forward<Args>(args)...)};
 }
 
@@ -77,8 +76,7 @@ template<typename... Args>
 inline void error_if_not(bool predicate, Args &&...args) {
     error_if(!predicate, std::forward<Args>(args)...);
 }
-}
-}// namespace ocarina::core
+}// namespace ocarina::inline core
 
 #define OC_SOURCE_LOCATION "\n", __FILE__, ":", __LINE__
 
