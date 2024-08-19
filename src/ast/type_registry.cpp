@@ -102,14 +102,14 @@ namespace detail {
 [[nodiscard]] auto find_content(ocarina::string_view &str, char l = '<', char r = '>') {
     ocarina::vector<ocarina::string_view> ret;
     OC_USING_SV
-    auto prev_token = str.find_first_of(l);
+    auto prev_token = str.find(l);
     constexpr auto token = ',';
     str = str.substr(prev_token + 1);
     uint count = 0;
     constexpr uint limit = 10000;
     while (true) {
         auto content = find_identifier(str);
-        auto new_cursor = str.find_first_of(token) + 1;
+        auto new_cursor = str.find(token) + 1;
         str = str.substr(new_cursor);
         ++ count;
         if (count > limit) {
