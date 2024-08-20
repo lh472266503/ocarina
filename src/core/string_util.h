@@ -205,7 +205,7 @@ template<typename FMT, typename... Args>
     return str;
 }
 
-[[nodiscard]] inline bool string_contain(const std::string_view &string,
+[[nodiscard]] inline bool string_contains(const std::string_view &string,
                                          const std::string_view &sub) {
     return string.find(sub) != std::string::npos;
 }
