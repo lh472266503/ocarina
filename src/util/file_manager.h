@@ -54,23 +54,4 @@ public:
     [[nodiscard]] WindowWrapper create_window(const char *name, uint2 initial_size, const char *type = "gl", bool resizable = false);
 };
 
-[[nodiscard]] inline vector<fs::path> include_paths() {
-    fs::path ext = "ext";
-    static std::array include_directories = {
-        ext,
-        ext / "xxHash",
-        ext / "EASTL" / "include",
-        ext / "spdlog" / "include",
-        ext / "EASTL" / "packages" / "EABase" / "include" / "Common",
-        ext / "fmt" / "include",
-    };
-    vector<fs::path> ret;
-    fs::path src_path = parent_path(__FILE__, 2);
-    ret.push_back(src_path);
-    for (const auto &p : include_directories) {
-        ret.push_back(src_path / p);
-    }
-    return ret;
-}
-
 }// namespace ocarina
