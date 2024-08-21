@@ -33,7 +33,7 @@ private:
         ocarina::map<string, DynamicModule> modules;
         Impl() = default;
     };
-    ocarina::unique_ptr<Impl> _impl;
+    ocarina::unique_ptr<Impl> impl_;
 
 public:
     FileManager &init(const fs::path &path, string_view cache_dir = ".cache");

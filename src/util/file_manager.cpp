@@ -49,9 +49,9 @@ bool create_directory_if_necessary(const fs::path &path) {
 }// namespace detail
 
 FileManager &FileManager::init(const fs::path &path, std::string_view cache_dir) {
-    _impl = std::move(ocarina::make_unique<Impl>());
-    _impl->runtime_directory = detail::create_runtime_directory(path);
-    _impl->cache_directory = runtime_directory() / cache_dir;
+    impl_ = std::move(ocarina::make_unique<Impl>());
+    impl_->runtime_directory = detail::create_runtime_directory(path);
+    impl_->cache_directory = runtime_directory() / cache_dir;
     DynamicModule::add_search_path(runtime_directory());
     detail::create_directory_if_necessary(cache_directory());
     return *this;
@@ -79,11 +79,11 @@ FileManager::~FileManager() noexcept {
 }
 
 const fs::path &FileManager::runtime_directory() const noexcept {
-    return _impl->runtime_directory;
+    return impl_->runtime_directory;
 }
 
 const fs::path &FileManager::cache_directory() const noexcept {
-    return _impl->cache_directory;
+    return impl_->cache_directory;
 }
 
 bool FileManager::create_directory_if_necessary(const fs::path &path) {
@@ -114,13 +114,13 @@ string FileManager::read_global_cache(const string &fn) const noexcept {
 }
 
 void FileManager::clear_cache() const noexcept {
-    if (fs::exists(_impl->cache_directory)) {
-        fs::remove_all(_impl->cache_directory);
+    if (fs::exists(impl_->cache_directory)) {
+        fs::remove_all(impl_->cache_directory);
     }
 }
 
 bool FileManager::is_exist_cache(const string &fn) const noexcept {
-    if (!_impl->use_cache) {
+    if (!impl_->use_cache) {
         return false;
     }
     auto path = cache_directory() / fn;
@@ -128,12 +128,12 @@ bool FileManager::is_exist_cache(const string &fn) const noexcept {
 }
 
 const DynamicModule *FileManager::obtain_module(const string &module_name) noexcept {
-    auto iter = _impl->modules.find(module_name);
+    auto iter = impl_->modules.find(module_name);
     DynamicModule *ret = nullptr;
-    if (iter == _impl->modules.cend()) {
+    if (iter == impl_->modules.cend()) {
         DynamicModule d(module_name);
-        _impl->modules.insert(std::make_pair(string(module_name), std::move(d)));
-        ret = &_impl->modules.at(module_name);
+        impl_->modules.insert(std::make_pair(string(module_name), std::move(d)));
+        ret = &impl_->modules.at(module_name);
     } else {
         ret = &iter->second;
     }
@@ -145,8 +145,8 @@ void FileManager::unload_module(void *handle) noexcept {
 }
 
 bool FileManager::unload_module(const std::string &module_name) noexcept {
-    auto iter = _impl->modules.find(module_name);
-    if (iter == _impl->modules.cend()) {
+    auto iter = impl_->modules.find(module_name);
+    if (iter == impl_->modules.cend()) {
         return false;
     }
     unload_module(iter->second.handle());
