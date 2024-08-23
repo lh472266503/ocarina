@@ -33,11 +33,19 @@ void DynamicModule::clear_search_path() noexcept {
 }
 
 DynamicModule::DynamicModule(const string &name) noexcept {
-    for (const auto &path : search_path()) {
-        handle_ = dynamic_module_load(path / name);
+    if (fs::path(name).is_absolute()) {
+        handle_ = dynamic_module_load(name);
         if (handle_) {
-            OC_DEBUG_FORMAT_WITH_LOCATION("load {} success", (path/ name).string());
+            OC_DEBUG_FORMAT_WITH_LOCATION("load {} success", name);
             return;
+        }
+    } else {
+        for (const auto &path : search_path()) {
+            handle_ = dynamic_module_load(path / name);
+            if (handle_) {
+                OC_DEBUG_FORMAT_WITH_LOCATION("load {} success", (path/ name).string());
+                return;
+            }
         }
     }
     OC_ERROR_FORMAT("load {} fail!", name);
