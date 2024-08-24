@@ -7,9 +7,10 @@
 #include <mutex>
 
 namespace ocarina {
-
 template<typename Mutex = std::mutex>
 class thread_safety {
+public:
+    using mutex_type = Mutex;
 
 private:
     mutable Mutex mutex_{};
