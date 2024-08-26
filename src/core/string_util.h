@@ -206,8 +206,18 @@ template<typename FMT, typename... Args>
 }
 
 [[nodiscard]] inline bool string_contains(const std::string_view &string,
-                                         const std::string_view &sub) {
+                                          const std::string_view &sub) {
     return string.find(sub) != std::string::npos;
+}
+
+[[nodiscard]] inline int string_count(const std::string &str, const std::string &substr) {
+    int count = 0;
+    size_t pos = str.find(substr);
+    while (pos != std::string::npos) {
+        ++count;
+        pos = str.find(substr, pos + substr.length());
+    }
+    return count;
 }
 
 [[nodiscard]] inline std::string from_file(const fs::path &fn) {

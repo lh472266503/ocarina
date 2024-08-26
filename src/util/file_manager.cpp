@@ -150,6 +150,7 @@ bool FileManager::unload_module(const std::string &module_name) noexcept {
         return false;
     }
     unload_module(iter->second.handle());
+    impl_->modules.erase(iter);
     return true;
 }
 
