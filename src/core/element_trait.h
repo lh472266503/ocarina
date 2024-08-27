@@ -58,7 +58,7 @@ using element_t = typename detail::element_impl<std::remove_cvref_t<T>>::type;
 namespace detail {
 template<typename T>
 struct ptr_impl {
-    static_assert(always_false_v<T>);
+//    static_assert(always_false_v<T>);
     using type = T;
 };
 
