@@ -395,3 +395,7 @@ template<size_t N, size_t M>
 [[nodiscard]] __device__ constexpr auto operator-(ocarina::Matrix<N, M> lhs, ocarina::Matrix<N, M> rhs) noexcept {
     return lhs + (-rhs);
 }
+
+using oc_float2x2 = ocarina::float2x2;
+using oc_float3x3 = ocarina::float3x3;
+using oc_float4x4 = ocarina::float4x4;
