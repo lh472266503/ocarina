@@ -89,8 +89,25 @@ using float4x4 = Matrix<4>;
 
 }// namespace ocarina
 
-[[nodiscard]] constexpr auto
-operator*(ocarina::float2x2 m, float s) noexcept {
+
+template<size_t N, size_t M>
+[[nodiscard]] constexpr auto operator*(ocarina::Mat<N, M> m, float s) {
+    return [&]<size_t ...i>(std::index_sequence<i...>) {
+        return ocarina::Mat<N, M>((m[i] * s)...);
+    }(std::make_index_sequence<N>());
+}
+
+template<size_t N, size_t M>
+[[nodiscard]] constexpr auto operator*(float s,ocarina::Mat<N, M> m) {
+    return m * s;
+}
+
+template<size_t N, size_t M>
+[[nodiscard]] constexpr auto operator/(ocarina::Mat<N, M> m, float s) {
+    return m * (1.0f / s);
+}
+
+[[nodiscard]] constexpr auto operator*(ocarina::float2x2 m, float s) noexcept {
     return ocarina::float2x2{m[0] * s, m[1] * s};
 }
 
