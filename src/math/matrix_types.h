@@ -12,6 +12,26 @@ struct Matrix {
     static_assert(always_false_v<std::integral_constant<size_t, N>>, "Invalid matrix type");
 };
 
+template<size_t N, size_t M>
+struct Mat {
+public:
+    static constexpr auto RowNum = M;
+    static constexpr auto ColNum = N;
+    using scalar_type = float;
+    using vector_type = Vector<scalar_type, M>;
+
+private:
+    array<vector_type, N> cols_{};
+
+public:
+    Mat() = default;
+    template<typename... Args>
+    requires(sizeof...(Args) == N && all_is_v<vector_type, Args...>)
+    constexpr Mat(Args &&...args) noexcept : cols_(array<vector_type, N>{OC_FORWARD(args)...}) {}
+    [[nodiscard]] constexpr vector_type &operator[](size_t i) noexcept { return cols_[i]; }
+    [[nodiscard]] constexpr const vector_type &operator[](size_t i) const noexcept { return cols_[i]; }
+};
+
 template<>
 struct Matrix<2> {
 private:

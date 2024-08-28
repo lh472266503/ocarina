@@ -31,11 +31,11 @@
 
 #define OC_DEFINE_TEMPLATE_VALUE(template_name) \
     template<typename T>                        \
-    constexpr auto template_name##_v = template_name<T>::value;
+    static constexpr auto template_name##_v = template_name<T>::value;
 
 #define OC_DEFINE_TEMPLATE_VALUE_MULTI(template_name) \
     template<typename... Ts>                          \
-    constexpr auto template_name##_v = template_name<Ts...>::value;
+    static constexpr auto template_name##_v = template_name<Ts...>::value;
 
 #define OC_DEFINE_TEMPLATE_TYPE(template_name) \
     template<typename T>                       \

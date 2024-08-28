@@ -93,19 +93,39 @@ MAKE_ALL_TYPE_TRAITS(unsigned)
 
 #undef MAKE_ALL_TYPE_TRAITS
 
-namespace detail {
+namespace {
 template<typename... T>
 struct all_same_impl : std::true_type {};
 
 template<typename First, typename... Other>
 struct all_same_impl<First, Other...> : std::conjunction<std::is_same<First, Other>...> {};
-}// namespace detail
+}// namespace
 
 template<typename... T>
-using is_same = detail::all_same_impl<T...>;
+using is_same = all_same_impl<T...>;
 
 template<typename... T>
 constexpr auto is_same_v = is_same<T...>::value;
+
+namespace {
+
+template<typename T, typename... Ts>
+struct all_is_impl;
+
+template<typename T, typename First>
+struct all_is_impl<T, First> : std::is_same<T, First> {};
+
+template<typename T, typename First, typename... Rest>
+struct all_is_impl<T, First, Rest...> : std::conjunction<all_is_impl<T, First>,
+                                                         all_is_impl<T, Rest>...> {};
+
+}// namespace
+
+template<typename Target, typename ...Ts>
+using all_is = all_is_impl<std::remove_cvref_t<Target>, std::remove_cvref_t<Ts>...>;
+
+template<typename Target,typename... Ts>
+constexpr auto all_is_v = all_is<Target, Ts...>::value;
 
 template<typename T, size_t N, size_t... Indices>
 struct Swizzle;
