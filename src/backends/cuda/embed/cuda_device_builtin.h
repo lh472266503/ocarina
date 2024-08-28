@@ -3,23 +3,6 @@
 #pragma once
 
 
-
-template<typename T, oc_uint N>
-class oc_array {
-private:
-    T _data[N];
-
-public:
-    template<typename... Elem>
-    __device__ constexpr oc_array(Elem... elem) noexcept : _data{elem...} {}
-    __device__ constexpr oc_array(oc_array &&) noexcept = default;
-    __device__ constexpr oc_array(const oc_array &) noexcept = default;
-    __device__ constexpr oc_array &operator=(oc_array &&) noexcept = default;
-    __device__ constexpr oc_array &operator=(const oc_array &) noexcept = default;
-    [[nodiscard]] __device__ T &operator[](size_t i) noexcept { return _data[i]; }
-    [[nodiscard]] __device__ T operator[](size_t i) const noexcept { return _data[i]; }
-};
-
 template<typename T, oc_uint N>
 __device__ oc_array<T, N> operator+(oc_array<T, N> arg) {
     oc_array<T, N> ret;

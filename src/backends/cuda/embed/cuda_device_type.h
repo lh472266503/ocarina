@@ -91,6 +91,17 @@ struct make_index_sequence_helper<0, Ints...> {
 template<size_t N>
 using make_index_sequence = typename make_index_sequence_helper<N>::type;
 
+template<bool B, typename T = void>
+struct enable_if {};
+
+template<typename T>
+struct enable_if<true, T> {
+    using type = T;
+};
+
+template<bool B, typename T = void>
+using enable_if_t = typename enable_if<B, T>::type;
+
 }// namespace ocarina
 
 #define OC_MAKE_VECTOR_N(type, dim) using type##dim = ocarina::Vector<type, dim>;
@@ -263,3 +274,46 @@ OC_MAKE_VECTOR_LOGIC_OPERATOR(<, ocarina::is_all_number_v<T>)
 OC_MAKE_VECTOR_LOGIC_OPERATOR(>, ocarina::is_all_number_v<T>)
 OC_MAKE_VECTOR_LOGIC_OPERATOR(<=, ocarina::is_all_number_v<T>)
 OC_MAKE_VECTOR_LOGIC_OPERATOR(>=, ocarina::is_all_number_v<T>)
+
+template<typename T, oc_uint N>
+class oc_array {
+private:
+    T _data[N];
+
+public:
+    template<typename... Elem>
+    __device__ constexpr oc_array(Elem... elem) noexcept : _data{elem...} {}
+    __device__ constexpr oc_array(oc_array &&) noexcept = default;
+    __device__ constexpr oc_array(const oc_array &) noexcept = default;
+    __device__ constexpr oc_array &operator=(oc_array &&) noexcept = default;
+    __device__ constexpr oc_array &operator=(const oc_array &) noexcept = default;
+    [[nodiscard]] __device__ T &operator[](size_t i) noexcept { return _data[i]; }
+    [[nodiscard]] __device__ T operator[](size_t i) const noexcept { return _data[i]; }
+};
+
+namespace ocarina {
+
+template<size_t N, size_t M = N>
+struct Matrix {
+public:
+    static constexpr auto RowNum = M;
+    static constexpr auto ColNum = N;
+    using scalar_type = float;
+    using vector_type = Vector<scalar_type, M>;
+
+private:
+    oc_array<vector_type, N> cols_{};
+
+public:
+    Matrix() = default;
+    template<typename... Args, typename = enable_if_t<sizeof...(Args) == N>>
+    constexpr Matrix(Args... args) noexcept : cols_(oc_array<vector_type, N>{args...}) {}
+    [[nodiscard]] constexpr vector_type &operator[](size_t i) noexcept { return cols_[i]; }
+    [[nodiscard]] constexpr const vector_type &operator[](size_t i) const noexcept { return cols_[i]; }
+};
+
+using float2x2 = Matrix<2>;
+using float3x3 = Matrix<3>;
+using float4x4 = Matrix<4>;
+
+}// namespace ocarina
