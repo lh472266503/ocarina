@@ -579,12 +579,12 @@ public:
 #include "math/swizzle_inl/swizzle4.inl.h"
 };
 
-template<size_t N>
-struct Computable<Matrix<N>>
-    : detail::EnableGetMemberByIndex<Computable<Matrix<N>>>,
-      detail::EnableSubscriptAccess<Computable<Matrix<N>>> {
-    OC_COMPUTABLE_COMMON(Computable<Matrix<N>>)
-    using this_type = Matrix<N>;
+template<size_t N, size_t M>
+struct Computable<Matrix<N, M>>
+    : detail::EnableGetMemberByIndex<Computable<Matrix<N, M>>>,
+      detail::EnableSubscriptAccess<Computable<Matrix<N, M>>> {
+    OC_COMPUTABLE_COMMON(Computable<Matrix<N, M>>)
+    using this_type = Matrix<N, M>;
     OC_MAKE_ASSIGNMENT_FUNC
 };
 

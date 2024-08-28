@@ -80,38 +80,19 @@ struct TypeDesc<void> {
 };
 
 /// matrices
-template<>
-struct TypeDesc<float2x2> {
-    static constexpr ocarina::string_view description() noexcept {
-        using namespace std::string_view_literals;
-        return "matrix<2>"sv;
+template<size_t N, size_t M>
+struct TypeDesc<ocarina::Matrix<N, M>> {
+    static ocarina::string &description() noexcept {
+        static thread_local auto s = ocarina::format(
+            "matrix<{},{}>",
+            N, M);
+        return s;
     }
-
-    static constexpr ocarina::string_view name() noexcept {
-        return "float2x2";
-    }
-};
-
-template<>
-struct TypeDesc<float3x3> {
-    static constexpr ocarina::string_view description() noexcept {
-        using namespace std::string_view_literals;
-        return "matrix<3>"sv;
-    }
-
-    static constexpr ocarina::string_view name() noexcept {
-        return "float3x3";
-    }
-};
-
-template<>
-struct TypeDesc<float4x4> {
-    static constexpr ocarina::string_view description() noexcept {
-        using namespace std::string_view_literals;
-        return "matrix<4>"sv;
-    }
-    static constexpr ocarina::string_view name() noexcept {
-        return "float4x4";
+    static ocarina::string &name() noexcept {
+        static thread_local auto s = ocarina::format(
+            "float{}x{}",
+            N, M);
+        return s;
     }
 };
 
