@@ -74,6 +74,25 @@ using oc_uchar = unsigned char;
 using oc_ushort = unsigned short;
 using oc_uint64t = unsigned long long;
 
+namespace ocarina {
+
+template<size_t... Ints>
+struct index_sequence {};
+
+template<size_t N, size_t... Ints>
+struct make_index_sequence_helper : make_index_sequence_helper<N - 1, N - 1, Ints...> {
+};
+
+template<size_t... Ints>
+struct make_index_sequence_helper<0, Ints...> {
+    using type = index_sequence<Ints...>;
+};
+
+template<size_t N>
+using make_index_sequence = typename make_index_sequence_helper<N>::type;
+
+}// namespace ocarina
+
 #define OC_MAKE_VECTOR_N(type, dim) using type##dim = ocarina::Vector<type, dim>;
 
 template<typename T, size_t N>
