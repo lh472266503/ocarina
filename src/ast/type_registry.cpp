@@ -232,14 +232,20 @@ void TypeRegistry::parse_matrix(Type *type, ocarina::string_view desc) noexcept 
     auto tmp_desc = ocarina::format("vector<float,{}>", M);
     type->members_.push_back(parse_type((tmp_desc)));
 
-#define OC_SIZE_ALIGN(dim)                       \
-    if (N == (dim)) {                            \
-        type->size_ = sizeof(Matrix<dim>);       \
-        type->alignment_ = alignof(Matrix<dim>); \
+#define OC_SIZE_ALIGN(NN, MM)                       \
+    if (N == (NN) && M == (MM)) {                   \
+        type->size_ = sizeof(Matrix<NN, MM>);       \
+        type->alignment_ = alignof(Matrix<NN, MM>); \
     } else
-    OC_SIZE_ALIGN(2)
-    OC_SIZE_ALIGN(3)
-    OC_SIZE_ALIGN(4) {
+    OC_SIZE_ALIGN(2, 2)
+    OC_SIZE_ALIGN(2, 3)
+    OC_SIZE_ALIGN(2, 4)
+    OC_SIZE_ALIGN(3, 2)
+    OC_SIZE_ALIGN(3, 3)
+    OC_SIZE_ALIGN(3, 4)
+    OC_SIZE_ALIGN(4, 2)
+    OC_SIZE_ALIGN(4, 3)
+    OC_SIZE_ALIGN(4, 4) {
         OC_ERROR("invalid matrix dimension <{}, {}>!", N, M);
     }
 #undef OC_SIZE_ALIGN
