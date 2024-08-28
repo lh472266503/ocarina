@@ -111,7 +111,7 @@ namespace detail {
         auto content = find_identifier(str);
         auto new_cursor = str.find(token) + 1;
         str = str.substr(new_cursor);
-        ++ count;
+        ++count;
         if (count > limit) {
             OC_ERROR("The number of loops has exceeded the upper limit. Please check the code");
         }
@@ -225,20 +225,22 @@ void TypeRegistry::parse_matrix(Type *type, ocarina::string_view desc) noexcept 
     type->tag_ = Type::Tag::MATRIX;
     auto [start, end] = detail::bracket_matching_far(desc, '<', '>');
     auto dimension_str = desc.substr(start + 1, end - start - 1);
-    auto dimension = std::stoi(string(dimension_str));
-    type->dimension_ = dimension;
-    auto tmp_desc = ocarina::format("vector<float,{}>", dimension);
+    auto dims = string_split(dimension_str, ',');
+    int N = std::stoi(string(dims[0]));
+    int M = std::stoi(string(dims[1]));
+    type->dimension_ = N;
+    auto tmp_desc = ocarina::format("vector<float,{}>", M);
     type->members_.push_back(parse_type((tmp_desc)));
 
 #define OC_SIZE_ALIGN(dim)                       \
-    if (dimension == (dim)) {                    \
+    if (N == (dim)) {                            \
         type->size_ = sizeof(Matrix<dim>);       \
         type->alignment_ = alignof(Matrix<dim>); \
     } else
     OC_SIZE_ALIGN(2)
     OC_SIZE_ALIGN(3)
     OC_SIZE_ALIGN(4) {
-        OC_ERROR("invalid matrix dimension {}!", dimension)
+        OC_ERROR("invalid matrix dimension <{}, {}>!", N, M);
     }
 #undef OC_SIZE_ALIGN
 }
