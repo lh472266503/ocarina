@@ -317,3 +317,81 @@ using float3x3 = Matrix<3>;
 using float4x4 = Matrix<4>;
 
 }// namespace ocarina
+
+namespace ocarina {
+template<size_t N, size_t M, size_t... i>
+__device__ constexpr auto negate_matrix_impl(const ocarina::Matrix<N, M> &m, ocarina::index_sequence<i...>) {
+    return ocarina::Matrix<N, M>{(-m[i])...};
+}
+}// namespace ocarina
+
+template<size_t N, size_t M>
+[[nodiscard]] __device__ constexpr auto operator-(ocarina::Matrix<N, M> m) {
+    return ocarina::negate_matrix_impl(m, ocarina::make_index_sequence<N>());
+}
+
+namespace ocarina {
+template<size_t N, size_t M, size_t... i>
+__device__ constexpr auto multiply_impl(const ocarina::Matrix<N, M> &m, float s, ocarina::index_sequence<i...>) {
+    return ocarina::Matrix<N, M>((m[i] * s)...);
+}
+}// namespace ocarina
+
+template<size_t N, size_t M>
+[[nodiscard]] __device__ constexpr auto operator*(ocarina::Matrix<N, M> m, float s) {
+    return ocarina::multiply_impl(m, s, ocarina::make_index_sequence<N>());
+}
+
+template<size_t N, size_t M>
+[[nodiscard]] __device__ constexpr auto operator*(float s, ocarina::Matrix<N, M> m) {
+    return m * s;
+}
+
+template<size_t N, size_t M>
+[[nodiscard]] __device__ constexpr auto operator/(ocarina::Matrix<N, M> m, float s) {
+    return m * (1.0f / s);
+}
+
+namespace ocarina {
+template<size_t N, size_t M, size_t... i>
+__device__ constexpr auto multiply_impl(const ocarina::Matrix<N, M> &m, const ocarina::Vector<float, N> &v,
+                                        ocarina::index_sequence<i...>) noexcept {
+    return ((v[i] * m[i]) + ...);
+}
+}// namespace ocarina
+
+template<size_t N, size_t M>
+[[nodiscard]] __device__ constexpr auto operator*(ocarina::Matrix<N, M> m, ocarina::Vector<float, N> v) noexcept {
+    return ocarina::multiply_impl(m, v, ocarina::make_index_sequence<N>());
+}
+
+namespace ocarina {
+template<size_t N, size_t M, size_t... i>
+__device__ constexpr auto multiply_matrices_impl(const ocarina::Matrix<N, M> &lhs, const ocarina::Matrix<M, N> &rhs,
+                                                 ocarina::index_sequence<i...>) noexcept {
+    return ocarina::Matrix<M, M>{(lhs * rhs[i])...};
+}
+}// namespace ocarina
+
+template<size_t N, size_t M>
+[[nodiscard]] __device__ constexpr auto operator*(ocarina::Matrix<N, M> lhs, ocarina::Matrix<M, N> rhs) noexcept {
+    return ocarina::multiply_matrices_impl(lhs, rhs, ocarina::make_index_sequence<M>());
+}
+
+namespace ocarina {
+template<size_t N, size_t M, size_t... i>
+__device__ constexpr auto add_matrices_impl(const ocarina::Matrix<N, M> &lhs, const ocarina::Matrix<N, M> &rhs,
+                                            ocarina::index_sequence<i...>) noexcept {
+    return ocarina::Matrix<N, M>{(lhs[i] + rhs[i])...};
+}
+}// namespace ocarina
+
+template<size_t N, size_t M>
+[[nodiscard]] __device__ constexpr auto operator+(ocarina::Matrix<N, M> lhs, ocarina::Matrix<N, M> rhs) noexcept {
+    return ocarina::add_matrices_impl(lhs, rhs, ocarina::make_index_sequence<N>());
+}
+
+template<size_t N, size_t M>
+[[nodiscard]] __device__ constexpr auto operator-(ocarina::Matrix<N, M> lhs, ocarina::Matrix<N, M> rhs) noexcept {
+    return lhs + (-rhs);
+}
