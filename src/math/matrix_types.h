@@ -89,16 +89,22 @@ using float4x4 = Matrix<4>;
 
 }// namespace ocarina
 
+template<size_t N, size_t M>
+[[nodiscard]] constexpr auto operator-(ocarina::Mat<N, M> m) {
+    return [&]<size_t... i>(std::index_sequence<i...>) {
+        return ocarina::Mat<N, M>((-m[i])...);
+    }(std::make_index_sequence<N>());
+}
 
 template<size_t N, size_t M>
 [[nodiscard]] constexpr auto operator*(ocarina::Mat<N, M> m, float s) {
-    return [&]<size_t ...i>(std::index_sequence<i...>) {
+    return [&]<size_t... i>(std::index_sequence<i...>) {
         return ocarina::Mat<N, M>((m[i] * s)...);
     }(std::make_index_sequence<N>());
 }
 
 template<size_t N, size_t M>
-[[nodiscard]] constexpr auto operator*(float s,ocarina::Mat<N, M> m) {
+[[nodiscard]] constexpr auto operator*(float s, ocarina::Mat<N, M> m) {
     return m * s;
 }
 
@@ -106,6 +112,34 @@ template<size_t N, size_t M>
 [[nodiscard]] constexpr auto operator/(ocarina::Mat<N, M> m, float s) {
     return m * (1.0f / s);
 }
+
+template<size_t N, size_t M>
+[[nodiscard]] constexpr auto operator*(ocarina::Mat<N, M> m, ocarina::Vector<float, N> v) noexcept {
+    return [&]<size_t... i>(std::index_sequence<i...>) {
+        return ((v[i] * m[i]) + ...);
+    }(std::make_index_sequence<N>());
+}
+
+template<size_t N, size_t M>
+[[nodiscard]] constexpr auto operator*(ocarina::Mat<N, M> lhs, ocarina::Mat<M, N> rhs) noexcept {
+    return [&]<size_t... i>(std::index_sequence<i...>) {
+        return ocarina::Mat<M, M>(lhs * rhs[i]...);
+    }(std::make_index_sequence<M>());
+}
+
+template<size_t N, size_t M>
+[[nodiscard]] constexpr auto operator+(ocarina::Mat<N, M> lhs, ocarina::Mat<N, M> rhs) noexcept {
+    return [&]<size_t... i>(std::index_sequence<i...>) {
+        return ocarina::Mat<N, M>(lhs[i] + rhs[i]...);
+    }(std::make_index_sequence<N>());
+}
+
+template<size_t N, size_t M>
+[[nodiscard]] constexpr auto operator-(ocarina::Mat<N, M> lhs, ocarina::Mat<N, M> rhs) noexcept {
+    return lhs + (-rhs);
+}
+
+/////
 
 [[nodiscard]] constexpr auto operator*(ocarina::float2x2 m, float s) noexcept {
     return ocarina::float2x2{m[0] * s, m[1] * s};
