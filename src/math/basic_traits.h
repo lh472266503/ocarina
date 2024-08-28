@@ -352,7 +352,7 @@ using vector_dimension = detail::vector_dimension_impl<std::remove_cvref_t<T>>;
 template<typename T>
 constexpr auto vector_dimension_v = vector_dimension<T>::value;
 
-template<size_t N>
+template<size_t N, size_t M = N>
 struct Matrix;
 
 namespace detail {

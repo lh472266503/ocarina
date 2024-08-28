@@ -7,13 +7,10 @@
 #include "vector_types.h"
 
 namespace ocarina {
-template<size_t N>
-struct Matrix {
-    static_assert(always_false_v<std::integral_constant<size_t, N>>, "Invalid matrix type");
-};
+
 
 template<size_t N, size_t M>
-struct Mat {
+struct Matrix {
 public:
     static constexpr auto RowNum = M;
     static constexpr auto ColNum = N;
@@ -24,63 +21,12 @@ private:
     array<vector_type, N> cols_{};
 
 public:
-    Mat() = default;
+    Matrix() = default;
     template<typename... Args>
     requires(sizeof...(Args) == N && all_is_v<vector_type, Args...>)
-    constexpr Mat(Args &&...args) noexcept : cols_(array<vector_type, N>{OC_FORWARD(args)...}) {}
+    constexpr Matrix(Args &&...args) noexcept : cols_(array<vector_type, N>{OC_FORWARD(args)...}) {}
     [[nodiscard]] constexpr vector_type &operator[](size_t i) noexcept { return cols_[i]; }
     [[nodiscard]] constexpr const vector_type &operator[](size_t i) const noexcept { return cols_[i]; }
-};
-
-template<>
-struct Matrix<2> {
-private:
-    array<float2, 2> _cols{};
-
-public:
-    constexpr Matrix() noexcept
-        : _cols{float2{1.0f, 0.0f}, float2{0.0f, 1.0f}} {}
-
-    constexpr Matrix(const float2 c0, const float2 c1) noexcept
-        : _cols{c0, c1} {}
-
-    [[nodiscard]] constexpr float2 &operator[](size_t i) noexcept { return _cols[i]; }
-    [[nodiscard]] constexpr const float2 &operator[](size_t i) const noexcept { return _cols[i]; }
-};
-
-template<>
-struct Matrix<3> {
-private:
-    array<float3, 3> _cols{};
-
-public:
-    constexpr Matrix() noexcept
-        : _cols{float3{1.0f, 0.0f, 0.0f}, float3{0.0f, 1.0f, 0.0f}, float3{0.0f, 0.0f, 1.0f}} {}
-
-    constexpr Matrix(const float3 c0, const float3 c1, const float3 c2) noexcept
-        : _cols{c0, c1, c2} {}
-
-    [[nodiscard]] constexpr float3 &operator[](size_t i) noexcept { return _cols[i]; }
-    [[nodiscard]] constexpr const float3 &operator[](size_t i) const noexcept { return _cols[i]; }
-};
-
-template<>
-struct Matrix<4> {
-private:
-    array<float4, 4> _cols{};
-
-public:
-    constexpr Matrix() noexcept
-        : _cols{float4{1.0f, 0.0f, 0.0f, 0.0f},
-                float4{0.0f, 1.0f, 0.0f, 0.0f},
-                float4{0.0f, 0.0f, 1.0f, 0.0f},
-                float4{0.0f, 0.0f, 0.0f, 1.0f}} {}
-
-    constexpr Matrix(const float4 c0, const float4 c1, const float4 c2, const float4 c3) noexcept
-        : _cols{c0, c1, c2, c3} {}
-
-    [[nodiscard]] constexpr float4 &operator[](size_t i) noexcept { return _cols[i]; }
-    [[nodiscard]] constexpr const float4 &operator[](size_t i) const noexcept { return _cols[i]; }
 };
 
 using float2x2 = Matrix<2>;
@@ -90,139 +36,53 @@ using float4x4 = Matrix<4>;
 }// namespace ocarina
 
 template<size_t N, size_t M>
-[[nodiscard]] constexpr auto operator-(ocarina::Mat<N, M> m) {
+[[nodiscard]] constexpr auto operator-(ocarina::Matrix<N, M> m) {
     return [&]<size_t... i>(std::index_sequence<i...>) {
-        return ocarina::Mat<N, M>((-m[i])...);
+        return ocarina::Matrix<N, M>((-m[i])...);
     }(std::make_index_sequence<N>());
 }
 
 template<size_t N, size_t M>
-[[nodiscard]] constexpr auto operator*(ocarina::Mat<N, M> m, float s) {
+[[nodiscard]] constexpr auto operator*(ocarina::Matrix<N, M> m, float s) {
     return [&]<size_t... i>(std::index_sequence<i...>) {
-        return ocarina::Mat<N, M>((m[i] * s)...);
+        return ocarina::Matrix<N, M>((m[i] * s)...);
     }(std::make_index_sequence<N>());
 }
 
 template<size_t N, size_t M>
-[[nodiscard]] constexpr auto operator*(float s, ocarina::Mat<N, M> m) {
+[[nodiscard]] constexpr auto operator*(float s, ocarina::Matrix<N, M> m) {
     return m * s;
 }
 
 template<size_t N, size_t M>
-[[nodiscard]] constexpr auto operator/(ocarina::Mat<N, M> m, float s) {
+[[nodiscard]] constexpr auto operator/(ocarina::Matrix<N, M> m, float s) {
     return m * (1.0f / s);
 }
 
 template<size_t N, size_t M>
-[[nodiscard]] constexpr auto operator*(ocarina::Mat<N, M> m, ocarina::Vector<float, N> v) noexcept {
+[[nodiscard]] constexpr auto operator*(ocarina::Matrix<N, M> m, ocarina::Vector<float, N> v) noexcept {
     return [&]<size_t... i>(std::index_sequence<i...>) {
         return ((v[i] * m[i]) + ...);
     }(std::make_index_sequence<N>());
 }
 
 template<size_t N, size_t M>
-[[nodiscard]] constexpr auto operator*(ocarina::Mat<N, M> lhs, ocarina::Mat<M, N> rhs) noexcept {
+[[nodiscard]] constexpr auto operator*(ocarina::Matrix<N, M> lhs, ocarina::Matrix<M, N> rhs) noexcept {
     return [&]<size_t... i>(std::index_sequence<i...>) {
-        return ocarina::Mat<M, M>(lhs * rhs[i]...);
+        return ocarina::Matrix<M, M>(lhs * rhs[i]...);
     }(std::make_index_sequence<M>());
 }
 
 template<size_t N, size_t M>
-[[nodiscard]] constexpr auto operator+(ocarina::Mat<N, M> lhs, ocarina::Mat<N, M> rhs) noexcept {
+[[nodiscard]] constexpr auto operator+(ocarina::Matrix<N, M> lhs, ocarina::Matrix<N, M> rhs) noexcept {
     return [&]<size_t... i>(std::index_sequence<i...>) {
-        return ocarina::Mat<N, M>(lhs[i] + rhs[i]...);
+        return ocarina::Matrix<N, M>(lhs[i] + rhs[i]...);
     }(std::make_index_sequence<N>());
 }
 
 template<size_t N, size_t M>
-[[nodiscard]] constexpr auto operator-(ocarina::Mat<N, M> lhs, ocarina::Mat<N, M> rhs) noexcept {
+[[nodiscard]] constexpr auto operator-(ocarina::Matrix<N, M> lhs, ocarina::Matrix<N, M> rhs) noexcept {
     return lhs + (-rhs);
-}
-
-/////
-
-[[nodiscard]] constexpr auto operator*(ocarina::float2x2 m, float s) noexcept {
-    return ocarina::float2x2{m[0] * s, m[1] * s};
-}
-
-[[nodiscard]] constexpr auto operator*(float s, ocarina::float2x2 m) noexcept {
-    return m * s;
-}
-
-[[nodiscard]] constexpr auto operator/(ocarina::float2x2 m, float s) noexcept {
-    return m * (1.0f / s);
-}
-
-[[nodiscard]] constexpr auto operator*(ocarina::float2x2 m, ocarina::float2 v) noexcept {
-    return v.x * m[0] + v.y * m[1];
-}
-
-[[nodiscard]] constexpr auto operator*(ocarina::float2x2 lhs, ocarina::float2x2 rhs) noexcept {
-    return ocarina::float2x2{lhs * rhs[0], lhs * rhs[1]};
-}
-
-[[nodiscard]] constexpr auto operator+(ocarina::float2x2 lhs, ocarina::float2x2 rhs) noexcept {
-    return ocarina::float2x2{lhs[0] + rhs[0], lhs[1] + rhs[1]};
-}
-
-[[nodiscard]] constexpr auto operator-(ocarina::float2x2 lhs, ocarina::float2x2 rhs) noexcept {
-    return ocarina::float2x2{lhs[0] - rhs[0], lhs[1] - rhs[1]};
-}
-
-[[nodiscard]] constexpr auto operator*(ocarina::float3x3 m, float s) noexcept {
-    return ocarina::float3x3{m[0] * s, m[1] * s, m[2] * s};
-}
-
-[[nodiscard]] constexpr auto operator*(float s, ocarina::float3x3 m) noexcept {
-    return m * s;
-}
-
-[[nodiscard]] constexpr auto operator/(ocarina::float3x3 m, float s) noexcept {
-    return m * (1.0f / s);
-}
-
-[[nodiscard]] constexpr auto operator*(ocarina::float3x3 m, ocarina::float3 v) noexcept {
-    return v.x * m[0] + v.y * m[1] + v.z * m[2];
-}
-
-[[nodiscard]] constexpr auto operator*(ocarina::float3x3 lhs, ocarina::float3x3 rhs) noexcept {
-    return ocarina::float3x3{lhs * rhs[0], lhs * rhs[1], lhs * rhs[2]};
-}
-
-[[nodiscard]] constexpr auto operator+(ocarina::float3x3 lhs, ocarina::float3x3 rhs) noexcept {
-    return ocarina::float3x3{lhs[0] + rhs[0], lhs[1] + rhs[1], lhs[2] + rhs[2]};
-}
-
-[[nodiscard]] constexpr auto operator-(ocarina::float3x3 lhs, ocarina::float3x3 rhs) noexcept {
-    return ocarina::float3x3{lhs[0] - rhs[0], lhs[1] - rhs[1], lhs[2] - rhs[2]};
-}
-
-[[nodiscard]] constexpr auto operator*(ocarina::float4x4 m, float s) noexcept {
-    return ocarina::float4x4{m[0] * s, m[1] * s, m[2] * s, m[3] * s};
-}
-
-[[nodiscard]] constexpr auto operator*(float s, ocarina::float4x4 m) noexcept {
-    return m * s;
-}
-
-[[nodiscard]] constexpr auto operator/(ocarina::float4x4 m, float s) noexcept {
-    return m * (1.0f / s);
-}
-
-[[nodiscard]] constexpr auto operator*(ocarina::float4x4 m, ocarina::float4 v) noexcept {
-    return v.x * m[0] + v.y * m[1] + v.z * m[2] + v.w * m[3];
-}
-
-[[nodiscard]] constexpr auto operator*(ocarina::float4x4 lhs, ocarina::float4x4 rhs) noexcept {
-    return ocarina::float4x4{lhs * rhs[0], lhs * rhs[1], lhs * rhs[2], lhs * rhs[3]};
-}
-
-[[nodiscard]] constexpr auto operator+(ocarina::float4x4 lhs, ocarina::float4x4 rhs) noexcept {
-    return ocarina::float4x4{lhs[0] + rhs[0], lhs[1] + rhs[1], lhs[2] + rhs[2], lhs[3] + rhs[3]};
-}
-
-[[nodiscard]] constexpr auto operator-(ocarina::float4x4 lhs, ocarina::float4x4 rhs) noexcept {
-    return ocarina::float4x4{lhs[0] - rhs[0], lhs[1] - rhs[1], lhs[2] - rhs[2], lhs[3] - rhs[3]};
 }
 
 namespace ocarina {
