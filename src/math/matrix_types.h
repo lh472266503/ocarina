@@ -23,9 +23,9 @@ private:
 
 public:
     template<typename... Args>
-    requires(sizeof...(Args) == N && all_is_v<vector_type, Args...>)
+    requires(sizeof...(Args) == N)
     explicit constexpr Matrix(Args &&...args) noexcept
-        : cols_(array_t{OC_FORWARD(args)...}) {}
+        : cols_(array_t{static_cast<vector_type>(OC_FORWARD(args))...}) {}
 
     template<typename... Args>
     requires(sizeof...(Args) == ElementNum && is_all_scalar_v<Args...>)
