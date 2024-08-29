@@ -298,16 +298,29 @@ struct Matrix {
 public:
     static constexpr auto RowNum = M;
     static constexpr auto ColNum = N;
+    static constexpr auto ElementNum = M * N;
     using scalar_type = float;
     using vector_type = Vector<scalar_type, M>;
+    using array_t = oc_array<vector_type, N>;
 
 private:
     oc_array<vector_type, N> cols_{};
 
 public:
-    Matrix() = default;
     template<typename... Args, typename = enable_if_t<sizeof...(Args) == N>>
     constexpr Matrix(Args... args) noexcept : cols_(oc_array<vector_type, N>{args...}) {}
+
+    template<size_t... i>
+    [[nodiscard]] static constexpr array_t diagonal_helper(ocarina::index_sequence<i...>, scalar_type s) noexcept {
+        array_t ret{};
+        if constexpr (M == N) {
+            ((ret[i][i] = s), ...);
+        }
+        return ret;
+    }
+    constexpr Matrix(scalar_type s = 1) noexcept
+        : cols_(diagonal_helper(ocarina::make_index_sequence<N>(), s)) {
+    }
     [[nodiscard]] constexpr vector_type &operator[](size_t i) noexcept { return cols_[i]; }
     [[nodiscard]] constexpr const vector_type &operator[](size_t i) const noexcept { return cols_[i]; }
 };
