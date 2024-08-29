@@ -209,6 +209,7 @@ public:
     T x{}, y{};
     VectorStorage() : x{}, y{} {}
     explicit constexpr VectorStorage(T s) noexcept : x{s}, y{s} {}
+    explicit constexpr VectorStorage(const T *ptr) noexcept : x{ptr[0]}, y{ptr[1]} {}
     constexpr VectorStorage(T x, T y) noexcept : x{x}, y{y} {}
 #include "swizzle_inl/swizzle2.inl.h"
 };
@@ -225,6 +226,7 @@ public:
     T x{}, y{}, z{};
     VectorStorage() : x{}, y{}, z{} {}
     explicit constexpr VectorStorage(T s) noexcept : x{s}, y{s}, z{s} {}
+    explicit constexpr VectorStorage(const T *ptr) noexcept : x{ptr[0]}, y{ptr[1]}, z{ptr[2]} {}
     constexpr VectorStorage(T x, T y, T z) noexcept : x{x}, y{y}, z{z} {}
 #include "swizzle_inl/swizzle3.inl.h"
 };
@@ -241,6 +243,7 @@ public:
     T x{}, y{}, z{}, w{};
     VectorStorage() : x{}, y{}, z{}, w{} {}
     explicit constexpr VectorStorage(T s) noexcept : x{s}, y{s}, z{s}, w{s} {}
+    explicit constexpr VectorStorage(const T *ptr) noexcept : x{ptr[0]}, y{ptr[1]}, z{ptr[2]}, w{ptr[3]} {}
     constexpr VectorStorage(T x, T y, T z, T w) noexcept : x{x}, y{y}, z{z}, w{w} {}
 #include "swizzle_inl/swizzle4.inl.h"
 };

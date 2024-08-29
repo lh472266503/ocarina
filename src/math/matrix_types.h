@@ -8,30 +8,52 @@
 
 namespace ocarina {
 
-
 template<size_t N, size_t M>
 struct Matrix {
 public:
     static constexpr auto RowNum = M;
     static constexpr auto ColNum = N;
+    static constexpr auto ElementNum = M * N;
     using scalar_type = float;
     using vector_type = Vector<scalar_type, M>;
+    using array_t = array<vector_type, N>;
 
 private:
-    array<vector_type, N> cols_{};
+    array_t cols_{};
 
 public:
     Matrix() = default;
+
     template<typename... Args>
     requires(sizeof...(Args) == N && all_is_v<vector_type, Args...>)
-    constexpr Matrix(Args &&...args) noexcept : cols_(array<vector_type, N>{OC_FORWARD(args)...}) {}
+    explicit constexpr Matrix(Args &&...args) noexcept
+        : cols_(array_t{OC_FORWARD(args)...}) {}
+
+    template<typename... Args>
+    requires(sizeof...(Args) == ElementNum && all_is_v<scalar_type, Args...>)
+    explicit constexpr Matrix(Args &&...args) noexcept
+        : cols_([&]<size_t... i>(std::index_sequence<i...>,
+                                 const array<scalar_type, ElementNum> &arr) {
+              return array_t{vector_type{addressof(arr.data()[i * M])}...};
+          }(std::make_index_sequence<N>(), array<scalar_type, ElementNum>{OC_FORWARD(args)...})) {
+    }
+
     [[nodiscard]] constexpr vector_type &operator[](size_t i) noexcept { return cols_[i]; }
     [[nodiscard]] constexpr const vector_type &operator[](size_t i) const noexcept { return cols_[i]; }
 };
 
-using float2x2 = Matrix<2>;
-using float3x3 = Matrix<3>;
-using float4x4 = Matrix<4>;
+#define OC_MAKE_MATRIX_(N, M) \
+    using float##N##x##M = Matrix<N, M>;
+
+OC_MAKE_MATRIX_(2, 2)
+OC_MAKE_MATRIX_(2, 3)
+OC_MAKE_MATRIX_(2, 4)
+OC_MAKE_MATRIX_(3, 2)
+OC_MAKE_MATRIX_(3, 3)
+OC_MAKE_MATRIX_(3, 4)
+OC_MAKE_MATRIX_(4, 2)
+OC_MAKE_MATRIX_(4, 3)
+OC_MAKE_MATRIX_(4, 4)
 
 }// namespace ocarina
 
