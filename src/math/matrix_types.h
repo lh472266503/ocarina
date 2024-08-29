@@ -30,12 +30,12 @@ public:
         : cols_(array_t{OC_FORWARD(args)...}) {}
 
     template<typename... Args>
-    requires(sizeof...(Args) == ElementNum && all_is_v<scalar_type, Args...>)
+    requires(sizeof...(Args) == ElementNum)
     explicit constexpr Matrix(Args &&...args) noexcept
         : cols_([&]<size_t... i>(std::index_sequence<i...>,
                                  const array<scalar_type, ElementNum> &arr) {
               return array_t{vector_type{addressof(arr.data()[i * M])}...};
-          }(std::make_index_sequence<N>(), array<scalar_type, ElementNum>{OC_FORWARD(args)...})) {
+          }(std::make_index_sequence<N>(), array<scalar_type, ElementNum>{static_cast<scalar_type>(OC_FORWARD(args))...})) {
     }
 
     [[nodiscard]] constexpr vector_type &operator[](size_t i) noexcept { return cols_[i]; }
