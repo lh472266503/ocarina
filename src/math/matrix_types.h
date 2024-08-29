@@ -30,7 +30,7 @@ public:
         : cols_(array_t{OC_FORWARD(args)...}) {}
 
     template<typename... Args>
-    requires(sizeof...(Args) == ElementNum)
+    requires(sizeof...(Args) == ElementNum && is_all_scalar_v<Args...>)
     explicit constexpr Matrix(Args &&...args) noexcept
         : cols_([&]<size_t... i>(std::index_sequence<i...>,
                                  const array<scalar_type, ElementNum> &arr) {
