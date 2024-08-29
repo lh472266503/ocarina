@@ -18,28 +18,31 @@ struct Vector {
 template<typename T>
 struct alignas(sizeof(T) * 2) Vector<T, 2> {
     T x{}, y{};
-    __device__ Vector(T s = T{}) noexcept : x{s}, y{s} {}
-    __device__ Vector(T x, T y) noexcept : x{x}, y{y} {}
-    __device__ T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
-    __device__ const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
+    __device__ constexpr Vector(T s = T{}) noexcept : x{s}, y{s} {}
+    __device__ constexpr Vector(T x, T y) noexcept : x{x}, y{y} {}
+    __device__ constexpr Vector(const T *ptr) noexcept : x{ptr[0]}, y{ptr[1]} {}
+    __device__ constexpr T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
+    __device__ constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
 };
 
 template<typename T>
 struct alignas(sizeof(T) * 4) Vector<T, 3> {
     T x{}, y{}, z{};
-    __device__ Vector(T s = T{}) noexcept : x{s}, y{s}, z{s} {}
-    __device__ Vector(T x, T y, T z) noexcept : x{x}, y{y}, z{z} {}
-    __device__ T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
-    __device__ const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
+    __device__ constexpr Vector(T s = T{}) noexcept : x{s}, y{s}, z{s} {}
+    __device__ constexpr Vector(T x, T y, T z) noexcept : x{x}, y{y}, z{z} {}
+    __device__ constexpr Vector(const T *ptr) noexcept : x{ptr[0]}, y{ptr[1]}, z{ptr[2]} {}
+    __device__ constexpr T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
+    __device__ constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
 };
 
 template<typename T>
 struct alignas(sizeof(T) * 4) Vector<T, 4> {
     T x{}, y{}, z{}, w{};
-    __device__ Vector(T s = T{}) noexcept : x{s}, y{s}, z{s}, w{s} {}
-    __device__ Vector(T x, T y, T z, T w) noexcept : x{x}, y{y}, z{z}, w{w} {}
-    __device__ T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
-    __device__ const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
+    __device__ constexpr Vector(T s = T{}) noexcept : x{s}, y{s}, z{s}, w{s} {}
+    __device__ constexpr Vector(T x, T y, T z, T w) noexcept : x{x}, y{y}, z{z}, w{w} {}
+    __device__ constexpr Vector(const T *ptr) noexcept : x{ptr[0]}, y{ptr[1]}, z{ptr[2]}, w{ptr[3]} {}
+    __device__ constexpr T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
+    __device__ constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
 };
 
 using uint = unsigned int;
@@ -287,6 +290,8 @@ public:
     __device__ constexpr oc_array(const oc_array &) noexcept = default;
     __device__ constexpr oc_array &operator=(oc_array &&) noexcept = default;
     __device__ constexpr oc_array &operator=(const oc_array &) noexcept = default;
+    __device__ constexpr T *data() noexcept { return &_data[0]; }
+    __device__ constexpr const T *data() const noexcept { return &_data[0]; }
     [[nodiscard]] __device__ T &operator[](size_t i) noexcept { return _data[i]; }
     [[nodiscard]] __device__ T operator[](size_t i) const noexcept { return _data[i]; }
 };
@@ -307,9 +312,6 @@ private:
     oc_array<vector_type, N> cols_{};
 
 public:
-    template<typename... Args, typename = enable_if_t<sizeof...(Args) == N>>
-    constexpr Matrix(Args... args) noexcept : cols_(oc_array<vector_type, N>{args...}) {}
-
     template<size_t... i>
     [[nodiscard]] static constexpr array_t diagonal_helper(ocarina::index_sequence<i...>, scalar_type s) noexcept {
         array_t ret{};
@@ -321,6 +323,21 @@ public:
     constexpr Matrix(scalar_type s = 1) noexcept
         : cols_(diagonal_helper(ocarina::make_index_sequence<N>(), s)) {
     }
+
+    template<typename... Args, enable_if_t<sizeof...(Args) == N, int> = 0>
+    constexpr Matrix(Args... args) noexcept : cols_(oc_array<vector_type, N>{args...}) {}
+
+    template<size_t... i>
+    [[nodiscard]] static constexpr array_t construct_helper(ocarina::index_sequence<i...>,
+                                                            const oc_array<scalar_type, ElementNum> &arr) {
+        return array_t{vector_type{&(arr.data()[i * M])}...};
+    }
+
+    template<typename... Args, enable_if_t<sizeof...(Args) == ElementNum, int> = 0>
+    explicit constexpr Matrix(Args &&...args) noexcept
+        : cols_(construct_helper(ocarina::make_index_sequence<N>(),
+                                 oc_array<scalar_type, ElementNum>{static_cast<scalar_type>(args)...})) {}
+
     [[nodiscard]] constexpr vector_type &operator[](size_t i) noexcept { return cols_[i]; }
     [[nodiscard]] constexpr const vector_type &operator[](size_t i) const noexcept { return cols_[i]; }
 };
