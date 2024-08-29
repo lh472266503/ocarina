@@ -342,9 +342,19 @@ public:
     [[nodiscard]] constexpr const vector_type &operator[](size_t i) const noexcept { return cols_[i]; }
 };
 
-using float2x2 = Matrix<2>;
-using float3x3 = Matrix<3>;
-using float4x4 = Matrix<4>;
+#define OC_MAKE_MATRIX(N, M) using float##N##x##M = Matrix<N, M>; 
+
+OC_MAKE_MATRIX(2, 2)
+OC_MAKE_MATRIX(2, 3)
+OC_MAKE_MATRIX(2, 4)
+OC_MAKE_MATRIX(3, 2)
+OC_MAKE_MATRIX(3, 3)
+OC_MAKE_MATRIX(3, 4)
+OC_MAKE_MATRIX(4, 2)
+OC_MAKE_MATRIX(4, 3)
+OC_MAKE_MATRIX(4, 4)
+
+#undef OC_MAKE_MATRIX
 
 }// namespace ocarina
 
@@ -426,6 +436,17 @@ template<size_t N, size_t M>
     return lhs + (-rhs);
 }
 
-using oc_float2x2 = ocarina::float2x2;
-using oc_float3x3 = ocarina::float3x3;
-using oc_float4x4 = ocarina::float4x4;
+#define OC_MAKE_MATRIX(N, M) using oc_float##N##x##M = ocarina::Matrix<N, M>; 
+
+OC_MAKE_MATRIX(2, 2)
+OC_MAKE_MATRIX(2, 3)
+OC_MAKE_MATRIX(2, 4)
+OC_MAKE_MATRIX(3, 2)
+OC_MAKE_MATRIX(3, 3)
+OC_MAKE_MATRIX(3, 4)
+OC_MAKE_MATRIX(4, 2)
+OC_MAKE_MATRIX(4, 3)
+OC_MAKE_MATRIX(4, 4)
+
+#undef OC_MAKE_MATRIX
+
