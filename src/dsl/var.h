@@ -230,12 +230,23 @@ OC_MAKE_DSL_TYPE(Short, short)
 OC_MAKE_DSL_TYPE(Ushort, ushort)
 OC_MAKE_DSL_TYPE(Bool, bool)
 
-using Float2x2 = Var<float2x2>;
-using Float3x3 = Var<float3x3>;
-using Float4x4 = Var<float4x4>;
-
 #undef OC_MAKE_DSL_TYPE
 #undef OC_MAKE_DSL_TYPE_IMPL
+
+#define OC_MAKE_DSL_MATRIX(N, M) \
+    using Float##N##x##M = Var<Matrix<N, M>>;
+
+OC_MAKE_DSL_MATRIX(2, 2)
+OC_MAKE_DSL_MATRIX(2, 3)
+OC_MAKE_DSL_MATRIX(2, 4)
+OC_MAKE_DSL_MATRIX(3, 2)
+OC_MAKE_DSL_MATRIX(3, 3)
+OC_MAKE_DSL_MATRIX(3, 4)
+OC_MAKE_DSL_MATRIX(4, 2)
+OC_MAKE_DSL_MATRIX(4, 3)
+OC_MAKE_DSL_MATRIX(4, 4)
+
+#undef OC_MAKE_MATRIX_
 
 template<typename T>
 Var(T &&) -> Var<expr_value_t<T>>;
