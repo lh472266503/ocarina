@@ -37,7 +37,7 @@ struct Var : public Computable<T> {
         }
     }
     Var(Var &&another) noexcept
-        : Var(ocarina::detail::extract_expression(std::forward<decltype(another)>(another))) {}
+        : Computable<T>(ocarina::move(another)) {}
     Var(const Var &another) noexcept
         : Var() { ocarina::detail::assign(*this, another); }
     template<typename Arg>
