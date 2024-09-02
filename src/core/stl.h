@@ -161,8 +161,8 @@ template<typename To, typename From>
     }
 }
 
-template<typename T>
-using UP = unique_ptr<T>;
+template<typename... Ts>
+using UP = unique_ptr<Ts...>;
 template<typename T>
 using SP = shared_ptr<T>;
 
