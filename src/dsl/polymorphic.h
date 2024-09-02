@@ -265,6 +265,34 @@ public:
         type_mgr_.clear();
     }
 
+    template<typename Index>
+    requires concepts::integral<Index>
+    [[nodiscard]] const T &operator[](Index i) const {
+        return Super::operator[](i);
+    }
+
+    template<typename Index>
+    requires concepts::integral<Index>
+    [[nodiscard]] const T &at(Index i) const {
+        return Super::at(i);
+    }
+
+    bool replace(int index, T new_obj) noexcept {
+        ptr_type *ptr = Super::at(index).get();
+        for (auto &item : type_mgr_.type_map) {
+            TypeData &type_data = item.second;
+            for (int i = 0; i < type_data.objects.size(); ++i) {
+                ptr_type *obj = type_data.objects[i];
+                if (obj == ptr) {
+                    type_data.objects[i] = new_obj.get();
+                    Super::at(index) = std::move(new_obj);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     [[nodiscard]] uint all_instance_num() const noexcept { return Super::size(); }
     [[nodiscard]] uint instance_num(const ptr_type *object) const noexcept {
         uint64_t hash_code = object->type_hash();
