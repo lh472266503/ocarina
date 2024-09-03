@@ -163,8 +163,12 @@ template<typename To, typename From>
 
 template<typename... Ts>
 using UP = unique_ptr<Ts...>;
+
 template<typename T>
 using SP = shared_ptr<T>;
+
+template<typename T>
+using WP = weak_ptr<T>;
 
 inline void oc_memcpy(void *dst, const void *src, size_t size) {
 #ifdef _MSC_VER
@@ -224,6 +228,7 @@ using std::span;
 using std::stack;
 using std::unordered_map;
 using std::unordered_set;
+using std::multimap;
 using std::vector;
 
 #if 1
