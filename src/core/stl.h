@@ -161,6 +161,13 @@ template<typename To, typename From>
     }
 }
 
+template<typename To, typename From>
+[[nodiscard]] std::unique_ptr<To> static_unique_pointer_cast(std::unique_ptr<From> &&from) {
+    To *casted = static_cast<To *>(from.get());
+    from.release();
+    return std::unique_ptr<To>(casted);
+}
+
 template<typename... Ts>
 using UP = unique_ptr<Ts...>;
 
@@ -221,6 +228,7 @@ using std::array;
 using std::deque;
 using std::list;
 using std::map;
+using std::multimap;
 using std::optional;
 using std::queue;
 using std::set;
@@ -228,7 +236,6 @@ using std::span;
 using std::stack;
 using std::unordered_map;
 using std::unordered_set;
-using std::multimap;
 using std::vector;
 
 #if 1
