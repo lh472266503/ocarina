@@ -108,7 +108,14 @@ requires concepts::iterable<T>
     return ret;
 }
 
-class Hashable {
+class RTTI {
+public:
+    [[nodiscard]] virtual const char *class_name() const noexcept {
+        return typeid(*this).name();
+    }
+};
+
+class Hashable : public RTTI {
 private:
     mutable uint64_t _hash{0u};
     mutable bool _hash_computed{false};
@@ -124,7 +131,6 @@ protected:
     }
 
 public:
-    [[nodiscard]] const char *class_name() const noexcept { return typeid(*this).name(); }
 
     void reset_hash() const noexcept { _hash_computed = false; }
 
