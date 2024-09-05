@@ -88,7 +88,7 @@ public:
 
     template<typename U, size_t NN, ocarina::enable_if_t<NN >= N, int> = 0>
     explicit constexpr Vector(Vector<U, NN> v)
-        : Vector{construct_helper(v, ocarina::make_index_sequence<M>())} {}
+        : Vector{construct_helper(v, ocarina::make_index_sequence<N>())} {}
 
     __device__ constexpr T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
     __device__ constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
@@ -353,7 +353,7 @@ public:
 
     template<size_t NN, size_t MM, enable_if_t<(NN >= N && MM >= M), int> = 0>
     explicit constexpr Matrix(Matrix<NN, MM> mat) noexcept
-        : cols_{construct_helper(mat, make_index_sequence<N>)} {}
+        : cols_{construct_helper(mat, make_index_sequence<N>())} {}
 
     template<size_t... i>
     [[nodiscard]] static constexpr array_t construct_helper(ocarina::index_sequence<i...>,
@@ -478,7 +478,12 @@ template<size_t N, size_t M>
     return lhs + (-rhs);
 }
 
-#define OC_MAKE_MATRIX(N, M) using oc_float##N##x##M = ocarina::Matrix<N, M>;
+#define OC_MAKE_MATRIX(N, M)                                                         \
+    using oc_float##N##x##M = ocarina::Matrix<N, M>;                                 \
+    template<typename... Args>                                                       \
+    [[nodiscard]] __device__ constexpr auto oc_make_float##N##x##M(Args &&...args) { \
+        return ocarina::make_float##N##x##M(args...);                                \
+    }
 
 OC_MAKE_MATRIX(2, 2)
 OC_MAKE_MATRIX(2, 3)
