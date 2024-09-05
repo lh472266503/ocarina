@@ -10,37 +10,86 @@ struct always_false {
 template<typename... Ts>
 static constexpr bool always_false_v = always_false<Ts...>::value;
 
+template<size_t... Ints>
+struct index_sequence {};
+
+template<size_t N, size_t... Ints>
+struct make_index_sequence_helper : make_index_sequence_helper<N - 1, N - 1, Ints...> {
+};
+
+template<size_t... Ints>
+struct make_index_sequence_helper<0, Ints...> {
+    using type = index_sequence<Ints...>;
+};
+
+template<size_t N>
+using make_index_sequence = typename make_index_sequence_helper<N>::type;
+
+template<bool B, typename T = void>
+struct enable_if {};
+
+template<typename T>
+struct enable_if<true, T> {
+    using type = T;
+};
+
+template<bool B, typename T = void>
+using enable_if_t = typename enable_if<B, T>::type;
+
+namespace detail {
 template<typename T, size_t N>
-struct Vector {
+struct VectorStorage {
     static_assert(always_false_v<T>, "Invalid vector storage");
 };
 
 template<typename T>
-struct alignas(sizeof(T) * 2) Vector<T, 2> {
+struct alignas(sizeof(T) * 2) VectorStorage<T, 2> {
     T x{}, y{};
-    __device__ constexpr Vector(T s = T{}) noexcept : x{s}, y{s} {}
-    __device__ constexpr Vector(T x, T y) noexcept : x{x}, y{y} {}
-    __device__ constexpr Vector(const T *ptr) noexcept : x{ptr[0]}, y{ptr[1]} {}
-    __device__ constexpr T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
-    __device__ constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
+    __device__ constexpr VectorStorage(T s = T{}) noexcept : x{s}, y{s} {}
+    __device__ constexpr VectorStorage(T x, T y) noexcept : x{x}, y{y} {}
+    __device__ constexpr VectorStorage(const T *ptr) noexcept : x{ptr[0]}, y{ptr[1]} {}
 };
 
 template<typename T>
-struct alignas(sizeof(T) * 4) Vector<T, 3> {
+struct alignas(sizeof(T) * 4) VectorStorage<T, 3> {
     T x{}, y{}, z{};
-    __device__ constexpr Vector(T s = T{}) noexcept : x{s}, y{s}, z{s} {}
-    __device__ constexpr Vector(T x, T y, T z) noexcept : x{x}, y{y}, z{z} {}
-    __device__ constexpr Vector(const T *ptr) noexcept : x{ptr[0]}, y{ptr[1]}, z{ptr[2]} {}
-    __device__ constexpr T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
-    __device__ constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
+    __device__ constexpr VectorStorage(T s = T{}) noexcept : x{s}, y{s}, z{s} {}
+    __device__ constexpr VectorStorage(T x, T y, T z) noexcept : x{x}, y{y}, z{z} {}
+    __device__ constexpr VectorStorage(const T *ptr) noexcept : x{ptr[0]}, y{ptr[1]}, z{ptr[2]} {}
 };
 
 template<typename T>
-struct alignas(sizeof(T) * 4) Vector<T, 4> {
+struct alignas(sizeof(T) * 4) VectorStorage<T, 4> {
     T x{}, y{}, z{}, w{};
-    __device__ constexpr Vector(T s = T{}) noexcept : x{s}, y{s}, z{s}, w{s} {}
-    __device__ constexpr Vector(T x, T y, T z, T w) noexcept : x{x}, y{y}, z{z}, w{w} {}
-    __device__ constexpr Vector(const T *ptr) noexcept : x{ptr[0]}, y{ptr[1]}, z{ptr[2]}, w{ptr[3]} {}
+    __device__ constexpr VectorStorage(T s = T{}) noexcept : x{s}, y{s}, z{s}, w{s} {}
+    __device__ constexpr VectorStorage(T x, T y, T z, T w) noexcept : x{x}, y{y}, z{z}, w{w} {}
+    __device__ constexpr VectorStorage(const T *ptr) noexcept : x{ptr[0]}, y{ptr[1]}, z{ptr[2]}, w{ptr[3]} {}
+};
+}// namespace detail
+
+namespace detail {
+
+}// namespace detail
+
+template<typename T, size_t N>
+struct Vector : public detail::VectorStorage<T, N> {
+    using detail::VectorStorage<T, N>::VectorStorage;
+
+private:
+    template<typename U, size_t NN, size_t... i>
+    static Vector<T, N> construct_helper(Vector<U, NN> v,
+                                         ocarina::index_sequence<i...>) {
+        return Vector<T, N>(static_cast<T>(v[i])...);
+    }
+
+public:
+    template<typename U>
+    explicit constexpr Vector(U s) noexcept : Vector(static_cast<T>(s)) {}
+
+    template<typename U, size_t NN, ocarina::enable_if_t<NN >= N, int> = 0>
+    explicit constexpr Vector(Vector<U, NN> v)
+        : Vector{construct_helper(v, ocarina::make_index_sequence<M>())} {}
+
     __device__ constexpr T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
     __device__ constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
 };
@@ -76,36 +125,6 @@ using oc_bool = bool;
 using oc_uchar = unsigned char;
 using oc_ushort = unsigned short;
 using oc_uint64t = unsigned long long;
-
-namespace ocarina {
-
-template<size_t... Ints>
-struct index_sequence {};
-
-template<size_t N, size_t... Ints>
-struct make_index_sequence_helper : make_index_sequence_helper<N - 1, N - 1, Ints...> {
-};
-
-template<size_t... Ints>
-struct make_index_sequence_helper<0, Ints...> {
-    using type = index_sequence<Ints...>;
-};
-
-template<size_t N>
-using make_index_sequence = typename make_index_sequence_helper<N>::type;
-
-template<bool B, typename T = void>
-struct enable_if {};
-
-template<typename T>
-struct enable_if<true, T> {
-    using type = T;
-};
-
-template<bool B, typename T = void>
-using enable_if_t = typename enable_if<B, T>::type;
-
-}// namespace ocarina
 
 #define OC_MAKE_VECTOR_N(type, dim) using type##dim = ocarina::Vector<type, dim>;
 
@@ -342,7 +361,7 @@ public:
     [[nodiscard]] constexpr const vector_type &operator[](size_t i) const noexcept { return cols_[i]; }
 };
 
-#define OC_MAKE_MATRIX(N, M) using float##N##x##M = Matrix<N, M>; 
+#define OC_MAKE_MATRIX(N, M) using float##N##x##M = Matrix<N, M>;
 
 OC_MAKE_MATRIX(2, 2)
 OC_MAKE_MATRIX(2, 3)
@@ -436,7 +455,7 @@ template<size_t N, size_t M>
     return lhs + (-rhs);
 }
 
-#define OC_MAKE_MATRIX(N, M) using oc_float##N##x##M = ocarina::Matrix<N, M>; 
+#define OC_MAKE_MATRIX(N, M) using oc_float##N##x##M = ocarina::Matrix<N, M>;
 
 OC_MAKE_MATRIX(2, 2)
 OC_MAKE_MATRIX(2, 3)
@@ -449,4 +468,3 @@ OC_MAKE_MATRIX(4, 3)
 OC_MAKE_MATRIX(4, 4)
 
 #undef OC_MAKE_MATRIX
-
