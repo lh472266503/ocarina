@@ -1940,26 +1940,5 @@ __device__ inline auto oc_normalize(oc_float4 v) noexcept { return v * oc_rsqrt(
 [[nodiscard]] __device__ inline auto oc_make_uint64t4(oc_uint64t4 v) noexcept { return oc_uint64t4{static_cast<oc_uint64t>(v.x), static_cast<oc_uint64t>(v.y), static_cast<oc_uint64t>(v.z), static_cast<oc_uint64t>(v.w)}; }
 
 
-[[nodiscard]] __device__ inline auto oc_make_float2x2(oc_float s = 1.0f) noexcept { return oc_float2x2{oc_make_float2(s, 0.0f), oc_make_float2(0.0f, s)}; }
-[[nodiscard]] __device__ inline auto oc_make_float2x2(oc_float m00, oc_float m01, oc_float m10, oc_float m11) noexcept { return oc_float2x2{oc_make_float2(m00, m01), oc_make_float2(m10, m11)}; }
-[[nodiscard]] __device__ inline auto oc_make_float2x2(oc_float2 c0, oc_float2 c1) noexcept { return oc_float2x2{c0, c1}; }
-[[nodiscard]] __device__ inline auto oc_make_float2x2(oc_float2x2 m) noexcept { return m; }
-[[nodiscard]] __device__ inline auto oc_make_float2x2(oc_float3x3 m) noexcept { return oc_float2x2{oc_make_float2(m[0]), oc_make_float2(m[1])}; }
-[[nodiscard]] __device__ inline auto oc_make_float2x2(oc_float4x4 m) noexcept { return oc_float2x2{oc_make_float2(m[0]), oc_make_float2(m[1])}; }
-
-[[nodiscard]] __device__ inline auto oc_make_float3x3(oc_float s = 1.0f) noexcept { return oc_float3x3{oc_make_float3(s, 0.0f, 0.0f), oc_make_float3(0.0f, s, 0.0f), oc_make_float3(0.0f, 0.0f, s)}; }
-[[nodiscard]] __device__ inline auto oc_make_float3x3(oc_float m00, oc_float m01, oc_float m02, oc_float m10, oc_float m11, oc_float m12, oc_float m20, oc_float m21, oc_float m22) noexcept { return oc_float3x3{oc_make_float3(m00, m01, m02), oc_make_float3(m10, m11, m12), oc_make_float3(m20, m21, m22)}; }
-[[nodiscard]] __device__ inline auto oc_make_float3x3(oc_float3 c0, oc_float3 c1, oc_float3 c2) noexcept { return oc_float3x3{c0, c1, c2}; }
-[[nodiscard]] __device__ inline auto oc_make_float3x3(oc_float2x2 m) noexcept { return oc_float3x3{oc_make_float3(m[0], 0.0f), oc_make_float3(m[1], 0.0f), oc_make_float3(0.0f, 0.0f, 1.0f)}; }
-[[nodiscard]] __device__ inline auto oc_make_float3x3(oc_float3x3 m) noexcept { return m; }
-[[nodiscard]] __device__ inline auto oc_make_float3x3(oc_float4x4 m) noexcept { return oc_float3x3{oc_make_float3(m[0]), oc_make_float3(m[1]), oc_make_float3(m[2])}; }
-
-[[nodiscard]] __device__ inline auto oc_make_float4x4(oc_float s = 1.0f) noexcept { return oc_float4x4{oc_make_float4(s, 0.0f, 0.0f, 0.0f), oc_make_float4(0.0f, s, 0.0f, 0.0f), oc_make_float4(0.0f, 0.0f, s, 0.0f), oc_make_float4(0.0f, 0.0f, 0.0f, s)}; }
-[[nodiscard]] __device__ inline auto oc_make_float4x4(oc_float m00, oc_float m01, oc_float m02, oc_float m03, oc_float m10, oc_float m11, oc_float m12, oc_float m13, oc_float m20, oc_float m21, oc_float m22, oc_float m23, oc_float m30, oc_float m31, oc_float m32, oc_float m33) noexcept { return oc_float4x4{oc_make_float4(m00, m01, m02, m03), oc_make_float4(m10, m11, m12, m13), oc_make_float4(m20, m21, m22, m23), oc_make_float4(m30, m31, m32, m33)}; }
-[[nodiscard]] __device__ inline auto oc_make_float4x4(oc_float4 c0, oc_float4 c1, oc_float4 c2, oc_float4 c3) noexcept { return oc_float4x4{c0, c1, c2, c3}; }
-[[nodiscard]] __device__ inline auto oc_make_float4x4(oc_float2x2 m) noexcept { return oc_float4x4{oc_make_float4(m[0], 0.0f, 0.0f), oc_make_float4(m[1], 0.0f, 0.0f), oc_make_float4(0.0f, 0.0f, 0.0f, 0.0f), oc_make_float4(0.0f, 0.0f, 0.0f, 1.0f)}; }
-[[nodiscard]] __device__ inline auto oc_make_float4x4(oc_float3x3 m) noexcept { return oc_float4x4{oc_make_float4(m[0], 0.0f), oc_make_float4(m[1], 0.0f), oc_make_float4(m[2], 0.0f), oc_make_float4(0.0f, 0.0f, 0.0f, 1.0f)}; }
-[[nodiscard]] __device__ inline auto oc_make_float4x4(oc_float4x4 m) noexcept { return m; }
-
  
  

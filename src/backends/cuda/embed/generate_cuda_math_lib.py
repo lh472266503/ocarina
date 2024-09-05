@@ -846,7 +846,7 @@ def main():
     convert_optix_device_header()
     define_vec_func()
     define_make_vecs()
-    define_make_matrix()
+    # define_make_matrix()
 
     content += "\n "
     content += "\n "

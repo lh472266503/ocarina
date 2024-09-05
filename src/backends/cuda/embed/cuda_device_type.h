@@ -398,6 +398,26 @@ OC_MAKE_MATRIX(4, 4)
 
 #undef OC_MAKE_MATRIX
 
+[[nodiscard]] constexpr auto make_float3x3(float2x2 m) noexcept {
+    return float3x3{float3(m[0].x, m[0].y, 0.0f),
+                    float3(m[1].x, m[1].y, 0.0f),
+                    float3(0.f, 0.f, 1.0f)};
+}
+
+[[nodiscard]] constexpr auto make_float4x4(float2x2 m) noexcept {
+    return float4x4{float4(m[0].x, m[0].y, 0.0f, 0.0f),
+                    float4(m[1].x, m[1].y, 0.0f, 0.0f),
+                    float4{0.0f, 0.0f, 1.0f, 0.0f},
+                    float4{0.0f, 0.0f, 0.0f, 1.0f}};
+}
+
+[[nodiscard]] constexpr auto make_float4x4(float3x3 m) noexcept {
+    return float4x4{float4(m[0].x, m[0].y,m[0].z, 0.0f),
+                    float4(m[1].x, m[1].y,m[1].z,  0.0f),
+                    float4(m[2].x, m[2].y,m[2].z,  0.0f),
+                    float4{0.0f, 0.0f, 0.0f, 1.0f}};
+}
+
 }// namespace ocarina
 
 namespace ocarina {
