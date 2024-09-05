@@ -112,6 +112,7 @@ template<size_t N, size_t M>
 namespace ocarina {
 
 template<size_t N, size_t M, typename... Args>
+requires is_all_basic_v<Args...>
 [[nodiscard]] constexpr Matrix<N, M> make_float(Args &&...args) noexcept {
     return Matrix<N, M>(OC_FORWARD(args)...);
 }
@@ -119,6 +120,7 @@ template<size_t N, size_t M, typename... Args>
 #define OC_MAKE_MATRIX_(N, M)                                                        \
     using float##N##x##M = Matrix<N, M>;                                             \
     template<typename... Args>                                                       \
+    requires is_all_basic_v<Args...>                                                 \
     [[nodiscard]] constexpr float##N##x##M make_float##N##x##M(Args &&...args) {     \
         return make_float<N, M>(OC_FORWARD(args)...);                                \
     }                                                                                \
@@ -137,26 +139,10 @@ OC_MAKE_MATRIX_(4, 2)
 OC_MAKE_MATRIX_(4, 3)
 OC_MAKE_MATRIX_(4, 4)
 
-[[nodiscard]] constexpr auto make_float2x2(float3x3 m) noexcept {
-    return float2x2{float2{m[0].x, m[0].y},
-                    float2{m[1].x, m[1].y}};
-}
-
-[[nodiscard]] constexpr auto make_float2x2(float4x4 m) noexcept {
-    return float2x2{float2{m[0].x, m[0].y},
-                    float2{m[1].x, m[1].y}};
-}
-
 [[nodiscard]] constexpr auto make_float3x3(float2x2 m) noexcept {
     return float3x3{make_float3(m[0], 0.0f),
                     make_float3(m[1], 0.0f),
                     make_float3(0.f, 0.f, 1.0f)};
-}
-
-[[nodiscard]] constexpr auto make_float3x3(float4x4 m) noexcept {
-    return float3x3{make_float3(m[0]),
-                    make_float3(m[1]),
-                    make_float3(m[2])};
 }
 
 [[nodiscard]] constexpr auto make_float4x4(float2x2 m) noexcept {

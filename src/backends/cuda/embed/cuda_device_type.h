@@ -346,7 +346,7 @@ public:
     template<typename... Args, enable_if_t<sizeof...(Args) == N, int> = 0>
     constexpr Matrix(Args... args) noexcept : cols_(oc_array<vector_type, N>{args...}) {}
 
-    template<size_t NN, size_t MM, size_t ...i>
+    template<size_t NN, size_t MM, size_t... i>
     [[nodiscard]] static constexpr auto construct_helper(Matrix<NN, MM> mat, index_sequence<i...>) {
         return oc_array<Vector<float, M>, N>{Vector<float, M>{mat[i]}...};
     }
@@ -370,7 +370,21 @@ public:
     [[nodiscard]] constexpr const vector_type &operator[](size_t i) const noexcept { return cols_[i]; }
 };
 
-#define OC_MAKE_MATRIX(N, M) using float##N##x##M = Matrix<N, M>;
+template<size_t N, size_t M, typename... Args>
+[[nodiscard]] constexpr Matrix<N, M> make_float(Args &&...args) noexcept {
+    return Matrix<N, M>(args...);
+}
+
+#define OC_MAKE_MATRIX(N, M)                                                         \
+    using float##N##x##M = Matrix<N, M>;                                             \
+    template<typename... Args>                                                       \
+    [[nodiscard]] constexpr float##N##x##M make_float##N##x##M(Args &&...args) {     \
+        return make_float<N, M>(args...);                                            \
+    }                                                                                \
+    template<size_t NN, size_t MM>                                                   \
+    [[nodiscard]] constexpr float##N##x##M make_float##N##x##M(Matrix<NN, MM> mat) { \
+        return float##N##x##M(mat);                                                  \
+    }
 
 OC_MAKE_MATRIX(2, 2)
 OC_MAKE_MATRIX(2, 3)

@@ -278,20 +278,28 @@ OC_MAKE_VEC_MAKER(uchar, UCHAR)
 #undef OC_MAKE_VEC_MAKER_DIM
 #undef OC_MAKE_VEC_MAKER
 
-#define OC_MAKE_MATRIX(dim)                                                                                 \
-    template<typename... Args>                                                                              \
-    requires(any_dsl_v<Args...> && requires {                                                               \
-        make_float##dim##x##dim(expr_value_t<Args>{}...);                                                   \
-    })                                                                                                      \
-    OC_NODISCARD auto make_float##dim##x##dim(const Args &...args) {                                        \
-        auto expr = Function::current()->call_builtin(Type::of<float##dim##x##dim>(),                       \
-                                                      CallOp::MAKE_FLOAT##dim##X##dim, {OC_EXPR(args)...}); \
-        return eval<float##dim##x##dim>(expr);                                                              \
+#define OC_MAKE_MATRIX(N, M)                                                                            \
+    template<typename... Args>                                                                          \
+    requires(any_dsl_v<Args...> && requires {                                                           \
+        make_float##N##x##M(expr_value_t<Args>{}...);                                                   \
+    })                                                                                                  \
+    OC_NODISCARD auto make_float##N##x##M(const Args &...args) {                                        \
+        auto expr = Function::current()->call_builtin(Type::of<float##N##x##M>(),                       \
+                                                      CallOp::MAKE_FLOAT##N##X##M, {OC_EXPR(args)...}); \
+        return eval<float##N##x##M>(expr);                                                              \
     }
 
-OC_MAKE_MATRIX(2)
-OC_MAKE_MATRIX(3)
-OC_MAKE_MATRIX(4)
+OC_MAKE_MATRIX(2, 2)
+OC_MAKE_MATRIX(2, 3)
+OC_MAKE_MATRIX(2, 4)
+
+OC_MAKE_MATRIX(3, 2)
+OC_MAKE_MATRIX(3, 3)
+OC_MAKE_MATRIX(3, 4)
+
+OC_MAKE_MATRIX(4, 2)
+OC_MAKE_MATRIX(4, 3)
+OC_MAKE_MATRIX(4, 4)
 
 #undef OC_MAKE_MATRIX
 

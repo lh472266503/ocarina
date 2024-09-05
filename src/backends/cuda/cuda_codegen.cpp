@@ -103,9 +103,19 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         case CallOp::MAKE_FLOAT2: OC_GEN_FUNC_NAME(make_float2); break;
         case CallOp::MAKE_FLOAT3: OC_GEN_FUNC_NAME(make_float3); break;
         case CallOp::MAKE_FLOAT4: OC_GEN_FUNC_NAME(make_float4); break;
+
         case CallOp::MAKE_FLOAT2X2: OC_GEN_FUNC_NAME(make_float2x2); break;
+        case CallOp::MAKE_FLOAT2X3: OC_GEN_FUNC_NAME(make_float2x3); break;
+        case CallOp::MAKE_FLOAT2X4: OC_GEN_FUNC_NAME(make_float2x4); break;
+
+        case CallOp::MAKE_FLOAT3X2: OC_GEN_FUNC_NAME(make_float3x2); break;
         case CallOp::MAKE_FLOAT3X3: OC_GEN_FUNC_NAME(make_float3x3); break;
+        case CallOp::MAKE_FLOAT3X4: OC_GEN_FUNC_NAME(make_float3x4); break;
+
+        case CallOp::MAKE_FLOAT4X2: OC_GEN_FUNC_NAME(make_float4x2); break;
+        case CallOp::MAKE_FLOAT4X3: OC_GEN_FUNC_NAME(make_float4x3); break;
         case CallOp::MAKE_FLOAT4X4: OC_GEN_FUNC_NAME(make_float4x4); break;
+
         case CallOp::ATOMIC_EXCH: OC_GEN_FUNC_NAME(atomicExch); break;
         case CallOp::ATOMIC_ADD: OC_GEN_FUNC_NAME(atomicAdd); break;
         case CallOp::ATOMIC_SUB: OC_GEN_FUNC_NAME(atomicSub); break;

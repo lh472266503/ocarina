@@ -131,6 +131,9 @@ concept matrix4 = is_matrix4_v<T>;
 template<typename T>
 concept basic = is_basic_v<T>;
 
+template<typename ...Ts>
+concept all_basic = is_all_basic_v<Ts...>;
+
 template<typename... T>
 concept same = is_same_v<T...>;
 
