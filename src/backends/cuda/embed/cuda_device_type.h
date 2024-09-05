@@ -332,7 +332,7 @@ private:
 
 public:
     template<size_t... i>
-    [[nodiscard]] static constexpr array_t diagonal_helper(ocarina::index_sequence<i...>, scalar_type s) noexcept {
+    [[nodiscard]] static constexpr array_t diagonal_helper(index_sequence<i...>, scalar_type s) noexcept {
         array_t ret{};
         if constexpr (M == N) {
             ((ret[i][i] = s), ...);
@@ -340,11 +340,20 @@ public:
         return ret;
     }
     constexpr Matrix(scalar_type s = 1) noexcept
-        : cols_(diagonal_helper(ocarina::make_index_sequence<N>(), s)) {
+        : cols_(diagonal_helper(make_index_sequence<N>(), s)) {
     }
 
     template<typename... Args, enable_if_t<sizeof...(Args) == N, int> = 0>
     constexpr Matrix(Args... args) noexcept : cols_(oc_array<vector_type, N>{args...}) {}
+
+    template<size_t NN, size_t MM, size_t ...i>
+    [[nodiscard]] static constexpr auto construct_helper(Matrix<NN, MM> mat, index_sequence<i...>) {
+        return oc_array<Vector<float, M>, N>{Vector<float, M>{mat[i]}...};
+    }
+
+    template<size_t NN, size_t MM, enable_if_t<(NN >= N && MM >= M), int> = 0>
+    explicit constexpr Matrix(Matrix<NN, MM> mat) noexcept
+        : cols_{construct_helper(mat, make_index_sequence<N>)} {}
 
     template<size_t... i>
     [[nodiscard]] static constexpr array_t construct_helper(ocarina::index_sequence<i...>,
