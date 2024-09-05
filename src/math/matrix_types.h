@@ -37,9 +37,9 @@ public:
     }
 
     template<size_t NN, size_t MM>
-    requires (NN >= N && MM >= M)
+    requires(NN >= N && MM >= M)
     explicit constexpr Matrix(Matrix<NN, MM> mat) noexcept
-        : cols_{[&]<size_t ...i>(std::index_sequence<i...>) {
+        : cols_{[&]<size_t... i>(std::index_sequence<i...>) {
               return std::array<Vector<float, M>, N>{Vector<float, M>{mat[i]}...};
           }(std::make_index_sequence<N>())} {}
 
@@ -116,11 +116,15 @@ template<size_t N, size_t M, typename... Args>
     return Matrix<N, M>(OC_FORWARD(args)...);
 }
 
-#define OC_MAKE_MATRIX_(N, M)                                                    \
-    using float##N##x##M = Matrix<N, M>;                                         \
-    template<typename... Args>                                                   \
-    [[nodiscard]] constexpr float##N##x##M make_float##N##x##M(Args &&...args) { \
-        return make_float<N, M>(OC_FORWARD(args)...);                            \
+#define OC_MAKE_MATRIX_(N, M)                                                        \
+    using float##N##x##M = Matrix<N, M>;                                             \
+    template<typename... Args>                                                       \
+    [[nodiscard]] constexpr float##N##x##M make_float##N##x##M(Args &&...args) {     \
+        return make_float<N, M>(OC_FORWARD(args)...);                                \
+    }                                                                                \
+    template<size_t NN, size_t MM>                                                   \
+    [[nodiscard]] constexpr float##N##x##M make_float##N##x##M(Matrix<NN, MM> mat) { \
+        return float##N##x##M(mat);                                                  \
     }
 
 OC_MAKE_MATRIX_(2, 2)
