@@ -36,6 +36,13 @@ public:
           }(std::make_index_sequence<N>(), array<scalar_type, ElementNum>{static_cast<scalar_type>(OC_FORWARD(args))...})) {
     }
 
+    template<size_t NN, size_t MM>
+    requires (NN >= N && MM >= M)
+    explicit constexpr Matrix(Matrix<NN, MM> mat) noexcept
+        : cols_{[&]<size_t ...i>(std::index_sequence<i...>) {
+              return std::array<Vector<float, M>, N>{Vector<float, M>{mat[i]}...};
+          }(std::make_index_sequence<N>())} {}
+
     constexpr Matrix(scalar_type s = 1) noexcept
         : cols_([&]<size_t... i>(std::index_sequence<i...>) {
               array_t ret{};
