@@ -303,6 +303,7 @@ private:
     T _data[N];
 
 public:
+    __device__ constexpr oc_array() noexcept : _data{} {}
     template<typename... Elem>
     __device__ constexpr oc_array(Elem... elem) noexcept : _data{elem...} {}
     __device__ constexpr oc_array(oc_array &&) noexcept = default;
