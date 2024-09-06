@@ -59,6 +59,20 @@ public:
         image(tex_handle, min(size, res), uv0, uv1);
     }
 
+    virtual void begin_disabled() noexcept = 0;
+    virtual void end_disabled() noexcept = 0;
+
+    template<typename Func>
+    void set_enabled(bool enabled, Func func) noexcept {
+        if (enabled) {
+            func();
+        } else {
+            begin_disabled();
+            func();
+            end_disabled();
+        }
+    }
+
     static bool open_file_dialog(std::filesystem::path &path, const FileDialogFilterVec &filters = {}) noexcept;
 
     virtual uint2 node_size() noexcept = 0;
