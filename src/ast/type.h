@@ -140,9 +140,9 @@ struct struct_member_tuple<Vector<T, N>> {
     using type = typename struct_member_tuple<ocarina::array<T, N>>::type;
 };
 
-template<size_t N>
-struct struct_member_tuple<Matrix<N>> {
-    using type = typename struct_member_tuple<ocarina::array<Vector<float, N>, N>>::type;
+template<size_t N, size_t M>
+struct struct_member_tuple<Matrix<N, M>> {
+    using type = typename struct_member_tuple<ocarina::array<Vector<float, M>, N>>::type;
 };
 
 /// make struct reflection
@@ -248,8 +248,8 @@ struct dimension_impl<Vector<T, N>> {
     static constexpr auto value = N;
 };
 
-template<size_t N>
-struct dimension_impl<Matrix<N>> {
+template<size_t N, size_t M>
+struct dimension_impl<Matrix<N, M>> {
     static constexpr auto value = N;
 };
 

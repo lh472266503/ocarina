@@ -352,7 +352,7 @@ using vector_dimension = detail::vector_dimension_impl<std::remove_cvref_t<T>>;
 template<typename T>
 constexpr auto vector_dimension_v = vector_dimension<T>::value;
 
-template<size_t N, size_t M = N>
+template<size_t N, size_t M>
 struct Matrix;
 
 namespace detail {
@@ -361,8 +361,8 @@ struct matrix_dimension_impl {
     static constexpr auto value = static_cast<size_t>(1u);
 };
 
-template<size_t N>
-struct matrix_dimension_impl<Matrix<N>> {
+template<size_t N, size_t M>
+struct matrix_dimension_impl<Matrix<N, M>> {
     static constexpr auto value = N;
 };
 }// namespace detail
@@ -579,11 +579,11 @@ namespace detail {
 template<typename T, size_t N = 0u>
 struct is_matrix_impl : std::false_type {};
 
-template<size_t N>
-struct is_matrix_impl<Matrix<N>, N> : std::true_type {};
+template<size_t N, size_t M>
+struct is_matrix_impl<Matrix<N, M>, N> : std::true_type {};
 
-template<size_t N>
-struct is_matrix_impl<Matrix<N>, 0u> : std::true_type {};
+template<size_t N, size_t M>
+struct is_matrix_impl<Matrix<N, M>, 0u> : std::true_type {};
 }// namespace detail
 
 template<typename T, size_t N = 0u>
