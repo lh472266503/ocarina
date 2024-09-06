@@ -142,11 +142,11 @@ OC_MAKE_MATRIX_(4, 4)
 template<size_t N, size_t M>
 [[nodiscard]] constexpr Matrix<M, N> transpose(const Matrix<N, M> &mat) noexcept {
     Matrix<M, N> ret = make_float<M, N>();
-    auto func_n = [&]<size_t ...n>(size_t i, std::index_sequence<n...>) {
+    auto func_n = [&]<size_t... n>(size_t i, std::index_sequence<n...>) {
         return Vector<float, N>((mat[n][i])...);
     };
-    auto func_m = [&]<size_t ...m>(std::index_sequence<m...>) {
-        return Matrix<M, N>(func_n(m,std::make_index_sequence<N>())...);
+    auto func_m = [&]<size_t... m>(std::index_sequence<m...>) {
+        return Matrix<M, N>(func_n(m, std::make_index_sequence<N>())...);
     };
     return func_m(std::make_index_sequence<M>());
 }
@@ -161,6 +161,11 @@ template<size_t N, size_t M>
     return float4x4{make_float4(m[0], 0.0f, 0.0f),
                     make_float4(m[1], 0.0f, 0.0f),
                     float4{0.0f, 0.0f, 1.0f, 0.0f},
+                    float4{0.0f, 0.0f, 0.0f, 1.0f}};
+}
+
+[[nodiscard]] constexpr auto make_float4x4(float3x4 m) noexcept {
+    return float4x4{m[0], m[1], m[2],
                     float4{0.0f, 0.0f, 0.0f, 1.0f}};
 }
 
