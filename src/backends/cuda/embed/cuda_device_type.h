@@ -412,10 +412,25 @@ OC_MAKE_MATRIX(4, 4)
 }
 
 [[nodiscard]] constexpr auto make_float4x4(float3x3 m) noexcept {
-    return float4x4{float4(m[0].x, m[0].y,m[0].z, 0.0f),
-                    float4(m[1].x, m[1].y,m[1].z,  0.0f),
-                    float4(m[2].x, m[2].y,m[2].z,  0.0f),
+    return float4x4{float4(m[0].x, m[0].y, m[0].z, 0.0f),
+                    float4(m[1].x, m[1].y, m[1].z, 0.0f),
+                    float4(m[2].x, m[2].y, m[2].z, 0.0f),
                     float4{0.0f, 0.0f, 0.0f, 1.0f}};
+}
+
+template<size_t N, size_t M, size_t... n>
+constexpr Vector<float, N> transpose_helper_n(const Matrix<N, M> &mat, size_t i, index_sequence<n...>) {
+    return Vector<float, N>((mat[n][i])...);
+}
+
+template<size_t N, size_t M, size_t... m>
+constexpr Matrix<M, N> transpose_helper_m(const Matrix<N, M> &mat, index_sequence<m...>) {
+    return Matrix<M, N>(transpose_helper_n(mat, m, make_index_sequence<N>())...);
+}
+
+template<size_t N, size_t M>
+[[nodiscard]] constexpr Matrix<M, N> transpose(const Matrix<N, M> &mat) noexcept {
+    return transpose_helper_m(mat, make_index_sequence<M>());
 }
 
 }// namespace ocarina
@@ -514,5 +529,10 @@ OC_MAKE_MATRIX(3, 4)
 OC_MAKE_MATRIX(4, 2)
 OC_MAKE_MATRIX(4, 3)
 OC_MAKE_MATRIX(4, 4)
+
+template<size_t N, size_t M>
+[[nodiscard]] constexpr ocarina::Matrix<M, N> oc_transpose(const ocarina::Matrix<N, M> &mat) noexcept {
+    return ocarina::transpose(mat);
+}
 
 #undef OC_MAKE_MATRIX

@@ -5,18 +5,6 @@
 
 [[nodiscard]]  inline auto face_forward(float3 v1, float3 v2) noexcept { return dot(v1, v2) > 0 ? v1 : -v1; }
 
-[[nodiscard]]  inline auto transpose(const float2x2 m) noexcept {
-    return make_float2x2(m[0].x, m[1].x, m[0].y, m[1].y);
-}
-
-[[nodiscard]]  inline auto transpose(const float3x3 m) noexcept {
-    return make_float3x3(m[0].x, m[1].x, m[2].x, m[0].y, m[1].y, m[2].y, m[0].z, m[1].z, m[2].z);
-}
-
-[[nodiscard]]  inline auto transpose(const float4x4 m) noexcept {
-    return make_float4x4(m[0].x, m[1].x, m[2].x, m[3].x, m[0].y, m[1].y, m[2].y, m[3].y, m[0].z, m[1].z, m[2].z, m[3].z, m[0].w, m[1].w, m[2].w, m[3].w);
-}
-
 [[nodiscard]]  inline auto determinant(const float2x2 m) noexcept {
     return m[0][0] * m[1][1] - m[1][0] * m[0][1];
 }

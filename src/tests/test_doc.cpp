@@ -299,7 +299,14 @@ void test_lambda(Device &device, Stream &stream) {
         //
         //        f3.x = 1;
         //        f3.y = 2;
+        float3x2 mat(1,2,3,4,5,6);
+        Float3x2 mat2 = mat;
+        Float2x3 tran = transpose(mat2);
 
+        $info("{} {} {}", tran[0]);
+        $info("{} {} {}", tran[1]);
+
+        return ;
 
         float3 f3 = make_float3(1, 2, 3);
 

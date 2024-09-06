@@ -139,9 +139,8 @@ OC_MAKE_MATRIX_(4, 2)
 OC_MAKE_MATRIX_(4, 3)
 OC_MAKE_MATRIX_(4, 4)
 
-
 template<size_t N, size_t M>
-[[nodiscard]] constexpr Matrix<M, N> transpose(Matrix<N, M> &mat) noexcept {
+[[nodiscard]] constexpr Matrix<M, N> transpose(const Matrix<N, M> &mat) noexcept {
     Matrix<M, N> ret = make_float<M, N>();
     auto func_n = [&]<size_t ...n>(size_t i, std::index_sequence<n...>) {
         return Vector<float, N>((mat[n][i])...);
@@ -151,7 +150,6 @@ template<size_t N, size_t M>
     };
     return func_m(std::make_index_sequence<M>());
 }
-
 
 [[nodiscard]] constexpr auto make_float3x3(float2x2 m) noexcept {
     return float3x3{make_float3(m[0], 0.0f),
