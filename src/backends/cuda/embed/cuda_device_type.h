@@ -416,6 +416,13 @@ OC_MAKE_MATRIX(4, 4)
                     float4{0.0f, 0.0f, 0.0f, 1.0f}};
 }
 
+[[nodiscard]] constexpr auto make_float4x4(float4x3 m) noexcept {
+    return float4x4{float4(m[0].x, m[0].y, m[0].z, 0.0f),
+                    float4(m[1].x, m[1].y, m[1].z, 0.0f),
+                    float4(m[2].x, m[2].y, m[2].z, 0.0f),
+                    float4{m[3].x, m[3].y, m[3].z, 1.0f}};
+}
+
 [[nodiscard]] constexpr auto make_float4x4(float3x3 m) noexcept {
     return float4x4{float4(m[0].x, m[0].y, m[0].z, 0.0f),
                     float4(m[1].x, m[1].y, m[1].z, 0.0f),

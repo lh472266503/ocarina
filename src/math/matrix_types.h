@@ -169,6 +169,13 @@ template<size_t N, size_t M>
                     float4{0.0f, 0.0f, 0.0f, 1.0f}};
 }
 
+[[nodiscard]] constexpr auto make_float4x4(float4x3 m) noexcept {
+    return float4x4{make_float4(m[0], 0.0f),
+                    make_float4(m[1], 0.0f),
+                    make_float4(m[2], 0.0f),
+                    make_float4(m[3], 1.0f)};
+}
+
 [[nodiscard]] constexpr auto make_float4x4(float3x3 m) noexcept {
     return float4x4{make_float4(m[0], 0.0f),
                     make_float4(m[1], 0.0f),
