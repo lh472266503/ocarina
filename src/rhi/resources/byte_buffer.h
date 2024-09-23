@@ -99,6 +99,7 @@ private:
     size_t size_{};
 
 public:
+    ByteBuffer() = default;
     ByteBuffer(Device::Impl *device, size_t size, const string &desc = "")
         : RHIResource(device, Tag::BUFFER, device->create_buffer(size, desc)),
           size_(size) {}

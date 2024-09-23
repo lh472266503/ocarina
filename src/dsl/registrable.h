@@ -8,6 +8,7 @@
 #include "rhi/resources/managed.h"
 #include "dsl/printer.h"
 #include "core/platform.h"
+#include "rhi/resources/byte_buffer.h"
 
 namespace ocarina {
 
@@ -85,6 +86,51 @@ public:
             Super::write(OC_FORWARD(index), OC_FORWARD(elm));
         } else {
             bindless_array_->buffer_var<T>(*index_).write(OC_FORWARD(index), OC_FORWARD(elm));
+        }
+    }
+};
+
+class RegistrableByteBuffer : public ByteBuffer, public Registrable {
+public:
+    using Super = ByteBuffer;
+
+public:
+    explicit RegistrableByteBuffer(BindlessArray &bindless_array)
+        : Super(), Registrable(&bindless_array) {}
+
+    RegistrableByteBuffer() = default;
+    [[nodiscard]] Super &super() noexcept { return *this; }
+    void register_self(size_t offset = 0, size_t size = 0) noexcept {
+        ByteBufferView buffer_view = super().view(offset, size);
+        index_ = bindless_array_->emplace(buffer_view);
+        length_ = [=]() {
+            return static_cast<uint>(buffer_view.size());
+        };
+    }
+
+    uint register_view(size_t offset, size_t size = 0) {
+        ByteBufferView buffer_view = super().view(offset, size);
+        return bindless_array_->emplace(buffer_view);
+    }
+
+    template<typename Target, typename Offset>
+    requires concepts::integral<expr_value_t<Offset>>
+    OC_NODISCARD auto load_as(Offset &&offset) const noexcept {
+        if (!has_registered()) {
+            return Super::load_as<Target>(OC_FORWARD(offset));
+        }
+        Uint buffer_index = *index_;
+        return bindless_array_->byte_buffer_var(buffer_index).template load_as<Target>(OC_FORWARD(offset));
+    }
+
+    template<typename Elm, typename Offset, typename Size = uint>
+    requires is_integral_expr_v<Offset>
+    void store(Offset &&offset, const Elm &val, bool check_boundary = true) noexcept {
+        if (!has_registered()) {
+            Super::store(OC_FORWARD(offset), val);
+        } else {
+            Uint buffer_index = *index_;
+            bindless_array_->byte_buffer_var(buffer_index).store(OC_FORWARD(offset), val);
         }
     }
 };
@@ -175,7 +221,7 @@ public:
         }
     }
 
-    template<typename ...Args>
+    template<typename... Args>
     OC_NODISCARD auto sample(uint channel_num, Args &&...args) const noexcept {
         if (has_registered()) {
             return bindless_array_->tex_var(*index_).sample(channel_num, OC_FORWARD(args)...);
@@ -184,12 +230,12 @@ public:
         }
     }
 
-    template<typename Target, typename ...Args>
+    template<typename Target, typename... Args>
     OC_NODISCARD auto read(Args &&...args) const noexcept {
         return Texture::read<Target>(OC_FORWARD(args)...);
     }
 
-    template<typename ...Args>
+    template<typename... Args>
     OC_NODISCARD auto write(Args &&...args) noexcept {
         return Texture::write(OC_FORWARD(args)...);
     }

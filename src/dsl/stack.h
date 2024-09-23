@@ -37,7 +37,7 @@ public:
     void init(Device &device) noexcept {
         byte_buffer_ = device.create_byte_buffer(sizeof(T) * size_ + sizeof(size_), name_);
     }
-    
+
 };
 
 }// namespace ocarina
