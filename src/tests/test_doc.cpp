@@ -303,10 +303,11 @@ void test_lambda(Device &device, Stream &stream) {
         //        f3.y = 2;
         stk.push_back(102u);
         stk.push_back(101u);
-        stk.at(0) = 9;
-        atomic_add(stk.count(), 10u);
-        stk.count() = 0;
+//        stk.at(0) = 9;
+//        atomic_add(stk.count(), 10u);
+//        stk.count() = 0;
         $info("{} {} {}", stk.at(0), stk.at(1), stk.count());
+        $info("{} {} {}", stk.at(2), stk.at(3), stk.count());
 //        Float2x3 tran0 = float2x3{};
 //        float3x2 mat(1,2,3,4,5,6);
 //        Float3x2 mat2 = mat;
@@ -417,10 +418,24 @@ void test_lambda(Device &device, Stream &stream) {
         //        };
     };
     Shader shader = device.compile(kernel);
+    vector<uint> vvv;
+    vvv.resize(101, 0);
+    uint ui{0u};
 
+
+
+    stream << stk.upload(vvv.data());
     stream << shader(1).dispatch(1)
+//           << stk.download(vvv.data())
+//           << stk.view(400, 4).upload(&ui)
+           << stk.clear()
+           << shader(1).dispatch(1)
            << Env::printer().retrieve()
            << synchronize() << commit();
+
+    stk.host_count();
+
+    int i = 0;
 }
 
 struct Base {

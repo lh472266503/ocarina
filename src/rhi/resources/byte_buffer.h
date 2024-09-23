@@ -87,6 +87,10 @@ public:
         return BufferByteSetCommand::create(head(), size_in_byte(), value, async);
     }
 
+    [[nodiscard]] BufferUploadCommand *upload_sync(const void *data) const noexcept {
+        return BufferUploadCommand::create(data, head(), size_in_byte(), false);
+    }
+
     [[nodiscard]] BufferByteSetCommand *reset(bool async = true) const noexcept {
         return byte_set(0, async);
     }

@@ -29,16 +29,33 @@ public:
         return (super().size() - sizeof(uint)) / stride;
     }
 
-    template<typename Size = uint>
-    [[nodiscard]] Var<Size> count() const noexcept {
-        const auto expr = make_expr<ByteBuffer>(expression());
-        return super().template load_as<uint>(expr.size() - sizeof(uint));
+    [[nodiscard]] BufferUploadCommand *clear(bool async = true) noexcept {
+        static uint val = 0;
+        auto cmd = view(size() - sizeof(uint), sizeof(uint)).upload(&val, async);
+        return cmd;
+    }
+
+    [[nodiscard]] uint host_count() const noexcept {
+        uint val = 0;
+        auto cmd = view(size() - sizeof(uint), sizeof(uint)).download(&val, false);
+        cmd->accept(*device_->command_visitor());
+        return val;
+    }
+
+    void clear_immediately() noexcept {
+        clear(false)->accept(*device_->command_visitor());
     }
 
     template<typename Size = uint>
-    [[nodiscard]] Var<Size>& count() noexcept {
+    [[nodiscard]] Var<Size> count() const noexcept {
+        const auto expr = make_expr<ByteBuffer>(expression());
+        return load_as<Size>(expr.size() - sizeof(uint));
+    }
+
+    template<typename Size = uint>
+    [[nodiscard]] Var<Size> &count() noexcept {
         auto expr = make_expr<ByteBuffer>(expression());
-        return super().template load_as<uint>(expr.size() - sizeof(uint));
+        return load_as<Size>(expr.size() - sizeof(uint));
     }
 
     template<typename Arg, typename Size = uint>
@@ -46,19 +63,19 @@ public:
     void push_back(const Arg &arg) noexcept {
         auto expr = make_expr<ByteBuffer>(expression());
         Var<Size> index = atomic_add(count(), 1);
-        super().store(index * stride, arg);
+        store(index * stride, arg);
     }
 
     template<typename Index, typename Size = uint>
     [[nodiscard]] Var<T> at(const Index &index) const noexcept {
         Var<Size> offset = index * sizeof(T);
-        return super().template load_as<T>(offset);
+        return load_as<T>(offset);
     }
 
     template<typename Index, typename Size = uint>
-    [[nodiscard]] Var<T>& at(const Index &index) noexcept {
+    [[nodiscard]] Var<T> &at(const Index &index) noexcept {
         Var<Size> offset = index * sizeof(T);
-        return super().template load_as<T>(offset);
+        return load_as<T>(offset);
     }
 };
 
