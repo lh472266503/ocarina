@@ -192,7 +192,7 @@ OC_MAKE_ATOMIC_SOA(template<typename T OC_COMMA ocarina::uint N OC_COMMA typenam
         static constexpr ocarina::uint type_size = sizeof(struct_type);                 \
                                                                                         \
     private:                                                                            \
-        ocarina::array<ocarina::SOAView<element_type, TBuffer>, N> _array{};            \
+        ocarina::array<ocarina::SOAView<element_type, TBuffer>, N> array_{};            \
                                                                                         \
     public:                                                                             \
         SOAView() = default;                                                            \
@@ -203,17 +203,17 @@ OC_MAKE_ATOMIC_SOA(template<typename T OC_COMMA ocarina::uint N OC_COMMA typenam
             view_size = ocarina::min(buffer_var.template size_in_byte<ocarina::uint>(), \
                                      view_size);                                        \
             for (int i = 0; i < N; ++i) {                                               \
-                _array[i] = SOAView<element_type, TBuffer>(buffer_var, view_size,       \
+                array_[i] = SOAView<element_type, TBuffer>(buffer_var, view_size,       \
                                                            offset, stride);             \
-                offset += _array[i].template size_in_byte<ocarina::uint>();             \
+                offset += array_[i].template size_in_byte<ocarina::uint>();             \
             }                                                                           \
         }                                                                               \
                                                                                         \
         [[nodiscard]] auto &operator[](size_t index) const noexcept {                   \
-            return _array[index];                                                       \
+            return array_[index];                                                       \
         }                                                                               \
         [[nodiscard]] auto &operator[](size_t index) noexcept {                         \
-            return _array[index];                                                       \
+            return array_[index];                                                       \
         }                                                                               \
                                                                                         \
         template<typename Index>                                                        \
@@ -223,7 +223,7 @@ OC_MAKE_ATOMIC_SOA(template<typename T OC_COMMA ocarina::uint N OC_COMMA typenam
                 [&] {                                                                   \
                     ocarina::Var<struct_type> ret;                                      \
                     for (int i = 0; i < N; ++i) {                                       \
-                        ret[i] = _array[i].read(OC_FORWARD(index));                     \
+                        ret[i] = array_[i].read(OC_FORWARD(index));                     \
                     }                                                                   \
                     return ret;                                                         \
                 },                                                                      \
@@ -236,7 +236,7 @@ OC_MAKE_ATOMIC_SOA(template<typename T OC_COMMA ocarina::uint N OC_COMMA typenam
             ocarina::outline(                                                           \
                 [&] {                                                                   \
                     for (int i = 0; i < N; ++i) {                                       \
-                        _array[i].write(OC_FORWARD(index), val[i]);                     \
+                        array_[i].write(OC_FORWARD(index), val[i]);                     \
                     }                                                                   \
                 },                                                                      \
                 "SOAView<" #TypeName ">::write");                                       \
@@ -248,7 +248,7 @@ OC_MAKE_ATOMIC_SOA(template<typename T OC_COMMA ocarina::uint N OC_COMMA typenam
                 [&] {                                                                   \
                     ocarina::Var<int_type> ret = 0;                                     \
                     for (int i = 0; i < N; ++i) {                                       \
-                        ret += _array[i].size_in_byte();                                \
+                        ret += array_[i].size_in_byte();                                \
                     }                                                                   \
                     return ret;                                                         \
                 },                                                                      \
