@@ -232,9 +232,7 @@ struct Test {
 void test_lambda(Device &device, Stream &stream) {
     auto [vertices, triangles] = get_cube();
 
-    Stack<uint> stk{100};
-    stk.init(device);
-
+    Stack<uint> stk = device.create_stack<uint>(100);
 
     {
         float3 a, b;
