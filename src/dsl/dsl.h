@@ -19,4 +19,4 @@
 #include "computable.inl"
 #include "env.h"
 #include "polymorphic.h"
-
+#include "stack.h"
