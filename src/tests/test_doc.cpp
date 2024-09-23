@@ -232,6 +232,10 @@ struct Test {
 void test_lambda(Device &device, Stream &stream) {
     auto [vertices, triangles] = get_cube();
 
+    Stack<uint> stk{100};
+    stk.init(device);
+
+
     {
         float3 a, b;
         static_assert(match_basic_func_v<float, float>);
