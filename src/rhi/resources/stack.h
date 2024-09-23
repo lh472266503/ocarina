@@ -67,13 +67,29 @@ public:
     }
 
     template<typename Index, typename Size = uint>
+    requires is_integral_expr_v<Index>
     [[nodiscard]] Var<T> at(const Index &index) const noexcept {
         Var<Size> offset = index * sizeof(T);
         return load_as<T>(offset);
     }
 
     template<typename Index, typename Size = uint>
+    requires is_integral_expr_v<Index>
     [[nodiscard]] Var<T> &at(const Index &index) noexcept {
+        Var<Size> offset = index * sizeof(T);
+        return load_as<T>(offset);
+    }
+
+    template<typename Index, typename Arg, typename Size = uint>
+    requires std::is_same_v<T, remove_device_t<Arg>> && is_integral_expr_v<Index>
+    void write(const Index &index, const Arg &arg) noexcept {
+        auto expr = make_expr<ByteBuffer>(expression());
+        store(index * stride, arg);
+    }
+
+    template<typename Index, typename Size = uint>
+    requires is_integral_expr_v<Index>
+    [[nodiscard]] Var<T> read(const Index &index) const noexcept {
         Var<Size> offset = index * sizeof(T);
         return load_as<T>(offset);
     }
