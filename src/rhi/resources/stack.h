@@ -18,11 +18,11 @@ enum AccessMode {
 };
 
 template<typename T, AccessMode mode = AOS>
-class Stack : public RegistrableByteBuffer {
+class Stack : public ByteBuffer {
 public:
     using element_type = T;
     static constexpr AccessMode access_mode = mode;
-    using Super = RegistrableByteBuffer;
+    using Super = ByteBuffer;
 
 private:
     string name_;
@@ -36,7 +36,7 @@ public:
         return *this;
     }
     void init(Device &device) noexcept {
-        super().super() = device.create_byte_buffer(sizeof(T) * size_ + sizeof(size_), name_);
+        super() = device.create_byte_buffer(sizeof(T) * size_ + sizeof(size_), name_);
     }
 };
 
