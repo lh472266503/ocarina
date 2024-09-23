@@ -217,6 +217,25 @@ struct EnableByteLoadAndStore {
         return eval<Target>(expr);
     }
 
+    template<typename Target, typename Offset>
+    requires is_integral_expr_v<Offset>
+    [[nodiscard]] Var<Target> &load_as(Offset &&offset, bool check_boundary = true) noexcept {
+        Var<expr_value_t<Offset>> new_offset = OC_FORWARD(offset);
+        if (check_boundary) {
+            new_offset = detail::correct_index(new_offset, self()->template size<expr_value_t<Offset>>(),
+                                               typeid(*this).name(), traceback_string());
+        }
+        const Type *ret_type = Type::of<Target>();
+        self()->expression()->mark(Usage::WRITE);
+        const CallExpr *expr = Function::current()->call_builtin(ret_type,
+                                                                 CallOp::BYTE_BUFFER_READ,
+                                                                 {self()->expression(),
+                                                                  OC_EXPR(new_offset)},
+                                                                 {ret_type});
+        Var<Target> *ret = Function::current()->template create_temp_obj<Var<Target>>(expr);
+        return *ret;
+    }
+
     template<typename Elm = uint, typename Offset>
     requires is_integral_expr_v<Offset>
     [[nodiscard]] auto load2(Offset &&offset, bool check_boundary = true) const noexcept {

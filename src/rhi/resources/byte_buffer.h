@@ -208,6 +208,13 @@ public:
     template<typename Target, typename Offset>
     requires is_integral_expr_v<Offset>
     [[nodiscard]] Var<Target> load_as(Offset &&offset) const noexcept {
+        const auto expr = make_expr<ByteBuffer>(expression());
+        return expr.template load_as<Target>(OC_FORWARD(offset));
+    }
+
+    template<typename Target, typename Offset>
+    requires is_integral_expr_v<Offset>
+    [[nodiscard]] Var<Target> &load_as(Offset &&offset) noexcept {
         auto expr = make_expr<ByteBuffer>(expression());
         return expr.template load_as<Target>(OC_FORWARD(offset));
     }

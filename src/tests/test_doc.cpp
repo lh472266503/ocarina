@@ -301,13 +301,20 @@ void test_lambda(Device &device, Stream &stream) {
         //
         //        f3.x = 1;
         //        f3.y = 2;
-        Float2x3 tran0 = float2x3{};
-        float3x2 mat(1,2,3,4,5,6);
-        Float3x2 mat2 = mat;
-        Float2x3 tran = transpose(mat);
-        $info("{} {} {}", tran[0]);
-        $info("{} {} {}", tran[1]);
-
+        stk.push_back(102u);
+        stk.push_back(101u);
+        stk.at(0) = 9;
+        atomic_add(stk.count(), 10u);
+        stk.count() = 0;
+        $info("{} {} {}", stk.at(0), stk.at(1), stk.count());
+//        Float2x3 tran0 = float2x3{};
+//        float3x2 mat(1,2,3,4,5,6);
+//        Float3x2 mat2 = mat;
+//        Float2x3 tran = transpose(mat);
+//        $info("{} {} {}", tran[0]);
+//        $info("{} {} {}", tran[1]);
+//        vert.at(0).x = 10.f;
+//        auto attt = vert.at(2) + 10;
         return ;
 
         float3 f3 = make_float3(1, 2, 3);
@@ -535,7 +542,7 @@ int main(int argc, char *argv[]) {
     Env::debugger().init(device);
 
     //    Env::set_code_obfuscation(true);
-    Env::set_valid_check(true);
+    Env::set_valid_check(false);
 
     /// create rtx file_manager if need
     device.init_rtx();

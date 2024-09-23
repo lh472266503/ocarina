@@ -15,7 +15,9 @@ namespace ocarina {
 template<typename T, AccessMode mode>
 class Stack : public ByteBuffer {
 public:
+    static_assert(is_valid_buffer_element_v<T>);
     using element_type = T;
+    static constexpr uint stride = sizeof(T);
     static constexpr AccessMode access_mode = mode;
     using Super = ByteBuffer;
 
@@ -24,7 +26,39 @@ public:
         : ByteBuffer(device, size * sizeof(T) + sizeof(uint), name) {}
     [[nodiscard]] Super &super() noexcept { return *this; }
     [[nodiscard]] uint capacity() const noexcept {
-        return (super().size() - sizeof(uint)) / sizeof(T);
+        return (super().size() - sizeof(uint)) / stride;
+    }
+
+    template<typename Size = uint>
+    [[nodiscard]] Var<Size> count() const noexcept {
+        const auto expr = make_expr<ByteBuffer>(expression());
+        return super().template load_as<uint>(expr.size() - sizeof(uint));
+    }
+
+    template<typename Size = uint>
+    [[nodiscard]] Var<Size>& count() noexcept {
+        auto expr = make_expr<ByteBuffer>(expression());
+        return super().template load_as<uint>(expr.size() - sizeof(uint));
+    }
+
+    template<typename Arg, typename Size = uint>
+    requires std::is_same_v<T, remove_device_t<Arg>>
+    void push_back(const Arg &arg) noexcept {
+        auto expr = make_expr<ByteBuffer>(expression());
+        Var<Size> index = atomic_add(count(), 1);
+        super().store(index * stride, arg);
+    }
+
+    template<typename Index, typename Size = uint>
+    [[nodiscard]] Var<T> at(const Index &index) const noexcept {
+        Var<Size> offset = index * sizeof(T);
+        return super().template load_as<T>(offset);
+    }
+
+    template<typename Index, typename Size = uint>
+    [[nodiscard]] Var<T>& at(const Index &index) noexcept {
+        Var<Size> offset = index * sizeof(T);
+        return super().template load_as<T>(offset);
     }
 };
 

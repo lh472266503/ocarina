@@ -255,7 +255,7 @@ public:
     template<typename Index>
     requires concepts::all_integral<expr_value_t<Index>>
     OC_NODISCARD auto at(Index &&index) const noexcept {
-        auto expr = make_expr<Buffer<T>>(expression());
+        const auto expr = make_expr<Buffer<T>>(expression());
         return expr.at(OC_FORWARD(index));
     }
 
