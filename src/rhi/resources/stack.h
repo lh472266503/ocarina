@@ -26,17 +26,17 @@ public:
 
 private:
     string name_;
-    uint size_;
+    uint capacity_;
 
 public:
     explicit Stack(uint size, string name = "stack")
-        : size_(size), name_(std::move(name)) {}
-    OC_MAKE_MEMBER_GETTER(size, )
+        : capacity_(size), name_(std::move(name)) {}
+    OC_MAKE_MEMBER_GETTER(capacity, )
     [[nodiscard]] Super &super() noexcept {
         return *this;
     }
     void init(Device &device) noexcept {
-        super() = device.create_byte_buffer(sizeof(T) * size_ + sizeof(size_), name_);
+        super() = device.create_byte_buffer(sizeof(T) * capacity_ + sizeof(capacity_), name_);
     }
 };
 
