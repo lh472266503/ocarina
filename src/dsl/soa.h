@@ -81,6 +81,20 @@ struct SOAView {
                                                                                           \
         template<typename Index>                                                          \
         requires ocarina::is_integral_expr_v<Index>                                       \
+        [[nodiscard]] ocarina::Var<atomic_type> at(Index &&index) const noexcept {        \
+            return buffer_->template load_as<atomic_type>(offset_ +                       \
+                                                          OC_FORWARD(index) * type_size); \
+        }                                                                                 \
+                                                                                          \
+        template<typename Index>                                                          \
+        requires ocarina::is_integral_expr_v<Index>                                       \
+        [[nodiscard]] ocarina::Var<atomic_type> &at(Index &&index) noexcept {             \
+            return buffer_->template load_as<atomic_type>(offset_ +                       \
+                                                          OC_FORWARD(index) * type_size); \
+        }                                                                                 \
+                                                                                          \
+        template<typename Index>                                                          \
+        requires ocarina::is_integral_expr_v<Index>                                       \
         void write(Index &&index, const ocarina::Var<atomic_type> &val) noexcept {        \
             buffer_->store(offset_ + OC_FORWARD(index) * type_size, val);                 \
         }                                                                                 \
