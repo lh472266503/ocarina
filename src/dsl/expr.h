@@ -6,7 +6,7 @@
 
 #include "math/basic_types.h"
 #include "dsl/type_trait.h"
-#include "dsl/computable.h"
+#include "dsl/ref.h"
 #include "ast/function.h"
 
 namespace ocarina {
