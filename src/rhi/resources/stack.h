@@ -60,10 +60,11 @@ public:
 
     template<typename Arg, typename Size = uint>
     requires std::is_same_v<T, remove_device_t<Arg>>
-    void push_back(const Arg &arg) noexcept {
+    Var<Size> push_back(const Arg &arg) noexcept {
         auto expr = make_expr<ByteBuffer>(expression());
         Var<Size> index = atomic_add(count(), 1);
         store(index * stride, arg);
+        return index;
     }
 
     template<typename Index, typename Size = uint>
