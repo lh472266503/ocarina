@@ -232,15 +232,10 @@ public:
     [[nodiscard]] SOAView<Elm, Ref<ByteBuffer>> soa_view() noexcept {
         return SOAView<Elm, Ref<ByteBuffer>>(*this);
     }
-};
 
-template<typename T, AccessMode mode>
-struct Ref<Stack<T, mode>> : public Ref<ByteBuffer> {
-    OC_REF_COMMON(Ref<Stack<T, mode>>)
-
-    template<typename Size = uint>
-    [[nodiscard]] Var<Size> &count() noexcept {
-        return load_as<Size>(size() - sizeof(uint));
+    template<typename Elm>
+    [[nodiscard]] AOSView<Elm, Ref<ByteBuffer>> aos_view() noexcept {
+        return AOSView<Elm, Ref<ByteBuffer>>(*this);
     }
 };
 
@@ -394,6 +389,11 @@ public:
     template<typename Elm>
     [[nodiscard]] SOAView<Elm, BindlessArrayByteBuffer> soa_view() noexcept {
         return SOAView<Elm, BindlessArrayByteBuffer>(*this);
+    }
+
+    template<typename Elm>
+    [[nodiscard]] AOSView<Elm, BindlessArrayByteBuffer> aos_view() noexcept {
+        return AOSView<Elm, BindlessArrayByteBuffer>(*this);
     }
 
     template<typename T, typename Offset>

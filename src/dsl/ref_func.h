@@ -47,6 +47,9 @@ class Ray;
 template<typename T, typename TBuffer>
 struct SOAView;
 
+template<typename T, typename TBuffer>
+struct AOSView;
+
 namespace detail {
 
 template<typename T>

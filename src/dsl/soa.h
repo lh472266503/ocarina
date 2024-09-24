@@ -139,7 +139,7 @@ OC_MAKE_ATOMIC_SOA(template<typename T OC_COMMA ocarina::uint N OC_COMMA typenam
         MAP(OC_MAKE_SOA_MEMBER, ##__VA_ARGS__)                                          \
     public:                                                                             \
         SOAView() = default;                                                            \
-        explicit SOAView(TBuffer &buffer_var,                                           \
+        explicit SOAView(const TBuffer &buffer_var,                                     \
                          ocarina::Uint view_size = InvalidUI32,                         \
                          ocarina::Uint offset = 0u,                                     \
                          ocarina::uint stride = type_size) {                            \
@@ -198,7 +198,7 @@ OC_MAKE_ATOMIC_SOA(template<typename T OC_COMMA ocarina::uint N OC_COMMA typenam
                                                                                         \
     public:                                                                             \
         SOAView() = default;                                                            \
-        explicit SOAView(TBuffer &buffer_var,                                           \
+        explicit SOAView(const TBuffer &buffer_var,                                     \
                          ocarina::Uint view_size = InvalidUI32,                         \
                          ocarina::Uint offset = 0u,                                     \
                          ocarina::uint stride = type_size) {                            \

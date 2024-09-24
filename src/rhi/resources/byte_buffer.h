@@ -210,31 +210,36 @@ public:
         return load<4, Elm>(OC_FORWARD(offset));
     }
 
+    [[nodiscard]] Expr<ByteBuffer> expr() const noexcept {
+        return make_expr<ByteBuffer>(expression());
+    }
+
     template<typename Target, typename Offset>
     requires is_integral_expr_v<Offset>
     [[nodiscard]] Var<Target> load_as(Offset &&offset) const noexcept {
-        const auto expr = make_expr<ByteBuffer>(expression());
-        return expr.template load_as<Target>(OC_FORWARD(offset));
+        return expr().template load_as<Target>(OC_FORWARD(offset));
     }
 
     template<typename Target, typename Offset>
     requires is_integral_expr_v<Offset>
     [[nodiscard]] Var<Target> &load_as(Offset &&offset) noexcept {
-        auto expr = make_expr<ByteBuffer>(expression());
-        return expr.template load_as<Target>(OC_FORWARD(offset));
+        return expr().template load_as<Target>(OC_FORWARD(offset));
     }
 
     template<typename Elm, typename Offset>
     requires is_integral_expr_v<Offset>
     void store(Offset &&offset, const Elm &val) noexcept {
-        auto expr = make_expr<ByteBuffer>(expression());
-        expr.store(OC_FORWARD(offset), val);
+        expr().store(OC_FORWARD(offset), val);
     }
 
     template<typename Elm>
     [[nodiscard]] SOAView<Elm, Expr<ByteBuffer>> soa_view() noexcept {
-        auto e = make_expr<ByteBuffer>(expression());
-        return SOAView<Elm, Expr<ByteBuffer>>(e);
+        return SOAView<Elm, Expr<ByteBuffer>>(expr());
+    }
+
+    template<typename Elm>
+    [[nodiscard]] AOSView<Elm, Expr<ByteBuffer>> aos_view() noexcept {
+        return AOSView<Elm, Expr<ByteBuffer>>(expr());
     }
 
     template<typename Target = uint, typename Index>

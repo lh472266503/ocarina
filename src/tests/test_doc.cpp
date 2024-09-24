@@ -104,11 +104,11 @@ void test_compute_shader(Device &device, Stream &stream) {
 
     stream << byte_buffer.upload(byte_vec.data(), false);
 
-    //    uint byte_handle = bindless_array.emplace(byte_buffer);
+    uint byte_handle = bindless_array.emplace(byte_buffer);
 
     /// upload buffer and texture handle to device memory
-    //    stream << bindless_array->upload_buffer_handles(true) << synchronize();
-    //    stream << bindless_array->upload_texture_handles(true) << synchronize();
+    stream << bindless_array->upload_buffer_handles(true) << synchronize();
+    stream << bindless_array->upload_texture_handles(true) << synchronize();
 
     stream << vert.upload(vertices.data())
            << tri.upload(triangles.data());
@@ -136,7 +136,7 @@ void test_compute_shader(Device &device, Stream &stream) {
         int i = 0;
     });
 
-    Kernel kernel = [&](Var<Pair> p, BufferVar<Triple> triangle,
+    Kernel kernel = [&](Var<Pair> p, BufferVar<Triple> triangle,BindlessArrayVar ba,
                         ByteBufferVar byte_buffer_var, BufferVar<float3> vert_buffer) {
         //        $info("{}   ", p.i);
         //        Float3 ver = p.b.read(dispatch_id());
@@ -180,34 +180,35 @@ void test_compute_shader(Device &device, Stream &stream) {
         //            $info("count for statement dispatch_idx is {} {} {}, i = {} ", dispatch_idx(), i);
         //        };
         //
-        Uint begin = 2;
-        Uint end = 10;
-        $for(i, begin, end) {
-            $info("begin end for statement dispatch_idx is {} {} {}, i = {} ", dispatch_idx(), i);
-        };
-        //
-        //        Uint step = 2;
+//        Uint begin = 2;
+//        Uint end = 10;
+//        $for(i, begin, end) {
+//            $info("begin end for statement dispatch_idx is {} {} {}, i = {} ", dispatch_idx(), i);
+//        };
+//        //
+//        //        Uint step = 2;
+//
+//        $for(i, 10, 0, -2) {
+//            $info("begin end step for statement dispatch_idx is {} {} {}, i = {} ", dispatch_idx(), i);
+//        };
+        //        auto soa = ba.byte_buffer_var(byte_handle).soa_view<Elm>();
+                auto soa = ba.byte_buffer_var(byte_handle).aos_view<Elm>();
+//                auto soa = byte_buffer_var.aos_view<Elm>();
+                soa.write(dispatch_id(), make_float4x4(1.f * dispatch_id() + 1));
+                Var a = soa.read(dispatch_id());
 
-        $for(i, 10, 0, -2) {
-            $info("begin end step for statement dispatch_idx is {} {} {}, i = {} ", dispatch_idx(), i);
-        };
+                Uint2 aa = make_uint2(1);
+                Float2 bb = make_float2(1.5f);
 
-        //        SOAView soa = byte_buffer_var.soa_view<Elm>();
-        //        soa.write(dispatch_id(), make_float4x4(1.f * dispatch_id()));
-        //        Var a = soa.read(dispatch_id());
-        //
-        //        Uint2 aa = make_uint2(1);
-        //        Float2 bb = make_float2(1.5f);
-        //
-        //        bb += bb + aa;
-        //
-        //        $info("\n {} {} {} {}  \n"
-        //              "{} {} {} {}  \n"
-        //              "{} {} {} {}  \n"
-        //              "{} {} {} {}  \n",
-        //              a[0], a[1], a[2], a[3]);
-        //
-        //        $info("{} {}   ", bb);
+                bb += bb + aa;
+
+                $info("\n {} {} {} {}  \n"
+                      "{} {} {} {}  \n"
+                      "{} {} {} {}  \n"
+                      "{} {} {} {}  \n",
+                      a[0], a[1], a[2], a[3]);
+
+//                $info("{} {}   ", bb);
     };
     Triple triple1{1, 2, 3};
 
@@ -216,7 +217,7 @@ void test_compute_shader(Device &device, Stream &stream) {
     Env::debugger().set_upper(make_uint2(1));
     auto shader = device.compile(kernel, "test desc");
     stream << Env::debugger().upload();
-    stream << shader(pa, tri, byte_buffer.view(), vert).dispatch(1)
+    stream << shader(pa, tri, bindless_array,byte_buffer.view(), vert).dispatch(5)
            /// explict retrieve log
            << byte_buffer.download(byte_vec.data(), 0)
            << Env::printer().retrieve()
@@ -231,8 +232,6 @@ struct Test {
 
 void test_lambda(Device &device, Stream &stream) {
     auto [vertices, triangles] = get_cube();
-
-    Stack<uint> stk = device.create_stack<uint>(100);
 
     {
         float3 a, b;
@@ -301,13 +300,13 @@ void test_lambda(Device &device, Stream &stream) {
         //
         //        f3.x = 1;
         //        f3.y = 2;
-        stk.push_back(102u);
-        stk.push_back(101u);
+//        stk.push_back(102u);
+//        stk.push_back(101u);
 //        stk.at(0) = 9;
 //        atomic_add(stk.count(), 10u);
 //        stk.count() = 0;
-        $info("{} {} {}", stk.at(0), stk.at(1), stk.count());
-        $info("{} {} {}", stk.at(2), stk.at(3), stk.count());
+//        $info("{} {} {}", stk.at(0), stk.at(1), stk.count());
+//        $info("{} {} {}", stk.at(2), stk.at(3), stk.count());
 //        Float2x3 tran0 = float2x3{};
 //        float3x2 mat(1,2,3,4,5,6);
 //        Float3x2 mat2 = mat;
@@ -424,16 +423,14 @@ void test_lambda(Device &device, Stream &stream) {
 
 
 
-    stream << stk.upload(vvv.data());
     stream << shader(1).dispatch(1)
 //           << stk.download(vvv.data())
 //           << stk.view(400, 4).upload(&ui)
-           << stk.clear()
            << shader(1).dispatch(1)
            << Env::printer().retrieve()
            << synchronize() << commit();
 
-    stk.host_count();
+//    stk.host_count();
 
     int i = 0;
 }
@@ -557,7 +554,7 @@ int main(int argc, char *argv[]) {
     Env::debugger().init(device);
 
     //    Env::set_code_obfuscation(true);
-    Env::set_valid_check(false);
+    Env::set_valid_check(true);
 
     /// create rtx file_manager if need
     device.init_rtx();
@@ -578,9 +575,9 @@ int main(int argc, char *argv[]) {
     auto bbb = bool_4 || bool_4.xxxx();
     auto b4 = all(bool_4.ww());
 
-    //        test_compute_shader(device, stream);
+            test_compute_shader(device, stream);
     //    test_parameter_struct(device, stream);
-    test_lambda(device, stream);
+//    test_lambda(device, stream);
 
     //    test_poly();
     return 0;
