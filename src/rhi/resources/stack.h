@@ -63,7 +63,7 @@ public:
     requires std::is_same_v<T, remove_device_t<Arg>>
     Var<Index> push_back(const Arg &arg) noexcept {
         Var<Index> index = next_index();
-        store(index * stride, arg);
+        write(index, arg);
         return index;
     }
 

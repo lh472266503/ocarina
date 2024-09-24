@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <utility>
+
 #include "math/basic_types.h"
 #include "builtin.h"
 #include "var.h"
@@ -282,9 +284,9 @@ private:
     ocarina::Uint offset_;
 
 public:
-    AOSView(const TBuffer &buffer, const Uint &ofs = 0u,
+    AOSView(const TBuffer &buffer, Uint ofs = 0u,
             const Uint &view_size = InvalidUI32)
-        : buffer_(buffer), offset_(ofs) {}
+        : buffer_(buffer), offset_(std::move(ofs)) {}
 
     template<typename Index, typename Size = uint>
     requires is_integral_expr_v<Index>
@@ -313,5 +315,10 @@ public:
         return buffer_->template load_as<T>(offset);
     }
 };
+
+template<typename Elm, typename TBuffer>
+[[nodiscard]] AOSView<Elm, TBuffer> make_aos_view(const TBuffer &buffer) noexcept {
+    return AOSView<Elm, TBuffer>(buffer);
+}
 
 }// namespace ocarina

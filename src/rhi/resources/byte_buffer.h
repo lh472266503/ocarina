@@ -115,7 +115,8 @@ public:
     /// head of the buffer
     [[nodiscard]] handle_ty head() const noexcept { return handle(); }
     [[nodiscard]] size_t size() const noexcept { return size_; }
-    [[nodiscard]] size_t size_in_byte() const noexcept { return size(); }
+    template<typename Size = size_t>
+    [[nodiscard]] Size size_in_byte() const noexcept { return size(); }
 
     void destroy() override {
         _destroy();
