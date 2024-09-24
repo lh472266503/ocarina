@@ -37,13 +37,16 @@ public:
         return *this;
     }
 
-    [[nodiscard]] T *operator->() noexcept {
+    [[nodiscard]] T *get() noexcept {
         return reinterpret_cast<T *>(addressof(_storage));
     }
 
-    [[nodiscard]] const T *operator->() const noexcept {
+    [[nodiscard]] const T *get() const noexcept {
         return reinterpret_cast<const T *>(addressof(_storage));
     }
+
+    [[nodiscard]] T *operator->() noexcept {return get();}
+    [[nodiscard]] const T *operator->() const noexcept {return get();}
 };
 
 enum AccessMode {
