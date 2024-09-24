@@ -195,8 +195,9 @@ void test_compute_shader(Device &device, Stream &stream) {
 //        };
         //        auto soa = ba.byte_buffer_var(byte_handle).soa_view<Elm>();
                 auto soa = ba.byte_buffer_var(byte_handle).aos_view<Elm>();
+                auto soa1 = soa;
 //                auto soa = byte_buffer_var.aos_view<Elm>();
-                soa.write(dispatch_id(), make_float4x4(1.f * dispatch_id() + 1));
+                soa1.write(dispatch_id(), make_float4x4(1.f * dispatch_id() + 1));
                 Var a = soa.read(dispatch_id());
 
                 Uint2 aa = make_uint2(1);

@@ -46,6 +46,11 @@ public:
     }
 };
 
+enum AccessMode {
+    AOS,
+    SOA
+};
+
 template<typename T, typename TBuffer>
 struct SOAView {
     static_assert(always_false_v<T, TBuffer>, "The SOAView template must be specialized");
@@ -57,6 +62,7 @@ struct SOAView {
         static_assert(is_valid_buffer_element_v<TypeName>);                               \
         using atomic_type = TypeName;                                                     \
         static constexpr ocarina::uint type_size = sizeof(atomic_type);                   \
+        static constexpr AccessMode access_mode = SOA;                                    \
                                                                                           \
     private:                                                                              \
         ocarina::BufferStorage<TBuffer> buffer_{};                                        \
@@ -134,6 +140,7 @@ OC_MAKE_ATOMIC_SOA(template<typename T OC_COMMA ocarina::uint N OC_COMMA typenam
         using struct_type = S;                                                          \
         static_assert(is_valid_buffer_element_v<struct_type>);                          \
         static constexpr ocarina::uint type_size = sizeof(struct_type);                 \
+        static constexpr AccessMode access_mode = SOA;                                  \
                                                                                         \
     public:                                                                             \
         MAP(OC_MAKE_SOA_MEMBER, ##__VA_ARGS__)                                          \
@@ -190,6 +197,7 @@ OC_MAKE_ATOMIC_SOA(template<typename T OC_COMMA ocarina::uint N OC_COMMA typenam
     public:                                                                             \
         using struct_type = TypeName;                                                   \
         static_assert(is_valid_buffer_element_v<struct_type>);                          \
+        static constexpr AccessMode access_mode = SOA;                                  \
         using element_type = ElementType;                                               \
         static constexpr ocarina::uint type_size = sizeof(struct_type);                 \
                                                                                         \
@@ -277,6 +285,7 @@ struct AOSView {
 public:
     using buffer_type = TBuffer;
     using element_type = T;
+    static constexpr AccessMode access_mode = AOS;
     static constexpr auto stride = sizeof(T);
 
 private:

@@ -420,14 +420,6 @@ OC_DEFINE_TEMPLATE_VALUE(is_dsl_basic)
 template<typename T, int... dims>
 class Buffer;
 
-enum AccessMode {
-    AOS,
-    SOA
-};
-
-template<typename T, AccessMode mode = AOS>
-class Stack;
-
 template<typename T, int... dims>
 class BufferView;
 

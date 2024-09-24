@@ -9,11 +9,18 @@
 #include <dsl/builtin.h>
 #include <dsl/operators.h>
 #include "rhi/device.h"
+#include "dsl/soa.h"
 
 namespace ocarina {
 
+template<typename T, typename TBuffer>
+class Stack {
+private:
+
+};
+
 template<typename T, AccessMode mode>
-class Stack : public ByteBuffer {
+class OldStack : public ByteBuffer {
 public:
     static_assert(is_valid_buffer_element_v<T>);
     using element_type = T;
@@ -22,7 +29,7 @@ public:
     using Super = ByteBuffer;
 
 public:
-    explicit Stack(Device::Impl *device, uint size, string name = "stack")
+    explicit OldStack(Device::Impl *device, uint size, string name = "stack")
         : ByteBuffer(device, size * sizeof(T) + sizeof(uint), name) {}
     [[nodiscard]] Super &super() noexcept { return *this; }
     [[nodiscard]] uint capacity() const noexcept {
