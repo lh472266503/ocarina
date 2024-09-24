@@ -14,6 +14,7 @@
 #include "operators.h"
 #include "func.h"
 #include "soa.h"
+#include "list.h"
 #include "struct.h"
 #include "rtx_type.h"
 #include "ref.inl"

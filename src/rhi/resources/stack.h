@@ -13,14 +13,8 @@
 
 namespace ocarina {
 
-template<typename T, typename TBuffer>
-class Stack {
-private:
-
-};
-
 template<typename T, AccessMode mode>
-class OldStack : public ByteBuffer {
+class Stack : public ByteBuffer {
 public:
     static_assert(is_valid_buffer_element_v<T>);
     using element_type = T;
@@ -29,7 +23,7 @@ public:
     using Super = ByteBuffer;
 
 public:
-    explicit OldStack(Device::Impl *device, uint size, string name = "stack")
+    explicit Stack(Device::Impl *device, uint size, string name = "stack")
         : ByteBuffer(device, size * sizeof(T) + sizeof(uint), name) {}
     [[nodiscard]] Super &super() noexcept { return *this; }
     [[nodiscard]] uint capacity() const noexcept {
