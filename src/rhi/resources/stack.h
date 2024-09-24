@@ -49,7 +49,7 @@ public:
     template<typename Size = uint>
     [[nodiscard]] Var<Size> &count() noexcept {
         auto expr = make_expr<ByteBuffer>(expression());
-        return load_as<Size>(expr.size() - sizeof(uint));
+        return load_as<Size>(expr.size_in_byte() - sizeof(uint));
     }
 
     template<typename Index = uint>

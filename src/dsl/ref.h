@@ -237,6 +237,11 @@ public:
 template<typename T, AccessMode mode>
 struct Ref<Stack<T, mode>> : public Ref<ByteBuffer> {
     OC_REF_COMMON(Ref<Stack<T, mode>>)
+
+    template<typename Size = uint>
+    [[nodiscard]] Var<Size> &count() noexcept {
+        return load_as<Size>(size() - sizeof(uint));
+    }
 };
 
 template<>
@@ -383,7 +388,7 @@ public:
     template<typename Size = uint>
     [[nodiscard]] Var<Size> size() const noexcept {
         Var<Size> ret = size_in_byte<Size>();
-        return detail::divide(ret, static_cast<uint>(sizeof(float)));
+        return ret;
     }
 
     template<typename Elm>
