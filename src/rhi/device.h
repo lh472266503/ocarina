@@ -20,9 +20,6 @@ class FileManager;
 template<typename T, int... Dims>
 class Buffer;
 
-template<typename T, AccessMode>
-class Stack;
-
 template<typename T>
 class Managed;
 
@@ -98,10 +95,8 @@ public:
 
     [[nodiscard]] ByteBuffer create_byte_buffer(size_t size, const string &name = "") const noexcept;
 
-    template<typename T, AccessMode mode = AccessMode::AOS>
-    [[nodiscard]] Stack<T, mode> create_stack(size_t size, const string &name = "") const noexcept {
-        return Stack<T, mode>(impl_.get(), size, name);
-    }
+    template<typename T>
+    [[nodiscard]] ByteBuffer create_stack(size_t size, const string &name = "") const noexcept; // implement in byte_buffer.h
 
     template<typename T = std::byte, int... Dims>
     [[nodiscard]] Buffer<T, Dims...> create_buffer(size_t size, handle_ty stream) noexcept {

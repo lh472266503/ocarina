@@ -132,6 +132,8 @@ void test_compute_shader(Device &device, Stream &stream) {
 
     std::tuple<int, float> tp;
 
+    auto stk = device.create_stack<int>(10);
+
     traverse_tuple(tp, [&](auto elm) {
         int i = 0;
     });
