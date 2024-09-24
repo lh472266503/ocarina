@@ -202,8 +202,8 @@ void test_compute_shader(Device &device, Stream &stream) {
         auto soa = list.buffer().soa_view<Elm>();
 //      auto soa1 = soa;
 //        list.write(dispatch_id(), make_float4x4(1.f * dispatch_id() + 1));
-        list.at(dispatch_id()) = make_float4x4(1.f * dispatch_id() + 1);
-                Var a = list.read(dispatch_id());
+        lst.at(dispatch_id()) = make_float4x4(1.f * dispatch_id() + 1);
+                Var a = lst.read(dispatch_id());
 
                 Uint2 aa = make_uint2(1);
                 Float2 bb = make_float2(1.5f);

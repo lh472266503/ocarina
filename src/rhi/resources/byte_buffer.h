@@ -233,13 +233,13 @@ public:
     }
 
     template<typename Elm>
-    [[nodiscard]] SOAView<Elm, Expr<ByteBuffer>> soa_view() const noexcept {
-        return SOAView<Elm, Expr<ByteBuffer>>(expr());
+    [[nodiscard]] auto soa_view() const noexcept {
+        return expr().soa_view<Elm>();
     }
 
     template<typename Elm>
-    [[nodiscard]] AOSView<Elm, Expr<ByteBuffer>> aos_view() const noexcept {
-        return AOSView<Elm, Expr<ByteBuffer>>(expr());
+    [[nodiscard]] auto aos_view() const noexcept {
+        return expr().aos_view<Elm>();
     }
 
     template<typename Target = uint, typename Index>

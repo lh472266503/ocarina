@@ -45,8 +45,8 @@ public:
         return reinterpret_cast<const T *>(addressof(_storage));
     }
 
-    [[nodiscard]] T *operator->() noexcept {return get();}
-    [[nodiscard]] const T *operator->() const noexcept {return get();}
+    [[nodiscard]] T *operator->() noexcept { return get(); }
+    [[nodiscard]] const T *operator->() const noexcept { return get(); }
 };
 
 enum AccessMode {
@@ -222,7 +222,7 @@ OC_MAKE_ATOMIC_SOA(template<typename T OC_COMMA ocarina::uint N OC_COMMA typenam
             }                                                                           \
         }                                                                               \
                                                                                         \
-        [[nodiscard]] auto &operator[](size_t index) const noexcept {                   \
+        [[nodiscard]] auto operator[](size_t index) const noexcept {                    \
             return array_[index];                                                       \
         }                                                                               \
         [[nodiscard]] auto &operator[](size_t index) noexcept {                         \
