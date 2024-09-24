@@ -15,17 +15,12 @@
 
 namespace ocarina {
 
-enum AccessMode {
-    AOS,
-    SOA
-};
-
 class FileManager;
 
 template<typename T, int... Dims>
 class Buffer;
 
-template<typename T, AccessMode mode = AOS>
+template<typename T, AccessMode>
 class Stack;
 
 template<typename T>

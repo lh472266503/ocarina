@@ -4,19 +4,12 @@
 
 #pragma once
 
-#include "core/stl.h"
-#include "core/concepts.h"
-#include "math/basic_traits.h"
-#include "type_trait.h"
-#include "ast/function.h"
-#include <utility>
-#include "core/platform.h"
 #include "ref_func.h"
 
 namespace ocarina {
 namespace detail {
 
-#define OC_COMPUTABLE_COMMON(...)                                                       \
+#define OC_REF_COMMON(...)                                                              \
 private:                                                                                \
     const Expression *expression_{nullptr};                                             \
                                                                                         \
@@ -44,7 +37,7 @@ struct Ref
       detail::EnableStaticCast<Ref<T>> {
     using this_type = T;
     static_assert(is_scalar_v<T>);
-    OC_COMPUTABLE_COMMON(Ref<T>)
+    OC_REF_COMMON(Ref<T>)
     OC_MAKE_ASSIGNMENT_FUNC
 };
 
@@ -57,7 +50,7 @@ struct Ref<Vector<T, 2>>
     using this_type = Vector<T, 2>;
     template<size_t... index>
     using swizzle_type = Swizzle<Var<T>, 2, index...>;
-    OC_COMPUTABLE_COMMON(Ref<Vector<T, 2>>)
+    OC_REF_COMMON(Ref<Vector<T, 2>>)
     OC_MAKE_ASSIGNMENT_FUNC
 public:
     explicit Ref(const Var<T> &arg) noexcept
@@ -83,7 +76,7 @@ struct Ref<Vector<T, 3>>
     using this_type = Vector<T, 3>;
     template<size_t... index>
     using swizzle_type = Swizzle<Var<T>, 3, index...>;
-    OC_COMPUTABLE_COMMON(Ref<Vector<T, 3>>)
+    OC_REF_COMMON(Ref<Vector<T, 3>>)
     OC_MAKE_ASSIGNMENT_FUNC
 public:
     explicit Ref(const Var<T> &arg) noexcept
@@ -111,7 +104,7 @@ struct Ref<Vector<T, 4>>
     using this_type = Vector<T, 4>;
     template<size_t... index>
     using swizzle_type = Swizzle<Var<T>, 4, index...>;
-    OC_COMPUTABLE_COMMON(Ref<Vector<T, 4>>)
+    OC_REF_COMMON(Ref<Vector<T, 4>>)
     OC_MAKE_ASSIGNMENT_FUNC
 public:
     explicit Ref(const Var<T> &arg) noexcept
@@ -136,7 +129,7 @@ template<size_t N, size_t M>
 struct Ref<Matrix<N, M>>
     : detail::EnableGetMemberByIndex<Ref<Matrix<N, M>>>,
       detail::EnableSubscriptAccess<Ref<Matrix<N, M>>> {
-    OC_COMPUTABLE_COMMON(Ref<Matrix<N, M>>)
+    OC_REF_COMMON(Ref<Matrix<N, M>>)
     using this_type = Matrix<N, M>;
     OC_MAKE_ASSIGNMENT_FUNC
 };
@@ -146,7 +139,7 @@ struct Ref<ocarina::array<T, N>>
     : detail::EnableSubscriptAccess<Ref<ocarina::array<T, N>>>,
       detail::EnableGetMemberByIndex<Ref<ocarina::array<T, N>>> {
     using this_type = ocarina::array<T, N>;
-    OC_COMPUTABLE_COMMON(Ref<ocarina::array<T, N>>)
+    OC_REF_COMMON(Ref<ocarina::array<T, N>>)
 public:
     void set(const this_type &t) {
         for (int i = 0; i < N; ++i) {
@@ -190,7 +183,7 @@ struct Ref<T[N]>
     : detail::EnableSubscriptAccess<Ref<T[N]>>,
       detail::EnableGetMemberByIndex<Ref<T[N]>> {
     using this_type = T[N];
-    OC_COMPUTABLE_COMMON(Ref<T[N]>)
+    OC_REF_COMMON(Ref<T[N]>)
 public:
     void set(const this_type &t) {
         for (int i = 0; i < N; ++i) {
@@ -204,7 +197,7 @@ struct Ref<Buffer<T>>
     : detail::EnableReadAndWrite<Ref<Buffer<T>>>,
       detail::EnableSubscriptAccess<Ref<Buffer<T>>>,
       detail::BufferAsAtomicAddress<Ref<Buffer<T>>, T> {
-    OC_COMPUTABLE_COMMON(Ref<Buffer<T>>)
+    OC_REF_COMMON(Ref<Buffer<T>>)
 
 public:
     void set(const BufferProxy<T> &buffer) noexcept {
@@ -221,7 +214,7 @@ template<>
 struct Ref<ByteBuffer>
     : detail::EnableByteLoadAndStore<Ref<ByteBuffer>>,
       detail::BufferAsAtomicAddress<Ref<ByteBuffer>, uint> {
-    OC_COMPUTABLE_COMMON(Ref<ByteBuffer>)
+    OC_REF_COMMON(Ref<ByteBuffer>)
 
 public:
     template<typename int_type = uint>
@@ -241,18 +234,23 @@ public:
     }
 };
 
+template<typename T, AccessMode mode>
+struct Ref<Stack<T, mode>> : public Ref<ByteBuffer> {
+    OC_REF_COMMON(Ref<Stack<T, mode>>)
+};
+
 template<>
 struct Ref<Texture>
     : detail::EnableTextureSample<Ref<Texture>>,
       detail::EnableTextureReadAndWrite<Ref<Texture>> {
-    OC_COMPUTABLE_COMMON(Ref<Texture>)
+    OC_REF_COMMON(Ref<Texture>)
 };
 
 template<typename T>
 struct Ref<Texture2D<T>>
     : detail::EnableTextureSample<Ref<Texture2D<T>>>,
       detail::EnableTextureReadAndWrite<Ref<Texture2D<T>>> {
-    OC_COMPUTABLE_COMMON(Ref<Texture2D<T>>)
+    OC_REF_COMMON(Ref<Texture2D<T>>)
 };
 
 template<>
@@ -260,13 +258,13 @@ struct Ref<Accel> {
 public:
     [[nodiscard]] inline Var<Hit> trace_closest(const Var<Ray> &ray) const noexcept;// implement in ref.inl
     [[nodiscard]] inline Var<bool> trace_any(const Var<Ray> &ray) const noexcept;   // implement in ref.inl
-    OC_COMPUTABLE_COMMON(Ref<Accel>)
+    OC_REF_COMMON(Ref<Accel>)
 };
 
 template<typename... T>
 struct Ref<ocarina::tuple<T...>> {
     using Tuple = ocarina::tuple<T...>;
-    OC_COMPUTABLE_COMMON(Ref<ocarina::tuple<T...>>)
+    OC_REF_COMMON(Ref<ocarina::tuple<T...>>)
 
 private:
     template<uint i>
@@ -431,7 +429,7 @@ public:
 namespace detail {
 template<>
 struct Ref<BindlessArray> {
-    OC_COMPUTABLE_COMMON(Ref<BindlessArray>)
+    OC_REF_COMMON(Ref<BindlessArray>)
 public:
     template<typename T, typename Index>
     requires concepts::integral<expr_value_t<Index>>
@@ -499,7 +497,7 @@ public:
     public:                                               \
         using this_type = S;                              \
         static constexpr auto cname = #S;                 \
-        OC_COMPUTABLE_COMMON(S)                           \
+        OC_REF_COMMON(S)                                  \
     public:                                               \
         void                                              \
         set(const this_type &_t_) {                       \
