@@ -789,14 +789,14 @@ public:
 
     template<typename Size = uint>
     [[nodiscard]] Var<Size> size_in_byte() const noexcept {
-        const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::BINDLESS_ARRAY_BUFFER_SIZE,
+        const CallExpr *expr = Function::current()->call_builtin(Type::of<Size>(), CallOp::BINDLESS_ARRAY_BUFFER_SIZE,
                                                                  {bindless_array_, index_});
         return eval<Size>(expr);
     }
 
     template<typename Size = uint>
     [[nodiscard]] Var<Size> size() const noexcept {
-        Var<Size> ret = size_in_byte();
+        Var<Size> ret = size_in_byte<Size>();
         return detail::divide(ret, static_cast<uint>(sizeof(T)));
     }
 
@@ -841,16 +841,16 @@ public:
         Function::current()->expr_statement(expr);
     }
 
-    template<typename T = float, typename Size = uint>
+    template<typename Size = uint>
     [[nodiscard]] Var<Size> size_in_byte() const noexcept {
-        const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::BINDLESS_ARRAY_BUFFER_SIZE,
+        const CallExpr *expr = Function::current()->call_builtin(Type::of<Size>(), CallOp::BINDLESS_ARRAY_BUFFER_SIZE,
                                                                  {bindless_array_, index_});
         return eval<Size>(expr);
     }
 
     template<typename Size = uint>
     [[nodiscard]] Var<Size> size() const noexcept {
-        Var<Size> ret = size_in_byte<float, Size>();
+        Var<Size> ret = size_in_byte<Size>();
         return detail::divide(ret, static_cast<uint>(sizeof(float)));
     }
 
