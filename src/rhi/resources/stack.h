@@ -47,12 +47,6 @@ public:
     }
 
     template<typename Size = uint>
-    [[nodiscard]] Var<Size> count() const noexcept {
-        const auto expr = make_expr<ByteBuffer>(expression());
-        return load_as<Size>(expr.size() - sizeof(uint));
-    }
-
-    template<typename Size = uint>
     [[nodiscard]] Var<Size> &count() noexcept {
         auto expr = make_expr<ByteBuffer>(expression());
         return load_as<Size>(expr.size() - sizeof(uint));
@@ -60,7 +54,7 @@ public:
 
     template<typename Index = uint>
     requires is_integral_expr_v<Index>
-    [[nodiscard]] Var<Index> next_index() const noexcept {
+    [[nodiscard]] Var<Index> next_index() noexcept {
         Var<Index> index = atomic_add(count(), 1);
         return index;
     }
