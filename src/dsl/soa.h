@@ -267,3 +267,51 @@ template<typename Elm, typename TBuffer>
     return SOAView<Elm, TBuffer>(buffer);
 }
 }// namespace ocarina
+
+namespace ocarina {
+
+template<typename T, typename TBuffer>
+struct AOSView {
+public:
+    using buffer_type = TBuffer;
+    using element_type = T;
+    static constexpr auto stride = sizeof(T);
+
+private:
+    ocarina::BufferStorage<TBuffer> buffer_;
+    ocarina::Uint offset_;
+
+public:
+    AOSView(const TBuffer &buffer, const Uint &ofs = 0u,
+            const Uint &view_size = InvalidUI32)
+        : buffer_(buffer), offset_(ofs) {}
+
+    template<typename Index, typename Size = uint>
+    requires is_integral_expr_v<Index>
+    [[nodiscard]] Var<T> at(const Index &index) const noexcept {
+        Var<Size> offset = index * sizeof(T);
+        return buffer_->template load_as<T>(offset);
+    }
+
+    template<typename Index, typename Size = uint>
+    requires is_integral_expr_v<Index>
+    [[nodiscard]] Var<T> &at(const Index &index) noexcept {
+        Var<Size> offset = index * sizeof(T);
+        return buffer_->template load_as<T>(offset);
+    }
+
+    template<typename Index, typename Arg, typename Size = uint>
+    requires std::is_same_v<T, remove_device_t<Arg>> && is_integral_expr_v<Index>
+    void write(const Index &index, const Arg &arg) noexcept {
+        buffer_->store(index * stride, arg);
+    }
+
+    template<typename Index, typename Size = uint>
+    requires is_integral_expr_v<Index>
+    [[nodiscard]] Var<T> read(const Index &index) const noexcept {
+        Var<Size> offset = index * sizeof(T);
+        return buffer_->template load_as<T>(offset);
+    }
+};
+
+}// namespace ocarina
