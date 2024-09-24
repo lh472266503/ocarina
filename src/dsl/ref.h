@@ -228,14 +228,14 @@ public:
         return size_in_byte<int_type>();
     }
 
-    template<typename Elm>
-    [[nodiscard]] SOAView<Elm, Ref<ByteBuffer>> soa_view() const noexcept {
-        return SOAView<Elm, Ref<ByteBuffer>>(*this);
+    template<typename Elm, typename int_type = uint>
+    [[nodiscard]] SOAView<Elm, Ref<ByteBuffer>> soa_view(const Var<int_type> &view_size = InvalidUI32) const noexcept {
+        return SOAView<Elm, Ref<ByteBuffer>>(*this, 0u, view_size);
     }
 
-    template<typename Elm>
-    [[nodiscard]] AOSView<Elm, Ref<ByteBuffer>> aos_view() const noexcept {
-        return AOSView<Elm, Ref<ByteBuffer>>(*this);
+    template<typename Elm, typename int_type = uint>
+    [[nodiscard]] AOSView<Elm, Ref<ByteBuffer>> aos_view(const Var<int_type> &view_size = InvalidUI32) const noexcept {
+        return AOSView<Elm, Ref<ByteBuffer>>(*this, 0u, view_size);
     }
 };
 
@@ -386,14 +386,14 @@ public:
         return ret;
     }
 
-    template<typename Elm>
-    [[nodiscard]] SOAView<Elm, BindlessArrayByteBuffer> soa_view() const noexcept {
-        return SOAView<Elm, BindlessArrayByteBuffer>(*this);
+    template<typename Elm, typename int_type = uint>
+    [[nodiscard]] SOAView<Elm, BindlessArrayByteBuffer> soa_view(const Var<int_type> &view_size = InvalidUI32) const noexcept {
+        return SOAView<Elm, BindlessArrayByteBuffer>(*this, 0, view_size);
     }
 
-    template<typename Elm>
-    [[nodiscard]] AOSView<Elm, BindlessArrayByteBuffer> aos_view() const noexcept {
-        return AOSView<Elm, BindlessArrayByteBuffer>(*this);
+    template<typename Elm, typename int_type = uint>
+    [[nodiscard]] AOSView<Elm, BindlessArrayByteBuffer> aos_view(const Var<int_type> &view_size = InvalidUI32) const noexcept {
+        return AOSView<Elm, BindlessArrayByteBuffer>(*this, 0, view_size);
     }
 
     template<typename T, typename Offset>

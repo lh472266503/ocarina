@@ -59,18 +59,45 @@ public:
 
     [[nodiscard]] auto view() noexcept {
         if constexpr (access_mode == AOS) {
-            return buffer().template aos_view<element_type >();
+            return buffer().template aos_view<element_type>(storage_size_in_byte());
         } else {
-            return buffer().template soa_view<element_type >();
+            return buffer().template soa_view<element_type>(storage_size_in_byte());
         }
     }
 
     [[nodiscard]] auto view() const noexcept {
         if constexpr (access_mode == AOS) {
-            return buffer().template aos_view<element_type >();
+            return buffer().template aos_view<element_type>(storage_size_in_byte());
         } else {
-            return buffer().template soa_view<element_type >();
+            return buffer().template soa_view<element_type>(storage_size_in_byte());
         }
+    }
+
+    /// for dsl start
+    template<typename Size = uint>
+    [[nodiscard]] Var<Size> size_in_byte() const noexcept {
+        if constexpr (is_host) {
+            return buffer().expr().size_in_byte();
+        } else {
+            return buffer().size_in_byte();
+        }
+    }
+
+    template<typename Index = uint>
+    requires is_integral_expr_v<Index>
+    [[nodiscard]] Var<Index> advance_index() noexcept {
+        Var<Index> old_index = atomic_add(count<Index>(), 1);
+        return old_index;
+    }
+
+    template<typename Size = uint>
+    [[nodiscard]] Var<Size> storage_size_in_byte() const noexcept {
+        return size_in_byte() - sizeof(uint);
+    }
+
+    template<typename Size = uint>
+    [[nodiscard]] Var<Size> &count() noexcept {
+        return buffer().template load_as<Size>(size_in_byte() - sizeof(uint));
     }
 
     template<typename Index, typename Arg, typename Size = uint>
@@ -97,6 +124,7 @@ public:
         static_assert(access_mode == AOS, "must be AOS!");
         return view().at(index);
     }
+    /// for dsl end
 };
 
 }// namespace ocarina

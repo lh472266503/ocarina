@@ -232,14 +232,14 @@ public:
         expr().store(OC_FORWARD(offset), val);
     }
 
-    template<typename Elm>
-    [[nodiscard]] auto soa_view() const noexcept {
-        return expr().soa_view<Elm>();
+    template<typename Elm, typename int_type = uint>
+    [[nodiscard]] auto soa_view(const Var<int_type> &view_size = InvalidUI32) const noexcept {
+        return expr().soa_view<Elm>(view_size);
     }
 
-    template<typename Elm>
-    [[nodiscard]] auto aos_view() const noexcept {
-        return expr().aos_view<Elm>();
+    template<typename Elm, typename int_type = uint>
+    [[nodiscard]] auto aos_view(const Var<int_type> &view_size = InvalidUI32) const noexcept {
+        return expr().aos_view<Elm>(view_size);
     }
 
     template<typename Target = uint, typename Index>

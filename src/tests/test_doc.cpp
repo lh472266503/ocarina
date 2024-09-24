@@ -202,19 +202,20 @@ void test_compute_shader(Device &device, Stream &stream) {
         auto soa = list.buffer().soa_view<Elm>();
 //      auto soa1 = soa;
 //        list.write(dispatch_id(), make_float4x4(1.f * dispatch_id() + 1));
-        lst.at(dispatch_id()) = make_float4x4(1.f * dispatch_id() + 1);
+        list.at(dispatch_id()) = make_float4x4(1.f * dispatch_id() + 1);
                 Var a = lst.read(dispatch_id());
 
                 Uint2 aa = make_uint2(1);
                 Float2 bb = make_float2(1.5f);
 
                 bb += bb + aa;
-
+                lst.count() = 20;
+                list.advance_index();
                 $info("\n {} {} {} {}  \n"
                       "{} {} {} {}  \n"
                       "{} {} {} {}  \n"
-                      "{} {} {} {}  \n",
-                      a[0], a[1], a[2], a[3]);
+                      "{} {} {} {}  {}\n",
+                      a[0], a[1], a[2], a[3], list.count());
 
 //                $info("{} {}   ", bb);
     };
