@@ -233,12 +233,12 @@ public:
     }
 
     template<typename Elm>
-    [[nodiscard]] SOAView<Elm, Expr<ByteBuffer>> soa_view() noexcept {
+    [[nodiscard]] SOAView<Elm, Expr<ByteBuffer>> soa_view() const noexcept {
         return SOAView<Elm, Expr<ByteBuffer>>(expr());
     }
 
     template<typename Elm>
-    [[nodiscard]] AOSView<Elm, Expr<ByteBuffer>> aos_view() noexcept {
+    [[nodiscard]] AOSView<Elm, Expr<ByteBuffer>> aos_view() const noexcept {
         return AOSView<Elm, Expr<ByteBuffer>>(expr());
     }
 

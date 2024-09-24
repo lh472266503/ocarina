@@ -132,7 +132,7 @@ void test_compute_shader(Device &device, Stream &stream) {
 
     std::tuple<int, float> tp;
 
-    List<ByteBuffer, int> lst{std::move(byte_buffer)};
+    List<ByteBuffer, float4x4> lst{std::move(byte_buffer)};
 
     traverse_tuple(tp, [&](auto elm) {
         int i = 0;
@@ -141,7 +141,7 @@ void test_compute_shader(Device &device, Stream &stream) {
     Kernel kernel = [&](Var<Pair> p, BufferVar<Triple> triangle,BindlessArrayVar ba,
                         ByteBufferVar byte_buffer_var, BufferVar<float3> vert_buffer) {
 
-        List<ByteBufferVar, int> list{byte_buffer_var};
+        List<ByteBufferVar, float4x4 , AOS> list{byte_buffer_var};
 
         //        $info("{}   ", p.i);
         //        Float3 ver = p.b.read(dispatch_id());
@@ -201,8 +201,9 @@ void test_compute_shader(Device &device, Stream &stream) {
 //        auto soa = lst.buffer().soa_view<Elm>();
         auto soa = list.buffer().soa_view<Elm>();
 //      auto soa1 = soa;
-                soa.write(dispatch_id(), make_float4x4(1.f * dispatch_id() + 1));
-                Var a = soa.read(dispatch_id());
+//        list.write(dispatch_id(), make_float4x4(1.f * dispatch_id() + 1));
+        list.at(dispatch_id()) = make_float4x4(1.f * dispatch_id() + 1);
+                Var a = list.read(dispatch_id());
 
                 Uint2 aa = make_uint2(1);
                 Float2 bb = make_float2(1.5f);

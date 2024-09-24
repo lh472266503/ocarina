@@ -10,10 +10,7 @@ namespace ocarina {
 
 template<typename TBuffer, typename T, AccessMode mode = AOS>
 class List {
-public:
-    using element_type = T;
-    static constexpr bool is_host = std::is_same_v<TBuffer, ByteBuffer>;
-    static constexpr AccessMode access_mode = mode;
+private:
     template<typename U>
     struct buffer_impl {
         using type = BufferStorage<TBuffer>;
@@ -25,6 +22,12 @@ public:
     };
     template<typename U>
     using buffer_t = typename buffer_impl<U>::type;
+
+public:
+    using element_type = T;
+    static constexpr bool is_host = std::is_same_v<TBuffer, ByteBuffer>;
+    static constexpr AccessMode access_mode = mode;
+    static constexpr uint stride = sizeof(T);
 
 private:
     buffer_t<TBuffer> buffer_;
@@ -54,12 +57,45 @@ public:
         }
     }
 
+    [[nodiscard]] auto view() noexcept {
+        if constexpr (access_mode == AOS) {
+            return buffer().template aos_view<element_type >();
+        } else {
+            return buffer().template soa_view<element_type >();
+        }
+    }
+
     [[nodiscard]] auto view() const noexcept {
         if constexpr (access_mode == AOS) {
-            return buffer().aos_view();
+            return buffer().template aos_view<element_type >();
         } else {
-            return buffer().soa_view();
+            return buffer().template soa_view<element_type >();
         }
+    }
+
+    template<typename Index, typename Arg, typename Size = uint>
+    requires std::is_same_v<T, remove_device_t<Arg>> && is_integral_expr_v<Index>
+    void write(const Index &index, const Arg &arg) noexcept {
+        view().write(index, arg);
+    }
+
+    template<typename Index, typename Size = uint>
+    requires is_integral_expr_v<Index>
+    [[nodiscard]] Var<T> read(const Index &index) const noexcept {
+        return view().read(index);
+    }
+
+    template<typename Index, typename Size = uint>
+    requires is_integral_expr_v<Index>
+    [[nodiscard]] Var<T> at(const Index &index) const noexcept {
+        return read(index);
+    }
+
+    template<typename Index, typename Size = uint>
+    requires is_integral_expr_v<Index>
+    [[nodiscard]] Var<T> &at(const Index &index) noexcept {
+        static_assert(access_mode == AOS, "must be AOS!");
+        return view().at(index);
     }
 };
 

@@ -229,12 +229,12 @@ public:
     }
 
     template<typename Elm>
-    [[nodiscard]] SOAView<Elm, Ref<ByteBuffer>> soa_view() noexcept {
+    [[nodiscard]] SOAView<Elm, Ref<ByteBuffer>> soa_view() const noexcept {
         return SOAView<Elm, Ref<ByteBuffer>>(*this);
     }
 
     template<typename Elm>
-    [[nodiscard]] AOSView<Elm, Ref<ByteBuffer>> aos_view() noexcept {
+    [[nodiscard]] AOSView<Elm, Ref<ByteBuffer>> aos_view() const noexcept {
         return AOSView<Elm, Ref<ByteBuffer>>(*this);
     }
 };
@@ -387,12 +387,12 @@ public:
     }
 
     template<typename Elm>
-    [[nodiscard]] SOAView<Elm, BindlessArrayByteBuffer> soa_view() noexcept {
+    [[nodiscard]] SOAView<Elm, BindlessArrayByteBuffer> soa_view() const noexcept {
         return SOAView<Elm, BindlessArrayByteBuffer>(*this);
     }
 
     template<typename Elm>
-    [[nodiscard]] AOSView<Elm, BindlessArrayByteBuffer> aos_view() noexcept {
+    [[nodiscard]] AOSView<Elm, BindlessArrayByteBuffer> aos_view() const noexcept {
         return AOSView<Elm, BindlessArrayByteBuffer>(*this);
     }
 
