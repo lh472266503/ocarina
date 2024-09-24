@@ -58,11 +58,17 @@ public:
         return load_as<Size>(expr.size() - sizeof(uint));
     }
 
-    template<typename Arg, typename Size = uint>
+    template<typename Index = uint>
+    requires is_integral_expr_v<Index>
+    [[nodiscard]] Var<Index> next_index() const noexcept {
+        Var<Index> index = atomic_add(count(), 1);
+        return index;
+    }
+
+    template<typename Arg, typename Index = uint>
     requires std::is_same_v<T, remove_device_t<Arg>>
-    Var<Size> push_back(const Arg &arg) noexcept {
-        auto expr = make_expr<ByteBuffer>(expression());
-        Var<Size> index = atomic_add(count(), 1);
+    Var<Index> push_back(const Arg &arg) noexcept {
+        Var<Index> index = next_index();
         store(index * stride, arg);
         return index;
     }
@@ -84,7 +90,6 @@ public:
     template<typename Index, typename Arg, typename Size = uint>
     requires std::is_same_v<T, remove_device_t<Arg>> && is_integral_expr_v<Index>
     void write(const Index &index, const Arg &arg) noexcept {
-        auto expr = make_expr<ByteBuffer>(expression());
         store(index * stride, arg);
     }
 
