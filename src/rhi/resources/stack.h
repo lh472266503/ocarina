@@ -54,15 +54,15 @@ public:
 
     template<typename Index = uint>
     requires is_integral_expr_v<Index>
-    [[nodiscard]] Var<Index> next_index() noexcept {
-        Var<Index> index = atomic_add(count(), 1);
-        return index;
+    [[nodiscard]] Var<Index> advance_index() noexcept {
+        Var<Index> old_index = atomic_add(count(), 1);
+        return old_index;
     }
 
     template<typename Arg, typename Index = uint>
     requires std::is_same_v<T, remove_device_t<Arg>>
     Var<Index> push_back(const Arg &arg) noexcept {
-        Var<Index> index = next_index();
+        Var<Index> index = advance_index();
         write(index, arg);
         return index;
     }
