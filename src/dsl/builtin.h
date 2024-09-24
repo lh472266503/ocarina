@@ -54,7 +54,7 @@ template<typename T>
 struct match_dsl_unary_func_impl : std::false_type {};
 
 template<typename T>
-struct match_dsl_unary_func_impl<Computable<T>> : std::true_type {};
+struct match_dsl_unary_func_impl<Ref<T>> : std::true_type {};
 
 template<typename T>
 struct match_dsl_unary_func_impl<Var<T>> : std::true_type {};
@@ -76,7 +76,7 @@ template<typename T>
 struct deduce_var_impl {};
 
 template<typename T>
-struct deduce_var_impl<Computable<T>> {
+struct deduce_var_impl<Ref<T>> {
     using type = Var<T>;
 };
 

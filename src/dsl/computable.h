@@ -493,9 +493,9 @@ public:                                                                         
     }                                                                                   \
                                                                                         \
 protected:                                                                              \
-    explicit Computable(const Expression *e) noexcept : expression_{e} {}               \
-    Computable(Computable &&) noexcept = default;                                       \
-    Computable(const Computable &) noexcept = default;
+    explicit Ref(const Expression *e) noexcept : expression_{e} {}                      \
+    Ref(Ref &&) noexcept = default;                                                     \
+    Ref(const Ref &) noexcept = default;
 
 #define OC_MAKE_ASSIGNMENT_FUNC \
 public:                         \
@@ -505,34 +505,34 @@ public:                         \
     }
 
 template<typename T>
-struct Computable
-    : detail::EnableBitwiseCast<Computable<T>>,
-      detail::EnableStaticCast<Computable<T>> {
+struct Ref
+    : detail::EnableBitwiseCast<Ref<T>>,
+      detail::EnableStaticCast<Ref<T>> {
     using this_type = T;
     static_assert(is_scalar_v<T>);
-    OC_COMPUTABLE_COMMON(Computable<T>)
+    OC_COMPUTABLE_COMMON(Ref<T>)
     OC_MAKE_ASSIGNMENT_FUNC
 };
 
 template<typename T>
-struct Computable<Vector<T, 2>>
-    : detail::EnableStaticCast<Computable<Vector<T, 2>>>,
-      detail::EnableBitwiseCast<Computable<Vector<T, 2>>>,
-      detail::EnableGetMemberByIndex<Computable<Vector<T, 2>>>,
-      detail::EnableSubscriptAccess<Computable<Vector<T, 2>>> {
+struct Ref<Vector<T, 2>>
+    : detail::EnableStaticCast<Ref<Vector<T, 2>>>,
+      detail::EnableBitwiseCast<Ref<Vector<T, 2>>>,
+      detail::EnableGetMemberByIndex<Ref<Vector<T, 2>>>,
+      detail::EnableSubscriptAccess<Ref<Vector<T, 2>>> {
     using this_type = Vector<T, 2>;
     template<size_t... index>
     using swizzle_type = Swizzle<Var<T>, 2, index...>;
-    OC_COMPUTABLE_COMMON(Computable<Vector<T, 2>>)
+    OC_COMPUTABLE_COMMON(Ref<Vector<T, 2>>)
     OC_MAKE_ASSIGNMENT_FUNC
 public:
-    explicit Computable(const Var<T> &arg) noexcept
+    explicit Ref(const Var<T> &arg) noexcept
         : expression_(ocarina::Function::current()->local(ocarina::Type::of<this_type>())) {
         x = arg;
         y = arg;
     }
-    explicit Computable(const T &arg) noexcept
-        : Computable{Var<T>{arg}} {}
+    explicit Ref(const T &arg) noexcept
+        : Ref{Var<T>{arg}} {}
 
 public:
     Var<T> x{Function::current()->swizzle(Type::of<T>(), expression(), 0, 1)};
@@ -541,25 +541,25 @@ public:
 };
 
 template<typename T>
-struct Computable<Vector<T, 3>>
-    : detail::EnableStaticCast<Computable<Vector<T, 3>>>,
-      detail::EnableBitwiseCast<Computable<Vector<T, 3>>>,
-      detail::EnableGetMemberByIndex<Computable<Vector<T, 3>>>,
-      detail::EnableSubscriptAccess<Computable<Vector<T, 3>>> {
+struct Ref<Vector<T, 3>>
+    : detail::EnableStaticCast<Ref<Vector<T, 3>>>,
+      detail::EnableBitwiseCast<Ref<Vector<T, 3>>>,
+      detail::EnableGetMemberByIndex<Ref<Vector<T, 3>>>,
+      detail::EnableSubscriptAccess<Ref<Vector<T, 3>>> {
     using this_type = Vector<T, 3>;
     template<size_t... index>
     using swizzle_type = Swizzle<Var<T>, 3, index...>;
-    OC_COMPUTABLE_COMMON(Computable<Vector<T, 3>>)
+    OC_COMPUTABLE_COMMON(Ref<Vector<T, 3>>)
     OC_MAKE_ASSIGNMENT_FUNC
 public:
-    explicit Computable(const Var<T> &arg) noexcept
+    explicit Ref(const Var<T> &arg) noexcept
         : expression_(ocarina::Function::current()->local(ocarina::Type::of<this_type>())) {
         x = arg;
         y = arg;
         z = arg;
     }
-    explicit Computable(const T &arg) noexcept
-        : Computable{Var<T>{arg}} {}
+    explicit Ref(const T &arg) noexcept
+        : Ref{Var<T>{arg}} {}
 
 public:
     Var<T> x{Function::current()->swizzle(Type::of<T>(), expression(), 0, 1)};
@@ -569,26 +569,26 @@ public:
 };
 
 template<typename T>
-struct Computable<Vector<T, 4>>
-    : detail::EnableStaticCast<Computable<Vector<T, 4>>>,
-      detail::EnableBitwiseCast<Computable<Vector<T, 4>>>,
-      detail::EnableGetMemberByIndex<Computable<Vector<T, 4>>>,
-      detail::EnableSubscriptAccess<Computable<Vector<T, 4>>> {
+struct Ref<Vector<T, 4>>
+    : detail::EnableStaticCast<Ref<Vector<T, 4>>>,
+      detail::EnableBitwiseCast<Ref<Vector<T, 4>>>,
+      detail::EnableGetMemberByIndex<Ref<Vector<T, 4>>>,
+      detail::EnableSubscriptAccess<Ref<Vector<T, 4>>> {
     using this_type = Vector<T, 4>;
     template<size_t... index>
     using swizzle_type = Swizzle<Var<T>, 4, index...>;
-    OC_COMPUTABLE_COMMON(Computable<Vector<T, 4>>)
+    OC_COMPUTABLE_COMMON(Ref<Vector<T, 4>>)
     OC_MAKE_ASSIGNMENT_FUNC
 public:
-    explicit Computable(const Var<T> &arg) noexcept
+    explicit Ref(const Var<T> &arg) noexcept
         : expression_(ocarina::Function::current()->local(ocarina::Type::of<this_type>())) {
         x = arg;
         y = arg;
         z = arg;
         w = arg;
     }
-    explicit Computable(const T &arg) noexcept
-        : Computable{Var<T>{arg}} {}
+    explicit Ref(const T &arg) noexcept
+        : Ref{Var<T>{arg}} {}
 
 public:
     Var<T> x{Function::current()->swizzle(Type::of<T>(), expression(), 0, 1)};
@@ -599,20 +599,20 @@ public:
 };
 
 template<size_t N, size_t M>
-struct Computable<Matrix<N, M>>
-    : detail::EnableGetMemberByIndex<Computable<Matrix<N, M>>>,
-      detail::EnableSubscriptAccess<Computable<Matrix<N, M>>> {
-    OC_COMPUTABLE_COMMON(Computable<Matrix<N, M>>)
+struct Ref<Matrix<N, M>>
+    : detail::EnableGetMemberByIndex<Ref<Matrix<N, M>>>,
+      detail::EnableSubscriptAccess<Ref<Matrix<N, M>>> {
+    OC_COMPUTABLE_COMMON(Ref<Matrix<N, M>>)
     using this_type = Matrix<N, M>;
     OC_MAKE_ASSIGNMENT_FUNC
 };
 
 template<typename T, size_t N>
-struct Computable<ocarina::array<T, N>>
-    : detail::EnableSubscriptAccess<Computable<ocarina::array<T, N>>>,
-      detail::EnableGetMemberByIndex<Computable<ocarina::array<T, N>>> {
+struct Ref<ocarina::array<T, N>>
+    : detail::EnableSubscriptAccess<Ref<ocarina::array<T, N>>>,
+      detail::EnableGetMemberByIndex<Ref<ocarina::array<T, N>>> {
     using this_type = ocarina::array<T, N>;
-    OC_COMPUTABLE_COMMON(Computable<ocarina::array<T, N>>)
+    OC_COMPUTABLE_COMMON(Ref<ocarina::array<T, N>>)
 public:
     void set(const this_type &t) {
         for (int i = 0; i < N; ++i) {
@@ -652,11 +652,11 @@ public:
 };
 
 template<typename T, size_t N>
-struct Computable<T[N]>
-    : detail::EnableSubscriptAccess<Computable<T[N]>>,
-      detail::EnableGetMemberByIndex<Computable<T[N]>> {
+struct Ref<T[N]>
+    : detail::EnableSubscriptAccess<Ref<T[N]>>,
+      detail::EnableGetMemberByIndex<Ref<T[N]>> {
     using this_type = T[N];
-    OC_COMPUTABLE_COMMON(Computable<T[N]>)
+    OC_COMPUTABLE_COMMON(Ref<T[N]>)
 public:
     void set(const this_type &t) {
         for (int i = 0; i < N; ++i) {
@@ -666,11 +666,11 @@ public:
 };
 
 template<typename T>
-struct Computable<Buffer<T>>
-    : detail::EnableReadAndWrite<Computable<Buffer<T>>>,
-      detail::EnableSubscriptAccess<Computable<Buffer<T>>>,
-      detail::BufferAsAtomicAddress<Computable<Buffer<T>>, T> {
-    OC_COMPUTABLE_COMMON(Computable<Buffer<T>>)
+struct Ref<Buffer<T>>
+    : detail::EnableReadAndWrite<Ref<Buffer<T>>>,
+      detail::EnableSubscriptAccess<Ref<Buffer<T>>>,
+      detail::BufferAsAtomicAddress<Ref<Buffer<T>>, T> {
+    OC_COMPUTABLE_COMMON(Ref<Buffer<T>>)
 
 public:
     void set(const BufferProxy<T> &buffer) noexcept {
@@ -684,10 +684,10 @@ public:
 };
 
 template<>
-struct Computable<ByteBuffer>
-    : detail::EnableByteLoadAndStore<Computable<ByteBuffer>>,
-      detail::BufferAsAtomicAddress<Computable<ByteBuffer>, uint> {
-    OC_COMPUTABLE_COMMON(Computable<ByteBuffer>)
+struct Ref<ByteBuffer>
+    : detail::EnableByteLoadAndStore<Ref<ByteBuffer>>,
+      detail::BufferAsAtomicAddress<Ref<ByteBuffer>, uint> {
+    OC_COMPUTABLE_COMMON(Ref<ByteBuffer>)
 
 public:
     template<typename int_type = uint>
@@ -702,37 +702,37 @@ public:
     }
 
     template<typename Elm>
-    [[nodiscard]] SOAView<Elm, Computable<ByteBuffer>> soa_view() noexcept {
-        return SOAView<Elm, Computable<ByteBuffer>>(*this);
+    [[nodiscard]] SOAView<Elm, Ref<ByteBuffer>> soa_view() noexcept {
+        return SOAView<Elm, Ref<ByteBuffer>>(*this);
     }
 };
 
 template<>
-struct Computable<Texture>
-    : detail::EnableTextureSample<Computable<Texture>>,
-      detail::EnableTextureReadAndWrite<Computable<Texture>> {
-    OC_COMPUTABLE_COMMON(Computable<Texture>)
+struct Ref<Texture>
+    : detail::EnableTextureSample<Ref<Texture>>,
+      detail::EnableTextureReadAndWrite<Ref<Texture>> {
+    OC_COMPUTABLE_COMMON(Ref<Texture>)
 };
 
 template<typename T>
-struct Computable<Texture2D<T>>
-    : detail::EnableTextureSample<Computable<Texture2D<T>>>,
-      detail::EnableTextureReadAndWrite<Computable<Texture2D<T>>> {
-    OC_COMPUTABLE_COMMON(Computable<Texture2D<T>>)
+struct Ref<Texture2D<T>>
+    : detail::EnableTextureSample<Ref<Texture2D<T>>>,
+      detail::EnableTextureReadAndWrite<Ref<Texture2D<T>>> {
+    OC_COMPUTABLE_COMMON(Ref<Texture2D<T>>)
 };
 
 template<>
-struct Computable<Accel> {
+struct Ref<Accel> {
 public:
     [[nodiscard]] inline Var<Hit> trace_closest(const Var<Ray> &ray) const noexcept;// implement in computable.inl
     [[nodiscard]] inline Var<bool> trace_any(const Var<Ray> &ray) const noexcept;   // implement in computable.inl
-    OC_COMPUTABLE_COMMON(Computable<Accel>)
+    OC_COMPUTABLE_COMMON(Ref<Accel>)
 };
 
 template<typename... T>
-struct Computable<ocarina::tuple<T...>> {
+struct Ref<ocarina::tuple<T...>> {
     using Tuple = ocarina::tuple<T...>;
-    OC_COMPUTABLE_COMMON(Computable<ocarina::tuple<T...>>)
+    OC_COMPUTABLE_COMMON(Ref<ocarina::tuple<T...>>)
 
 private:
     template<uint i>
@@ -896,8 +896,8 @@ public:
 
 namespace detail {
 template<>
-struct Computable<BindlessArray> {
-    OC_COMPUTABLE_COMMON(Computable<BindlessArray>)
+struct Ref<BindlessArray> {
+    OC_COMPUTABLE_COMMON(Ref<BindlessArray>)
 public:
     template<typename T, typename Index>
     requires concepts::integral<expr_value_t<Index>>
@@ -961,7 +961,7 @@ public:
     namespace ocarina {                                   \
     namespace detail {                                    \
     template<>                                            \
-    struct Computable<S> {                                \
+    struct Ref<S> {                                       \
     public:                                               \
         using this_type = S;                              \
         static constexpr auto cname = #S;                 \
@@ -980,7 +980,7 @@ public:
 }// namespace detail
 
 template<typename T>
-struct Proxy : public ocarina::detail::Computable<T> {
+struct Proxy : public ocarina::detail::Ref<T> {
     static_assert(ocarina::always_false_v<T>, "proxy is invalid !");
 };
 
@@ -990,6 +990,6 @@ struct Proxy : public ocarina::detail::Computable<T> {
 
 #define OC_MAKE_PROXY(S) \
     template<>           \
-    struct ocarina::Proxy<S> : public ocarina::detail::Computable<S>
+    struct ocarina::Proxy<S> : public ocarina::detail::Ref<S>
 
 }// namespace ocarina

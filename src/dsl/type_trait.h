@@ -27,7 +27,7 @@ class Buffer;
 namespace detail {
 
 template<typename T>
-struct Computable;
+struct Ref;
 
 /// var
 template<typename T>
@@ -89,7 +89,7 @@ struct expr_value_impl<Expr<T>> {
 };
 
 template<typename T>
-struct expr_value_impl<Computable<T>> {
+struct expr_value_impl<Ref<T>> {
     using type = T;
 };
 
@@ -196,7 +196,7 @@ template<typename T>
 struct is_dsl_impl<Expr<T>> : std::true_type {};
 
 template<typename T>
-struct is_dsl_impl<Computable<T>> : std::true_type {};
+struct is_dsl_impl<Ref<T>> : std::true_type {};
 
 template<typename T>
 struct is_dsl_impl<Var<T>> : std::true_type {};
