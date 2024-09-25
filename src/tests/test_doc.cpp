@@ -125,7 +125,7 @@ void test_compute_shader(Device &device, Stream &stream) {
 
     std::tuple<int, float> tp;
 
-    List<float4x4, ByteBuffer,  SOA> lst{std::move(byte_buffer)};
+    List<float4x4,  SOA, ByteBuffer> lst{std::move(byte_buffer)};
 
     traverse_tuple(tp, [&](auto elm) {
         int i = 0;
@@ -135,16 +135,16 @@ void test_compute_shader(Device &device, Stream &stream) {
     Kernel kernel = [&](Var<Pair> p, BufferVar<Triple> triangle,BindlessArrayVar ba,
                         ByteBufferVar byte_buffer_var, BufferVar<float3> vert_buffer) {
 
-//        List< float4x4 , BindlessArrayByteBuffer,SOA> list{bindless_array.byte_buffer_var(byte_handle)};
-        List< float4x4 , BindlessArrayByteBuffer,SOA> list{ba.byte_buffer_var(byte_handle)};
-//        List<float4x4 ,ByteBufferVar,  SOA> list{byte_buffer_var};
+//        List< float4x4,SOA , BindlessArrayByteBuffer> list{bindless_array.byte_buffer_var(byte_handle)};
+//        List< float4x4 ,SOA, BindlessArrayByteBuffer> list{ba.byte_buffer_var(byte_handle)};
+        List<float4x4 ,  SOA,ByteBufferVar> list{byte_buffer_var};
         //        return ;
         //        auto soa = ba.byte_buffer_var(byte_handle).soa_view<Elm>();
         //                auto soa = ba.byte_buffer_var(byte_handle).aos_view<Elm>();
         //        auto soa = lst.buffer().soa_view<Elm>();
         //        auto soa = list.buffer().soa_view<Elm>();
 //        list.count() = 2;
-                lst.push_back( make_float4x4(dispatch_id() * 1.f));
+        list.push_back( make_float4x4(dispatch_id() * 1.f));
         //        list.write(dispatch_id(), make_float4x4(dispatch_id() * 1.f));
         //      fbuffer.write(11, float4x4{6});
         //      $info("{} ", list.advance_index());
@@ -152,7 +152,7 @@ void test_compute_shader(Device &device, Stream &stream) {
 //        auto soa = byte_buffer_var.soa_view<Elm>();
 //        soa.write(0, make_float4x4(1.f * dispatch_id() + 1));
         //        list.at(dispatch_id()) = make_float4x4(1.f * dispatch_id() + 1);
-                        Var a = lst.read(dispatch_id());
+                        Var a = list.read(dispatch_id());
         //
         //                Uint2 aa = make_uint2(1);
         //                Float2 bb = make_float2(1.5f);

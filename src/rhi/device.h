@@ -22,7 +22,7 @@ class Buffer;
 
 class ByteBuffer;
 
-template<typename T, typename TBuffer, AccessMode mode = AOS>
+template<typename T, AccessMode mode = AOS, typename TBuffer = ByteBuffer>
 class List;
 
 template<typename T>

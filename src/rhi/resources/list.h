@@ -15,7 +15,7 @@ struct SOAView;
 template<typename T, typename TBuffer>
 struct AOSView;
 
-template<typename T, typename TBuffer, AccessMode mode>
+template<typename T, AccessMode mode, typename TBuffer>
 class List {
 private:
     template<typename U>
