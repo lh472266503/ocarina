@@ -7,7 +7,7 @@
 #include "soa.h"
 
 namespace ocarina {
-
+class BufferUploadCommand;
 template<typename TBuffer, typename T, AccessMode mode = AOS>
 class List {
 private:
@@ -71,6 +71,13 @@ public:
         } else {
             return buffer().template soa_view<element_type>(storage_size_in_byte());
         }
+    }
+
+    [[nodiscard]] BufferUploadCommand *clear(bool async = true) noexcept {
+        static_assert(is_host, "clear must be called on host side!");
+        static uint val = 0;
+        auto cmd = buffer().view(buffer().size() - sizeof(uint), sizeof(uint)).upload(&val, async);
+        return cmd;
     }
 
     /// for dsl start
