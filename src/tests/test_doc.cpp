@@ -173,6 +173,7 @@ void test_compute_shader(Device &device, Stream &stream) {
     Env::debugger().set_lower(make_uint2(0));
     Env::debugger().set_upper(make_uint2(1));
     auto shader = device.compile(kernel, "test desc");
+    lst.clear_immediately();
     stream << Env::debugger().upload() ;
     stream << lst.clear() ;
     stream << shader(pa, tri, bindless_array,byte_buffer.view(), vert).dispatch(5)
@@ -180,6 +181,8 @@ void test_compute_shader(Device &device, Stream &stream) {
            << byte_buffer.download(byte_vec.data(), 0)
            << Env::printer().retrieve()
            << synchronize() << commit();
+
+    auto ijk = lst.host_count();
 
     int iii = 0;
 }

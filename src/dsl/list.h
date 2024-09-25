@@ -5,9 +5,11 @@
 #pragma once
 
 #include "soa.h"
+#include "rhi/command.h"
+#include "rhi/device.h"
 
 namespace ocarina {
-class BufferUploadCommand;
+
 template<typename TBuffer, typename T, AccessMode mode = AOS>
 class List {
 private:
@@ -78,6 +80,23 @@ public:
         static uint val = 0;
         auto cmd = buffer().view(buffer().size() - sizeof(uint), sizeof(uint)).upload(&val, async);
         return cmd;
+    }
+
+    void clear_immediately() noexcept {
+        clear(false)->accept(*buffer().device()->command_visitor());
+    }
+
+    [[nodiscard]] uint host_count() const noexcept {
+        static_assert(is_host, "clear must be called on host side!");
+        uint val = 0;
+        auto cmd = buffer().view(buffer().size() - sizeof(uint), sizeof(uint)).download(&val, false);
+        cmd->accept(*buffer().device()->command_visitor());
+        return val;
+    }
+
+    [[nodiscard]] uint capacity() const noexcept {
+        static_assert(is_host, "clear must be called on host side!");
+        return (buffer().size() - sizeof(uint)) / stride;
     }
 
     /// for dsl start

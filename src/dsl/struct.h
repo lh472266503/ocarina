@@ -7,7 +7,6 @@
 #include "ast/type_registry.h"
 #include "var.h"
 #include "soa.h"
-#include "list.h"
 
 #define OC_STRUCT_ALIAS(NS, S)      \
     namespace NS {                  \
