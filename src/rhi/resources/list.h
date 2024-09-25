@@ -4,13 +4,18 @@
 
 #pragma once
 
-#include "soa.h"
 #include "rhi/command.h"
 #include "rhi/device.h"
 
 namespace ocarina {
 
-template<typename TBuffer, typename T, AccessMode mode = AOS>
+template<typename T, typename TBuffer>
+struct SOAView;
+
+template<typename T, typename TBuffer>
+struct AOSView;
+
+template<typename T, typename TBuffer, AccessMode mode>
 class List {
 private:
     template<typename U>
