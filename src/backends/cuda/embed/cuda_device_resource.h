@@ -209,8 +209,8 @@ __device__ oc_array<float, N> oc_tex_sample_float(OCTexture obj, oc_float u, oc_
 }
 
 template<typename T>
-__device__ T oc_bindless_array_buffer_read(OCBindlessArray bindless_array, oc_uint buffer_index, oc_uint64t index) noexcept {
-    const T *buffer = reinterpret_cast<T *>(bindless_array.buffer_slot[buffer_index].head);
+__device__ T &oc_bindless_array_buffer_read(OCBindlessArray bindless_array, oc_uint buffer_index, oc_uint64t index) noexcept {
+    T *buffer = reinterpret_cast<T *>(bindless_array.buffer_slot[buffer_index].head);
     return buffer[index];
 }
 
@@ -219,9 +219,9 @@ __device__ oc_uint oc_bindless_array_buffer_size(OCBindlessArray bindless_array,
 }
 
 template<typename T>
-__device__ T oc_bindless_array_byte_buffer_read(OCBindlessArray bindless_array, oc_uint buffer_index, oc_uint64t offset) noexcept {
-    const char *buffer = reinterpret_cast<char *>(bindless_array.buffer_slot[buffer_index].head);
-    return *reinterpret_cast<const T *>(&buffer[offset]);
+__device__ T &oc_bindless_array_byte_buffer_read(OCBindlessArray bindless_array, oc_uint buffer_index, oc_uint64t offset) noexcept {
+    char *buffer = reinterpret_cast<char *>(bindless_array.buffer_slot[buffer_index].head);
+    return *reinterpret_cast<T *>(&buffer[offset]);
 }
 
 template<typename T>
