@@ -318,7 +318,7 @@ public:
 
 namespace ocarina {
 
-template<size_t N, size_t M = N>
+template<size_t N, size_t M>
 struct Matrix {
 public:
     static constexpr auto RowNum = M;
