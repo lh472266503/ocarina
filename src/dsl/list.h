@@ -90,6 +90,14 @@ public:
         return old_index;
     }
 
+    template<typename Arg, typename Index = uint>
+    requires std::is_same_v<T, remove_device_t<Arg>>
+    Var<Index> push_back(const Arg &arg) noexcept {
+        Var<Index> index = advance_index();
+        write(index, arg);
+        return index;
+    }
+
     template<typename Size = uint>
     [[nodiscard]] Var<Size> storage_size_in_byte() const noexcept {
         return size_in_byte() - sizeof(uint);
