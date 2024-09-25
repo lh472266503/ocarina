@@ -296,8 +296,8 @@ private:
     ocarina::Uint offset_;
 
 public:
-    explicit AOSView(const TBuffer &buffer, Uint ofs = 0u,
-                     const Uint &view_size = InvalidUI32)
+    explicit AOSView(const TBuffer &buffer, const Uint &view_size = InvalidUI32,
+                     Uint ofs = 0u)
         : buffer_(buffer), offset_(std::move(ofs)) {}
 
     template<typename Index, typename Size = uint>

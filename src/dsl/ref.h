@@ -230,12 +230,12 @@ public:
 
     template<typename Elm, typename int_type = uint>
     [[nodiscard]] SOAView<Elm, Ref<ByteBuffer>> soa_view(const Var<int_type> &view_size = InvalidUI32) const noexcept {
-        return SOAView<Elm, Ref<ByteBuffer>>(*this, 0u, view_size);
+        return SOAView<Elm, Ref<ByteBuffer>>(*this, view_size);
     }
 
     template<typename Elm, typename int_type = uint>
     [[nodiscard]] AOSView<Elm, Ref<ByteBuffer>> aos_view(const Var<int_type> &view_size = InvalidUI32) const noexcept {
-        return AOSView<Elm, Ref<ByteBuffer>>(*this, 0u, view_size);
+        return AOSView<Elm, Ref<ByteBuffer>>(*this, view_size);
     }
 };
 

@@ -96,11 +96,14 @@ void test_compute_shader(Device &device, Stream &stream) {
     //    uint t_idx = bindless_array.emplace(tri);
 
     using Elm = float4x4;
-    uint len = 10;
-    auto byte_buffer = device.create_byte_buffer(sizeof(Elm) * len, "");
+    uint len = 11;
+    auto byte_buffer = device.create_stack<Elm>(len, "");
+    auto byte_buffer2 = device.create_byte_buffer((len + 1) * sizeof(Elm), "");
     vector<Elm> byte_vec;
 
-    byte_vec.resize(len);
+    auto fbuffer = device.create_buffer<Elm>(len + 1);
+
+    byte_vec.resize(len + 1);
 
     stream << byte_buffer.upload(byte_vec.data(), false);
 
@@ -120,16 +123,6 @@ void test_compute_shader(Device &device, Stream &stream) {
     };
     Pair pa;
 
-    //    pa.b = vert.proxy();
-
-    //    Type::of<Hit>();
-
-    //    auto tt = Type::of<Triple>();
-
-    //    Kernel k = [] {
-    //        Var<Triple> a;
-    //    };
-
     std::tuple<int, float> tp;
 
     List<ByteBuffer, float4x4> lst{std::move(byte_buffer)};
@@ -137,87 +130,41 @@ void test_compute_shader(Device &device, Stream &stream) {
     traverse_tuple(tp, [&](auto elm) {
         int i = 0;
     });
-
+    //    byte_buffer.handle_ = fbuffer.handle_;
+    //    fbuffer.handle_ = byte_buffer.handle_;
     Kernel kernel = [&](Var<Pair> p, BufferVar<Triple> triangle,BindlessArrayVar ba,
                         ByteBufferVar byte_buffer_var, BufferVar<float3> vert_buffer) {
 
-        List<ByteBufferVar, float4x4 , AOS> list{byte_buffer_var};
-
-        //        $info("{}   ", p.i);
-        //        Float3 ver = p.b.read(dispatch_id());
-        //        $info("{}  {}  {}   {}", ver, p.b.size());
-        //        HitVar hit;
-        //
-        //        Float l = 1.f;
-        //        Float r = 2.f;
-        //
-        //        Float c = add(l, r);
-        //
-        //        /// Note the usage and implementation of DSL struct member function, e.g sum()
-        //        Var t = triangle.read(dispatch_id());
-        //        $info("triple  index {} : i = {}, j = {}, k = {},  sum: {} ", dispatch_id(), t.i, t.j, t.k, t->sum());
-        //
-        //        $info("vert from capture {} {} {}", vert.read(dispatch_id()));
-        //        $info("vert_buffer  {} {} {}", vert_buffer.read(dispatch_id()));
-        //
-        //        $switch(dispatch_id()) {
-        //            $case(1) {
-        //                $info("dispatch_idx is {} {} {}", dispatch_idx());
-        //            };
-        //            $default {
-        //                $info("switch default  dispatch_idx is {} {} {}", dispatch_idx());
-        //            };
-        //        };
-        //
-        //        $if(dispatch_id() == 1) {
-        //            $info("if branch dispatch_idx is {} {} {}", dispatch_idx());
-        //        }
-        //        $elif(dispatch_id() == 2) {
-        //            $info("if else branch dispatch_idx is {} {} {}", dispatch_idx());
-        //        }
-        //        $else {
-        //            $info("else branch dispatch_idx is {} {} {}", dispatch_idx());
-        //        };
-        //
-        //        Uint count = 2;
-        //
-        //        $for(i, count) {
-        //            $info("count for statement dispatch_idx is {} {} {}, i = {} ", dispatch_idx(), i);
-        //        };
-        //
-//        Uint begin = 2;
-//        Uint end = 10;
-//        $for(i, begin, end) {
-//            $info("begin end for statement dispatch_idx is {} {} {}, i = {} ", dispatch_idx(), i);
-//        };
-//        //
-//        //        Uint step = 2;
-//
-//        $for(i, 10, 0, -2) {
-//            $info("begin end step for statement dispatch_idx is {} {} {}, i = {} ", dispatch_idx(), i);
-//        };
+        List<ByteBufferVar, float4x4 , SOA> list{byte_buffer_var};
+        //        return ;
         //        auto soa = ba.byte_buffer_var(byte_handle).soa_view<Elm>();
-//                auto soa = ba.byte_buffer_var(byte_handle).aos_view<Elm>();
-//        auto soa = lst.buffer().soa_view<Elm>();
-        auto soa = list.buffer().soa_view<Elm>();
-//      auto soa1 = soa;
-//        list.write(dispatch_id(), make_float4x4(1.f * dispatch_id() + 1));
-        list.at(dispatch_id()) = make_float4x4(1.f * dispatch_id() + 1);
-                Var a = lst.read(dispatch_id());
+        //                auto soa = ba.byte_buffer_var(byte_handle).aos_view<Elm>();
+        //        auto soa = lst.buffer().soa_view<Elm>();
+        //        auto soa = list.buffer().soa_view<Elm>();
+        $info("{} ", byte_buffer_var.size_in_byte());
+                list.count() = 0;
+              list.push_back(make_float4x4(dispatch_id() * 1.f));
+        //      fbuffer.write(11, float4x4{6});
+        //      $info("{} ", list.advance_index());
+        //      auto soa1 = soa;a
+//        auto soa = byte_buffer_var.soa_view<Elm>();
+//        soa.write(0, make_float4x4(1.f * dispatch_id() + 1));
+        //        list.at(dispatch_id()) = make_float4x4(1.f * dispatch_id() + 1);
+                        Var a = list.read(dispatch_id());
+        //
+        //                Uint2 aa = make_uint2(1);
+        //                Float2 bb = make_float2(1.5f);
+        //
+        //                bb += bb + aa;
+        //                lst.count() = 20;
+        //                list.advance_index();
+                        $info("\n {} {} {} {}  \n"
+                              "{} {} {} {}  \n"
+                              "{} {} {} {}  \n"
+                              "{} {} {} {}  {}\n",
+                              a[0], a[1], a[2], a[3], list.storage_size_in_byte());
 
-                Uint2 aa = make_uint2(1);
-                Float2 bb = make_float2(1.5f);
-
-                bb += bb + aa;
-                lst.count() = 20;
-                list.advance_index();
-                $info("\n {} {} {} {}  \n"
-                      "{} {} {} {}  \n"
-                      "{} {} {} {}  \n"
-                      "{} {} {} {}  {}\n",
-                      a[0], a[1], a[2], a[3], list.count());
-
-//                $info("{} {}   ", bb);
+        //                $info("{} {}   ", bb);
     };
     Triple triple1{1, 2, 3};
 
@@ -226,7 +173,7 @@ void test_compute_shader(Device &device, Stream &stream) {
     Env::debugger().set_upper(make_uint2(1));
     auto shader = device.compile(kernel, "test desc");
     stream << Env::debugger().upload();
-    stream << shader(pa, tri, bindless_array,byte_buffer.view(), vert).dispatch(5)
+    stream << shader(pa, tri, bindless_array,byte_buffer2.view(), vert).dispatch(5)
            /// explict retrieve log
            << byte_buffer.download(byte_vec.data(), 0)
            << Env::printer().retrieve()
@@ -309,21 +256,21 @@ void test_lambda(Device &device, Stream &stream) {
         //
         //        f3.x = 1;
         //        f3.y = 2;
-//        stk.push_back(102u);
-//        stk.push_back(101u);
-//        stk.at(0) = 9;
-//        atomic_add(stk.count(), 10u);
-//        stk.count() = 0;
-//        $info("{} {} {}", stk.at(0), stk.at(1), stk.count());
-//        $info("{} {} {}", stk.at(2), stk.at(3), stk.count());
-//        Float2x3 tran0 = float2x3{};
-//        float3x2 mat(1,2,3,4,5,6);
-//        Float3x2 mat2 = mat;
-//        Float2x3 tran = transpose(mat);
-//        $info("{} {} {}", tran[0]);
-//        $info("{} {} {}", tran[1]);
-//        vert.at(0).x = 10.f;
-//        auto attt = vert.at(2) + 10;
+        //        stk.push_back(102u);
+        //        stk.push_back(101u);
+        //        stk.at(0) = 9;
+        //        atomic_add(stk.count(), 10u);
+        //        stk.count() = 0;
+        //        $info("{} {} {}", stk.at(0), stk.at(1), stk.count());
+        //        $info("{} {} {}", stk.at(2), stk.at(3), stk.count());
+        //        Float2x3 tran0 = float2x3{};
+        //        float3x2 mat(1,2,3,4,5,6);
+        //        Float3x2 mat2 = mat;
+        //        Float2x3 tran = transpose(mat);
+        //        $info("{} {} {}", tran[0]);
+        //        $info("{} {} {}", tran[1]);
+        //        vert.at(0).x = 10.f;
+        //        auto attt = vert.at(2) + 10;
         return ;
 
         float3 f3 = make_float3(1, 2, 3);
@@ -346,7 +293,7 @@ void test_lambda(Device &device, Stream &stream) {
         };
         func(f3);
         func(aa);
-      //        aa.xy() == aa.xy();
+        //        aa.xy() == aa.xy();
 
         //      aa.xy += 1;
         //      Float3 bbb = + aa.xyy();
@@ -372,27 +319,27 @@ void test_lambda(Device &device, Stream &stream) {
             float3 rgb = clamp(b, 0.f, 1.f);
             Uint3 ui = make_uint3(7,8,9);
 
-             a = -a.xyz() ;
+            a = -a.xyz() ;
             $info("{} {}  {}  aa ", a);
 
             Float3 t2 = make_float3(t.zyx());
-//
-//            DynamicArray<float> fa{123.f};
+            //
+            //            DynamicArray<float> fa{123.f};
             auto axyz = a.xyz();
-//            auto axy = select(make_bool2(true), make_float2(1),make_float2(2).xy());
+            //            auto axy = select(make_bool2(true), make_float2(1),make_float2(2).xy());
             Float3 sel = select(make_bool3(1,0,0).xyz(), a.xyz(), b.xyz());
 
             sel = face_forward(a, b.xyz(),a.xyz());
             auto mf = make_float4(a.xyz(), t.x);
 
-//            using tp = decltype(make_float4(remove_device_t<std::remove_cvref_t<decltype(a.xyz())>>{}, remove_device_t<Float>{}));
+            //            using tp = decltype(make_float4(remove_device_t<std::remove_cvref_t<decltype(a.xyz())>>{}, remove_device_t<Float>{}));
 
-//            a.xyz() * t.x;
+            //            a.xyz() * t.x;
 
             max(a.xyz(), b);
-                $info("{} {}  {}  call_select ", sel);
+            $info("{} {}  {}  call_select ", sel);
             $info("{} {}  {}  call_lerp ", lerp(t, b.xyz(),a));
-//            $info("{} {}  {}  {} ", t2, fa[0]);
+            //            $info("{} {}  {}  {} ", t2, fa[0]);
         }
         //        f3 = xyz;
 
@@ -433,13 +380,13 @@ void test_lambda(Device &device, Stream &stream) {
 
 
     stream << shader(1).dispatch(1)
-//           << stk.download(vvv.data())
-//           << stk.view(400, 4).upload(&ui)
+           //           << stk.download(vvv.data())
+           //           << stk.view(400, 4).upload(&ui)
            << shader(1).dispatch(1)
            << Env::printer().retrieve()
            << synchronize() << commit();
 
-//    stk.host_count();
+    //    stk.host_count();
 
     int i = 0;
 }
@@ -563,7 +510,7 @@ int main(int argc, char *argv[]) {
     Env::debugger().init(device);
 
     //    Env::set_code_obfuscation(true);
-    Env::set_valid_check(true);
+    Env::set_valid_check(false);
 
     /// create rtx file_manager if need
     device.init_rtx();
@@ -584,9 +531,9 @@ int main(int argc, char *argv[]) {
     auto bbb = bool_4 || bool_4.xxxx();
     auto b4 = all(bool_4.ww());
 
-            test_compute_shader(device, stream);
+    test_compute_shader(device, stream);
     //    test_parameter_struct(device, stream);
-//    test_lambda(device, stream);
+    //    test_lambda(device, stream);
 
     //    test_poly();
     return 0;
