@@ -253,9 +253,9 @@ public:
 ByteBufferView::ByteBufferView(const ocarina::ByteBuffer &buffer)
     : ByteBufferView(buffer.handle(), buffer.size()) {}
 
-template<typename T>
-ByteBuffer Device::create_stack(size_t size, const std::string &name) const noexcept {
-    return create_byte_buffer(sizeof(T) * size + sizeof(uint), name);
+template<typename T, ocarina::AccessMode mode>
+List<T, mode> Device::create_list(size_t size, const std::string &name) const noexcept {
+    return List<T, mode>(create_byte_buffer(sizeof(T) * size + sizeof(uint), name));
 }
 
 }// namespace ocarina
