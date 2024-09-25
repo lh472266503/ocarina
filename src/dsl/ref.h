@@ -353,12 +353,27 @@ public:
     BindlessArrayByteBuffer(const Expression *array, const Expression *index) noexcept
         : bindless_array_{array}, index_{index} {}
 
-    template<typename T, typename Offset>
+    template<typename T, typename Offset, typename Size = uint>
     requires concepts::integral<expr_value_t<Offset>>
-    [[nodiscard]] Var<T> load_as(Offset &&offset) const noexcept {
+    [[nodiscard]] Var<T> load_as(Offset &&offset, bool check_boundary = true) const noexcept {
+        if (check_boundary) {
+            offset = detail::correct_index(offset, size_in_byte<Size>(), typeid(*this).name(), traceback_string());
+        }
         const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::BINDLESS_ARRAY_BYTE_BUFFER_READ,
                                                                  {bindless_array_, index_, OC_EXPR(offset)});
         return eval<T>(expr);
+    }
+
+    template<typename T, typename Offset, typename Size = uint>
+    requires concepts::integral<expr_value_t<Offset>>
+    [[nodiscard]] Var<T> &load_as(Offset &&offset, bool check_boundary = true) noexcept {
+        if (check_boundary) {
+            offset = detail::correct_index(offset, size_in_byte<Size>(), typeid(*this).name(), traceback_string());
+        }
+        const CallExpr *expr = Function::current()->call_builtin(Type::of<T>(), CallOp::BINDLESS_ARRAY_BYTE_BUFFER_READ,
+                                                                 {bindless_array_, index_, OC_EXPR(offset)});
+        Var<T> *ret = Function::current()->template create_temp_obj<Var<T>>(expr);
+        return *ret;
     }
 
     template<typename Elm, typename Offset, typename Size = uint>
@@ -388,12 +403,12 @@ public:
 
     template<typename Elm, typename int_type = uint>
     [[nodiscard]] SOAView<Elm, BindlessArrayByteBuffer> soa_view(const Var<int_type> &view_size = InvalidUI32) const noexcept {
-        return SOAView<Elm, BindlessArrayByteBuffer>(*this, 0, view_size);
+        return SOAView<Elm, BindlessArrayByteBuffer>(*this, view_size);
     }
 
     template<typename Elm, typename int_type = uint>
     [[nodiscard]] AOSView<Elm, BindlessArrayByteBuffer> aos_view(const Var<int_type> &view_size = InvalidUI32) const noexcept {
-        return AOSView<Elm, BindlessArrayByteBuffer>(*this, 0, view_size);
+        return AOSView<Elm, BindlessArrayByteBuffer>(*this, view_size);
     }
 
     template<typename T, typename Offset>

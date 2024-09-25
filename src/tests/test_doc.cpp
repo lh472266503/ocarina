@@ -125,7 +125,7 @@ void test_compute_shader(Device &device, Stream &stream) {
 
     std::tuple<int, float> tp;
 
-    List<ByteBuffer, float4x4> lst{std::move(byte_buffer)};
+    List<ByteBuffer, float4x4, SOA> lst{std::move(byte_buffer)};
 
     traverse_tuple(tp, [&](auto elm) {
         int i = 0;
@@ -135,6 +135,7 @@ void test_compute_shader(Device &device, Stream &stream) {
     Kernel kernel = [&](Var<Pair> p, BufferVar<Triple> triangle,BindlessArrayVar ba,
                         ByteBufferVar byte_buffer_var, BufferVar<float3> vert_buffer) {
 
+//        List<BindlessArrayByteBuffer, float4x4 , SOA> list{bindless_array.byte_buffer_var(byte_handle)};
         List<ByteBufferVar, float4x4 , SOA> list{byte_buffer_var};
         //        return ;
         //        auto soa = ba.byte_buffer_var(byte_handle).soa_view<Elm>();
@@ -142,8 +143,9 @@ void test_compute_shader(Device &device, Stream &stream) {
         //        auto soa = lst.buffer().soa_view<Elm>();
         //        auto soa = list.buffer().soa_view<Elm>();
         $info("{} ", byte_buffer_var.size_in_byte());
-                list.count() = 0;
-              list.push_back(make_float4x4(dispatch_id() * 1.f));
+        list.count() = 0;
+                list.push_back( make_float4x4(dispatch_id() * 1.f));
+        //        list.write(dispatch_id(), make_float4x4(dispatch_id() * 1.f));
         //      fbuffer.write(11, float4x4{6});
         //      $info("{} ", list.advance_index());
         //      auto soa1 = soa;a
