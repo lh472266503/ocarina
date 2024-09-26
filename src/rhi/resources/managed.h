@@ -180,6 +180,14 @@ public:
         return device_ty::storage_segment().download(host_ty::data(), 0, async);
     }
 
+    void upload_immediately() const noexcept {
+        upload(false)->accept(*device_ty::buffer().device()->command_visitor());
+    }
+
+    void download_immediately() noexcept {
+        download(false)->accept(*device_ty::buffer().device()->command_visitor());
+    }
+
     [[nodiscard]] device_ty &device_list() noexcept { return *this; }
     [[nodiscard]] const device_ty &device_list() const noexcept { return *this; }
     [[nodiscard]] host_ty &host_list() noexcept { return *this; }

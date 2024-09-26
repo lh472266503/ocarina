@@ -131,6 +131,8 @@ void test_compute_shader(Device &device, Stream &stream) {
 
     auto mcd = ml.upload();
     auto cmd = ml.download();
+    ml.upload_immediately();
+    ml.download_immediately();
 
     traverse_tuple(tp, [&](auto elm) {
         int i = 0;
