@@ -246,7 +246,7 @@ OC_MAKE_DSL_MATRIX(4, 2)
 OC_MAKE_DSL_MATRIX(4, 3)
 OC_MAKE_DSL_MATRIX(4, 4)
 
-#undef OC_MAKE_MATRIX_
+#undef OC_MAKE_DSL_MATRIX
 
 template<typename T>
 Var(T &&) -> Var<expr_value_t<T>>;
