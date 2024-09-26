@@ -134,6 +134,8 @@ void test_compute_shader(Device &device, Stream &stream) {
     ml.upload_immediately();
     ml.download_immediately();
 
+
+
     traverse_tuple(tp, [&](auto elm) {
         int i = 0;
     });
@@ -192,6 +194,8 @@ void test_compute_shader(Device &device, Stream &stream) {
            << synchronize() << commit();
 
     auto ijk = lst.host_count();
+
+    RegistrableList<Elm, SOA> rl{move(lst)};
 
     int iii = 0;
 }

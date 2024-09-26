@@ -135,6 +135,102 @@ public:
     }
 };
 
+template<typename T, AccessMode mode = AOS>
+class RegistrableList : public List<T, mode, ByteBuffer>,
+                        public Registrable {
+public:
+    using Super = List<T, mode, ByteBuffer>;
+
+public:
+    RegistrableList() = default;
+    explicit RegistrableList(BindlessArray &bindless_array)
+        : Super(), Registrable(&bindless_array) {}
+
+    explicit RegistrableList(Super &&list) : Super(std::move(list)) {}
+
+    [[nodiscard]] const Super &super() const noexcept { return *this; }
+    [[nodiscard]] Super &super() noexcept { return *this; }
+
+    void register_self() noexcept {
+        if (has_registered()) {
+            bindless_array_->set_buffer(index_.hv(), Super::device_list().buffer());
+        } else {
+            index_ = bindless_array_->emplace(Super::device_list().buffer());
+        }
+        length_ = [&]() {
+            return static_cast<uint>(Super::device_list().capacity());
+        };
+    }
+
+    void unregister() noexcept {
+        if (has_registered()) {
+            (*bindless_array_)->remove_buffer(index_.hv());
+            index_ = InvalidUI32;
+        }
+    }
+
+    /// for dsl start
+    template<typename Size = uint>
+    [[nodiscard]] Var<Size> size_in_byte() const noexcept {
+        if (has_registered()) {
+            Uint buffer_index = *index_;
+            return bindless_array_->byte_buffer_var(buffer_index).size_in_byte();
+        }
+        return Super::buffer().expr().size_in_byte();
+    }
+
+    template<typename Size = uint>
+    [[nodiscard]] Var<Size> storage_size_in_byte() const noexcept {
+        return size_in_byte() - sizeof(uint);
+    }
+
+    [[nodiscard]] auto bindless_buffer() const noexcept {
+        Uint buffer_index = *index_;
+        BindlessArrayByteBuffer buffer = bindless_array_->byte_buffer_var(buffer_index);
+        return buffer;
+    }
+
+    [[nodiscard]] auto bindless_list() const noexcept {
+        BindlessArrayByteBuffer buffer = bindless_buffer();
+        return create_list<T, mode>(buffer);
+    }
+
+    template<typename Size = uint>
+    [[nodiscard]] Var<Size> &count() noexcept {
+        if (has_registered()) {
+            return bindless_list().template count<Size>();
+        }
+        return Super::template count<Size>();
+    }
+
+    template<typename Index = uint>
+    requires is_integral_expr_v<Index>
+    [[nodiscard]] Var<Index> advance_index() noexcept {
+        Var<Index> old_index = atomic_add(count<Index>(), 1);
+        return old_index;
+    }
+
+    template<typename Index, typename Size = uint>
+    requires is_integral_expr_v<Index>
+    [[nodiscard]] Var<T> read(const Index &index) const noexcept {
+        if (has_registered()) {
+            return bindless_list().template read<T>(index);
+        }
+        return Super::template read<T>(index);
+    }
+
+    template<typename Index, typename Arg, typename Size = uint>
+    requires std::is_same_v<T, remove_device_t<Arg>> && is_integral_expr_v<Index>
+    void write(const Index &index, const Arg &arg) noexcept {
+        if (has_registered()) {
+            bindless_list().write(index, arg);
+        } else {
+            Super::write(index, arg);
+        }
+    }
+    /// for dsl end
+};
+
 template<typename T>
 class RegistrableManaged : public Managed<T>,
                            public Registrable {
