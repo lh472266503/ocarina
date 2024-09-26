@@ -155,6 +155,9 @@ public:
     [[nodiscard]] const Super &super() const noexcept { return *this; }
     [[nodiscard]] Super &super() noexcept { return *this; }
 
+    [[nodiscard]] const Super *operator->() const noexcept { return &super(); }
+    [[nodiscard]] Super *operator->() noexcept { return &super(); }
+
     void register_self() noexcept {
         if (has_registered()) {
             bindless_array_->set_buffer(index_.hv(), Super::buffer());
@@ -231,7 +234,7 @@ public:
 
     template<typename Index, typename Size = uint>
     requires is_integral_expr_v<Index>
-    [[nodiscard]] Var<T>& at(const Index &index) noexcept {
+    [[nodiscard]] Var<T> &at(const Index &index) noexcept {
         if (has_registered()) {
             return bindless_list().at(index);
         }

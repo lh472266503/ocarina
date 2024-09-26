@@ -56,9 +56,9 @@ void test_list(Device &device, Stream& stream) {
 
     };
     auto shader = device.compile(kernel, "test_list");
-    stream << rl.super().storage_segment().upload(host.data());
+    stream << rl->storage_segment().upload(host.data());
     stream << shader(6).dispatch(3);
-    stream << rl.super().storage_segment().download(host.data());
+    stream << rl->storage_segment().download(host.data());
     stream << Env::printer().retrieve();
     stream << synchronize() << commit();
 
