@@ -125,7 +125,7 @@ void test_compute_shader(Device &device, Stream &stream) {
 
     std::tuple<int, float> tp;
 
-    List<float4x4,  SOA, ByteBuffer> lst{std::move(byte_buffer)};
+    List<float4x4,  SOA, ByteBuffer> lst= create_list<Elm, SOA>(std::move(byte_buffer));
 
     traverse_tuple(tp, [&](auto elm) {
         int i = 0;
@@ -134,10 +134,9 @@ void test_compute_shader(Device &device, Stream &stream) {
     //    fbuffer.handle_ = byte_buffer.handle_;
     Kernel kernel = [&](Var<Pair> p, BufferVar<Triple> triangle,BindlessArrayVar ba,
                         ByteBufferVar byte_buffer_var, BufferVar<float3> vert_buffer) {
-
-//        List< float4x4,SOA , BindlessArrayByteBuffer> list{bindless_array.byte_buffer_var(byte_handle)};
-//        List< float4x4 ,SOA, BindlessArrayByteBuffer> list{ba.byte_buffer_var(byte_handle)};
-        List<float4x4 ,  SOA,ByteBufferVar> list{byte_buffer_var};
+//List< float4x4 ,SOA, BindlessArrayByteBuffer> list = create_list<float4x4, SOA>(ba.byte_buffer_var(byte_handle));
+//List< float4x4 ,SOA, BindlessArrayByteBuffer> list = create_list<float4x4, SOA>(bindless_array.byte_buffer_var(byte_handle));
+        List<float4x4 ,  SOA,ByteBufferVar> list = create_list<float4x4, SOA>(byte_buffer_var);
         //        return ;
         //        auto soa = ba.byte_buffer_var(byte_handle).soa_view<Elm>();
         //                auto soa = ba.byte_buffer_var(byte_handle).aos_view<Elm>();

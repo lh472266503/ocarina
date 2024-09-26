@@ -40,12 +40,9 @@ private:
     buffer_t<TBuffer> buffer_;
 
 public:
-    template<typename U>
-    requires std::is_same_v<U, ByteBuffer>
-    explicit List(U buffer) : buffer_(std::move(buffer)) {}
+    explicit List(ByteBuffer buffer) : buffer_(std::move(buffer)) {}
 
     template<typename U>
-    requires(!std::is_same_v<U, ByteBuffer>)
     explicit List(const U &u) : buffer_(u) {}
 
     [[nodiscard]] auto &buffer() noexcept {
@@ -165,5 +162,15 @@ public:
     }
     /// for dsl end
 };
+
+template<typename T, AccessMode mode = AOS, typename TBuffer>
+[[nodiscard]] List<T, mode, TBuffer> create_list(const TBuffer &buffer) noexcept {
+    return List<T, mode, TBuffer>(OC_FORWARD(buffer));
+}
+
+template<typename T, AccessMode mode = AOS>
+[[nodiscard]] List<T, mode, ByteBuffer> create_list(ByteBuffer &&buffer) noexcept {
+    return List<T, mode, ByteBuffer>(OC_FORWARD(buffer));
+}
 
 }// namespace ocarina
