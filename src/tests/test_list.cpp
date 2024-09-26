@@ -16,10 +16,12 @@ using namespace ocarina;
 void test_list(Device &device, Stream& stream) {
     using Elm = float4x4;
     size_t size = 10;
-    auto list = device.create_list<Elm, AOS>(size);
+    auto list = device.create_list<Elm, SOA>(size);
 
-    RegistrableList<Elm, AOS> rl{std::move(list)};
+    RegistrableList<Elm, SOA> rl{};
     vector<Elm> host;
+    rl.set_list(std::move(list));
+
     host.resize(size , make_float4x4(2));
 
     BindlessArray bindless_array = device.create_bindless_array();
@@ -41,8 +43,8 @@ void test_list(Device &device, Stream& stream) {
               "{} {} {} {}  {}\n",
               a[0], a[1], a[2], a[3], rl.advance_index());
 
-//        rl.write(dispatch_id(), mat);
-        rl.at(dispatch_id()) = mat;
+        rl.write(dispatch_id(), mat);
+//        rl.at(dispatch_id()) = mat;
 
         a = rl.read(dispatch_id());
 

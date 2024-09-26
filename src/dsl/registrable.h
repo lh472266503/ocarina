@@ -148,6 +148,10 @@ public:
 
     explicit RegistrableList(Super &&list) : Super(std::move(list)) {}
 
+    void set_list(Super &&list) noexcept {
+        super() = std::move(list);
+    }
+
     [[nodiscard]] const Super &super() const noexcept { return *this; }
     [[nodiscard]] Super &super() noexcept { return *this; }
 
