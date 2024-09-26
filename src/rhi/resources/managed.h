@@ -160,10 +160,38 @@ public:
         host_list().resize(device_list().capacity());
     }
 
+    // Move constructor
+    ManagedList(ManagedList &&other) noexcept
+        : device_ty(std::move(other)),
+          host_ty(std::move(other)) {}
+
+    // Move assignment
+    ManagedList &operator=(ManagedList &&other) noexcept {
+        device_ty::operator=(std::move(other));
+        host_ty::operator=(std::move(other));
+        return *this;
+    }
+
+    [[nodiscard]] BufferUploadCommand *upload(bool async = true) const noexcept {
+        return device_ty::storage_segment().upload(host_ty::data(), async);
+    }
+
+    [[nodiscard]] BufferDownloadCommand *download(bool async = true) noexcept {
+        return device_ty::storage_segment().download(host_ty::data(), 0, async);
+    }
+
     [[nodiscard]] device_ty &device_list() noexcept { return *this; }
     [[nodiscard]] const device_ty &device_list() const noexcept { return *this; }
     [[nodiscard]] host_ty &host_list() noexcept { return *this; }
     [[nodiscard]] const host_ty &host_list() const noexcept { return *this; }
+
+    void set_host(host_ty val) noexcept { host_list() = std::move(val); }
+    [[nodiscard]] const T *operator->() const { return host_ty::data(); }
+    [[nodiscard]] T *operator->() { return host_ty::data(); }
+
+    template<typename Index>
+    requires concepts::integral<Index>
+    [[nodiscard]] auto operator[](Index &&i) { return host_ty::operator[](OC_FORWARD(i)); }
 };
 
 }// namespace ocarina

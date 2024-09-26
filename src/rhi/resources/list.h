@@ -62,6 +62,11 @@ public:
         }
     }
 
+    [[nodiscard]] auto storage_segment() const noexcept {
+        static_assert(is_host, "clear must be called on host side!");
+        return buffer().view(0, buffer().size() - sizeof(uint));
+    }
+
     [[nodiscard]] auto view() noexcept {
         if constexpr (access_mode == AOS) {
             return buffer().template aos_view<element_type>(storage_size_in_byte());
