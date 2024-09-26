@@ -153,12 +153,12 @@ public:
 
     void register_self() noexcept {
         if (has_registered()) {
-            bindless_array_->set_buffer(index_.hv(), Super::device_list().buffer());
+            bindless_array_->set_buffer(index_.hv(), Super::buffer());
         } else {
-            index_ = bindless_array_->emplace(Super::device_list().buffer());
+            index_ = bindless_array_->emplace(Super::buffer());
         }
         length_ = [&]() {
-            return static_cast<uint>(Super::device_list().capacity());
+            return static_cast<uint>(Super::capacity());
         };
     }
 
@@ -214,9 +214,24 @@ public:
     requires is_integral_expr_v<Index>
     [[nodiscard]] Var<T> read(const Index &index) const noexcept {
         if (has_registered()) {
-            return bindless_list().template read<T>(index);
+            return bindless_list().read(index);
         }
-        return Super::template read<T>(index);
+        return Super::read(index);
+    }
+
+    template<typename Index, typename Size = uint>
+    requires is_integral_expr_v<Index>
+    [[nodiscard]] Var<T> at(const Index &index) const noexcept {
+        return read(index);
+    }
+
+    template<typename Index, typename Size = uint>
+    requires is_integral_expr_v<Index>
+    [[nodiscard]] Var<T>& at(const Index &index) noexcept {
+        if (has_registered()) {
+            return bindless_list().at(index);
+        }
+        return Super::at(index);
     }
 
     template<typename Index, typename Arg, typename Size = uint>
