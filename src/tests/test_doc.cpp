@@ -127,6 +127,8 @@ void test_compute_shader(Device &device, Stream &stream) {
 
     List<float4x4,  SOA, ByteBuffer> lst= create_list<Elm, SOA>(std::move(byte_buffer));
 
+    ManagedList<Elm> ml = device.create_managed_list<Elm>(10, "");
+
     traverse_tuple(tp, [&](auto elm) {
         int i = 0;
     });

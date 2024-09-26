@@ -40,7 +40,8 @@ private:
     buffer_t<TBuffer> buffer_;
 
 public:
-    explicit List(ByteBuffer buffer) : buffer_(std::move(buffer)) {}
+    List() = default;
+    explicit List(ByteBuffer &&buffer) : buffer_(std::move(buffer)) {}
 
     template<typename U>
     explicit List(const U &u) : buffer_(u) {}

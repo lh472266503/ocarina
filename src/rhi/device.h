@@ -25,6 +25,9 @@ class ByteBuffer;
 template<typename T, AccessMode mode = AOS, typename TBuffer = ByteBuffer>
 class List;
 
+template<typename T, AccessMode mode = AOS>
+class ManagedList;
+
 template<typename T>
 class Managed;
 
@@ -102,6 +105,11 @@ public:
 
     template<typename T, AccessMode mode = AOS>
     [[nodiscard]] List<T, mode> create_list(size_t size, const string &name = "") const noexcept; // implement in byte_buffer.h
+
+    template<typename T, AccessMode mode = AOS>
+    [[nodiscard]] ManagedList<T, mode> create_managed_list(size_t size, const string &name = "") const noexcept {
+        return ManagedList<T, mode>(create_list<T, mode>(size, name));
+    }
 
     template<typename T = std::byte, int... Dims>
     [[nodiscard]] Buffer<T, Dims...> create_buffer(size_t size, handle_ty stream) noexcept {
