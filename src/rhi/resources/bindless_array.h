@@ -122,6 +122,12 @@ public:
         return byte_buffer_var(OC_FORWARD(index)).template soa_view<Elm>();
     }
 
+    template<typename Elm, typename Index>
+    requires concepts::integral<expr_value_t<Index>>
+    [[nodiscard]] AOSView<Elm, BindlessArrayByteBuffer> aos_view(Index &&index) noexcept {
+        return byte_buffer_var(OC_FORWARD(index)).template aos_view<Elm>();
+    }
+
     [[nodiscard]] Var<BindlessArray> var() const noexcept {
         return Var<BindlessArray>(expression());
     }

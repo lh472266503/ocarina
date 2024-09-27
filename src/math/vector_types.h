@@ -209,6 +209,7 @@ public:
     T x{}, y{};
     VectorStorage() : x{}, y{} {}
     explicit constexpr VectorStorage(T s) noexcept : x{s}, y{s} {}
+    explicit constexpr VectorStorage(const T *ptr) noexcept : x{ptr[0]}, y{ptr[1]} {}
     constexpr VectorStorage(T x, T y) noexcept : x{x}, y{y} {}
 #include "swizzle_inl/swizzle2.inl.h"
 };
@@ -225,6 +226,7 @@ public:
     T x{}, y{}, z{};
     VectorStorage() : x{}, y{}, z{} {}
     explicit constexpr VectorStorage(T s) noexcept : x{s}, y{s}, z{s} {}
+    explicit constexpr VectorStorage(const T *ptr) noexcept : x{ptr[0]}, y{ptr[1]}, z{ptr[2]} {}
     constexpr VectorStorage(T x, T y, T z) noexcept : x{x}, y{y}, z{z} {}
 #include "swizzle_inl/swizzle3.inl.h"
 };
@@ -241,6 +243,7 @@ public:
     T x{}, y{}, z{}, w{};
     VectorStorage() : x{}, y{}, z{}, w{} {}
     explicit constexpr VectorStorage(T s) noexcept : x{s}, y{s}, z{s}, w{s} {}
+    explicit constexpr VectorStorage(const T *ptr) noexcept : x{ptr[0]}, y{ptr[1]}, z{ptr[2]}, w{ptr[3]} {}
     constexpr VectorStorage(T x, T y, T z, T w) noexcept : x{x}, y{y}, z{z}, w{w} {}
 #include "swizzle_inl/swizzle4.inl.h"
 };
@@ -259,6 +262,14 @@ struct Vector : public detail::VectorStorage<T, N> {
     template<typename U>
     requires is_scalar_v<U>
     explicit constexpr Vector(U s) noexcept : Vector(static_cast<T>(s)) {}
+
+    template<typename U, size_t NN>
+    requires(NN >= N)
+    explicit constexpr Vector(Vector<U, NN> v)
+        : Vector([&]<size_t... i>(std::index_sequence<i...>) {
+              return Vector<T, N>(static_cast<T>(v[i])...);
+          }(std::make_index_sequence<N>())) {}
+
     [[nodiscard]] constexpr T &operator[](size_t index) noexcept { return (&(this->x))[index]; }
     [[nodiscard]] constexpr const T &operator[](size_t index) const noexcept { return (&(this->x))[index]; }
     [[nodiscard]] constexpr T &at(size_t index) noexcept { return (&(this->x))[index]; }
@@ -742,8 +753,8 @@ OC_MAKE_SWIZZLE_LOGIC_FUNC(none)
             static_cast<type>(v[0]),                                                                                         \
             static_cast<type>(v[1]));                                                                                        \
     }                                                                                                                        \
-    [[nodiscard]] constexpr auto make_##type##2(type##3 v) noexcept { return type##2(v.x, v.y); }                            \
-    [[nodiscard]] constexpr auto make_##type##2(type##4 v) noexcept { return type##2(v.x, v.y); }                            \
+    template<typename T, size_t N>                                                                                           \
+    [[nodiscard]] constexpr auto make_##type##2(Vector<T, N> v) noexcept { return type##2(v); }                              \
                                                                                                                              \
     [[nodiscard]] constexpr auto make_##type##3(type s = {}) noexcept { return type##3(s); }                                 \
     [[nodiscard]] constexpr auto make_##type##3(type x, type y, type z) noexcept { return type##3(x, y, z); }                \

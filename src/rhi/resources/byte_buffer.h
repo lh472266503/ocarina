@@ -87,6 +87,10 @@ public:
         return BufferByteSetCommand::create(head(), size_in_byte(), value, async);
     }
 
+    [[nodiscard]] BufferUploadCommand *upload_sync(const void *data) const noexcept {
+        return BufferUploadCommand::create(data, head(), size_in_byte(), false);
+    }
+
     [[nodiscard]] BufferByteSetCommand *reset(bool async = true) const noexcept {
         return byte_set(0, async);
     }
@@ -99,6 +103,7 @@ private:
     size_t size_{};
 
 public:
+    ByteBuffer() = default;
     ByteBuffer(Device::Impl *device, size_t size, const string &desc = "")
         : RHIResource(device, Tag::BUFFER, device->create_buffer(size, desc)),
           size_(size) {}
@@ -110,7 +115,8 @@ public:
     /// head of the buffer
     [[nodiscard]] handle_ty head() const noexcept { return handle(); }
     [[nodiscard]] size_t size() const noexcept { return size_; }
-    [[nodiscard]] size_t size_in_byte() const noexcept { return size(); }
+    template<typename Size = size_t>
+    [[nodiscard]] Size size_in_byte() const noexcept { return size(); }
 
     void destroy() override {
         _destroy();
@@ -204,24 +210,36 @@ public:
         return load<4, Elm>(OC_FORWARD(offset));
     }
 
+    [[nodiscard]] Expr<ByteBuffer> expr() const noexcept {
+        return make_expr<ByteBuffer>(expression());
+    }
+
     template<typename Target, typename Offset>
     requires is_integral_expr_v<Offset>
     [[nodiscard]] Var<Target> load_as(Offset &&offset) const noexcept {
-        auto expr = make_expr<ByteBuffer>(expression());
-        return expr.template load_as<Target>(OC_FORWARD(offset));
+        return expr().template load_as<Target>(OC_FORWARD(offset));
+    }
+
+    template<typename Target, typename Offset>
+    requires is_integral_expr_v<Offset>
+    [[nodiscard]] Var<Target> &load_as(Offset &&offset) noexcept {
+        return expr().template load_as<Target>(OC_FORWARD(offset));
     }
 
     template<typename Elm, typename Offset>
     requires is_integral_expr_v<Offset>
     void store(Offset &&offset, const Elm &val) noexcept {
-        auto expr = make_expr<ByteBuffer>(expression());
-        expr.store(OC_FORWARD(offset), val);
+        expr().store(OC_FORWARD(offset), val);
     }
 
-    template<typename Elm>
-    [[nodiscard]] SOAView<Elm, Expr<ByteBuffer>> soa_view() noexcept {
-        auto e = make_expr<ByteBuffer>(expression());
-        return SOAView<Elm, Expr<ByteBuffer>>(e);
+    template<typename Elm, typename int_type = uint>
+    [[nodiscard]] auto soa_view(const Var<int_type> &view_size = InvalidUI32) const noexcept {
+        return expr().soa_view<Elm>(view_size);
+    }
+
+    template<typename Elm, typename int_type = uint>
+    [[nodiscard]] auto aos_view(const Var<int_type> &view_size = InvalidUI32) const noexcept {
+        return expr().aos_view<Elm>(view_size);
     }
 
     template<typename Target = uint, typename Index>
@@ -234,5 +252,10 @@ public:
 
 ByteBufferView::ByteBufferView(const ocarina::ByteBuffer &buffer)
     : ByteBufferView(buffer.handle(), buffer.size()) {}
+
+template<typename T, ocarina::AccessMode mode>
+List<T, mode> Device::create_list(size_t size, const std::string &name) const noexcept {
+    return List<T, mode>(create_byte_buffer(sizeof(T) * size + sizeof(uint), name));
+}
 
 }// namespace ocarina

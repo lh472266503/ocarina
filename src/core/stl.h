@@ -31,11 +31,11 @@
 
 #define OC_DEFINE_TEMPLATE_VALUE(template_name) \
     template<typename T>                        \
-    constexpr auto template_name##_v = template_name<T>::value;
+    static constexpr auto template_name##_v = template_name<T>::value;
 
 #define OC_DEFINE_TEMPLATE_VALUE_MULTI(template_name) \
     template<typename... Ts>                          \
-    constexpr auto template_name##_v = template_name<Ts...>::value;
+    static constexpr auto template_name##_v = template_name<Ts...>::value;
 
 #define OC_DEFINE_TEMPLATE_TYPE(template_name) \
     template<typename T>                       \
@@ -161,10 +161,21 @@ template<typename To, typename From>
     }
 }
 
-template<typename T>
-using UP = unique_ptr<T>;
+template<typename To, typename From>
+[[nodiscard]] std::unique_ptr<To> static_unique_pointer_cast(std::unique_ptr<From> &&from) {
+    To *casted = static_cast<To *>(from.get());
+    from.release();
+    return std::unique_ptr<To>(casted);
+}
+
+template<typename... Ts>
+using UP = unique_ptr<Ts...>;
+
 template<typename T>
 using SP = shared_ptr<T>;
+
+template<typename T>
+using WP = weak_ptr<T>;
 
 inline void oc_memcpy(void *dst, const void *src, size_t size) {
 #ifdef _MSC_VER
@@ -217,6 +228,7 @@ using std::array;
 using std::deque;
 using std::list;
 using std::map;
+using std::multimap;
 using std::optional;
 using std::queue;
 using std::set;

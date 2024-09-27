@@ -5,7 +5,7 @@
 #pragma once
 
 #include "core/stl.h"
-#include "computable.h"
+#include "ref.h"
 #include "ast/type_registry.h"
 #include "core/string_util.h"
 #include "syntax.h"

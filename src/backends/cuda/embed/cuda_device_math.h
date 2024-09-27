@@ -5,18 +5,6 @@
 
 [[nodiscard]] __device__ inline auto oc_face_forward(oc_float3 v1, oc_float3 v2) noexcept { return oc_dot(v1, v2) > 0 ? v1 : -v1; }
 
-[[nodiscard]] __device__ inline auto oc_transpose(const oc_float2x2 m) noexcept {
-    return oc_make_float2x2(m[0].x, m[1].x, m[0].y, m[1].y);
-}
-
-[[nodiscard]] __device__ inline auto oc_transpose(const oc_float3x3 m) noexcept {
-    return oc_make_float3x3(m[0].x, m[1].x, m[2].x, m[0].y, m[1].y, m[2].y, m[0].z, m[1].z, m[2].z);
-}
-
-[[nodiscard]] __device__ inline auto oc_transpose(const oc_float4x4 m) noexcept {
-    return oc_make_float4x4(m[0].x, m[1].x, m[2].x, m[3].x, m[0].y, m[1].y, m[2].y, m[3].y, m[0].z, m[1].z, m[2].z, m[3].z, m[0].w, m[1].w, m[2].w, m[3].w);
-}
-
 [[nodiscard]] __device__ inline auto oc_determinant(const oc_float2x2 m) noexcept {
     return m[0][0] * m[1][1] - m[1][0] * m[0][1];
 }

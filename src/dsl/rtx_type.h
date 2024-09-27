@@ -8,7 +8,7 @@
 #include "dsl/operators.h"
 #include "dsl/struct.h"
 #include "dsl/func.h"
-#include "computable.h"
+#include "ref.h"
 
 namespace ocarina {
 

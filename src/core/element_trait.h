@@ -58,7 +58,7 @@ using element_t = typename detail::element_impl<std::remove_cvref_t<T>>::type;
 namespace detail {
 template<typename T>
 struct ptr_impl {
-    static_assert(always_false_v<T>);
+//    static_assert(always_false_v<T>);
     using type = T;
 };
 
@@ -108,9 +108,9 @@ template<typename T>
 static constexpr bool is_ptr_v = detail::is_ptr_impl<std::remove_cvref_t<T>>::value;
 
 template<typename Arg>
-requires is_ptr_v<Arg>
-[[nodiscard]] auto raw_ptr(Arg &arg) {
-    if constexpr (std::is_pointer_v<Arg>) {
+requires is_ptr_v<std::remove_cvref_t<Arg>>
+[[nodiscard]] auto raw_ptr(Arg &&arg) {
+    if constexpr (std::is_pointer_v<std::remove_cvref_t<Arg>>) {
         return arg;
     } else {
         return arg.get();

@@ -832,10 +832,10 @@ def main():
     curr_dir = dirname(realpath(__file__))
     # using_scalar()
     # define_vector()
-    define_array()
+    # define_array()
     define_operator()
-    define_matrix()
-    matrix_operator()
+    # define_matrix()
+    # matrix_operator()
     define_select()
     define_unary_funcs()
     define_binary_funcs()
@@ -846,7 +846,7 @@ def main():
     convert_optix_device_header()
     define_vec_func()
     define_make_vecs()
-    define_make_matrix()
+    # define_make_matrix()
 
     content += "\n "
     content += "\n "

@@ -34,6 +34,17 @@ concept string_viewable = requires(T v) {
     ocarina::string_view{v};
 };
 
+template<typename... Ts>
+concept all_string_viewable = (string_viewable<Ts> && ...);
+
+template<typename T>
+concept string_convertible = requires(T v) {
+    ocarina::string{v};
+};
+
+template<typename... Ts>
+concept all_string_convertible = (string_convertible<Ts> && ...);
+
 template<typename T>
 concept span_convertible = requires(T v) {
     ocarina::span{v};
@@ -120,7 +131,8 @@ concept matrix4 = is_matrix4_v<T>;
 template<typename T>
 concept basic = is_basic_v<T>;
 
-
+template<typename ...Ts>
+concept all_basic = is_all_basic_v<Ts...>;
 
 template<typename... T>
 concept same = is_same_v<T...>;

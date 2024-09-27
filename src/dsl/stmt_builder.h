@@ -458,7 +458,7 @@ void for_range(Count &&count, Body &&body) noexcept {
 }
 
 template<typename Begin, typename End, typename Body>
-requires concepts::integral<expr_value_t<Begin>>
+requires ocarina::is_all_integral_expr_v<Begin, End>
 void for_range(Begin &&begin, End &&end, Body &&body) noexcept {
     detail::range(std::forward<Begin>(begin),
                   std::forward<End>(end)) /
@@ -466,7 +466,7 @@ void for_range(Begin &&begin, End &&end, Body &&body) noexcept {
 }
 
 template<typename Begin, typename End, typename Step, typename Body>
-requires concepts::integral<expr_value_t<Begin>>
+requires ocarina::is_all_integral_expr_v<Begin, End, Step>
 void for_range(Begin &&begin, End &&end, Step &&step, Body &&body) noexcept {
     detail::range(std::forward<Begin>(begin),
                   std::forward<End>(end),

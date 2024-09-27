@@ -93,19 +93,39 @@ MAKE_ALL_TYPE_TRAITS(unsigned)
 
 #undef MAKE_ALL_TYPE_TRAITS
 
-namespace detail {
+namespace {
 template<typename... T>
 struct all_same_impl : std::true_type {};
 
 template<typename First, typename... Other>
 struct all_same_impl<First, Other...> : std::conjunction<std::is_same<First, Other>...> {};
-}// namespace detail
+}// namespace
 
 template<typename... T>
-using is_same = detail::all_same_impl<T...>;
+using is_same = all_same_impl<T...>;
 
 template<typename... T>
 constexpr auto is_same_v = is_same<T...>::value;
+
+namespace {
+
+template<typename T, typename... Ts>
+struct all_is_impl;
+
+template<typename T, typename First>
+struct all_is_impl<T, First> : std::is_same<T, First> {};
+
+template<typename T, typename First, typename... Rest>
+struct all_is_impl<T, First, Rest...> : std::conjunction<all_is_impl<T, First>,
+                                                         all_is_impl<T, Rest>...> {};
+
+}// namespace
+
+template<typename Target, typename ...Ts>
+using all_is = all_is_impl<std::remove_cvref_t<Target>, std::remove_cvref_t<Ts>...>;
+
+template<typename Target,typename... Ts>
+constexpr auto all_is_v = all_is<Target, Ts...>::value;
 
 template<typename T, size_t N, size_t... Indices>
 struct Swizzle;
@@ -332,7 +352,7 @@ using vector_dimension = detail::vector_dimension_impl<std::remove_cvref_t<T>>;
 template<typename T>
 constexpr auto vector_dimension_v = vector_dimension<T>::value;
 
-template<size_t N>
+template<size_t N, size_t M>
 struct Matrix;
 
 namespace detail {
@@ -341,8 +361,8 @@ struct matrix_dimension_impl {
     static constexpr auto value = static_cast<size_t>(1u);
 };
 
-template<size_t N>
-struct matrix_dimension_impl<Matrix<N>> {
+template<size_t N, size_t M>
+struct matrix_dimension_impl<Matrix<N, M>> {
     static constexpr auto value = N;
 };
 }// namespace detail
@@ -559,11 +579,11 @@ namespace detail {
 template<typename T, size_t N = 0u>
 struct is_matrix_impl : std::false_type {};
 
-template<size_t N>
-struct is_matrix_impl<Matrix<N>, N> : std::true_type {};
+template<size_t N, size_t M>
+struct is_matrix_impl<Matrix<N, M>, N> : std::true_type {};
 
-template<size_t N>
-struct is_matrix_impl<Matrix<N>, 0u> : std::true_type {};
+template<size_t N, size_t M>
+struct is_matrix_impl<Matrix<N, M>, 0u> : std::true_type {};
 }// namespace detail
 
 template<typename T, size_t N = 0u>

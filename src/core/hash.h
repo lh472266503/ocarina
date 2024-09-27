@@ -34,6 +34,21 @@ concept hashable_with_hash_code_method = requires(T x) {
     return XXH3_64bits_withSeed(data, size, seed);
 }
 
+namespace {
+template<typename T>
+struct is_3row_matrix {
+    static constexpr bool value = false;
+};
+
+template<size_t N>
+struct is_3row_matrix<Matrix<N, 3>> {
+    static constexpr bool value = true;
+};
+
+template<typename T>
+static constexpr bool is_3row_matrix_v = is_3row_matrix<std::remove_cvref_t<T>>::value;
+}// namespace
+
 [[nodiscard]] OC_CORE_API std::string_view hash_to_string(uint64_t hash) noexcept;
 
 class Hash64 {
@@ -60,9 +75,12 @@ public:
         } else if constexpr (is_vector3_v<T>) {
             auto x = s;
             return xxh3_hash64(&x, sizeof(vector_element_t<T>) * 3u, seed_);
-        } else if constexpr (is_matrix3_v<T>) {
-            auto x = ocarina::make_float4x4(s);
-            return (*this)(x);
+        } else if constexpr (is_3row_matrix_v<T>) {
+            uint64t ret = seed_;
+            for (int i = 0; i < std::remove_cvref_t<T>::ColNum; ++i) {
+                ret = Hash64{ret}((*this)(s[i]));
+            }
+            return ret;
         } else if constexpr (
             std::is_standard_layout_v<std::remove_cvref_t<T>> ||
             std::is_arithmetic_v<std::remove_cvref_t<T>> ||
@@ -108,7 +126,14 @@ requires concepts::iterable<T>
     return ret;
 }
 
-class Hashable {
+class RTTI {
+public:
+    [[nodiscard]] virtual const char *class_name() const noexcept {
+        return typeid(*this).name();
+    }
+};
+
+class Hashable : public RTTI {
 private:
     mutable uint64_t _hash{0u};
     mutable bool _hash_computed{false};
@@ -124,8 +149,6 @@ protected:
     }
 
 public:
-    [[nodiscard]] const char *class_name() const noexcept { return typeid(*this).name(); }
-
     void reset_hash() const noexcept { _hash_computed = false; }
 
     [[nodiscard]] uint64_t hash() const noexcept {

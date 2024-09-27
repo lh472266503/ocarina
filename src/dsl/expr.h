@@ -6,7 +6,7 @@
 
 #include "math/basic_types.h"
 #include "dsl/type_trait.h"
-#include "dsl/computable.h"
+#include "dsl/ref.h"
 #include "ast/function.h"
 
 namespace ocarina {
@@ -27,11 +27,11 @@ template<typename T>
 }// namespace detail
 
 template<typename T>
-struct Expr : public detail::Computable<T> {
+struct Expr : public detail::Ref<T> {
 public:
     using this_type = T;
     explicit Expr(const Expression *expression) noexcept
-        : detail::Computable<T>(expression) {}
+        : detail::Ref<T>(expression) {}
     Expr() = default;
     template<typename Arg>
     requires concepts::non_pointer<std::remove_cvref_t<Arg>> && concepts::different<Expr<T>, std::remove_cvref_t<Arg>>

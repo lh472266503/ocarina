@@ -3,6 +3,7 @@
 //
 
 #include "widgets.h"
+#include "imgui_internal.h"
 
 namespace ocarina {
 template<typename T>
@@ -55,6 +56,16 @@ void ImGuiWidgets::begin_tool_tip() noexcept {
 
 void ImGuiWidgets::end_tool_tip() noexcept {
     ImGui::EndTooltip();
+}
+
+void ImGuiWidgets::begin_disabled() noexcept {
+    ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+    ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+}
+
+void ImGuiWidgets::end_disabled() noexcept {
+    ImGui::PopStyleVar();
+    ImGui::PopItemFlag();
 }
 
 bool ImGuiWidgets::radio_button(const std::string &label, bool active) noexcept {

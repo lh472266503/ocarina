@@ -5,7 +5,7 @@
 #pragma once
 
 #include "core/stl.h"
-#include "computable.h"
+#include "ref.h"
 #include "ast/function.h"
 #include "expr.h"
 #include "math/basic_types.h"
@@ -18,26 +18,26 @@ struct ArgumentCreation {};
 struct ReferenceArgumentCreation {};
 }// namespace detail
 
-using detail::Computable;
+using detail::Ref;
 
 template<typename T>
-struct Var : public Computable<T> {
+struct Var : public Ref<T> {
     using this_type = T;
-    using Super = Computable<T>;
-    using Computable<T>::Computable;
+    using Super = Ref<T>;
+    using Ref<T>::Ref;
     using dsl_type = Var<T>;
     friend class MemberAccessor;
     explicit Var(const ocarina::Expression *expression) noexcept
-        : ocarina::detail::Computable<this_type>(expression) {}
+        : ocarina::detail::Ref<this_type>(expression) {}
     Var() noexcept
         : Var(ocarina::Function::current()->local(ocarina::Type::of<this_type>())) {
         static_assert(!is_param_struct_v<T>);
         if constexpr (is_struct_v<T>) {
-            Computable<T>::set(T{});
+            Ref<T>::set(T{});
         }
     }
     Var(Var &&another) noexcept
-        : Var(ocarina::detail::extract_expression(std::forward<decltype(another)>(another))) {}
+        : Ref<T>(ocarina::move(another)) {}
     Var(const Var &another) noexcept
         : Var() { ocarina::detail::assign(*this, another); }
     template<typename Arg>
@@ -230,12 +230,23 @@ OC_MAKE_DSL_TYPE(Short, short)
 OC_MAKE_DSL_TYPE(Ushort, ushort)
 OC_MAKE_DSL_TYPE(Bool, bool)
 
-using Float2x2 = Var<float2x2>;
-using Float3x3 = Var<float3x3>;
-using Float4x4 = Var<float4x4>;
-
 #undef OC_MAKE_DSL_TYPE
 #undef OC_MAKE_DSL_TYPE_IMPL
+
+#define OC_MAKE_DSL_MATRIX(N, M) \
+    using Float##N##x##M = Var<Matrix<N, M>>;
+
+OC_MAKE_DSL_MATRIX(2, 2)
+OC_MAKE_DSL_MATRIX(2, 3)
+OC_MAKE_DSL_MATRIX(2, 4)
+OC_MAKE_DSL_MATRIX(3, 2)
+OC_MAKE_DSL_MATRIX(3, 3)
+OC_MAKE_DSL_MATRIX(3, 4)
+OC_MAKE_DSL_MATRIX(4, 2)
+OC_MAKE_DSL_MATRIX(4, 3)
+OC_MAKE_DSL_MATRIX(4, 4)
+
+#undef OC_MAKE_DSL_MATRIX
 
 template<typename T>
 Var(T &&) -> Var<expr_value_t<T>>;

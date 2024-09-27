@@ -8,6 +8,7 @@
 #include "rhi/resources/managed.h"
 #include "dsl/printer.h"
 #include "core/platform.h"
+#include "rhi/resources/byte_buffer.h"
 
 namespace ocarina {
 
@@ -87,6 +88,169 @@ public:
             bindless_array_->buffer_var<T>(*index_).write(OC_FORWARD(index), OC_FORWARD(elm));
         }
     }
+};
+
+class RegistrableByteBuffer : public ByteBuffer, public Registrable {
+public:
+    using Super = ByteBuffer;
+
+public:
+    explicit RegistrableByteBuffer(BindlessArray &bindless_array)
+        : Super(), Registrable(&bindless_array) {}
+
+    RegistrableByteBuffer() = default;
+    [[nodiscard]] Super &super() noexcept { return *this; }
+    void register_self(size_t offset = 0, size_t size = 0) noexcept {
+        ByteBufferView buffer_view = super().view(offset, size);
+        index_ = bindless_array_->emplace(buffer_view);
+        length_ = [=]() {
+            return static_cast<uint>(buffer_view.size());
+        };
+    }
+
+    uint register_view(size_t offset, size_t size = 0) {
+        ByteBufferView buffer_view = super().view(offset, size);
+        return bindless_array_->emplace(buffer_view);
+    }
+
+    template<typename Target, typename Offset>
+    requires concepts::integral<expr_value_t<Offset>>
+    OC_NODISCARD auto load_as(Offset &&offset) const noexcept {
+        if (!has_registered()) {
+            return Super::load_as<Target>(OC_FORWARD(offset));
+        }
+        Uint buffer_index = *index_;
+        return bindless_array_->byte_buffer_var(buffer_index).template load_as<Target>(OC_FORWARD(offset));
+    }
+
+    template<typename Elm, typename Offset, typename Size = uint>
+    requires is_integral_expr_v<Offset>
+    void store(Offset &&offset, const Elm &val, bool check_boundary = true) noexcept {
+        if (!has_registered()) {
+            Super::store(OC_FORWARD(offset), val);
+        } else {
+            Uint buffer_index = *index_;
+            bindless_array_->byte_buffer_var(buffer_index).store(OC_FORWARD(offset), val);
+        }
+    }
+};
+
+template<typename T, AccessMode mode = AOS>
+class RegistrableList : public List<T, mode, ByteBuffer>,
+                        public Registrable {
+public:
+    using Super = List<T, mode, ByteBuffer>;
+
+public:
+    RegistrableList() = default;
+    explicit RegistrableList(BindlessArray &bindless_array)
+        : Super(), Registrable(&bindless_array) {}
+
+    explicit RegistrableList(Super &&list) : Super(std::move(list)) {}
+
+    void set_list(Super &&list) noexcept {
+        super() = std::move(list);
+    }
+
+    [[nodiscard]] const Super &super() const noexcept { return *this; }
+    [[nodiscard]] Super &super() noexcept { return *this; }
+
+    [[nodiscard]] const Super *operator->() const noexcept { return &super(); }
+    [[nodiscard]] Super *operator->() noexcept { return &super(); }
+
+    void register_self() noexcept {
+        if (has_registered()) {
+            bindless_array_->set_buffer(index_.hv(), Super::buffer());
+        } else {
+            index_ = bindless_array_->emplace(Super::buffer());
+        }
+        length_ = [&]() {
+            return static_cast<uint>(Super::capacity());
+        };
+    }
+
+    void unregister() noexcept {
+        if (has_registered()) {
+            (*bindless_array_)->remove_buffer(index_.hv());
+            index_ = InvalidUI32;
+        }
+    }
+
+    /// for dsl start
+    template<typename Size = uint>
+    [[nodiscard]] Var<Size> size_in_byte() const noexcept {
+        if (has_registered()) {
+            Uint buffer_index = *index_;
+            return bindless_array_->byte_buffer_var(buffer_index).size_in_byte();
+        }
+        return Super::buffer().expr().size_in_byte();
+    }
+
+    template<typename Size = uint>
+    [[nodiscard]] Var<Size> storage_size_in_byte() const noexcept {
+        return size_in_byte() - sizeof(uint);
+    }
+
+    [[nodiscard]] auto bindless_buffer() const noexcept {
+        Uint buffer_index = *index_;
+        BindlessArrayByteBuffer buffer = bindless_array_->byte_buffer_var(buffer_index);
+        return buffer;
+    }
+
+    [[nodiscard]] auto bindless_list() const noexcept {
+        BindlessArrayByteBuffer buffer = bindless_buffer();
+        return create_list<T, mode>(buffer);
+    }
+
+    template<typename Size = uint>
+    [[nodiscard]] Var<Size> &count() noexcept {
+        if (has_registered()) {
+            return bindless_list().template count<Size>();
+        }
+        return Super::template count<Size>();
+    }
+
+    template<typename Index = uint>
+    requires is_integral_expr_v<Index>
+    [[nodiscard]] Var<Index> advance_index() noexcept {
+        Var<Index> old_index = atomic_add(count<Index>(), 1);
+        return old_index;
+    }
+
+    template<typename Index, typename Size = uint>
+    requires is_integral_expr_v<Index>
+    [[nodiscard]] Var<T> read(const Index &index) const noexcept {
+        if (has_registered()) {
+            return bindless_list().read(index);
+        }
+        return Super::read(index);
+    }
+
+    template<typename Index, typename Size = uint>
+    requires is_integral_expr_v<Index>
+    [[nodiscard]] Var<T> at(const Index &index) const noexcept {
+        return read(index);
+    }
+
+    template<typename Index, typename Size = uint>
+    requires is_integral_expr_v<Index>
+    [[nodiscard]] Var<T> &at(const Index &index) noexcept {
+        if (has_registered()) {
+            return bindless_list().at(index);
+        }
+        return Super::at(index);
+    }
+
+    template<typename Index, typename Arg, typename Size = uint>
+    requires std::is_same_v<T, remove_device_t<Arg>> && is_integral_expr_v<Index>
+    void write(const Index &index, const Arg &arg) noexcept {
+        if (has_registered()) {
+            bindless_list().write(index, arg);
+        } else {
+            Super::write(index, arg);
+        }
+    }
+    /// for dsl end
 };
 
 template<typename T>
@@ -175,7 +339,7 @@ public:
         }
     }
 
-    template<typename ...Args>
+    template<typename... Args>
     OC_NODISCARD auto sample(uint channel_num, Args &&...args) const noexcept {
         if (has_registered()) {
             return bindless_array_->tex_var(*index_).sample(channel_num, OC_FORWARD(args)...);
@@ -184,12 +348,12 @@ public:
         }
     }
 
-    template<typename Target, typename ...Args>
+    template<typename Target, typename... Args>
     OC_NODISCARD auto read(Args &&...args) const noexcept {
         return Texture::read<Target>(OC_FORWARD(args)...);
     }
 
-    template<typename ...Args>
+    template<typename... Args>
     OC_NODISCARD auto write(Args &&...args) noexcept {
         return Texture::write(OC_FORWARD(args)...);
     }

@@ -16,7 +16,6 @@
 #include "soa.h"
 #include "struct.h"
 #include "rtx_type.h"
-#include "computable.inl"
+#include "ref.inl"
 #include "env.h"
 #include "polymorphic.h"
-
