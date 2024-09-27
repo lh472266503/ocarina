@@ -1,0 +1,217 @@
+#pragma once
+#include "vulkan_swapchain.h"
+#include "vulkan_device.h"
+#include "util.h"
+#include "vulkan_texture.h"
+namespace ocarina {
+
+VulkanSwapchain::VulkanSwapchain() {
+
+}
+
+VulkanSwapchain::~VulkanSwapchain() {
+}
+
+void VulkanSwapchain::create_swapchain(const SwapChainCreation &creation, VulkanDevice *vulkan_device) {
+
+    VkDevice device = vulkan_device->logicalDevice();
+    VkPhysicalDevice physicalDevice = vulkan_device->physicalDevice();
+    // Store the current swap chain handle so we can use it later on to ease up recreation
+    VkSwapchainKHR oldSwapchain = swapChain_;
+
+    // Get physical device surface properties and formats
+    VkSurfaceCapabilitiesKHR surfCaps;
+    VK_CHECK_RESULT(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface_, &surfCaps));
+
+    // Get available present modes
+    uint32_t presentModeCount;
+    VK_CHECK_RESULT(vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface_, &presentModeCount, NULL));
+    assert(presentModeCount > 0);
+
+    std::vector<VkPresentModeKHR> presentModes(presentModeCount);
+    VK_CHECK_RESULT(vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface_, &presentModeCount, presentModes.data()));
+
+    VkExtent2D swapchainExtent = {};
+    // If width (and height) equals the special value 0xFFFFFFFF, the size of the surface will be set by the swapchain
+    if (surfCaps.currentExtent.width == (uint32_t)-1) {
+        // If the surface size is undefined, the size is set to
+        // the size of the images requested.
+        swapchainExtent.width = creation.width;
+        swapchainExtent.height = creation.height;
+    } else {
+        // If the surface size is defined, the swap chain size must match
+        swapchainExtent = surfCaps.currentExtent;
+    }
+
+    // Select a present mode for the swapchain
+
+    // The VK_PRESENT_MODE_FIFO_KHR mode must always be present as per spec
+    // This mode waits for the vertical blank ("v-sync")
+    VkPresentModeKHR swapchainPresentMode = get_preferred_presentmode(physicalDevice, surface_, creation.vsync);
+
+    // Determine the number of images
+    uint32_t desiredNumberOfSwapchainImages = std::max(creation.bufferCount, surfCaps.minImageCount);
+    desiredNumberOfSwapchainImages = surfCaps.maxImageCount > 0 ? std::min(desiredNumberOfSwapchainImages, surfCaps.maxImageCount) : desiredNumberOfSwapchainImages;
+
+    if ((surfCaps.maxImageCount > 0) && (desiredNumberOfSwapchainImages > surfCaps.maxImageCount)) {
+        desiredNumberOfSwapchainImages = surfCaps.maxImageCount;
+    }
+
+    // Find the transformation of the surface
+    VkSurfaceTransformFlagsKHR preTransform;
+    if (surfCaps.supportedTransforms & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR) {
+        // We prefer a non-rotated transform
+        preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
+    } else {
+        preTransform = surfCaps.currentTransform;
+    }
+
+    // Find a supported composite alpha format (not all devices support alpha opaque)
+    VkCompositeAlphaFlagBitsKHR compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+    // Simply select the first composite alpha format available
+    std::vector<VkCompositeAlphaFlagBitsKHR> compositeAlphaFlags = {
+        VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
+        VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR,
+        VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR,
+        VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR,
+    };
+    for (auto &compositeAlphaFlag : compositeAlphaFlags) {
+        if (surfCaps.supportedCompositeAlpha & compositeAlphaFlag) {
+            compositeAlpha = compositeAlphaFlag;
+            break;
+        };
+    }
+
+    VkSwapchainCreateInfoKHR swapchainCI = {};
+    swapchainCI.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+    swapchainCI.surface = surface_;
+    swapchainCI.minImageCount = desiredNumberOfSwapchainImages;
+    swapchainCI.imageFormat = get_vulkan_format(creation.format, creation.colorSpace == ColorSpace::SRGB);
+    swapchainCI.imageColorSpace = colorspace_vulkan(creation.colorSpace);
+    swapchainCI.imageExtent = {swapchainExtent.width, swapchainExtent.height};
+    swapchainCI.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+    swapchainCI.preTransform = (VkSurfaceTransformFlagBitsKHR)preTransform;
+    swapchainCI.imageArrayLayers = 1;
+    swapchainCI.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    swapchainCI.queueFamilyIndexCount = 0;
+    swapchainCI.presentMode = swapchainPresentMode;
+    // Setting oldSwapChain to the saved handle of the previous swapchain aids in resource reuse and makes sure that we can still present already acquired images
+    swapchainCI.oldSwapchain = oldSwapchain;
+    // Setting clipped to VK_TRUE allows the implementation to discard rendering outside of the surface area
+    swapchainCI.clipped = VK_TRUE;
+    swapchainCI.compositeAlpha = compositeAlpha;
+
+    // Enable transfer source on swap chain images if supported
+    if (surfCaps.supportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_SRC_BIT) {
+        swapchainCI.imageUsage |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+    }
+
+    // Enable transfer destination on swap chain images if supported
+    if (surfCaps.supportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_DST_BIT) {
+        swapchainCI.imageUsage |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+    }
+
+    VK_CHECK_RESULT(vkCreateSwapchainKHR(device, &swapchainCI, nullptr, &swapChain_));
+
+    // If an existing swap chain is re-created, destroy the old swap chain
+    // This also cleans up all the presentable images
+    if (oldSwapchain != VK_NULL_HANDLE) {
+        release_backbuffers();
+        vkDestroySwapchainKHR(device, oldSwapchain, nullptr);
+    }
+
+    setup_backbuffers(swapchainCI);
+}
+
+void VulkanSwapchain::setup_backbuffers(const VkSwapchainCreateInfoKHR &swapChainCreateInfo) {
+    VkDevice device = vulkan_device_->logicalDevice();
+    uint32_t imageCount = 0;
+    vkGetSwapchainImagesKHR(device, swapChain_, &imageCount, nullptr);
+
+    std::vector<VkImage> images;
+    images.resize(imageCount);
+    vkGetSwapchainImagesKHR(device, swapChain_, &imageCount, &images.front());
+
+    for (auto image : images) {
+        // We pass a VK_NULL_HANDLE for the device since vkImages are owned by the swapchain
+        uint3 res = {swapChainCreateInfo.imageExtent.width, swapChainCreateInfo.imageExtent.height, 1};
+
+        //create buffer imageview
+        VkImageView imageView = VK_NULL_HANDLE;
+        VkImageViewCreateInfo colorAttachmentView = {};
+        colorAttachmentView.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+        colorAttachmentView.pNext = NULL;
+        colorAttachmentView.format = swapChainCreateInfo.imageFormat;
+        colorAttachmentView.components = {
+            VK_COMPONENT_SWIZZLE_R,
+            VK_COMPONENT_SWIZZLE_G,
+            VK_COMPONENT_SWIZZLE_B,
+            VK_COMPONENT_SWIZZLE_A};
+        colorAttachmentView.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        colorAttachmentView.subresourceRange.baseMipLevel = 0;
+        colorAttachmentView.subresourceRange.levelCount = 1;
+        colorAttachmentView.subresourceRange.baseArrayLayer = 0;
+        colorAttachmentView.subresourceRange.layerCount = 1;
+        colorAttachmentView.viewType = VK_IMAGE_VIEW_TYPE_2D;
+        colorAttachmentView.flags = 0;
+
+        vkCreateImageView(device, &colorAttachmentView, nullptr, &imageView);
+
+        backBuffers_.push_back({image, imageView});
+    }
+}
+
+void VulkanSwapchain::release_backbuffers()
+{
+    for (size_t i = 0; i < backBuffers_.size(); i++) {
+        vkDestroyImage(vulkan_device_->logicalDevice(), backBuffers_[i].image_, nullptr);
+        vkDestroyImageView(vulkan_device_->logicalDevice(), backBuffers_[i].imageView_, nullptr);
+    }
+
+    backBuffers_.clear();
+}
+
+VkPresentModeKHR VulkanSwapchain::get_preferred_presentmode(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, bool vsync)
+{
+    // Default mode, only one guaranteed to be supported
+    VkPresentModeKHR selectedMode = VK_PRESENT_MODE_FIFO_KHR;
+
+    // Get available present modes
+    uint32_t presentModeCount = 0;
+    vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &presentModeCount, nullptr);
+
+    // In some weird conditions, some Nvidia driver just doesnt touch presentModeCount, leaving us with an unitialized value.
+    // We need to skip following code otherwise Vector<VkPresentModeKHR> presentModes(presentModeCount) will fail.
+    // This is not going to prevent the application from running.
+    if (presentModeCount == 0) {
+        return selectedMode;
+    }
+
+    std::vector<VkPresentModeKHR> presentModes(presentModeCount);
+    vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &presentModeCount, &presentModes.front());
+
+    if (!vsync) {
+        for (auto presentMode : presentModes) {
+            // Favor immediate mode for no vsync (will tear but gives lowest latency)
+            if (presentMode == VK_PRESENT_MODE_IMMEDIATE_KHR) {
+                selectedMode = presentMode;
+                break;
+            } else if (presentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
+                // If no immediate mode, settle for mailbox
+                selectedMode = presentMode;
+            }
+        }
+    } else {
+        for (auto presentMode : presentModes) {
+            if (presentMode == VK_PRESENT_MODE_FIFO_RELAXED_KHR) {
+                // Favor adaptive vsync if available
+                selectedMode = presentMode;
+                break;
+            }
+        }
+    }
+
+    return selectedMode;
+}
+
+}// namespace ocarina

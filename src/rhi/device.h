@@ -12,6 +12,7 @@
 #include "core/concepts.h"
 #include "core/thread_pool.h"
 #include "params.h"
+#include "graphics_descriptions.h"
 
 namespace ocarina {
 class FileManager;

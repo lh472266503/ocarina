@@ -1,0 +1,97 @@
+//
+// Created by Zero on 06/06/2022.
+//
+#include "rhi/device.h"
+#include "vulkan_instance.h"
+#include "util/file_manager.h"
+#include "util.h"
+#if defined(_WIN32)
+#include <vulkan/vulkan_win32.h>
+#endif
+
+namespace ocarina {
+
+VulkanInstance::VulkanInstance(const InstanceCreation& instanceCreation) {
+    VkApplicationInfo appInfo = {};
+    appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+    appInfo.pApplicationName = instanceCreation.applicationName;
+    appInfo.pEngineName = instanceCreation.applicationName;
+    appInfo.apiVersion = VK_API_VERSION_1_1;
+
+    std::vector<const char *> instanceExtensions = {VK_KHR_SURFACE_EXTENSION_NAME};
+
+    // Enable surface extensions depending on os
+#if defined(_WIN32)
+    instanceExtensions.push_back(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
+#elif defined(VK_USE_PLATFORM_ANDROID_KHR)
+    instanceExtensions.push_back(VK_KHR_ANDROID_SURFACE_EXTENSION_NAME);
+#elif defined(_DIRECT2DISPLAY)
+    instanceExtensions.push_back(VK_KHR_DISPLAY_EXTENSION_NAME);
+#elif defined(VK_USE_PLATFORM_DIRECTFB_EXT)
+    instanceExtensions.push_back(VK_EXT_DIRECTFB_SURFACE_EXTENSION_NAME);
+#elif defined(VK_USE_PLATFORM_WAYLAND_KHR)
+    instanceExtensions.push_back(VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME);
+#elif defined(VK_USE_PLATFORM_XCB_KHR)
+    instanceExtensions.push_back(VK_KHR_XCB_SURFACE_EXTENSION_NAME);
+#elif defined(VK_USE_PLATFORM_IOS_MVK)
+    instanceExtensions.push_back(VK_MVK_IOS_SURFACE_EXTENSION_NAME);
+#elif defined(VK_USE_PLATFORM_MACOS_MVK)
+    instanceExtensions.push_back(VK_MVK_MACOS_SURFACE_EXTENSION_NAME);
+#elif defined(VK_USE_PLATFORM_HEADLESS_EXT)
+    instanceExtensions.push_back(VK_EXT_HEADLESS_SURFACE_EXTENSION_NAME);
+#elif defined(VK_USE_PLATFORM_SCREEN_QNX)
+    instanceExtensions.push_back(VK_QNX_SCREEN_SURFACE_EXTENSION_NAME);
+#endif
+
+    // Get extensions supported by the instance and store for later use
+    uint32_t extCount = 0;
+    vkEnumerateInstanceExtensionProperties(nullptr, &extCount, nullptr);
+    if (extCount > 0) {
+        std::vector<VkExtensionProperties> extensions(extCount);
+        if (vkEnumerateInstanceExtensionProperties(nullptr, &extCount, &extensions.front()) == VK_SUCCESS) {
+            for (VkExtensionProperties &extension : extensions) {
+                m_supportedInstanceExtensions.push_back(extension.extensionName);
+            }
+        }
+    }
+
+    VkInstanceCreateInfo instanceCreateInfo = {};
+    instanceCreateInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+    instanceCreateInfo.pNext = NULL;
+    instanceCreateInfo.pApplicationInfo = &appInfo;
+
+    // The VK_LAYER_KHRONOS_validation contains all current validation functionality.
+    // Note that on Android this layer requires at least NDK r20
+    const char *validationLayerName = "VK_LAYER_KHRONOS_validation";
+    if (instanceCreation.validation) {
+        // Check if this layer is available at instance level
+        uint32_t instanceLayerCount;
+        vkEnumerateInstanceLayerProperties(&instanceLayerCount, nullptr);
+        std::vector<VkLayerProperties> instanceLayerProperties(instanceLayerCount);
+        vkEnumerateInstanceLayerProperties(&instanceLayerCount, instanceLayerProperties.data());
+        bool validationLayerPresent = false;
+        for (VkLayerProperties &layer : instanceLayerProperties) {
+            if (strcmp(layer.layerName, validationLayerName) == 0) {
+                validationLayerPresent = true;
+                break;
+            }
+        }
+        if (validationLayerPresent) {
+            instanceCreateInfo.ppEnabledLayerNames = &validationLayerName;
+            instanceCreateInfo.enabledLayerCount = 1;
+        } else {
+            std::cerr << "Validation layer VK_LAYER_KHRONOS_validation not present, validation is disabled";
+        }
+    }
+    VkResult result = vkCreateInstance(&instanceCreateInfo, nullptr, &instance_);
+    VK_CHECK_RESULT(result);
+}
+
+VulkanInstance::~VulkanInstance()
+{
+    vkDestroyInstance(instance_, nullptr);
+}
+
+}// namespace ocarina
+
+

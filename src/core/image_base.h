@@ -106,6 +106,30 @@ OC_NDSC_INLINE size_t channel_num(PixelStorage pixel_storage) {
     return 4u;
 }
 
+OC_NDSC_INLINE uint32_t format_size_in_bytes(PixelStorage pixel_storage) {
+    switch (pixel_storage) {
+        case ocarina::PixelStorage::BYTE1:
+            return 1;
+        case ocarina::PixelStorage::BYTE2:
+            return 2;
+        case ocarina::PixelStorage::BYTE4:
+            return 4;
+        case ocarina::PixelStorage::UINT1:
+        case ocarina::PixelStorage::FLOAT1:
+            return 4;
+        case ocarina::PixelStorage::UINT2:
+        case ocarina::PixelStorage::FLOAT2:
+            return 8;
+        case ocarina::PixelStorage::UINT4:
+        case ocarina::PixelStorage::FLOAT4:
+            return 16;
+        case ocarina::PixelStorage::UNKNOWN:
+            return 0;
+        default:
+            return 4;
+    }
+}
+
 class ImageBase : public concepts::Noncopyable {
 protected:
     PixelStorage pixel_storage_{PixelStorage::UNKNOWN};
