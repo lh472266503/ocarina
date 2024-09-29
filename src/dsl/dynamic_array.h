@@ -211,7 +211,11 @@ public:
             return ocarina::min(r, x);
         });
     }
-
+    void sanitize() noexcept {
+        *this = map([&](const Var<T> &val) {
+            return ocarina::select(ocarina::isnan(val) || ocarina::isinf(val), Var<T>(0), val);
+        });
+    }
     template<typename F>
     [[nodiscard]] Bool any(F &&f) const noexcept {
         return reduce(false, [&f](auto ans, auto value) noexcept { return ans || f(value); });

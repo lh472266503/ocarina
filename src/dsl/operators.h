@@ -82,7 +82,7 @@ OC_MAKE_DSL_UNARY_OPERATOR(~, BIT_NOT)
         auto expression = ocarina::Function::current()->binary(ocarina::DynamicArray<Ret>::type(size),   \
                                                                ocarina::BinaryOp::tag, lhs.expression(), \
                                                                rhs.expression());                        \
-        return ocarina::DynamicArray<Ret>(size, expression);                                             \
+        return eval_dynamic_array(ocarina::DynamicArray<Ret>(size, expression));                         \
     }                                                                                                    \
     template<typename T, typename U>                                                                     \
     requires ocarina::is_scalar_v<ocarina::expr_value_t<U>>                                              \
