@@ -37,7 +37,7 @@ void test_list(Device &device, Stream& stream) {
 
       Var a = rl.read(dispatch_id());
 
-        $info("\n {} {} {} {}  \n"
+        $info_with_traceback("\n {} {} {} {}  \n"
               "{} {} {} {}  \n"
               "{} {} {} {}  \n"
               "{} {} {} {}  {}\n",
