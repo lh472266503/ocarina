@@ -36,7 +36,7 @@ void test_list(Device &device, Stream& stream) {
 
     Kernel kernel = [&](Uint i) {
       Var mat = make_float4x4(dispatch_id() + 1);
-      DynamicArray<float> arr(3, 2);
+      DynamicArray<float> arr(3, 3);
       arr *= arr;
       Var a = rl.read(dispatch_id());
       DynamicArray<bool> bb{arr.size(), false};

@@ -235,15 +235,41 @@ OC_NODISCARD auto select(U &&pred, T &&t, F &&f) noexcept {
     return eval<T>(expr);
 }
 
-/// used for dynamic array
+/// used for dynamic array start
 template<typename P, typename T>
 [[nodiscard]] DynamicArray<T> select(const DynamicArray<P> &pred, const DynamicArray<T> &t,
                                      const DynamicArray<T> &f) noexcept {
+    OC_ASSERT(pred.size() == t.size() && t.size() == f.size());
     auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
                                                   CallOp::SELECT,
                                                   {OC_EXPR(pred), OC_EXPR(t), OC_EXPR(f)});
     return detail::eval_dynamic_array<T>(DynamicArray<T>(pred.size(), expr));
 }
+
+//template<typename P, typename T>
+//[[nodiscard]] DynamicArray<T> select(const Var<P> &p, const DynamicArray<T> &t,
+//                                     const DynamicArray<T> &f) noexcept {
+//    OC_ASSERT(t.size() == f.size());
+//    DynamicArray<P> pp{t.size(), p};
+//    return select(pp, t, f);
+//};
+//
+//template<typename P, typename T>
+//[[nodiscard]] DynamicArray<T> select(const DynamicArray<P> &p, const Var<T> &t,
+//                                     const DynamicArray<T> &f) noexcept {
+//    OC_ASSERT(p.size() == f.size());
+//    DynamicArray<T> tt{f.size(), t};
+//    return select(p, tt, f);
+//}
+//
+//template<typename P, typename T>
+//[[nodiscard]] DynamicArray<T> select(const DynamicArray<P> &p, const DynamicArray<T> &t,
+//                                     const Var<T> &f) noexcept {
+//    OC_ASSERT(t.size() == p.size());
+//    DynamicArray<T> ff{t.size(), f};
+//    return select(p, t, ff);
+//}
+/// used for dynamic array end
 
 template<typename... Args>
 requires(any_device_type_v<Args...>)
