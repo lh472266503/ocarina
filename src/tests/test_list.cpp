@@ -38,10 +38,14 @@ void test_list(Device &device, Stream& stream) {
       Var mat = make_float4x4(dispatch_id() + 1);
       DynamicArray<float> arr(3, 3);
       arr *= arr;
+
+      auto a2 = expand_to_array(arr, 3);
+
       Var a = rl.read(dispatch_id());
-      DynamicArray<bool> bb{arr.size(), false};
-      bb[0] = true;
-      arr = ocarina::select(bb, arr, -arr);
+      DynamicArray<bool> bb{1, false};
+      auto nb = detail::expand_to_array(bb, 3);
+      nb[0] = true;
+      arr = ocarina::select(0, arr, 5.f);
       $info("{} {} {}  ", arr.as_vec3());
       return ;
         $info_with_traceback("\n {} {} {} {}  \n"

@@ -51,6 +51,34 @@ requires ocarina::is_integral_expr_v<DispatchId>
 namespace detail {
 
 template<typename T>
+requires is_scalar_v<T>
+[[nodiscard]] DynamicArray<T> expand_to_array(const T &t, uint size) noexcept;
+
+template<typename T>
+requires is_scalar_v<T>
+[[nodiscard]] DynamicArray<T> expand_to_array(const Var<T> &t, uint size) noexcept;
+
+template<typename T>
+requires is_scalar_v<T>
+[[nodiscard]] DynamicArray<T> expand_to_array(DynamicArray<T> arr, uint size) noexcept;
+
+template<typename T>
+requires is_scalar_v<T>
+[[nodiscard]] uint mix_size(const Var<T> &t) noexcept;
+
+template<typename T>
+requires is_scalar_v<T>
+[[nodiscard]] uint mix_size(const T &t) noexcept;
+
+template<typename T>
+requires is_scalar_v<T>
+[[nodiscard]] uint mix_size(const DynamicArray<T> &t) noexcept;
+
+}// namespace detail
+
+namespace detail {
+
+template<typename T>
 struct match_dsl_unary_func_impl : std::false_type {};
 
 template<typename T>
@@ -237,8 +265,8 @@ OC_NODISCARD auto select(U &&pred, T &&t, F &&f) noexcept {
 
 /// used for dynamic array start
 template<typename P, typename T>
-[[nodiscard]] DynamicArray<T> select(const DynamicArray<P> &pred, const DynamicArray<T> &t,
-                                     const DynamicArray<T> &f) noexcept {
+[[nodiscard]] DynamicArray<T> select_array(const DynamicArray<P> &pred, const DynamicArray<T> &t,
+                                           const DynamicArray<T> &f) noexcept {
     OC_ASSERT(pred.size() == t.size() && t.size() == f.size());
     auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
                                                   CallOp::SELECT,
@@ -246,29 +274,23 @@ template<typename P, typename T>
     return detail::eval_dynamic_array<T>(DynamicArray<T>(pred.size(), expr));
 }
 
-//template<typename P, typename T>
-//[[nodiscard]] DynamicArray<T> select(const Var<P> &p, const DynamicArray<T> &t,
-//                                     const DynamicArray<T> &f) noexcept {
-//    OC_ASSERT(t.size() == f.size());
-//    DynamicArray<P> pp{t.size(), p};
-//    return select(pp, t, f);
-//};
-//
-//template<typename P, typename T>
-//[[nodiscard]] DynamicArray<T> select(const DynamicArray<P> &p, const Var<T> &t,
-//                                     const DynamicArray<T> &f) noexcept {
-//    OC_ASSERT(p.size() == f.size());
-//    DynamicArray<T> tt{f.size(), t};
-//    return select(p, tt, f);
-//}
-//
-//template<typename P, typename T>
-//[[nodiscard]] DynamicArray<T> select(const DynamicArray<P> &p, const DynamicArray<T> &t,
-//                                     const Var<T> &f) noexcept {
-//    OC_ASSERT(t.size() == p.size());
-//    DynamicArray<T> ff{t.size(), f};
-//    return select(p, t, ff);
-//}
+template<typename P, typename T, typename F>
+requires requires {
+    detail::expand_to_array(std::declval<P>(), 3);
+    detail::expand_to_array(std::declval<T>(), 3);
+    detail::expand_to_array(std::declval<F>(), 3);
+} && any_dynamic_array_v<P, T, F>
+[[nodiscard]] auto select(P &&p, T &&t, F &&f) noexcept {
+    using namespace detail;
+    uint size0 = detail::mix_size(p);
+    uint size1 = detail::mix_size(t);
+    uint size2 = detail::mix_size(f);
+    OC_ASSERT(size0 == size1 || size0 == size2 || size1 == size2);
+    uint max_size = std::max({size0, size1, size2});
+    return select_array(expand_to_array(OC_FORWARD(p), max_size),
+                        expand_to_array(OC_FORWARD(t), max_size),
+                        expand_to_array(OC_FORWARD(f), max_size));
+}
 /// used for dynamic array end
 
 template<typename... Args>
