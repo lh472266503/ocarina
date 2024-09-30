@@ -32,11 +32,18 @@ void test_list(Device &device, Stream& stream) {
 
     rl.super().clear_immediately();
 
+
+
     Kernel kernel = [&](Uint i) {
       Var mat = make_float4x4(dispatch_id() + 1);
-
+      DynamicArray<float> arr(3, 2);
+      arr *= arr;
       Var a = rl.read(dispatch_id());
-
+      DynamicArray<bool> bb{arr.size(), false};
+      bb[0] = true;
+      arr = ocarina::select(bb, arr, -arr);
+      $info("{} {} {}  ", arr.as_vec3());
+      return ;
         $info_with_traceback("\n {} {} {} {}  \n"
               "{} {} {} {}  \n"
               "{} {} {} {}  \n"

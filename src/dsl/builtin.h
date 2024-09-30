@@ -230,8 +230,19 @@ requires(std::is_same_v<expr_value_t<U>, bool> &&
          std::is_same_v<expr_value_t<T>, expr_value_t<F>>) &&
         none_dynamic_array_v<U, T, F>
 OC_NODISCARD auto select(U &&pred, T &&t, F &&f) noexcept {
-    auto expr = Function::current()->conditional(Type::of<expr_value_t<T>>(), OC_EXPR(pred), OC_EXPR(t), OC_EXPR(f));
+    auto expr = Function::current()->conditional(Type::of<expr_value_t<T>>(),
+                                                 OC_EXPR(pred), OC_EXPR(t), OC_EXPR(f));
     return eval<T>(expr);
+}
+
+/// used for dynamic array
+template<typename P, typename T>
+[[nodiscard]] DynamicArray<T> select(const DynamicArray<P> &pred, const DynamicArray<T> &t,
+                                     const DynamicArray<T> &f) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
+                                                  CallOp::SELECT,
+                                                  {OC_EXPR(pred), OC_EXPR(t), OC_EXPR(f)});
+    return detail::eval_dynamic_array<T>(DynamicArray<T>(pred.size(), expr));
 }
 
 template<typename... Args>
