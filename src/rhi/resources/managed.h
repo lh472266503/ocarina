@@ -157,7 +157,7 @@ public:
 public:
     ManagedList() = default;
     explicit ManagedList(device_ty list) : device_ty(std::move(list)) {
-        host_list().resize(device_list().capacity());
+        host_list().resize(device_list().capacity(), T{});
     }
 
     // Move constructor

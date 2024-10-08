@@ -211,7 +211,11 @@ public:
             return ocarina::min(r, x);
         });
     }
-
+    void sanitize() noexcept {
+        *this = map([&](const Var<T> &val) {
+            return ocarina::select(ocarina::isnan(val) || ocarina::isinf(val), Var<T>(0), val);
+        });
+    }
     template<typename F>
     [[nodiscard]] Bool any(F &&f) const noexcept {
         return reduce(false, [&f](auto ans, auto value) noexcept { return ans || f(value); });
@@ -269,6 +273,40 @@ public:
 };
 
 namespace detail {
+
+template<typename T>
+requires is_scalar_v<T>
+[[nodiscard]] DynamicArray<T> expand_to_array(const T &t, uint size) noexcept {
+    return DynamicArray<T>(size, t);
+}
+
+template<typename T>
+requires is_scalar_v<T>
+[[nodiscard]] DynamicArray<T> expand_to_array(const Var<T> &t, uint size) noexcept {
+    return DynamicArray<T>(size, t);
+}
+
+template<typename T>
+requires is_scalar_v<T>
+[[nodiscard]] DynamicArray<T> expand_to_array(DynamicArray<T> arr, uint size) noexcept {
+    OC_ASSERT(arr.size() == 1 || arr.size() == size);
+    if (arr.size() == size) {
+        return arr;
+    }
+    return DynamicArray<T>(size, arr[0]);
+}
+
+template<typename T>
+requires is_scalar_v<T>
+[[nodiscard]] uint mix_size(const Var<T> &t) noexcept { return 1; }
+
+template<typename T>
+requires is_scalar_v<T>
+[[nodiscard]] uint mix_size(const T &t) noexcept { return 1; }
+
+template<typename T>
+requires is_scalar_v<T>
+[[nodiscard]] uint mix_size(const DynamicArray<T> &t) noexcept { return t.size(); }
 
 template<typename T>
 [[nodiscard]] inline DynamicArray<T> eval_dynamic_array(const DynamicArray<T> &array) noexcept {

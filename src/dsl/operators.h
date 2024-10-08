@@ -10,6 +10,14 @@
 #include "ast/function.h"
 #include "ast/op.h"
 
+namespace ocarina::detail {
+
+template<typename T>
+[[nodiscard]] inline DynamicArray<T>
+eval_dynamic_array(const DynamicArray<T> &array) noexcept;// implement in dynamic_array.h
+
+}// namespace ocarina::detail
+
 #define OC_MAKE_DSL_UNARY_OPERATOR(op, tag)                                                                          \
     template<typename T>                                                                                             \
     requires ocarina::is_device_type_v<T>                                                                            \
@@ -20,7 +28,7 @@
             auto expression = ocarina::Function::current()->unary(expr.type(),                                       \
                                                                   ocarina::UnaryOp::tag,                             \
                                                                   expr.expression());                                \
-            return ocarina::DynamicArray<element_t>(expr.size(), expression);                                        \
+            return ocarina::detail::eval_dynamic_array(ocarina::DynamicArray<element_t>(expr.size(), expression));   \
         } else {                                                                                                     \
             return []<typename Arg>(const Arg &arg) {                                                                \
                 using Ret = std::remove_cvref_t<decltype(op std::declval<ocarina::remove_device_t<Arg>>())>;         \
@@ -82,7 +90,7 @@ OC_MAKE_DSL_UNARY_OPERATOR(~, BIT_NOT)
         auto expression = ocarina::Function::current()->binary(ocarina::DynamicArray<Ret>::type(size),   \
                                                                ocarina::BinaryOp::tag, lhs.expression(), \
                                                                rhs.expression());                        \
-        return ocarina::DynamicArray<Ret>(size, expression);                                             \
+        return ocarina::detail::eval_dynamic_array(ocarina::DynamicArray<Ret>(size, expression));        \
     }                                                                                                    \
     template<typename T, typename U>                                                                     \
     requires ocarina::is_scalar_v<ocarina::expr_value_t<U>>                                              \

@@ -104,3 +104,12 @@
     $condition_execute { $err(__VA_ARGS__); }
 #define $condition_err_with_location(...) \
     $condition_execute { $err_with_location(__VA_ARGS__); }
+
+#define $debug_with_traceback(fmt, ...) \
+    $debug(fmt + string(" with ") + traceback_string(), __VA_ARGS__);
+#define $info_with_traceback(fmt, ...) \
+    $info(fmt + string(" with ") + traceback_string(), __VA_ARGS__);
+#define $warn_with_traceback(fmt, ...) \
+    $warn(fmt + string(" with ") + traceback_string(), __VA_ARGS__);
+#define $err_with_traceback(fmt, ...) \
+    $err(fmt + string(" with ") + traceback_string(), __VA_ARGS__);

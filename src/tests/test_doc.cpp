@@ -153,7 +153,7 @@ void test_compute_shader(Device &device, Stream &stream) {
         //        auto soa = list.buffer().soa_view<Elm>();
 //        list.count() = 2;
         list.push_back( make_float4x4(dispatch_id() * 1.f));
-        ml.device_list().write(dispatch_id(), make_float4x4(dispatch_id() * 2.f));
+        ml.write(dispatch_id(), make_float4x4(dispatch_id() * 2.f));
         //        list.write(dispatch_id(), make_float4x4(dispatch_id() * 1.f));
         //      fbuffer.write(11, float4x4{6});
         //      $info("{} ", list.advance_index());
