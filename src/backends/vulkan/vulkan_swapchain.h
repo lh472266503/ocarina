@@ -20,8 +20,11 @@ public:
     ~VulkanSwapchain();
 
     void create_swapchain(const SwapChainCreation &creation, VulkanDevice* vulkan_device);
-
+    void release();
     OC_MAKE_MEMBER_GETTER(swapChain, )
+
+    void queue_present();
+
 private:
     void setup_backbuffers(const VkSwapchainCreateInfoKHR &swapChainCreateInfo);
     void release_backbuffers();
@@ -34,5 +37,13 @@ private:
     VulkanDevice *vulkan_device_;
     //uint32_t imageCount_ = 0;
     std::vector<SwapChainBuffer> backBuffers_;
+
+    // Synchronization semaphores
+    struct {
+        // Swap chain image presentation
+        VkSemaphore presentComplete;
+        // Command buffer submission and execution
+        VkSemaphore renderComplete;
+    } semaphores;
 };
 }// namespace ocarina

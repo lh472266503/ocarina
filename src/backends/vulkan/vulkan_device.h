@@ -76,6 +76,7 @@ private:
 
 public:
     explicit VulkanDevice(FileManager *file_manager, const ocarina::InstanceCreation &instance_creation);
+    ~VulkanDevice();
     void init_hardware_info();
 
     [[nodiscard]] handle_ty create_buffer(size_t size, const string &desc) noexcept override;

@@ -13,7 +13,7 @@ VulkanSwapchain::~VulkanSwapchain() {
 }
 
 void VulkanSwapchain::create_swapchain(const SwapChainCreation &creation, VulkanDevice *vulkan_device) {
-
+    vulkan_device_ = vulkan_device;
     VkDevice device = vulkan_device->logicalDevice();
     VkPhysicalDevice physicalDevice = vulkan_device->physicalDevice();
     // Store the current swap chain handle so we can use it later on to ease up recreation
@@ -121,6 +121,23 @@ void VulkanSwapchain::create_swapchain(const SwapChainCreation &creation, Vulkan
     }
 
     setup_backbuffers(swapchainCI);
+
+    // Semaphore used to ensures that image presentation is complete before starting to submit again
+    VkSemaphoreCreateInfo semaphoreCreateInfo = {VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO};
+    vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &semaphores.presentComplete);
+    vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &semaphores.renderComplete);
+}
+
+void VulkanSwapchain::release()
+{
+    VkDevice device = vulkan_device_->logicalDevice();
+    release_backbuffers();
+    vkDestroySemaphore(device, semaphores.presentComplete, nullptr);
+    vkDestroySemaphore(device, semaphores.renderComplete, nullptr);
+}
+
+void VulkanSwapchain::queue_present() {
+
 }
 
 void VulkanSwapchain::setup_backbuffers(const VkSwapchainCreateInfoKHR &swapChainCreateInfo) {

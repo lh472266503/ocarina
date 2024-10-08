@@ -13,6 +13,11 @@ VulkanDevice::VulkanDevice(FileManager *file_manager, const ocarina::InstanceCre
 
 }
 
+VulkanDevice::~VulkanDevice()
+{
+    shutdown();
+}
+
 void VulkanDevice::init_hardware_info() {
 
 }
@@ -141,6 +146,7 @@ void VulkanDevice::init_vulkan()
 
 void VulkanDevice::shutdown()
 {
+    m_swapChain.release();
     vkDestroyDevice(logicalDevice_, nullptr);
 }
 
