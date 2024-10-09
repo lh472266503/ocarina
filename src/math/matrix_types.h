@@ -99,6 +99,37 @@ OC_MATRIX_UNARY_FUNC(copysign)
 
 #undef OC_MATRIX_UNARY_FUNC
 
+#define OC_MATRIX_BINARY_FUNC(func)                                \
+    template<size_t N, size_t M>                                   \
+    [[nodiscard]] Matrix<N, M> func(Matrix<N, M> lhs,              \
+                                    Matrix<N, M> rhs) noexcept {   \
+        return [&]<size_t... i>(std::index_sequence<i...>) {       \
+            return ocarina::Matrix<N, M>(func(lhs[i], rhs[i])...); \
+        }(std::make_index_sequence<N>());                          \
+    }
+
+OC_MATRIX_BINARY_FUNC(max)
+OC_MATRIX_BINARY_FUNC(min)
+OC_MATRIX_BINARY_FUNC(pow)
+OC_MATRIX_BINARY_FUNC(atan2)
+
+#undef OC_MATRIX_BINARY_FUNC
+
+#define OC_MATRIX_TRIPLE_FUNC(func)                                  \
+    template<size_t N, size_t M>                                     \
+    [[nodiscard]] Matrix<N, M> func(Matrix<N, M> t, Matrix<N, M> u,  \
+                                    Matrix<N, M> v) noexcept {       \
+        return [&]<size_t... i>(std::index_sequence<i...>) {         \
+            return ocarina::Matrix<N, M>(func(t[i], u[i], v[i])...); \
+        }(std::make_index_sequence<N>());                            \
+    }
+
+OC_MATRIX_TRIPLE_FUNC(fma)
+OC_MATRIX_TRIPLE_FUNC(clamp)
+OC_MATRIX_TRIPLE_FUNC(lerp)
+
+#undef OC_MATRIX_TRIPLE_FUNC
+
 }// namespace ocarina
 
 template<size_t N, size_t M>

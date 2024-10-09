@@ -32,7 +32,12 @@ void test_list(Device &device, Stream& stream) {
 
     rl.super().clear_immediately();
 
+    float3x3 mmm(-2.f);
+    auto m22 = abs(mmm);
 
+    auto m333 = max(mmm, m22);
+
+    auto m = isnan(mmm);
 
     Kernel kernel = [&](Uint i) {
       Var mat = make_float4x4(dispatch_id() + 1);
