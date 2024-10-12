@@ -87,7 +87,7 @@ __device__ inline oc_float2 getTriangleBarycentric() {
     return oc_make_float2(1 - barycentric.y - barycentric.x, barycentric.x);
 }
 
-#define SEPERATION 1
+#define TRAVERSE_ONLY 1
 
 __device__ inline Hit trace_closest_(OptixTraversableHandle handle,
                                      Ray ray) {
@@ -117,7 +117,7 @@ __device__ inline Hit traverse_closest_(OptixTraversableHandle handle,
 
 __device__ inline Hit oc_trace_closest(OptixTraversableHandle handle,
                                        Ray ray) {
-#if SEPERATION
+#if TRAVERSE_ONLY
     return traverse_closest_(handle, ray);
 #else
     return trace_closest_(handle, ray);
@@ -145,7 +145,7 @@ __device__ inline bool trace_any_(OptixTraversableHandle handle, Ray ray) {
 }
 
 __device__ inline bool oc_trace_any(OptixTraversableHandle handle, Ray ray) {
-#if SEPERATION
+#if TRAVERSE_ONLY
     return traverse_any_(handle, ray);
 #else
     return trace_any_(handle, ray);
