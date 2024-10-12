@@ -30,6 +30,32 @@ __device__ inline void trace(OptixTraversableHandle handle,
         std::forward<Args>(payload)...);
 }
 
+template<typename... Args>
+__device__ inline void traverse(OptixTraversableHandle handle,
+                             Ray ray,
+                             oc_uint flags,
+                             oc_uint SBToffset,
+                             oc_uint SBTstride,
+                             oc_uint missSBTIndex,
+                             Args &&...payload) {
+    auto origin = ::make_float3(ray.org_min.x, ray.org_min.y, ray.org_min.z);
+    auto direction = ::make_float3(ray.dir_max.x, ray.dir_max.y, ray.dir_max.z);
+
+    optixTraverse(
+        handle,
+        origin,
+        direction,
+        ray.org_min.w,
+        ray.dir_max.w,
+        0.0f,// rayTime
+        OptixVisibilityMask(1),
+        flags,
+        SBToffset,   // SBT offset
+        SBTstride,   // SBT stride
+        missSBTIndex,// missSBTIndex
+        std::forward<Args>(payload)...);
+}
+
 __device__ oc_uint3 getLaunchIndex() {
     auto idx = optixGetLaunchIndex();
     return oc_make_uint3(idx.x, idx.y, idx.z);
@@ -76,14 +102,25 @@ __device__ inline Hit oc_trace_closest(OptixTraversableHandle handle,
 
 __device__ inline bool oc_trace_any(OptixTraversableHandle handle, Ray ray) {
     unsigned int occluded = 0u;
-    trace(handle, ray, OPTIX_RAY_FLAG_DISABLE_ANYHIT
+    traverse(handle, ray, OPTIX_RAY_FLAG_DISABLE_ANYHIT
                        | OPTIX_RAY_FLAG_TERMINATE_ON_FIRST_HIT,
           1,        // SBT offset
           0,           // SBT stride
-          0,        // missSBTIndex
-          occluded);
-    return bool(occluded);
+          0        // missSBTIndex
+          );
+    return optixHitObjectIsHit();
 }
+
+// __device__ inline bool oc_trace_any(OptixTraversableHandle handle, Ray ray) {
+//     unsigned int occluded = 0u;
+//     trace(handle, ray, OPTIX_RAY_FLAG_DISABLE_ANYHIT
+//                        | OPTIX_RAY_FLAG_TERMINATE_ON_FIRST_HIT,
+//           1,        // SBT offset
+//           0,           // SBT stride
+//           0,        // missSBTIndex
+//           occluded);
+//     return bool(occluded);
+// }
 
 __device__ inline Hit getClosestHit() {
     Hit ret;
