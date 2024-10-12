@@ -100,7 +100,7 @@ __device__ inline Hit oc_trace_closest(OptixTraversableHandle handle,
     return hit;
 }
 
-__device__ inline bool oc_trace_any(OptixTraversableHandle handle, Ray ray) {
+__device__ inline bool traverse_any_(OptixTraversableHandle handle, Ray ray) {
     unsigned int occluded = 0u;
     traverse(handle, ray, OPTIX_RAY_FLAG_DISABLE_ANYHIT
                        | OPTIX_RAY_FLAG_TERMINATE_ON_FIRST_HIT,
@@ -111,16 +111,20 @@ __device__ inline bool oc_trace_any(OptixTraversableHandle handle, Ray ray) {
     return optixHitObjectIsHit();
 }
 
-// __device__ inline bool oc_trace_any(OptixTraversableHandle handle, Ray ray) {
-//     unsigned int occluded = 0u;
-//     trace(handle, ray, OPTIX_RAY_FLAG_DISABLE_ANYHIT
-//                        | OPTIX_RAY_FLAG_TERMINATE_ON_FIRST_HIT,
-//           1,        // SBT offset
-//           0,           // SBT stride
-//           0,        // missSBTIndex
-//           occluded);
-//     return bool(occluded);
-// }
+__device__ inline bool trace_any_(OptixTraversableHandle handle, Ray ray) {
+    unsigned int occluded = 0u;
+    trace(handle, ray, OPTIX_RAY_FLAG_DISABLE_ANYHIT
+                       | OPTIX_RAY_FLAG_TERMINATE_ON_FIRST_HIT,
+          1,        // SBT offset
+          0,           // SBT stride
+          0,        // missSBTIndex
+          occluded);
+    return bool(occluded);
+}
+
+__device__ inline bool oc_trace_any(OptixTraversableHandle handle, Ray ray) {
+    return traverse_any_(handle, ray);
+}
 
 __device__ inline Hit getClosestHit() {
     Hit ret;
