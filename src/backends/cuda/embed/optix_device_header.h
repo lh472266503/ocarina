@@ -108,8 +108,8 @@ Hit getHitObjectInfo() {
     hit.prim_id = optixHitObjectGetPrimitiveIndex();
     unsigned int attr0 = optixHitObjectGetAttribute_0();
     unsigned int attr1 = optixHitObjectGetAttribute_1();
-    float x = reinterpret_cast<float &>(attr0);
-    float y = reinterpret_cast<float &>(attr1);
+    float x = __uint_as_float(attr0);
+    float y = __uint_as_float(attr1);
     hit.bary = oc_make_float2(1 - x - y, x);
     return hit;
 }
