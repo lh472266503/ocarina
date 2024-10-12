@@ -100,6 +100,21 @@ private:
 public:
     void init_module(const string_view &ptx_code) {
         OptixModuleCompileOptions module_compile_options = {};
+        static constexpr std::array<uint, 1> ray_trace_payload_semantics{
+            OPTIX_PAYLOAD_SEMANTICS_TRACE_CALLER_WRITE | OPTIX_PAYLOAD_SEMANTICS_CH_READ,
+        };
+
+        static constexpr std::array<uint, 2> ray_query_payload_semantics{
+            OPTIX_PAYLOAD_SEMANTICS_TRACE_CALLER_WRITE | OPTIX_PAYLOAD_SEMANTICS_IS_READ | OPTIX_PAYLOAD_SEMANTICS_AH_READ,
+            OPTIX_PAYLOAD_SEMANTICS_TRACE_CALLER_WRITE | OPTIX_PAYLOAD_SEMANTICS_IS_READ | OPTIX_PAYLOAD_SEMANTICS_AH_READ,
+        };
+
+        std::array<OptixPayloadType, 1> payload_types{};
+        payload_types[0].numPayloadValues = ray_trace_payload_semantics.size();
+        payload_types[0].payloadSemantics = ray_trace_payload_semantics.data();
+        // payload_types[1].numPayloadValues = ray_query_payload_semantics.size();
+        // payload_types[1].payloadSemantics = ray_query_payload_semantics.data();
+
         // TODO: REVIEW THIS
         module_compile_options.maxRegisterCount = OPTIX_COMPILE_DEFAULT_MAX_REGISTER_COUNT;
         //#ifndef NDEBUG
@@ -107,6 +122,9 @@ public:
 //        module_compile_options.debugLevel = OPTIX_COMPILE_DEBUG_LEVEL_NONE;
         //#else
         module_compile_options.optLevel = OPTIX_COMPILE_OPTIMIZATION_LEVEL_3;
+        // module_compile_options.numPayloadTypes = payload_types.size();
+        // module_compile_options.payloadTypes = payload_types.data();
+
         //        module_compile_options.debugLevel = OPTIX_COMPILE_DEBUG_LEVEL_NONE;
         //#endif
         pipeline_compile_options_.traversableGraphFlags = OPTIX_TRAVERSABLE_GRAPH_FLAG_ALLOW_SINGLE_LEVEL_INSTANCING;
