@@ -125,7 +125,7 @@ public:
         pipeline_compile_options_.pipelineLaunchParamsVariableName = "params";
         char log[2048];
         size_t log_size = sizeof(log);
-        OC_OPTIX_CHECK_WITH_LOG(optixModuleCreateFromPTX(
+        OC_OPTIX_CHECK_WITH_LOG(optixModuleCreate(
                                     device_->optix_device_context(),
                                     &module_compile_options,
                                     &pipeline_compile_options_,
@@ -140,7 +140,7 @@ public:
 
         OptixPipelineLinkOptions pipeline_link_options = {};
         pipeline_link_options.maxTraceDepth = max_trace_depth;
-        pipeline_link_options.debugLevel = OPTIX_COMPILE_DEBUG_LEVEL_NONE;
+//        pipeline_link_options.debugLevel = OPTIX_COMPILE_DEBUG_LEVEL_NONE;
         char log[2048];
         size_t sizeof_log = sizeof(log);
 
@@ -156,10 +156,10 @@ public:
 
         // Set shaders stack sizes.
         OptixStackSizes stack_sizes = {};
-        OC_OPTIX_CHECK(optixUtilAccumulateStackSizes(program_group_table_.raygen_group, &stack_sizes));
-        OC_OPTIX_CHECK(optixUtilAccumulateStackSizes(program_group_table_.miss_closest_group, &stack_sizes));
-        OC_OPTIX_CHECK(optixUtilAccumulateStackSizes(program_group_table_.hit_closest_group, &stack_sizes));
-        OC_OPTIX_CHECK(optixUtilAccumulateStackSizes(program_group_table_.hit_any_group, &stack_sizes));
+        OC_OPTIX_CHECK(optixUtilAccumulateStackSizes(program_group_table_.raygen_group, &stack_sizes,optix_pipeline_));
+        OC_OPTIX_CHECK(optixUtilAccumulateStackSizes(program_group_table_.miss_closest_group, &stack_sizes,optix_pipeline_));
+        OC_OPTIX_CHECK(optixUtilAccumulateStackSizes(program_group_table_.hit_closest_group, &stack_sizes,optix_pipeline_));
+        OC_OPTIX_CHECK(optixUtilAccumulateStackSizes(program_group_table_.hit_any_group, &stack_sizes,optix_pipeline_));
 
         uint32_t direct_callable_stack_size_from_traversal;
         uint32_t direct_callable_stack_size_from_state;
