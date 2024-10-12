@@ -87,7 +87,7 @@ __device__ inline oc_float2 getTriangleBarycentric() {
     return oc_make_float2(1 - barycentric.y - barycentric.x, barycentric.x);
 }
 
-__device__ inline Hit oc_trace_closest(OptixTraversableHandle handle,
+__device__ inline Hit trace_closest_(OptixTraversableHandle handle,
                                           Ray ray) {
     unsigned int u0, u1;
     Hit hit;
@@ -98,6 +98,11 @@ __device__ inline Hit oc_trace_closest(OptixTraversableHandle handle,
           0,        // missSBTIndex
           u0, u1);
     return hit;
+}
+
+__device__ inline Hit oc_trace_closest(OptixTraversableHandle handle,
+                                          Ray ray) {
+    return trace_closest_(handle, ray);
 }
 
 __device__ inline bool traverse_any_(OptixTraversableHandle handle, Ray ray) {
