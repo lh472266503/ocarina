@@ -126,11 +126,11 @@ __device__ inline Hit traverse_closest_(OptixTraversableHandle handle,
 
 __device__ inline Hit oc_trace_closest(OptixTraversableHandle handle,
                                        Ray ray) {
-#if TRAVERSE_ONLY
-    return traverse_closest_(handle, ray);
-#else
+// #if TRAVERSE_ONLY
+//     return traverse_closest_(handle, ray);
+// #else
     return trace_closest_(handle, ray);
-#endif
+// #endif
 }
 
 __device__ inline bool traverse_any_(OptixTraversableHandle handle, Ray ray) {
