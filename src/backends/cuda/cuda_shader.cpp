@@ -199,7 +199,7 @@ public:
 
     void build_sbt(ProgramGroupTable program_group_table) {
         sbt_records_ = Buffer<SBTRecord>(device_, 4, "OptixShader::sbt_records_");
-        SBTRecord sbt[4] = {};
+        SBTRecord sbt[ProgramGroupTable::size()] = {};
         OC_OPTIX_CHECK(optixSbtRecordPackHeader(program_group_table.raygen_group, &sbt[0]));
         OC_OPTIX_CHECK(optixSbtRecordPackHeader(program_group_table.hit_closest_group, &sbt[1]));
         OC_OPTIX_CHECK(optixSbtRecordPackHeader(program_group_table.hit_any_group, &sbt[2]));
