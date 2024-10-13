@@ -134,7 +134,6 @@ __device__ inline Hit oc_trace_closest(OptixTraversableHandle handle,
 }
 
 __device__ inline bool traverse_any_(OptixTraversableHandle handle, Ray ray) {
-    unsigned int occluded = 0u;
     traverse(handle, ray, OPTIX_RAY_FLAG_DISABLE_ANYHIT | OPTIX_RAY_FLAG_TERMINATE_ON_FIRST_HIT,
              1,// SBT offset
              0,// SBT stride
@@ -157,7 +156,7 @@ __device__ inline bool oc_trace_any(OptixTraversableHandle handle, Ray ray) {
 // #if TRAVERSE_ONLY
     return traverse_any_(handle, ray);
 // #else
-//     return trace_any_(handle, ray);
+    // return trace_any_(handle, ray);
 // #endif
 }
 
