@@ -89,10 +89,10 @@ __device__ inline oc_float2 getTriangleBarycentric() {
 
 #define TRAVERSE_ONLY 1
 
-__device__ inline Hit trace_closest_(OptixTraversableHandle handle,
+__device__ inline TriangleHit trace_closest_(OptixTraversableHandle handle,
                                      Ray ray) {
     unsigned int u0, u1;
-    Hit hit;
+    TriangleHit hit;
     pack_pointer(&hit, u0, u1);
     trace(handle, ray, OPTIX_RAY_FLAG_DISABLE_ANYHIT,
           0,// SBT offset
@@ -102,8 +102,8 @@ __device__ inline Hit trace_closest_(OptixTraversableHandle handle,
     return hit;
 }
 
-Hit getHitObjectInfo() {
-    Hit hit;
+TriangleHit getHitObjectInfo() {
+    TriangleHit hit;
     hit.inst_id = optixHitObjectGetInstanceId();
     hit.prim_id = optixHitObjectGetPrimitiveIndex();
     unsigned int attr0 = optixHitObjectGetAttribute_0();
@@ -114,7 +114,7 @@ Hit getHitObjectInfo() {
     return hit;
 }
 
-__device__ inline Hit traverse_closest_(OptixTraversableHandle handle,
+__device__ inline TriangleHit traverse_closest_(OptixTraversableHandle handle,
                                         Ray ray) {
     traverse(handle, ray, OPTIX_RAY_FLAG_DISABLE_ANYHIT | OPTIX_RAY_FLAG_DISABLE_CLOSESTHIT,
              0,// SBT offset
@@ -124,7 +124,7 @@ __device__ inline Hit traverse_closest_(OptixTraversableHandle handle,
     return getHitObjectInfo();
 }
 
-__device__ inline Hit oc_trace_closest(OptixTraversableHandle handle,
+__device__ inline TriangleHit oc_trace_closest(OptixTraversableHandle handle,
                                        Ray ray) {
 // #if TRAVERSE_ONLY
 //     return traverse_closest_(handle, ray);
@@ -160,28 +160,28 @@ __device__ inline bool oc_trace_any(OptixTraversableHandle handle, Ray ray) {
 // #endif
 }
 
-__device__ inline Hit getClosestHit() {
-    Hit ret;
+__device__ inline TriangleHit getClosestHit() {
+    TriangleHit ret;
     ret.inst_id = optixGetInstanceId();
     ret.prim_id = optixGetPrimitiveIndex();
     ret.bary = getTriangleBarycentric();
     return ret;
 }
 
-template<typename T = Hit>
+template<typename T = TriangleHit>
 __device__ inline T *getPayloadPtr() {
     const unsigned int u0 = optixGetPayload_0();
     const unsigned int u1 = optixGetPayload_1();
     return reinterpret_cast<T *>(unpack_pointer(u0, u1));
 }
 
-template<typename T = Hit>
+template<typename T = TriangleHit>
 __device__ inline T &getPayload() {
     return *getPayloadPtr();
 }
 
 extern "C" __global__ void __closesthit__closest() {
-    Hit &hit = getPayload<Hit>();
+    TriangleHit &hit = getPayload<TriangleHit>();
     hit = getClosestHit();
 }
 

@@ -75,7 +75,7 @@ public:
     }
 
     template<typename TRay>
-    [[nodiscard]] Var<Hit> trace_closest(const TRay &ray) const noexcept {
+    [[nodiscard]] Var<TriangleHit> trace_closest(const TRay &ray) const noexcept {
         return make_expr<Accel>(expression()).trace_closest(ray);
     }
 

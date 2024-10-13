@@ -12,7 +12,7 @@
 
 namespace ocarina {
 
-struct alignas(16) Hit {
+struct alignas(16) TriangleHit {
     uint inst_id{uint(-1)};
     uint prim_id{uint(-1)};
     float2 bary{};
@@ -24,7 +24,7 @@ struct alignas(16) Hit {
 }// namespace ocarina
 
 // clang-format off
-OC_BUILTIN_STRUCT(ocarina,Hit, inst_id, prim_id, bary){
+OC_BUILTIN_STRUCT(ocarina,TriangleHit, inst_id, prim_id, bary){
     [[nodiscard]] Bool is_miss() const noexcept {
         return eval(inst_id == uint(-1));
     }

@@ -6,12 +6,12 @@ template<class To, class From>
     return *reinterpret_cast<const To *>(&src);
 }
 
-struct alignas(16) Hit {
+struct alignas(16) TriangleHit {
     oc_uint inst_id{oc_uint(-1)};
     oc_uint prim_id{oc_uint(-1)};
     oc_float2 bary;
-    Hit() = default;
-    Hit(oc_uint inst_id, oc_uint prim_id, oc_float2 bary)
+    TriangleHit() = default;
+    TriangleHit(oc_uint inst_id, oc_uint prim_id, oc_float2 bary)
         : inst_id(inst_id), prim_id(prim_id), bary(bary) {}
 };
 

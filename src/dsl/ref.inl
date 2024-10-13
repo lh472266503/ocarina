@@ -15,11 +15,11 @@ Var<bool> Ref<Accel>::trace_any(const Var<Ray> &ray) const noexcept {
     return eval<bool>(expr);
 }
 
-Var<Hit> Ref<Accel>::trace_closest(const Var<Ray> &ray) const noexcept {
-    const CallExpr *expr = Function::current()->call_builtin(Type::of<Hit>(),
+Var<TriangleHit> Ref<Accel>::trace_closest(const Var<Ray> &ray) const noexcept {
+    const CallExpr *expr = Function::current()->call_builtin(Type::of<TriangleHit>(),
                                                              CallOp::TRACE_CLOSEST,
                                                              {expression(), OC_EXPR(ray)});
-    return eval<Hit>(expr);
+    return eval<TriangleHit>(expr);
 }
 
 }// namespace ocarina::detail

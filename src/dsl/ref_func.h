@@ -41,7 +41,7 @@ template<typename T>
 template<typename T>
 [[nodiscard]] inline Expr<expr_value_t<T>> make_expr(const Expression *expr) noexcept;// implement in stmt_builder.h
 
-class Hit;
+class TriangleHit;
 class Ray;
 
 template<typename T, typename TBuffer>
