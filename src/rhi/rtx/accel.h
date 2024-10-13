@@ -70,8 +70,8 @@ public:
     }
 
     template<typename TRay>
-    [[nodiscard]] Var<bool> trace_any(const TRay &ray) const noexcept {
-        return make_expr<Accel>(expression()).trace_any(ray);
+    [[nodiscard]] Var<bool> trace_occlusion(const TRay &ray) const noexcept {
+        return make_expr<Accel>(expression()).trace_occlusion(ray);
     }
 
     template<typename TRay>

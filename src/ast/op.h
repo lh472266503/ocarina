@@ -179,7 +179,7 @@ enum struct CallOp : uint32_t {
     MAKE_RAY,
     RAY_OFFSET_ORIGIN,
     TRACE_CLOSEST,
-    TRACE_ANY,
+    TRACE_OCCLUSION,
 
     COUNT
 };

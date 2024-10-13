@@ -296,7 +296,7 @@ public:
         ProgramName entries{
             raygen_entry.c_str(),
             "__closesthit__closest",
-            "__closesthit__any"};
+            "__closesthit__occlusion"};
         program_group_table_ = create_program_groups(device_->optix_device_context(), entries);
         build_sbt(program_group_table_);
         build_pipeline(device_->optix_device_context());
