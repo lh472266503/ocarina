@@ -96,6 +96,7 @@ private:
     Buffer<SBTRecord> sbt_records_{};
     OptixShaderBindingTable sbt_{};
     Buffer<std::byte> params_;
+    std::array<OptixPayloadType, 1> payload_types_{};
 
 public:
     void init_module(const string_view &ptx_code) {
@@ -109,9 +110,8 @@ public:
             OPTIX_PAYLOAD_SEMANTICS_TRACE_CALLER_WRITE | OPTIX_PAYLOAD_SEMANTICS_IS_READ | OPTIX_PAYLOAD_SEMANTICS_AH_READ,
         };
 
-        std::array<OptixPayloadType, 1> payload_types{};
-        payload_types[0].numPayloadValues = ray_trace_payload_semantics.size();
-        payload_types[0].payloadSemantics = ray_trace_payload_semantics.data();
+        payload_types_[0].numPayloadValues = ray_trace_payload_semantics.size();
+        payload_types_[0].payloadSemantics = ray_trace_payload_semantics.data();
         // payload_types[1].numPayloadValues = ray_query_payload_semantics.size();
         // payload_types[1].payloadSemantics = ray_query_payload_semantics.data();
 
@@ -122,8 +122,8 @@ public:
 //        module_compile_options.debugLevel = OPTIX_COMPILE_DEBUG_LEVEL_NONE;
         //#else
         module_compile_options.optLevel = OPTIX_COMPILE_OPTIMIZATION_LEVEL_3;
-        // module_compile_options.numPayloadTypes = payload_types.size();
-        // module_compile_options.payloadTypes = payload_types.data();
+        // module_compile_options.numPayloadTypes = payload_types_.size();
+        // module_compile_options.payloadTypes = payload_types_.data();
 
         //        module_compile_options.debugLevel = OPTIX_COMPILE_DEBUG_LEVEL_NONE;
         //#endif

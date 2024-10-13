@@ -87,7 +87,9 @@ __device__ inline oc_float2 getTriangleBarycentric() {
     return oc_make_float2(1 - barycentric.y - barycentric.x, barycentric.x);
 }
 
+
 #define TRAVERSE_ONLY 1
+
 
 __device__ inline TriangleHit trace_closest_(OptixTraversableHandle handle,
                                              Ray ray) {
@@ -174,6 +176,8 @@ __device__ inline T *getPayloadPtr() {
     const unsigned int u1 = optixGetPayload_1();
     return reinterpret_cast<T *>(unpack_pointer(u0, u1));
 }
+
+
 
 template<typename T = TriangleHit>
 __device__ inline T &getPayload() {
