@@ -129,7 +129,8 @@ public:
         //#endif
         pipeline_compile_options_.traversableGraphFlags = OPTIX_TRAVERSABLE_GRAPH_FLAG_ALLOW_SINGLE_LEVEL_INSTANCING;
         pipeline_compile_options_.usesMotionBlur = false;
-        pipeline_compile_options_.numPayloadValues = 4;
+        //todo WTF?
+        pipeline_compile_options_.numPayloadValues = 32;
         pipeline_compile_options_.usesPrimitiveTypeFlags = OPTIX_PRIMITIVE_TYPE_FLAGS_TRIANGLE;
         //        pipeline_compile_options_.numAttributeValues = 2;
 
