@@ -156,7 +156,7 @@ def main():
         f.write(string)
         f.close()
 
-    fn = os.path.join(curr_dir, "../backends/cuda/embed/cuda_device_math.h")
+    fn = os.path.join(curr_dir, "../backends/cuda/builtin/cuda_device_math.h")
     string = get_content("oc_", "__device__")
     with open(fn, "w") as f:
         f.write(string)

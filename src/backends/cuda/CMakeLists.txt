@@ -2,7 +2,7 @@
 find_package(CUDAToolkit)
 if (CUDAToolkit_FOUND)
 
-    file(GLOB backend_headers "embed/*.h")
+    file(GLOB backend_headers "builtin/*.h")
 
     file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/cuda)
     add_custom_target(copy_cuda_headers ALL DEPENDS ${backend_headers})
