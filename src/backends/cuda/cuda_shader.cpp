@@ -198,8 +198,8 @@ public:
     }
 
     void build_sbt(ProgramGroupTable program_group_table) {
-        sbt_records_ = Buffer<SBTRecord>(device_, 4, "OptixShader::sbt_records_");
         SBTRecord sbt[ProgramGroupTable::size()] = {};
+        sbt_records_ = Buffer<SBTRecord>(device_, ProgramGroupTable::size(), "OptixShader::sbt_records_");
         OC_OPTIX_CHECK(optixSbtRecordPackHeader(program_group_table.raygen_group, &sbt[0]));
         OC_OPTIX_CHECK(optixSbtRecordPackHeader(program_group_table.hit_closest_group, &sbt[1]));
         OC_OPTIX_CHECK(optixSbtRecordPackHeader(program_group_table.hit_any_group, &sbt[2]));
@@ -218,6 +218,7 @@ public:
     ProgramGroupTable create_program_groups(OptixDeviceContext optix_device_context,
                                             const ProgramName &program_name) {
         OptixProgramGroupOptions program_group_options = {};
+//        program_group_options.payloadType = payload_types_.data();
         char log[2048];
         size_t sizeof_log = sizeof(log);
         ProgramGroupTable program_group_table;
