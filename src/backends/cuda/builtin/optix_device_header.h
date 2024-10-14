@@ -102,6 +102,19 @@ __device__ inline TriangleHit trace_closest_(OptixTraversableHandle handle,
     return hit;
 }
 
+// __device__ inline TriangleHit trace_closest_(OptixTraversableHandle handle,
+//                                              Ray ray) {
+//     TriangleHit hit;
+//     oc_uint u0, u1;
+//     pack_pointer(&hit, u0, u1);
+//     trace(handle, ray, OPTIX_RAY_FLAG_DISABLE_ANYHIT,
+//           0,// SBT offset
+//           0,// SBT stride
+//           0,// missSBTIndex
+//           u0, u1);
+//     return hit;
+// }
+
 TriangleHit getHitObjectInfo() {
     TriangleHit hit;
     hit.inst_id = optixHitObjectIsHit() ? optixHitObjectGetInstanceId() : ~0u;
@@ -181,6 +194,8 @@ __device__ inline T &getPayload() {
 }
 
 extern "C" __global__ void __closesthit__closest() {
+    // auto &hit = getPayload();
+    // hit = getClosestHit();
     TriangleHit hit = getClosestHit();
     optixSetPayload_0(hit.inst_id);
     optixSetPayload_1(hit.prim_id);
