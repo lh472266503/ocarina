@@ -64,7 +64,7 @@ struct alignas(OPTIX_SBT_RECORD_ALIGNMENT) SBTRecord {
 struct ProgramName {
     const char *raygen{};
     const char *closesthit_closest{};
-    const char *closesthit_any{};
+    const char *closesthit_occlusion{};
 };
 
 struct ProgramGroupTable {
@@ -256,7 +256,7 @@ public:
             memset(&hit_prog_group_desc, 0, sizeof(OptixProgramGroupDesc));
             hit_prog_group_desc.kind = OPTIX_PROGRAM_GROUP_KIND_HITGROUP;
             hit_prog_group_desc.hitgroup.moduleCH = optix_module_;
-            hit_prog_group_desc.hitgroup.entryFunctionNameCH = program_name.closesthit_any;
+            hit_prog_group_desc.hitgroup.entryFunctionNameCH = program_name.closesthit_occlusion;
             sizeof_log = sizeof(log);
 
             OC_OPTIX_CHECK_WITH_LOG(optixProgramGroupCreate(
