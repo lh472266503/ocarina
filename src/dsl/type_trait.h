@@ -751,7 +751,7 @@ using condition_t = typename detail::condition_impl<T, Args...>::type;
     OC_MAKE_VAR_TYPE_IMPL(type, 3) \
     OC_MAKE_VAR_TYPE_IMPL(type, 4)
 
-struct Hit;
+struct TriangleHit;
 
 OC_MAKE_VAR_TYPE(int)
 OC_MAKE_VAR_TYPE(uint)
@@ -760,7 +760,7 @@ OC_MAKE_VAR_TYPE(char)
 OC_MAKE_VAR_TYPE(uchar)
 OC_MAKE_VAR_TYPE(bool)
 OC_MAKE_VAR_TYPE_IMPL(Ray, )
-OC_MAKE_VAR_TYPE_IMPL(Hit, )
+OC_MAKE_VAR_TYPE_IMPL(TriangleHit, )
 
 #define OC_MAKE_VAR_MAT(dim) \
     template<EPort port>     \

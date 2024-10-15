@@ -46,7 +46,7 @@ auto func(T a, T b) {
     Var<uint> ui = a;
     Var<float2> f2;
     f2 = +f2;
-    Var<Hit> hit{};
+    Var<TriangleHit> hit{};
 //    aa = rcp(aa);
 //    a = rcp(a);
 //    c = rcp(c);
@@ -100,7 +100,7 @@ int main(int argc, char *argv[]) {
         $for(v, 9) {
             a = a + v;
         };
-        Var<Hit> hit;
+        Var<TriangleHit> hit;
         $if(hit->is_miss()){
             $comment(miss)
 

@@ -64,7 +64,7 @@ struct alignas(OPTIX_SBT_RECORD_ALIGNMENT) SBTRecord {
 struct ProgramName {
     const char *raygen{};
     const char *closesthit_closest{};
-    const char *closesthit_any{};
+    const char *closesthit_occlusion{};
 };
 
 struct ProgramGroupTable {
@@ -96,10 +96,25 @@ private:
     Buffer<SBTRecord> sbt_records_{};
     OptixShaderBindingTable sbt_{};
     Buffer<std::byte> params_;
+    std::array<OptixPayloadType, 1> payload_types_{};
 
 public:
     void init_module(const string_view &ptx_code) {
         OptixModuleCompileOptions module_compile_options = {};
+        static constexpr std::array<uint, 1> ray_trace_payload_semantics{
+            OPTIX_PAYLOAD_SEMANTICS_TRACE_CALLER_WRITE | OPTIX_PAYLOAD_SEMANTICS_CH_READ,
+        };
+
+        static constexpr std::array<uint, 2> ray_query_payload_semantics{
+            OPTIX_PAYLOAD_SEMANTICS_TRACE_CALLER_WRITE | OPTIX_PAYLOAD_SEMANTICS_IS_READ | OPTIX_PAYLOAD_SEMANTICS_AH_READ,
+            OPTIX_PAYLOAD_SEMANTICS_TRACE_CALLER_WRITE | OPTIX_PAYLOAD_SEMANTICS_IS_READ | OPTIX_PAYLOAD_SEMANTICS_AH_READ,
+        };
+
+        payload_types_[0].numPayloadValues = ray_trace_payload_semantics.size();
+        payload_types_[0].payloadSemantics = ray_trace_payload_semantics.data();
+        // payload_types[1].numPayloadValues = ray_query_payload_semantics.size();
+        // payload_types[1].payloadSemantics = ray_query_payload_semantics.data();
+
         // TODO: REVIEW THIS
         module_compile_options.maxRegisterCount = OPTIX_COMPILE_DEFAULT_MAX_REGISTER_COUNT;
         //#ifndef NDEBUG
@@ -107,11 +122,15 @@ public:
 //        module_compile_options.debugLevel = OPTIX_COMPILE_DEBUG_LEVEL_NONE;
         //#else
         module_compile_options.optLevel = OPTIX_COMPILE_OPTIMIZATION_LEVEL_3;
+        // module_compile_options.numPayloadTypes = payload_types_.size();
+        // module_compile_options.payloadTypes = payload_types_.data();
+
         //        module_compile_options.debugLevel = OPTIX_COMPILE_DEBUG_LEVEL_NONE;
         //#endif
         pipeline_compile_options_.traversableGraphFlags = OPTIX_TRAVERSABLE_GRAPH_FLAG_ALLOW_SINGLE_LEVEL_INSTANCING;
         pipeline_compile_options_.usesMotionBlur = false;
-        pipeline_compile_options_.numPayloadValues = 4;
+        //todo WTF?
+        pipeline_compile_options_.numPayloadValues = 32;
         pipeline_compile_options_.usesPrimitiveTypeFlags = OPTIX_PRIMITIVE_TYPE_FLAGS_TRIANGLE;
         //        pipeline_compile_options_.numAttributeValues = 2;
 
@@ -125,7 +144,7 @@ public:
         pipeline_compile_options_.pipelineLaunchParamsVariableName = "params";
         char log[2048];
         size_t log_size = sizeof(log);
-        OC_OPTIX_CHECK_WITH_LOG(optixModuleCreateFromPTX(
+        OC_OPTIX_CHECK_WITH_LOG(optixModuleCreate(
                                     device_->optix_device_context(),
                                     &module_compile_options,
                                     &pipeline_compile_options_,
@@ -140,7 +159,7 @@ public:
 
         OptixPipelineLinkOptions pipeline_link_options = {};
         pipeline_link_options.maxTraceDepth = max_trace_depth;
-        pipeline_link_options.debugLevel = OPTIX_COMPILE_DEBUG_LEVEL_NONE;
+//        pipeline_link_options.debugLevel = OPTIX_COMPILE_DEBUG_LEVEL_NONE;
         char log[2048];
         size_t sizeof_log = sizeof(log);
 
@@ -156,10 +175,10 @@ public:
 
         // Set shaders stack sizes.
         OptixStackSizes stack_sizes = {};
-        OC_OPTIX_CHECK(optixUtilAccumulateStackSizes(program_group_table_.raygen_group, &stack_sizes));
-        OC_OPTIX_CHECK(optixUtilAccumulateStackSizes(program_group_table_.miss_closest_group, &stack_sizes));
-        OC_OPTIX_CHECK(optixUtilAccumulateStackSizes(program_group_table_.hit_closest_group, &stack_sizes));
-        OC_OPTIX_CHECK(optixUtilAccumulateStackSizes(program_group_table_.hit_any_group, &stack_sizes));
+        OC_OPTIX_CHECK(optixUtilAccumulateStackSizes(program_group_table_.raygen_group, &stack_sizes,optix_pipeline_));
+        OC_OPTIX_CHECK(optixUtilAccumulateStackSizes(program_group_table_.miss_closest_group, &stack_sizes,optix_pipeline_));
+        OC_OPTIX_CHECK(optixUtilAccumulateStackSizes(program_group_table_.hit_closest_group, &stack_sizes,optix_pipeline_));
+        OC_OPTIX_CHECK(optixUtilAccumulateStackSizes(program_group_table_.hit_any_group, &stack_sizes,optix_pipeline_));
 
         uint32_t direct_callable_stack_size_from_traversal;
         uint32_t direct_callable_stack_size_from_state;
@@ -180,8 +199,8 @@ public:
     }
 
     void build_sbt(ProgramGroupTable program_group_table) {
-        sbt_records_ = Buffer<SBTRecord>(device_, 4, "OptixShader::sbt_records_");
-        SBTRecord sbt[4] = {};
+        SBTRecord sbt[ProgramGroupTable::size()] = {};
+        sbt_records_ = Buffer<SBTRecord>(device_, ProgramGroupTable::size(), "OptixShader::sbt_records_");
         OC_OPTIX_CHECK(optixSbtRecordPackHeader(program_group_table.raygen_group, &sbt[0]));
         OC_OPTIX_CHECK(optixSbtRecordPackHeader(program_group_table.hit_closest_group, &sbt[1]));
         OC_OPTIX_CHECK(optixSbtRecordPackHeader(program_group_table.hit_any_group, &sbt[2]));
@@ -200,6 +219,7 @@ public:
     ProgramGroupTable create_program_groups(OptixDeviceContext optix_device_context,
                                             const ProgramName &program_name) {
         OptixProgramGroupOptions program_group_options = {};
+//        program_group_options.payloadType = payload_types_.data();
         char log[2048];
         size_t sizeof_log = sizeof(log);
         ProgramGroupTable program_group_table;
@@ -238,7 +258,7 @@ public:
             memset(&hit_prog_group_desc, 0, sizeof(OptixProgramGroupDesc));
             hit_prog_group_desc.kind = OPTIX_PROGRAM_GROUP_KIND_HITGROUP;
             hit_prog_group_desc.hitgroup.moduleCH = optix_module_;
-            hit_prog_group_desc.hitgroup.entryFunctionNameCH = program_name.closesthit_any;
+            hit_prog_group_desc.hitgroup.entryFunctionNameCH = program_name.closesthit_occlusion;
             sizeof_log = sizeof(log);
 
             OC_OPTIX_CHECK_WITH_LOG(optixProgramGroupCreate(
@@ -278,7 +298,7 @@ public:
         ProgramName entries{
             raygen_entry.c_str(),
             "__closesthit__closest",
-            "__closesthit__any"};
+            "__closesthit__occlusion"};
         program_group_table_ = create_program_groups(device_->optix_device_context(), entries);
         build_sbt(program_group_table_);
         build_pipeline(device_->optix_device_context());

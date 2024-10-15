@@ -256,8 +256,8 @@ struct Ref<Texture2D<T>>
 template<>
 struct Ref<Accel> {
 public:
-    [[nodiscard]] inline Var<Hit> trace_closest(const Var<Ray> &ray) const noexcept;// implement in ref.inl
-    [[nodiscard]] inline Var<bool> trace_any(const Var<Ray> &ray) const noexcept;   // implement in ref.inl
+    [[nodiscard]] inline Var<TriangleHit> trace_closest(const Var<Ray> &ray) const noexcept;// implement in ref.inl
+    [[nodiscard]] inline Var<bool> trace_occlusion(const Var<Ray> &ray) const noexcept;   // implement in ref.inl
     OC_REF_COMMON(Ref<Accel>)
 };
 

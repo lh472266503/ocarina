@@ -70,12 +70,12 @@ public:
     }
 
     template<typename TRay>
-    [[nodiscard]] Var<bool> trace_any(const TRay &ray) const noexcept {
-        return make_expr<Accel>(expression()).trace_any(ray);
+    [[nodiscard]] Var<bool> trace_occlusion(const TRay &ray) const noexcept {
+        return make_expr<Accel>(expression()).trace_occlusion(ray);
     }
 
     template<typename TRay>
-    [[nodiscard]] Var<Hit> trace_closest(const TRay &ray) const noexcept {
+    [[nodiscard]] Var<TriangleHit> trace_closest(const TRay &ray) const noexcept {
         return make_expr<Accel>(expression()).trace_closest(ray);
     }
 

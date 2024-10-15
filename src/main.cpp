@@ -34,7 +34,7 @@ int main() {
     //    cout << typeid(tp).name() << endl;
     //    cout << typeid(struct_member_tuple<ocarina::array<float, 2>>::type).name();
     cout << TypeDesc<decltype(tp)>::description() << endl;
-    //    cout << TypeDesc<Hit>::description() << endl;
+    //    cout << TypeDesc<TriangleHit>::description() << endl;
     //    cout << typeid(ocarina::tuple_join_t<tuple<int, float, int>, tuple<int, float, uint>, int>).name() << endl;
     //    cout << typeid(canonical_layout<float2x2>::type).name() << endl;
 }

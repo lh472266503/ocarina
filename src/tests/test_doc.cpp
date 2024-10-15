@@ -15,7 +15,7 @@ using namespace ocarina;
 
 struct Triple {
     uint i{50}, j{}, k{};
-    Hit h{};
+    TriangleHit h{};
     Triple(uint i, uint j, uint k) : i(i), j(j), k(k) {}
     Triple() = default;
 };
@@ -267,7 +267,7 @@ void test_lambda(Device &device, Stream &stream) {
 
     Kernel kernel = [&](Uint i) {
         //        Float *p;
-        //        HitVar *hit;
+        //        TriangleHitVar *hit;
         //        Float b;
         //
         //        Float3 f3;
@@ -364,7 +364,7 @@ void test_lambda(Device &device, Stream &stream) {
         //        $outline {
         //
         //            Var<Triple> ttt;
-        //            Var<Hit> hit;
+        //            Var<TriangleHit> hit;
         //
         //            //            auto sn = hit.expression()->type()->simple_cname();
         //
@@ -373,7 +373,7 @@ void test_lambda(Device &device, Stream &stream) {
         //
         //                $outline {
         //                    p = new Float(15);
-        //                    //                    hit = new HitVar{};
+        //                    //                    hit = new TriangleHitVar{};
         //                    //                    *p = b;
         //                    //                    b = 19;
         //                };

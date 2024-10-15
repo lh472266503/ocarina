@@ -32,10 +32,26 @@ void test_list(Device &device, Stream& stream) {
 
     rl.super().clear_immediately();
 
+    float3x3 mmm(-2.f);
+    auto m22 = abs(mmm);
 
+    auto m333 = max(mmm, m22);
+
+    auto m = isnan(mmm);
 
     Kernel kernel = [&](Uint i) {
-      Var mat = make_float4x4(dispatch_id() + 1);
+
+
+
+      Var m = make_float4x4(dispatch_id() + 1);
+      Var m2 = rcp(m);
+      m = max(m, m2);
+      $info("\n {} {} {} {}  \n"
+                           "{} {} {} {}  \n"
+                           "{} {} {} {}  \n"
+                           "{} {} {} {}  \n",
+                           m[0], m[1], m[2], m[3]);
+      return ;
       DynamicArray<float> arr(3, 3);
       arr *= arr;
 
@@ -54,7 +70,7 @@ void test_list(Device &device, Stream& stream) {
               "{} {} {} {}  {}\n",
               a[0], a[1], a[2], a[3], rl.advance_index());
 
-        rl.write(dispatch_id(), mat);
+//        rl.write(dispatch_id(), mat);
 //        rl.at(dispatch_id()) = mat;
 
         a = rl.read(dispatch_id());
