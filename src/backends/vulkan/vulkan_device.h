@@ -70,7 +70,8 @@ private:
     /** @brief Queue family properties of the physical device */
     std::vector<VkQueueFamilyProperties> m_queueFamilyProperties;
     /** @brief List of extensions supported by the device */
-    std::vector<std::string> m_supportedExtensions;
+    std::vector<const char*> m_supportedExtensions;
+    std::vector<const char *> m_enableExtensions;
     /** @brief Default command pool for the graphics queue family index */
     VkCommandPool m_commandPool = VK_NULL_HANDLE;
 
@@ -109,11 +110,20 @@ public:
 
     OC_MAKE_MEMBER_GETTER_SETTER(physicalDevice, );
 
+    //uint32_t get_queue_family_index
 private:
     void init_vulkan();
     void create_logical_device();
+    void get_enable_features();
+    void get_enable_extentions();
 
     VulkanInstance m_instance;
     VulkanSwapchain m_swapChain;
+
+    uint32_t queueFamilyIndices_[(uint32_t)QueueType::NumQueueType];
+    //uint32_t queueFamilyIndexPerQueue_[(uint32_t)QueueType::NumQueueType];
+    std::vector<VkQueueFamilyProperties> queueFamilyProperties_;
+    uint32_t queueFamilyCount_ = 0;
+    uint32_t getQueueFamilyIndex(uint32_t queueFlags) const;
 };
 }// namespace ocarina

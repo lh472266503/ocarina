@@ -5,6 +5,7 @@
 #pragma once
 
 #include "core/pool.h"
+#include "graphics_descriptions.h"
 
 namespace ocarina {
 class Command;
@@ -25,9 +26,11 @@ class CommandQueue {
 
 private:
     CommandList commands_{};
+    QueueType queueType_;
 
 public:
     CommandQueue() = default;
+    CommandQueue(QueueType queueType) : queueType_(queueType) {}
     ~CommandQueue() { recycle(); }
     template<typename... Args>
     auto push_back(Args &&...args) {

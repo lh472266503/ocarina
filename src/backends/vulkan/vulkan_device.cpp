@@ -10,7 +10,7 @@ namespace ocarina {
 
 VulkanDevice::VulkanDevice(FileManager *file_manager, const ocarina::InstanceCreation &instance_creation)
     : Device::Impl(file_manager), m_instance(instance_creation) {
-
+    init_vulkan();
 }
 
 VulkanDevice::~VulkanDevice()
@@ -142,12 +142,104 @@ void VulkanDevice::init_vulkan()
     vkGetPhysicalDeviceProperties(physicalDevice_, &m_deviceProperties);
     vkGetPhysicalDeviceFeatures(physicalDevice_, &m_deviceFeatures);
     vkGetPhysicalDeviceMemoryProperties(physicalDevice_, &m_deviceMemoryProperties);
+
+    // Get list of supported extensions
+    uint32_t extCount = 0;
+    vkEnumerateDeviceExtensionProperties(physicalDevice_, nullptr, &extCount, nullptr);
+    if (extCount > 0) {
+        std::vector<VkExtensionProperties> extensions(extCount);
+        if (vkEnumerateDeviceExtensionProperties(physicalDevice_, nullptr, &extCount, &extensions.front()) == VK_SUCCESS) {
+            for (auto ext : extensions) 
+            {
+                m_supportedExtensions.push_back(ext.extensionName);
+            }
+        }
+    }
+
+
+    // Retrieve Physical Device's Queue Families
+    uint32_t queueFamilyPropertiesCount = 0;
+    vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice_, &queueFamilyPropertiesCount, nullptr);
+
+    queueFamilyProperties_.resize(queueFamilyPropertiesCount);
+    vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice_, &queueFamilyPropertiesCount, queueFamilyProperties_.data());
+
+    static const uint32_t queueGraphicsIndex = uint32_t(QueueType::Graphics);
+    static const uint32_t queueCopyIndex = uint32_t(QueueType::Copy);
+    static const uint32_t queueComputeIndex = uint32_t(QueueType::Compute);
+
+    uint32_t graphicsFlags = VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_COMPUTE_BIT | VK_QUEUE_TRANSFER_BIT;
+    uint32_t computeFlags = VK_QUEUE_COMPUTE_BIT;
+    uint32_t copyFlags = VK_QUEUE_TRANSFER_BIT;
+
+    queueFamilyIndices_[queueGraphicsIndex] = getQueueFamilyIndex(graphicsFlags);
+    queueFamilyIndices_[queueCopyIndex] = getQueueFamilyIndex(copyFlags);
+    queueFamilyIndices_[queueComputeIndex] = getQueueFamilyIndex(computeFlags);
+
+    get_enable_features();
+    get_enable_extentions();
+
+    create_logical_device();
+}
+
+void VulkanDevice::create_logical_device()
+{
+
+    VkDeviceQueueCreateInfo queues[uint32_t(QueueType::NumQueueType)];
+    const float defaultQueuePriority(0.0f);
+    for (int i = 0; i < uint32_t(QueueType::NumQueueType); ++i)
+    {
+        queues[i].queueFamilyIndex = queueFamilyIndices_[i];
+        queues[i].queueCount = 1;
+        queues[i].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+        queues[i].pQueuePriorities = &defaultQueuePriority;
+    }
+    
+
+    VkDeviceCreateInfo info{};
+    info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+    info.queueCreateInfoCount = queueFamilyCount_;
+    info.pQueueCreateInfos = queues;
+    info.enabledLayerCount = 0;
+    info.ppEnabledLayerNames = nullptr;
+    info.enabledExtensionCount = m_enableExtensions.size();
+    info.ppEnabledExtensionNames = m_enableExtensions.data();
+    info.pEnabledFeatures = &m_enabledFeatures;
+    //VkPhysicalDeviceFeatures physicalDeviceFeatures = m_Adapter.GetVulkanPhysicalDeviceFeatures();
+
+    VkResult result = vkCreateDevice(physicalDevice_, &info, nullptr, &logicalDevice_);
+    
+}
+
+void VulkanDevice::get_enable_features() {
+    
+}
+
+void VulkanDevice::get_enable_extentions()
+{
+    for (auto &extension : m_supportedExtensions) {
+        // Swap chain extension - required
+        if (!strcmp(VK_KHR_SWAPCHAIN_EXTENSION_NAME, extension)) {
+            m_enableExtensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+        }
+    }
 }
 
 void VulkanDevice::shutdown()
 {
     m_swapChain.release();
     vkDestroyDevice(logicalDevice_, nullptr);
+}
+
+uint32_t VulkanDevice::getQueueFamilyIndex(uint32_t queueFlags) const {
+    for (uint32_t i = 0; i < queueFamilyProperties_.size(); i++) {
+        if ((queueFamilyProperties_[i].queueFlags & queueFlags) == queueFlags)
+        {
+            return i;
+        }
+    }
+
+    return InvalidUI32;
 }
 
 }// namespace ocarina
