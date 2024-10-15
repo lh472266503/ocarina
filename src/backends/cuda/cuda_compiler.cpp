@@ -58,7 +58,8 @@ ocarina::string CUDACompiler::compile(const Function &function, int sm) const no
         "-w"};
     ocarina::vector<string> includes;
     if (function.is_raytracing()) {
-        includes.push_back(ocarina::format("-I {}", optix_include));
+        static string inc_path = (fs::current_path() / "cuda" / "optix").string();
+        includes.push_back(ocarina::format("-I {}", inc_path));
         compile_option.push_back(includes.back().c_str());
         header_names.push_back("optix_device_header.h");
         string source = FileManager::read_file(string("cuda/optix_device_header.h"));
