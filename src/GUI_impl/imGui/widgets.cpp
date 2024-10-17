@@ -341,6 +341,22 @@ bool ImGuiWidgets::drag_float4(const string &label, ocarina::float4 *val, float 
     return ImGui::DragFloat4(label.c_str(), reinterpret_cast<float *>(val), speed, min, max);
 }
 
+bool ImGuiWidgets::drag_float(const string &label, float *val, float speed, float min, float max, const char *fmt) noexcept {
+    return ImGui::DragFloat(label.c_str(), val, speed, min, max, fmt);
+}
+
+bool ImGuiWidgets::drag_float2(const string &label, ocarina::float2 *val, float speed, float min, float max, const char *fmt) noexcept {
+    return ImGui::DragFloat2(label.c_str(), reinterpret_cast<float *>(val), speed, min, max, fmt);
+}
+
+bool ImGuiWidgets::drag_float3(const string &label, ocarina::float3 *val, float speed, float min, float max, const char *fmt) noexcept {
+    return ImGui::DragFloat3(label.c_str(), reinterpret_cast<float *>(val), speed, min, max, fmt);
+}
+
+bool ImGuiWidgets::drag_float4(const string &label, ocarina::float4 *val, float speed, float min, float max, const char *fmt) noexcept {
+    return ImGui::DragFloat4(label.c_str(), reinterpret_cast<float *>(val), speed, min, max, fmt);
+}
+
 bool ImGuiWidgets::combo(const std::string &label, int *current_item, const char *const *items, int item_num) noexcept {
     return ImGui::Combo(label.c_str(), current_item, items, item_num);
 }
