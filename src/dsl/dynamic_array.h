@@ -62,6 +62,14 @@ public:
         Function::current()->assign(expression_, other.expression_);
     }
 
+    static DynamicArray<T> zero(uint size) noexcept {
+        return DynamicArray<T>{size, static_cast<T>(0)};
+    }
+
+    static DynamicArray<T> one(uint size) noexcept {
+        return DynamicArray<T>{size, static_cast<T>(1)};
+    }
+
     void reset(const DynamicArray<T> &array) noexcept {
         size_ = array.size();
         expression_ = array.expression();
@@ -227,6 +235,10 @@ public:
     template<typename F>
     [[nodiscard]] Bool none(F &&f) const noexcept { return !any(OC_FORWARD(f)); }
 };
+
+using ArrayFloat = DynamicArray<float>;
+using ArrayInt = DynamicArray<int>;
+using ArrayUint = DynamicArray<uint>;
 
 template<typename T>
 OC_NODISCARD constexpr auto
@@ -420,5 +432,4 @@ DynamicArray<float> BindlessArrayTexture::sample(uint channel_num, const UV &uv)
         return sample(channel_num, arg.x, arg.y);
     }(decay_swizzle(uv));
 }
-
 }// namespace ocarina
