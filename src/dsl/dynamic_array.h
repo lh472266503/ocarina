@@ -61,13 +61,13 @@ public:
         : size_{other.size_}, expression_(Function::current()->local(type())) {
         Function::current()->assign(expression_, other.expression_);
     }
-
-    static DynamicArray<T> zero(uint size) noexcept {
-        return DynamicArray<T>{size, static_cast<T>(0)};
-    }
-
-    static DynamicArray<T> one(uint size) noexcept {
-        return DynamicArray<T>{size, static_cast<T>(1)};
+    static DynamicArray<T> zero(uint size) noexcept { return DynamicArray<T>{size, static_cast<T>(0)}; }
+    static DynamicArray<T> one(uint size) noexcept { return DynamicArray<T>{size, static_cast<T>(1)}; }
+    [[nodiscard]] bool valid() const noexcept { return size_ > 0; }
+    [[nodiscard]] static const Type *type(uint size) noexcept {
+        return Type::from(ocarina::format("array<{},{}>",
+                                          TypeDesc<T>::description(),
+                                          size));
     }
 
     void reset(const DynamicArray<T> &array) noexcept {
@@ -78,14 +78,6 @@ public:
     void invalidate() noexcept {
         size_ = 0;
         expression_ = nullptr;
-    }
-
-    [[nodiscard]] bool valid() const noexcept { return size_ > 0; }
-
-    [[nodiscard]] static const Type *type(uint size) noexcept {
-        return Type::from(ocarina::format("array<{},{}>",
-                                          TypeDesc<T>::description(),
-                                          size));
     }
 
     [[nodiscard]] const Type *type() const noexcept {
@@ -204,6 +196,17 @@ public:
             }
         }
         return r;
+    }
+
+    template<typename F>
+    void foreach (F &&f) const noexcept {
+        for (auto i = 0u; i < size(); i++) {
+            if constexpr (std::invocable<F, Var<T>>) {
+                f((*this)[i]);
+            } else {
+                f(i, (*this)[i]);
+            }
+        }
     }
 
     [[nodiscard]] Var<T> sum() const noexcept {
