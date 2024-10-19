@@ -236,9 +236,9 @@ public:
     [[nodiscard]] Bool none(F &&f) const noexcept { return !any(OC_FORWARD(f)); }
 };
 
-using ArrayFloat = DynamicArray<float>;
-using ArrayInt = DynamicArray<int>;
-using ArrayUint = DynamicArray<uint>;
+using FloatArray = DynamicArray<float>;
+using IntArray = DynamicArray<int>;
+using UintArray = DynamicArray<uint>;
 
 template<typename T>
 OC_NODISCARD constexpr auto
