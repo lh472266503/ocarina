@@ -236,9 +236,19 @@ public:
     [[nodiscard]] Bool none(F &&f) const noexcept { return !any(OC_FORWARD(f)); }
 };
 
-using FloatArray = DynamicArray<float>;
-using IntArray = DynamicArray<int>;
-using UintArray = DynamicArray<uint>;
+#define OC_MAKE_ARRAY_DIM(type, dim) using type##dim##_array = DynamicArray<type##dim>;
+#define OC_MAKE_ARRAY(type)    \
+    OC_MAKE_ARRAY_DIM(type, )  \
+    OC_MAKE_ARRAY_DIM(type, 2) \
+    OC_MAKE_ARRAY_DIM(type, 3) \
+    OC_MAKE_ARRAY_DIM(type, 4)
+
+OC_MAKE_ARRAY(float)
+OC_MAKE_ARRAY(uint)
+OC_MAKE_ARRAY(int)
+
+#undef OC_MAKE_ARRAY
+#undef OC_MAKE_ARRAY_DIM
 
 template<typename T>
 OC_NODISCARD constexpr auto
