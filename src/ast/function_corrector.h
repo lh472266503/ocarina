@@ -53,6 +53,7 @@ private:
     void visit_expr(const Expression *const &expression, Function *cur_func = nullptr) noexcept;
 
     void process_member_expr(const Expression *&expression,Function *cur_func) noexcept;
+    void process_subscript_expr(const Expression *&expression,Function *cur_func) noexcept;
     void process_param_struct(const Expression *&expression) noexcept;
 
     [[nodiscard]] bool is_from_invoker(const Expression *expression) noexcept;
