@@ -62,7 +62,8 @@ private:
 
 public:
     explicit FunctionCorrector() = default;
-    void apply(Function *function) noexcept;
+    //todo
+    void apply(Function *function, int counter = 0) noexcept;
 };
 
 }// namespace ocarina

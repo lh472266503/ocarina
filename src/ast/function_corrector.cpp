@@ -13,7 +13,7 @@ void FunctionCorrector::traverse(Function &function) noexcept {
     OC_ERROR_IF_NOT(valid, "FunctionCorrector error: invalid function ", function.description().c_str());
 }
 
-void FunctionCorrector::apply(Function *function) noexcept {
+void FunctionCorrector::apply(Function *function, int counter) noexcept {
     function_stack_.push_back(function);
     traverse(*current_function());
     if (current_function()->is_kernel()) {
@@ -47,7 +47,7 @@ void FunctionCorrector::process_capture(const Expression *&expression, Function 
 }
 
 void FunctionCorrector::process_subscript_expr(const Expression *&expression, Function *cur_func) noexcept {
-    expression->accept(*this);
+    process_capture(const_cast<const Expression *&>(expression), cur_func);
 }
 
 void FunctionCorrector::visit_expr(const Expression *const &expression, Function *cur_func) noexcept {
@@ -246,7 +246,7 @@ void FunctionCorrector::visit(const MemberExpr *expr) {
     OC_ERROR_IF(stage_ == ProcessCapture);
 }
 
-void FunctionCorrector::process_member_expr(const Expression *&expression,Function *cur_func) noexcept {
+void FunctionCorrector::process_member_expr(const Expression *&expression, Function *cur_func) noexcept {
     auto member_expr = dynamic_cast<const MemberExpr *>(expression);
     switch (stage_) {
         case ProcessCapture:
