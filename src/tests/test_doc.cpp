@@ -283,17 +283,17 @@ void test_lambda(Device &device, Stream &stream) {
         Float3 f3;
 
 
-        $outline{
-            arr = new float_array({1, 5});
-            int a  = 0;
-//            Float a = (*arr)[0];
-//            f3.xyz() = make_float3(2,5,6);
-//            return a;
-        };
-//        f1 = PDF_wi_transmission((*arr)[1], f3,f3,f3,f1);
-        Float a = (*arr)[0];
-//        int j = 0;
-        $info("{} {} {}", (*arr)[0], (*arr)[1], f1);
+//        $outline{
+//            arr = new float_array({1, 5});
+//            int a  = 0;
+////            Float a = (*arr)[0];
+////            f3.xyz() = make_float3(2,5,6);
+////            return a;
+//        };
+////        f1 = PDF_wi_transmission((*arr)[1], f3,f3,f3,f1);
+//        Float a = (*arr)[0];
+////        int j = 0;
+//        $info("{} {} {}", (*arr)[0], (*arr)[1], f1);
 //        $info("{} {} {}", f3.xyz().decay());
 
         //        Float *p;
