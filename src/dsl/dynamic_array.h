@@ -203,8 +203,10 @@ public:
         for (auto i = 0u; i < size(); i++) {
             if constexpr (std::invocable<F, Var<T>>) {
                 f((*this)[i]);
-            } else {
+            } else if constexpr (std::invocable<F, uint, Var<T>>) {
                 f(i, (*this)[i]);
+            } else {
+                f(i);
             }
         }
     }
