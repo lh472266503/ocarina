@@ -9,8 +9,10 @@ namespace ocarina {
 void FunctionCorrector::traverse(Function &function) noexcept {
     visit(function.body());
     function.correct_used_structures();
-    bool valid = function.check_context();
-    OC_ERROR_IF_NOT(valid, "FunctionCorrector error: invalid function ", function.description().c_str());
+    if (function.is_callable()) {
+        bool valid = function.check_context();
+        OC_ERROR_IF_NOT(valid, "FunctionCorrector error: invalid function ", function.description().c_str());
+    }
 }
 
 void FunctionCorrector::apply(Function *function, int counter) noexcept {
@@ -22,6 +24,10 @@ void FunctionCorrector::apply(Function *function, int counter) noexcept {
         current_function()->splitting_arguments();
         traverse(*current_function());
         stage_ = ProcessCapture;
+    }
+    if (function->is_kernel()) {
+        bool valid = function->check_context();
+        OC_ERROR_IF_NOT(valid, "FunctionCorrector error: invalid function ", function->description().c_str());
     }
     function_stack_.pop_back();
 }
@@ -47,6 +53,7 @@ void FunctionCorrector::process_capture(const Expression *&expression, Function 
 }
 
 void FunctionCorrector::process_subscript_expr(const Expression *&expression, Function *cur_func) noexcept {
+    expression->accept(*this);
     process_capture(const_cast<const Expression *&>(expression), cur_func);
 }
 
@@ -287,7 +294,6 @@ void FunctionCorrector::process_param_struct(const Expression *&expression) noex
 }
 
 void FunctionCorrector::visit(const SubscriptExpr *expr) {
-    visit_expr(expr->range_);
     for (const Expression *const &index : expr->indexes_) {
         visit_expr(index);
     }
