@@ -68,6 +68,11 @@ public:
         return bindless_array_->emplace(buffer_view);
     }
 
+    void update_buffer(Super buffer) {
+        super() = std::move(buffer);
+        register_self();
+    }
+
     [[nodiscard]] Super &super() noexcept { return *this; }
 
     template<typename Index>
@@ -113,6 +118,11 @@ public:
         return bindless_array_->emplace(buffer_view);
     }
 
+    void update_buffer(Super buffer) {
+        super() = std::move(buffer);
+        register_self();
+    }
+
     template<typename Target, typename Offset>
     requires concepts::integral<expr_value_t<Offset>>
     OC_NODISCARD auto load_as(Offset &&offset) const noexcept {
@@ -150,6 +160,11 @@ public:
 
     void set_list(Super &&list) noexcept {
         super() = std::move(list);
+    }
+
+    void update_buffer(Super buffer) {
+        super() = std::move(buffer);
+        register_self();
     }
 
     [[nodiscard]] const Super &super() const noexcept { return *this; }
@@ -285,6 +300,14 @@ public:
         BufferView<T> buffer_view = Super::device_buffer().view(offset, size);
         return bindless_array_->emplace(buffer_view);
     }
+
+    void update_buffer(Super buffer) {
+        super() = std::move(buffer);
+        register_self();
+    }
+    
+    [[nodiscard]] const Super &super() const noexcept { return *this; }
+    [[nodiscard]] Super &super() noexcept { return *this; }
 
     void unregister() noexcept {
         if (has_registered()) {
