@@ -96,6 +96,7 @@ public:
         OC_ASSERT(has_device_value());
         return *_device_value;
     }
+    
     [[nodiscard]] dsl_t<value_ty> operator*() const noexcept {
         if (has_device_value()) {
             return dv();
@@ -103,6 +104,7 @@ public:
             return dsl_t<value_ty>(hv());
         }
     }
+
     [[nodiscard]] bool has_encoded() const noexcept { return _offset != InvalidUI32; }
     void invalidation() const noexcept { _offset = InvalidUI32; }
 

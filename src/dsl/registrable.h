@@ -57,7 +57,11 @@ public:
 
     void register_self(size_t offset = 0, size_t size = 0) noexcept {
         BufferView<T> buffer_view = super().view(offset, size);
-        index_ = bindless_array_->emplace(buffer_view);
+        if (has_registered()) {
+            bindless_array_->set_buffer(index_.hv(), buffer_view);
+        } else {
+            index_ = bindless_array_->emplace(buffer_view);
+        }
         length_ = [=]() {
             return static_cast<uint>(buffer_view.size());
         };
@@ -114,7 +118,11 @@ public:
     [[nodiscard]] Super &super() noexcept { return *this; }
     void register_self(size_t offset = 0, size_t size = 0) noexcept {
         ByteBufferView buffer_view = super().view(offset, size);
-        index_ = bindless_array_->emplace(buffer_view);
+        if (has_registered()) {
+            bindless_array_->set_buffer(index_.hv(), buffer_view);
+        } else {
+            index_ = bindless_array_->emplace(buffer_view);
+        }
         length_ = [=]() {
             return static_cast<uint>(buffer_view.size());
         };
@@ -327,7 +335,7 @@ public:
         super().host_buffer().resize(buffer.size());
         register_self();
     }
-    
+
     [[nodiscard]] const Super &super() const noexcept { return *this; }
     [[nodiscard]] Super &super() noexcept { return *this; }
 
