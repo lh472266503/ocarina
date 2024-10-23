@@ -9,7 +9,8 @@
 namespace ocarina {
 
 VulkanDevice::VulkanDevice(FileManager *file_manager, const ocarina::InstanceCreation &instance_creation)
-    : Device::Impl(file_manager), m_instance(instance_creation) {
+    : Device::Impl(file_manager), m_instance(instance_creation), m_windowHandle(instance_creation.windowHandle) {
+
     init_vulkan();
 }
 
@@ -180,6 +181,10 @@ void VulkanDevice::init_vulkan()
     get_enable_extentions();
 
     create_logical_device();
+
+    m_swapChain.create_surface(m_instance.instance(), m_windowHandle);
+    SwapChainCreation swapchain_creation{};
+    m_swapChain.create_swapchain(swapchain_creation, this);
 }
 
 void VulkanDevice::create_logical_device()
@@ -219,7 +224,7 @@ void VulkanDevice::get_enable_extentions()
 {
     for (auto &extension : m_supportedExtensions) {
         // Swap chain extension - required
-        if (!strcmp(VK_KHR_SWAPCHAIN_EXTENSION_NAME, extension)) {
+        if (!strcmp(VK_KHR_SWAPCHAIN_EXTENSION_NAME, extension.c_str())) {
             m_enableExtensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
         }
     }
@@ -232,6 +237,25 @@ void VulkanDevice::shutdown()
 }
 
 uint32_t VulkanDevice::getQueueFamilyIndex(uint32_t queueFlags) const {
+
+    if ((queueFlags & VK_QUEUE_COMPUTE_BIT) == queueFlags) {
+        for (uint32_t i = 0; i < static_cast<uint32_t>(queueFamilyProperties_.size()); i++) {
+            if ((queueFamilyProperties_[i].queueFlags & VK_QUEUE_COMPUTE_BIT) && ((queueFamilyProperties_[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) == 0)) {
+                return i;
+            }
+        }
+    }
+
+    // Dedicated queue for transfer
+    // Try to find a queue family index that supports transfer but not graphics and compute
+    if ((queueFlags & VK_QUEUE_TRANSFER_BIT) == queueFlags) {
+        for (uint32_t i = 0; i < static_cast<uint32_t>(queueFamilyProperties_.size()); i++) {
+            if ((queueFamilyProperties_[i].queueFlags & VK_QUEUE_TRANSFER_BIT) && ((queueFamilyProperties_[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) == 0) && ((queueFamilyProperties_[i].queueFlags & VK_QUEUE_COMPUTE_BIT) == 0)) {
+                return i;
+            }
+        }
+    }
+
     for (uint32_t i = 0; i < queueFamilyProperties_.size(); i++) {
         if ((queueFamilyProperties_[i].queueFlags & queueFlags) == queueFlags)
         {
@@ -244,7 +268,7 @@ uint32_t VulkanDevice::getQueueFamilyIndex(uint32_t queueFlags) const {
 
 }// namespace ocarina
 
-OC_EXPORT_API ocarina::VulkanDevice *create(ocarina::FileManager *file_manager, const ocarina::InstanceCreation& instance_creation) {
+OC_EXPORT_API ocarina::VulkanDevice *create_device(ocarina::FileManager *file_manager, const ocarina::InstanceCreation& instance_creation) {
     return ocarina::new_with_allocator<ocarina::VulkanDevice>(file_manager, instance_creation);
 }
 

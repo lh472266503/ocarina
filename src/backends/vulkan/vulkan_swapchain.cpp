@@ -3,6 +3,9 @@
 #include "vulkan_device.h"
 #include "util.h"
 #include "vulkan_texture.h"
+#ifdef _WIN32
+#include <vulkan/vulkan_win32.h>
+#endif
 namespace ocarina {
 
 VulkanSwapchain::VulkanSwapchain() {
@@ -10,6 +13,15 @@ VulkanSwapchain::VulkanSwapchain() {
 }
 
 VulkanSwapchain::~VulkanSwapchain() {
+}
+
+void VulkanSwapchain::create_surface(VkInstance instance, uint32_t window_handle) {
+#ifdef _WIN32
+    VkWin32SurfaceCreateInfoKHR surfaceCreateInfo = {VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR};
+    surfaceCreateInfo.hwnd = HWND(window_handle);
+
+    vkCreateWin32SurfaceKHR(instance, &surfaceCreateInfo, nullptr, &surface_);
+#endif
 }
 
 void VulkanSwapchain::create_swapchain(const SwapChainCreation &creation, VulkanDevice *vulkan_device) {

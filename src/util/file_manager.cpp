@@ -154,6 +154,10 @@ bool FileManager::unload_module(const std::string &module_name) noexcept {
     return true;
 }
 
+std::string FileManager::backend_full_name(const string &name) {
+    return detail::backend_full_name(name);
+}
+
 Device FileManager::create_device(const string &backend_name) noexcept {
     auto d = obtain_module(dynamic_module_name(detail::backend_full_name(backend_name)));
     auto create_device = reinterpret_cast<Device::Creator *>(d->function_ptr("create"));

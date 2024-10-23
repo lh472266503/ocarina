@@ -32,6 +32,7 @@ protected:
     Clock clock_;
     double dt_{};
     unique_ptr<Widgets> widgets_{};
+    uint32_t window_handle_ = InvalidUI32;
 
 protected:
     virtual void _begin_frame() noexcept;
@@ -52,6 +53,7 @@ public:
     [[nodiscard]] virtual uint2 size() const noexcept = 0;
     [[nodiscard]] virtual bool should_close() const noexcept = 0;
     [[nodiscard]] explicit operator bool() const noexcept { return !should_close(); }
+    [[nodiscard]] uint32_t get_window_handle() const { return window_handle_; }
     virtual Window &set_mouse_callback(MouseButtonCallback cb) noexcept;
     virtual Window &set_cursor_position_callback(CursorPositionCallback cb) noexcept;
     virtual Window &set_window_size_callback(WindowSizeCallback cb) noexcept;

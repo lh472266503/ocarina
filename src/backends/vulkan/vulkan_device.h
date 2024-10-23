@@ -70,7 +70,7 @@ private:
     /** @brief Queue family properties of the physical device */
     std::vector<VkQueueFamilyProperties> m_queueFamilyProperties;
     /** @brief List of extensions supported by the device */
-    std::vector<const char*> m_supportedExtensions;
+    std::vector<std::string> m_supportedExtensions;
     std::vector<const char *> m_enableExtensions;
     /** @brief Default command pool for the graphics queue family index */
     VkCommandPool m_commandPool = VK_NULL_HANDLE;
@@ -119,6 +119,7 @@ private:
 
     VulkanInstance m_instance;
     VulkanSwapchain m_swapChain;
+    uint32_t m_windowHandle = InvalidUI32;
 
     uint32_t queueFamilyIndices_[(uint32_t)QueueType::NumQueueType];
     //uint32_t queueFamilyIndexPerQueue_[(uint32_t)QueueType::NumQueueType];

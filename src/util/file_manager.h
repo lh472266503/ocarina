@@ -50,6 +50,7 @@ public:
     const DynamicModule *obtain_module(const string &module_name) noexcept;
     bool unload_module(const string &module_name) noexcept;
     void unload_module(void *handle) noexcept;
+    [[nodiscard]] static std::string backend_full_name(const string &name);
     [[nodiscard]] Device create_device(const string &backend_name) noexcept;
     [[nodiscard]] WindowWrapper create_window(const char *name, uint2 initial_size, const char *type = "gl", bool resizable = false);
 };

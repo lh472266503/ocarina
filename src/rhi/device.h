@@ -56,6 +56,7 @@ public:
 
     public:
         explicit Impl(FileManager *ctx) : file_manager_(ctx) {}
+        explicit Impl(FileManager *ctx, const InstanceCreation &instance_creation) : file_manager_(ctx) {}
         [[nodiscard]] virtual handle_ty create_buffer(size_t size, const string &desc) noexcept = 0;
         virtual void destroy_buffer(handle_ty handle) noexcept = 0;
         [[nodiscard]] virtual handle_ty create_texture(uint3 res, PixelStorage pixel_storage,
@@ -105,7 +106,7 @@ public:
     [[nodiscard]] ByteBuffer create_byte_buffer(size_t size, const string &name = "") const noexcept;
 
     template<typename T, AccessMode mode = AOS>
-    [[nodiscard]] List<T, mode> create_list(size_t size, const string &name = "") const noexcept; // implement in byte_buffer.h
+    [[nodiscard]] List<T, mode> create_list(size_t size, const string &name = "") const noexcept;// implement in byte_buffer.h
 
     template<typename T, AccessMode mode = AOS>
     [[nodiscard]] ManagedList<T, mode> create_managed_list(size_t size, const string &name = "") const noexcept {
@@ -150,5 +151,12 @@ public:
             return compile(kernel, shader_desc, tag);
         });
     }
+
+    [[nodiscard]] static Device create_device(const string &backend_name, const ocarina::InstanceCreation &instance_creation);
 };
+
+namespace rhi_global 
+{
+//OC_EXPORT_API Device rhi_create_device(const string &backend_name, const ocarina::InstanceCreation &instance_creation);
+}
 }// namespace ocarina

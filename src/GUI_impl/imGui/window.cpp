@@ -7,6 +7,10 @@
 #include "ext/imgui/gizmo/ImGuizmo.h"
 #include "core/logging.h"
 #include "rhi/common.h"
+#ifdef _WIN32
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include "GLFW/glfw3native.h"// for glfwGetWin32Window
+#endif
 
 namespace ocarina {
 
@@ -54,6 +58,9 @@ void GLWindow::init(const char *name, uint2 initial_size, bool resizable) noexce
         glfwGetError(&error);
         OC_ERROR_FORMAT("Failed to create GLFW window: {}.", error);
     }
+    #ifdef _WIN32
+    window_handle_ = (uint32_t)glfwGetWin32Window(handle_);
+    #endif
     glfwMakeContextCurrent(handle_);
     glfwSwapInterval(0);// disable vsync
 
