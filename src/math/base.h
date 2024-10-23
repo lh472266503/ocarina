@@ -78,6 +78,13 @@ template<typename U, typename V>
 }
 
 template<typename T>
+void Swap(T &a, T &b) noexcept {
+    T tmp = a;
+    a = b;
+    b = tmp;
+}
+
+template<typename T>
 [[nodiscard]] constexpr auto safe_sqrt(const T &t) noexcept {
     return sqrt(max(0.f, t));
 }
@@ -238,7 +245,5 @@ requires ocarina::is_vector4_v<expr_value_t<V>>
            (make_8bit(color.z) << 16) +
            (make_8bit(color.w) << 24);
 }
-
 #include "common_lib.inl.h"
-
 }// namespace ocarina

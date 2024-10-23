@@ -204,6 +204,17 @@ struct Test {
     Uint a;
 };
 
+template<EPort p = EPort::D>
+[[nodiscard]] oc_float<p> PDF_wi_transmission(const oc_float<p> &PDF_wh, const oc_float3<p> &wo, const oc_float3<p> &wh,
+                                              const oc_float3<p> &wi, const oc_float<p> &eta) {
+    return $outline {
+//        oc_float<p> denom = sqr(dot(wi, wh) * eta + dot(wo, wh));
+//        oc_float<p> dwh_dwi = abs_dot(wi, wh) / denom;
+//        oc_float<p> ret = PDF_wh * dwh_dwi;
+        return PDF_wh + eta;
+    };
+}
+
 void test_lambda(Device &device, Stream &stream) {
     auto [vertices, triangles] = get_cube();
 
@@ -266,6 +277,25 @@ void test_lambda(Device &device, Stream &stream) {
     //    bool abaa = ocarina::is_vector2_v<ocarina::detail::VectorStorage<int, 2>>;
 
     Kernel kernel = [&](Uint i) {
+
+        float_array *arr;
+        Float f1 = 6;
+        Float3 f3;
+
+
+//        $outline{
+//            arr = new float_array({1, 5});
+//            int a  = 0;
+////            Float a = (*arr)[0];
+////            f3.xyz() = make_float3(2,5,6);
+////            return a;
+//        };
+////        f1 = PDF_wi_transmission((*arr)[1], f3,f3,f3,f1);
+//        Float a = (*arr)[0];
+////        int j = 0;
+//        $info("{} {} {}", (*arr)[0], (*arr)[1], f1);
+//        $info("{} {} {}", f3.xyz().decay());
+
         //        Float *p;
         //        TriangleHitVar *hit;
         //        Float b;
@@ -291,74 +321,74 @@ void test_lambda(Device &device, Stream &stream) {
         //        auto attt = vert.at(2) + 10;
         return ;
 
-        float3 f3 = make_float3(1, 2, 3);
-
-        auto fm = max(1.f, f3);
-
-        Float3 aa = f3;
-
-        auto func = []<typename Arg>(Arg &arg) {
-            arg.xyz() = make_float3(5,6,7);
-            arg.xy() += arg.z;
-            arg.xy() += arg.yz();
-            arg.xy() += arg.yz();
-            arg.xy() = arg.xy() + arg.x;
-            arg.xy() = arg.x + arg.xy();
-            arg.xy() = arg.xy() + arg.xy();
-            arg.xy() = arg.xy() + arg.xy();
-
-            int i = 0;
-        };
-        func(f3);
-        func(aa);
-        //        aa.xy() == aa.xy();
-
-        //      aa.xy += 1;
-        //      Float3 bbb = + aa.xyy();
-        //        bool bbb = ocarina::is_scalar_v<Float3>;
-        $info("{} {} {} {} func ", aa, aa.zyx()[0]);
-        aa = aa.zxx();
-        $info("{} {} {}  ", aa);
-        auto at = aa >= aa.yyy();
-        $info("{} {} {}  {}  ", make_uint3(at), none(at.xyz()).cast<int>());
-        //        Float3 aac = 19.f;
-
-        auto ma = max(f3.xyz(), 2.f);
-
-        int fdgsi = 0;
-        auto ax = rcp(aa.x);
-        //        $info("{} {} {}  ", aac.call_min(aac, -19.f));
-        $info("{} max_  ", max(aa.x, aa.y));
-        $info("{} {}  {}  ", aa);
-        {
-            Float3 t = make_float3(7,8,9);
-            Float3 a = make_float3(2, 4, 6);
-            float3 b = make_float3(1, 2, 3);
-            float3 rgb = clamp(b, 0.f, 1.f);
-            Uint3 ui = make_uint3(7,8,9);
-
-            a = -a.xyz() ;
-            $info("{} {}  {}  aa ", a);
-
-            Float3 t2 = make_float3(t.zyx());
-            //
-            //            DynamicArray<float> fa{123.f};
-            auto axyz = a.xyz();
-            //            auto axy = select(make_bool2(true), make_float2(1),make_float2(2).xy());
-            Float3 sel = select(make_bool3(1,0,0).xyz(), a.xyz(), b.xyz());
-
-            sel = face_forward(a, b.xyz(),a.xyz());
-            auto mf = make_float4(a.xyz(), t.x);
-
-            //            using tp = decltype(make_float4(remove_device_t<std::remove_cvref_t<decltype(a.xyz())>>{}, remove_device_t<Float>{}));
-
-            //            a.xyz() * t.x;
-
-            max(a.xyz(), b);
-            $info("{} {}  {}  call_select ", sel);
-            $info("{} {}  {}  call_lerp ", lerp(t, b.xyz(),a));
+////        float3 f3 = make_float3(1, 2, 3);
+////
+////        auto fm = max(1.f, f3);
+//
+//        Float3 aa;
+//
+//        auto func = []<typename Arg>(Arg &arg) {
+//            arg.xyz() = make_float3(5,6,7);
+//            arg.xy() += arg.z;
+//            arg.xy() += arg.yz();
+//            arg.xy() += arg.yz();
+//            arg.xy() = arg.xy() + arg.x;
+//            arg.xy() = arg.x + arg.xy();
+//            arg.xy() = arg.xy() + arg.xy();
+//            arg.xy() = arg.xy() + arg.xy();
+//
+//            int i = 0;
+//        };
+//        func(f3);
+//        func(aa);
+//        //        aa.xy() == aa.xy();
+//
+//        //      aa.xy += 1;
+//        //      Float3 bbb = + aa.xyy();
+//        //        bool bbb = ocarina::is_scalar_v<Float3>;
+//        $info("{} {} {} {} func ", aa, aa.zyx()[0]);
+//        aa = aa.zxx();
+//        $info("{} {} {}  ", aa);
+//        auto at = aa >= aa.yyy();
+//        $info("{} {} {}  {}  ", make_uint3(at), none(at.xyz()).cast<int>());
+//        //        Float3 aac = 19.f;
+//
+//        auto ma = max(f3.xyz(), 2.f);
+//
+//        int fdgsi = 0;
+//        auto ax = rcp(aa.x);
+//        //        $info("{} {} {}  ", aac.call_min(aac, -19.f));
+//        $info("{} max_  ", max(aa.x, aa.y));
+//        $info("{} {}  {}  ", aa);
+//        {
+//            Float3 t = make_float3(7,8,9);
+//            Float3 a = make_float3(2, 4, 6);
+//            float3 b = make_float3(1, 2, 3);
+//            float3 rgb = clamp(b, 0.f, 1.f);
+//            Uint3 ui = make_uint3(7,8,9);
+//
+//            a = -a.xyz() ;
+//            $info("{} {}  {}  aa ", a);
+//
+//            Float3 t2 = make_float3(t.zyx());
+//            //
+//            //            DynamicArray<float> fa{123.f};
+//            auto axyz = a.xyz();
+//            //            auto axy = select(make_bool2(true), make_float2(1),make_float2(2).xy());
+//            Float3 sel = select(make_bool3(1,0,0).xyz(), a.xyz(), b.xyz());
+//
+//            sel = face_forward(a, b.xyz(),a.xyz());
+//            auto mf = make_float4(a.xyz(), t.x);
+//
+//            //            using tp = decltype(make_float4(remove_device_t<std::remove_cvref_t<decltype(a.xyz())>>{}, remove_device_t<Float>{}));
+//
+//            //            a.xyz() * t.x;
+//
+//            max(a.xyz(), b);
+//            $info("{} {}  {}  call_select ", sel);
+//            $info("{} {}  {}  call_lerp ", lerp(t, b.xyz(),a));
             //            $info("{} {}  {}  {} ", t2, fa[0]);
-        }
+//        }
         //        f3 = xyz;
 
         //        $outline {
@@ -549,9 +579,9 @@ int main(int argc, char *argv[]) {
     auto bbb = bool_4 || bool_4.xxxx();
     auto b4 = all(bool_4.ww());
 
-    test_compute_shader(device, stream);
+//    test_compute_shader(device, stream);
     //    test_parameter_struct(device, stream);
-    //    test_lambda(device, stream);
+        test_lambda(device, stream);
 
     //    test_poly();
     return 0;

@@ -61,6 +61,14 @@ public:
         : size_{other.size_}, expression_(Function::current()->local(type())) {
         Function::current()->assign(expression_, other.expression_);
     }
+    static DynamicArray<T> zero(uint size) noexcept { return DynamicArray<T>{size, static_cast<T>(0)}; }
+    static DynamicArray<T> one(uint size) noexcept { return DynamicArray<T>{size, static_cast<T>(1)}; }
+    [[nodiscard]] bool valid() const noexcept { return size_ > 0; }
+    [[nodiscard]] static const Type *type(uint size) noexcept {
+        return Type::from(ocarina::format("array<{},{}>",
+                                          TypeDesc<T>::description(),
+                                          size));
+    }
 
     void reset(const DynamicArray<T> &array) noexcept {
         size_ = array.size();
@@ -70,14 +78,6 @@ public:
     void invalidate() noexcept {
         size_ = 0;
         expression_ = nullptr;
-    }
-
-    [[nodiscard]] bool valid() const noexcept { return size_ > 0; }
-
-    [[nodiscard]] static const Type *type(uint size) noexcept {
-        return Type::from(ocarina::format("array<{},{}>",
-                                          TypeDesc<T>::description(),
-                                          size));
     }
 
     [[nodiscard]] const Type *type() const noexcept {
@@ -198,6 +198,19 @@ public:
         return r;
     }
 
+    template<typename F>
+    void foreach (F &&f) const noexcept {
+        for (auto i = 0u; i < size(); i++) {
+            if constexpr (std::invocable<F, Var<T>>) {
+                f((*this)[i]);
+            } else if constexpr (std::invocable<F, uint, Var<T>>) {
+                f(i, (*this)[i]);
+            } else {
+                f(i);
+            }
+        }
+    }
+
     [[nodiscard]] Var<T> sum() const noexcept {
         return reduce(0.f, [](auto r, auto x) noexcept { return r + x; });
     }
@@ -227,6 +240,20 @@ public:
     template<typename F>
     [[nodiscard]] Bool none(F &&f) const noexcept { return !any(OC_FORWARD(f)); }
 };
+
+#define OC_MAKE_ARRAY_DIM(type, dim) using type##dim##_array = DynamicArray<type##dim>;
+#define OC_MAKE_ARRAY(type)    \
+    OC_MAKE_ARRAY_DIM(type, )  \
+    OC_MAKE_ARRAY_DIM(type, 2) \
+    OC_MAKE_ARRAY_DIM(type, 3) \
+    OC_MAKE_ARRAY_DIM(type, 4)
+
+OC_MAKE_ARRAY(float)
+OC_MAKE_ARRAY(uint)
+OC_MAKE_ARRAY(int)
+
+#undef OC_MAKE_ARRAY
+#undef OC_MAKE_ARRAY_DIM
 
 template<typename T>
 OC_NODISCARD constexpr auto
@@ -420,5 +447,4 @@ DynamicArray<float> BindlessArrayTexture::sample(uint channel_num, const UV &uv)
         return sample(channel_num, arg.x, arg.y);
     }(decay_swizzle(uv));
 }
-
 }// namespace ocarina

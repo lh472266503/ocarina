@@ -9,11 +9,13 @@ namespace ocarina {
 void FunctionCorrector::traverse(Function &function) noexcept {
     visit(function.body());
     function.correct_used_structures();
-    bool valid = function.check_context();
-    OC_ERROR_IF_NOT(valid, "FunctionCorrector error: invalid function ", function.description().c_str());
+    if (function.is_callable()) {
+        bool valid = function.check_context();
+        OC_ERROR_IF_NOT(valid, "FunctionCorrector error: invalid function ", function.description().c_str());
+    }
 }
 
-void FunctionCorrector::apply(Function *function) noexcept {
+void FunctionCorrector::apply(Function *function, int counter) noexcept {
     function_stack_.push_back(function);
     traverse(*current_function());
     if (current_function()->is_kernel()) {
@@ -22,6 +24,10 @@ void FunctionCorrector::apply(Function *function) noexcept {
         current_function()->splitting_arguments();
         traverse(*current_function());
         stage_ = ProcessCapture;
+    }
+    if (function->is_kernel()) {
+        bool valid = function->check_context();
+        OC_ERROR_IF_NOT(valid, "FunctionCorrector error: invalid function ", function->description().c_str());
     }
     function_stack_.pop_back();
 }
@@ -46,19 +52,36 @@ void FunctionCorrector::process_capture(const Expression *&expression, Function 
     }
 }
 
+void FunctionCorrector::process_subscript_expr(const Expression *&expression, Function *cur_func) noexcept {
+    expression->accept(*this);
+    process_capture(const_cast<const Expression *&>(expression), cur_func);
+}
+
 void FunctionCorrector::visit_expr(const Expression *const &expression, Function *cur_func) noexcept {
     cur_func = cur_func == nullptr ? current_function() : cur_func;
     if (expression == nullptr) {
         return;
     }
-    if (expression->is_ref()) {
-        static_cast<const VariableExpr *>(expression)->variable().mark_used();
-        process_capture(const_cast<const Expression *&>(expression), cur_func);
-    } else if (expression->is_member()) {
-        static_cast<const VariableExpr *>(expression)->variable().mark_used();
-        process_member_expr(const_cast<const Expression *&>(expression), cur_func);
-    } else {
-        expression->accept(*this);
+
+    switch (expression->tag()) {
+        case Expression::Tag::REF: {
+            static_cast<const VariableExpr *>(expression)->variable().mark_used();
+            process_capture(const_cast<const Expression *&>(expression), cur_func);
+            break;
+        }
+        case Expression::Tag::MEMBER: {
+            static_cast<const VariableExpr *>(expression)->variable().mark_used();
+            process_member_expr(const_cast<const Expression *&>(expression), cur_func);
+            break;
+        }
+        case Expression::Tag::SUBSCRIPT: {
+            process_subscript_expr(const_cast<const Expression *&>(expression), cur_func);
+            break;
+        }
+        default: {
+            expression->accept(*this);
+            break;
+        }
     }
 }
 
@@ -230,7 +253,7 @@ void FunctionCorrector::visit(const MemberExpr *expr) {
     OC_ERROR_IF(stage_ == ProcessCapture);
 }
 
-void FunctionCorrector::process_member_expr(const Expression *&expression,Function *cur_func) noexcept {
+void FunctionCorrector::process_member_expr(const Expression *&expression, Function *cur_func) noexcept {
     auto member_expr = dynamic_cast<const MemberExpr *>(expression);
     switch (stage_) {
         case ProcessCapture:
@@ -271,7 +294,6 @@ void FunctionCorrector::process_param_struct(const Expression *&expression) noex
 }
 
 void FunctionCorrector::visit(const SubscriptExpr *expr) {
-    visit_expr(expr->range_);
     for (const Expression *const &index : expr->indexes_) {
         visit_expr(index);
     }

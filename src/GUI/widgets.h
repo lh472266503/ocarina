@@ -295,8 +295,13 @@ public:
     virtual bool drag_float3(const string &label, float3 *val, float speed, float min, float max) noexcept = 0;
     virtual bool drag_float4(const string &label, float4 *val, float speed, float min, float max) noexcept = 0;
 
+    virtual bool drag_float(const string &label, float *val, float speed, float min, float max, const char *fmt) noexcept = 0;
+    virtual bool drag_float2(const string &label, float2 *val, float speed, float min, float max, const char *fmt) noexcept = 0;
+    virtual bool drag_float3(const string &label, float3 *val, float speed, float min, float max, const char *fmt) noexcept = 0;
+    virtual bool drag_float4(const string &label, float4 *val, float speed, float min, float max, const char *fmt) noexcept = 0;
+
     bool drag_floatN(const string &label, float *val, uint size,
-                     float speed = 0.1, float min = 0, float max = 0) noexcept;
+                     float speed = 0.1, float min = 0, float max = 0, const char *fmt = "%.3f") noexcept;
 
     virtual bool combo(const string &label, int *current_item,
                        const char *const items[], int item_num) noexcept = 0;
@@ -307,7 +312,6 @@ public:
     bool combo(const string &label, int *current_item, const vector<const char *> &items) noexcept {
         return combo(label, current_item, items.data(), items.size());
     }
-
 
     virtual ~Widgets() = default;
 };

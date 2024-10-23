@@ -34,7 +34,11 @@ bool check_context(const T &t, const Function *ctx) {
     if constexpr (concepts::iterable<T>) {
         bool ret = true;
         for (const auto &item : t) {
+#ifndef NDEBUG
+            ret = check_context(item, ctx) && ret;
+#else
             ret = ret && check_context(item, ctx);
+#endif
         }
         return ret;
     } else if constexpr (requires() {

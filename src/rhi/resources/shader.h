@@ -192,8 +192,13 @@ public:
     };
 };
 
+class ShaderBase : public RHIResource {
+public:
+    using RHIResource::RHIResource;
+};
+
 template<typename... Args>
-class Shader<void(Args...)> final : public RHIResource {
+class Shader<void(Args...)> final : public ShaderBase {
 public:
     using signature = canonical_signature_t<void(Args...)>;
     using Impl = typename Shader<>::Impl;
@@ -204,8 +209,9 @@ private:
 
 public:
     Shader() = default;
+    using ShaderBase::ShaderBase;
     Shader(Device::Impl *device, ocarina::shared_ptr<Function> function, ShaderTag tag) noexcept
-        : RHIResource(device, SHADER,
+        : ShaderBase(device, SHADER,
                       device->create_shader(*function)),
           _shader_tag(tag), _function(ocarina::move(function)) {}
 

@@ -49,6 +49,7 @@ public:
     [[nodiscard]] virtual uint element_num() const noexcept { return 0; }
     [[nodiscard]] virtual bool has_device_value() const noexcept { return true; }
     virtual void reset_device_value() const noexcept {}
+    virtual ~encodable_impl() = default;
 };
 }// namespace detail
 
@@ -57,7 +58,7 @@ class Encodable : public detail::encodable_impl<T> {};
 
 template<typename value_ty, typename T = encoded_ty>
 requires(is_std_vector_v<value_ty> && is_scalar_v<typename value_ty::value_type>) || is_basic_v<value_ty>
-struct EncodedData : public Encodable<T> {
+struct EncodedData final : public Encodable<T> {
 private:
     using host_ty = std::variant<value_ty, std::function<value_ty()>>;
     host_ty _host_value{};
@@ -107,7 +108,7 @@ public:
     }
 
     [[nodiscard]] bool has_encoded() const noexcept { return _offset != InvalidUI32; }
-    void invalidation() noexcept { _offset = InvalidUI32; }
+    void invalidation() const noexcept { _offset = InvalidUI32; }
 
     void init_encode(RegistrableManaged<T> &data) const noexcept {
         OC_ASSERT(!has_encoded());
