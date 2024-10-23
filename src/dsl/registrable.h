@@ -302,7 +302,8 @@ public:
     }
 
     void update_buffer(Super buffer) {
-        super() = std::move(buffer);
+        super().device_buffer() = std::move(buffer);
+        super().host_buffer().resize(buffer.size());
         register_self();
     }
     
@@ -389,5 +390,4 @@ public:
         return Texture::write(OC_FORWARD(args)...);
     }
 };
-
 }// namespace ocarina
