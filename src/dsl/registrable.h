@@ -68,6 +68,11 @@ public:
         return bindless_array_->emplace(buffer_view);
     }
 
+    uint register_view_index(uint index, size_t offset, size_t size = 0) {
+        BufferView<T> buffer_view = super().view(offset, size);
+        bindless_array_->set_buffer(index_.hv() + index, buffer_view);
+    }
+
     void update_buffer(Super buffer) {
         super() = std::move(buffer);
         register_self();
@@ -116,6 +121,11 @@ public:
     uint register_view(size_t offset, size_t size = 0) {
         ByteBufferView buffer_view = super().view(offset, size);
         return bindless_array_->emplace(buffer_view);
+    }
+
+    uint register_view_index(uint index, size_t offset, size_t size = 0) {
+        ByteBufferView buffer_view = super().view(offset, size);
+        bindless_array_->set_buffer(index_.hv() + index, buffer_view);
     }
 
     void update_buffer(Super buffer) {
@@ -299,6 +309,11 @@ public:
     uint register_view(size_t offset, size_t size = 0) {
         BufferView<T> buffer_view = Super::device_buffer().view(offset, size);
         return bindless_array_->emplace(buffer_view);
+    }
+
+    uint register_view_index(uint index, size_t offset, size_t size = 0) {
+        BufferView<T> buffer_view = super().view(offset, size);
+        bindless_array_->set_buffer(index_.hv() + index, buffer_view);
     }
 
     void update_buffer(Super buffer) {
