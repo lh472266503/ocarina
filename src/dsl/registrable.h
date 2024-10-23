@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "serialize.h"
+#include "encode.h"
 #include "rhi/resources/managed.h"
 #include "dsl/printer.h"
 #include "core/platform.h"
@@ -70,7 +70,9 @@ public:
 
     uint register_view_index(uint index, size_t offset, size_t size = 0) {
         BufferView<T> buffer_view = super().view(offset, size);
-        bindless_array_->set_buffer(index_.hv() + index, buffer_view);
+        index += index_.hv();
+        bindless_array_->set_buffer(index, buffer_view);
+        return index;
     }
 
     void update_buffer(Super buffer) {
@@ -125,7 +127,9 @@ public:
 
     uint register_view_index(uint index, size_t offset, size_t size = 0) {
         ByteBufferView buffer_view = super().view(offset, size);
-        bindless_array_->set_buffer(index_.hv() + index, buffer_view);
+        index += index_.hv();
+        bindless_array_->set_buffer(index, buffer_view);
+        return index;
     }
 
     void update_buffer(Super buffer) {
@@ -313,7 +317,9 @@ public:
 
     uint register_view_index(uint index, size_t offset, size_t size = 0) {
         BufferView<T> buffer_view = super().view(offset, size);
-        bindless_array_->set_buffer(index_.hv() + index, buffer_view);
+        index += index_.hv();
+        bindless_array_->set_buffer(index, buffer_view);
+        return index;
     }
 
     void update_buffer(Super buffer) {
