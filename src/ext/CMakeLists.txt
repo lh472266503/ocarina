@@ -27,6 +27,10 @@ add_subdirectory(EASTL)
 target_include_directories(EASTL PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/EASTL/include)
 target_link_libraries(ocarina-ext PUBLIC EASTL)
 
+add_subdirectory(pybind11)
+
+
+
 add_subdirectory(tinyexr)
 
 add_subdirectory(spdlog)
@@ -45,11 +49,21 @@ add_subdirectory(stblib)
 add_library(ocarina-gui-ext INTERFACE)
 target_link_libraries(ocarina-gui-ext INTERFACE glfw_config ocarina-imgui)
 
+#cmake_policy(SET CMP0148 NEW)
+find_package(PythonLibs REQUIRED)
+include_directories(${PYTHON_INCLUDE_DIRS})
+link_directories(${PYTHON_LIBRARIES})
+
+target_include_directories(ocarina-ext INTERFACE
+        ${CMAKE_CURRENT_SOURCE_DIR}/pybind11/include/pybind11
+        ${CMAKE_CURRENT_SOURCE_DIR}/pybind11/include
+        ${PYTHON_INCLUDE_DIRS})
 
 target_link_libraries(ocarina-ext
         PUBLIC
         ocarina-gui-ext
         ocarina-ext-stb
+        ${PYTHON_LIBRARIES}
         xxhash
         spdlog
         ocarina-ext-tinyexr)
