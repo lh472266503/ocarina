@@ -49,8 +49,8 @@ add_subdirectory(stblib)
 add_library(ocarina-gui-ext INTERFACE)
 target_link_libraries(ocarina-gui-ext INTERFACE glfw_config ocarina-imgui)
 
-#cmake_policy(SET CMP0148 NEW)
-find_package(PythonLibs REQUIRED)
+cmake_policy(SET CMP0148 NEW)
+find_package(Python REQUIRED COMPONENTS Interpreter Development)
 include_directories(${PYTHON_INCLUDE_DIRS})
 link_directories(${PYTHON_LIBRARIES})
 
