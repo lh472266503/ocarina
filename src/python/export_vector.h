@@ -8,6 +8,7 @@
 #include <pybind11/operators.h>
 #include "core/stl.h"
 #include "math/basic_types.h"
+#include "core/string_util.h"
 
 namespace py = pybind11;
 using namespace ocarina;

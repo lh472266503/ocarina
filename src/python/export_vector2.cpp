@@ -12,8 +12,9 @@ using namespace ocarina;
     auto m##type = py::class_<Vector<type, 2>, ocarina::detail::VectorStorage<type, 2>>(m, #type "2") \
                        .def(py::init<type>())                                                         \
                        .def(py::init<type, type>())                                                   \
-                       .def(py::init<Vector<type, 2>>());
+//                       .def("__repr__", [](Vector<type,2>& self){return format(#type"2({},{})", self.x, self.y);})
+
 
 void export_vector2(py::module &m) {
-    OC_EXPORT_VECTOR2(float)
+    OC_EXPORT_VECTOR2(float);
 }
