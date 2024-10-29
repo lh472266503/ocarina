@@ -45,6 +45,7 @@ add_subdirectory(stblib)
 add_library(ocarina-gui-ext INTERFACE)
 target_link_libraries(ocarina-gui-ext INTERFACE glfw_config ocarina-imgui)
 
+add_subdirectory(SDL)
 
 target_link_libraries(ocarina-ext
         PUBLIC
@@ -52,4 +53,5 @@ target_link_libraries(ocarina-ext
         ocarina-ext-stb
         xxhash
         spdlog
-        ocarina-ext-tinyexr)
+        ocarina-ext-tinyexr
+        SDL3::SDL3)

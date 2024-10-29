@@ -15,12 +15,13 @@ VulkanSwapchain::VulkanSwapchain() {
 VulkanSwapchain::~VulkanSwapchain() {
 }
 
-void VulkanSwapchain::create_surface(VkInstance instance, uint32_t window_handle) {
+void VulkanSwapchain::create_surface(VkInstance instance, uint64_t window_handle) {
 #ifdef _WIN32
     VkWin32SurfaceCreateInfoKHR surfaceCreateInfo = {VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR};
     surfaceCreateInfo.hwnd = HWND(window_handle);
 
-    vkCreateWin32SurfaceKHR(instance, &surfaceCreateInfo, nullptr, &surface_);
+    VkResult err = vkCreateWin32SurfaceKHR(instance, &surfaceCreateInfo, nullptr, &surface_);
+    VK_CHECK_RESULT(err);
 #endif
 }
 
@@ -62,7 +63,7 @@ void VulkanSwapchain::create_swapchain(const SwapChainCreation &creation, Vulkan
     VkPresentModeKHR swapchainPresentMode = get_preferred_presentmode(physicalDevice, surface_, creation.vsync);
 
     // Determine the number of images
-    uint32_t desiredNumberOfSwapchainImages = std::max(creation.bufferCount, surfCaps.minImageCount);
+    uint32_t desiredNumberOfSwapchainImages = std::max(creation.bufferCount, surfCaps.minImageCount + 1);
     desiredNumberOfSwapchainImages = surfCaps.maxImageCount > 0 ? std::min(desiredNumberOfSwapchainImages, surfCaps.maxImageCount) : desiredNumberOfSwapchainImages;
 
     if ((surfCaps.maxImageCount > 0) && (desiredNumberOfSwapchainImages > surfCaps.maxImageCount)) {
@@ -98,7 +99,7 @@ void VulkanSwapchain::create_swapchain(const SwapChainCreation &creation, Vulkan
     swapchainCI.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
     swapchainCI.surface = surface_;
     swapchainCI.minImageCount = desiredNumberOfSwapchainImages;
-    swapchainCI.imageFormat = get_vulkan_format(creation.format, creation.colorSpace == ColorSpace::SRGB);
+    swapchainCI.imageFormat = get_preferred_colorformat(creation.colorSpace);//get_vulkan_format(creation.format, creation.colorSpace == ColorSpace::SRGB);
     swapchainCI.imageColorSpace = colorspace_vulkan(creation.colorSpace);
     swapchainCI.imageExtent = {swapchainExtent.width, swapchainExtent.height};
     swapchainCI.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
@@ -123,7 +124,8 @@ void VulkanSwapchain::create_swapchain(const SwapChainCreation &creation, Vulkan
         swapchainCI.imageUsage |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
     }
 
-    VK_CHECK_RESULT(vkCreateSwapchainKHR(device, &swapchainCI, nullptr, &swapChain_));
+    VkResult err = vkCreateSwapchainKHR(device, &swapchainCI, nullptr, &swapChain_);
+    VK_CHECK_RESULT(err);
 
     // If an existing swap chain is re-created, destroy the old swap chain
     // This also cleans up all the presentable images
@@ -241,6 +243,25 @@ VkPresentModeKHR VulkanSwapchain::get_preferred_presentmode(VkPhysicalDevice phy
     }
 
     return selectedMode;
+}
+
+VkFormat VulkanSwapchain::get_preferred_colorformat(ColorSpace colorSpace)
+{
+    VkPhysicalDevice physicalDevice = vulkan_device_->physicalDevice();
+    uint32_t formatCount;
+    VK_CHECK_RESULT(vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface_, &formatCount, nullptr));
+    assert(formatCount > 0);
+
+    std::vector<VkSurfaceFormatKHR> surfaceFormats(formatCount);
+    VK_CHECK_RESULT(vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface_, &formatCount, surfaceFormats.data()));
+    VkColorSpaceKHR vulkanColorSpace = colorspace_vulkan(colorSpace);
+    for (uint32_t i = 0; i < formatCount; ++i)
+    {
+        if (vulkanColorSpace == surfaceFormats[i].colorSpace)
+        {
+            return surfaceFormats[i].format;
+        }
+    }
 }
 
 }// namespace ocarina

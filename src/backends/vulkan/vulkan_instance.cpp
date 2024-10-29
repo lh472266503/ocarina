@@ -83,6 +83,11 @@ VulkanInstance::VulkanInstance(const InstanceCreation& instanceCreation) {
             std::cerr << "Validation layer VK_LAYER_KHRONOS_validation not present, validation is disabled";
         }
     }
+    if (instanceExtensions.size() > 0) {
+        instanceCreateInfo.enabledExtensionCount = (uint32_t)instanceExtensions.size();
+        instanceCreateInfo.ppEnabledExtensionNames = instanceExtensions.data();
+    }
+
     VkResult result = vkCreateInstance(&instanceCreateInfo, nullptr, &instance_);
     VK_CHECK_RESULT(result);
 }

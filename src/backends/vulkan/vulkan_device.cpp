@@ -191,6 +191,7 @@ void VulkanDevice::create_logical_device()
 {
 
     VkDeviceQueueCreateInfo queues[uint32_t(QueueType::NumQueueType)];
+    memset(queues, 0, sizeof(VkDeviceQueueCreateInfo) * uint32_t(QueueType::NumQueueType));
     const float defaultQueuePriority(0.0f);
     for (int i = 0; i < uint32_t(QueueType::NumQueueType); ++i)
     {
@@ -203,7 +204,7 @@ void VulkanDevice::create_logical_device()
 
     VkDeviceCreateInfo info{};
     info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-    info.queueCreateInfoCount = queueFamilyCount_;
+    info.queueCreateInfoCount = uint32_t(QueueType::NumQueueType);
     info.pQueueCreateInfos = queues;
     info.enabledLayerCount = 0;
     info.ppEnabledLayerNames = nullptr;

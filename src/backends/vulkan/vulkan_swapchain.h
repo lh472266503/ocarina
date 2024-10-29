@@ -18,7 +18,7 @@ class VulkanSwapchain : public concepts::Noncopyable {
 public:
     VulkanSwapchain();
     ~VulkanSwapchain();
-    void create_surface(VkInstance instance, uint32_t window_handle);
+    void create_surface(VkInstance instance, uint64_t window_handle);
     void create_swapchain(const SwapChainCreation &creation, VulkanDevice* vulkan_device);
     void release();
     OC_MAKE_MEMBER_GETTER(swapChain, )
@@ -29,7 +29,7 @@ private:
     void setup_backbuffers(const VkSwapchainCreateInfoKHR &swapChainCreateInfo);
     void release_backbuffers();
     VkPresentModeKHR get_preferred_presentmode(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, bool vsync);
-    
+    VkFormat get_preferred_colorformat(ColorSpace colorSpace);
 
 private:
     VkSwapchainKHR swapChain_ = VK_NULL_HANDLE;

@@ -119,7 +119,7 @@ private:
 
     VulkanInstance m_instance;
     VulkanSwapchain m_swapChain;
-    uint32_t m_windowHandle = InvalidUI32;
+    uint64_t m_windowHandle = InvalidUI64;
 
     uint32_t queueFamilyIndices_[(uint32_t)QueueType::NumQueueType];
     //uint32_t queueFamilyIndexPerQueue_[(uint32_t)QueueType::NumQueueType];

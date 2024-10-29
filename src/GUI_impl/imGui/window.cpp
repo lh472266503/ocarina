@@ -59,7 +59,7 @@ void GLWindow::init(const char *name, uint2 initial_size, bool resizable) noexce
         OC_ERROR_FORMAT("Failed to create GLFW window: {}.", error);
     }
     #ifdef _WIN32
-    window_handle_ = (uint32_t)glfwGetWin32Window(handle_);
+    window_handle_ = (uint64_t)glfwGetWin32Window(handle_);
     #endif
     glfwMakeContextCurrent(handle_);
     glfwSwapInterval(0);// disable vsync

@@ -13,7 +13,7 @@ struct InstanceCreation {
     const char *applicationName;
     bool validation = false;
     std::vector<const char *> instanceExtentions;
-    uint32_t windowHandle = -1;
+    uint64_t windowHandle = InvalidUI64;
 };
 
 struct SwapChainCreation {

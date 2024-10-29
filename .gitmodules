@@ -7,3 +7,6 @@
 [submodule "src/ext/xxHash"]
 	path = src/ext/xxHash
 	url = https://github.com/Cyan4973/xxHash.git
+[submodule "src/ext/SDL"]
+	path = src/ext/SDL
+	url = https://github.com/libsdl-org/SDL.git

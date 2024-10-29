@@ -89,13 +89,14 @@ namespace ocarina {
     }
 
     static VkColorSpaceKHR colorspace_vulkan(const ColorSpace colorSpace) {
-        static const VkColorSpaceKHR colorSpaceToVulkan[] =
-            {
-                VK_COLOR_SPACE_SRGB_NONLINEAR_KHR,         // sRGB
-                VK_COLOR_SPACE_EXTENDED_SRGB_NONLINEAR_EXT,// scRGB
-                VK_COLOR_SPACE_HDR10_ST2084_EXT,           // BT2020
-            };
-
-        return colorSpaceToVulkan[uint32_t(colorSpace)];
+        switch (colorSpace)
+        {
+        case ColorSpace::SRGB:
+            //return VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
+        case ColorSpace::LINEAR:
+            return VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
+        default:
+            return VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
+        }
     }
 }
