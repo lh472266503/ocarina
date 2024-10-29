@@ -2,7 +2,7 @@
 // Created by ling.zhu on 2024/10/28.
 //
 
-#include "export_vector.h"
+#include "export_vector_op.h"
 #include "swizzle_inl/swizzle3.inl.h"
 
 namespace py = pybind11;
@@ -29,9 +29,11 @@ using namespace ocarina;
                     .def_readwrite("y", &Vector<T, 3>::y)                                       \
                     .def_readwrite("z", &Vector<T, 3>::z);                                      \
     export_swizzle3<T>(m##T);                                                                   \
+    export_vector_op<T, 3>(m##T);                                                               \
     OC_EXPORT_MAKE_VECTOR3(T)
 
 void export_vector3(py::module &m) {
+
     OC_EXPORT_VECTOR3(float)
     OC_EXPORT_VECTOR3(uint);
     OC_EXPORT_VECTOR3(int);

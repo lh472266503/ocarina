@@ -2,7 +2,7 @@
 // Created by ling.zhu on 2024/10/28.
 //
 
-#include "export_vector.h"
+#include "export_vector_op.h"
 #include "swizzle_inl/swizzle4.inl.h"
 
 namespace py = pybind11;
@@ -12,7 +12,6 @@ using namespace ocarina;
     m.def("make_" #T "4", [](T a) { return make_##T##4(a); });                         \
     m.def("make_" #T "4", [](T a, T b, T c, T d) { return make_##T##4(a, b, c, d); }); \
     m.def("make_" #T "4", [](Vector<T, 4> a) { return make_##T##4(a); });
-
 
 #define OC_EXPORT_VECTOR4(T)                                                                    \
     py::class_<ocarina::detail::VectorStorage<T, 4>>(m, "_VectorStorage" #T "4");               \
@@ -31,6 +30,7 @@ using namespace ocarina;
                     .def_readwrite("z", &Vector<T, 4>::z)                                       \
                     .def_readwrite("w", &Vector<T, 4>::w);                                      \
     export_swizzle4<T>(m##T);                                                                   \
+    export_vector_op<T, 4>(m##T);                                                               \
     OC_EXPORT_MAKE_VECTOR4(T)
 
 void export_vector4(py::module &m) {

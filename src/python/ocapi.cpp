@@ -3,7 +3,7 @@
 //
 
 
-#include "export_vector.h"
+#include "export_vector_op.h"
 
 namespace py = pybind11;
 using namespace ocarina;
