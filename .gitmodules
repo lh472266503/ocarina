@@ -7,6 +7,8 @@
 [submodule "src/ext/xxHash"]
 	path = src/ext/xxHash
 	url = https://github.com/Cyan4973/xxHash.git
-[submodule "src/ext/SDL"]
+[submodule "src/ext/pybind11"]
+	path = src/ext/pybind11
+	url = https://github.com/pybind/pybind11.git[submodule "src/ext/SDL"]
 	path = src/ext/SDL
 	url = https://github.com/libsdl-org/SDL.git

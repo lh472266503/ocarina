@@ -8,7 +8,7 @@
 #include "stmt_builder.h"
 #include "core/stl.h"
 #include "core/util.h"
-#include "serialize.h"
+#include "encode.h"
 #include "core/hash.h"
 #include "registrable.h"
 #include "env.h"

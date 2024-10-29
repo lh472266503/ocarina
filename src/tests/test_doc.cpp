@@ -10,6 +10,7 @@
 #include "base/scattering/interaction.h"
 #include "core/platform.h"
 #include "util/file_manager.h"
+#include "numpy.h"
 
 using namespace ocarina;
 

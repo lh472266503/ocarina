@@ -69,17 +69,14 @@ private:
 
 public:
     explicit EncodedData(value_ty val = value_ty{}) : _host_value(std::move(val)) {}
-
     EncodedData &operator=(const value_ty &val) {
         _host_value = val;
         return *this;
     }
-
     EncodedData &operator=(const std::function<value_ty()> &val) {
         _host_value = val;
         return *this;
     }
-
     [[nodiscard]] bool has_device_value() const noexcept override { return _device_value.has_value(); }
     void reset_device_value() const noexcept override {
         (const_cast<decltype(_device_value) &>(_device_value)).reset();
@@ -99,6 +96,7 @@ public:
         OC_ASSERT(has_device_value());
         return *_device_value;
     }
+
     [[nodiscard]] dsl_t<value_ty> operator*() const noexcept {
         if (has_device_value()) {
             return dv();

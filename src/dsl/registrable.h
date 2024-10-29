@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "serialize.h"
+#include "encode.h"
 #include "rhi/resources/managed.h"
 #include "dsl/printer.h"
 #include "core/platform.h"
@@ -57,7 +57,11 @@ public:
 
     void register_self(size_t offset = 0, size_t size = 0) noexcept {
         BufferView<T> buffer_view = super().view(offset, size);
-        index_ = bindless_array_->emplace(buffer_view);
+        if (has_registered()) {
+            bindless_array_->set_buffer(index_.hv(), buffer_view);
+        } else {
+            index_ = bindless_array_->emplace(buffer_view);
+        }
         length_ = [=]() {
             return static_cast<uint>(buffer_view.size());
         };
@@ -66,6 +70,13 @@ public:
     uint register_view(size_t offset, size_t size = 0) {
         BufferView<T> buffer_view = super().view(offset, size);
         return bindless_array_->emplace(buffer_view);
+    }
+
+    uint register_view_index(uint index, size_t offset, size_t size = 0) {
+        BufferView<T> buffer_view = super().view(offset, size);
+        index += index_.hv();
+        bindless_array_->set_buffer(index, buffer_view);
+        return index;
     }
 
     void update_buffer(Super buffer) {
@@ -107,7 +118,11 @@ public:
     [[nodiscard]] Super &super() noexcept { return *this; }
     void register_self(size_t offset = 0, size_t size = 0) noexcept {
         ByteBufferView buffer_view = super().view(offset, size);
-        index_ = bindless_array_->emplace(buffer_view);
+        if (has_registered()) {
+            bindless_array_->set_buffer(index_.hv(), buffer_view);
+        } else {
+            index_ = bindless_array_->emplace(buffer_view);
+        }
         length_ = [=]() {
             return static_cast<uint>(buffer_view.size());
         };
@@ -116,6 +131,13 @@ public:
     uint register_view(size_t offset, size_t size = 0) {
         ByteBufferView buffer_view = super().view(offset, size);
         return bindless_array_->emplace(buffer_view);
+    }
+
+    uint register_view_index(uint index, size_t offset, size_t size = 0) {
+        ByteBufferView buffer_view = super().view(offset, size);
+        index += index_.hv();
+        bindless_array_->set_buffer(index, buffer_view);
+        return index;
     }
 
     void update_buffer(Super buffer) {
@@ -301,11 +323,19 @@ public:
         return bindless_array_->emplace(buffer_view);
     }
 
+    uint register_view_index(uint index, size_t offset, size_t size = 0) {
+        BufferView<T> buffer_view = super().view(offset, size);
+        index += index_.hv();
+        bindless_array_->set_buffer(index, buffer_view);
+        return index;
+    }
+
     void update_buffer(Super buffer) {
-        super() = std::move(buffer);
+        super().device_buffer() = std::move(buffer);
+        super().host_buffer().resize(buffer.size());
         register_self();
     }
-    
+
     [[nodiscard]] const Super &super() const noexcept { return *this; }
     [[nodiscard]] Super &super() noexcept { return *this; }
 
@@ -389,5 +419,4 @@ public:
         return Texture::write(OC_FORWARD(args)...);
     }
 };
-
 }// namespace ocarina

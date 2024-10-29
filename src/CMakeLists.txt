@@ -14,6 +14,7 @@ add_subdirectory(backends)
 add_subdirectory(util)
 add_subdirectory(math)
 add_subdirectory(GUI_impl)
+add_subdirectory(python)
 
 add_library(ocarina-all INTERFACE)
 target_link_libraries(ocarina-all INTERFACE
