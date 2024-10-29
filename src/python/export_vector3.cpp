@@ -8,6 +8,11 @@
 namespace py = pybind11;
 using namespace ocarina;
 
+#define OC_EXPORT_MAKE_VECTOR3(T)                                              \
+    m.def("make_" #T "3", [](T a) { return make_##T##3(a); });                 \
+    m.def("make_" #T "3", [](T a, T b, T c) { return make_##T##3(a, b, c); }); \
+    m.def("make_" #T "3", [](Vector<T, 3> a) { return make_##T##3(a); });
+
 #define OC_EXPORT_VECTOR3(T)                                                                    \
     py::class_<ocarina::detail::VectorStorage<T, 3>>(m, "_VectorStorage" #T "3");               \
     auto m##T = py::class_<Vector<T, 3>, ocarina::detail::VectorStorage<T, 3>>(m, #T "3")       \
@@ -23,7 +28,8 @@ using namespace ocarina;
                     .def_readwrite("x", &Vector<T, 3>::x)                                       \
                     .def_readwrite("y", &Vector<T, 3>::y)                                       \
                     .def_readwrite("z", &Vector<T, 3>::z);                                      \
-    export_swizzle3<T>(m##T);
+    export_swizzle3<T>(m##T);                                                                   \
+    OC_EXPORT_MAKE_VECTOR3(T)
 
 void export_vector3(py::module &m) {
     OC_EXPORT_VECTOR3(float)

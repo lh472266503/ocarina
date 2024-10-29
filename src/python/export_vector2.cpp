@@ -8,6 +8,11 @@
 namespace py = pybind11;
 using namespace ocarina;
 
+#define OC_EXPORT_MAKE_VECTOR2(T)                                      \
+    m.def("make_" #T "2", [](T a) { return make_##T##2(a); });         \
+    m.def("make_" #T "2", [](T a, T b) { return make_##T##2(a, b); }); \
+    m.def("make_" #T "2", [](Vector<T, 2> a) { return make_##T##2(a); });
+
 #define OC_EXPORT_VECTOR2(T)                                                                                   \
     py::class_<ocarina::detail::VectorStorage<T, 2>>(m, "_VectorStorage" #T "2");                              \
     auto m##T = py::class_<Vector<T, 2>, ocarina::detail::VectorStorage<T, 2>>(m, #T "2")                      \
@@ -20,7 +25,8 @@ using namespace ocarina;
                     .def("copy", [](Vector<T, 2> &self) { return Vector<T, 2>(self); })                        \
                     .def_readwrite("x", &Vector<T, 2>::x)                                                      \
                     .def_readwrite("y", &Vector<T, 2>::y);                                                     \
-    export_swizzle2<T>(m##T);
+    export_swizzle2<T>(m##T);                                                                                  \
+    OC_EXPORT_MAKE_VECTOR2(T)
 
 void export_vector2(py::module &m) {
     OC_EXPORT_VECTOR2(float);
