@@ -50,17 +50,13 @@ void export_vector_op(M &m) {
 template<typename T, size_t N, typename M>
 void export_unary_func(M &m) {
 #define OC_EXPORT_UNARY_FUNC(func)                                                \
-    if constexpr (requires {                                                      \
-                      ocarina::func(Vector<T, N>{});                              \
-                  }) {                                                            \
-        m = m.def(#func, [](const Vector<T, N> &v) { return ocarina::func(v); }); \
-    }
-    OC_EXPORT_UNARY_FUNC(rcp)
+        m.def(#func, [](const Vector<T, N> &v) { return ocarina::func(v); });
     if constexpr (is_signed_v<T>) {
         OC_EXPORT_UNARY_FUNC(abs)
         OC_EXPORT_UNARY_FUNC(sign)
     }
     if constexpr (is_floating_point_v<T>) {
+        OC_EXPORT_UNARY_FUNC(rcp)
         OC_EXPORT_UNARY_FUNC(sqrt)
         OC_EXPORT_UNARY_FUNC(cos)
         OC_EXPORT_UNARY_FUNC(sin)
@@ -101,9 +97,7 @@ void export_unary_func(M &m) {
 }
 
 template<typename T, size_t N, typename M>
-void export_all_func(M &m) {
-    export_vector_op<T, N>(m);
-    if constexpr (is_number_v<T>) {
-        export_unary_func<T, N>(m);
-    }
+void export_all_func(M &mt, py::module& m)  {
+    export_vector_op<T, N>(mt);
+    export_unary_func<T, N>(m);
 }
