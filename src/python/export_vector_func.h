@@ -46,3 +46,64 @@ void export_vector_op(M &m) {
     m = m.def("__eq__", [](const Vector<T, N> &a, const Vector<T, N> &b) { return a == b; }, py::is_operator());
     m = m.def("__ne__", [](const Vector<T, N> &a, const Vector<T, N> &b) { return a != b; }, py::is_operator());
 }
+
+template<typename T, size_t N, typename M>
+void export_unary_func(M &m) {
+#define OC_EXPORT_UNARY_FUNC(func)                                                \
+    if constexpr (requires {                                                      \
+                      ocarina::func(Vector<T, N>{});                              \
+                  }) {                                                            \
+        m = m.def(#func, [](const Vector<T, N> &v) { return ocarina::func(v); }); \
+    }
+    OC_EXPORT_UNARY_FUNC(rcp)
+    if constexpr (is_signed_v<T>) {
+        OC_EXPORT_UNARY_FUNC(abs)
+        OC_EXPORT_UNARY_FUNC(sign)
+    }
+    if constexpr (is_floating_point_v<T>) {
+        OC_EXPORT_UNARY_FUNC(sqrt)
+        OC_EXPORT_UNARY_FUNC(cos)
+        OC_EXPORT_UNARY_FUNC(sin)
+        OC_EXPORT_UNARY_FUNC(tan)
+        OC_EXPORT_UNARY_FUNC(cosh)
+        OC_EXPORT_UNARY_FUNC(sinh)
+        OC_EXPORT_UNARY_FUNC(tanh)
+        OC_EXPORT_UNARY_FUNC(log)
+        OC_EXPORT_UNARY_FUNC(log2)
+        OC_EXPORT_UNARY_FUNC(log10)
+        OC_EXPORT_UNARY_FUNC(exp)
+        OC_EXPORT_UNARY_FUNC(exp2)
+        OC_EXPORT_UNARY_FUNC(asin)
+        OC_EXPORT_UNARY_FUNC(acos)
+        OC_EXPORT_UNARY_FUNC(atan)
+        OC_EXPORT_UNARY_FUNC(asinh)
+        OC_EXPORT_UNARY_FUNC(acosh)
+        OC_EXPORT_UNARY_FUNC(atanh)
+        OC_EXPORT_UNARY_FUNC(floor)
+        OC_EXPORT_UNARY_FUNC(ceil)
+        OC_EXPORT_UNARY_FUNC(degrees)
+        OC_EXPORT_UNARY_FUNC(radians)
+        OC_EXPORT_UNARY_FUNC(round)
+        OC_EXPORT_UNARY_FUNC(isnan)
+        OC_EXPORT_UNARY_FUNC(isinf)
+        OC_EXPORT_UNARY_FUNC(fract)
+        OC_EXPORT_UNARY_FUNC(length)
+        OC_EXPORT_UNARY_FUNC(normalize)
+        OC_EXPORT_UNARY_FUNC(length_squared)
+        OC_EXPORT_UNARY_FUNC(sqr)
+    }
+    if constexpr (std::is_same_v<bool, T>) {
+        OC_EXPORT_UNARY_FUNC(all)
+        OC_EXPORT_UNARY_FUNC(any)
+        OC_EXPORT_UNARY_FUNC(none)
+    }
+#undef OC_EXPORT_UNARY_FUNC
+}
+
+template<typename T, size_t N, typename M>
+void export_all_func(M &m) {
+    export_vector_op<T, N>(m);
+    if constexpr (is_number_v<T>) {
+        export_unary_func<T, N>(m);
+    }
+}

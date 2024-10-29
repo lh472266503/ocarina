@@ -26,7 +26,7 @@ using namespace ocarina;
                     .def_readwrite("x", &Vector<T, 2>::x)                                                      \
                     .def_readwrite("y", &Vector<T, 2>::y);                                                     \
     export_swizzle2<T>(m##T);                                                                                  \
-    export_vector_op<T, 2>(m##T);                                                                              \
+    export_all_func<T, 2>(m##T);                                                                              \
     OC_EXPORT_MAKE_VECTOR2(T)
 
 void export_vector2(py::module &m) {

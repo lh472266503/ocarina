@@ -30,7 +30,7 @@ using namespace ocarina;
                     .def_readwrite("z", &Vector<T, 4>::z)                                       \
                     .def_readwrite("w", &Vector<T, 4>::w);                                      \
     export_swizzle4<T>(m##T);                                                                   \
-    export_vector_op<T, 4>(m##T);                                                               \
+    export_all_func<T, 4>(m##T);                                                               \
     OC_EXPORT_MAKE_VECTOR4(T)
 
 void export_vector4(py::module &m) {
