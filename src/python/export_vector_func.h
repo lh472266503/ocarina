@@ -17,6 +17,7 @@ template<typename T, size_t N, typename M>
 void export_vector_op(M &m) {
     if constexpr (ocarina::is_number_v<T>) {
         m = m.def("__add__", [](const Vector<T, N> &a, const Vector<T, N> &b) { return a + b; }, py::is_operator());
+        m = m.def("__neg__", [](const Vector<T, N> &a) { return -a; }, py::is_operator());
         m = m.def("__add__", [](const Vector<T, N> &a, const T &b) { return a + b; }, py::is_operator());
         m = m.def("__radd__", [](const Vector<T, N> &a, const T &b) { return a + b; }, py::is_operator());
         m = m.def("__sub__", [](const Vector<T, N> &a, const Vector<T, N> &b) { return a - b; }, py::is_operator());
@@ -97,7 +98,31 @@ void export_unary_func(M &m) {
 }
 
 template<typename T, size_t N, typename M>
+void export_binary_func(M &m) {
+#define OC_EXPORT_BINARY_FUNC(func) \
+    m.def(#func, [](const Vector<T, N> &lhs, const Vector<T, N> &rhs) { return ocarina::func(lhs, rhs); });
+    if constexpr (is_floating_point_v<T>) {
+        OC_EXPORT_BINARY_FUNC(pow)
+        OC_EXPORT_BINARY_FUNC(atan2)
+    }
+
+    if constexpr (is_number_v<T>) {
+        OC_EXPORT_BINARY_FUNC(min)
+        OC_EXPORT_BINARY_FUNC(max)
+        OC_EXPORT_BINARY_FUNC(distance_squared)
+        OC_EXPORT_BINARY_FUNC(distance)
+        OC_EXPORT_BINARY_FUNC(dot)
+        if constexpr (N == 3) {
+            OC_EXPORT_BINARY_FUNC(cross)
+        }
+    }
+
+#undef OC_EXPORT_BINARY_FUNC
+}
+
+template<typename T, size_t N, typename M>
 void export_all_func(M &mt, py::module& m)  {
     export_vector_op<T, N>(mt);
     export_unary_func<T, N>(m);
+    export_binary_func<T, N>(m);
 }
