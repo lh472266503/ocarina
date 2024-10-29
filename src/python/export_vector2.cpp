@@ -24,4 +24,7 @@ using namespace ocarina;
 
 void export_vector2(py::module &m) {
     OC_EXPORT_VECTOR2(float);
+    OC_EXPORT_VECTOR2(uint);
+    OC_EXPORT_VECTOR2(int);
+    OC_EXPORT_VECTOR2(bool);
 }

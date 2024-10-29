@@ -29,4 +29,7 @@ using namespace ocarina;
 
 void export_vector4(py::module &m) {
     OC_EXPORT_VECTOR4(float)
+    OC_EXPORT_VECTOR4(uint);
+    OC_EXPORT_VECTOR4(int);
+    OC_EXPORT_VECTOR4(bool);
 }
