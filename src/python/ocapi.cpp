@@ -17,6 +17,6 @@ PYBIND11_MODULE(ocapi, m) {
     m.def("add", [](int a, int b) { return a + b; }, "A function that adds two numbers");
     m.def("sub", [](int a, int b) { return a - b;}, "func");
     export_vector2(m);
-//    export_vector3(m);
-//    export_vector4(m);
+    export_vector3(m);
+    export_vector4(m);
 }
