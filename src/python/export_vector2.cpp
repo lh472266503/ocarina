@@ -2,7 +2,7 @@
 // Created by ling.zhu on 2024/10/28.
 //
 
-#include "export_vector_op.h"
+#include "export_vector_func.h"
 #include "swizzle_inl/swizzle2.inl.h"
 
 namespace py = pybind11;
