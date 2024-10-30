@@ -3,21 +3,25 @@
 //
 
 #include "export_vector_func.h"
+#include "math/base.h"
 
 namespace py = pybind11;
 using namespace ocarina;
 
+template<size_t N, size_t M, typename Module>
+void export_matrix_op(py::module &m, Module &mt) {
+}
+
 template<size_t N, size_t M>
-void export_matrix_(py::module &m) {
+auto export_matrix_base(py::module &m) {
     string cls_name = ocarina::format("float{}x{}", N, M);
     auto mt = py::class_<Matrix<N, M>>(m, cls_name.c_str());
     mt.def("__getitem__", [](Matrix<N, M> &self, size_t i) { return &self[i]; }, py::return_value_policy::reference_internal);
     mt.def("__setitem__", [](Matrix<N, M> &self, size_t i, Vector<float, M> k) { self[i] = k; });
-
+    auto make_func_name = "make_" + cls_name;
     auto export_constructor = [&]<typename Func>(const Func &func) {
-        auto func_name = "make_" + cls_name;
         mt.def(py::init(func));
-        mt.def(func_name.c_str(), func);
+        m.def(make_func_name.c_str(), func);
     };
 
     export_constructor([](float a) { return Matrix<N, M>(a); });
@@ -44,7 +48,22 @@ void export_matrix_(py::module &m) {
         return to_str(self);
     });
 
-    
+    if constexpr (N == M) {
+#define OC_EXPORT_MATRIX_FUNC(func) \
+    m.def(#func, [&](Matrix<N, M> mat) { return ocarina::func(mat); });
+        OC_EXPORT_MATRIX_FUNC(inverse)
+        OC_EXPORT_MATRIX_FUNC(transpose)
+        OC_EXPORT_MATRIX_FUNC(determinant)
+#undef OC_EXPORT_MATRIX_FUNC
+    }
+
+    return mt;
+}
+
+template<size_t N, size_t M>
+void export_matrix_(py::module &m) {
+    auto mt = export_matrix_base<N, M>(m);
+    export_matrix_op<N, M>(m, mt);
 }
 
 void export_matrix(py::module &m) {
