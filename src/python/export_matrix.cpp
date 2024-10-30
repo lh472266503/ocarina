@@ -18,6 +18,12 @@ auto export_matrix_base(py::module &m) {
     auto mt = py::class_<Matrix<N, M>>(m, cls_name.c_str());
     mt.def("__getitem__", [](Matrix<N, M> &self, size_t i) { return &self[i]; }, py::return_value_policy::reference_internal);
     mt.def("__setitem__", [](Matrix<N, M> &self, size_t i, Vector<float, M> k) { self[i] = k; });
+    mt.def("__neg__", [](Matrix<N, M> &self) { return -self; });
+    mt.def("__mul__", [](Matrix<N, M> &self, float s) { return self * s; });
+    mt.def("__rmul__", [](Matrix<N, M> &self, float s) { return self * s; });
+    mt.def("__mul__", [](Matrix<N, M> &self, ocarina::Vector<float, N> v) { return self * v; });
+    mt.def("__mul__", [](Matrix<N, M> &self, ocarina::Matrix<M, N> rhs) { return self * rhs; });
+
     auto make_func_name = "make_" + cls_name;
     auto export_constructor = [&]<typename Func>(const Func &func) {
         mt.def(py::init(func));
