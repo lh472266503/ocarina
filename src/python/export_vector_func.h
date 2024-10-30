@@ -5,6 +5,7 @@
 #pragma once
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 #include <pybind11/operators.h>
 #include "core/stl.h"
 #include "math/basic_types.h"
@@ -153,10 +154,18 @@ void export_vector_cast(M &m) {
 }
 
 template<typename T, size_t N, typename M>
+void export_vector_member_func(M &mt, py::module &m) {
+    mt.def(py::init([&](std::array<T, N> a) {
+        return Vector<T, N>(a.data());
+    }));
+}
+
+template<typename T, size_t N, typename M>
 void export_vector_func(M &mt, py::module &m) {
     export_vector_op<T, N>(mt);
     export_vector_unary_func<T, N>(m);
     export_vector_binary_func<T, N>(m);
     export_vector_triple_func<T, N>(m);
     export_vector_cast<T, N>(m);
+    export_vector_member_func<T, N>(mt, m);
 }
