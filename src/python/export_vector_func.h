@@ -49,7 +49,7 @@ void export_vector_op(M &m) {
 }
 
 template<typename T, size_t N, typename M>
-void export_unary_func(M &m) {
+void export_vector_unary_func(M &m) {
 #define OC_EXPORT_UNARY_FUNC(func)                                                \
         m.def(#func, [](const Vector<T, N> &v) { return ocarina::func(v); });
     if constexpr (is_signed_v<T>) {
@@ -98,7 +98,7 @@ void export_unary_func(M &m) {
 }
 
 template<typename T, size_t N, typename M>
-void export_binary_func(M &m) {
+void export_vector_binary_func(M &m) {
 #define OC_EXPORT_BINARY_FUNC(func) \
     m.def(#func, [](const Vector<T, N> &lhs, const Vector<T, N> &rhs) { return ocarina::func(lhs, rhs); });
     if constexpr (is_floating_point_v<T>) {
@@ -121,8 +121,14 @@ void export_binary_func(M &m) {
 }
 
 template<typename T, size_t N, typename M>
-void export_all_func(M &mt, py::module& m)  {
+void export_vector_triple_func(M &m) {
+
+}
+
+template<typename T, size_t N, typename M>
+void export_vector_func(M &mt, py::module& m)  {
     export_vector_op<T, N>(mt);
-    export_unary_func<T, N>(m);
-    export_binary_func<T, N>(m);
+    export_vector_unary_func<T, N>(m);
+    export_vector_binary_func<T, N>(m);
+    export_vector_triple_func<T,N>(m);
 }
