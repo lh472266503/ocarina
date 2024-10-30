@@ -10,6 +10,7 @@
 #include "math/basic_types.h"
 #include "math/base.h"
 #include "core/string_util.h"
+#include "ast/type_registry.h"
 
 namespace py = pybind11;
 using namespace ocarina;
@@ -136,9 +137,22 @@ void export_vector_triple_func(M &m) {
 }
 
 template<typename T, size_t N, typename M>
+void export_vector_cast(M &m) {
+    using Tuple = std::tuple<uint, int, float, bool>;
+    traverse_tuple(Tuple{}, [&]<typename Elm>(const Elm &_, uint index) {
+        if constexpr (std::is_same_v<T, Elm>) {
+            return ;
+        }
+        string func_name = ocarina::format("make_{}{}", TypeDesc<T>::name(), N);
+        m.def(func_name.c_str(), [](const Vector<Elm, N> &v) { return Vector<T, N>(v); });
+    });
+}
+
+template<typename T, size_t N, typename M>
 void export_vector_func(M &mt, py::module &m) {
     export_vector_op<T, N>(mt);
     export_vector_unary_func<T, N>(m);
     export_vector_binary_func<T, N>(m);
     export_vector_triple_func<T, N>(m);
+    export_vector_cast<T, N>(m);
 }
