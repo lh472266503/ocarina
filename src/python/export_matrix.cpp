@@ -62,7 +62,7 @@ auto export_matrix_base(py::module &m) {
         OC_EXPORT_MATRIX_FUNC(determinant)
 #undef OC_EXPORT_MATRIX_FUNC
     }
-
+    
     return mt;
 }
 
