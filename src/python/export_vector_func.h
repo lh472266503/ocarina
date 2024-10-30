@@ -8,6 +8,7 @@
 #include <pybind11/operators.h>
 #include "core/stl.h"
 #include "math/basic_types.h"
+#include "math/base.h"
 #include "core/string_util.h"
 
 namespace py = pybind11;
@@ -50,8 +51,8 @@ void export_vector_op(M &m) {
 
 template<typename T, size_t N, typename M>
 void export_vector_unary_func(M &m) {
-#define OC_EXPORT_UNARY_FUNC(func)                                                \
-        m.def(#func, [](const Vector<T, N> &v) { return ocarina::func(v); });
+#define OC_EXPORT_UNARY_FUNC(func) \
+    m.def(#func, [](const Vector<T, N> &v) { return ocarina::func(v); });
     if constexpr (is_signed_v<T>) {
         OC_EXPORT_UNARY_FUNC(abs)
         OC_EXPORT_UNARY_FUNC(sign)
@@ -122,13 +123,22 @@ void export_vector_binary_func(M &m) {
 
 template<typename T, size_t N, typename M>
 void export_vector_triple_func(M &m) {
-
+#define OC_EXPORT_TRIPLE_FUNC(func) \
+    m.def(#func, [](const Vector<T, N> &a, const Vector<T, N> &b, const Vector<T, N> &c) { return ocarina::func(a, b, c); });
+    if constexpr (is_number_v<T>) {
+        OC_EXPORT_TRIPLE_FUNC(clamp)
+    }
+    if constexpr (is_floating_point_v<T>) {
+        OC_EXPORT_TRIPLE_FUNC(fma)
+        OC_EXPORT_TRIPLE_FUNC(lerp)
+    }
+#undef OC_EXPORT_TRIPLE_FUNC
 }
 
 template<typename T, size_t N, typename M>
-void export_vector_func(M &mt, py::module& m)  {
+void export_vector_func(M &mt, py::module &m) {
     export_vector_op<T, N>(mt);
     export_vector_unary_func<T, N>(m);
     export_vector_binary_func<T, N>(m);
-    export_vector_triple_func<T,N>(m);
+    export_vector_triple_func<T, N>(m);
 }
