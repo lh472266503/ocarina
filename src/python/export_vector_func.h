@@ -138,13 +138,17 @@ void export_vector_triple_func(M &m) {
 
 template<typename T, size_t N, typename M>
 void export_vector_cast(M &m) {
-    using Tuple = std::tuple<uint, int, float, bool>;
-    traverse_tuple(Tuple{}, [&]<typename Elm>(const Elm &_, uint index) {
-        if constexpr (std::is_same_v<T, Elm>) {
+    traverse_tuple(std::tuple<uint, int, float, bool>{}, [&]<typename Src>(const Src &_, uint index) {
+        if constexpr (std::is_same_v<T, Src>) {
             return ;
         }
-        string func_name = ocarina::format("make_{}{}", TypeDesc<T>::name(), N);
-        m.def(func_name.c_str(), [](const Vector<Elm, N> &v) { return Vector<T, N>(v); });
+        string cast_func_name = ocarina::format("make_{}{}", TypeDesc<T>::name(), N);
+        m.def(cast_func_name.c_str(), [](const Vector<Src, N> &v) { return Vector<T, N>(v); });
+
+        if constexpr (!std::is_same_v<Src, bool> && !std::is_same_v<T, bool>) {
+            string func_name = ocarina::format("as_{}{}", TypeDesc<T>::name(), N);
+            m.def(func_name.c_str(), [](const Vector<Src, N> &v) { return ocarina::bit_cast<Vector<T, N>>(v); });
+        }
     });
 }
 
