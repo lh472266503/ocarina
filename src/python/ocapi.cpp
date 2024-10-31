@@ -14,6 +14,8 @@ void export_vector4(py::module &m);
 void export_matrix(py::module &m);
 void export_device(py::module &m);
 
+void export_type(py::module &m);
+
 void export_scalar_cast(py::module &m) {
     using Tuple = std::tuple<uint, int, float>;
     traverse_tuple(Tuple{}, [&]<typename Src>(const Src &_, uint index) {
