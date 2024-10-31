@@ -19,16 +19,12 @@ using namespace ocarina;
 template<typename T, typename... Base>
 auto export_type(py::module &m, const char *name) {
     auto mt = py::class_<T, Base...>(m, name);
-    if constexpr (requires {
-                      TypeDesc<T>::description();
-                  }) {
-        mt.def_property_readonly("desc_", [](const T &self) {
-            return TypeDesc<T>::description();
-        });
-        mt.def("clone", [](const T &self) {
-            return T{self};
-        });
-        mt.def(py::init<>());
-    }
+    mt.def_property_readonly("desc_", [](const T &self) {
+        return TypeDesc<T>::description();
+    });
+    mt.def("clone", [](const T &self) {
+        return T{self};
+    });
+    mt.def(py::init<>());
     return mt;
 }
