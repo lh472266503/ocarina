@@ -15,19 +15,14 @@ using namespace ocarina;
 
 #define OC_EXPORT_VECTOR4(T)                                                                    \
     py::class_<ocarina::detail::VectorStorage<T, 4>>(m, "_VectorStorage" #T "4");               \
-    auto m##T = py::class_<Vector<T, 4>, ocarina::detail::VectorStorage<T, 4>>(m, #T "4")       \
-                    .def(py::init<>())                                                          \
+    auto m##T = export_type<Vector<T, 4>, ocarina::detail::VectorStorage<T, 4>>(m, #T "4")      \
                     .def(py::init<T>())                                                         \
                     .def(py::init<T, T, T, T>())                                                \
-                    .def_property_readonly("desc_", [](Vector<T, 4>) {                          \
-                        return TypeDesc<Vector<T, 4>>::description();                           \
-                    })                                                                          \
                     .def("__repr__", [](Vector<T, 4> &self) {                                   \
                         return format(#T "4({},{},{},{})", self.x, self.y, self.z, self.w);     \
                     })                                                                          \
                     .def("__getitem__", [](Vector<T, 4> &self, size_t i) { return self[i]; })   \
                     .def("__setitem__", [](Vector<T, 4> &self, size_t i, T k) { self[i] = k; }) \
-                    .def("copy", [](Vector<T, 4> &self) { return Vector<T, 4>(self); })         \
                     .def_readwrite("x", &Vector<T, 4>::x)                                       \
                     .def_readwrite("y", &Vector<T, 4>::y)                                       \
                     .def_readwrite("z", &Vector<T, 4>::z)                                       \

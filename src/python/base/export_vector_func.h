@@ -4,14 +4,7 @@
 
 #pragma once
 
-#include "ext/pybind11/include/pybind11/pybind11.h"
-#include "ext/pybind11/include/pybind11/stl.h"
-#include "ext/pybind11/include/pybind11/operators.h"
-#include "core/stl.h"
-#include "math/basic_types.h"
-#include "math/base.h"
-#include "core/string_util.h"
-#include "ast/type_registry.h"
+#include "python/common.h"
 
 namespace py = pybind11;
 using namespace ocarina;
@@ -49,7 +42,6 @@ void export_vector_op(M &m) {
     }
     m = m.def("__eq__", [](const Vector<T, N> &a, const Vector<T, N> &b) { return a == b; }, py::is_operator());
     m = m.def("__ne__", [](const Vector<T, N> &a, const Vector<T, N> &b) { return a != b; }, py::is_operator());
-    m = m.def("clone", [](const Vector<T, N> &self) { return Vector<T, N>{self}; });
 }
 
 template<typename T, size_t N, typename M>

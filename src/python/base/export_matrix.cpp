@@ -57,7 +57,7 @@ void export_matrix_func(py::module &m, Module &mt) {
 template<size_t N, size_t M>
 auto export_matrix_base(py::module &m) {
     string cls_name = ocarina::format("float{}x{}", N, M);
-    auto mt = py::class_<Matrix<N, M>>(m, cls_name.c_str());
+    auto mt = export_type<Matrix<N, M>>(m, cls_name.c_str());
     mt.def("__getitem__", [](Matrix<N, M> &self, size_t i) { return &self[i]; }, py::return_value_policy::reference_internal);
     mt.def("__setitem__", [](Matrix<N, M> &self, size_t i, Vector<float, M> k) { self[i] = k; });
     mt.def("__neg__", [](Matrix<N, M> &self) { return -self; });

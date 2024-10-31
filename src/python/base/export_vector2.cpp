@@ -15,17 +15,12 @@ using namespace ocarina;
 
 #define OC_EXPORT_VECTOR2(T)                                                                                   \
     py::class_<ocarina::detail::VectorStorage<T, 2>>(m, "_VectorStorage" #T "2");                              \
-    auto m##T = py::class_<Vector<T, 2>, ocarina::detail::VectorStorage<T, 2>>(m, #T "2")                      \
-                    .def(py::init<>())                                                                         \
+    auto m##T = export_type<Vector<T, 2>, ocarina::detail::VectorStorage<T, 2>>(m, #T "2")                     \
                     .def(py::init<T>())                                                                        \
                     .def(py::init<T, T>())                                                                     \
-                    .def_property_readonly("desc_", [](Vector<T, 2>) {                                         \
-                        return TypeDesc<Vector<T, 2>>::description();                                          \
-                    })                                                                                         \
                     .def("__repr__", [](Vector<T, 2> &self) { return format(#T "2({},{})", self.x, self.y); }) \
                     .def("__getitem__", [](Vector<T, 2> &self, size_t i) { return self[i]; })                  \
                     .def("__setitem__", [](Vector<T, 2> &self, size_t i, T k) { self[i] = k; })                \
-                    .def("copy", [](Vector<T, 2> &self) { return Vector<T, 2>(self); })                        \
                     .def_readwrite("x", &Vector<T, 2>::x)                                                      \
                     .def_readwrite("y", &Vector<T, 2>::y);                                                     \
     export_swizzle2<T>(m##T);                                                                                  \
