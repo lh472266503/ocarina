@@ -49,6 +49,7 @@ void export_vector_op(M &m) {
     }
     m = m.def("__eq__", [](const Vector<T, N> &a, const Vector<T, N> &b) { return a == b; }, py::is_operator());
     m = m.def("__ne__", [](const Vector<T, N> &a, const Vector<T, N> &b) { return a != b; }, py::is_operator());
+    m = m.def("clone", [](const Vector<T, N> &self) { return Vector<T, N>{self}; });
 }
 
 template<typename T, size_t N, typename M>
@@ -141,7 +142,7 @@ template<typename T, size_t N, typename M>
 void export_vector_cast(M &m) {
     traverse_tuple(std::tuple<uint, int, float, bool>{}, [&]<typename Src>(const Src &_, uint index) {
         if constexpr (std::is_same_v<T, Src>) {
-            return ;
+            return;
         }
         string cast_func_name = ocarina::format("make_{}{}", TypeDesc<T>::name(), N);
         m.def(cast_func_name.c_str(), [](const Vector<Src, N> &v) { return Vector<T, N>(v); });

@@ -68,6 +68,7 @@ auto export_matrix_base(py::module &m) {
     mt.def("__truediv__", [](Matrix<N, M> &self,  float s) { return self / s; });
     mt.def("__add__", [](Matrix<N, M> &self, ocarina::Matrix<N, M> rhs) { return self + rhs; });
     mt.def("__sub__", [](Matrix<N, M> &self, ocarina::Matrix<N, M> rhs) { return self - rhs; });
+    mt.def("clone", [](const Matrix<N, M> &self) { return Matrix<N, M>{self}; });
 
     auto make_func_name = "make_" + cls_name;
     auto export_constructor = [&]<typename Func>(const Func &func) {
@@ -76,6 +77,8 @@ auto export_matrix_base(py::module &m) {
     };
 
     export_constructor([](float a) { return Matrix<N, M>(a); });
+
+    export_constructor([](Matrix<N, M> a) { return Matrix<N, M>(a); });
 
     export_constructor([](const std::array<float, M * N> &a) {
         return [&]<size_t... i>(std::index_sequence<i...>) {
