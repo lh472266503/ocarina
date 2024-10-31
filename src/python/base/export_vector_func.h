@@ -4,9 +4,9 @@
 
 #pragma once
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
-#include <pybind11/operators.h>
+#include "ocarina/src/ext/pybind11/include/pybind11/pybind11.h"
+#include "ocarina/src/ext/pybind11/include/pybind11/stl.h"
+#include "ocarina/src/ext/pybind11/include/pybind11/operators.h"
 #include "core/stl.h"
 #include "math/basic_types.h"
 #include "math/base.h"
