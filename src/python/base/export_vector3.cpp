@@ -19,6 +19,9 @@ using namespace ocarina;
                     .def(py::init<>())                                                          \
                     .def(py::init<T>())                                                         \
                     .def(py::init<T, T, T>())                                                   \
+                    .def_property_readonly("desc_", [](Vector<T, 3>) {                          \
+                        return TypeDesc<Vector<T, 3>>::description();                           \
+                    })                                                                          \
                     .def("__repr__", [](Vector<T, 3> &self) {                                   \
                         return format(#T "3({},{},{})", self.x, self.y, self.z);                \
                     })                                                                          \
