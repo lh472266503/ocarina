@@ -3,7 +3,7 @@
 function(ocarina_add_test name)
     cmake_parse_arguments(TEST "" "" "SOURCES" ${ARGN})
     add_executable(${name}  ${TEST_SOURCES})
-    target_link_libraries(${name} ocarina-all)
+    target_link_libraries(${name} ocarina-native)
     set_target_properties(${name} PROPERTIES
             PUBLIC_HEADER "${HEADER_FILES}"
             LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}

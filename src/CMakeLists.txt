@@ -16,8 +16,8 @@ add_subdirectory(math)
 add_subdirectory(GUI_impl)
 add_subdirectory(python)
 
-add_library(ocarina-all INTERFACE)
-target_link_libraries(ocarina-all INTERFACE
+add_library(ocarina-native INTERFACE)
+target_link_libraries(ocarina-native INTERFACE
         ocarina-ext
         ocarina-dsl
         ocarina-ast
@@ -29,10 +29,10 @@ target_link_libraries(ocarina-all INTERFACE
         ocarina-math
         ocarina-core)
 
-add_dependencies(ocarina-all ocarina-GUI_impl)
+add_dependencies(ocarina-native ocarina-GUI_impl)
 
 add_library(ocarina SHARED main.cpp)
-target_link_libraries(ocarina ocarina-all)
+target_link_libraries(ocarina ocarina-native)
 
 
 option(OCARINA_BUILD_TESTS "Build tests" TRUE)

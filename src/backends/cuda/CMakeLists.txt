@@ -22,7 +22,6 @@ if (CUDAToolkit_FOUND)
                 COMMAND ${CMAKE_COMMAND} -E echo "Current IDE is ${CMAKE_GENERATOR}, current Config is ${CMAKE_CFG_INTDIR}"
                 COMMAND ${CMAKE_COMMAND} -E echo "Copying cuda header files to ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}${CMAKE_CFG_INTDIR}"
                 COMMAND ${CMAKE_COMMAND} -E make_directory ${BUILTIN_DST}
-#                COMMAND ${CMAKE_COMMAND} -E copy_directory ${BUILTIN_SRC} ${BUILTIN_DST}
                 COMMAND python.exe ${BUILTIN_SRC}/copy_cuda_files.py ${BUILTIN_DST}
                 COMMAND ${CMAKE_COMMAND} -E echo "Complete copy!")
     else ()
@@ -31,7 +30,6 @@ if (CUDAToolkit_FOUND)
         add_custom_command(TARGET copy_cuda_headers POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E echo "Copying cuda header files to ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
                 COMMAND ${CMAKE_COMMAND} -E make_directory ${BUILTIN_DST}
-#                COMMAND ${CMAKE_COMMAND} -E copy_directory ${BUILTIN_SRC} ${BUILTIN_DST}
                 COMMAND python.exe ${BUILTIN_SRC}/copy_cuda_files.py ${BUILTIN_DST}
                 COMMAND ${CMAKE_COMMAND} -E echo "Complete copy!"
         )

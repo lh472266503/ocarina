@@ -18,7 +18,6 @@
 namespace py = pybind11;
 using namespace ocarina;
 
-
 void export_device(py::module &m) {
     py::class_<concepts::Noncopyable>(m, "concepts_Noncopyable");
     py::class_<RHIResource>(m, "RHIResource");
@@ -36,13 +35,11 @@ void export_device(py::module &m) {
         return device.create_accel();
     });
 
-
     auto func = [] {
         Env::printer();
         CppCodegen a(false);
     };
     func();
-
 
     m.def("load_lib", [&](const string &p) {
         auto handle = LoadLibraryA(p.c_str());
