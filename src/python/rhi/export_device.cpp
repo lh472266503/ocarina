@@ -33,7 +33,7 @@ void export_device(py::module &m) {
 
     m_device.def("create_accel", [](const Device &device) {
         return device.create_accel();
-    });
+    }, py::return_value_policy::move);
 
     auto func = [] {
         Env::printer();
