@@ -18,7 +18,7 @@ if (CMAKE_GENERATOR MATCHES "Visual Studio")
 #    )
 
     add_custom_target(export_to_python ALL
-            DEPENDS ocarina-native ocapi  # 依赖于所有目标
+            DEPENDS ocarina-native ocapi
             COMMAND ${CMAKE_COMMAND} -E echo "export libraries after all targets are built..."
             COMMAND ${CMAKE_COMMAND} -E echo "start copy"
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
@@ -38,7 +38,7 @@ else ()
 #    )
 
     add_custom_target(export_to_python ALL
-            DEPENDS ocarina-native ocapi  # 依赖于所有目标
+            DEPENDS ocarina-native ocapi
             COMMAND ${CMAKE_COMMAND} -E echo "export libraries after all targets are built..."
             COMMAND ${CMAKE_COMMAND} -E echo "start copy"
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
