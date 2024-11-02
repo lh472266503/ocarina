@@ -64,11 +64,12 @@ auto export_matrix_base(py::module &m) {
     mt.def("__mul__", [](Matrix<N, M> &self, float s) { return self * s; });
     mt.def("__rmul__", [](Matrix<N, M> &self, float s) { return self * s; });
     mt.def("__mul__", [](Matrix<N, M> &self, ocarina::Vector<float, N> v) { return self * v; });
-    mt.def("__mul__", [](Matrix<N, M> &self, ocarina::Matrix<M, N> rhs) { return self * rhs; });
+    if constexpr (N == M) {
+        mt.def("__mul__", [](Matrix<N, M> &self, ocarina::Matrix<M, N> rhs) { return self * rhs; });
+    }
     mt.def("__truediv__", [](Matrix<N, M> &self,  float s) { return self / s; });
     mt.def("__add__", [](Matrix<N, M> &self, ocarina::Matrix<N, M> rhs) { return self + rhs; });
     mt.def("__sub__", [](Matrix<N, M> &self, ocarina::Matrix<N, M> rhs) { return self - rhs; });
-    mt.def("clone", [](const Matrix<N, M> &self) { return Matrix<N, M>{self}; });
 
     auto make_func_name = "make_" + cls_name;
     auto export_constructor = [&]<typename Func>(const Func &func) {
@@ -105,22 +106,34 @@ auto export_matrix_base(py::module &m) {
     return mt;
 }
 
-template<size_t N, size_t M>
-void export_matrix_(py::module &m) {
-    auto mt = export_matrix_base<N, M>(m);
-    export_matrix_func<N, M>(m, mt);
-}
-
 void export_matrix(py::module &m) {
-    export_matrix_<2, 2>(m);
-    export_matrix_<2, 3>(m);
-    export_matrix_<2, 4>(m);
 
-    export_matrix_<3, 2>(m);
-    export_matrix_<3, 3>(m);
-    export_matrix_<3, 4>(m);
+#define OC_EXPORT_MATRIX(N, M)  auto m##N##M = export_matrix_base<N, M>(m);
+    OC_EXPORT_MATRIX(2, 2);
+    OC_EXPORT_MATRIX(2, 3);
+    OC_EXPORT_MATRIX(2, 4);
 
-    export_matrix_<4, 2>(m);
-    export_matrix_<4, 3>(m);
-    export_matrix_<4, 4>(m);
+    OC_EXPORT_MATRIX(3, 2);
+    OC_EXPORT_MATRIX(3, 3);
+    OC_EXPORT_MATRIX(3, 4);
+
+    OC_EXPORT_MATRIX(4, 2);
+    OC_EXPORT_MATRIX(4, 3);
+    OC_EXPORT_MATRIX(4, 4);
+#undef OC_EXPORT_MATRIX
+
+#define OC_EXPORT_MATRIX_FUNC(N, M) export_matrix_func<N, M>(m, m##N##M);
+    OC_EXPORT_MATRIX_FUNC(2, 2);
+    OC_EXPORT_MATRIX_FUNC(2, 3);
+    OC_EXPORT_MATRIX_FUNC(2, 4);
+
+    OC_EXPORT_MATRIX_FUNC(3, 2);
+    OC_EXPORT_MATRIX_FUNC(3, 3);
+    OC_EXPORT_MATRIX_FUNC(3, 4);
+
+    OC_EXPORT_MATRIX_FUNC(4, 2);
+    OC_EXPORT_MATRIX_FUNC(4, 3);
+    OC_EXPORT_MATRIX_FUNC(4, 4);
+#undef OC_EXPORT_MATRIX_FUNC
+
 }
