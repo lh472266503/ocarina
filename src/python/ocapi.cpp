@@ -11,6 +11,7 @@ using namespace ocarina;
 void export_vector2(py::module &m);
 void export_vector3(py::module &m);
 void export_vector4(py::module &m);
+void export_vector(py::module &m);
 void export_matrix(py::module &m);
 void export_device(py::module &m);
 
@@ -36,5 +37,6 @@ PYBIND11_MODULE(ocapi, m) {
     export_scalar_cast(m);
     export_matrix(m);
 
+    export_type(m);
     export_device(m);
 }

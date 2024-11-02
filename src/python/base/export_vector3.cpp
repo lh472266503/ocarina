@@ -31,9 +31,8 @@ using namespace ocarina;
     OC_EXPORT_MAKE_VECTOR3(T)
 
 void export_vector3(py::module &m) {
-
+    OC_EXPORT_VECTOR3(bool);
     OC_EXPORT_VECTOR3(float)
     OC_EXPORT_VECTOR3(uint);
     OC_EXPORT_VECTOR3(int);
-    OC_EXPORT_VECTOR3(bool);
 }
