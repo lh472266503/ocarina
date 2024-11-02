@@ -163,11 +163,11 @@ template<size_t N, size_t M>
     }(std::make_index_sequence<N>());
 }
 
-template<size_t N, size_t M>
-[[nodiscard]] constexpr auto operator*(ocarina::Matrix<N, M> lhs, ocarina::Matrix<M, N> rhs) noexcept {
+template<size_t N, size_t M, size_t Dim>
+[[nodiscard]] constexpr auto operator*(ocarina::Matrix<N, M> lhs, ocarina::Matrix<Dim, N> rhs) noexcept {
     return [&]<size_t... i>(std::index_sequence<i...>) {
-        return ocarina::Matrix<M, M>(lhs * rhs[i]...);
-    }(std::make_index_sequence<M>());
+        return ocarina::Matrix<Dim, M>(lhs * rhs[i]...);
+    }(std::make_index_sequence<Dim>());
 }
 
 template<size_t N, size_t M>

@@ -496,16 +496,16 @@ template<size_t N, size_t M>
 }
 
 namespace ocarina {
-template<size_t N, size_t M, size_t... i>
-__device__ constexpr auto multiply_matrices_impl(const ocarina::Matrix<N, M> &lhs, const ocarina::Matrix<M, N> &rhs,
+template<size_t N, size_t M, size_t Dim, size_t... i>
+__device__ constexpr auto multiply_matrices_impl(const ocarina::Matrix<N, M> &lhs, const ocarina::Matrix<Dim, N> &rhs,
                                                  ocarina::index_sequence<i...>) noexcept {
-    return ocarina::Matrix<M, M>{(lhs * rhs[i])...};
+    return ocarina::Matrix<Dim, M>{(lhs * rhs[i])...};
 }
 }// namespace ocarina
 
-template<size_t N, size_t M>
-[[nodiscard]] __device__ constexpr auto operator*(ocarina::Matrix<N, M> lhs, ocarina::Matrix<M, N> rhs) noexcept {
-    return ocarina::multiply_matrices_impl(lhs, rhs, ocarina::make_index_sequence<M>());
+template<size_t N, size_t M, size_t Dim>
+[[nodiscard]] __device__ constexpr auto operator*(ocarina::Matrix<N, M> lhs, ocarina::Matrix<Dim, N> rhs) noexcept {
+    return ocarina::multiply_matrices_impl(lhs, rhs, ocarina::make_index_sequence<Dim>());
 }
 
 namespace ocarina {
