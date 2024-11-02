@@ -51,7 +51,6 @@ void export_matrix_func(py::module &m, Module &mt) {
     OC_EXPORT_MATRIX_FUNC(fract)
 
 #undef OC_EXPORT_MATRIX_FUNC
-
 }
 
 template<size_t N, size_t M>
@@ -64,10 +63,12 @@ auto export_matrix_base(py::module &m) {
     mt.def("__mul__", [](Matrix<N, M> &self, float s) { return self * s; });
     mt.def("__rmul__", [](Matrix<N, M> &self, float s) { return self * s; });
     mt.def("__mul__", [](Matrix<N, M> &self, ocarina::Vector<float, N> v) { return self * v; });
-    if constexpr (N == M) {
-        mt.def("__mul__", [](Matrix<N, M> &self, ocarina::Matrix<M, N> rhs) { return self * rhs; });
-    }
-    mt.def("__truediv__", [](Matrix<N, M> &self,  float s) { return self / s; });
+
+    mt.def("__mul__", [](Matrix<N, M> &self, ocarina::Matrix<2, N> rhs) { return self * rhs; });
+    mt.def("__mul__", [](Matrix<N, M> &self, ocarina::Matrix<3, N> rhs) { return self * rhs; });
+    mt.def("__mul__", [](Matrix<N, M> &self, ocarina::Matrix<4, N> rhs) { return self * rhs; });
+
+    mt.def("__truediv__", [](Matrix<N, M> &self, float s) { return self / s; });
     mt.def("__add__", [](Matrix<N, M> &self, ocarina::Matrix<N, M> rhs) { return self + rhs; });
     mt.def("__sub__", [](Matrix<N, M> &self, ocarina::Matrix<N, M> rhs) { return self - rhs; });
 
@@ -102,13 +103,13 @@ auto export_matrix_base(py::module &m) {
     mt.def("__repr__", [](Matrix<N, M> &self) {
         return to_str(self);
     });
-    
+
     return mt;
 }
 
 void export_matrix(py::module &m) {
 
-#define OC_EXPORT_MATRIX(N, M)  auto m##N##M = export_matrix_base<N, M>(m);
+#define OC_EXPORT_MATRIX(N, M) auto m##N##M = export_matrix_base<N, M>(m);
     OC_EXPORT_MATRIX(2, 2);
     OC_EXPORT_MATRIX(2, 3);
     OC_EXPORT_MATRIX(2, 4);
@@ -135,5 +136,4 @@ void export_matrix(py::module &m) {
     OC_EXPORT_MATRIX_FUNC(4, 3);
     OC_EXPORT_MATRIX_FUNC(4, 4);
 #undef OC_EXPORT_MATRIX_FUNC
-
 }
