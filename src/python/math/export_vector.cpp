@@ -8,7 +8,6 @@
 #include "swizzle_inl/swizzle4.inl.h"
 #include "rhi/resources/buffer.h"
 
-
 namespace py = pybind11;
 using namespace ocarina;
 

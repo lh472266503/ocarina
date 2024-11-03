@@ -35,5 +35,4 @@ void export_device(PythonExporter &exporter) {
         CppCodegen a(false);
     };
     func();
-
 }

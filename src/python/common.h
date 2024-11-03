@@ -9,12 +9,11 @@
 #include "ast/type_desc.h"
 #include "rhi/resources/buffer.h"
 
-
 namespace py = pybind11;
 using namespace ocarina;
 
 template<typename T, typename... Base>
-requires (is_basic_v<T> || is_struct_v<T>)
+requires(is_basic_v<T> || is_struct_v<T>)
 auto export_pod_type(PythonExporter &exporter, const char *name) {
     auto &m = exporter.module;
     auto mt = py::class_<T, Base...>(m, name);
