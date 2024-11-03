@@ -17,13 +17,20 @@ namespace py = pybind11;
 using namespace ocarina;
 
 template<typename T, typename... Base>
+requires (is_basic_v<T> || is_struct_v<T>)
 auto export_type(py::module &m, const char *name) {
     auto mt = py::class_<T, Base...>(m, name);
-    mt.def_property_readonly("desc_", [](const T &self) {
+    mt.def_static("desc", []() {
         return TypeDesc<T>::description();
     });
     mt.def("clone", [](const T &self) {
         return T{self};
+    });
+    mt.def_static("sizeof", []() {
+        return sizeof(T);
+    });
+    mt.def_static("alignof", []() {
+        return alignof(T);
     });
     mt.def(py::init<>());
     return mt;
