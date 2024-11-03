@@ -4,8 +4,7 @@
 
 #pragma once
 
-#include "ext/pybind11/include/pybind11/pybind11.h"
-#include "ext/pybind11/include/pybind11/stl.h"
+#include "python/exporter.h"
 #include "ext/pybind11/include/pybind11/operators.h"
 #include "ast/type_desc.h"
 #include "rhi/resources/buffer.h"

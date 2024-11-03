@@ -2,8 +2,7 @@
 // Created by ling.zhu on 2024/10/31.
 //
 
-#include "ext/pybind11/include/pybind11/pybind11.h"
-#include "ext/pybind11/include/pybind11/stl.h"
+#include "python/exporter.h"
 #include "math/basic_types.h"
 #include "rhi/common.h"
 #include "dsl/dsl.h"

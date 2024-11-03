@@ -2,8 +2,7 @@
 // Created by Zero on 2024/11/3.
 //
 
-#include "ext/pybind11/include/pybind11/pybind11.h"
-#include "ext/pybind11/include/pybind11/stl.h"
+#include "python/exporter.h"
 #include "math/basic_types.h"
 
 namespace py = pybind11;
