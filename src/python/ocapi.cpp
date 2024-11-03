@@ -2,7 +2,9 @@
 // Created by ling.zhu on 2024/10/28.
 //
 
-#include "math/export_vector_func.h"
+#include "ext/pybind11/include/pybind11/pybind11.h"
+#include "ext/pybind11/include/pybind11/stl.h"
+#include "core/stl.h"
 
 namespace py = pybind11;
 using namespace ocarina;

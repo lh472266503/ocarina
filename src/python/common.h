@@ -7,14 +7,14 @@
 #include "ext/pybind11/include/pybind11/pybind11.h"
 #include "ext/pybind11/include/pybind11/stl.h"
 #include "ext/pybind11/include/pybind11/operators.h"
-#include "ast/type_registry.h"
+#include "ast/type_desc.h"
 
 
 namespace py = pybind11;
 using namespace ocarina;
 
 template<typename T, typename... Base>
-requires (is_basic_v<T> || is_struct_v<T>)
+//requires (is_basic_v<T> || is_struct_v<T>)
 auto export_pod_type(py::module &m, const char *name) {
     auto mt = py::class_<T, Base...>(m, name);
     mt.def_static("desc", []() {

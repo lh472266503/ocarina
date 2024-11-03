@@ -4,8 +4,9 @@
 
 #include "ext/pybind11/include/pybind11/pybind11.h"
 #include "ext/pybind11/include/pybind11/stl.h"
-#include "ast/type_registry.h"
+#include "rhi/resources/buffer.h"
 #include "math/base.h"
+#include "ast/type_desc.h"
 
 namespace py = pybind11;
 using namespace ocarina;

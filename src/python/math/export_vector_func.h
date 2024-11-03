@@ -5,6 +5,7 @@
 #pragma once
 
 #include "python/common.h"
+#include "rhi/resources/buffer.h"
 
 namespace py = pybind11;
 using namespace ocarina;
