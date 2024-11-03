@@ -2,7 +2,13 @@
 // Created by Zero on 2024/11/3.
 //
 
-#include "export_vector_func.h"
+#include "ext/pybind11/include/pybind11/pybind11.h"
+#include "ext/pybind11/include/pybind11/stl.h"
+#include "ast/type_registry.h"
+#include "math/base.h"
+
+namespace py = pybind11;
+using namespace ocarina;
 
 void export_vector(py::module &m);
 void export_matrix(py::module &m);
@@ -18,6 +24,7 @@ void export_scalar_cast(py::module &m) {
         });
     });
 }
+
 void export_math(py::module &m) {
     export_vector(m);
     export_scalar_cast(m);
