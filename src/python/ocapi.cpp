@@ -34,11 +34,12 @@ void export_ast(py::module &m) {
     export_type(m);
 }
 
-void export_base_type(py::module &m);
+void export_resource(py::module &m);
 
 void export_device(py::module &m);
 
 void export_rhi(py::module &m) {
+    export_resource(m);
     export_device(m);
 }
 

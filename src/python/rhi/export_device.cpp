@@ -18,8 +18,11 @@
 namespace py = pybind11;
 using namespace ocarina;
 
-void export_device(py::module &m) {
+void export_resource(py::module &m) {
     py::class_<RHIResource>(m, "RHIResource");
+}
+
+void export_device(py::module &m) {
 
     auto m_accel = py::class_<Accel, RHIResource>(m, "Accel");
 
@@ -30,9 +33,7 @@ void export_device(py::module &m) {
         return FileManager::instance().create_device(name);
     });
 
-    m_device.def("create_accel", [](const Device &device) {
-        return device.create_accel();
-    }, py::return_value_policy::move);
+    m_device.def("create_accel", [](const Device &device) { return device.create_accel(); }, py::return_value_policy::move);
 
     auto func = [] {
         Env::printer();
@@ -40,14 +41,4 @@ void export_device(py::module &m) {
     };
     func();
 
-    m.def("load_lib", [&](const string &p) {
-        auto handle = LoadLibraryA(p.c_str());
-        if (handle) {
-            OC_INFO(p, " is success")
-        } else {
-            DWORD error = GetLastError();
-            std::cerr << "Failed to load DLL. Error: " << error << std::endl;
-            OC_WARNING(p, " is fail!")
-        }
-    });
 }
