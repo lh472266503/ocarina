@@ -4,12 +4,8 @@
 
 #include "ext/pybind11/include/pybind11/pybind11.h"
 #include "ext/pybind11/include/pybind11/stl.h"
-#include "ext/pybind11/include/pybind11/operators.h"
-#include "core/stl.h"
 #include "math/basic_types.h"
-#include "math/base.h"
 #include "rhi/device.h"
-#include "python/common.h"
 #include "rhi/common.h"
 #include "dsl/dsl.h"
 #include "util/file_manager.h"
@@ -36,7 +32,7 @@ void export_device(py::module &m) {
     m_device.def("create_accel", [](const Device &device) { return device.create_accel(); }, py::return_value_policy::move);
 
     auto func = [] {
-        Env::printer();
+        auto &_ = Env::printer();
         CppCodegen a(false);
     };
     func();
