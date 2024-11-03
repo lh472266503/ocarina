@@ -13,13 +13,14 @@ namespace py = pybind11;
 using namespace ocarina;
 
 template<typename T, size_t N>
-auto export_vector_type(py::module &m) {
+auto export_vector_type(PythonExporter &exporter) {
+    auto &m = exporter.module;
     using vector_type = Vector<T, N>;
     static string type_str = string(TypeDesc<vector_type>::name());
     static string base_type_str = "_VectorStorage" + type_str;
     static string make_str = "make_" + type_str;
     auto _ = py::class_<ocarina::detail::VectorStorage<T, N>>(m, base_type_str.c_str());
-    auto ret = export_pod_type<vector_type, ocarina::detail::VectorStorage<T, N>>(m, type_str.c_str())
+    auto ret = export_pod_type<vector_type, ocarina::detail::VectorStorage<T, N>>(exporter, type_str.c_str())
                    .def(py::init<>())
                    .def(py::init<T>())
                    .def("__repr__", [](const vector_type &self) { return to_str(self); })
@@ -57,8 +58,9 @@ auto export_vector_type(py::module &m) {
     return ret;
 }
 
-void export_vector(py::module &m) {
-#define OC_EXPORT_VECTOR(T, N) auto m##T##N = export_vector_type<T, N>(m);
+void export_vector(PythonExporter &exporter) {
+    auto &m = exporter.module;
+#define OC_EXPORT_VECTOR(T, N) auto m##T##N = export_vector_type<T, N>(exporter);
     OC_EXPORT_VECTOR(bool, 2)
     OC_EXPORT_VECTOR(bool, 3)
     OC_EXPORT_VECTOR(bool, 4)
@@ -79,7 +81,7 @@ void export_vector(py::module &m) {
 
 #define OC_EXPORT_VECTOR_FUNC(T, N) \
     export_swizzle##N<T>(m##T##N);  \
-    export_vector_func<T, N>(m##T##N, m);
+    export_vector_func<T, N>(m##T##N, exporter);
 
     OC_EXPORT_VECTOR_FUNC(bool, 2)
     OC_EXPORT_VECTOR_FUNC(bool, 3)

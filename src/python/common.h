@@ -15,7 +15,8 @@ using namespace ocarina;
 
 template<typename T, typename... Base>
 requires (is_basic_v<T> || is_struct_v<T>)
-auto export_pod_type(py::module &m, const char *name) {
+auto export_pod_type(PythonExporter &exporter, const char *name) {
+    auto &m = exporter.module;
     auto mt = py::class_<T, Base...>(m, name);
     mt.def_static("desc", []() {
         return TypeDesc<T>::description();

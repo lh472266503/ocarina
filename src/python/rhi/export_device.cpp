@@ -12,12 +12,13 @@
 namespace py = pybind11;
 using namespace ocarina;
 
-void export_resource(py::module &m) {
+void export_resource(PythonExporter &exporter) {
+    auto &m = exporter.module;
     py::class_<RHIResource>(m, "RHIResource");
 }
 
-void export_device(py::module &m) {
-
+void export_device(PythonExporter &exporter) {
+    auto &m = exporter.module;
     auto m_accel = py::class_<Accel, RHIResource>(m, "Accel");
 
     auto m_device = py::class_<Device, concepts::Noncopyable>(m, "Device");

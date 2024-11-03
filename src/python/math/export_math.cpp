@@ -2,8 +2,7 @@
 // Created by Zero on 2024/11/3.
 //
 
-#include "ext/pybind11/include/pybind11/pybind11.h"
-#include "ext/pybind11/include/pybind11/stl.h"
+#include "python/exporter.h"
 #include "rhi/resources/buffer.h"
 #include "math/base.h"
 #include "ast/type_desc.h"
@@ -11,9 +10,10 @@
 namespace py = pybind11;
 using namespace ocarina;
 
-void export_vector(py::module &m);
-void export_matrix(py::module &m);
-void export_scalar_cast(py::module &m) {
+void export_vector(PythonExporter &exporter);
+void export_matrix(PythonExporter &exporter);
+void export_scalar_cast(PythonExporter &exporter) {
+    auto &m = exporter.module;
     using Tuple = std::tuple<uint, int, float>;
     traverse_tuple(Tuple{}, [&]<typename Src>(const Src &_, uint index) {
         traverse_tuple(Tuple{}, [&]<typename Dst>(const Dst &_, uint index) {
@@ -26,8 +26,8 @@ void export_scalar_cast(py::module &m) {
     });
 }
 
-void export_math(py::module &m) {
-    export_vector(m);
-    export_scalar_cast(m);
-    export_matrix(m);
+void export_math(PythonExporter &exporter) {
+    export_vector(exporter);
+    export_scalar_cast(exporter);
+    export_matrix(exporter);
 }

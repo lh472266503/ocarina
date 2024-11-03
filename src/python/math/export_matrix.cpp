@@ -10,7 +10,8 @@ namespace py = pybind11;
 using namespace ocarina;
 
 template<size_t N, size_t M, typename Module>
-void export_matrix_func(py::module &m, Module &mt) {
+void export_matrix_func(PythonExporter &exporter, Module &mt) {
+    auto &m = exporter.module;
 #define OC_EXPORT_MATRIX_FUNC(func) \
     m.def(#func, [&](Matrix<N, M> mat) { return ocarina::func(mat); });
 
@@ -55,9 +56,10 @@ void export_matrix_func(py::module &m, Module &mt) {
 }
 
 template<size_t N, size_t M>
-auto export_matrix_base(py::module &m) {
+auto export_matrix_base(PythonExporter &exporter) {
+    auto &m = exporter.module;
     string cls_name = ocarina::format("float{}x{}", N, M);
-    auto mt = export_pod_type<Matrix<N, M>>(m, cls_name.c_str());
+    auto mt = export_pod_type<Matrix<N, M>>(exporter, cls_name.c_str());
     mt.def("__getitem__", [](Matrix<N, M> &self, size_t i) { return &self[i]; }, py::return_value_policy::reference_internal);
     mt.def("__setitem__", [](Matrix<N, M> &self, size_t i, Vector<float, M> k) { self[i] = k; });
     mt.def("__neg__", [](Matrix<N, M> &self) { return -self; });
@@ -108,9 +110,9 @@ auto export_matrix_base(py::module &m) {
     return mt;
 }
 
-void export_matrix(py::module &m) {
-
-#define OC_EXPORT_MATRIX(N, M) auto m##N##M = export_matrix_base<N, M>(m);
+void export_matrix(PythonExporter &exporter) {
+    auto &m = exporter.module;
+#define OC_EXPORT_MATRIX(N, M) auto m##N##M = export_matrix_base<N, M>(exporter);
     OC_EXPORT_MATRIX(2, 2);
     OC_EXPORT_MATRIX(2, 3);
     OC_EXPORT_MATRIX(2, 4);
@@ -124,7 +126,7 @@ void export_matrix(py::module &m) {
     OC_EXPORT_MATRIX(4, 4);
 #undef OC_EXPORT_MATRIX
 
-#define OC_EXPORT_MATRIX_FUNC(N, M) export_matrix_func<N, M>(m, m##N##M);
+#define OC_EXPORT_MATRIX_FUNC(N, M) export_matrix_func<N, M>(exporter, m##N##M);
     OC_EXPORT_MATRIX_FUNC(2, 2);
     OC_EXPORT_MATRIX_FUNC(2, 3);
     OC_EXPORT_MATRIX_FUNC(2, 4);
