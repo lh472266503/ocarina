@@ -12,6 +12,19 @@
 namespace py = pybind11;
 using namespace ocarina;
 
+template<typename T>
+void export_buffer(PythonExporter &exporter) {
+    string buffer_name = ocarina::format("buffer_{}", string(TypeDesc<T>::name()));
+    auto m_buffer = py::class_<Buffer<T>, RHIResource>(exporter.module, buffer_name.c_str());
+    m_buffer.def("size", [](const Buffer<T> &self) {
+        return self.size();
+    });
+
+    exporter.m_device->def(("create_" + buffer_name).c_str(), [](const Device &self, uint size) {
+        return self.create_buffer<T>(size);
+    }, py::return_value_policy::move);
+}
+
 template<typename T, typename... Base>
 requires(is_basic_v<T> || is_struct_v<T>)
 auto export_pod_type(PythonExporter &exporter, const char *name) {
@@ -30,5 +43,6 @@ auto export_pod_type(PythonExporter &exporter, const char *name) {
         return alignof(T);
     });
     mt.def(py::init<>());
+    export_buffer<T>(exporter);
     return mt;
 }

@@ -14,5 +14,6 @@ using namespace ocarina;
 
 struct PythonExporter {
     py::module module;
+    UP<py::class_<Device, concepts::Noncopyable>> m_device;
 };
 

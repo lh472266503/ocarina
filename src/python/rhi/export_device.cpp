@@ -35,4 +35,5 @@ void export_device(PythonExporter &exporter) {
         CppCodegen a(false);
     };
     func();
+    exporter.m_device = std::make_unique<py::class_<Device, concepts::Noncopyable>>(m_device);
 }
