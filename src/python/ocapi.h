@@ -17,3 +17,12 @@ struct PythonExporter {
     UP<py::class_<Device, concepts::Noncopyable>> m_device;
 };
 
+struct Context {
+    [[nodiscard]] static Context &instance() noexcept;
+    Context() {
+        OC_INFO("ocapi load!");
+    }
+    ~Context() {
+        OC_INFO("ocapi unload!");
+    }
+};

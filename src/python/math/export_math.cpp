@@ -2,7 +2,7 @@
 // Created by Zero on 2024/11/3.
 //
 
-#include "python/exporter.h"
+#include "python/ocapi.h"
 #include "python/common.h"
 #include "rhi/resources/buffer.h"
 #include "math/base.h"
@@ -29,6 +29,7 @@ void export_scalar_op(PythonExporter &exporter) {
 }
 
 void export_math(PythonExporter &exporter) {
+    Context::instance();
     export_vector(exporter);
     export_scalar_op(exporter);
     export_matrix(exporter);
