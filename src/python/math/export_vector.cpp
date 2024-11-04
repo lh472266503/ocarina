@@ -3,9 +3,9 @@
 //
 
 #include "export_vector_func.h"
-#include "swizzle_inl/swizzle2.inl.h"
-#include "swizzle_inl/swizzle3.inl.h"
-#include "swizzle_inl/swizzle4.inl.h"
+#include "swizzle_inl/export_swizzle2.inl.h"
+#include "swizzle_inl/export_swizzle3.inl.h"
+#include "swizzle_inl/export_swizzle4.inl.h"
 #include "rhi/resources/buffer.h"
 
 namespace py = pybind11;
