@@ -3,6 +3,7 @@
 //
 
 #include "python/exporter.h"
+#include "python/common.h"
 #include "rhi/resources/buffer.h"
 #include "math/base.h"
 #include "ast/type_desc.h"
@@ -12,7 +13,7 @@ using namespace ocarina;
 
 void export_vector(PythonExporter &exporter);
 void export_matrix(PythonExporter &exporter);
-void export_scalar_cast(PythonExporter &exporter) {
+void export_scalar_op(PythonExporter &exporter) {
     auto &m = exporter.module;
     using Tuple = std::tuple<uint, int, float>;
     traverse_tuple(Tuple{}, [&]<typename Src>(const Src &_, uint index) {
@@ -23,11 +24,12 @@ void export_scalar_cast(PythonExporter &exporter) {
             string func_name = ocarina::format("as_{}", TypeDesc<Dst>::name());
             m.def(func_name.c_str(), [&](const Src &src) { return ocarina::bit_cast<Dst>(src); });
         });
+        export_buffer<Src>(exporter);
     });
 }
 
 void export_math(PythonExporter &exporter) {
     export_vector(exporter);
-    export_scalar_cast(exporter);
+    export_scalar_op(exporter);
     export_matrix(exporter);
 }
