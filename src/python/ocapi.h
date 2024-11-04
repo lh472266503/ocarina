@@ -7,7 +7,7 @@
 #include "ext/pybind11/include/pybind11/pybind11.h"
 #include "ext/pybind11/include/pybind11/stl.h"
 #include "core/stl.h"
-#include "rhi/device.h"
+#include "rhi/common.h"
 
 namespace py = pybind11;
 using namespace ocarina;
@@ -18,6 +18,8 @@ struct PythonExporter {
 };
 
 struct Context {
+    UP<Device> device;
+    UP<Stream> stream;
     [[nodiscard]] static Context &instance() noexcept;
     Context() {
         OC_INFO("ocapi load!");

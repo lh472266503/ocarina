@@ -14,6 +14,7 @@ Context &Context::instance() noexcept {
 }
 
 PYBIND11_MODULE(ocapi, m) {
+    auto &context = Context::instance();
     PythonExporter python_exporter;
     python_exporter.module = m;
     export_ast(python_exporter);

@@ -29,7 +29,6 @@ void export_scalar_op(PythonExporter &exporter) {
 }
 
 void export_math(PythonExporter &exporter) {
-    Context::instance();
     export_vector(exporter);
     export_scalar_op(exporter);
     export_matrix(exporter);
