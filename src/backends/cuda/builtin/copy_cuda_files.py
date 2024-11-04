@@ -39,7 +39,6 @@ args = sys.argv
 
 dst = ""
 
-# 第一个参数是脚本名称，后面的参数是传入的参数
 if len(args) > 1:
     dst = args[1]
 else:
@@ -53,8 +52,4 @@ def get_module_path():
 src = get_module_path()
 os.chdir(src)
 
-
-# dst = os.path.join(os.getcwd(), "src\\python\\vision")
-# print(src)
-# print(dst)
 copy_files(src, dst)
