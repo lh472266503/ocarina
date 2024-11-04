@@ -19,6 +19,10 @@ void export_init(PythonExporter &exporter) noexcept {
         DynamicModule::add_search_path(path);
         Context::instance().device = std::make_unique<Device>(FileManager::instance().create_device(name));
     });
+
+    exporter.module.def("device", []() {
+        return Context::instance().device.get();
+    });
 }
 
 void export_rhi(PythonExporter &exporter) {
