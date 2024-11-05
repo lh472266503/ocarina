@@ -8,6 +8,7 @@
 #include "ext/pybind11/include/pybind11/operators.h"
 #include "ast/type_desc.h"
 #include "rhi/common.h"
+#include "numpy.h"
 
 namespace py = pybind11;
 using namespace ocarina;
@@ -19,7 +20,7 @@ void export_buffer(PythonExporter &exporter) {
     m_buffer.def_static("create", [](uint size) { return Context::instance().device->create_buffer<T>(size); }, ret_policy::move);
     m_buffer.def("size", [](const Buffer<T> &self) { return self.size(); });
     m_buffer.def("upload", [](const Buffer<T> &self, const vector<T> &lst) { self.upload_immediately(lst.data()); });
-    m_buffer.def("download", [](const Buffer<T> &self, vector<T> &lst) { self.download_immediately(lst.data()); });
+    m_buffer.def("download", [](const Buffer<T> &self, py::buffer &lst) { self.download_immediately(lst.request().ptr); });
 }
 
 template<typename T, typename... Base>
