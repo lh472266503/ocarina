@@ -29,7 +29,7 @@ void export_device(PythonExporter &exporter) {
     auto &m = exporter.module;
     auto m_device = py::class_<Device, concepts::Noncopyable>(m, "Device");
 
-    m_device.def("create_accel", [](const Device &device) { return device.create_accel(); }, py::return_value_policy::move);
+    m_device.def("create_accel", [](const Device &device) { return device.create_accel(); }, ret_policy::move);
 
     auto func = [] {
         auto &_ = Env::printer();

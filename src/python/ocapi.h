@@ -17,6 +17,8 @@ struct PythonExporter {
     UP<py::class_<Device, concepts::Noncopyable>> m_device;
 };
 
+using ret_policy = py::return_value_policy;
+
 struct Context {
     UP<Device> device;
     UP<Stream> stream;
