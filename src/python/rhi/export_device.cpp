@@ -17,16 +17,17 @@ void export_resource(PythonExporter &exporter) {
     py::class_<RHIResource>(m, "RHIResource");
 }
 
+void export_mesh(PythonExporter &exporter) {
+    auto m_mesh = py::class_<RHIMesh, RHIResource>(exporter.module, "RHIMesh");
+}
+
+void export_accel(PythonExporter &exporter) {
+    auto m_accel = py::class_<Accel, RHIResource>(exporter.module, "Accel");
+}
+
 void export_device(PythonExporter &exporter) {
     auto &m = exporter.module;
-    auto m_accel = py::class_<Accel, RHIResource>(m, "Accel");
-
     auto m_device = py::class_<Device, concepts::Noncopyable>(m, "Device");
-
-    m_device.def_static("create", [](const string &name, const string &path) {
-        DynamicModule::add_search_path(path);
-        return FileManager::instance().create_device(name);
-    });
 
     m_device.def("create_accel", [](const Device &device) { return device.create_accel(); }, py::return_value_policy::move);
 
@@ -36,4 +37,7 @@ void export_device(PythonExporter &exporter) {
     };
     func();
     exporter.m_device = std::make_unique<py::class_<Device, concepts::Noncopyable>>(m_device);
+
+    export_mesh(exporter);
+    export_accel(exporter);
 }
