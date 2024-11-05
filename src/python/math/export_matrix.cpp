@@ -5,7 +5,6 @@
 #include "export_vector_func.h"
 #include "math/base.h"
 
-
 namespace py = pybind11;
 using namespace ocarina;
 
@@ -62,18 +61,18 @@ auto export_matrix_base(PythonExporter &exporter) {
     auto mt = export_pod_type<Matrix<N, M>>(exporter, cls_name.c_str());
     mt.def("__getitem__", [](Matrix<N, M> &self, size_t i) { return &self[i]; }, py::return_value_policy::reference_internal);
     mt.def("__setitem__", [](Matrix<N, M> &self, size_t i, Vector<float, M> k) { self[i] = k; });
-    mt.def("__neg__", [](Matrix<N, M> &self) { return -self; });
-    mt.def("__mul__", [](Matrix<N, M> &self, float s) { return self * s; });
-    mt.def("__rmul__", [](Matrix<N, M> &self, float s) { return self * s; });
-    mt.def("__mul__", [](Matrix<N, M> &self, ocarina::Vector<float, N> v) { return self * v; });
+    mt.def("__neg__", [](Matrix<N, M> &self) { return -self; }, py::is_operator());
+    mt.def("__mul__", [](Matrix<N, M> &self, float s) { return self * s; }, py::is_operator());
+    mt.def("__rmul__", [](Matrix<N, M> &self, float s) { return self * s; }, py::is_operator());
+    mt.def("__mul__", [](Matrix<N, M> &self, ocarina::Vector<float, N> v) { return self * v; }, py::is_operator());
 
-    mt.def("__mul__", [](Matrix<N, M> &self, ocarina::Matrix<2, N> rhs) { return self * rhs; });
-    mt.def("__mul__", [](Matrix<N, M> &self, ocarina::Matrix<3, N> rhs) { return self * rhs; });
-    mt.def("__mul__", [](Matrix<N, M> &self, ocarina::Matrix<4, N> rhs) { return self * rhs; });
+    mt.def("__mul__", [](Matrix<N, M> &self, ocarina::Matrix<2, N> rhs) { return self * rhs; }, py::is_operator());
+    mt.def("__mul__", [](Matrix<N, M> &self, ocarina::Matrix<3, N> rhs) { return self * rhs; }, py::is_operator());
+    mt.def("__mul__", [](Matrix<N, M> &self, ocarina::Matrix<4, N> rhs) { return self * rhs; }, py::is_operator());
 
-    mt.def("__truediv__", [](Matrix<N, M> &self, float s) { return self / s; });
-    mt.def("__add__", [](Matrix<N, M> &self, ocarina::Matrix<N, M> rhs) { return self + rhs; });
-    mt.def("__sub__", [](Matrix<N, M> &self, ocarina::Matrix<N, M> rhs) { return self - rhs; });
+    mt.def("__truediv__", [](Matrix<N, M> &self, float s) { return self / s; }, py::is_operator());
+    mt.def("__add__", [](Matrix<N, M> &self, ocarina::Matrix<N, M> rhs) { return self + rhs; }, py::is_operator());
+    mt.def("__sub__", [](Matrix<N, M> &self, ocarina::Matrix<N, M> rhs) { return self - rhs; }, py::is_operator());
 
     auto make_func_name = "make_" + cls_name;
     auto export_constructor = [&]<typename Func>(const Func &func) {
