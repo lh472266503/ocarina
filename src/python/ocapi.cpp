@@ -20,4 +20,5 @@ PYBIND11_MODULE(ocapi, m) {
     export_ast(python_exporter);
     export_rhi(python_exporter);
     export_math(python_exporter);
+    export_struct<TriangleHit>(python_exporter);
 }

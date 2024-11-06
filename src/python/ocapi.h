@@ -34,16 +34,6 @@ struct Context {
     }
 };
 
-template<typename T>
-void export_buffer(PythonExporter &exporter) {
-    string buffer_name = ocarina::format("Buffer{}", string(TypeDesc<T>::name()));
-    auto m_buffer = py::class_<Buffer<T>, RHIResource>(exporter.module, buffer_name.c_str());
-    m_buffer.def_static("create", [](uint size) { return Context::instance().device->create_buffer<T>(size); }, ret_policy::move);
-    m_buffer.def("size", [](const Buffer<T> &self) { return self.size(); });
-    m_buffer.def("upload", [](const Buffer<T> &self, const vector<T> &lst) { self.upload_immediately(lst.data()); });
-    m_buffer.def("download", [](const Buffer<T> &self, py::buffer &lst) { self.download_immediately(lst.request().ptr); });
-}
-
 namespace ocarina::python {
 template<typename T>
 class Array : public vector<T> {
@@ -54,48 +44,50 @@ public:
 }// namespace ocarina::python
 
 template<typename T>
-void export_array(PythonExporter &exporter) {
-    static string class_name = ocarina::format("Array{}", string(TypeDesc<T>::name()));
-    auto mt = py::class_<python::Array<T>>(exporter.module, class_name.c_str());
+void export_array(PythonExporter &exporter, const char *name = nullptr) {
+    using array_t = python::Array<T>;
+    name = name ? name : TypeDesc<T>::name().data();
+    static string class_name = ocarina::format("Array{}", name);
+    auto mt = py::class_<array_t>(exporter.module, class_name.c_str());
     mt.def(py::init<>());
-    mt.def("push_back", [](python::Array<T> &self, const T &t) {
-        self.push_back(t);
-    });
-    mt.def("pop_back", [](python::Array<T> &self) {
-        self.pop_back();
-    });
-    mt.def("size", [](python::Array<T> &self) {
-        return self.size();
-    });
-    mt.def("__getitem__", [](python::Array<T> &self, size_t i) {
-        return self[i];
-    });
-    mt.def("__setitem__", [](python::Array<T> &self, size_t i, const T &t) {
-        self[i] = t;
-    });
-    mt.def("resize", [](python::Array<T> &self, const uint &t) {
-        self.resize(t);
-    });
-    mt.def("__repr__",[&](python::Array<T> &self) {
+    mt.def("push_back", [](array_t &self, const T &t) { self.push_back(t); });
+    mt.def("pop_back", [](array_t &self) { self.pop_back(); });
+    mt.def("size", [](array_t &self) { return self.size(); });
+    mt.def("__getitem__", [](array_t &self, size_t i) { return self[i]; });
+    mt.def("__setitem__", [](array_t &self, size_t i, const T &t) { self[i] = t; });
+    mt.def("resize", [](array_t &self, const uint &t) { self.resize(t); });
+    mt.def("clear", [](array_t &self) { self.clear(); });
+    mt.def("__repr__", [&](array_t &self) {
         string ret = class_name + "[";
         for (int i = 0; i < self.size(); ++i) {
             ret += to_str(self[i]) + ",";
         }
-        ret.pop_back();
-        return ret;
+        return ret + "]";
     });
 }
 
 template<typename T>
-void export_container(PythonExporter &exporter) {
-    export_buffer<T>(exporter);
-    export_array<T>(exporter);
+void export_buffer(PythonExporter &exporter, const char *name = nullptr) {
+    name = name ? name : TypeDesc<T>::name().data();
+    string buffer_name = ocarina::format("Buffer{}", name);
+    auto m_buffer = py::class_<Buffer<T>, RHIResource>(exporter.module, buffer_name.c_str());
+    m_buffer.def_static("create", [](uint size) { return Context::instance().device->create_buffer<T>(size); }, ret_policy::move);
+    m_buffer.def("size", [](const Buffer<T> &self) { return self.size(); });
+    m_buffer.def("upload", [](const Buffer<T> &self, const vector<T> &lst) { self.upload_immediately(lst.data()); });
+    m_buffer.def("download", [](const Buffer<T> &self, py::buffer &lst) { self.download_immediately(lst.request().ptr); });
+}
+
+template<typename T>
+void export_container(PythonExporter &exporter, const char *name = nullptr) {
+    export_buffer<T>(exporter, name);
+    export_array<T>(exporter, name);
 }
 
 template<typename T, typename... Base>
 requires(is_basic_v<T> || is_struct_v<T>)
-auto export_pod_type(PythonExporter &exporter, const char *name) {
+auto export_pod_type(PythonExporter &exporter, const char *name = nullptr) {
     auto &m = exporter.module;
+    name = name ? name : TypeDesc<T>::name().data();
     auto mt = py::class_<T, Base...>(m, name);
     mt.def_static("desc", []() {
         return TypeDesc<T>::description();
@@ -111,7 +103,16 @@ auto export_pod_type(PythonExporter &exporter, const char *name) {
     });
     mt.def(py::init<>());
     if constexpr (!std::is_same_v<vector_element_t<T>, bool>) {
-        export_container<T>(exporter);
+        export_container<T>(exporter, name);
     }
+    return mt;
+}
+
+template<typename T, typename... Base>
+requires(is_struct_v<T>)
+auto export_struct(PythonExporter &exporter) {
+    string_view cname = TypeDesc<T>::name();
+    static string_view simple_name = cname.substr(cname.find_last_of("::") + 1);
+    auto mt = export_pod_type<T, Base...>(exporter, simple_name.data());
     return mt;
 }
