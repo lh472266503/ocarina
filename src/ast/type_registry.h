@@ -59,20 +59,19 @@ template<typename T>
     } else if constexpr (is_scalar_v<T>) {
         return ocarina::format("{}", val);
     } else if constexpr (is_struct_v<T>) {
-        static string str = [] {
-            string ret = "[";
-            traverse_tuple(struct_member_tuple_t<T>{}, [&]<typename Elm>(const Elm &_) {
-                ret += "{},";
-            });
-            ret.pop_back();
-            return ret + "]";
-        }();
-        return [&]<size_t ...i>(std::index_sequence<i...>) {
+        string ret = "[";
+        traverse_tuple(struct_member_tuple_t<T>{}, [&]<typename Elm>(const Elm &_, uint index) {
             constexpr auto offset_array = struct_member_tuple<T>::offset_array;
             auto head = reinterpret_cast<const std::byte *>(addressof(val));
-            using Members = struct_member_tuple_t<T>;
-            return ocarina::format(str, (to_str(*reinterpret_cast<const tuple_element_t<i, Members>*>(head + offset_array[i])))...);
-        }(std::make_index_sequence<struct_member_tuple<T>::offset_array.size()>());
+            auto addr = head + offset_array[index];
+            const Elm &elm = reinterpret_cast<const Elm &>(*addr);
+            if (index == offset_array.size() - 1) {
+                ret += to_str(elm);
+            } else {
+                ret += to_str(elm) + ",";
+            }
+        });
+        return ret + "]";
     } else {
         static_assert(always_false_v<T>);
         return "";
