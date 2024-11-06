@@ -217,4 +217,5 @@ OC_EXPORT_API ocarina::CUDADevice *create_device(ocarina::FileManager *file_mana
 
 OC_EXPORT_API void destroy(ocarina::CUDADevice *device) {
     ocarina::delete_with_allocator(device);
+    OC_INFO("cuda device is destroy!");
 }

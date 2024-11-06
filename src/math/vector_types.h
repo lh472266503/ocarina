@@ -385,8 +385,8 @@ struct Vector : public detail::VectorStorage<T, N> {
 
     OC_MAKE_VECTOR_LOGIC_OPERATOR(||, ocarina::is_all_boolean_v<T, U>)
     OC_MAKE_VECTOR_LOGIC_OPERATOR(&&, ocarina::is_all_boolean_v<T, U>)
-    OC_MAKE_VECTOR_LOGIC_OPERATOR(==, ocarina::is_all_number_v<T, U>)
-    OC_MAKE_VECTOR_LOGIC_OPERATOR(!=, ocarina::is_all_number_v<T, U>)
+    OC_MAKE_VECTOR_LOGIC_OPERATOR(==, ocarina::is_all_scalar_v<T, U>)
+    OC_MAKE_VECTOR_LOGIC_OPERATOR(!=, ocarina::is_all_scalar_v<T, U>)
     OC_MAKE_VECTOR_LOGIC_OPERATOR(<, ocarina::is_all_number_v<T, U>)
     OC_MAKE_VECTOR_LOGIC_OPERATOR(>, ocarina::is_all_number_v<T, U>)
     OC_MAKE_VECTOR_LOGIC_OPERATOR(<=, ocarina::is_all_number_v<T, U>)

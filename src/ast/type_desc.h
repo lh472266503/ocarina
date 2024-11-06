@@ -1,0 +1,264 @@
+//
+// Created by Zero on 2024/11/3.
+//
+
+#pragma once
+
+#include "core/string_util.h"
+
+namespace ocarina {
+template<typename T, int... dims>
+class Buffer;
+
+template<typename T>
+class BufferProxy;
+
+template<typename T, int... dims>
+class BufferView;
+
+class Texture;
+class ByteBuffer;
+
+template<typename T>
+class Texture2D;
+
+class Accel;
+
+class BindlessArray;
+
+template<typename T>
+struct TypeDesc {
+    static_assert(always_false_v<T>, "Invalid type.");
+};
+
+#define OC_MAKE_VECTOR_DESC_NAME(S, N)                                 \
+    template<>                                                         \
+    struct TypeDesc<Vector<S, N>> {                                    \
+        static constexpr ocarina::string_view description() noexcept { \
+            return ocarina::string_view("vector<" #S "," #N ">");      \
+        }                                                              \
+        static constexpr ocarina::string_view name() noexcept {        \
+            return ocarina::string_view(#S #N);                        \
+        }                                                              \
+    };
+
+#define OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(S)          \
+    template<>                                                         \
+    struct TypeDesc<S> {                                               \
+        static constexpr ocarina::string_view description() noexcept { \
+            using namespace std::string_view_literals;                 \
+            return #S##sv;                                             \
+        }                                                              \
+        static constexpr ocarina::string_view name() noexcept {        \
+            return description();                                      \
+        }                                                              \
+    };                                                                 \
+    OC_MAKE_VECTOR_DESC_NAME(S, 2)                                     \
+    OC_MAKE_VECTOR_DESC_NAME(S, 3)                                     \
+    OC_MAKE_VECTOR_DESC_NAME(S, 4)
+
+OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(bool)
+OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(float)
+OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(int)
+OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(uint)
+OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(uchar)
+OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(char)
+OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(uint64t)
+OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(ushort)
+
+#undef OC_MAKE_VECTOR_DESC_NAME
+#undef OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION
+
+template<>
+struct TypeDesc<void> {
+    static constexpr ocarina::string_view description() noexcept {
+        using namespace std::string_view_literals;
+        return "void"sv;
+    }
+
+    static constexpr ocarina::string_view name() noexcept {
+        return description();
+    }
+};
+
+/// matrices
+template<size_t N, size_t M>
+struct TypeDesc<ocarina::Matrix<N, M>> {
+    static ocarina::string &description() noexcept {
+        static thread_local auto s = ocarina::format(
+            "matrix<{},{}>",
+            N, M);
+        return s;
+    }
+    static ocarina::string &name() noexcept {
+        static thread_local auto s = ocarina::format(
+            "float{}x{}",
+            N, M);
+        return s;
+    }
+};
+
+template<typename T>
+struct TypeDesc<vector<T>> {
+    static_assert(alignof(T) >= 4u);
+
+    static ocarina::string &description() noexcept {
+        static thread_local auto s = ocarina::format(
+            "d_array<{},0>",
+            TypeDesc<T>::description());
+        return s;
+    }
+
+    static ocarina::string &name() noexcept {
+        return description();
+    }
+};
+
+template<typename T, size_t N>
+struct TypeDesc<ocarina::array<T, N>> {
+    static_assert(alignof(T) >= 4u);
+    static ocarina::string &description() noexcept {
+        static thread_local auto s = ocarina::format(
+            "array<{},{}>",
+            TypeDesc<T>::description(), N);
+        return s;
+    }
+
+    static ocarina::string_view name() noexcept {
+        return description();
+    }
+};
+
+template<typename T, int... Dims>
+struct TypeDesc<Buffer<T, Dims...>> {
+    static_assert(alignof(T) >= 4u);
+    static ocarina::string &description() noexcept {
+        static thread_local string str = []() -> string {
+            auto ret = ocarina::format("buffer<{}", TypeDesc<T>::description());
+            (ret.append(",").append(to_string(Dims)), ...);
+            ret.append(">");
+            return ret;
+        }();
+        return str;
+    }
+    static ocarina::string_view name() noexcept {
+        return description();
+    }
+};
+
+template<typename T>
+struct TypeDesc<BufferProxy<T>> : public TypeDesc<Buffer<T>> {};
+
+template<>
+struct TypeDesc<ByteBuffer> {
+    static ocarina::string_view description() noexcept {
+        return "bytebuffer";
+    }
+    static ocarina::string_view name() noexcept {
+        return description();
+    }
+};
+
+template<>
+struct TypeDesc<Texture> {
+    static ocarina::string_view description() noexcept {
+        return "texture";
+    }
+    static ocarina::string_view name() noexcept {
+        return description();
+    }
+};
+
+template<typename T>
+struct TypeDesc<Texture2D<T>> {
+    static ocarina::string &description() noexcept {
+        static thread_local string str = ocarina::format("texture2d<{}>",
+                                                         TypeDesc<T>::description());
+        return str;
+    }
+    static ocarina::string_view name() noexcept {
+        return description();
+    }
+};
+
+template<>
+struct TypeDesc<Accel> {
+    static ocarina::string_view description() noexcept {
+        return "accel";
+    }
+    static ocarina::string_view name() noexcept {
+        return description();
+    }
+};
+
+template<typename T, size_t N>
+struct TypeDesc<T[N]> : public TypeDesc<ocarina::array<T, N>> {};
+
+template<typename... T>
+struct TypeDesc<ocarina::tuple<T...>> {
+    static ocarina::string &description() noexcept {
+        static thread_local ocarina::string str = []() -> ocarina::string {
+            auto ret = ocarina::format("struct<{},false,false", alignof(ocarina::tuple<T...>));
+            (ret.append(",").append(TypeDesc<T>::description()), ...);
+            ret.append(">");
+            return ret;
+        }();
+        return str;
+    }
+    static ocarina::string_view name() noexcept {
+        return description();
+    }
+};
+
+template<>
+struct TypeDesc<BindlessArray> {
+    static ocarina::string_view description() noexcept {
+        return "bindlessArray";
+    }
+    static ocarina::string_view name() noexcept {
+        return description();
+    }
+};
+
+/// make struct type description
+#define OC_MAKE_STRUCT_MEMBER_FMT(member) ",{}"
+
+#define OC_MAKE_STRUCT_MEMBER_DESC(member) \
+    ocarina::TypeDesc<std::remove_cvref_t<decltype(this_type::member)>>::description()
+
+#define OC_MAKE_STRUCT_DESC(S, ...)                                                  \
+    template<>                                                                       \
+    struct ocarina::TypeDesc<S> {                                                    \
+        using this_type = S;                                                         \
+        static ocarina::string description() noexcept {                              \
+            static thread_local ocarina::string s = ocarina::format(                 \
+                "struct<{},{},{}" MAP(OC_MAKE_STRUCT_MEMBER_FMT, ##__VA_ARGS__) ">", \
+                alignof(this_type), ocarina::is_builtin_struct_v<this_type>,         \
+                ocarina::is_param_struct_v<this_type>,                               \
+                MAP_LIST(OC_MAKE_STRUCT_MEMBER_DESC, ##__VA_ARGS__));                \
+            return s;                                                                \
+        }                                                                            \
+    };
+
+template<typename T>
+[[nodiscard]] string to_str(const T &val) noexcept {
+    static string type_string = string(TypeDesc<T>::name());
+    if constexpr (is_vector2_v<T>) {
+        return ocarina::format(type_string + "({}, {})", val.x, val.y);
+    } else if constexpr (is_vector3_v<T>) {
+        return ocarina::format(type_string + "({}, {}, {})", val.x, val.y, val.z);
+    } else if constexpr (is_vector4_v<T>) {
+        return ocarina::format(type_string + "({}, {}, {}, {})", val.x, val.y, val.z, val.w);
+    } else if constexpr (is_matrix2_v<T>) {
+        return ocarina::format("[{},\n {}]", to_str(val[0]), to_str(val[1]));
+    } else if constexpr (is_matrix3_v<T>) {
+        return ocarina::format("[{},\n {},\n {}]", to_str(val[0]), to_str(val[1]), to_str(val[2]));
+    } else if constexpr (is_matrix4_v<T>) {
+        return ocarina::format("[{},\n {},\n {},\n {}]", to_str(val[0]), to_str(val[1]), to_str(val[2]), to_str(val[3]));
+    } else {
+        static_assert(always_false_v<T>);
+        return "";
+    }
+}
+
+}// namespace ocarina

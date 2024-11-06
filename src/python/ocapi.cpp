@@ -2,21 +2,22 @@
 // Created by ling.zhu on 2024/10/28.
 //
 
+#include "ocapi.h"
 
-#include "export_vector.h"
+void export_math(PythonExporter &exporter);
+void export_ast(PythonExporter &exporter);
+void export_rhi(PythonExporter &exporter);
 
-namespace py = pybind11;
-using namespace ocarina;
-
-void export_vector2(py::module &m);
-void export_vector3(py::module &m);
-void export_vector4(py::module &m);
+Context &Context::instance() noexcept {
+    static Context context;
+    return context;
+}
 
 PYBIND11_MODULE(ocapi, m) {
-
-    m.def("add", [](int a, int b) { return a + b; }, "A function that adds two numbers");
-    m.def("sub", [](int a, int b) { return a - b;}, "func");
-    export_vector2(m);
-//    export_vector3(m);
-//    export_vector4(m);
+    auto &context = Context::instance();
+    PythonExporter python_exporter;
+    python_exporter.module = m;
+    export_ast(python_exporter);
+    export_rhi(python_exporter);
+    export_math(python_exporter);
 }

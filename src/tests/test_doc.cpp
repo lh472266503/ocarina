@@ -544,6 +544,15 @@ void test_parameter_struct(Device &device, Stream &stream) {
 }
 
 int main(int argc, char *argv[]) {
+    auto m = float3x2() * float2x3();
+    cout << to_str(m) << endl;
+
+    auto m2 = float2x3() * float3x2();
+    cout << to_str(m2) << endl;
+
+    auto m3 = float2x3() * float4x2();
+    cout << to_str(m3) << endl;
+//    return 0;
     fs::path path(argv[0]);
     FileManager &file_manager = FileManager::instance();
 
