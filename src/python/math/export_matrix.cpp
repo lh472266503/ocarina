@@ -102,10 +102,6 @@ auto export_matrix_base(PythonExporter &exporter) {
         }(std::make_index_sequence<N>());
     });
 
-    mt.def("__repr__", [](Matrix<N, M> &self) {
-        return to_str(self);
-    });
-
     return mt;
 }
 

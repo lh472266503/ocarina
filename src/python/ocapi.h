@@ -49,6 +49,15 @@ void export_array(PythonExporter &exporter, const char *name = nullptr) {
     name = name ? name : TypeDesc<T>::name().data();
     static string class_name = ocarina::format("Array{}", name);
     auto mt = py::class_<array_t>(exporter.module, class_name.c_str());
+    mt.def_static("from_list", [](const py::list &lst) {
+        array_t arr;
+        arr.reserve(lst.size());
+        for (int i = 0; i < lst.size(); ++i) {
+            py::object item = lst[i];
+            arr.push_back(item.template cast<T>());
+        }
+        return arr;
+    });
     mt.def(py::init<>());
     mt.def("push_back", [](array_t &self, const T &t) { self.push_back(t); });
     mt.def("pop_back", [](array_t &self) { self.pop_back(); });
@@ -101,11 +110,24 @@ auto export_pod_type(PythonExporter &exporter, const char *name = nullptr) {
     mt.def_static("alignof", []() {
         return alignof(T);
     });
+    mt.def("__repr__", [](const T &self) {
+        return to_str(self);
+    });
     mt.def(py::init<>());
     if constexpr (!std::is_same_v<vector_element_t<T>, bool>) {
         export_container<T>(exporter, name);
     }
     return mt;
+}
+
+template<typename Elm, typename T>
+decltype(auto) get_member_by_offset(T &t, uint offset) {
+    return *reinterpret_cast<Elm *>(reinterpret_cast<std::byte *>(&t) + offset);
+}
+
+template<typename Elm, typename T>
+decltype(auto) get_member_by_offset(const T &t, uint offset) {
+    return *reinterpret_cast<const Elm *>(reinterpret_cast<const std::byte *>(&t) + offset);
 }
 
 template<typename T, typename... Base>
@@ -114,5 +136,16 @@ auto export_struct(PythonExporter &exporter) {
     string_view cname = TypeDesc<T>::name();
     static string_view simple_name = cname.substr(cname.find_last_of("::") + 1);
     auto mt = export_pod_type<T, Base...>(exporter, simple_name.data());
+    traverse_tuple(struct_member_tuple_t<T>{}, [&]<typename Elm>(const Elm &_, uint index) {
+        auto getter = [index = index](const T &self) {
+            auto ofs = struct_member_tuple<T>::offset_array[index];
+            return get_member_by_offset<Elm>(self, ofs);
+        };
+        auto setter = [index = index](T &self, const Elm &val) {
+            auto ofs = struct_member_tuple<T>::offset_array[index];
+            get_member_by_offset<Elm>(self, ofs) = val;
+        };
+        mt.def_property(struct_member_tuple<T>::members[index].data(), getter, setter);
+    });
     return mt;
 }

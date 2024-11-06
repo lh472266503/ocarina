@@ -94,7 +94,16 @@ void test_list(Device &device, Stream& stream) {
     int i = 0;
 }
 
+template <typename C, typename D>
+auto def_readwrite(D C::* pm) {
+    int i = 0;
+    cout << typeid(C).name() << endl;
+    cout << typeid(D).name() << endl;
+}
+
 int main(int argc, char *argv[]) {
+    def_readwrite(&float3::x);
+
 
     ocarina::TriangleHit h;
 

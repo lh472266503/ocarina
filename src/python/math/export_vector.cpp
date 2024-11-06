@@ -22,7 +22,6 @@ auto export_vector_type(PythonExporter &exporter) {
     auto ret = export_pod_type<vector_type, ocarina::detail::VectorStorage<T, N>>(exporter)
                    .def(py::init<>())
                    .def(py::init<T>())
-                   .def("__repr__", [](const vector_type &self) { return to_str(self); })
                    .def("__getitem__", [](const vector_type &self, size_t i) { return self[i]; })
                    .def("__setitem__", [](vector_type &self, size_t i, T k) { self[i] = k; })
                    .def_readwrite("x", &vector_type::x)
