@@ -12,7 +12,6 @@
 
 namespace ocarina {
 
-
 template<typename T>
 const Type *Type::of() noexcept {
     using raw_type = std::remove_cvref_t<T>;
@@ -42,6 +41,43 @@ const Type *Type::of() noexcept {
     return ret;
 }
 
+template<typename T>
+[[nodiscard]] string to_str(const T &val) noexcept {
+    static string type_string = string(TypeDesc<T>::name());
+    if constexpr (is_vector2_v<T>) {
+        return ocarina::format(type_string + "({}, {})", val.x, val.y);
+    } else if constexpr (is_vector3_v<T>) {
+        return ocarina::format(type_string + "({}, {}, {})", val.x, val.y, val.z);
+    } else if constexpr (is_vector4_v<T>) {
+        return ocarina::format(type_string + "({}, {}, {}, {})", val.x, val.y, val.z, val.w);
+    } else if constexpr (is_matrix2_v<T>) {
+        return ocarina::format("[{},\n {}]", to_str(val[0]), to_str(val[1]));
+    } else if constexpr (is_matrix3_v<T>) {
+        return ocarina::format("[{},\n {},\n {}]", to_str(val[0]), to_str(val[1]), to_str(val[2]));
+    } else if constexpr (is_matrix4_v<T>) {
+        return ocarina::format("[{},\n {},\n {},\n {}]", to_str(val[0]), to_str(val[1]), to_str(val[2]), to_str(val[3]));
+    } else if constexpr (is_scalar_v<T>) {
+        return ocarina::format("{}", val);
+    } else if constexpr (is_struct_v<T>) {
+        static string str = [] {
+            string ret = "[";
+            traverse_tuple(struct_member_tuple_t<T>{}, [&]<typename Elm>(const Elm &_) {
+                ret += "{},";
+            });
+            ret.pop_back();
+            return ret + "]";
+        }();
+        return [&]<size_t ...i>(std::index_sequence<i...>) {
+            constexpr auto offset_array = struct_member_tuple<T>::offset_array;
+            auto head = reinterpret_cast<const std::byte *>(addressof(val));
+            using Members = struct_member_tuple_t<T>;
+            return ocarina::format(str, (to_str(*reinterpret_cast<const tuple_element_t<i, Members>*>(head + offset_array[i])))...);
+        }(std::make_index_sequence<struct_member_tuple<T>::offset_array.size()>());
+    } else {
+        static_assert(always_false_v<T>);
+        return "";
+    }
+}
 
 namespace detail {
 template<typename S, typename Members, typename offsets>

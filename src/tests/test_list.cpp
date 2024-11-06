@@ -95,6 +95,21 @@ void test_list(Device &device, Stream& stream) {
 }
 
 int main(int argc, char *argv[]) {
+
+    ocarina::TriangleHit h;
+
+    struct_member_tuple_t<TriangleHit> a;
+    traverse_tuple(a, []<typename T>(T t) {
+        cout << typeid(T).name() << endl;
+    });
+
+    cout << TypeDesc<decltype(h)>::name() << endl;
+    cout << Var<TriangleHit>::cname << endl;
+    cout << to_str(float4{}) << endl;
+    cout << to_str(1.5f) << endl;
+    h.bary = float2(1,9);
+    cout << to_str(h) << endl;
+    return 0;
     fs::path path(argv[0]);
     FileManager &file_manager = FileManager::instance();
 
