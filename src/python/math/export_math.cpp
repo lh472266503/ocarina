@@ -3,9 +3,6 @@
 //
 
 #include "python/ocapi.h"
-#include "python/common.h"
-#include "rhi/resources/buffer.h"
-#include "math/base.h"
 #include "ast/type_desc.h"
 
 namespace py = pybind11;
