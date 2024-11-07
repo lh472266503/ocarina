@@ -7,6 +7,7 @@
 void export_math(PythonExporter &exporter);
 void export_ast(PythonExporter &exporter);
 void export_rhi(PythonExporter &exporter);
+void export_rtx(PythonExporter &exporter);
 
 Context &Context::instance() noexcept {
     static Context context;
@@ -20,5 +21,5 @@ PYBIND11_MODULE(ocapi, m) {
     export_ast(python_exporter);
     export_rhi(python_exporter);
     export_math(python_exporter);
-    export_struct<TriangleHit>(python_exporter);
+    export_rtx(python_exporter);
 }

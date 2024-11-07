@@ -25,6 +25,7 @@ using ret_policy = py::return_value_policy;
 struct Context {
     UP<Device> device;
     UP<Stream> stream;
+    BindlessArray bindless_array;
     [[nodiscard]] static Context &instance() noexcept;
     Context() {
         OC_INFO("ocapi load!");
@@ -77,6 +78,7 @@ void export_array(PythonExporter &exporter, const char *name = nullptr) {
 
 template<typename T>
 void export_buffer(PythonExporter &exporter, const char *name = nullptr) {
+    using array_t = python::Array<T>;
     name = name ? name : TypeDesc<T>::name().data();
     string buffer_name = ocarina::format("Buffer{}", name);
     auto m_buffer = py::class_<Buffer<T>, RHIResource>(exporter.module, buffer_name.c_str());
@@ -84,6 +86,12 @@ void export_buffer(PythonExporter &exporter, const char *name = nullptr) {
     m_buffer.def("size", [](const Buffer<T> &self) { return self.size(); });
     m_buffer.def("upload", [](const Buffer<T> &self, const vector<T> &lst) { self.upload_immediately(lst.data()); });
     m_buffer.def("download", [](const Buffer<T> &self, py::buffer &lst) { self.download_immediately(lst.request().ptr); });
+    m_buffer.def("download", [](const Buffer<T> &self) {
+        array_t arr{};
+        arr.resize(self.size());
+        self.download_immediately(arr.data());
+        return arr;
+    }, ret_policy::move);
 }
 
 template<typename T>
