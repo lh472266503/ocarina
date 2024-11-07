@@ -442,11 +442,6 @@ struct type_element_impl<Swizzle<T, N, Indices...>> {
     using type = T;
 };
 
-template<size_t N, size_t M>
-struct type_element_impl<Matrix<N, M>> {
-    using type = float;
-};
-
 }// namespace detail
 
 template<typename T>
