@@ -17,12 +17,21 @@ void export_resource(PythonExporter &exporter) {
     py::class_<RHIResource>(m, "RHIResource");
 }
 
-void export_mesh(PythonExporter &exporter) {
-    auto m_mesh = py::class_<RHIMesh, RHIResource>(exporter.module, "RHIMesh");
+auto export_mesh(PythonExporter &exporter) {
+    auto mt = py::class_<RHIMesh, RHIResource>(exporter.module, "RHIMesh");
 }
 
-void export_accel(PythonExporter &exporter) {
-    auto m_accel = py::class_<Accel, RHIResource>(exporter.module, "Accel");
+auto export_accel(PythonExporter &exporter) {
+    auto mt = py::class_<Accel, RHIResource>(exporter.module, "Accel");
+}
+
+void export_stream(PythonExporter &exporter) {
+    auto mt = py::class_<Stream, RHIResource>(exporter.module, "Stream");
+    mt.def("commit", [&](Stream &self) { self.commit(Commit{}); });
+}
+
+void export_bindless_array(PythonExporter &exporter) {
+    auto mt = py::class_<BindlessArray, RHIResource>(exporter.module, "BindlessArray");
 }
 
 void export_device(PythonExporter &exporter) {
@@ -40,4 +49,6 @@ void export_device(PythonExporter &exporter) {
 
     export_mesh(exporter);
     export_accel(exporter);
+    export_stream(exporter);
+    export_bindless_array(exporter);
 }

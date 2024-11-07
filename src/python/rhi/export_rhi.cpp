@@ -13,6 +13,8 @@ void export_resource(PythonExporter &exporter);
 
 void export_device(PythonExporter &exporter);
 
+void export_commands(PythonExporter &exporter);
+
 void export_init(PythonExporter &exporter) noexcept {
     exporter.module.def("init_context", [](const string &name,
                                            const string &path) {
@@ -26,16 +28,17 @@ void export_init(PythonExporter &exporter) noexcept {
     exporter.module.def("device", []() {
         return Context::instance().device.get();
     });
-//    exporter.module.def("stream", []() {
-//        return Context::instance().stream.get();
-//    });
-//    exporter.module.def("bindless_array", []() -> BindlessArray & {
-//        return Context::instance().bindless_array;
-//    });
+    exporter.module.def("stream", []() {
+        return Context::instance().stream.get();
+    });
+    exporter.module.def("bindless_array", []() -> BindlessArray & {
+        return Context::instance().bindless_array;
+    }, ret_policy::reference);
 }
 
 void export_rhi(PythonExporter &exporter) {
     export_resource(exporter);
+    export_commands(exporter);
     export_device(exporter);
     export_init(exporter);
 }
