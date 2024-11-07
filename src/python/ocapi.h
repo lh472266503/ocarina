@@ -96,8 +96,8 @@ void export_buffer(PythonExporter &exporter, const char *name = nullptr) {
 
 template<typename T>
 void export_container(PythonExporter &exporter, const char *name = nullptr) {
-    export_buffer<T>(exporter, name);
     export_array<T>(exporter, name);
+    export_buffer<T>(exporter, name);
 }
 
 template<typename T, typename... Base>
