@@ -35,6 +35,9 @@ void export_bindless_array(PythonExporter &exporter) {
 }
 
 void export_device(PythonExporter &exporter) {
+    export_mesh(exporter);
+    export_accel(exporter);
+    
     auto &m = exporter.module;
     auto m_device = py::class_<Device, concepts::Noncopyable>(m, "Device");
 
@@ -47,8 +50,6 @@ void export_device(PythonExporter &exporter) {
     func();
     exporter.m_device = std::make_unique<py::class_<Device, concepts::Noncopyable>>(m_device);
 
-    export_mesh(exporter);
-    export_accel(exporter);
     export_stream(exporter);
     export_bindless_array(exporter);
 }
