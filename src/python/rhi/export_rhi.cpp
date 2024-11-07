@@ -25,12 +25,16 @@ void export_init(PythonExporter &exporter) noexcept {
         Context::instance().device = std::make_unique<Device>(std::move(device));
     });
 
+    exporter.module.def("exit", []() {
+        Context::destroy_instance();
+    });
+
     exporter.module.def("device", []() {
         return Context::instance().device.get();
-    });
+    }, ret_policy::reference);
     exporter.module.def("stream", []() {
         return Context::instance().stream.get();
-    });
+    }, ret_policy::reference);
     exporter.module.def("bindless_array", []() -> BindlessArray & {
         return Context::instance().bindless_array;
     }, ret_policy::reference);

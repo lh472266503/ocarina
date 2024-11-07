@@ -6,6 +6,8 @@
 
 namespace ocarina {
 
+void dependency_window() {}
+
 Window::Window(bool resizable) noexcept
     : resizable_{resizable} {}
 

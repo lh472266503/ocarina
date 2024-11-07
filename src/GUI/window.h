@@ -83,4 +83,7 @@ public:
         run_one_frame(OC_FORWARD(draw), 0);
     }
 };
+
+void dependency_window();
+
 }// namespace ocarina

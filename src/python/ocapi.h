@@ -23,10 +23,12 @@ struct PythonExporter {
 using ret_policy = py::return_value_policy;
 
 struct Context {
+    static Context * s_context;
     UP<Device> device;
     UP<Stream> stream;
     BindlessArray bindless_array;
     [[nodiscard]] static Context &instance() noexcept;
+    static void destroy_instance() noexcept;
     Context() {
         OC_INFO("ocapi load!");
     }

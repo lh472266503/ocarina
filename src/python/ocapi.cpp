@@ -10,9 +10,20 @@ void export_rhi(PythonExporter &exporter);
 void export_rtx(PythonExporter &exporter);
 void export_window(PythonExporter &exporter);
 
+Context *Context::s_context = nullptr;
+
 Context &Context::instance() noexcept {
-    static Context context;
-    return context;
+    if (s_context == nullptr) {
+        s_context = new Context{};
+    }
+    return *s_context;
+}
+
+void Context::destroy_instance() noexcept {
+    if (s_context) {
+        delete s_context;
+    }
+    s_context = nullptr;
 }
 
 PYBIND11_MODULE(ocapi, m) {
