@@ -15,7 +15,10 @@ void export_window(PythonExporter &exporter) {
     mt.def_static("create", [](uint width, uint height) {
         static auto ret = FileManager::instance().create_window("Python", make_uint2(width, height), "imGui");
         ret->init_widgets();
-        return ret.get(); }, ret_policy::reference);
+        return ret.get();
+    }, ret_policy::reference);
+
+    mt.def("set_clear_color", &Window::set_clear_color);
 
 #define OC_EXPORT_WINDOW_CB(func_name)                              \
     mt.def(#func_name, [](Window &self, const py::function &func) { \

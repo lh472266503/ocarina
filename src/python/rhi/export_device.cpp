@@ -27,6 +27,7 @@ auto export_accel(PythonExporter &exporter) {
 
 void export_stream(PythonExporter &exporter) {
     auto mt = py::class_<Stream, RHIResource>(exporter.module, "Stream");
+    mt.def("add", [](Stream &self, Command *cmd) -> Stream & { return self << cmd; }, ret_policy ::reference);
     mt.def("commit", [&](Stream &self) { self.commit(Commit{}); });
 }
 
@@ -37,7 +38,7 @@ void export_bindless_array(PythonExporter &exporter) {
 void export_device(PythonExporter &exporter) {
     export_mesh(exporter);
     export_accel(exporter);
-    
+
     auto &m = exporter.module;
     auto m_device = py::class_<Device, concepts::Noncopyable>(m, "Device");
 
