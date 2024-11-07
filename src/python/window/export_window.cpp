@@ -17,6 +17,4 @@ void export_window(PythonExporter &exporter) {
         static auto ret = FileManager::instance().create_window("Python", make_uint2(width, height), "imGui");
         return ret.get();
     }, ret_policy::reference);
-
-    
 }
