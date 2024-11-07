@@ -8,6 +8,7 @@ void export_math(PythonExporter &exporter);
 void export_ast(PythonExporter &exporter);
 void export_rhi(PythonExporter &exporter);
 void export_rtx(PythonExporter &exporter);
+void export_window(PythonExporter &exporter);
 
 Context &Context::instance() noexcept {
     static Context context;
@@ -18,6 +19,7 @@ PYBIND11_MODULE(ocapi, m) {
     auto &context = Context::instance();
     PythonExporter python_exporter;
     python_exporter.module = m;
+    export_window(python_exporter);
     export_ast(python_exporter);
     export_rhi(python_exporter);
     export_math(python_exporter);
