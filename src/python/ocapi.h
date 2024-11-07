@@ -67,6 +67,7 @@ void export_array(PythonExporter &exporter, const char *name = nullptr) {
     mt.def("size", [](array_t &self) { return self.size(); });
     mt.def("__getitem__", [](array_t &self, size_t i) { return self[i]; });
     mt.def("__setitem__", [](array_t &self, size_t i, const T &t) { self[i] = t; });
+    mt.def("resize", [](array_t &self, const uint &t, const T &elm) { self.resize(t, elm); });
     mt.def("resize", [](array_t &self, const uint &t) { self.resize(t); });
     mt.def("clear", [](array_t &self) { self.clear(); });
     mt.def("__repr__", [&](array_t &self) {
