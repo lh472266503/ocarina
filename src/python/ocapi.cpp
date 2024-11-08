@@ -9,6 +9,7 @@ void export_ast(PythonExporter &exporter);
 void export_rhi(PythonExporter &exporter);
 void export_rtx(PythonExporter &exporter);
 void export_window(PythonExporter &exporter);
+void export_image(PythonExporter &exporter);
 
 Context *Context::s_context = nullptr;
 
@@ -31,6 +32,7 @@ PYBIND11_MODULE(ocapi, m) {
     PythonExporter python_exporter;
     python_exporter.module = m;
     export_window(python_exporter);
+    export_image(python_exporter);
     export_ast(python_exporter);
     export_rhi(python_exporter);
     export_math(python_exporter);

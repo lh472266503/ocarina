@@ -15,6 +15,13 @@
 namespace py = pybind11;
 using namespace ocarina;
 
+#define OC_EXPORT_ENUM_VALUE(v, enum_type) \
+    .value(#v, enum_type::v)
+
+#define OC_EXPORT_ENUM(m, Enum, ...) \
+    py::enum_<Enum>(m, #Enum)        \
+        MAP_UD(OC_EXPORT_ENUM_VALUE, Enum, ##__VA_ARGS__);
+
 struct PythonExporter {
     py::module module;
     UP<py::class_<Device, concepts::Noncopyable>> m_device;
@@ -23,7 +30,7 @@ struct PythonExporter {
 using ret_policy = py::return_value_policy;
 
 struct Context {
-    static Context * s_context;
+    static Context *s_context;
     UP<Device> device;
     UP<Stream> stream;
     BindlessArray bindless_array;
@@ -93,8 +100,7 @@ void export_buffer(PythonExporter &exporter, const char *name = nullptr) {
         array_t arr{};
         arr.resize(self.size());
         self.download_immediately(arr.data());
-        return arr;
-    }, ret_policy::move);
+        return arr; }, ret_policy::move);
 }
 
 template<typename T>

@@ -35,8 +35,14 @@ void export_bindless_array(PythonExporter &exporter) {
     auto mt = py::class_<BindlessArray, RHIResource>(exporter.module, "BindlessArray");
 }
 
+void export_texture(PythonExporter &exporter) {
+    auto mt = py::class_<Texture, RHIResource>(exporter.module, "Texture");
+//    mt.def_static("create", [&](uint2 res))
+}
+
 void export_device(PythonExporter &exporter) {
     export_mesh(exporter);
+    export_texture(exporter);
     export_accel(exporter);
 
     auto &m = exporter.module;
