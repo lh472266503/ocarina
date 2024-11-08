@@ -20,8 +20,12 @@ void export_window(PythonExporter &exporter) {
 
     mt.def("set_clear_color", &Window::set_clear_color);
     mt.def("set_should_close", &Window::set_should_close);
-    mt.def("set_background", [](Window &self, const py::buffer &buffer) {
+    mt.def("set_background", [](Window &self, const py::array_t<float> &buffer) {
         self.set_background(reinterpret_cast<float4 *>(buffer.request().ptr));
+    });
+
+    mt.def("set_background", [](Window &self, const py::array_t<uchar> &buffer) {
+        self.set_background(reinterpret_cast<uchar4 *>(buffer.request().ptr));
     });
 
     mt.def("set_background", [](Window &self, const python::Array<float4> &arr) {

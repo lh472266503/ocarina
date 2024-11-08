@@ -37,8 +37,14 @@ void export_image_class(PythonExporter &exporter) {
     mt.def_property_readonly("resolution", &Image::resolution);
     mt.def_property_readonly("pixel_storage", &Image::pixel_storage);
     mt.def("as_float_array_t", [](Image &self) {
-        auto size = self.size_in_bytes() / sizeof(float);
-        return py::array_t<float>(size - 0, self.pixel_ptr<float>(), py::none());
+        using type = float;
+        auto size = self.size_in_bytes() / sizeof(type);
+        return py::array_t<type>(size - 0, self.pixel_ptr<type>(), py::none());
+    });
+    mt.def("as_uchar_array_t", [](Image &self) {
+        using type = uchar;
+        auto size = self.size_in_bytes() / sizeof(type);
+        return py::array_t<type>(size - 0, self.pixel_ptr<type>(), py::none());
     });
 }
 
