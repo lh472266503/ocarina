@@ -24,7 +24,8 @@ void export_image_enum(PythonExporter &exporter) {
 }
 
 void export_image_class(PythonExporter &exporter) {
-    
+    auto _ = py::class_<ImageBase, concepts::Noncopyable>(exporter.module, "ImageBase");
+    auto mt = py::class_<Image, ImageBase>(exporter.module, "Image");
 }
 
 void export_image(PythonExporter &exporter) {

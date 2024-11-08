@@ -19,6 +19,10 @@ void export_window(PythonExporter &exporter) {
     }, ret_policy::reference);
 
     mt.def("set_clear_color", &Window::set_clear_color);
+    mt.def("set_should_close", &Window::set_should_close);
+    mt.def("set_background", [](Window &self, py::buffer buffer) {
+        self.set_background(reinterpret_cast<float4 *>(buffer.request().ptr));
+    });
 
 #define OC_EXPORT_WINDOW_CB(func_name)                              \
     mt.def(#func_name, [](Window &self, const py::function &func) { \
