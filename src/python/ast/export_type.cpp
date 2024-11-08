@@ -8,12 +8,6 @@
 namespace py = pybind11;
 using namespace ocarina;
 
-void export_base_type(PythonExporter &exporter) {
-    auto &m = exporter.module;
-    py::class_<concepts::Noncopyable>(m, "concepts_Noncopyable");
-    py::class_<RTTI>(m, "RTTI");
-    py::class_<Hashable, RTTI>(m, "Hashable");
-}
 
 void export_type(PythonExporter &exporter) {
     auto &m = exporter.module;
