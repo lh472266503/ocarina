@@ -18,7 +18,6 @@ public:
     using UpdateCallback = ocarina::function<void(double)>;
     using BeginFrame = ocarina::function<void()>;
     using EndFrame = ocarina::function<void()>;
-
 protected:
     MouseButtonCallback mouse_button_callback_;
     CursorPositionCallback cursor_position_callback_;

@@ -2,7 +2,7 @@
 // Created by Zero on 2022/8/16.
 //
 
-#include "window.h"
+#include "glfw_window.h"
 #include "widgets.h"
 #include "ext/imgui/gizmo/ImGuizmo.h"
 #include "core/logging.h"
@@ -233,10 +233,10 @@ void GLWindow::set_size(uint2 size) noexcept {
 
 }// namespace ocarina
 
-OC_EXPORT_API ocarina::GLWindow *create(const char *name, ocarina::uint2 initial_size, bool resizable) {
-    return ocarina::new_with_allocator<ocarina::GLWindow>(name, initial_size, resizable);
-}
-
-OC_EXPORT_API void destroy(ocarina::GLWindow *ptr) {
-    ocarina::delete_with_allocator(ptr);
-}
+//OC_EXPORT_API ocarina::GLWindow *create(const char *name, ocarina::uint2 initial_size, bool resizable) {
+//    return ocarina::new_with_allocator<ocarina::GLWindow>(name, initial_size, resizable);
+//}
+//
+//OC_EXPORT_API void destroy(ocarina::GLWindow *ptr) {
+//    ocarina::delete_with_allocator(ptr);
+//}

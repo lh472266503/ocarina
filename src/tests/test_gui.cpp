@@ -10,9 +10,9 @@
 #include <windows.h>
 #include "math/base.h"
 #include "util/image.h"
-#include "dsl/dsl.h"
-#include "GUI_impl/imGui/window.h"
+//#include "GUI_impl/imGui/glfwindow.h"
 #include "util/image.h"
+#include "GUI/window.h"
 
 using namespace ocarina;
 
@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
     fs::path path(argv[0]);
     FileManager &file_manager = FileManager::instance();
 
-    auto window = file_manager.create_window("display", make_uint2(500), "gl");
+    auto window = file_manager.create_window("display", make_uint2(500), WindowLibrary::GLFW, "imGui");
     auto image_io = Image::pure_color(make_float4(1,0,0,1), ColorSpace::LINEAR, make_uint2(500));
     window->run([&](double d){
         window->set_background(image_io.pixel_ptr<float4>(), make_uint2(500));
