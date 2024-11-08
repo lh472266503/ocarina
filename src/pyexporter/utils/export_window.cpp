@@ -12,8 +12,8 @@ using namespace ocarina;
 void export_window(PythonExporter &exporter) {
     dependency_window();
     auto mt = py::class_<Window>(exporter.module, "Window");
-    mt.def_static("create", [](uint width, uint height) {
-        static auto ret = FileManager::instance().create_window("Python", make_uint2(width, height), "imGui");
+    mt.def_static("create", [](uint2 res) {
+        static auto ret = FileManager::instance().create_window("Python", res, "imGui");
         ret->init_widgets();
         return ret.get();
     }, ret_policy::reference);
