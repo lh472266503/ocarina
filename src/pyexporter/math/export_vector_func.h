@@ -5,7 +5,7 @@
 #pragma once
 
 #include "rhi/resources/buffer.h"
-#include "python/ocapi.h"
+#include "pyexporter/ocapi.h"
 #include "rhi/common.h"
 
 namespace py = pybind11;

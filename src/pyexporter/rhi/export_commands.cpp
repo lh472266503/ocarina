@@ -2,7 +2,7 @@
 // Created by ling.zhu on 2024/11/7.
 //
 
-#include "python/ocapi.h"
+#include "pyexporter/ocapi.h"
 
 namespace py = pybind11;
 using namespace ocarina;

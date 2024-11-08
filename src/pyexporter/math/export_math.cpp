@@ -2,7 +2,7 @@
 // Created by Zero on 2024/11/3.
 //
 
-#include "python/ocapi.h"
+#include "pyexporter/ocapi.h"
 #include "ast/type_desc.h"
 
 namespace py = pybind11;
