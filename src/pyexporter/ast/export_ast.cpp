@@ -19,14 +19,13 @@ void export_function(PythonExporter &exporter) {
     mt.def_static("push", [](FunctionTag tag) {
         auto ret = make_shared<Function>(tag);
         Function::push(ret);
-        return ret;
     });
 
     mt.def_static("pop", [] {
-        auto ret = Function::current();
         Function::pop(nullptr);
-        return ret;
     });
+
+    mt.def_static("current", &Function::current, ret_policy::reference);
 }
 
 void export_ast(PythonExporter &exporter) {

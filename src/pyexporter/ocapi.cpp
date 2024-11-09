@@ -21,9 +21,7 @@ Context &Context::instance() noexcept {
 }
 
 void Context::destroy_instance() noexcept {
-    if (s_context) {
-        delete s_context;
-    }
+    delete s_context;
     s_context = nullptr;
 }
 
