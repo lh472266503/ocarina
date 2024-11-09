@@ -37,7 +37,22 @@ void export_bindless_array(PythonExporter &exporter) {
 
 void export_texture(PythonExporter &exporter) {
     auto mt = py::class_<Texture, RHIResource>(exporter.module, "Texture");
-//    mt.def_static("create", [&](uint2 res))
+    mt.def_static("create", [&](uint2 res, PixelStorage storage) {
+        return Context::instance().device->create_texture(res, storage);
+    });
+    mt.def_property_readonly("resolution", [](Texture &self) -> uint2 {
+        return self.resolution().xy();
+    });
+    mt.def_property_readonly("pixel_storage", [](Texture &self){
+        return self->pixel_storage();
+    });
+    mt.def_property_readonly("pixel_num", &Texture::pixel_num);
+    mt.def("upload", [](Texture &self, const py::buffer &buffer) {
+        self.upload_immediately(buffer.request().ptr);
+    });
+    mt.def("download", [](Texture &self, py::buffer &buffer) {
+        self.download_immediately(buffer.request().ptr);
+    });
 }
 
 void export_device(PythonExporter &exporter) {

@@ -39,7 +39,6 @@ void export_image_class(PythonExporter &exporter) {
     mt.def_property_readonly("pixel_num", &Image::pixel_num);
     mt.def_property_readonly("channel_num", &Image::channel_num);
     mt.def_property_readonly("size_in_bytes", &Image::size_in_bytes);
-    mt.def_property_readonly("pitch_byte_size", &Image::pitch_byte_size);
     mt.def("as_float_array_t", [](Image &self) {
         using type = float;
         auto size = self.size_in_bytes() / sizeof(type);
