@@ -19,7 +19,11 @@ void export_resource(PythonExporter &exporter) {
 
 auto export_byte_buffer(PythonExporter &exporter) {
     auto mt = py::class_<ByteBuffer, RHIResource>(exporter.module, "ByteBuffer");
-    mt.def_static("create", [](uint size) { return Context::instance().device->create_byte_buffer(size); }, ret_policy::move);
+    mt.def(
+        py::init([](size_t size) {
+            return Context::instance().device->create_byte_buffer(size);
+        }),
+        ret_policy::move);
     mt.def("size_in_byte", [](ByteBuffer &self) {
         return self.size_in_byte();
     });
@@ -88,7 +92,7 @@ void export_device(PythonExporter &exporter) {
         auto &_ = Env::printer();
         CppCodegen a(false);
     };
-    
+
     func();
     exporter.m_device = std::make_unique<py::class_<Device, concepts::Noncopyable>>(m_device);
 
