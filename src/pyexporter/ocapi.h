@@ -81,6 +81,10 @@ void export_array(PythonExporter &exporter, const char *name = nullptr) {
         string ret = class_name + "[";
         for (int i = 0; i < self.size(); ++i) {
             ret += to_str(self[i]) + ",";
+            if (i > 100) {
+                ret += "......" + to_str(self[self.size() - 1]);
+                break;
+            }
         }
         return ret + "]";
     });
