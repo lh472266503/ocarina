@@ -53,8 +53,8 @@ void export_darray(PythonExporter &exporter) {
     mt.def("push_back_", [](StructArray<float> &self, float arg) {
         self.Super::push_back(arg);
     });
-    mt.def("pop_back_", [](StructArray<float> &self, size_t num) {
-        self.pop_back(num);
+    mt.def("pop_back_", [](StructArray<float> &self, size_t size_in_byte) {
+        self.pop_back(size_in_byte / sizeof(float));
     });
     mt.def("load", [](StructArray<float> &self, size_t ofs, size_t size_in_byte) {
         py::array_t<float> ret{static_cast<ssize_t>(size_in_byte / sizeof(float))};
@@ -63,14 +63,20 @@ void export_darray(PythonExporter &exporter) {
                   size_in_byte);
         return ret;
     });
+    mt.def("store", [](StructArray<float> &self, size_t ofs, const py::array_t<float> &arr) {
+        auto index = ofs / sizeof(float);
+        for (int i = 0; i < arr.size(); ++i) {
+            self[i + index] = arr.at(i);
+        }
+    });
     mt.def("clear", [](StructArray<float> &self) {
         self.clear();
     });
     mt.def("size_in_byte", [](StructArray<float> &self) {
         return self.size() * sizeof(float);
     });
-    mt.def("resize_", [](StructArray<float> &self, size_t num) {
-        self.resize(num);
+    mt.def("resize_", [](StructArray<float> &self, size_t size_in_byte) {
+        self.resize(size_in_byte / sizeof(float));
     });
 }
 
