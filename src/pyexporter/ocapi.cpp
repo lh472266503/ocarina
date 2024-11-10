@@ -25,6 +25,55 @@ void Context::destroy_instance() noexcept {
     s_context = nullptr;
 }
 
+template<typename T>
+class StructArray : public vector<T> {
+public:
+    using Super = vector<T>;
+    using Super::Super;
+
+public:
+    void push_back(const py::array_t<T> &arr) {
+        for (int i = 0; i < arr.size(); ++i) {
+            Super::push_back(arr.at(i));
+        }
+    }
+    void pop_back(size_t num) {
+        for (int i = 0; i < num; ++i) {
+            Super::pop_back();
+        }
+    }
+};
+
+void export_darray(PythonExporter &exporter) {
+    auto mt = py::class_<StructArray<float>>(exporter.module, "StructArray");
+    mt.def(py::init());
+    mt.def("push_back_", [](StructArray<float> &self, const py::array_t<float> &arr) {
+        self.push_back(arr);
+    });
+    mt.def("push_back_", [](StructArray<float> &self, float arg) {
+        self.Super::push_back(arg);
+    });
+    mt.def("pop_back_", [](StructArray<float> &self, size_t num) {
+        self.pop_back(num);
+    });
+    mt.def("load", [](StructArray<float> &self, size_t ofs, size_t size_in_byte) {
+        py::array_t<float> ret{static_cast<ssize_t>(size_in_byte / sizeof(float))};
+        oc_memcpy(ret.request().ptr,
+                  reinterpret_cast<const std::byte *>(self.data()) + ofs,
+                  size_in_byte);
+        return ret;
+    });
+    mt.def("clear", [](StructArray<float> &self) {
+        self.clear();
+    });
+    mt.def("size_in_byte", [](StructArray<float> &self) {
+        return self.size() * sizeof(float);
+    });
+    mt.def("resize_", [](StructArray<float> &self, size_t num) {
+        self.resize(num);
+    });
+}
+
 void export_base_type(PythonExporter &exporter) {
     auto &m = exporter.module;
     py::class_<concepts::Noncopyable>(m, "concepts_Noncopyable");
@@ -40,6 +89,7 @@ PYBIND11_MODULE(ocapi, m) {
     PythonExporter python_exporter;
     python_exporter.module = m;
     export_base_type(python_exporter);
+    export_darray(python_exporter);
     export_image(python_exporter);
     export_ast(python_exporter);
     export_rhi(python_exporter);
