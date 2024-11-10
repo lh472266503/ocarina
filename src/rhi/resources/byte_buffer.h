@@ -175,6 +175,12 @@ public:
     [[nodiscard]] BufferUploadCommand *upload(Args &&...args) const noexcept {
         return view(0, size_).upload(OC_FORWARD(args)...);
     }
+    void upload_immediately(const void *data) const noexcept {
+        upload(data, false)->accept(*device_->command_visitor());
+    }
+    void download_immediately(void *data) const noexcept {
+        download(data, false)->accept(*device_->command_visitor());
+    }
     template<typename... Args>
     [[nodiscard]] BufferByteSetCommand *byte_set(Args &&...args) const noexcept {
         return view(0, size_).byte_set(OC_FORWARD(args)...);

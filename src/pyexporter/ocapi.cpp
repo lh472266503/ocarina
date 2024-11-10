@@ -25,25 +25,6 @@ void Context::destroy_instance() noexcept {
     s_context = nullptr;
 }
 
-template<typename T>
-class StructArray : public vector<T> {
-public:
-    using Super = vector<T>;
-    using Super::Super;
-
-public:
-    void push_back(const py::array_t<T> &arr) {
-        for (int i = 0; i < arr.size(); ++i) {
-            Super::push_back(arr.at(i));
-        }
-    }
-    void pop_back(size_t num) {
-        for (int i = 0; i < num; ++i) {
-            Super::pop_back();
-        }
-    }
-};
-
 void export_struct_array(PythonExporter &exporter) {
     auto mt = py::class_<StructArray<float>>(exporter.module, "StructArrayImpl");
     mt.def(py::init());
