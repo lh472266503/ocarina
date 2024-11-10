@@ -45,7 +45,7 @@ public:
 };
 
 void export_struct_array(PythonExporter &exporter) {
-    auto mt = py::class_<StructArray<float>>(exporter.module, "StructArray");
+    auto mt = py::class_<StructArray<float>>(exporter.module, "StructArrayImpl");
     mt.def(py::init());
     mt.def("push_back_", [](StructArray<float> &self, const py::array_t<float> &arr) {
         self.push_back(arr);
