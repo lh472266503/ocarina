@@ -115,15 +115,10 @@ void export_buffer(PythonExporter &exporter, const char *name = nullptr) {
     name = name ? name : TypeDesc<T>::name().data();
     string buffer_name = ocarina::format("Buffer{}", name);
     auto m_buffer = py::class_<Buffer<T>, RHIResource>(exporter.module, buffer_name.c_str());
-    m_buffer.def_static("create", [](uint size) { return Context::instance().device->create_buffer<T>(size); }, ret_policy::move);
+    m_buffer.def(py::init([](uint size) { return Context::instance().device->create_buffer<T>(size); }), ret_policy::move);
     m_buffer.def("size", [](const Buffer<T> &self) { return self.size(); });
     m_buffer.def("upload", [](const Buffer<T> &self, const vector<T> &lst) { self.upload_immediately(lst.data()); });
     m_buffer.def("download", [](const Buffer<T> &self, py::buffer &lst) { self.download_immediately(lst.request().ptr); });
-    m_buffer.def("download", [](const Buffer<T> &self) {
-        array_t arr{};
-        arr.resize(self.size());
-        self.download_immediately(arr.data());
-        return arr; }, ret_policy::move);
 }
 
 template<typename T>

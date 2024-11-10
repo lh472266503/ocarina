@@ -42,12 +42,12 @@ void export_image_class(PythonExporter &exporter) {
     mt.def("as_float_array_t", [](Image &self) {
         using type = float;
         auto size = self.size_in_bytes() / sizeof(type);
-        return py::array_t<type>(size - 0, self.pixel_ptr<type>(), py::none());
+        return py::array_t<type>(size, self.pixel_ptr<type>(), py::none());
     });
     mt.def("as_uchar_array_t", [](Image &self) {
         using type = uchar;
         auto size = self.size_in_bytes() / sizeof(type);
-        return py::array_t<type>(size - 0, self.pixel_ptr<type>(), py::none());
+        return py::array_t<type>(size, self.pixel_ptr<type>(), py::none());
     });
 }
 

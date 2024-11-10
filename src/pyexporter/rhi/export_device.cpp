@@ -30,14 +30,15 @@ auto export_byte_buffer(PythonExporter &exporter) {
     mt.def("upload", [](ByteBuffer &self, const StructArray<float> &arr) {
         self.upload_immediately(arr.data());
     });
+    mt.def("upload", [](ByteBuffer &self, const py::buffer &arr) {
+        self.upload_immediately(arr.request().ptr);
+    });
     mt.def("download", [](ByteBuffer &self, StructArray<float> &arr) {
         self.download_immediately(arr.data());
     });
-    mt.def("download", [](ByteBuffer &self) {
-                StructArray<float> ret;
-                ret.resize(self.size_in_byte() / sizeof(float));
-                self.download_immediately(ret.data());
-                return ret; }, ret_policy::move);
+    mt.def("download", [](const ByteBuffer &self, py::buffer &lst) {
+        self.download_immediately(lst.request().ptr);
+    });
 }
 
 auto export_mesh(PythonExporter &exporter) {

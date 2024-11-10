@@ -44,6 +44,11 @@ void export_struct_array(PythonExporter &exporter) {
                   size_in_byte);
         return ret;
     });
+    mt.def("as_float_array_t", [](StructArray<float> &self) {
+        using type = float;
+        auto size = self.size();
+        return py::array_t<type>(size, self.data(), py::none());
+    });
     mt.def("store", [](StructArray<float> &self, size_t ofs, const py::array_t<float> &arr) {
         auto index = ofs / sizeof(float);
         for (int i = 0; i < arr.size(); ++i) {
