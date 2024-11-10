@@ -124,8 +124,31 @@ auto export_pod_type(PythonExporter &exporter, const char *name = nullptr) {
     mt.def_static("sizeof", []() {
         return sizeof(T);
     });
+    exporter.module.def("hash64", [](const T &arg) {
+        return hash64(arg);
+    });
     mt.def_static("alignof", []() {
         return alignof(T);
+    });
+    mt.def("to_bytes", [](T &self) {
+        py::array_t<uchar, alignof(T)> ret{sizeof(T)};
+        oc_memcpy(ret.request().ptr, addressof(self), ret.size());
+        return ret;
+    });
+    mt.def_static("from_bytes", [](const py::array_t<uchar> &arr) {
+        T ret;
+        oc_memcpy(addressof(ret), arr.request().ptr, sizeof(T));
+        return ret;
+    });
+    mt.def("to_floats", [](T &self) {
+        py::array_t<float, alignof(T)> ret{sizeof(T) / sizeof(float)};
+        oc_memcpy(ret.request().ptr, addressof(self), sizeof(T));
+        return ret;
+    });
+    mt.def_static("from_floats", [](const py::array_t<float> &arr) {
+        T ret;
+        oc_memcpy(addressof(ret), arr.request().ptr, sizeof(T));
+        return ret;
     });
     mt.def("__repr__", [](const T &self) {
         return to_str(self);
