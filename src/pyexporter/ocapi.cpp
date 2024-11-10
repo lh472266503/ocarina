@@ -44,7 +44,7 @@ public:
     }
 };
 
-void export_darray(PythonExporter &exporter) {
+void export_struct_array(PythonExporter &exporter) {
     auto mt = py::class_<StructArray<float>>(exporter.module, "StructArray");
     mt.def(py::init());
     mt.def("push_back_", [](StructArray<float> &self, const py::array_t<float> &arr) {
@@ -95,7 +95,7 @@ PYBIND11_MODULE(ocapi, m) {
     PythonExporter python_exporter;
     python_exporter.module = m;
     export_base_type(python_exporter);
-    export_darray(python_exporter);
+    export_struct_array(python_exporter);
     export_image(python_exporter);
     export_ast(python_exporter);
     export_rhi(python_exporter);
