@@ -231,6 +231,16 @@ void GLWindow::set_size(uint2 size) noexcept {
     }
 }
 
+void GLWindow::show_window() noexcept
+{
+
+}
+
+void GLWindow::hide_window() noexcept
+{
+
+}
+
 }// namespace ocarina
 
 //OC_EXPORT_API ocarina::GLWindow *create(const char *name, ocarina::uint2 initial_size, bool resizable) {

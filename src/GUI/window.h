@@ -83,5 +83,7 @@ public:
     virtual void run_one_frame(UpdateCallback &&draw) noexcept {
         run_one_frame(OC_FORWARD(draw), 0);
     }
+    virtual void show_window() noexcept = 0;
+    virtual void hide_window() noexcept = 0;
 };
 }// namespace ocarina

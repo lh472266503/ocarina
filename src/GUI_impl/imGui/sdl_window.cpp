@@ -51,7 +51,7 @@ uint2 SDLWindow::size() const noexcept {
 }
 
 bool SDLWindow::should_close() const noexcept {
-    return false;//SDL_ShouldMinimizeOnFocusLoss(handle_);//glfwWindowShouldClose(handle_);
+    return should_close_;
 }
 
 void SDLWindow::set_background(const uchar4 *pixels, uint2 size) noexcept {
@@ -98,37 +98,22 @@ void SDLWindow::set_should_close() noexcept {
 }
 
 void SDLWindow::_begin_frame() noexcept {
-    if (!should_close()) {
-        //glfwMakeContextCurrent(handle_);
-        //glfwPollEvents();
-        //ImGui_ImplOpenGL3_NewFrame();
-        //ImGui_ImplGlfw_NewFrame();
-        //ImGui::NewFrame();
-        //ImGuizmo::BeginFrame();
+    //if (!should_close()) {
+        SDL_Event windowEvent;
+        while (SDL_PollEvent(&windowEvent))
+            if (windowEvent.type == SDL_EVENT_QUIT) {
+                should_close_ = true;
+                break;
+            } else if (windowEvent.type == SDL_EVENT_WINDOW_FOCUS_LOST) {
+                break;
+            }
         Window::_begin_frame();
-    }
+    //}
 }
 
 void SDLWindow::_end_frame() noexcept {
     if (!should_close()) {
         Window::_end_frame();
-        // background
-        //if (texture_ != nullptr) {
-        //    ImVec2 background_size{
-        //        static_cast<float>(texture_->size().x),
-        //        static_cast<float>(texture_->size().y)};
-        //    ImGui::GetBackgroundDrawList()->AddImage(
-        //        reinterpret_cast<ImTextureID>(static_cast<uint64_t>(texture_->handle())), {}, background_size);
-        //}
-        //// rendering
-        //ImGui::Render();
-        //int display_w, display_h;
-        //glfwGetFramebufferSize(handle_, &display_w, &display_h);
-        //glViewport(0, 0, display_w, display_h);
-        //glClearColor(clear_color_.x, clear_color_.y, clear_color_.z, clear_color_.w);
-        //glClear(GL_COLOR_BUFFER_BIT);
-        //ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-        //glfwSwapBuffers(handle_);
     }
 }
 
@@ -138,6 +123,15 @@ void SDLWindow::set_size(uint2 size) noexcept {
     } else {
         OC_WARNING("Ignoring resize on non-resizable window.");
     }
+}
+
+void SDLWindow::show_window() noexcept {
+    SDL_ShowWindow(handle_);
+}
+
+void SDLWindow::hide_window() noexcept
+{
+    SDL_HideWindow(handle_);
 }
 
 }// namespace ocarina

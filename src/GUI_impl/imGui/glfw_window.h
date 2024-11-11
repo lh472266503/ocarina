@@ -43,5 +43,7 @@ public:
     void set_background(const Buffer<ocarina::float4> &buffer, ocarina::uint2 size) noexcept override;
     void set_should_close() noexcept override;
     void set_size(uint2 size) noexcept override;
+    void show_window() noexcept override;
+    void hide_window() noexcept override;
 };
 }// namespace ocarina

@@ -185,9 +185,10 @@ void VulkanSwapchain::setup_backbuffers(const VkSwapchainCreateInfoKHR &swapChai
         colorAttachmentView.subresourceRange.layerCount = 1;
         colorAttachmentView.viewType = VK_IMAGE_VIEW_TYPE_2D;
         colorAttachmentView.flags = 0;
+        colorAttachmentView.image = image;
 
-        vkCreateImageView(device, &colorAttachmentView, nullptr, &imageView);
-
+        VkResult err = vkCreateImageView(device, &colorAttachmentView, nullptr, &imageView);
+        VK_CHECK_RESULT(err);
         backBuffers_.push_back({image, imageView});
     }
 }
