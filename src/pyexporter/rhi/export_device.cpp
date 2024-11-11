@@ -54,11 +54,13 @@ auto export_mesh(PythonExporter &exporter) {
                return Context::instance().device->create<RHIMesh>(params);
            }),
            ret_policy ::move);
+    mt.def("build_bvh", [](RHIMesh &self) { return self.build_bvh(); }, ret_policy::reference);
 }
 
 auto export_accel(PythonExporter &exporter) {
     auto mt = py::class_<Accel, RHIResource>(exporter.module, "Accel");
-    mt.def_static("create", []() { return Context::instance().device->create_accel(); }, ret_policy::move);
+    mt.def(py::init([]() { return Context::instance().device->create_accel(); }), ret_policy::move);
+    mt.def("build_bvh", [](Accel &self) { return self.build_bvh(); }, ret_policy::reference);
 }
 
 void export_stream(PythonExporter &exporter) {
