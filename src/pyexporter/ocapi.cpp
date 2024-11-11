@@ -31,9 +31,6 @@ void export_struct_array(PythonExporter &exporter) {
     mt.def("push_back_", [](StructArray<float> &self, const py::array_t<float> &arr) {
         self.push_back(arr);
     });
-    mt.def("push_back_", [](StructArray<float> &self, float arg) {
-        self.Super::push_back(arg);
-    });
     mt.def("pop_back_", [](StructArray<float> &self, size_t size_in_byte) {
         self.pop_back(size_in_byte / sizeof(float));
     });
