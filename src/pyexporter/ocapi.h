@@ -25,8 +25,8 @@ using namespace ocarina;
 #define OC_EXPORT_STRUCT_MEMBER(member, S) \
     .def_readwrite(#member, &S::member)
 
-#define OC_EXPORT_STRUCT(m, S, ...) \
-    py::class_<S>(m, #S)            \
+#define OC_EXPORT_STRUCT(m, S, ...)      \
+    py::class_<S>(m, #S).def(py::init()) \
         MAP_UD(OC_EXPORT_STRUCT_MEMBER, S, ##__VA_ARGS__);
 
 struct PythonExporter {

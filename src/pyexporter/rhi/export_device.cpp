@@ -50,6 +50,10 @@ auto export_mesh(PythonExporter &exporter) {
                      tri_num, usage_tag, geom_tag)
 
     auto mt = py::class_<RHIMesh, RHIResource>(exporter.module, "RHIMesh");
+    mt.def(py::init([](MeshParams params) {
+               return Context::instance().device->create<RHIMesh>(params);
+           }),
+           ret_policy ::move);
 }
 
 auto export_accel(PythonExporter &exporter) {

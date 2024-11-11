@@ -38,8 +38,8 @@ struct MeshParams {
     uint tri_stride{};
     uint tri_num{};
 
-    AccelUsageTag usage_tag;
-    AccelGeomTag geom_tag;
+    AccelUsageTag usage_tag{FAST_TRACE};
+    AccelGeomTag geom_tag{DISABLE_ANYHIT};
 };
 
 }// namespace ocarina

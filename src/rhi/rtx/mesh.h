@@ -49,7 +49,7 @@ RHIMesh Device::create_mesh(const VBuffer &v_buffer, const TBuffer &t_buffer,
     params.usage_tag = usage_tag;
     params.geom_tag = geom_tag;
 
-    return _create<RHIMesh>(params);
+    return create<RHIMesh>(params);
 }
 
 }// namespace ocarina

@@ -87,15 +87,14 @@ public:
 
 private:
     Handle impl_;
-    template<typename T, typename... Args>
-    [[nodiscard]] auto _create(Args &&...args) const noexcept {
-        return T(this->impl_.get(), std::forward<Args>(args)...);
-    }
 
 public:
     explicit Device(Handle impl) : impl_(std::move(impl)) {}
     [[nodiscard]] FileManager *file_manager() const noexcept { return impl_->file_manager_; }
-
+    template<typename T, typename... Args>
+    [[nodiscard]] auto create(Args &&...args) const noexcept {
+        return T(this->impl_.get(), std::forward<Args>(args)...);
+    }
     template<typename T = std::byte, int... Dims>
     [[nodiscard]] Buffer<T, Dims...> create_buffer(size_t size, const string &name = "") const noexcept {
         return Buffer<T, Dims...>(impl_.get(), size, name);
@@ -141,7 +140,7 @@ public:
     [[nodiscard]] auto compile(const Kernel<T> &kernel, const string &shader_desc = "", ShaderTag tag = CS) const noexcept {
         OC_INFO_FORMAT("compile shader : {}", shader_desc.c_str());
         kernel.function()->set_description(shader_desc);
-        return _create<Shader<T>>(kernel.function(), tag);
+        return create<Shader<T>>(kernel.function(), tag);
     }
     template<typename T>
     [[nodiscard]] auto async_compile(Kernel<T> &&kernel, const string &shader_desc = "", ShaderTag tag = CS) const noexcept {
