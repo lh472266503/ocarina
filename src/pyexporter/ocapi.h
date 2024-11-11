@@ -177,7 +177,7 @@ auto export_pod_type(PythonExporter &exporter, const char *name = nullptr) {
         return to_str(self);
     });
     mt.def(py::init<>());
-    if constexpr (!std::is_same_v<vector_element_t<T>, bool>) {
+    if constexpr (sizeof(T) >= sizeof(float) && is_scalar_v<T>) {
         export_container<T>(exporter, name);
     }
     return mt;
