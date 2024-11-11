@@ -9,8 +9,6 @@
 namespace py = pybind11;
 using namespace ocarina;
 
-void export_resource(PythonExporter &exporter);
-
 void export_device(PythonExporter &exporter);
 
 void export_commands(PythonExporter &exporter);
@@ -41,7 +39,6 @@ void export_init(PythonExporter &exporter) noexcept {
 }
 
 void export_rhi(PythonExporter &exporter) {
-    export_resource(exporter);
     export_commands(exporter);
     export_device(exporter);
     export_init(exporter);

@@ -71,6 +71,7 @@ void export_base_type(PythonExporter &exporter) {
     py::class_<concepts::Noncopyable>(m, "concepts_Noncopyable");
     py::class_<RTTI>(m, "RTTI");
     py::class_<Hashable, RTTI>(m, "Hashable");
+    py::class_<RHIResource, concepts::Noncopyable>(m, "RHIResource");
     exporter.module.def("hash64", [](const string &str) {
         return hash64(str);
     });
@@ -81,11 +82,11 @@ PYBIND11_MODULE(ocapi, m) {
     PythonExporter python_exporter;
     python_exporter.module = m;
     export_base_type(python_exporter);
+    export_math(python_exporter);
     export_struct_array(python_exporter);
     export_image(python_exporter);
     export_ast(python_exporter);
     export_rhi(python_exporter);
-    export_math(python_exporter);
     export_window(python_exporter);
     export_rtx(python_exporter);
 }

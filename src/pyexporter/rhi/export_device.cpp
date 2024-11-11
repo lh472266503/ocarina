@@ -12,11 +12,6 @@
 namespace py = pybind11;
 using namespace ocarina;
 
-void export_resource(PythonExporter &exporter) {
-    auto &m = exporter.module;
-    py::class_<RHIResource>(m, "RHIResource");
-}
-
 auto export_byte_buffer(PythonExporter &exporter) {
     auto mt = py::class_<ByteBuffer, RHIResource>(exporter.module, "ByteBuffer");
     mt.def(
