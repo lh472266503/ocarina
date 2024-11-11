@@ -22,6 +22,7 @@ auto export_byte_buffer(PythonExporter &exporter) {
     mt.def("size_in_byte", [](ByteBuffer &self) {
         return self.size_in_byte();
     });
+    mt.def("handle", [](ByteBuffer &self) { return self.handle(); });
     mt.def("upload", [](ByteBuffer &self, const StructArray<float> &arr) {
         self.upload_immediately(arr.data());
     });
@@ -37,6 +38,17 @@ auto export_byte_buffer(PythonExporter &exporter) {
 }
 
 auto export_mesh(PythonExporter &exporter) {
+    OC_EXPORT_ENUM(exporter.module, AccelUsageTag, FAST_BUILD,
+                   FAST_UPDATE,
+                   FAST_TRACE)
+    OC_EXPORT_ENUM(exporter.module, AccelGeomTag, NONE,
+                   DISABLE_ANYHIT,
+                   SINGLE_ANYHIT_CALL,
+                   DISABLE_FACE_CULLING)
+    OC_EXPORT_STRUCT(exporter.module, MeshParams, vert_handle,
+                     vert_stride, vert_num, tri_handle, tri_stride,
+                     tri_num, usage_tag, geom_tag)
+
     auto mt = py::class_<RHIMesh, RHIResource>(exporter.module, "RHIMesh");
 }
 

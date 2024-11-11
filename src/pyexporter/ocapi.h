@@ -22,6 +22,13 @@ using namespace ocarina;
     py::enum_<Enum>(m, #Enum)        \
         MAP_UD(OC_EXPORT_ENUM_VALUE, Enum, ##__VA_ARGS__);
 
+#define OC_EXPORT_STRUCT_MEMBER(member, S) \
+    .def_readwrite(#member, &S::member)
+
+#define OC_EXPORT_STRUCT(m, S, ...) \
+    py::class_<S>(m, #S)            \
+        MAP_UD(OC_EXPORT_STRUCT_MEMBER, S, ##__VA_ARGS__);
+
 struct PythonExporter {
     py::module module;
     UP<py::class_<Device, concepts::Noncopyable>> m_device;
@@ -98,7 +105,7 @@ void export_array(PythonExporter &exporter, const char *name = nullptr) {
     mt.def("as_float_array_t", [](array_t &self) {
         using type = float;
         auto size = self.size();
-        return py::array_t<type>(size, reinterpret_cast<type *>((void*)(self.data())), py::none());
+        return py::array_t<type>(size, reinterpret_cast<type *>((void *)(self.data())), py::none());
     });
     mt.def("clear", [](array_t &self) { self.clear(); });
     mt.def("__repr__", [&](array_t &self) {
@@ -119,11 +126,12 @@ void export_buffer(PythonExporter &exporter, const char *name = nullptr) {
     using array_t = python::Array<T>;
     name = name ? name : TypeDesc<T>::name().data();
     string buffer_name = ocarina::format("Buffer{}", name);
-    auto m_buffer = py::class_<Buffer<T>, RHIResource>(exporter.module, buffer_name.c_str());
-    m_buffer.def(py::init([](uint size) { return Context::instance().device->create_buffer<T>(size); }), ret_policy::move);
-    m_buffer.def("size", [](const Buffer<T> &self) { return self.size(); });
-    m_buffer.def("upload", [](const Buffer<T> &self, const vector<T> &lst) { self.upload_immediately(lst.data()); });
-    m_buffer.def("download", [](const Buffer<T> &self, py::buffer &lst) { self.download_immediately(lst.request().ptr); });
+    auto mt = py::class_<Buffer<T>, RHIResource>(exporter.module, buffer_name.c_str());
+    mt.def(py::init([](uint size) { return Context::instance().device->create_buffer<T>(size); }), ret_policy::move);
+    mt.def("size", [](const Buffer<T> &self) { return self.size(); });
+    mt.def("handle", [](const Buffer<T> &self) { return self.handle(); });
+    mt.def("upload", [](const Buffer<T> &self, const vector<T> &lst) { self.upload_immediately(lst.data()); });
+    mt.def("download", [](const Buffer<T> &self, py::buffer &lst) { self.download_immediately(lst.request().ptr); });
 }
 
 template<typename T>
