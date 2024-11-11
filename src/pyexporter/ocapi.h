@@ -95,6 +95,11 @@ void export_array(PythonExporter &exporter, const char *name = nullptr) {
     mt.def("__setitem__", [](array_t &self, size_t i, const T &t) { self[i] = t; });
     mt.def("resize", [](array_t &self, const uint &t, const T &elm) { self.resize(t, elm); });
     mt.def("resize", [](array_t &self, const uint &t) { self.resize(t); });
+    mt.def("as_float_array_t", [](array_t &self) {
+        using type = float;
+        auto size = self.size();
+        return py::array_t<type>(size, reinterpret_cast<type *>((void*)(self.data())), py::none());
+    });
     mt.def("clear", [](array_t &self) { self.clear(); });
     mt.def("__repr__", [&](array_t &self) {
         string ret = class_name + "[";
