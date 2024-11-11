@@ -94,7 +94,7 @@ void SDLWindow::unbind_buffer(ocarina::uint &handle) const noexcept {
 }
 
 void SDLWindow::set_should_close() noexcept {
-    //glfwSetWindowShouldClose(handle_, true);
+    should_close_ = true;
 }
 
 void SDLWindow::_begin_frame() noexcept {
