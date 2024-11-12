@@ -65,12 +65,15 @@ auto export_accel(PythonExporter &exporter) {
     auto mt = py::class_<Accel, RHIResource>(exporter.module, "Accel");
     mt.def(py::init([]() { return Context::instance().device->create_accel(); }), ret_policy::move);
     mt.def("build_bvh", [](Accel &self) { return self.build_bvh(); }, ret_policy::reference);
+    mt.def("add_instance", [](Accel &self, RHIMesh *mesh, float4x4 mat) {
+        self.add_instance(std::move(*mesh), mat);
+    });
 }
 
 void export_stream(PythonExporter &exporter) {
     auto mt = py::class_<Stream, RHIResource>(exporter.module, "Stream");
-    mt.def("add", [](Stream &self, Command *cmd) -> Stream & { return self << cmd; }, ret_policy ::reference);
-    mt.def("sync", [](Stream &self) -> Stream & { return self << synchronize(); }, ret_policy ::reference);
+    mt.def("add", [](Stream &self, Command *cmd) -> Stream & { return self << cmd; }, ret_policy::reference);
+    mt.def("sync", [](Stream &self) -> Stream & { return self << synchronize(); }, ret_policy::reference);
     mt.def("commit", [&](Stream &self) { self.commit(Commit{}); });
 }
 
