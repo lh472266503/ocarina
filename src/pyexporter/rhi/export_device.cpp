@@ -116,6 +116,7 @@ void export_device(PythonExporter &exporter) {
 
     auto &m = exporter.module;
     auto m_device = py::class_<Device, concepts::Noncopyable>(m, "Device");
+    m_device.def("init_rtx", [](Device &device) { return device.init_rtx(); });
 
     auto func = [] {
         auto &_ = Env::printer();
