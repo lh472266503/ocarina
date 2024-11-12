@@ -29,12 +29,16 @@ auto export_byte_buffer(PythonExporter &exporter) {
     mt.def("upload_immediately", [](ByteBuffer &self, const py::buffer &arr) {
         self.upload_immediately(arr.request().ptr);
     });
+    mt.def("upload", [](ByteBuffer &self, const StructArray<float> &arr) { return self.upload(arr.data()); }, ret_policy::reference);
+    mt.def("upload", [](ByteBuffer &self, const py::buffer &arr) { return self.upload(arr.request().ptr); }, ret_policy::reference);
     mt.def("download_immediately", [](ByteBuffer &self, StructArray<float> &arr) {
         self.download_immediately(arr.data());
     });
     mt.def("download_immediately", [](const ByteBuffer &self, py::buffer &lst) {
         self.download_immediately(lst.request().ptr);
     });
+    mt.def("download", [](ByteBuffer &self, StructArray<float> &arr) { return self.download(arr.data()); }, ret_policy::reference);
+    mt.def("download", [](ByteBuffer &self, py::buffer &arr) { return self.download(arr.request().ptr); }, ret_policy::reference);
 }
 
 auto export_mesh(PythonExporter &exporter) {
@@ -66,6 +70,7 @@ auto export_accel(PythonExporter &exporter) {
 void export_stream(PythonExporter &exporter) {
     auto mt = py::class_<Stream, RHIResource>(exporter.module, "Stream");
     mt.def("add", [](Stream &self, Command *cmd) -> Stream & { return self << cmd; }, ret_policy ::reference);
+    mt.def("sync", [](Stream &self) -> Stream & { return self << synchronize(); }, ret_policy ::reference);
     mt.def("commit", [&](Stream &self) { self.commit(Commit{}); });
 }
 
@@ -91,6 +96,8 @@ void export_texture(PythonExporter &exporter) {
     mt.def("download_immediately", [](Texture &self, py::buffer &buffer) {
         self.download_immediately(buffer.request().ptr);
     });
+    mt.def("upload", [](Texture &self, const py::buffer &buffer) { return self.upload(buffer.request().ptr); }, ret_policy::reference);
+    mt.def("download", [](Texture &self, py::buffer &buffer) { return self.download(buffer.request().ptr); }, ret_policy::reference);
 }
 
 void export_device(PythonExporter &exporter) {
