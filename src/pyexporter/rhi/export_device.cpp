@@ -23,16 +23,16 @@ auto export_byte_buffer(PythonExporter &exporter) {
         return self.size_in_byte();
     });
     mt.def("handle", [](ByteBuffer &self) { return self.handle(); });
-    mt.def("upload", [](ByteBuffer &self, const StructArray<float> &arr) {
+    mt.def("upload_immediately", [](ByteBuffer &self, const StructArray<float> &arr) {
         self.upload_immediately(arr.data());
     });
-    mt.def("upload", [](ByteBuffer &self, const py::buffer &arr) {
+    mt.def("upload_immediately", [](ByteBuffer &self, const py::buffer &arr) {
         self.upload_immediately(arr.request().ptr);
     });
-    mt.def("download", [](ByteBuffer &self, StructArray<float> &arr) {
+    mt.def("download_immediately", [](ByteBuffer &self, StructArray<float> &arr) {
         self.download_immediately(arr.data());
     });
-    mt.def("download", [](const ByteBuffer &self, py::buffer &lst) {
+    mt.def("download_immediately", [](const ByteBuffer &self, py::buffer &lst) {
         self.download_immediately(lst.request().ptr);
     });
 }
@@ -85,10 +85,10 @@ void export_texture(PythonExporter &exporter) {
         return self->pixel_storage();
     });
     mt.def_property_readonly("pixel_num", &Texture::pixel_num);
-    mt.def("upload", [](Texture &self, const py::buffer &buffer) {
+    mt.def("upload_immediately", [](Texture &self, const py::buffer &buffer) {
         self.upload_immediately(buffer.request().ptr);
     });
-    mt.def("download", [](Texture &self, py::buffer &buffer) {
+    mt.def("download_immediately", [](Texture &self, py::buffer &buffer) {
         self.download_immediately(buffer.request().ptr);
     });
 }
