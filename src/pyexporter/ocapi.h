@@ -130,8 +130,10 @@ void export_buffer(PythonExporter &exporter, const char *name = nullptr) {
     mt.def(py::init([](uint size) { return Context::instance().device->create_buffer<T>(size); }), ret_policy::move);
     mt.def("size", [](const Buffer<T> &self) { return self.size(); });
     mt.def("handle", [](const Buffer<T> &self) { return self.handle(); });
-    mt.def("upload_immediately", [](const Buffer<T> &self, const vector<T> &lst) { self.upload_immediately(lst.data()); });
+    mt.def("upload_immediately", [](const Buffer<T> &self, const py::buffer &lst) { self.upload_immediately(lst.request().ptr); });
     mt.def("download_immediately", [](const Buffer<T> &self, py::buffer &lst) { self.download_immediately(lst.request().ptr); });
+    mt.def("upload", [](const Buffer<T> &self, const py::buffer &lst) { return self.upload(lst.request().ptr); }, ret_policy::reference);
+    mt.def("download", [](const Buffer<T> &self, py::buffer &lst) { return self.download(lst.request().ptr); }, ret_policy::reference);
 }
 
 template<typename T>
