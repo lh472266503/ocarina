@@ -28,7 +28,7 @@ void export_window(PythonExporter &exporter) {
         self.set_background(reinterpret_cast<uchar4 *>(buffer.request().ptr));
     });
 
-    mt.def("set_background", [](Window &self, const python::Array<float4> &arr) {
+    mt.def("set_background", [](Window &self, const python::DArray<float4> &arr) {
         self.set_background(arr.data());
     });
 

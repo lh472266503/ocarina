@@ -52,7 +52,7 @@ struct Context {
 };
 
 template<typename T>
-class StructArray : public vector<T> {
+class StructDynamicArray : public vector<T> {
 public:
     using Super = vector<T>;
     using Super::Super;
@@ -72,7 +72,7 @@ public:
 
 namespace ocarina::python {
 template<typename T>
-class Array : public vector<T> {
+class DArray : public vector<T> {
 public:
     using Super = vector<T>;
     using Super::Super;
@@ -81,9 +81,9 @@ public:
 
 template<typename T>
 void export_array(PythonExporter &exporter, const char *name = nullptr) {
-    using array_t = python::Array<T>;
+    using array_t = python::DArray<T>;
     name = name ? name : TypeDesc<T>::name().data();
-    static string class_name = ocarina::format("Array{}", name);
+    static string class_name = ocarina::format("DynamicArray{}", name);
     auto mt = py::class_<array_t>(exporter.module, class_name.c_str());
     mt.def_static("from_list", [](const py::list &lst) {
         array_t arr;
@@ -123,7 +123,6 @@ void export_array(PythonExporter &exporter, const char *name = nullptr) {
 
 template<typename T>
 void export_buffer(PythonExporter &exporter, const char *name = nullptr) {
-    using array_t = python::Array<T>;
     name = name ? name : TypeDesc<T>::name().data();
     string buffer_name = ocarina::format("Buffer{}", name);
     auto mt = py::class_<Buffer<T>, RHIResource>(exporter.module, buffer_name.c_str());

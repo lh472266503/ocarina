@@ -23,21 +23,21 @@ auto export_byte_buffer(PythonExporter &exporter) {
         return self.size_in_byte();
     });
     mt.def("handle", [](ByteBuffer &self) { return self.handle(); });
-    mt.def("upload_immediately", [](ByteBuffer &self, const StructArray<float> &arr) {
+    mt.def("upload_immediately", [](ByteBuffer &self, const StructDynamicArray<float> &arr) {
         self.upload_immediately(arr.data());
     });
     mt.def("upload_immediately", [](ByteBuffer &self, const py::buffer &arr) {
         self.upload_immediately(arr.request().ptr);
     });
-    mt.def("upload", [](ByteBuffer &self, const StructArray<float> &arr) { return self.upload(arr.data()); }, ret_policy::reference);
+    mt.def("upload", [](ByteBuffer &self, const StructDynamicArray<float> &arr) { return self.upload(arr.data()); }, ret_policy::reference);
     mt.def("upload", [](ByteBuffer &self, const py::buffer &arr) { return self.upload(arr.request().ptr); }, ret_policy::reference);
-    mt.def("download_immediately", [](ByteBuffer &self, StructArray<float> &arr) {
+    mt.def("download_immediately", [](ByteBuffer &self, StructDynamicArray<float> &arr) {
         self.download_immediately(arr.data());
     });
     mt.def("download_immediately", [](const ByteBuffer &self, py::buffer &lst) {
         self.download_immediately(lst.request().ptr);
     });
-    mt.def("download", [](ByteBuffer &self, StructArray<float> &arr) { return self.download(arr.data()); }, ret_policy::reference);
+    mt.def("download", [](ByteBuffer &self, StructDynamicArray<float> &arr) { return self.download(arr.data()); }, ret_policy::reference);
     mt.def("download", [](ByteBuffer &self, py::buffer &arr) { return self.download(arr.request().ptr); }, ret_policy::reference);
 }
 
