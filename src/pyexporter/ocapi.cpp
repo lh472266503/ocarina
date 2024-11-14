@@ -74,6 +74,25 @@ void export_base_type(PythonExporter &exporter) {
     });
 }
 
+void export_byte_func(PythonExporter &exporter) {
+    exporter.module.def("to_bytes", [](const basic_literal_t &v) {
+        return ocarina::visit([&]<typename T>(const T &t) {
+            return py::bytes(reinterpret_cast<const char *>(addressof(v)), sizeof(T));
+        },
+                              v);
+    });
+    exporter.module.def("bytes2int", [](const py::bytes &bt) {
+        int ret;
+        oc_memcpy(addressof(ret), py::buffer(bt).request().ptr, sizeof(int));
+        return ret;
+    });
+    exporter.module.def("bytes2float", [](const py::bytes &bt) {
+        float ret;
+        oc_memcpy(addressof(ret), py::buffer(bt).request().ptr, sizeof(float));
+        return ret;
+    });
+}
+
 PYBIND11_MODULE(ocapi, m) {
     auto &context = Context::instance();
     PythonExporter python_exporter;
@@ -86,4 +105,5 @@ PYBIND11_MODULE(ocapi, m) {
     export_rhi(python_exporter);
     export_window(python_exporter);
     export_rtx(python_exporter);
+    export_byte_func(python_exporter);
 }
