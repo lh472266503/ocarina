@@ -163,13 +163,11 @@ auto export_pod_type(PythonExporter &exporter, const char *name = nullptr) {
         return alignof(T);
     });
     mt.def("to_bytes", [](T &self) {
-        py::array_t<uchar, alignof(T)> ret{sizeof(T)};
-        oc_memcpy(ret.request().ptr, addressof(self), ret.size());
-        return ret;
+        return py::bytes(reinterpret_cast<const char *>(addressof(self)), sizeof(T));
     });
-    mt.def_static("from_bytes", [](const py::array_t<uchar> &arr) {
+    mt.def_static("from_bytes", [](const py::bytes &byte) {
         T ret;
-        oc_memcpy(addressof(ret), arr.request().ptr, sizeof(T));
+        oc_memcpy(addressof(ret), py::buffer(byte).request().ptr, sizeof(T));
         return ret;
     });
     mt.def("to_floats", [](T &self) {
