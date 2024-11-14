@@ -25,44 +25,6 @@ void Context::destroy_instance() noexcept {
     s_context = nullptr;
 }
 
-void export_struct_array(PythonExporter &exporter) {
-    auto mt = py::class_<StructDynamicArray<float>>(exporter.module, "StructDynamicArrayImpl");
-    mt.def(py::init());
-    mt.def("push_back_", [](StructDynamicArray<float> &self, const py::array_t<float> &arr) {
-        self.push_back(arr);
-    });
-    mt.def("pop_back_", [](StructDynamicArray<float> &self, size_t size_in_byte) {
-        self.pop_back(size_in_byte / sizeof(float));
-    });
-    mt.def("load", [](StructDynamicArray<float> &self, size_t ofs, size_t size_in_byte) {
-        py::array_t<float> ret{static_cast<ssize_t>(size_in_byte / sizeof(float))};
-        oc_memcpy(ret.request().ptr,
-                  reinterpret_cast<const std::byte *>(self.data()) + ofs,
-                  size_in_byte);
-        return ret;
-    });
-    mt.def("as_float_array_t", [](StructDynamicArray<float> &self) {
-        using type = float;
-        auto size = self.size();
-        return py::array_t<type>(size, self.data(), py::none());
-    });
-    mt.def("store", [](StructDynamicArray<float> &self, size_t ofs, const py::array_t<float> &arr) {
-        auto index = ofs / sizeof(float);
-        for (int i = 0; i < arr.size(); ++i) {
-            self[i + index] = arr.at(i);
-        }
-    });
-    mt.def("clear", [](StructDynamicArray<float> &self) {
-        self.clear();
-    });
-    mt.def("size_in_byte", [](StructDynamicArray<float> &self) {
-        return self.size() * sizeof(float);
-    });
-    mt.def("resize_", [](StructDynamicArray<float> &self, size_t size_in_byte) {
-        self.resize(size_in_byte / sizeof(float));
-    });
-}
-
 void export_base_type(PythonExporter &exporter) {
     auto &m = exporter.module;
     py::class_<concepts::Noncopyable>(m, "concepts_Noncopyable");
@@ -82,13 +44,21 @@ void export_byte_func(PythonExporter &exporter) {
                               v);
     });
     exporter.module.def("bytes2int", [](const py::bytes &bt) {
-        int ret;
-        oc_memcpy(addressof(ret), py::buffer(bt).request().ptr, sizeof(int));
+        using T = int;
+        T ret;
+        oc_memcpy(addressof(ret), py::buffer(bt).request().ptr, sizeof(T));
+        return ret;
+    });
+    exporter.module.def("bytes2uint", [](const py::bytes &bt) {
+        using T = uint;
+        T ret;
+        oc_memcpy(addressof(ret), py::buffer(bt).request().ptr, sizeof(T));
         return ret;
     });
     exporter.module.def("bytes2float", [](const py::bytes &bt) {
-        float ret;
-        oc_memcpy(addressof(ret), py::buffer(bt).request().ptr, sizeof(float));
+        using T = float;
+        T ret;
+        oc_memcpy(addressof(ret), py::buffer(bt).request().ptr, sizeof(T));
         return ret;
     });
 }
@@ -99,7 +69,6 @@ PYBIND11_MODULE(ocapi, m) {
     python_exporter.module = m;
     export_base_type(python_exporter);
     export_math(python_exporter);
-    export_struct_array(python_exporter);
     export_image(python_exporter);
     export_ast(python_exporter);
     export_rhi(python_exporter);

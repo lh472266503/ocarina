@@ -51,96 +51,6 @@ struct Context {
     }
 };
 
-template<typename T>
-class StructDynamicArray : public vector<T> {
-public:
-    using Super = vector<T>;
-    using Super::Super;
-
-public:
-    void push_back(const py::array_t<T> &arr) {
-        for (int i = 0; i < arr.size(); ++i) {
-            Super::push_back(arr.at(i));
-        }
-    }
-    void pop_back(size_t num) {
-        for (int i = 0; i < num; ++i) {
-            Super::pop_back();
-        }
-    }
-};
-
-namespace ocarina::python {
-template<typename T>
-class DArray : public vector<T> {
-public:
-    using Super = vector<T>;
-    using Super::Super;
-};
-}// namespace ocarina::python
-
-template<typename T>
-void export_array(PythonExporter &exporter, const char *name = nullptr) {
-    using array_t = python::DArray<T>;
-    name = name ? name : TypeDesc<T>::name().data();
-    static string class_name = ocarina::format("DynamicArray{}", name);
-    auto mt = py::class_<array_t>(exporter.module, class_name.c_str());
-    mt.def_static("from_list", [](const py::list &lst) {
-        array_t arr;
-        arr.reserve(lst.size());
-        for (int i = 0; i < lst.size(); ++i) {
-            py::object item = lst[i];
-            arr.push_back(item.template cast<T>());
-        }
-        return arr;
-    });
-    mt.def(py::init<>());
-    mt.def("push_back", [](array_t &self, const T &t) { self.push_back(t); });
-    mt.def("pop_back", [](array_t &self) { self.pop_back(); });
-    mt.def("size", [](array_t &self) { return self.size(); });
-    mt.def("__getitem__", [](array_t &self, size_t i) { return self[i]; });
-    mt.def("__setitem__", [](array_t &self, size_t i, const T &t) { self[i] = t; });
-    mt.def("resize", [](array_t &self, const uint &t, const T &elm) { self.resize(t, elm); });
-    mt.def("resize", [](array_t &self, const uint &t) { self.resize(t); });
-    mt.def("as_float_array_t", [](array_t &self) {
-        using type = float;
-        auto size = self.size();
-        return py::array_t<type>(size, reinterpret_cast<type *>((void *)(self.data())), py::none());
-    });
-    mt.def("clear", [](array_t &self) { self.clear(); });
-    mt.def("__repr__", [&](array_t &self) {
-        string ret = class_name + "[";
-        for (int i = 0; i < self.size(); ++i) {
-            ret += to_str(self[i]) + ",";
-            if (i > 100) {
-                ret += "......" + to_str(self[self.size() - 1]);
-                break;
-            }
-        }
-        return ret + "]";
-    });
-}
-
-template<typename T>
-void export_buffer(PythonExporter &exporter, const char *name = nullptr) {
-    name = name ? name : TypeDesc<T>::name().data();
-    string buffer_name = ocarina::format("Buffer{}", name);
-    auto mt = py::class_<Buffer<T>, RHIResource>(exporter.module, buffer_name.c_str());
-    mt.def(py::init([](uint size) { return Context::instance().device->create_buffer<T>(size); }), ret_policy::move);
-    mt.def("size", [](const Buffer<T> &self) { return self.size(); });
-    mt.def("handle", [](const Buffer<T> &self) { return self.handle(); });
-    mt.def("upload_immediately", [](const Buffer<T> &self, const py::buffer &lst) { self.upload_immediately(lst.request().ptr); });
-    mt.def("download_immediately", [](const Buffer<T> &self, py::buffer &lst) { self.download_immediately(lst.request().ptr); });
-    mt.def("upload", [](const Buffer<T> &self, const py::buffer &lst) { return self.upload(lst.request().ptr); }, ret_policy::reference);
-    mt.def("download", [](const Buffer<T> &self, py::buffer &lst) { return self.download(lst.request().ptr); }, ret_policy::reference);
-}
-
-template<typename T>
-void export_container(PythonExporter &exporter, const char *name = nullptr) {
-    export_array<T>(exporter, name);
-    export_buffer<T>(exporter, name);
-}
-
 template<typename T, typename... Base>
 requires(is_basic_v<T> || is_struct_v<T>)
 auto export_pod_type(PythonExporter &exporter, const char *name = nullptr) {
@@ -184,9 +94,6 @@ auto export_pod_type(PythonExporter &exporter, const char *name = nullptr) {
         return to_str(self);
     });
     mt.def(py::init<>());
-    if constexpr (sizeof(T) >= sizeof(float) && is_scalar_v<T>) {
-        export_container<T>(exporter, name);
-    }
     return mt;
 }
 

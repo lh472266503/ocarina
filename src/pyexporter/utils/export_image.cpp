@@ -39,12 +39,12 @@ void export_image_class(PythonExporter &exporter) {
     mt.def_property_readonly("pixel_num", &Image::pixel_num);
     mt.def_property_readonly("channel_num", &Image::channel_num);
     mt.def_property_readonly("size_in_bytes", &Image::size_in_bytes);
-    mt.def("as_float_array_t", [](Image &self) {
+    mt.def("as_float_array", [](Image &self) {
         using type = float;
         auto size = self.size_in_bytes() / sizeof(type);
         return py::array_t<type>(size, self.pixel_ptr<type>(), py::none());
     });
-    mt.def("as_uchar_array_t", [](Image &self) {
+    mt.def("as_uchar_array", [](Image &self) {
         using type = uchar;
         auto size = self.size_in_bytes() / sizeof(type);
         return py::array_t<type>(size, self.pixel_ptr<type>(), py::none());
