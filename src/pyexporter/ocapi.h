@@ -72,6 +72,9 @@ auto export_pod_type(PythonExporter &exporter, const char *name = nullptr) {
     mt.def_static("alignof", []() {
         return alignof(T);
     });
+    mt.def_static("max_member_size", []() {
+        return Type::of<T>()->max_member_size();
+    });
     mt.def("to_bytes", [](T &self) {
         return py::bytes(reinterpret_cast<const char *>(addressof(self)), sizeof(T));
     });
