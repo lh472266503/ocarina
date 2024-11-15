@@ -63,7 +63,7 @@ void export_op_enum(PythonExporter &exporter) {
 }
 
 void export_expressions(PythonExporter &exporter) {
-
+    export_op_enum(exporter);
     py::class_<ASTNode>(exporter.module, "ASTNode")
         .def("check_context", &ASTNode::check_context);
     py::class_<Expression, ASTNode, concepts::Noncopyable, Hashable>(exporter.module, "Expression")
