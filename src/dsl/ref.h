@@ -257,7 +257,7 @@ template<>
 struct Ref<Accel> {
 public:
     [[nodiscard]] inline Var<TriangleHit> trace_closest(const Var<Ray> &ray) const noexcept;// implement in ref.inl
-    [[nodiscard]] inline Var<bool> trace_occlusion(const Var<Ray> &ray) const noexcept;   // implement in ref.inl
+    [[nodiscard]] inline Var<bool> trace_occlusion(const Var<Ray> &ray) const noexcept;     // implement in ref.inl
     OC_REF_COMMON(Ref<Accel>)
 };
 
@@ -516,7 +516,8 @@ public:
     struct Ref<S> {                                       \
     public:                                               \
         using this_type = S;                              \
-        static constexpr auto cname = #S;                 \
+        static constexpr const char *cname =              \
+            TypeDesc<S>::name().data();                   \
         OC_REF_COMMON(S)                                  \
     public:                                               \
         void                                              \

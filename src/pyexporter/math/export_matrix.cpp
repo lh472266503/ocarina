@@ -58,7 +58,7 @@ template<size_t N, size_t M>
 auto export_matrix_base(PythonExporter &exporter) {
     auto &m = exporter.module;
     string cls_name = ocarina::format("float{}x{}", N, M);
-    auto mt = export_pod_type<Matrix<N, M>>(exporter, cls_name.c_str());
+    auto mt = export_pod_type<Matrix<N, M>>(exporter);
     mt.def("__getitem__", [](Matrix<N, M> &self, size_t i) { return &self[i]; }, py::return_value_policy::reference_internal);
     mt.def("__setitem__", [](Matrix<N, M> &self, size_t i, Vector<float, M> k) { self[i] = k; });
     mt.def("__neg__", [](Matrix<N, M> &self) { return -self; }, py::is_operator());
@@ -100,10 +100,6 @@ auto export_matrix_base(PythonExporter &exporter) {
         return [&]<size_t... i>(std::index_sequence<i...>) {
             return Matrix<N, M>(Vector<float, M>(a[i].data())...);
         }(std::make_index_sequence<N>());
-    });
-
-    mt.def("__repr__", [](Matrix<N, M> &self) {
-        return to_str(self);
     });
 
     return mt;

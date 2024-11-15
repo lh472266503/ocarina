@@ -22,8 +22,8 @@ void Function::StructureSet::add(const ocarina::Type *type) noexcept {
     struct_lst.push_back(type);
 }
 
-ocarina::stack<Function *> &Function::_function_stack() noexcept {
-    static ocarina::stack<Function *> ret;
+Function::stack_type &Function::_function_stack() noexcept {
+    static stack_type ret;
     return ret;
 }
 
@@ -185,12 +185,11 @@ void Function::correct_used_structures() noexcept {
     }
 }
 
-void Function::_push(ocarina::Function *f) {
+void Function::push(stack_type::value_type f) {
     _function_stack().push(f);
 }
 
-void Function::_pop(ocarina::Function *f) {
-    OC_ASSERT(f == _function_stack().top());
+void Function::pop(stack_type::value_type f) {
     _function_stack().pop();
 }
 
@@ -455,7 +454,7 @@ Function *Function::current() noexcept {
     if (_function_stack().empty()) {
         return nullptr;
     }
-    return _function_stack().top();
+    return _function_stack().top().get();
 }
 
 ScopeStmt *Function::scope() noexcept {

@@ -238,27 +238,9 @@ struct TypeDesc<BindlessArray> {
                 MAP_LIST(OC_MAKE_STRUCT_MEMBER_DESC, ##__VA_ARGS__));                \
             return s;                                                                \
         }                                                                            \
+        static constexpr string_view name() noexcept {                               \
+            return #S;                                                               \
+        }                                                                            \
     };
-
-template<typename T>
-[[nodiscard]] string to_str(const T &val) noexcept {
-    static string type_string = string(TypeDesc<T>::name());
-    if constexpr (is_vector2_v<T>) {
-        return ocarina::format(type_string + "({}, {})", val.x, val.y);
-    } else if constexpr (is_vector3_v<T>) {
-        return ocarina::format(type_string + "({}, {}, {})", val.x, val.y, val.z);
-    } else if constexpr (is_vector4_v<T>) {
-        return ocarina::format(type_string + "({}, {}, {}, {})", val.x, val.y, val.z, val.w);
-    } else if constexpr (is_matrix2_v<T>) {
-        return ocarina::format("[{},\n {}]", to_str(val[0]), to_str(val[1]));
-    } else if constexpr (is_matrix3_v<T>) {
-        return ocarina::format("[{},\n {},\n {}]", to_str(val[0]), to_str(val[1]), to_str(val[2]));
-    } else if constexpr (is_matrix4_v<T>) {
-        return ocarina::format("[{},\n {},\n {},\n {}]", to_str(val[0]), to_str(val[1]), to_str(val[2]), to_str(val[3]));
-    } else {
-        static_assert(always_false_v<T>);
-        return "";
-    }
-}
 
 }// namespace ocarina

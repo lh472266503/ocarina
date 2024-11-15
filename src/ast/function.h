@@ -60,6 +60,8 @@ public:
         void add(const Type *type) noexcept;
     };
 
+    using stack_type = stack<SP<Function>>;
+
 private:
     ocarina::vector<ocarina::unique_ptr<Expression>> all_expressions_;
     ocarina::vector<ocarina::unique_ptr<Statement>> all_statements_;
@@ -105,17 +107,16 @@ private:
     friend class Variable;
 
 private:
-    static ocarina::stack<Function *> &_function_stack() noexcept;
-    static void _push(Function *f);
-    static void _pop(Function *f);
+    static stack_type &_function_stack() noexcept;
+
     [[nodiscard]] uint _next_variable_uid() noexcept;
     void mark_variable_usage(uint uid, Usage usage) noexcept;
     template<typename Func>
     static shared_ptr<Function> _define(Function::Tag tag, Func &&func) noexcept {
         shared_ptr<Function> ret = ocarina::make_shared<Function>(tag);
-        _push(ret.get());
+        push(ret);
         ret->with(ret->body(), std::forward<Func>(func));
-        _pop(ret.get());
+        pop(ret);
         return ret;
     }
 
@@ -189,6 +190,8 @@ private:
     };
 
 public:
+    static void push(stack_type::value_type f);
+    static void pop(stack_type::value_type f);
     void set_call_expression(const CallExpr *call_expr) noexcept { _call_expr = call_expr; }
     [[nodiscard]] const CallExpr *call_expr() const noexcept { return _call_expr; }
     void set_description(string desc) const noexcept { description_ = ocarina::move(desc); }
