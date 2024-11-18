@@ -18,19 +18,19 @@ ByteBuffer Device::create_byte_buffer(size_t size, const std::string &name) cons
 }
 
 Stream Device::create_stream() noexcept {
-    return _create<Stream>();
+    return create<Stream>();
 }
 
 Accel Device::create_accel() const noexcept {
-    return _create<Accel>();
+    return create<Accel>();
 }
 
 BindlessArray Device::create_bindless_array() const noexcept {
-    return _create<BindlessArray>();
+    return create<BindlessArray>();
 }
 
 Texture Device::create_texture(uint3 res, PixelStorage storage, const string &desc) const noexcept {
-    return _create<Texture>(res, storage, 1, desc);
+    return create<Texture>(res, storage, 1, desc);
 }
 
 Texture Device::create_texture(uint2 res, PixelStorage storage, const string &desc) const noexcept {

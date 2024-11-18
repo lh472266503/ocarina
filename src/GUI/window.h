@@ -86,4 +86,7 @@ public:
     virtual void show_window() noexcept = 0;
     virtual void hide_window() noexcept = 0;
 };
+
+void dependency_window();
+
 }// namespace ocarina

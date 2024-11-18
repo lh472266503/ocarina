@@ -5,7 +5,7 @@
 #pragma once
 
 #include "rhi/resources/buffer.h"
-#include "python/common.h"
+#include "pyexporter/ocapi.h"
 #include "rhi/common.h"
 
 namespace py = pybind11;
@@ -38,6 +38,12 @@ void export_vector_op(M &m) {
         m = m.def("__rmod__", [](const Vector<T, N> &a, const T &b) { return b % a; }, py::is_operator());
         m = m.def("__shl__", [](const Vector<T, N> &a, const T &b) { return a << b; }, py::is_operator());
         m = m.def("__shr__", [](const Vector<T, N> &a, const T &b) { return a >> b; }, py::is_operator());
+
+        m = m.def("__mod__", [](const Vector<T, N> &a, const Vector<T, N> &b) { return a % b; }, py::is_operator());
+        m = m.def("__rmod__", [](const Vector<T, N> &a, const Vector<T, N> &b) { return b % a; }, py::is_operator());
+        m = m.def("__shl__", [](const Vector<T, N> &a, const Vector<T, N> &b) { return a << b; }, py::is_operator());
+        m = m.def("__shr__", [](const Vector<T, N> &a, const Vector<T, N> &b) { return a >> b; }, py::is_operator());
+
         m = m.def("__xor__", [](const Vector<T, N> &a, const Vector<T, N> &b) { return a ^ b; }, py::is_operator());
         m = m.def("__and__", [](const Vector<T, N> &a, const Vector<T, N> &b) { return a & b; }, py::is_operator());
         m = m.def("__or__", [](const Vector<T, N> &a, const Vector<T, N> &b) { return a | b; }, py::is_operator());
