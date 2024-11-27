@@ -8,7 +8,8 @@ function(ocarina_add_test name)
             PUBLIC_HEADER "${HEADER_FILES}"
             LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
             RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-            WINDOWS_EXPORT_ALL_SYMBOLS ON)
+            WINDOWS_EXPORT_ALL_SYMBOLS ON
+            FOLDER "ocarina/test")
 endfunction()
 
 

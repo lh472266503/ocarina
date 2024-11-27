@@ -11,7 +11,8 @@ function(ocarina_add_backend name)
             RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
             WINDOWS_EXPORT_ALL_SYMBOLS ON
             UNITY_BUILD OFF
-            DEBUG_POSTFIX "")
+            DEBUG_POSTFIX ""
+            FOLDER "ocarina")
 endfunction()
 
 add_library(ocarina-backend INTERFACE)

@@ -51,14 +51,14 @@ enum QueueType
 };
 
 struct BufferCreation {
-    AccessFlags AccessFlags;   ///< Access flags.
-    GraphhicBufferBindFlags BindFlags; ///< Buffer bind flags.
-    BufferFlags Flags;         ///< Buffer flags.
+    //AccessFlags AccessFlags;   ///< Access flags.
+    GraphicBufferBindFlags BindFlags;///< Buffer bind flags.
+    //BufferFlags Flags;         ///< Buffer flags.
     uint32_t ElementSize;           ///< Element size in bytes.
-    U32 NumElements;           ///< Number of elements in the resource.
-    Format Format;             ///< Data format.
-    ResourceState InitialState;///< Initial resource state.
-    Extension Extensions;      ///< Extensions
+    uint32_t NumElements;      ///< Number of elements in the resource.
+    //Format Format;             ///< Data format.
+    //ResourceState InitialState;///< Initial resource state.
+    //Extension Extensions;      ///< Extensions
 };
 
 //enum CommandListType {
