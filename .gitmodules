@@ -13,3 +13,6 @@
 [submodule "src/ext/SDL"]
 	path = src/ext/SDL
 	url = https://github.com/libsdl-org/SDL.git
+[submodule "src/ext/SPIRV-Cross"]
+	path = src/ext/SPIRV-Cross
+	url = https://github.com/KhronosGroup/SPIRV-Cross.git

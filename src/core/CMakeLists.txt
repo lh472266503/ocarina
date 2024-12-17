@@ -1,7 +1,7 @@
 file(GLOB_RECURSE HEADER_FILES *.h*)
 file(GLOB_RECURSE SOURCE_FILES *.c*)
 
-add_library(ocarina-core SHARED ${SOURCE_FILES})
+add_library(ocarina-core SHARED ${HEADER_FILES} ${SOURCE_FILES})
 target_link_libraries(ocarina-core PUBLIC
         ocarina-ext
         ocarina-math

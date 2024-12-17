@@ -26,7 +26,9 @@ int main(int argc, char *argv[]) {
     //instanceCreation.instanceExtentions =
     instanceCreation.windowHandle = window->get_window_handle();
     Device device = Device::create_device("vulkan", instanceCreation);
-    Stream stream = device.create_stream();
+
+    //Shader
+    handle_ty vertex_shader = device.create_shader_from_file("D:\\github\\Vision\\src\\ocarina\\src\\backends\\vulkan\\builtin\\triangle.vert", ShaderType::VertexShader);
 
     auto image_io = Image::pure_color(make_float4(1, 0, 0, 1), ColorSpace::LINEAR, make_uint2(500));
     window->run([&](double d) {

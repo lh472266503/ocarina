@@ -263,6 +263,8 @@ VkFormat VulkanSwapchain::get_preferred_colorformat(ColorSpace colorSpace)
             return surfaceFormats[i].format;
         }
     }
+
+    return VK_FORMAT_UNDEFINED;
 }
 
 }// namespace ocarina

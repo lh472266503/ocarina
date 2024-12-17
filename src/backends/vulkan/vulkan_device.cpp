@@ -5,6 +5,7 @@
 #include "vulkan_device.h"
 #include "util/file_manager.h"
 #include "util.h"
+#include "vulkan_shader.h"
 
 namespace ocarina {
 
@@ -46,6 +47,16 @@ handle_ty VulkanDevice::create_texture(uint3 res, PixelStorage pixel_storage,
 
 handle_ty VulkanDevice::create_shader(const Function &function) noexcept {
     return 0;
+}
+
+handle_ty VulkanDevice::create_shader_from_file(const std::string &file_name, ShaderType shader_type) noexcept {
+    VulkanShader *shader = VulkanShader::create_from_HLSL(this, shader_type, file_name, "main");
+    if (shader)
+    {
+        return (handle_ty)shader->shader_module();
+    }
+
+    return InvalidUI64;
 }
 
 handle_ty VulkanDevice::create_mesh(const MeshParams &params) noexcept {

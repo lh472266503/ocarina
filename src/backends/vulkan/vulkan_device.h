@@ -87,6 +87,7 @@ public:
                                            const string &desc) noexcept override;
     void destroy_texture(handle_ty handle) noexcept override;
     [[nodiscard]] handle_ty create_shader(const Function &function) noexcept override;
+    [[nodiscard]] handle_ty create_shader_from_file(const std::string &file_name, ShaderType shader_type) noexcept override;
     void destroy_shader(handle_ty handle) noexcept override;
     [[nodiscard]] handle_ty create_accel() noexcept override;
     void destroy_accel(handle_ty handle) noexcept override;
@@ -106,9 +107,9 @@ public:
     [[nodiscard]] CommandVisitor *command_visitor() noexcept override;
     void shutdown();
 
-    OC_MAKE_MEMBER_GETTER_SETTER(logicalDevice, );
+    OC_MAKE_MEMBER_GETTER(logicalDevice, );
 
-    OC_MAKE_MEMBER_GETTER_SETTER(physicalDevice, );
+    OC_MAKE_MEMBER_GETTER(physicalDevice, );
 
     //uint32_t get_queue_family_index
 private:

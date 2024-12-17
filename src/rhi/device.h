@@ -63,6 +63,7 @@ public:
                                                        uint level_num, const string &desc) noexcept = 0;
         virtual void destroy_texture(handle_ty handle) noexcept = 0;
         [[nodiscard]] virtual handle_ty create_shader(const Function &function) noexcept = 0;
+        [[nodiscard]] virtual handle_ty create_shader_from_file(const std::string &file_name, ShaderType shader_type) noexcept = 0;
         virtual void destroy_shader(handle_ty handle) noexcept = 0;
         [[nodiscard]] virtual handle_ty create_accel() noexcept = 0;
         virtual void destroy_accel(handle_ty handle) noexcept = 0;
@@ -149,6 +150,11 @@ public:
         return async([=, this, kernel = ocarina::move(kernel)] {
             return compile(kernel, shader_desc, tag);
         });
+    }
+
+    [[nodiscard]] handle_ty create_shader_from_file(const std::string& file_name, ShaderType shader_type)
+    {
+        return impl_->create_shader_from_file(file_name, shader_type);
     }
 
     [[nodiscard]] static Device create_device(const string &backend_name, const ocarina::InstanceCreation &instance_creation);

@@ -51,10 +51,26 @@ add_library(ocarina-gui-ext INTERFACE)
 target_link_libraries(ocarina-gui-ext INTERFACE glfw_config ocarina-imgui)
 
 add_subdirectory(SDL)
+set_property(TARGET SDL_uclibc PROPERTY FOLDER "ocarina/ext/SDL3")
+set_property(TARGET SDL3_test PROPERTY FOLDER "ocarina/ext/SDL3")
+set_property(TARGET SDL3-shared PROPERTY FOLDER "ocarina/ext/SDL3")
+
 cmake_policy(SET CMP0148 NEW)
 find_package(Python REQUIRED COMPONENTS Interpreter Development)
 include_directories(${PYTHON_INCLUDE_DIRS})
 link_directories(${PYTHON_LIBRARIES})
+
+add_subdirectory(SPIRV-Cross)
+set_property(TARGET spirv-cross PROPERTY FOLDER "ocarina/ext/spirv")
+set_property(TARGET spirv-cross-c PROPERTY FOLDER "ocarina/ext/spirv")
+set_property(TARGET spirv-cross-core PROPERTY FOLDER "ocarina/ext/spirv")
+set_property(TARGET spirv-cross-glsl PROPERTY FOLDER "ocarina/ext/spirv")
+set_property(TARGET spirv-cross-hlsl PROPERTY FOLDER "ocarina/ext/spirv")
+set_property(TARGET spirv-cross-msl PROPERTY FOLDER "ocarina/ext/spirv")
+set_property(TARGET spirv-cross-cpp PROPERTY FOLDER "ocarina/ext/spirv")
+set_property(TARGET spirv-cross-reflect PROPERTY FOLDER "ocarina/ext/spirv")
+set_property(TARGET spirv-cross-util PROPERTY FOLDER "ocarina/ext/spirv")
+#list(APPEND SPIRV_LIBS "spirv-cross-core" "spirv-cross-hlsl" )
 
 target_include_directories(ocarina-ext INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/pybind11/include/pybind11

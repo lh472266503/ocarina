@@ -31,10 +31,21 @@ if(AUTO_LOCATE_VULKAN)
 	endif()
 
 	file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/vulkan)
-    #add_custom_target(copy_cuda_headers ALL DEPENDS ${backend_headers})
-    #include_directories(${CUDA_INCLUDE_DIRS})
+
     file(GLOB_RECURSE HEADER_FILES *.h*)
     file(GLOB_RECURSE SOURCE_FILES *.c*)
+
+	foreach(file ${HEADER_FILES})
+		# Get the file extension
+		get_filename_component(file_ext ${file} EXT)
+		message("get_filename_component in vulkan backend project : ${file}, ext is ${file_ext}")
+		# Check if the extension is not "hlsl" and remove it from the list
+		if(file_ext STREQUAL ".hlsl")
+			message("ext equals to hlsl: ${file}")
+			list(REMOVE_ITEM HEADER_FILES ${file})
+		endif()
+	endforeach()
+
     ocarina_add_backend(vulkan SOURCES ${HEADER_FILES} ${SOURCE_FILES})
     #target_compile_definitions(ocarina-backend-vulkan PRIVATE OPTIX_INCLUDE=${OptiX_INCLUDE})
     target_link_libraries(ocarina-backend-vulkan PRIVATE Vulkan::Vulkan)
@@ -54,4 +65,36 @@ else()
 	endif()
 endif()
 
+set(BUILTIN_DST "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR}")
 
+
+if(MSVC)
+    set(DXC_PATH "../../ext/dxc/msvc")
+	set(SPIRV_PATH "../../ext/SPIRV-Cross")
+	target_include_directories(ocarina-backend-vulkan PRIVATE ${DXC_PATH}/inc ${SPIRV_PATH})
+
+	set(DXC_LIB ${DXC_PATH}/lib/x64)
+	set(DXC_BIN ${DXC_PATH}/bin/x64)
+	if (NOT CMAKE_CL_64)
+		set(DXC_LIB ${DXC_PATH}/lib/x86)
+		set(DXC_BIN ${DXC_PATH}/bin/x86)
+	endif()
+	message("set DXC library path: ${DXC_LIB}")
+
+	link_directories(${DXC_LIB})
+	target_link_libraries(ocarina-backend-vulkan PRIVATE dxcompiler.lib spirv-cross-core spirv-cross-hlsl)
+
+	file(GLOB DXC_BIN_FILES "${DXC_BIN}/*.*")
+
+	foreach(FILE ${DXC_BIN_FILES})
+		add_custom_command(TARGET ocarina-backend-vulkan POST_BUILD        # Adds a post-build event to MyTest
+		COMMAND ${CMAKE_COMMAND} -E copy  # which executes "cmake - E copy..."
+			"${FILE}"      # <--this is in-file
+			"${BUILTIN_DST}")                 # <--this is out-file path
+	endforeach()
+else()
+	set(DXC_PATH "../../ext/dxc/clang")
+	include_directories(${DXC_PATH}/inc)
+	add_library(dxc SHARED IMPORTED)
+	target_link_libraries(ocarina-backend-vulkan PRIVATE dxc)
+endif()

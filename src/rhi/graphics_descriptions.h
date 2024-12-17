@@ -50,6 +50,15 @@ enum QueueType
     NumQueueType,
 };
 
+enum class ShaderType {
+    VertexShader,           ///< Vertex shader.
+    PixelShader,            ///< Pixel shader.
+    GeometryShader,         ///< Geometry shader.
+    ComputeShader,          ///< Compute shader.
+    MeshShader,             ///< Mesh shader.
+    NumShaderType,          ///< Number of shader types.
+};
+
 struct BufferCreation {
     //AccessFlags AccessFlags;   ///< Access flags.
     GraphicBufferBindFlags BindFlags;///< Buffer bind flags.
