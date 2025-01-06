@@ -16,6 +16,45 @@
 
 using namespace ocarina;
 
+class TestA
+{
+public:
+    TestA() : _a(0) {}
+    TestA(int v) : _a(v) {}
+    TestA(const TestA& other) {
+        _a = other._a;
+        std::cout << "Copy constuctor." << std::endl;
+    }
+    TestA(const TestA&& rvalue)
+    {
+        std::cout << "Move constuctor." << std::endl;
+        _a = std::move(rvalue)._a;
+    }
+    TestA& operator=(const TestA& other)
+    {
+        _a = other._a;
+        std::cout << "Copy assignment constuctor." << std::endl;
+        return *this;
+    }
+
+    TestA &operator=(const TestA &&rvalue) {
+        _a = std::move(rvalue)._a;
+        std::cout << "Move assignment constuctor." << std::endl;
+        return *this;
+    }
+
+private: 
+    int _a;
+
+public:
+    static TestA PlusTestAMove(const TestA& left, const TestA& right)
+    {
+        TestA ret(left._a + right._a);
+        return std::move(ret);
+    }
+};
+
+
 int main(int argc, char *argv[]) {
     fs::path path(argv[0]);
     FileManager &file_manager = FileManager::instance();

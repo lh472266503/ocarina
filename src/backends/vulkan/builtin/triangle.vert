@@ -4,7 +4,7 @@
 struct VSInput
 {
 [[vk::location(0)]] float3 Pos : POSITION0;
-[[vk::location(1)]] float3 Color : COLOR0;
+[[vk::location(1)]] float4 Color : COLOR0;
 };
 
 struct UBO
@@ -19,7 +19,7 @@ cbuffer ubo : register(b0) { UBO ubo; }
 struct VSOutput
 {
 	float4 Pos : SV_POSITION;
-[[vk::location(0)]] float3 Color : COLOR0;
+[[vk::location(0)]] float4 Color : COLOR0;
 };
 
 VSOutput main(VSInput input)
@@ -27,7 +27,7 @@ VSOutput main(VSInput input)
 	VSOutput output = (VSOutput)0;
 	output.Color = input.Color;
 	output.Pos = mul(ubo.projectionMatrix, mul(ubo.viewMatrix, mul(ubo.modelMatrix, float4(input.Pos.xyz, 1.0))));
-	if AnyIsNaN(output.Pos)
+	if (AnyIsNaN(output.Pos))
 	{
 		output.Color = float4(1, 0, 0, 1);
 	}

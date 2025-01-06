@@ -13,6 +13,7 @@
 #include <wrl/client.h>
 using namespace Microsoft::WRL;
 #endif
+#include "shader_reflection.h"
 #include "dxc_compiler.h"
 
 namespace ocarina {
@@ -66,8 +67,6 @@ VulkanShader *VulkanShader::create_from_HLSL(Device::Impl *device, ShaderType sh
         {
             std::vector<uint32_t> spriv_code;
             std::string errors;
-            //bool compiled = HLSLToSPRIV(shader_code, stage, entryPoint, true, spriv_code, errors);
-
         }
 
         CompileInput compile_input{
@@ -81,9 +80,14 @@ VulkanShader *VulkanShader::create_from_HLSL(Device::Impl *device, ShaderType sh
         CompileResult compile_result;
         bool compiled = DXCCompiler::compile_hlsl_spriv(compile_input, compile_result);
 
-        vulkan_shader = create(device, shader_type, compile_result.spriv_codes, entryPoint);
+        ShaderReflection reflection;
+        if (compiled)
+        {
+            DXCCompiler::run_spriv_reflection(compile_result.spriv_codes, compile_input.shader_type, reflection);
 
-        
+            vulkan_shader = create(device, shader_type, compile_result.spriv_codes, entryPoint);
+        }
+
     } 
 
     return vulkan_shader;

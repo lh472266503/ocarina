@@ -12,6 +12,7 @@
 namespace ocarina {
 
     class VulkanDevice;
+struct ShaderReflection;
 
     struct CompileInput
     {
@@ -36,7 +37,7 @@ public:
     static bool preprocess(const char *hlsl, uint32_t size, const std::string& full_file_path, VkShaderStageFlagBits stage, const std::vector<std::string> &include_paths, std::string &plattern_hlsl);
     static bool compile_hlsl_spriv(const CompileInput& input, CompileResult& result);
 
-    static void run_spriv_reflection(const std::vector<uint32_t> &spriv, ShaderType shader_type);
+    static void run_spriv_reflection(const std::vector<uint32_t> &spriv, ShaderType shader_type, ShaderReflection& shader_reflection);
     DXCCompiler() = default;
     DXCCompiler(const DXCCompiler &) = delete;
     DXCCompiler(DXCCompiler &&) = delete;

@@ -3,6 +3,7 @@
 //
 
 #include "dxc_compiler.h"
+#include "shader_reflection.h"
 #ifdef _WIN32
 #define NOMINMAX
 #include <Windows.h>
@@ -216,10 +217,10 @@ bool DXCCompiler::compile_hlsl_spriv(const CompileInput &input, CompileResult &r
         result.spriv_codes[i] = spvCode;
     }
 
-    return true;
+    return result.spriv_codes.size() > 0;
 }
 
-void DXCCompiler::run_spriv_reflection(const std::vector<uint32_t> &spriv, ShaderType shader_type) {
+void DXCCompiler::run_spriv_reflection(const std::vector<uint32_t> &spriv, ShaderType shader_type, ShaderReflection &shader_reflection) {
     ComPtr<IDxcUtils> dxc_utils{};
     ComPtr<IDxcContainerReflection> dxc_container_reflection{};
 
@@ -265,6 +266,75 @@ void DXCCompiler::run_spriv_reflection(const std::vector<uint32_t> &spriv, Shade
         //reflectionData.m_ThreadGroupSize[0] = execution.workgroup_size.x;
         //reflectionData.m_ThreadGroupSize[1] = execution.workgroup_size.y;
         //reflectionData.m_ThreadGroupSize[2] = execution.workgroup_size.z;
+        shader_reflection.thread_group_size[0] = execution.workgroup_size.x;
+        shader_reflection.thread_group_size[1] = execution.workgroup_size.y;
+        shader_reflection.thread_group_size[2] = execution.workgroup_size.z;
+    }
+
+    for (spirv_cross::Resource &resource : resources.uniform_buffers) {
+        uint32_t set = spirvmodule.get_decoration(resource.id, spv::DecorationDescriptorSet);
+        uint32_t binding = spirvmodule.get_decoration(resource.id, spv::DecorationBinding);
+        //printf("CB %s at set = %u, binding = %u\n", resource.name.c_str(), set, binding);
+
+        //ReflectionData::ResourceInfo info;
+        //info.m_Name = spirvmodule.get_name(resource.id);
+        //info.m_NameCRC = GetCRC32(info.m_Name);
+        //info.m_Register = binding;
+        //info.m_DescriptorSet = set;
+
+        //info.m_RegisterCount = 1;
+        //info.m_ShaderType = shaderType;
+        //info.m_ParameterType = ReflectionData::Reflect_ConstantBuffer;
+
+        //reflectionData.m_ConstantBufferBindPoints.Update(binding, 1);
+        //reflectionData.m_Resources.push_back(info);
+        ShaderReflection::ShaderResource shader_resource;
+        shader_resource.name = spirvmodule.get_name(resource.id);
+        shader_resource.descriptor_set = set;
+        shader_resource.register_ = binding;
+        shader_resource.parameter_type = ShaderReflection::ResourceType::ConstantBuffer;
+        shader_resource.shader_type = (uint32_t)shader_type;
+
+        spirv_cross::SmallVector<spirv_cross::BufferRange> ranges = spirvmodule.get_active_buffer_ranges(resource.id);
+        //spirvmodule.get_active_interface_variables
+        for (spirv_cross::BufferRange& range : ranges)
+        {
+            //range.
+        }
+
+        shader_reflection.shader_resources.push_back(shader_resource);
+    }
+
+    if (shader_type == ShaderType::VertexShader)
+    {
+        for (spirv_cross::Resource& resource : resources.stage_inputs)
+        {
+            uint32_t set = spirvmodule.get_decoration(resource.id, spv::DecorationDescriptorSet);
+            uint32_t binding = spirvmodule.get_decoration(resource.id, spv::DecorationBinding);
+            uint32_t location = spirvmodule.get_decoration(resource.id, spv::DecorationLocation);
+            spirv_cross::SPIRType spirType = spirvmodule.get_type(resource.type_id);
+            //printf("CB %s at set = %u, binding = %u\n", resource.name.c_str(), set, binding);
+
+            //ReflectionData::ResourceInfo info;
+            //info.m_Name = spirvmodule.get_name(resource.id);
+            //info.m_NameCRC = GetCRC32(info.m_Name);
+            //info.m_Register = binding;
+            //info.m_DescriptorSet = set;
+
+            //info.m_RegisterCount = 1;
+            //info.m_ShaderType = shaderType;
+            //info.m_ParameterType = ReflectionData::Reflect_ConstantBuffer;
+
+            //reflectionData.m_ConstantBufferBindPoints.Update(binding, 1);
+            //reflectionData.m_Resources.push_back(info);
+            ShaderReflection::ShaderResource shader_resource;
+            shader_resource.name = spirvmodule.get_name(resource.id);
+            shader_resource.descriptor_set = set;
+            shader_resource.register_ = binding;
+            shader_resource.shader_type = (uint32_t)shader_type;
+
+            shader_reflection.input_layouts.push_back(shader_resource);
+        }
     }
 }
 
