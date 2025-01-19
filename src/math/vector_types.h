@@ -510,6 +510,7 @@ private:
     OC_MAKE_VECTOR_TRIPLE_FUNC(fma)
     OC_MAKE_VECTOR_TRIPLE_FUNC(clamp)
     OC_MAKE_VECTOR_TRIPLE_FUNC(lerp)
+    OC_MAKE_VECTOR_TRIPLE_FUNC(inverse_lerp)
 
 #undef OC_MAKE_VECTOR_TRIPLE_FUNC
 
@@ -600,6 +601,7 @@ public:
     /// triple functions
     OC_MAKE_ACCESSOR_FUNC(clamp)
     OC_MAKE_ACCESSOR_FUNC(lerp)
+    OC_MAKE_ACCESSOR_FUNC(inverse_lerp)
     OC_MAKE_ACCESSOR_FUNC(fma)
     OC_MAKE_ACCESSOR_FUNC(select)
     OC_MAKE_ACCESSOR_FUNC(face_forward)

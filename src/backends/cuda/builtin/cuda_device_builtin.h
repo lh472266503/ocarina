@@ -1521,6 +1521,20 @@ oc_array<oc_float, N> oc_fma(oc_array<oc_float, N> v0, oc_array<oc_float, N> v1,
 }
 
 
+__device__ oc_float oc_inverse_lerp(oc_float v0, oc_float v1, oc_float v2) { return (v0 - v1) / (v2 - v1); }
+__device__ oc_float2 oc_inverse_lerp(oc_float2 v0, oc_float2 v1, oc_float2 v2) { return oc_float2(oc_inverse_lerp(v0.x, v1.x, v2.x), oc_inverse_lerp(v0.y, v1.y, v2.y)); }
+__device__ oc_float3 oc_inverse_lerp(oc_float3 v0, oc_float3 v1, oc_float3 v2) { return oc_float3(oc_inverse_lerp(v0.x, v1.x, v2.x), oc_inverse_lerp(v0.y, v1.y, v2.y), oc_inverse_lerp(v0.z, v1.z, v2.z)); }
+__device__ oc_float4 oc_inverse_lerp(oc_float4 v0, oc_float4 v1, oc_float4 v2) { return oc_float4(oc_inverse_lerp(v0.x, v1.x, v2.x), oc_inverse_lerp(v0.y, v1.y, v2.y), oc_inverse_lerp(v0.z, v1.z, v2.z), oc_inverse_lerp(v0.w, v1.w, v2.w)); }
+template<oc_uint N>
+oc_array<oc_float, N> oc_inverse_lerp(oc_array<oc_float, N> v0, oc_array<oc_float, N> v1, oc_array<oc_float, N> v2) {
+    oc_array<oc_float, N> ret;
+    for(oc_uint i = 0; i < N; ++i) {
+        ret[i] = oc_inverse_lerp(v0[i], v1[i], v2[i]);
+    }
+    return ret;
+}
+
+
 __device__ inline auto oc_dot(oc_float2 a, oc_float2 b) { return a.x * b.x + a.y * b.y; }
 __device__ inline auto oc_length(oc_float2 v) noexcept { return oc_sqrt(oc_dot(v, v)); }
 __device__ inline auto oc_length_squared(oc_float2 v) noexcept { return oc_dot(v, v); }
