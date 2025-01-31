@@ -99,6 +99,11 @@ template<typename T>
     return asin(clamp(t, -1.f, 1.f));
 }
 
+template<typename T>
+auto safe_div(const T &a, const T &b) noexcept {
+    return select(b == 0.0f, 0.0f, a / b);
+};
+
 template<typename T, size_t N>
 [[nodiscard]] auto triangle_area(Vector<T, N> p0, Vector<T, N> p1, Vector<T, N> p2) noexcept {
     static_assert(N == 3 || N == 2, "N must be greater than 1!");
