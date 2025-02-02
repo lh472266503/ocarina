@@ -124,3 +124,5 @@ inline void error_if_not(bool predicate, Args &&...args) {
     ::ocarina::core::error_if_not(__VA_ARGS__, "\n    Source: ", OC_SOURCE_LOCATION);
 #define OC_ERROR_FORMAT(FMT, ...) \
     OC_ERROR(ocarina::format(FMT, __VA_ARGS__));
+
+#define OC_NOT_IMPLEMENT_ERROR OC_ERROR("set_eta is not implemented");
