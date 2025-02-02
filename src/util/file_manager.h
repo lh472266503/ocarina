@@ -13,13 +13,8 @@ namespace ocarina {
 class Device;
 class DynamicModule;
 class FileManager : public concepts::Noncopyable {
-private:
-    FileManager() = default;
-    FileManager(const FileManager &) = delete;
-    FileManager(FileManager &&) = delete;
-    FileManager operator=(const FileManager &) = delete;
-    FileManager operator=(FileManager &&) = delete;
-    static FileManager *s_file_manager;
+
+    OC_MAKE_INSTANCE_CONSTRUCTOR(FileManager, s_file_manager)
 
 public:
     [[nodiscard]] static FileManager &instance() noexcept;

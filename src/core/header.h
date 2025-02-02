@@ -147,13 +147,13 @@ using handle_ty = uint64_t;
         }                                                        \
     }
 
-#define OC_MAKE_INSTANCE(ClassName, static_ptr)      \
-private:                                             \
-    static ClassName *static_ptr;                    \
-    ClassName() = default;                           \
-                                                     \
-public:                                              \
-    ClassName(const ClassName &) = delete;           \
-    ClassName(ClassName &&) = delete;                \
-    ClassName operator=(const ClassName &) = delete; \
+#define OC_MAKE_INSTANCE_CONSTRUCTOR(ClassName, static_ptr) \
+private:                                                    \
+    static ClassName *static_ptr;                           \
+    ClassName() = default;                                  \
+                                                            \
+public:                                                     \
+    ClassName(const ClassName &) = delete;                  \
+    ClassName(ClassName &&) = delete;                       \
+    ClassName operator=(const ClassName &) = delete;        \
     ClassName operator=(ClassName &&) = delete;

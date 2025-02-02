@@ -10,13 +10,7 @@
 namespace ocarina {
 
 class Env {
-private:
-    Env() = default;
-    Env(const Env &) = delete;
-    Env(Env &&) = delete;
-    Env operator=(const Env &) = delete;
-    Env operator=(Env &&) = delete;
-    static Env *s_env;
+    OC_MAKE_INSTANCE_CONSTRUCTOR(Env, s_env)
 
 private:
     Printer printer_;

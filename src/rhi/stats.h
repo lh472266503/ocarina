@@ -7,6 +7,7 @@
 #include "core/stl.h"
 #include "math/basic_types.h"
 #include "util/image.h"
+#include "core/header.h"
 #include "core/thread_safety.h"
 
 namespace ocarina {
@@ -25,13 +26,7 @@ class MemoryStats : public thread_safety<> {
         }
     };
 
-private:
-    static MemoryStats *s_stats;
-    MemoryStats() = default;
-    MemoryStats(const MemoryStats &) = delete;
-    MemoryStats(MemoryStats &&) = delete;
-    MemoryStats operator=(const MemoryStats &) = delete;
-    MemoryStats operator=(MemoryStats &&) = delete;
+    OC_MAKE_INSTANCE_CONSTRUCTOR(MemoryStats, s_stats);
 
 private:
     size_t buffer_size_{};
