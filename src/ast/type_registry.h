@@ -57,7 +57,7 @@ template<typename T>
     } else if constexpr (is_matrix4_v<T>) {
         return ocarina::format("[{},\n {},\n {},\n {}]", to_str(val[0]), to_str(val[1]), to_str(val[2]), to_str(val[3]));
     } else if constexpr (is_scalar_v<T>) {
-        return ocarina::format("{}", val);
+        return std::to_string(val);
     } else if constexpr (is_struct_v<T>) {
         string ret = "[";
         traverse_tuple(struct_member_tuple_t<T>{}, [&]<typename Elm>(const Elm &_, uint index) {
