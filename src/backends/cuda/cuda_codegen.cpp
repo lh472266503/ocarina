@@ -36,6 +36,7 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         case CallOp::SELECT: OC_GEN_FUNC_NAME(select); break;
         case CallOp::CLAMP: OC_GEN_FUNC_NAME(clamp); break;
         case CallOp::LERP: OC_GEN_FUNC_NAME(lerp); break;
+        case CallOp::INVERSE_LERP: OC_GEN_FUNC_NAME(inverse_lerp); break;
         case CallOp::ABS: OC_GEN_FUNC_NAME(abs); break;
         case CallOp::MIN: OC_GEN_FUNC_NAME(min); break;
         case CallOp::MAX: OC_GEN_FUNC_NAME(max); break;

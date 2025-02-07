@@ -146,3 +146,14 @@ using handle_ty = uint64_t;
             static_assert(ocarina::always_false_v<T>);           \
         }                                                        \
     }
+
+#define OC_MAKE_INSTANCE_CONSTRUCTOR(ClassName, static_ptr) \
+private:                                                    \
+    static ClassName *static_ptr;                           \
+    ClassName() = default;                                  \
+                                                            \
+public:                                                     \
+    ClassName(const ClassName &) = delete;                  \
+    ClassName(ClassName &&) = delete;                       \
+    ClassName operator=(const ClassName &) = delete;        \
+    ClassName operator=(ClassName &&) = delete;

@@ -54,6 +54,7 @@ enum struct CallOp : uint32_t {
     SELECT,
     CLAMP,
     LERP,
+    INVERSE_LERP,
 
     ABS,
     MIN,

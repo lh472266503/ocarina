@@ -57,12 +57,12 @@ void CUDATexture::init() {
     res_desc.res.array.hArray = array_handle_;
     res_desc.flags = 0;
     CUDA_TEXTURE_DESC tex_desc{};
-    tex_desc.addressMode[0] = CU_TR_ADDRESS_MODE_WRAP;
-    tex_desc.addressMode[1] = CU_TR_ADDRESS_MODE_WRAP;
-    tex_desc.addressMode[2] = CU_TR_ADDRESS_MODE_WRAP;
+    tex_desc.addressMode[0] = CU_TR_ADDRESS_MODE_MIRROR;
+    tex_desc.addressMode[1] = CU_TR_ADDRESS_MODE_MIRROR;
+    tex_desc.addressMode[2] = CU_TR_ADDRESS_MODE_MIRROR;
     tex_desc.maxAnisotropy = 2;
     tex_desc.maxMipmapLevelClamp = 9;
-    tex_desc.filterMode = CU_TR_FILTER_MODE_POINT;
+    tex_desc.filterMode = CU_TR_FILTER_MODE_LINEAR;
     tex_desc.flags = CU_TRSF_NORMALIZED_COORDINATES;
     OC_CU_CHECK(cuSurfObjectCreate(&proxy_.surface, &res_desc));
     OC_CU_CHECK(cuTexObjectCreate(&proxy_.texture, &res_desc, &tex_desc, nullptr));

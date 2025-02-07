@@ -676,7 +676,12 @@ def define_triple_funcs():
             "name" : "fma",
             "body" : "return fmaf(v0, v1, v2);",
             "types" : ["float"]
-        }
+        },
+        {
+            "name" : "inverse_lerp",
+            "body" : "return (v0 - v1) / (v2 - v1);",
+            "types" : ["float"]
+        },
     ]
     for v in lst:
         define_triple_func(v)

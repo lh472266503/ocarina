@@ -145,4 +145,10 @@ requires is_all_basic_v<X, A, B>
     return min(max(x, a), b);
 }
 
+template<typename X, typename A, typename B>
+requires is_all_basic_v<X, A, B>
+[[nodiscard]] constexpr auto inverse_lerp(X x, A a, B b) noexcept {
+    return (x - a) / (b - a);
+}
+
 }// namespace ocarina

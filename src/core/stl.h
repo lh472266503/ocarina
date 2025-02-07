@@ -392,41 +392,41 @@ inline bool is_file_exist(const char* full_file_path)
 template<typename T>
 struct deep_copy_shared_ptr {
 private:
-    ocarina::shared_ptr<T> _ptr{};
+    ocarina::shared_ptr<T> ptr_{};
 
 public:
     deep_copy_shared_ptr() = default;
     template<typename U>
     requires std::is_convertible_v<U *, T *>
-    explicit deep_copy_shared_ptr(const shared_ptr<U> &u) : _ptr(u) {}
+    explicit deep_copy_shared_ptr(const shared_ptr<U> &u) : ptr_(u) {}
     template<typename U>
     requires std::is_convertible_v<U *, T *>
-    deep_copy_shared_ptr(const deep_copy_shared_ptr<U> &u) : _ptr(u.ptr()) {}
-    [[nodiscard]] const T &operator*() const noexcept { return *_ptr; }
-    [[nodiscard]] T &operator*() noexcept { return *_ptr; }
-    [[nodiscard]] const T *operator->() const noexcept { return _ptr.get(); }
-    [[nodiscard]] T *operator->() noexcept { return _ptr.get(); }
-    [[nodiscard]] const T *get() const noexcept { return _ptr.get(); }
-    [[nodiscard]] T *get() noexcept { return _ptr.get(); }
-    [[nodiscard]] const ocarina::shared_ptr<T> &ptr() const noexcept { return _ptr; }
-    [[nodiscard]] ocarina::shared_ptr<T> &ptr() noexcept { return _ptr; }
+    deep_copy_shared_ptr(const deep_copy_shared_ptr<U> &u) : ptr_(u.ptr()) {}
+    [[nodiscard]] const T &operator*() const noexcept { return *ptr_; }
+    [[nodiscard]] T &operator*() noexcept { return *ptr_; }
+    [[nodiscard]] const T *operator->() const noexcept { return ptr_.get(); }
+    [[nodiscard]] T *operator->() noexcept { return ptr_.get(); }
+    [[nodiscard]] const T *get() const noexcept { return ptr_.get(); }
+    [[nodiscard]] T *get() noexcept { return ptr_.get(); }
+    [[nodiscard]] const ocarina::shared_ptr<T> &ptr() const noexcept { return ptr_; }
+    [[nodiscard]] ocarina::shared_ptr<T> &ptr() noexcept { return ptr_; }
 
     template<typename Other>
     requires std::is_convertible_v<Other *, T *>
     deep_copy_shared_ptr<T> &operator=(const deep_copy_shared_ptr<Other> &other) noexcept {
-        if (_ptr) {
-            *_ptr = *other.ptr();
+        if (ptr_) {
+            *ptr_ = *other.ptr();
         } else {
-            _ptr = other.ptr();
+            ptr_ = other.ptr();
         }
         return *this;
     }
 
     deep_copy_shared_ptr<T> &operator=(const deep_copy_shared_ptr<T> &other) noexcept {
-        if (_ptr) {
-            *_ptr = *other.ptr();
+        if (ptr_) {
+            *ptr_ = *other.ptr();
         } else {
-            _ptr = other.ptr();
+            ptr_ = other.ptr();
         }
         return *this;
     }
@@ -440,36 +440,36 @@ template<typename T, typename... Args>
 template<typename T>
 struct deep_copy_unique_ptr {
 private:
-    ocarina::unique_ptr<T> _ptr{};
+    ocarina::unique_ptr<T> ptr_{};
 
 public:
     deep_copy_unique_ptr() = default;
     template<typename U>
     requires std::is_convertible_v<U *, T *>
-    explicit deep_copy_unique_ptr(unique_ptr<U> &&u) : _ptr(ocarina::move(u)) {}
+    explicit deep_copy_unique_ptr(unique_ptr<U> &&u) : ptr_(ocarina::move(u)) {}
     template<typename U>
     requires std::is_convertible_v<U *, T *>
-    deep_copy_unique_ptr(deep_copy_unique_ptr<U> &&u) : _ptr(ocarina::move(u.ptr())) {}
-    [[nodiscard]] const T &operator*() const noexcept { return *_ptr; }
-    [[nodiscard]] T &operator*() noexcept { return *_ptr; }
-    [[nodiscard]] const T *operator->() const noexcept { return _ptr.get(); }
-    [[nodiscard]] T *operator->() noexcept { return _ptr.get(); }
-    [[nodiscard]] const T *get() const noexcept { return _ptr.get(); }
-    [[nodiscard]] T *get() noexcept { return _ptr.get(); }
-    [[nodiscard]] const ocarina::unique_ptr<T> &ptr() const noexcept { return _ptr; }
-    [[nodiscard]] ocarina::unique_ptr<T> &ptr() noexcept { return _ptr; }
+    deep_copy_unique_ptr(deep_copy_unique_ptr<U> &&u) : ptr_(ocarina::move(u.ptr())) {}
+    [[nodiscard]] const T &operator*() const noexcept { return *ptr_; }
+    [[nodiscard]] T &operator*() noexcept { return *ptr_; }
+    [[nodiscard]] const T *operator->() const noexcept { return ptr_.get(); }
+    [[nodiscard]] T *operator->() noexcept { return ptr_.get(); }
+    [[nodiscard]] const T *get() const noexcept { return ptr_.get(); }
+    [[nodiscard]] T *get() noexcept { return ptr_.get(); }
+    [[nodiscard]] const ocarina::unique_ptr<T> &ptr() const noexcept { return ptr_; }
+    [[nodiscard]] ocarina::unique_ptr<T> &ptr() noexcept { return ptr_; }
 
     template<typename Other>
     requires std::is_convertible_v<Other *, T *>
     deep_copy_unique_ptr<T> &operator=(const deep_copy_unique_ptr<Other> &other) noexcept {
-        OC_ASSERT(_ptr && other.ptr());
-        *_ptr = *other.ptr();
+        OC_ASSERT(ptr_ && other.ptr());
+        *ptr_ = *other.ptr();
         return *this;
     }
 
     deep_copy_unique_ptr<T> &operator=(const deep_copy_unique_ptr<T> &other) noexcept {
-        OC_ASSERT(_ptr && other.ptr());
-        *_ptr = *other.ptr();
+        OC_ASSERT(ptr_ && other.ptr());
+        *ptr_ = *other.ptr();
         return *this;
     }
 };

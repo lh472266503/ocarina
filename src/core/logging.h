@@ -81,46 +81,48 @@ inline void error_if_not(bool predicate, Args &&...args) {
 #define OC_SOURCE_LOCATION "\n", __FILE__, ":", __LINE__
 
 #define OC_DEBUG(...) \
-    ::ocarina::core::debug(__VA_ARGS__);
+    ::ocarina::core::debug(__VA_ARGS__)
 #define OC_DEBUG_FORMAT(FMT, ...) \
-    OC_DEBUG(ocarina::format(FMT, __VA_ARGS__));
+    OC_DEBUG(ocarina::format(FMT, __VA_ARGS__))
 #define OC_DEBUG_WITH_LOCATION(...) \
     OC_DEBUG(__VA_ARGS__, OC_SOURCE_LOCATION)
 #define OC_DEBUG_FORMAT_WITH_LOCATION(FMT, ...) \
-    OC_DEBUG(ocarina::format(FMT, __VA_ARGS__), OC_SOURCE_LOCATION);
+    OC_DEBUG(ocarina::format(FMT, __VA_ARGS__), OC_SOURCE_LOCATION)
 
 #define OC_INFO(...) \
-    ::ocarina::core::info(__VA_ARGS__);
+    ::ocarina::core::info(__VA_ARGS__)
 #define OC_INFO_FORMAT(FMT, ...) \
-    OC_INFO(ocarina::format(FMT, __VA_ARGS__));
+    OC_INFO(ocarina::format(FMT, __VA_ARGS__))
 #define OC_INFO_WITH_LOCATION(...) \
     OC_INFO(__VA_ARGS__, OC_SOURCE_LOCATION)
 #define OC_INFO_FORMAT_WITH_LOCATION(FMT, ...) \
-    OC_INFO(ocarina::format(FMT, __VA_ARGS__), OC_SOURCE_LOCATION);
+    OC_INFO(ocarina::format(FMT, __VA_ARGS__), OC_SOURCE_LOCATION)
 
 #define OC_WARNING(...) \
-    ::ocarina::core::warning(__VA_ARGS__, "\n    Source: ", OC_SOURCE_LOCATION);
+    ::ocarina::core::warning(__VA_ARGS__, "\n    Source: ", OC_SOURCE_LOCATION)
 #define OC_WARNING_IF(...) \
-    ::ocarina::core::warning_if(__VA_ARGS__, "\n    Source: ", OC_SOURCE_LOCATION);
+    ::ocarina::core::warning_if(__VA_ARGS__, "\n    Source: ", OC_SOURCE_LOCATION)
 #define OC_WARNING_IF_NOT(...) \
-    ::ocarina::core::warning_if_not(__VA_ARGS__, "\n    Source: ", OC_SOURCE_LOCATION);
+    ::ocarina::core::warning_if_not(__VA_ARGS__, "\n    Source: ", OC_SOURCE_LOCATION)
 #define OC_WARNING_FORMAT(FMT, ...) \
     OC_WARNING(ocarina::format(FMT, __VA_ARGS__));
 
 #define OC_EXCEPTION(...) \
-    ::ocarina::core::exception(__VA_ARGS__, "\n    Source: ", OC_SOURCE_LOCATION);
+    ::ocarina::core::exception(__VA_ARGS__, "\n    Source: ", OC_SOURCE_LOCATION)
 #define OC_EXCEPTION_IF(...) \
-    ::ocarina::core::exception_if(__VA_ARGS__, "\n    Source: ", OC_SOURCE_LOCATION);
+    ::ocarina::core::exception_if(__VA_ARGS__, "\n    Source: ", OC_SOURCE_LOCATION)
 #define OC_EXCEPTION_IF_NOT(...) \
-    ::ocarina::core::exception_if_not(__VA_ARGS__, "\n    Source: ", OC_SOURCE_LOCATION);
+    ::ocarina::core::exception_if_not(__VA_ARGS__, "\n    Source: ", OC_SOURCE_LOCATION)
 #define OC_EXCEPTION_FORMAT(FMT, ...) \
-    OC_EXCEPTION(ocarina::format(FMT, __VA_ARGS__));
+    OC_EXCEPTION(ocarina::format(FMT, __VA_ARGS__))
 
 #define OC_ERROR(...) \
-    ::ocarina::core::error(__VA_ARGS__, "\n    Source: ", OC_SOURCE_LOCATION);
+    ::ocarina::core::error(__VA_ARGS__, "\n    Source: ", OC_SOURCE_LOCATION)
 #define OC_ERROR_IF(...) \
-    ::ocarina::core::error_if(__VA_ARGS__, "\n    Source: ", OC_SOURCE_LOCATION);
+    ::ocarina::core::error_if(__VA_ARGS__, "\n    Source: ", OC_SOURCE_LOCATION)
 #define OC_ERROR_IF_NOT(...) \
-    ::ocarina::core::error_if_not(__VA_ARGS__, "\n    Source: ", OC_SOURCE_LOCATION);
+    ::ocarina::core::error_if_not(__VA_ARGS__, "\n    Source: ", OC_SOURCE_LOCATION)
 #define OC_ERROR_FORMAT(FMT, ...) \
     OC_ERROR(ocarina::format(FMT, __VA_ARGS__));
+
+#define OC_NOT_IMPLEMENT_ERROR(func_name) OC_ERROR(#func_name " is not implemented")

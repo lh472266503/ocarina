@@ -277,7 +277,7 @@ Image Image::load_exr(const fs::path &fn, ColorSpace color_space, float3 scale) 
             return ret;
         }
         default:
-            OC_ERROR("unknown")
+            OC_ERROR("unknown");
     }
 }
 
