@@ -19,43 +19,81 @@ using namespace ocarina;
 class TestA
 {
 public:
-    TestA() : _a(0) {}
-    TestA(int v) : _a(v) {}
+    TestA() = default;
+    explicit TestA(const char *str) {
+        int length = strlen(str);
+        _a = new char[length + 1];
+        _a[length] = 0;
+        memcpy(_a, str, length);
+    }
+    ~TestA()
+    {
+        if (_a)
+        {
+            delete[] _a;
+            _a = nullptr;
+        }
+    }
+
     TestA(const TestA& other) {
-        _a = other._a;
+        if (_a != nullptr)
+        {
+            delete[] _a;
+        }
+
+        if (other._a != nullptr)
+        {
+            int length = strlen(other._a);
+            _a = new char[length + 1];
+            _a[length] = 0;
+            memcpy(_a, other._a, length);
+        }
         std::cout << "Copy constuctor." << std::endl;
     }
-    TestA(const TestA&& rvalue)
+    TestA(TestA&& rvalue) noexcept
     {
         std::cout << "Move constuctor." << std::endl;
-        _a = std::move(rvalue)._a;
+        _a = std::move(rvalue._a);
+        rvalue._a = nullptr;
     }
     TestA& operator=(const TestA& other)
     {
-        _a = other._a;
+        if (_a != nullptr) {
+            delete[] _a;
+        }
+
+        if (other._a != nullptr) {
+            int length = strlen(other._a);
+            _a = new char[length + 1];
+            _a[length] = 0;
+            memcpy(_a, other._a, length);
+        }
         std::cout << "Copy assignment constuctor." << std::endl;
         return *this;
     }
 
-    TestA &operator=(const TestA &&rvalue) {
-        _a = std::move(rvalue)._a;
+    TestA &operator=(TestA &&rvalue) noexcept
+    {
+        _a = std::move(rvalue._a);
+        rvalue._a = nullptr;
         std::cout << "Move assignment constuctor." << std::endl;
         return *this;
     }
 
-private: 
-    int _a;
-
-public:
-    static TestA PlusTestAMove(const TestA& left, const TestA& right)
-    {
-        TestA ret(left._a + right._a);
-        return std::move(ret);
-    }
+public: 
+    char* _a = nullptr;
 };
 
 
 int main(int argc, char *argv[]) {
+    
+    std::vector<TestA> test;
+    {
+        TestA a("test right value");
+        //TestA a = "test right value";   compile error because we declare the constructor as explicit
+        test.emplace_back(std::move(a));
+    }
+
     fs::path path(argv[0]);
     FileManager &file_manager = FileManager::instance();
 

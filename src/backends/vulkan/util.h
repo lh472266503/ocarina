@@ -5,6 +5,8 @@
 #pragma once
 #include "core/logging.h"
 #include <vulkan/vulkan.h>
+#include "core/image_base.h"
+#include "rhi/graphics_descriptions.h"
 
 static std::string errorString(VkResult errorCode) {
     switch (errorCode) {
@@ -51,6 +53,8 @@ static std::string errorString(VkResult errorCode) {
 
 
 namespace ocarina {
+#define IS_VK_NULL_HANDLE(h) (h == VK_NULL_HANDLE)
+
     static VkFormat get_vulkan_format(PixelStorage format, bool srgb)
     {
     switch (format) {
@@ -99,4 +103,23 @@ namespace ocarina {
             return VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
         }
     }
-}
+
+    static VkPrimitiveTopology get_vulkan_topology(PrimitiveType primitive_type)
+    {
+        switch (primitive_type)
+        {
+        case PrimitiveType::TRIANGLES:
+            return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+        case PrimitiveType::TRIANGLE_STRIP:
+            return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
+        case PrimitiveType::POINTS:
+            return VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
+        case PrimitiveType::LINES:
+            return VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
+        case PrimitiveType::LINE_STRIP:
+            return VK_PRIMITIVE_TOPOLOGY_LINE_STRIP;
+        default:
+            return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+        }
+    }
+    }

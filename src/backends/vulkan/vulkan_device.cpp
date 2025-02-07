@@ -6,6 +6,7 @@
 #include "util/file_manager.h"
 #include "util.h"
 #include "vulkan_shader.h"
+#include "vulkan_driver.h"
 
 namespace ocarina {
 
@@ -281,7 +282,8 @@ uint32_t VulkanDevice::getQueueFamilyIndex(uint32_t queueFlags) const {
 }// namespace ocarina
 
 OC_EXPORT_API ocarina::VulkanDevice *create_device(ocarina::FileManager *file_manager, const ocarina::InstanceCreation& instance_creation) {
-    return ocarina::new_with_allocator<ocarina::VulkanDevice>(file_manager, instance_creation);
+    //return ocarina::new_with_allocator<ocarina::VulkanDevice>(file_manager, instance_creation);
+    return ocarina::VulkanDriver::instance().create_device(file_manager, instance_creation);
 }
 
 OC_EXPORT_API void destroy(ocarina::VulkanDevice *device) {

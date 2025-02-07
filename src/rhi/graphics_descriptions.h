@@ -70,6 +70,64 @@ struct BufferCreation {
     //Extension Extensions;      ///< Extensions
 };
 
+//! blending operator function
+enum class BlendOperator : uint8_t {
+    ADD,             //!< the fragment is added to the color buffer
+    SUBTRACT,        //!< the fragment is subtracted from the color buffer
+    REVERSE_SUBTRACT,//!< the color buffer is subtracted from the fragment
+    MIN,             //!< the min between the fragment and color buffer
+    MAX              //!< the max between the fragment and color buffer
+};
+
+//! blending function
+enum class BlendFunction : uint8_t {
+    ZERO,               //!< f(src, dst) = 0
+    ONE,                //!< f(src, dst) = 1
+    SRC_COLOR,          //!< f(src, dst) = src
+    ONE_MINUS_SRC_COLOR,//!< f(src, dst) = 1-src
+    DST_COLOR,          //!< f(src, dst) = dst
+    ONE_MINUS_DST_COLOR,//!< f(src, dst) = 1-dst
+    SRC_ALPHA,          //!< f(src, dst) = src.a
+    ONE_MINUS_SRC_ALPHA,//!< f(src, dst) = 1-src.a
+    DST_ALPHA,          //!< f(src, dst) = dst.a
+    ONE_MINUS_DST_ALPHA,//!< f(src, dst) = 1-dst.a
+    SRC_ALPHA_SATURATE  //!< f(src, dst) = (1,1,1) * min(src.a, 1 - dst.a), 1
+};
+
+//! stencil operation
+enum class StencilOperation : uint8_t {
+    KEEP,     //!< Keeps the current value.
+    ZERO,     //!< Sets the value to 0.
+    REPLACE,  //!< Sets the value to the stencil reference value.
+    INCR,     //!< Increments the current value. Clamps to the maximum representable unsigned value.
+    INCR_WRAP,//!< Increments the current value. Wraps value to zero when incrementing the maximum representable unsigned value.
+    DECR,     //!< Decrements the current value. Clamps to 0.
+    DECR_WRAP,//!< Decrements the current value. Wraps value to the maximum representable unsigned value when decrementing a value of zero.
+    INVERT,   //!< Bitwise inverts the current value.
+};
+
+//! comparison function for the depth / stencil sampler
+enum class SamplerCompareFunc : uint8_t {
+    // don't change the enums values
+    LE = 0,//!< Less or equal
+    GE,    //!< Greater or equal
+    L,     //!< Strictly less than
+    G,     //!< Strictly greater than
+    E,     //!< Equal
+    NE,    //!< Not equal
+    A,     //!< Always. Depth / stencil testing is deactivated.
+    N      //!< Never. The depth / stencil test always fails.
+};
+
+enum class PrimitiveType : uint8_t
+{
+    POINTS = 0,       //!< points
+    LINES = 1,        //!< lines
+    LINE_STRIP = 3,   //!< line strip
+    TRIANGLES = 4,    //!< triangles
+    TRIANGLE_STRIP = 5//!< triangle strip
+};
+
 //enum CommandListType {
 //    Graphics,///< Graphics command list
 //    Compute, ///< Compute command list

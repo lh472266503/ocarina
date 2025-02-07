@@ -18,18 +18,16 @@ using namespace Microsoft::WRL;
 
 namespace ocarina {
 
-VulkanShader::VulkanShader(VulkanDevice *device, std::span<uint32_t> shaderCode, const std::string_view &entryPoint) : entry_(entryPoint) {
+VulkanShader::VulkanShader(VulkanDevice *device, std::span<uint32_t> shaderCode, const std::string_view &entryPoint) : entry_(entryPoint), device_(device) {
     VkShaderModuleCreateInfo moduleCreateInfo{};
     moduleCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
     moduleCreateInfo.codeSize = shaderCode.size() * sizeof(uint32_t);
     moduleCreateInfo.pCode = (uint32_t *)shaderCode.data();
     vkCreateShaderModule(device->logicalDevice(), &moduleCreateInfo, nullptr, &shader_module_);
-
-
 }
 
 VulkanShader::~VulkanShader() {
-    
+    vkDestroyShaderModule(device_->logicalDevice(), shader_module_, nullptr);
 }
 
 VulkanShader* VulkanShader::create(Device::Impl* device,
@@ -40,7 +38,7 @@ VulkanShader* VulkanShader::create(Device::Impl* device,
     return ocarina::new_with_allocator<VulkanShader>(static_cast<VulkanDevice*>(device), shaderCode, entryPoint);
 }
 
-VulkanShader *VulkanShader::create_from_HLSL(Device::Impl *device, ShaderType shader_type, const std::string &filename, const std::string &entryPoint) {
+VulkanShader *VulkanShader::create_from_HLSL(Device::Impl *device, ShaderType shader_type, const std::string &filename, const std::string &entry_point) {
     std::ifstream is(filename.data());
     VulkanShader *vulkan_shader = nullptr;
     if (is.is_open()) {
@@ -71,7 +69,7 @@ VulkanShader *VulkanShader::create_from_HLSL(Device::Impl *device, ShaderType sh
 
         CompileInput compile_input{
             .hlsl = shaderCode,
-            .entry = entryPoint,
+            .entry = entry_point,
             .full_file_path = filename,
             .shader_type = shader_type,
             .output_pdbs = false,
@@ -85,7 +83,7 @@ VulkanShader *VulkanShader::create_from_HLSL(Device::Impl *device, ShaderType sh
         {
             DXCCompiler::run_spriv_reflection(compile_result.spriv_codes, compile_input.shader_type, reflection);
 
-            vulkan_shader = create(device, shader_type, compile_result.spriv_codes, entryPoint);
+            vulkan_shader = create(device, shader_type, compile_result.spriv_codes, entry_point);
         }
 
     } 
@@ -162,6 +160,28 @@ bool VulkanShader::HLSLToSPRIV(std::span<char> hlsl, VkShaderStageFlagBits stage
     }
 
     return true;
+}
+
+VulkanShader* VulkanShaderManager::get_or_create_from_HLSL(Device::Impl* device,
+    ShaderType shader_type,
+    const std::string& filename,
+    const std::string& entry_point)
+{
+    ShaderKey shader_key{shader_type, filename, entry_point};
+
+    auto it = vulkan_shaders_.find(shader_key);
+    if (it != vulkan_shaders_.end()) {
+        return it->second;
+    }
+
+    VulkanShader *shader = VulkanShader::create_from_HLSL(device, shader_type, filename, entry_point);
+
+    if (shader != nullptr)
+    {
+        vulkan_shaders_.insert(std::make_pair(shader_key, shader));
+    }
+
+    return shader;
 }
 
 }// namespace ocarina
