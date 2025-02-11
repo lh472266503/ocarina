@@ -15,7 +15,10 @@ class DynamicModule;
 class FileManager : public concepts::Noncopyable {
 
     OC_MAKE_INSTANCE_CONSTRUCTOR(FileManager, s_file_manager)
-    OC_MAKE_INSTANCE_FUNC_DECL(FileManager)
+
+public:
+    [[nodiscard]] static FileManager &instance() noexcept;
+    static void destroy_instance();
 
 private:
     struct Impl {

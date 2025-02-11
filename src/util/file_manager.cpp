@@ -57,7 +57,22 @@ FileManager &FileManager::init(const fs::path &path, std::string_view cache_dir)
     return *this;
 }
 
-OC_MAKE_INSTANCE_FUNC_DEF(FileManager, s_file_manager)
+FileManager *FileManager::s_file_manager = nullptr;
+
+FileManager &FileManager::instance() noexcept {
+    if (s_file_manager == nullptr) {
+        s_file_manager = new FileManager();
+        s_file_manager->init(fs::current_path());
+    }
+    return *s_file_manager;
+}
+
+void FileManager::destroy_instance() {
+    if (s_file_manager) {
+        delete s_file_manager;
+        s_file_manager = nullptr;
+    }
+}
 
 FileManager::~FileManager() noexcept {
     OC_INFO("file_manager was destructed !");
