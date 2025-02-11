@@ -163,7 +163,7 @@ public:                                         \
     [[nodiscard]] static ClassName &instance(); \
     static void destroy_instance();
 
-#define OC_MAKE_INSTANCE_FUNC_DEF(ClassName, s_var_name)                          \
+#define OC_MAKE_INSTANCE_FUNC_DEF_WITH_HOTFIX(ClassName, s_var_name)              \
     ClassName *ClassName::s_var_name = nullptr;                                   \
     ClassName &ClassName::instance() {                                            \
         if (s_var_name == nullptr) {                                              \
@@ -179,4 +179,20 @@ public:                                         \
             delete s_var_name;                                                    \
             s_var_name = nullptr;                                                 \
         }                                                                         \
+    }
+
+#define OC_MAKE_INSTANCE_FUNC_DEF(ClassName, s_var_name) \
+    ClassName *ClassName::s_var_name = nullptr;          \
+    ClassName &ClassName::instance() {                   \
+        if (s_var_name == nullptr) {                     \
+            s_var_name = new ClassName();                \
+        }                                                \
+        return *s_var_name;                              \
+    }                                                    \
+                                                         \
+    void ClassName::destroy_instance() {                 \
+        if (s_var_name) {                                \
+            delete s_var_name;                           \
+            s_var_name = nullptr;                        \
+        }                                                \
     }

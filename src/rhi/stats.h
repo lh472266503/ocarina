@@ -52,8 +52,7 @@ private:
     }
 
 public:
-    static MemoryStats &instance();
-    static void destroy_instance();
+    OC_MAKE_INSTANCE_FUNC_DECL(MemoryStats)
     OC_MAKE_MEMBER_GETTER(buffer_size, )
     OC_MAKE_MEMBER_GETTER(tex_size, )
     void on_buffer_allocate(handle_ty handle, size_t size, string name = "");

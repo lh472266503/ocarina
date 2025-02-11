@@ -6,21 +6,7 @@
 
 namespace ocarina {
 
-Env *Env::s_env = nullptr;
-
-Env &Env::instance() noexcept {
-    if (s_env == nullptr) {
-        s_env = new Env();
-    }
-    return *s_env;
-}
-
-void Env::destroy_instance() noexcept {
-    if (s_env) {
-        delete s_env;
-        s_env = nullptr;
-    }
-}
+OC_MAKE_INSTANCE_FUNC_DEF(Env, s_env)
 
 namespace detail {
 [[nodiscard]] Var<uint> correct_index(Var<uint> index, Var<uint> size, const string &desc,

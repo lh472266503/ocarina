@@ -22,8 +22,7 @@ private:
     bool code_obfuscation_{false};
 
 public:
-    [[nodiscard]] static Env &instance() noexcept;
-    static void destroy_instance() noexcept;
+    OC_MAKE_INSTANCE_FUNC_DECL(Env)
 
     template<typename T>
     void set(const string &key, const T &val) noexcept {
