@@ -135,7 +135,7 @@ __device__ inline void oc_coordinate_system(oc_float3 v1, oc_float3 &v2, oc_floa
     v3 = oc_cross(v1, v2);
 }
 
-__device__ inline void oc_make_orthonormals_tangent(oc_float3 N, oc_float3 T, oc_float3 &a, oc_float3 &b){
+__device__ inline void oc_make_normal_tangent(oc_float3 N, oc_float3 T, oc_float3 &a, oc_float3 &b){
     b = oc_normalize(oc_cross(N, T));
     a = oc_cross(b, N);
 }

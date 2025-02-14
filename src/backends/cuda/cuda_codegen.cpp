@@ -78,6 +78,7 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         case CallOp::NORMALIZE: OC_GEN_FUNC_NAME(normalize); break;
         case CallOp::FACE_FORWARD: OC_GEN_FUNC_NAME(face_forward); break;
         case CallOp::COORDINATE_SYSTEM: OC_GEN_FUNC_NAME(coordinate_system); break;
+        case CallOp::MAKE_NORMAL_TANGENT: OC_GEN_FUNC_NAME(make_normal_tangent); break;
         case CallOp::DETERMINANT: OC_GEN_FUNC_NAME(det); break;
         case CallOp::TRANSPOSE: OC_GEN_FUNC_NAME(transpose); break;
         case CallOp::INVERSE: OC_GEN_FUNC_NAME(inverse); break;

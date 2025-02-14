@@ -135,7 +135,7 @@
     v3 = cross(v1, v2);
 }
 
- inline void make_orthonormals_tangent(float3 N, float3 T, float3 &a, float3 &b){
+ inline void make_normal_tangent(float3 N, float3 T, float3 &a, float3 &b){
     b = normalize(cross(N, T));
     a = cross(b, N);
 }
