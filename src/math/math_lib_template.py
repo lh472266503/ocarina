@@ -141,6 +141,11 @@ def get_content(prefix = "", device_flag = ""):
     v3 = {prefix}cross(v1, v2);
 }}
 
+{device_flag} inline void {prefix}make_orthonormals_tangent({prefix}float3 N, {prefix}float3 T, {prefix}float3 &a, {prefix}float3 &b){{
+    b = {prefix}normalize({prefix}cross(N, T));
+    a = {prefix}cross(b, N);
+}}
+
 
 """
     return content
