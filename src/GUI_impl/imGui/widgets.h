@@ -127,6 +127,7 @@ public:
     void end_menu_bar() noexcept override;
 
     void text(const char *format, ...) noexcept override;
+    bool input_text(const std::string &label, char *buf, size_t buf_size) noexcept override;
     void text_wrapped(const char *format, ...) noexcept override;
     bool check_box(const string &label, bool *val) noexcept override;
 

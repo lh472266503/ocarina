@@ -166,6 +166,10 @@ void ImGuiWidgets::text(const char *format, ...) noexcept {
     va_end(args);
 }
 
+bool ImGuiWidgets::input_text(const std::string &label, char *buf, size_t buf_size) noexcept {
+    return ImGui::InputText(label.c_str(), buf, buf_size);
+}
+
 void ImGuiWidgets::text_wrapped(const char *format, ...) noexcept {
     va_list args;
     va_start(args, format);
