@@ -45,11 +45,11 @@ template<typename T>
 [[nodiscard]] string to_str(const T &val) noexcept {
     static string type_string = string(TypeDesc<T>::name());
     if constexpr (is_vector2_v<T>) {
-        return ocarina::format(type_string + "({}, {})", val.x, val.y);
+        return ocarina::format(type_string + "({}, {})", to_str(val.x), to_str(val.y));
     } else if constexpr (is_vector3_v<T>) {
-        return ocarina::format(type_string + "({}, {}, {})", val.x, val.y, val.z);
+        return ocarina::format(type_string + "({}, {}, {})", to_str(val.x), to_str(val.y), to_str(val.z));
     } else if constexpr (is_vector4_v<T>) {
-        return ocarina::format(type_string + "({}, {}, {}, {})", val.x, val.y, val.z, val.w);
+        return ocarina::format(type_string + "({}, {}, {}, {})", to_str(val.x), to_str(val.y), to_str(val.z), to_str(val.w));
     } else if constexpr (is_matrix2_v<T>) {
         return ocarina::format("[{},\n {}]", to_str(val[0]), to_str(val[1]));
     } else if constexpr (is_matrix3_v<T>) {
