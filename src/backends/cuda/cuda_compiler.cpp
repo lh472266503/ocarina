@@ -12,7 +12,6 @@
 
 namespace ocarina {
 
-static constexpr auto optix_include = OC_STRINGIFY(OPTIX_INCLUDE);
 
 CUDACompiler::CUDACompiler(CUDADevice *device)
     : device_(device) {}
