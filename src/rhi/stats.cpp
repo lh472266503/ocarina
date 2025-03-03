@@ -9,21 +9,7 @@
 
 namespace ocarina {
 
-MemoryStats *MemoryStats::s_stats = nullptr;
-
-MemoryStats &MemoryStats::instance() {
-    if (s_stats == nullptr) {
-        s_stats = new MemoryStats();
-    }
-    return *s_stats;
-}
-
-void MemoryStats::destroy_instance() {
-    if (s_stats) {
-        delete s_stats;
-        s_stats = nullptr;
-    }
-}
+OC_MAKE_INSTANCE_FUNC_DEF(MemoryStats, s_stats)
 
 string MemoryStats::total_buffer_info() const noexcept {
     return ocarina::format("total buffer memory is {} \n", bytes_string(buffer_size_));
@@ -34,7 +20,7 @@ string MemoryStats::buffer_detail_info() const noexcept {
     for (const auto &item : buffer_map_) {
         const BufferData &data = item.second;
         double percent = double(data.size) / buffer_size_;
-        ret += ocarina::format("size {}, percent {:.2f} %, block {}\n", bytes_string(data.size),percent * 100, data.name);
+        ret += ocarina::format("size {}, percent {:.2f} %, block {}\n", bytes_string(data.size), percent * 100, data.name);
     }
     return ret;
 }
@@ -87,7 +73,7 @@ void MemoryStats::on_buffer_free(ocarina::handle_ty handle) {
     });
 }
 
-void MemoryStats::on_tex_allocate(ocarina::handle_ty handle, uint3 res,PixelStorage storage, std::string name) {
+void MemoryStats::on_tex_allocate(ocarina::handle_ty handle, uint3 res, PixelStorage storage, std::string name) {
     with_lock([&] {
         auto data = TexData{name, res, storage};
         tex_size_ += data.size();

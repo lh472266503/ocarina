@@ -85,6 +85,23 @@ template<typename element_type>
 using texture_sample_t = typename detail::texture_sample_impl<std::remove_cvref_t<element_type>>::type;
 
 namespace detail {
+template<typename T, size_t N>
+struct basic_impl {
+    using type = Vector<T, N>;
+};
+
+template<typename T>
+struct basic_impl<T, 1> {
+    using type = T;
+};
+}// namespace detail
+
+template<typename T, uint N>
+using basic = detail::basic_impl<std::remove_cvref_t<T>, N>;
+template<typename T, uint N>
+using basic_t = typename basic<T, N>::type;
+
+namespace detail {
 template<typename T>
 struct literal_value {
     static_assert(always_false_v<T>);

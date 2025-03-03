@@ -301,11 +301,18 @@ OC_NODISCARD auto face_forward(Args &&...args) noexcept {
 }
 
 template<typename A>
-requires(is_all_float_element_expr_v<A> &&
-         is_all_float_vector3_v<expr_value_t<A>>)
+requires(is_all_float_vector3_v<expr_value_t<A>>)
 void coordinate_system(const A &a, Var<float3> &b, Var<float3> &c) noexcept {
     auto expr = Function::current()->call_builtin(Type::of<expr_value_t<A>>(),
                                                   CallOp::COORDINATE_SYSTEM, {OC_EXPR(a), OC_EXPR(b), OC_EXPR(c)});
+    Function::current()->expr_statement(expr);
+}
+
+template<typename N, typename T>
+requires(is_all_float_vector3_v<expr_value_t<N>> && is_all_float_vector3_v<expr_value_t<T>>)
+void make_normal_tangent(const N &n, const T &t, Var<float3> &a, Var<float3> &b) noexcept {
+    auto expr = Function::current()->call_builtin(Type::of<expr_value_t<N>>(),
+                                                  CallOp::MAKE_NORMAL_TANGENT, {OC_EXPR(n), OC_EXPR(t), OC_EXPR(a), OC_EXPR(b)});
     Function::current()->expr_statement(expr);
 }
 

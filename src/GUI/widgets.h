@@ -190,7 +190,7 @@ public:
         func();
         pop_window();
     }
-
+    virtual bool input_text(const string &label, char* buf, size_t buf_size) noexcept = 0;
     virtual void text(const char *format, ...) noexcept = 0;
     void text(const string &str) noexcept {
         text(str.c_str());

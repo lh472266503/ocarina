@@ -534,7 +534,16 @@ ocarina::string Function::func_name(uint64_t ext_hash, string ext_name) const no
     }
 }
 
+namespace detail {
+void assign_verify(const Expression *lhs, const Expression *rhs) noexcept {
+    if (lhs->type()->is_array()) {
+        OC_ASSERT(lhs->type()->dimension() == rhs->type()->dimension() || rhs->type()->dimension() == 1);
+    }
+}
+}// namespace detail
+
 void Function::assign(const Expression *lhs, const Expression *rhs) noexcept {
+    detail::assign_verify(lhs, rhs);
     create_statement<AssignStmt>(lhs, rhs);
 }
 
