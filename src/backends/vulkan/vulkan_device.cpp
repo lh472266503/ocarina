@@ -18,6 +18,7 @@ VulkanDevice::VulkanDevice(FileManager *file_manager, const ocarina::InstanceCre
 
 VulkanDevice::~VulkanDevice()
 {
+    VulkanDriver::instance().terminate();
     shutdown();
 }
 
@@ -51,11 +52,12 @@ handle_ty VulkanDevice::create_shader(const Function &function) noexcept {
 }
 
 handle_ty VulkanDevice::create_shader_from_file(const std::string &file_name, ShaderType shader_type) noexcept {
-    VulkanShader *shader = VulkanShader::create_from_HLSL(this, shader_type, file_name, "main");
-    if (shader)
-    {
-        return (handle_ty)shader->shader_module();
-    }
+    //VulkanShader *shader = VulkanShader::create_from_HLSL(this, shader_type, file_name, "main");
+    //if (shader)
+    //{
+    //    return (handle_ty)shader->shader_module();
+    //}
+
 
     return InvalidUI64;
 }

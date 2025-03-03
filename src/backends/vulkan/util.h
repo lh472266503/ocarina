@@ -122,4 +122,23 @@ namespace ocarina {
             return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
         }
     }
+
+    static VkShaderStageFlagBits get_vulkan_shader_stage(ShaderType shader_type)
+    {
+        switch (shader_type) {
+        case ocarina::ShaderType::VertexShader:
+            return VK_SHADER_STAGE_VERTEX_BIT;
+        case ocarina::ShaderType::PixelShader:
+            return VK_SHADER_STAGE_FRAGMENT_BIT;
+        case ocarina::ShaderType::GeometryShader:
+            return VK_SHADER_STAGE_GEOMETRY_BIT;
+        case ocarina::ShaderType::ComputeShader:
+            return VK_SHADER_STAGE_COMPUTE_BIT;
+        case ocarina::ShaderType::MeshShader:
+            return VK_SHADER_STAGE_MESH_BIT_EXT;
+        case ocarina::ShaderType::NumShaderType:
+        default:
+            return VK_SHADER_STAGE_VERTEX_BIT;
+        }
+    }
     }

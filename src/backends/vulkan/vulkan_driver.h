@@ -9,6 +9,7 @@ class VulkanPipelineManager;
 class VulkanPipeline;
 class FileManager;
 class VulkanDevice;
+class VulkanShaderManager;
 struct InstanceCreation;
 
 class VulkanDriver : public concepts::Noncopyable {
@@ -27,5 +28,6 @@ private:
     VulkanDriver();
     VulkanDevice *vulkan_device_;
     std::unique_ptr<VulkanPipelineManager> vulkan_pipeline_manager;
+    std::unique_ptr<VulkanShaderManager> vulkan_shader_manager;
 };
 }// namespace ocarina

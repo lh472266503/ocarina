@@ -4,11 +4,13 @@
 #include "vulkan_pipeline.h"
 #include "util/file_manager.h"
 #include "rhi/graphics_descriptions.h"
+#include "vulkan_shader.h"
 
 namespace ocarina {
 
 VulkanDriver::VulkanDriver() {
     vulkan_pipeline_manager = std::make_unique<VulkanPipelineManager>();
+    vulkan_shader_manager = std::make_unique<VulkanShaderManager>();
 }
 
 VulkanDriver::~VulkanDriver() {

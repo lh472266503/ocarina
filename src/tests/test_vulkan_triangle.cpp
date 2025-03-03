@@ -84,9 +84,17 @@ public:
     char* _a = nullptr;
 };
 
+struct ExampleStruct {
+    char a;
+    int b;
+    short c;
+    float d;
+};
+
 
 int main(int argc, char *argv[]) {
-    
+    size_t structSize = sizeof(ExampleStruct);
+
     std::vector<TestA> test;
     {
         TestA a("test right value");
@@ -106,6 +114,7 @@ int main(int argc, char *argv[]) {
 
     //Shader
     handle_ty vertex_shader = device.create_shader_from_file("D:\\github\\Vision\\src\\ocarina\\src\\backends\\vulkan\\builtin\\triangle.vert", ShaderType::VertexShader);
+    handle_ty pixel_shader = device.create_shader_from_file("D:\\github\\Vision\\src\\ocarina\\src\\backends\\vulkan\\builtin\\triangle.frag", ShaderType::PixelShader);
 
     auto image_io = Image::pure_color(make_float4(1, 0, 0, 1), ColorSpace::LINEAR, make_uint2(500));
     window->run([&](double d) {
