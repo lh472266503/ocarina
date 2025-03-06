@@ -19,8 +19,8 @@ struct interval {
     T end;
 
     inline interval()
-        : begin(empty_range_lower<T>()),
-          end(empty_range_upper<T>()) {}
+        : begin(neg_infinity_v<T>),
+          end(pos_infinity_v<T>) {}
 
     inline interval(T begin, T end) : begin(begin), end(end) {}
 
@@ -61,9 +61,8 @@ template<typename T>
     return interval<T>(max(a.begin, b.begin), min(a.end, b.end));
 }
 
-}// namespace math
-}// namespace ocarina
-
+}
+}// namespace ocarina::math
 
 template<typename T>
 [[nodiscard]] ocarina::interval<T> operator*(const ocarina::interval<T> &a, const T &b) {
@@ -82,6 +81,6 @@ template<typename T>
 
 template<typename T>
 [[nodiscard]] bool operator!=(const ocarina::interval<T> &a,
-    const ocarina::interval<T> &b) {
+                              const ocarina::interval<T> &b) {
     return !(a == b);
 }

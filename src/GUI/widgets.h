@@ -190,7 +190,7 @@ public:
         func();
         pop_window();
     }
-    virtual bool input_text(const string &label, char* buf, size_t buf_size) noexcept = 0;
+    virtual bool input_text(const string &label, char *buf, size_t buf_size) noexcept = 0;
     virtual void text(const char *format, ...) noexcept = 0;
     void text(const string &str) noexcept {
         text(str.c_str());
@@ -280,25 +280,32 @@ public:
 
     bool input_floatN(const string &label, float *val, uint size) noexcept;
 
-    virtual bool drag_int(const string &label, int *val, float speed, int min, int max) noexcept = 0;
-    virtual bool drag_int2(const string &label, int2 *val, float speed, int min, int max) noexcept = 0;
-    virtual bool drag_int3(const string &label, int3 *val, float speed, int min, int max) noexcept = 0;
-    virtual bool drag_int4(const string &label, int4 *val, float speed, int min, int max) noexcept = 0;
+    virtual bool drag_int(const string &label, int *val, float speed, int min = neg_infinity_v<int>,
+                          int max = pos_infinity_v<int>) noexcept = 0;
+    virtual bool drag_int2(const string &label, int2 *val, float speed, int min = neg_infinity_v<int>,
+                           int max = pos_infinity_v<int>) noexcept = 0;
+    virtual bool drag_int3(const string &label, int3 *val, float speed, int min = neg_infinity_v<int>,
+                           int max = pos_infinity_v<int>) noexcept = 0;
+    virtual bool drag_int4(const string &label, int4 *val, float speed, int min = neg_infinity_v<int>,
+                           int max = pos_infinity_v<int>) noexcept = 0;
 
-    virtual bool drag_uint(const string &label, uint *val, float speed, uint min, uint max) noexcept = 0;
-    virtual bool drag_uint2(const string &label, uint2 *val, float speed, uint min, uint max) noexcept = 0;
-    virtual bool drag_uint3(const string &label, uint3 *val, float speed, uint min, uint max) noexcept = 0;
-    virtual bool drag_uint4(const string &label, uint4 *val, float speed, uint min, uint max) noexcept = 0;
+    virtual bool drag_uint(const string &label, uint *val, float speed, uint min = neg_infinity_v<uint>,
+                           uint max = pos_infinity_v<uint>) noexcept = 0;
+    virtual bool drag_uint2(const string &label, uint2 *val, float speed, uint min = neg_infinity_v<uint>,
+                            uint max = pos_infinity_v<uint>) noexcept = 0;
+    virtual bool drag_uint3(const string &label, uint3 *val, float speed, uint min = neg_infinity_v<uint>,
+                            uint max = pos_infinity_v<uint>) noexcept = 0;
+    virtual bool drag_uint4(const string &label, uint4 *val, float speed, uint min = neg_infinity_v<uint>,
+                            uint max = pos_infinity_v<uint>) noexcept = 0;
 
-    virtual bool drag_float(const string &label, float *val, float speed, float min, float max) noexcept = 0;
-    virtual bool drag_float2(const string &label, float2 *val, float speed, float min, float max) noexcept = 0;
-    virtual bool drag_float3(const string &label, float3 *val, float speed, float min, float max) noexcept = 0;
-    virtual bool drag_float4(const string &label, float4 *val, float speed, float min, float max) noexcept = 0;
-
-    virtual bool drag_float(const string &label, float *val, float speed, float min, float max, const char *fmt) noexcept = 0;
-    virtual bool drag_float2(const string &label, float2 *val, float speed, float min, float max, const char *fmt) noexcept = 0;
-    virtual bool drag_float3(const string &label, float3 *val, float speed, float min, float max, const char *fmt) noexcept = 0;
-    virtual bool drag_float4(const string &label, float4 *val, float speed, float min, float max, const char *fmt) noexcept = 0;
+    virtual bool drag_float(const string &label, float *val, float speed, float min = neg_infinity_v<float>,
+                            float max = pos_infinity_v<float>, const char *fmt="%.3f") noexcept = 0;
+    virtual bool drag_float2(const string &label, float2 *val, float speed, float min = neg_infinity_v<float>,
+                             float max = pos_infinity_v<float>, const char *fmt="%.3f") noexcept = 0;
+    virtual bool drag_float3(const string &label, float3 *val, float speed, float min = neg_infinity_v<float>,
+                             float max = pos_infinity_v<float>, const char *fmt="%.3f") noexcept = 0;
+    virtual bool drag_float4(const string &label, float4 *val, float speed, float min = neg_infinity_v<float>,
+                             float max = pos_infinity_v<float>, const char *fmt="%.3f") noexcept = 0;
 
     bool drag_floatN(const string &label, float *val, uint size,
                      float speed = 0.1, float min = 0, float max = 0, const char *fmt = "%.3f") noexcept;
