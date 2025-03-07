@@ -25,6 +25,7 @@ namespace ocarina {
         SynchronizeCommand,      \
         BLASBuildCommand,        \
         TLASBuildCommand,        \
+        TLASUpdateCommand,       \
         ShaderDispatchCommand
 
 /// forward declare
@@ -317,6 +318,17 @@ public:
     template<typename T>
     [[nodiscard]] T *accel() const { return reinterpret_cast<T *>(accel_); }
     OC_MAKE_CMD_COMMON_FUNC(TLASBuildCommand)
+};
+
+class TLASUpdateCommand final : public Command {
+private:
+    handle_ty accel_{};
+
+public:
+    explicit TLASUpdateCommand(handle_ty accel) : accel_(accel) {}
+    template<typename T>
+    [[nodiscard]] T *accel() const { return reinterpret_cast<T *>(accel_); }
+    OC_MAKE_CMD_COMMON_FUNC(TLASUpdateCommand)
 };
 
 class Function;

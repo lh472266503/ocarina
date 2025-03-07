@@ -30,12 +30,17 @@ void mat4x4_to_array12(float4x4 mat, float *output) {
 }
 }// namespace detail
 
-
 void OptixAccel::clear() noexcept {
     Accel::Impl::clear();
     tlas_buffer_.destroy();
     instances_.destroy();
     tlas_handle_ = 0;
+}
+
+void OptixAccel::update_bvh(ocarina::CUDACommandVisitor *visitor) noexcept {
+    device_->use_context([&] {
+
+    });
 }
 
 void OptixAccel::build_bvh(CUDACommandVisitor *visitor) noexcept {

@@ -206,8 +206,13 @@ void CUDACommandVisitor::visit(const ocarina::BufferToTextureCommand *cmd) noexc
 void CUDACommandVisitor::visit(const BLASBuildCommand *cmd) noexcept {
     cmd->mesh<CUDAMesh>()->build_bvh(cmd);
 }
+
 void CUDACommandVisitor::visit(const TLASBuildCommand *cmd) noexcept {
     cmd->accel<OptixAccel>()->build_bvh(this);
+}
+
+void CUDACommandVisitor::visit(const ocarina::TLASUpdateCommand *cmd) noexcept {
+    cmd->accel<OptixAccel>()->update_bvh(this);
 }
 
 }// namespace ocarina
