@@ -17,7 +17,7 @@ class BindlessArray : public RHIResource {
 public:
     class Impl {
     public:
-        static constexpr auto slot_size = 50000;
+        static constexpr auto c_max_slot_num = 50000;
         [[nodiscard]] virtual size_t emplace_buffer(handle_ty handle, size_t size_in_byte) noexcept = 0;
         virtual void remove_buffer(handle_ty index) noexcept = 0;
         [[nodiscard]] virtual size_t emplace_texture(handle_ty handle) noexcept = 0;
@@ -31,6 +31,8 @@ public:
         virtual CommandList update_slotSOA(bool async) noexcept = 0;
         [[nodiscard]] virtual size_t buffer_num() const noexcept = 0;
         [[nodiscard]] virtual size_t texture_num() const noexcept = 0;
+        [[nodiscard]] virtual size_t buffer_slots_size() const noexcept = 0;
+        [[nodiscard]] virtual size_t tex_slots_size() const noexcept = 0;
 
         /// for device side structure
         [[nodiscard]] virtual const void *handle_ptr() const noexcept = 0;
@@ -55,6 +57,8 @@ public:
     [[nodiscard]] CommandList update_slotSOA_sync() noexcept {
         return impl()->update_slotSOA(false);
     }
+
+    [[nodiscard]] static constexpr size_t max_slot_num() noexcept { return Impl::c_max_slot_num; }
 
     /// for device side structure
     [[nodiscard]] const void *handle_ptr() const noexcept override { return impl()->handle_ptr(); }
