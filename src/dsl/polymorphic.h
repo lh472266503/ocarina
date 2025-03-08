@@ -265,6 +265,13 @@ public:
         type_mgr_.clear();
     }
 
+    void remedy() noexcept {
+        type_mgr_.clear();
+        for (auto &elm : *this) {
+            type_mgr_.add_object(elm);
+        }
+    }
+
     template<typename Index>
     requires concepts::integral<Index>
     [[nodiscard]] const T &operator[](Index i) const {
