@@ -47,7 +47,7 @@ vector<OptixTraversableHandle> OptixAccel::blas_handles() noexcept {
     return traversable_handles;
 }
 
-OptixBuildInput OptixAccel::construct_build_input(uint instance_num) noexcept {
+OptixBuildInput OptixAccel::init_instance_buffer(uint instance_num) noexcept {
     OptixBuildInput instance_input = {};
     instances_ = Buffer<OptixInstance>(device_, instance_num, "instance buffer");
     instance_input.type = OPTIX_BUILD_INPUT_TYPE_INSTANCES;
@@ -66,7 +66,7 @@ void OptixAccel::build_bvh(CUDACommandVisitor *visitor) noexcept {
     device_->use_context([&] {
         vector<OptixTraversableHandle> traversable_handles = blas_handles();
         size_t instance_num = traversable_handles.size();
-        OptixBuildInput instance_input = construct_build_input(instance_num);
+        OptixBuildInput instance_input = init_instance_buffer(instance_num);
 
         OptixAccelBuildOptions accel_options = {};
         accel_options.buildFlags = (OPTIX_BUILD_FLAG_ALLOW_COMPACTION | OPTIX_BUILD_FLAG_PREFER_FAST_TRACE);
