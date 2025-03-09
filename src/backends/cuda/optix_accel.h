@@ -22,6 +22,8 @@ public:
     explicit OptixAccel(CUDADevice *device) : device_(device) {}
     void build_bvh(CUDACommandVisitor *visitor) noexcept;
     void update_bvh(CUDACommandVisitor *visitor) noexcept;
+    [[nodiscard]] vector<OptixTraversableHandle> blas_handles() noexcept;
+    [[nodiscard]] OptixBuildInput construct_build_input(uint instance_num) noexcept;
     [[nodiscard]] size_t data_size() const noexcept override;
     [[nodiscard]] size_t data_alignment() const noexcept override;
     void clear() noexcept override;

@@ -37,6 +37,25 @@ void OptixAccel::clear() noexcept {
     tlas_handle_ = 0;
 }
 
+vector<OptixTraversableHandle> OptixAccel::blas_handles() noexcept {
+    vector<OptixTraversableHandle> traversable_handles;
+    traversable_handles.reserve(meshes_.size());
+    for (const RHIMesh &mesh : meshes_) {
+        const auto *cuda_mesh = dynamic_cast<const CUDAMesh *>(mesh.impl());
+        traversable_handles.push_back(cuda_mesh->blas_handle());
+    }
+    return traversable_handles;
+}
+
+OptixBuildInput OptixAccel::construct_build_input(uint instance_num) noexcept {
+    OptixBuildInput instance_input = {};
+    instances_ = Buffer<OptixInstance>(device_, instance_num, "instance buffer");
+    instance_input.type = OPTIX_BUILD_INPUT_TYPE_INSTANCES;
+    instance_input.instanceArray.numInstances = instance_num;
+    instance_input.instanceArray.instances = instances_.ptr<CUdeviceptr>();
+    return instance_input;
+}
+
 void OptixAccel::update_bvh(ocarina::CUDACommandVisitor *visitor) noexcept {
     device_->use_context([&] {
 
@@ -45,18 +64,9 @@ void OptixAccel::update_bvh(ocarina::CUDACommandVisitor *visitor) noexcept {
 
 void OptixAccel::build_bvh(CUDACommandVisitor *visitor) noexcept {
     device_->use_context([&] {
-        vector<OptixTraversableHandle> traversable_handles;
-        traversable_handles.reserve(meshes_.size());
-        for (const RHIMesh &mesh : meshes_) {
-            const auto *cuda_mesh = dynamic_cast<const CUDAMesh *>(mesh.impl());
-            traversable_handles.push_back(cuda_mesh->blas_handle());
-        }
-        size_t instance_num = meshes_.size();
-        OptixBuildInput instance_input = {};
-        instances_ = Buffer<OptixInstance>(device_, instance_num, "instance buffer");
-        instance_input.type = OPTIX_BUILD_INPUT_TYPE_INSTANCES;
-        instance_input.instanceArray.numInstances = instance_num;
-        instance_input.instanceArray.instances = instances_.ptr<CUdeviceptr>();
+        vector<OptixTraversableHandle> traversable_handles = blas_handles();
+        size_t instance_num = traversable_handles.size();
+        OptixBuildInput instance_input = construct_build_input(instance_num);
 
         OptixAccelBuildOptions accel_options = {};
         accel_options.buildFlags = (OPTIX_BUILD_FLAG_ALLOW_COMPACTION | OPTIX_BUILD_FLAG_PREFER_FAST_TRACE);
