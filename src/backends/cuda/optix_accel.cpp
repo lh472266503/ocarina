@@ -73,11 +73,11 @@ vector<OptixInstance> OptixAccel::construct_optix_instances() const noexcept {
     vector<OptixInstance> optix_instances;
     uint instance_num = transforms_.size();
     optix_instances.reserve(instance_num);
-    auto traversable_handles = blas_handles();
     for (int i = 0; i < instance_num; ++i) {
         float4x4 transform = transforms_[i];
         OptixInstance optix_instance;
-        optix_instance.traversableHandle = traversable_handles[i];
+        const auto *cuda_mesh = dynamic_cast<const CUDAMesh *>(meshes_[i].impl());
+        optix_instance.traversableHandle = cuda_mesh->blas_handle();
         optix_instance.flags = OPTIX_INSTANCE_FLAG_NONE;
         optix_instance.instanceId = i;
         optix_instance.visibilityMask = 1;
