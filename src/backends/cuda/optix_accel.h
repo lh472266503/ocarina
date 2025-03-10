@@ -17,7 +17,7 @@ private:
     OptixTraversableHandle tlas_handle_{};
     CUDADevice *device_;
     Buffer<OptixInstance> instances_{};
-    OptixBuildInput build_input_{};
+    OptixBuildInput instance_input_{};
 
 public:
     explicit OptixAccel(CUDADevice *device) : device_(device) {}
