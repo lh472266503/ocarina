@@ -37,16 +37,6 @@ void OptixAccel::clear() noexcept {
     tlas_handle_ = 0;
 }
 
-vector<OptixTraversableHandle> OptixAccel::blas_handles() const noexcept {
-    vector<OptixTraversableHandle> traversable_handles;
-    traversable_handles.reserve(meshes_.size());
-    for (const RHIMesh &mesh : meshes_) {
-        const auto *cuda_mesh = dynamic_cast<const CUDAMesh *>(mesh.impl());
-        traversable_handles.push_back(cuda_mesh->blas_handle());
-    }
-    return traversable_handles;
-}
-
 OptixAccelBufferSizes OptixAccel::compute_memory_usage(OptixAccelBuildOptions build_options,
                                                        OptixBuildInput instance_input) const noexcept {
     OptixAccelBufferSizes ias_buffer_sizes;
@@ -90,6 +80,7 @@ vector<OptixInstance> OptixAccel::construct_optix_instances() const noexcept {
 
 void OptixAccel::update_bvh(ocarina::CUDACommandVisitor *visitor) noexcept {
     device_->use_context([&] {
+
 
     });
 }

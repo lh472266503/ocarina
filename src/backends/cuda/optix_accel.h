@@ -22,7 +22,6 @@ public:
     explicit OptixAccel(CUDADevice *device) : device_(device) {}
     void build_bvh(CUDACommandVisitor *visitor) noexcept;
     void update_bvh(CUDACommandVisitor *visitor) noexcept;
-    [[nodiscard]] vector<OptixTraversableHandle> blas_handles() const noexcept;
     [[nodiscard]] static constexpr OptixAccelBuildOptions build_options(AccelBuildTag build_tag) noexcept {
         OptixAccelBuildOptions accel_options = {};
         accel_options.buildFlags = (OPTIX_BUILD_FLAG_ALLOW_COMPACTION | OPTIX_BUILD_FLAG_PREFER_FAST_TRACE);
