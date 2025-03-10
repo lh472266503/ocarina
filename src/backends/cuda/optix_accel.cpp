@@ -37,7 +37,7 @@ void OptixAccel::clear() noexcept {
     tlas_handle_ = 0;
 }
 
-vector<OptixTraversableHandle> OptixAccel::blas_handles() noexcept {
+vector<OptixTraversableHandle> OptixAccel::blas_handles() const noexcept {
     vector<OptixTraversableHandle> traversable_handles;
     traversable_handles.reserve(meshes_.size());
     for (const RHIMesh &mesh : meshes_) {
@@ -69,6 +69,25 @@ OptixBuildInput OptixAccel::init_instance_buffer(uint instance_num) noexcept {
     return instance_input;
 }
 
+vector<OptixInstance> OptixAccel::construct_optix_instances() const noexcept {
+    vector<OptixInstance> optix_instances;
+    uint instance_num = transforms_.size();
+    optix_instances.reserve(instance_num);
+    auto traversable_handles = blas_handles();
+    for (int i = 0; i < instance_num; ++i) {
+        float4x4 transform = transforms_[i];
+        OptixInstance optix_instance;
+        optix_instance.traversableHandle = traversable_handles[i];
+        optix_instance.flags = OPTIX_INSTANCE_FLAG_NONE;
+        optix_instance.instanceId = i;
+        optix_instance.visibilityMask = 1;
+        optix_instance.sbtOffset = 0;
+        detail::mat4x4_to_array12(transform, optix_instance.transform);
+        optix_instances.push_back(optix_instance);
+    }
+    return optix_instances;
+}
+
 void OptixAccel::update_bvh(ocarina::CUDACommandVisitor *visitor) noexcept {
     device_->use_context([&] {
 
@@ -77,8 +96,7 @@ void OptixAccel::update_bvh(ocarina::CUDACommandVisitor *visitor) noexcept {
 
 void OptixAccel::build_bvh(CUDACommandVisitor *visitor) noexcept {
     device_->use_context([&] {
-        vector<OptixTraversableHandle> traversable_handles = blas_handles();
-        size_t instance_num = traversable_handles.size();
+        size_t instance_num = transforms_.size();
         OptixBuildInput instance_input = init_instance_buffer(instance_num);
 
         OptixAccelBuildOptions accel_options = build_options(AccelBuildTag::BUILD);
@@ -92,20 +110,7 @@ void OptixAccel::build_bvh(CUDACommandVisitor *visitor) noexcept {
         emit_desc.type = OPTIX_PROPERTY_TYPE_COMPACTED_SIZE;
         emit_desc.result = compact_size_buffer.handle();
 
-        vector<OptixInstance> optix_instances;
-        optix_instances.reserve(instance_num);
-
-        for (int i = 0; i < instance_num; ++i) {
-            float4x4 transform = transforms_[i];
-            OptixInstance optix_instance;
-            optix_instance.traversableHandle = traversable_handles[i];
-            optix_instance.flags = OPTIX_INSTANCE_FLAG_NONE;
-            optix_instance.instanceId = i;
-            optix_instance.visibilityMask = 1;
-            optix_instance.sbtOffset = 0;
-            detail::mat4x4_to_array12(transform, optix_instance.transform);
-            optix_instances.push_back(optix_instance);
-        }
+        vector<OptixInstance> optix_instances = construct_optix_instances();
 
         instances_.upload_immediately(optix_instances.data());
         OC_OPTIX_CHECK(optixAccelBuild(device_->optix_device_context(),
