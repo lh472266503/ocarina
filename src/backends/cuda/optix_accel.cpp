@@ -50,13 +50,11 @@ OptixAccelBufferSizes OptixAccel::compute_memory_usage(OptixAccelBuildOptions bu
     return ias_buffer_sizes;
 }
 
-OptixBuildInput OptixAccel::init_instance_buffer(uint instance_num) noexcept {
-    OptixBuildInput instance_input = {};
+void OptixAccel::init_instance_input(uint instance_num) noexcept {
     instances_ = Buffer<OptixInstance>(device_, instance_num, "instance buffer");
-    instance_input.type = OPTIX_BUILD_INPUT_TYPE_INSTANCES;
-    instance_input.instanceArray.numInstances = instance_num;
-    instance_input.instanceArray.instances = instances_.ptr<CUdeviceptr>();
-    return instance_input;
+    build_input_.type = OPTIX_BUILD_INPUT_TYPE_INSTANCES;
+    build_input_.instanceArray.numInstances = instance_num;
+    build_input_.instanceArray.instances = instances_.ptr<CUdeviceptr>();
 }
 
 vector<OptixInstance> OptixAccel::construct_optix_instances() const noexcept {
@@ -88,11 +86,11 @@ void OptixAccel::update_bvh(ocarina::CUDACommandVisitor *visitor) noexcept {
 void OptixAccel::build_bvh(CUDACommandVisitor *visitor) noexcept {
     device_->use_context([&] {
         size_t instance_num = transforms_.size();
-        OptixBuildInput instance_input = init_instance_buffer(instance_num);
+        init_instance_input(instance_num);
 
         OptixAccelBuildOptions accel_options = build_options(AccelBuildTag::BUILD);
 
-        OptixAccelBufferSizes ias_buffer_sizes = compute_memory_usage(accel_options, instance_input);
+        OptixAccelBufferSizes ias_buffer_sizes = compute_memory_usage(accel_options, build_input_);
 
         auto ias_buffer = Buffer<std::byte>(device_, ias_buffer_sizes.outputSizeInBytes, "TLAS buffer");
         auto temp_buffer = Buffer<std::byte>(device_, ias_buffer_sizes.tempSizeInBytes, "TLAS temp buffer");
@@ -106,7 +104,7 @@ void OptixAccel::build_bvh(CUDACommandVisitor *visitor) noexcept {
         instances_.upload_immediately(optix_instances.data());
         OC_OPTIX_CHECK(optixAccelBuild(device_->optix_device_context(),
                                        nullptr, &accel_options,
-                                       &instance_input, 1,
+                                       &build_input_, 1,
                                        temp_buffer.ptr<CUdeviceptr>(),
                                        ias_buffer_sizes.tempSizeInBytes,
                                        ias_buffer.ptr<CUdeviceptr>(),

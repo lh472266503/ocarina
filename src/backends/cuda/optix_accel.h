@@ -17,6 +17,7 @@ private:
     OptixTraversableHandle tlas_handle_{};
     CUDADevice *device_;
     Buffer<OptixInstance> instances_{};
+    OptixBuildInput build_input_{};
 
 public:
     explicit OptixAccel(CUDADevice *device) : device_(device) {}
@@ -33,7 +34,7 @@ public:
     [[nodiscard]] vector<OptixInstance> construct_optix_instances() const noexcept;
     [[nodiscard]] OptixAccelBufferSizes compute_memory_usage(OptixAccelBuildOptions build_options,
                                                              OptixBuildInput instance_input) const noexcept;
-    [[nodiscard]] OptixBuildInput init_instance_buffer(uint instance_num) noexcept;
+    void init_instance_input(uint instance_num) noexcept;
     [[nodiscard]] size_t data_size() const noexcept override;
     [[nodiscard]] size_t data_alignment() const noexcept override;
     void clear() noexcept override;
