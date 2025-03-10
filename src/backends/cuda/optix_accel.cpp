@@ -47,6 +47,19 @@ vector<OptixTraversableHandle> OptixAccel::blas_handles() noexcept {
     return traversable_handles;
 }
 
+OptixAccelBufferSizes OptixAccel::compute_memory_usage(OptixAccelBuildOptions build_options,
+                                                       OptixBuildInput instance_input) const noexcept {
+    OptixAccelBufferSizes ias_buffer_sizes;
+    OC_OPTIX_CHECK(optixAccelComputeMemoryUsage(device_->optix_device_context(),
+                                                &build_options, &instance_input,
+                                                1,// num build inputs
+                                                &ias_buffer_sizes));
+    OC_INFO_FORMAT("tlas: outputSizeInBytes is {} byte, tempSizeInBytes is {} byte",
+                   ias_buffer_sizes.outputSizeInBytes,
+                   ias_buffer_sizes.tempSizeInBytes);
+    return ias_buffer_sizes;
+}
+
 OptixBuildInput OptixAccel::init_instance_buffer(uint instance_num) noexcept {
     OptixBuildInput instance_input = {};
     instances_ = Buffer<OptixInstance>(device_, instance_num, "instance buffer");
@@ -68,18 +81,9 @@ void OptixAccel::build_bvh(CUDACommandVisitor *visitor) noexcept {
         size_t instance_num = traversable_handles.size();
         OptixBuildInput instance_input = init_instance_buffer(instance_num);
 
-        OptixAccelBuildOptions accel_options = {};
-        accel_options.buildFlags = (OPTIX_BUILD_FLAG_ALLOW_COMPACTION | OPTIX_BUILD_FLAG_PREFER_FAST_TRACE);
-        accel_options.operation = OPTIX_BUILD_OPERATION_BUILD;
+        OptixAccelBuildOptions accel_options = build_options(AccelBuildTag::BUILD);
 
-        OptixAccelBufferSizes ias_buffer_sizes;
-        OC_OPTIX_CHECK(optixAccelComputeMemoryUsage(device_->optix_device_context(),
-                                                    &accel_options, &instance_input,
-                                                    1,// num build inputs
-                                                    &ias_buffer_sizes));
-        OC_INFO_FORMAT("tlas: outputSizeInBytes is {} byte, tempSizeInBytes is {} byte",
-                       ias_buffer_sizes.outputSizeInBytes,
-                       ias_buffer_sizes.tempSizeInBytes);
+        OptixAccelBufferSizes ias_buffer_sizes = compute_memory_usage(accel_options, instance_input);
 
         auto ias_buffer = Buffer<std::byte>(device_, ias_buffer_sizes.outputSizeInBytes, "TLAS buffer");
         auto temp_buffer = Buffer<std::byte>(device_, ias_buffer_sizes.tempSizeInBytes, "TLAS temp buffer");

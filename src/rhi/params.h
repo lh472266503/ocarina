@@ -22,6 +22,11 @@ enum AccelUsageTag : uint8_t {
     FAST_TRACE
 };
 
+enum AccelBuildTag : uint8_t {
+    BUILD,
+    UPDATE
+};
+
 enum AccelGeomTag : uint8_t {
     NONE = 0,
     DISABLE_ANYHIT = 1 << 0,
