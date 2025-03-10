@@ -16,12 +16,13 @@ private:
     MeshParams params_;
     OptixTraversableHandle blas_handle_{};
     Buffer<std::byte> blas_buffer_{};
+    OptixBuildInput build_input_{};
 
 public:
     CUDAMesh(CUDADevice *device, const MeshParams &params)
         : device_(device), params_(params) {}
     void update_mesh(const MeshParams &mesh_params) noexcept { params_ = mesh_params; }
-    [[nodiscard]] OptixBuildInput construct_build_input() const noexcept;
+    void init_build_input() noexcept;
     [[nodiscard]] handle_ty blas_handle() const noexcept override { return blas_handle_; }
     [[nodiscard]] uint vertex_num() const noexcept override { return params_.vert_num; }
     [[nodiscard]] uint triangle_num() const noexcept override { return params_.tri_num; }
