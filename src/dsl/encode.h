@@ -61,40 +61,40 @@ requires(is_std_vector_v<value_ty> && is_scalar_v<typename value_ty::value_type>
 struct EncodedData final : public Encodable<T> {
 private:
     using host_ty = std::variant<value_ty, std::function<value_ty()>>;
-    host_ty _host_value{};
-    optional<dsl_t<value_ty>> _device_value{};
+    host_ty host_value_{};
+    optional<dsl_t<value_ty>> device_value_{};
     /// origin index in buffer
-    mutable uint _offset{InvalidUI32};
-    mutable RegistrableManaged<T> *_data{nullptr};
+    mutable uint offset_{InvalidUI32};
+    mutable RegistrableManaged<T> *data_{nullptr};
 
 public:
-    explicit EncodedData(value_ty val = value_ty{}) : _host_value(std::move(val)) {}
+    explicit EncodedData(value_ty val = value_ty{}) : host_value_(std::move(val)) {}
     EncodedData &operator=(const value_ty &val) {
-        _host_value = val;
+        host_value_ = val;
         return *this;
     }
     EncodedData &operator=(const std::function<value_ty()> &val) {
-        _host_value = val;
+        host_value_ = val;
         return *this;
     }
-    [[nodiscard]] bool has_device_value() const noexcept override { return _device_value.has_value(); }
+    [[nodiscard]] bool has_device_value() const noexcept override { return device_value_.has_value(); }
     void reset_device_value() const noexcept override {
-        (const_cast<decltype(_device_value) &>(_device_value)).reset();
+        (const_cast<decltype(device_value_) &>(device_value_)).reset();
     }
     [[nodiscard]] value_ty hv() const noexcept {
-        if (_host_value.index() == 0) {
-            return std::get<0>(_host_value);
+        if (host_value_.index() == 0) {
+            return std::get<0>(host_value_);
         } else {
-            return std::get<1>(_host_value)();
+            return std::get<1>(host_value_)();
         }
     }
     [[nodiscard]] value_ty &hv() noexcept {
-        OC_ASSERT(_host_value.index() == 0);
-        return std::get<0>(_host_value);
+        OC_ASSERT(host_value_.index() == 0);
+        return std::get<0>(host_value_);
     }
     [[nodiscard]] const dsl_t<value_ty> &dv() const noexcept {
         OC_ASSERT(has_device_value());
-        return *_device_value;
+        return *device_value_;
     }
 
     [[nodiscard]] dsl_t<value_ty> operator*() const noexcept {
@@ -105,13 +105,13 @@ public:
         }
     }
 
-    [[nodiscard]] bool has_encoded() const noexcept { return _offset != InvalidUI32; }
-    void invalidation() const noexcept { _offset = InvalidUI32; }
+    [[nodiscard]] bool has_encoded() const noexcept { return offset_ != InvalidUI32; }
+    void invalidation() const noexcept { offset_ = InvalidUI32; }
 
     void init_encode(RegistrableManaged<T> &data) const noexcept {
         OC_ASSERT(!has_encoded());
-        _offset = data.host_buffer().size();
-        _data = addressof(data);
+        offset_ = data.host_buffer().size();
+        data_ = addressof(data);
         if constexpr (is_scalar_v<value_ty>) {
             data.push_back(bit_cast<T>(hv()));
         } else if constexpr (is_vector_v<value_ty>) {
@@ -136,22 +136,22 @@ public:
     void update(RegistrableManaged<T> &data) const noexcept override {
         OC_ASSERT(has_encoded());
         if constexpr (is_scalar_v<value_ty>) {
-            data.host_buffer()[_offset] = bit_cast<T>(hv());
+            data.host_buffer()[offset_] = bit_cast<T>(hv());
         } else if constexpr (is_vector_v<value_ty>) {
             for (int i = 0; i < vector_dimension_v<value_ty>; ++i) {
-                data.host_buffer()[_offset + i] = bit_cast<T>(hv()[i]);
+                data.host_buffer()[offset_ + i] = bit_cast<T>(hv()[i]);
             }
         } else if constexpr (is_matrix_v<value_ty>) {
             uint count = 0;
             for (int i = 0; i < matrix_dimension_v<value_ty>; ++i) {
                 for (int j = 0; j < matrix_dimension_v<value_ty>; ++j) {
-                    data.host_buffer()[_offset + count] = bit_cast<T>(hv()[i][j]);
+                    data.host_buffer()[offset_ + count] = bit_cast<T>(hv()[i][j]);
                     ++count;
                 }
             }
         } else if constexpr (is_std_vector_v<value_ty>) {
             for (int i = 0; i < hv().size(); ++i) {
-                data.host_buffer()[_offset + i] = bit_cast<T>(hv()[i]);
+                data.host_buffer()[offset_ + i] = bit_cast<T>(hv()[i]);
             }
         } else {
             static_assert(always_false_v<value_ty>);
@@ -159,7 +159,7 @@ public:
     }
 
     void update() const noexcept override {
-        update(*_data);
+        update(*data_);
     }
 
     void encode(RegistrableManaged<T> &data) const noexcept override {
@@ -219,14 +219,14 @@ public:
 
     void decode(const DataAccessor<T> *da) const noexcept override {
         const DynamicArray<T> array = da->template load_dynamic_array<T>(element_num());
-        const_cast<decltype(_device_value) *>(&_device_value)->emplace(_decode(array));
+        const_cast<decltype(device_value_) *>(&device_value_)->emplace(_decode(array));
     }
 
     void decode() const noexcept override {
-        if (_data == nullptr) {
+        if (data_ == nullptr) {
             return;
         }
-        DataAccessor<T> da{_offset * sizeof(T), *_data};
+        DataAccessor<T> da{offset_ * sizeof(T), *data_};
         decode(&da);
     }
 };
