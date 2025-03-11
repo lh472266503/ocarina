@@ -43,6 +43,7 @@ public:
     virtual void encode(RegistrableManaged<T> &data) const noexcept {}
     virtual void update(RegistrableManaged<T> &data) const noexcept {}
     virtual void update() const noexcept {}
+    virtual void invalidate() const noexcept {}
     /// for device
     virtual void decode(const DataAccessor<T> *da) const noexcept {}
     virtual void decode() const noexcept {}
@@ -106,7 +107,7 @@ public:
     }
 
     [[nodiscard]] bool has_encoded() const noexcept { return offset_ != InvalidUI32; }
-    void invalidation() const noexcept { offset_ = InvalidUI32; }
+    void invalidate() const noexcept override { offset_ = InvalidUI32; }
 
     void init_encode(RegistrableManaged<T> &data) const noexcept {
         OC_ASSERT(!has_encoded());
@@ -206,7 +207,7 @@ public:
             }
             return ret;
         } else if constexpr (is_std_vector_v<value_ty>) {
-            using element_ty = value_ty::value_type;
+            using element_ty = typename value_ty::value_type;
             DynamicArray<element_ty> ret{hv().size()};
             for (int i = 0; i < hv().size(); ++i) {
                 ret[i] = as<element_ty>(array[i]);
@@ -233,6 +234,7 @@ public:
 
 namespace detail {
 OC_MAKE_AUTO_MEMBER_FUNC(encode)
+OC_MAKE_AUTO_MEMBER_FUNC(invalidate)
 OC_MAKE_AUTO_MEMBER_FUNC(update)
 OC_MAKE_AUTO_MEMBER_FUNC(decode)
 OC_MAKE_AUTO_MEMBER_FUNC(reset_device_value)
@@ -242,8 +244,9 @@ OC_MAKE_AUTO_MEMBER_FUNC(element_num)
 
 #define OC_ENCODE_ELEMENT(name) ocarina::detail::encode(name, datas);
 #define OC_UPDATE_ELEMENT(name) ocarina::detail::update(name, datas);
+#define OC_INVALIDATE_ELEMENT(name) ocarina::detail::invalidate(name);
 #define OC_DECODE_ELEMENT(name) ocarina::detail::decode(name, da);
-#define OC_INVALIDATE_ELEMENT(name) ocarina::detail::reset_device_value(name);
+#define OC_RESET_DEVICE_ELEMENT(name) ocarina::detail::reset_device_value(name);
 #define OC_VALID_ELEMENT(name) &&ocarina::detail::has_device_value(name)
 #define OC_SIZE_ELEMENT(name) +ocarina::detail::element_num(name)
 
@@ -263,9 +266,13 @@ OC_MAKE_AUTO_MEMBER_FUNC(element_num)
         Super::decode(da);                                                       \
         MAP(OC_DECODE_ELEMENT, __VA_ARGS__)                                      \
     }                                                                            \
+    void invalidate() const noexcept override {                                  \
+        Super::invalidate();                                                     \
+        MAP(OC_INVALIDATE_ELEMENT, __VA_ARGS__)                                  \
+    }                                                                            \
     void reset_device_value() const noexcept override {                          \
         Super::reset_device_value();                                             \
-        MAP(OC_INVALIDATE_ELEMENT, __VA_ARGS__)                                  \
+        MAP(OC_RESET_DEVICE_ELEMENT, __VA_ARGS__)                                \
     }                                                                            \
     [[nodiscard]] bool has_device_value() const noexcept override {              \
         return Super::has_device_value() MAP(OC_VALID_ELEMENT, __VA_ARGS__);     \
