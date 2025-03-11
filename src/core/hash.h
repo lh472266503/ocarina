@@ -150,6 +150,7 @@ protected:
 
 public:
     void reset_hash() const noexcept { _hash_computed = false; }
+    void reset_type_hash() const noexcept { _type_hash_computed = false; }
 
     [[nodiscard]] uint64_t hash() const noexcept {
         if (!_hash_computed) {

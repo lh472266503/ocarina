@@ -268,6 +268,8 @@ public:
     void remedy() noexcept {
         type_mgr_.clear();
         for (auto &elm : *this) {
+            elm->invalidate();
+            elm->reset_type_hash();
             type_mgr_.add_object(elm);
         }
     }
