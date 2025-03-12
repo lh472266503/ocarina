@@ -31,8 +31,8 @@ public:
     friend class MemberAccessor;
     explicit Var(const ocarina::Expression *expression) noexcept
         : ocarina::detail::Ref<this_type>(expression) {}
-    Var(const std::source_location &location = std::source_location::current()) noexcept
-        : Var(ocarina::Function::current()->local(ocarina::Type::of<this_type>(), location)) {
+    Var(OC_APPEND_SRC_LOCATION) noexcept
+        : Var(ocarina::Function::current()->local(ocarina::Type::of<this_type>(), OC_SRC_LOCATION)) {
         static_assert(!is_param_struct_v<T>);
         if constexpr (is_struct_v<T>) {
             Ref<T>::set(T{});
@@ -46,13 +46,12 @@ public:
     requires ocarina::concepts::non_pointer<std::remove_cvref_t<Arg>> &&
              concepts::different<std::remove_cvref_t<Arg>, Var<this_type>> &&
              requires(ocarina::expr_value_t<this_type> a, ocarina::expr_value_t<Arg> b) { a = b; }
-    Var(Arg &&arg, const std::source_location &location = std::source_location::current())
-        : Var(location) { ocarina::detail::assign(*this, std::forward<Arg>(arg)); }
+    Var(Arg &&arg, OC_APPEND_SRC_LOCATION)
+        : Var(OC_SRC_LOCATION) { ocarina::detail::assign(*this, std::forward<Arg>(arg)); }
     explicit Var(ocarina::detail::ArgumentCreation,
-                 const std::source_location &location = std::source_location::current()) noexcept
+                 OC_APPEND_SRC_LOCATION) noexcept
         : Var(ocarina::Function::current()->argument(ocarina::Type::of<this_type>())) {}
-    explicit Var(ocarina::detail::ReferenceArgumentCreation,
-                 const std::source_location &location = std::source_location::current()) noexcept
+    explicit Var(ocarina::detail::ReferenceArgumentCreation, OC_APPEND_SRC_LOCATION) noexcept
         : Var(ocarina::Function::current()->reference_argument(ocarina::Type::of<this_type>())) {}
     template<typename Arg>
     requires requires(ocarina::expr_value_t<this_type> a, ocarina::expr_value_t<Arg> b) { a = b; }

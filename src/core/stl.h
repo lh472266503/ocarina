@@ -24,10 +24,14 @@
 #include <unordered_set>
 #include <string_view>
 #include <filesystem>
+#include <source_location>
 #include <EASTL/tuple.h>
 #include <EASTL/string.h>
 
 #define OC_FORWARD(arg) std::forward<decltype(arg)>(arg)
+
+#define OC_APPEND_SRC_LOCATION std::source_location src_location = std::source_location::current()
+#define OC_SRC_LOCATION src_location
 
 #define OC_DEFINE_TEMPLATE_VALUE(template_name) \
     template<typename T>                        \
