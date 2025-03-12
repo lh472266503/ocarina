@@ -10,6 +10,7 @@
 #include "expr.h"
 #include "math/basic_types.h"
 #include "type_trait.h"
+#include <source_location>
 
 namespace ocarina {
 
@@ -22,6 +23,7 @@ using detail::Ref;
 
 template<typename T>
 struct Var : public Ref<T> {
+public:
     using this_type = T;
     using Super = Ref<T>;
     using Ref<T>::Ref;
@@ -29,8 +31,8 @@ struct Var : public Ref<T> {
     friend class MemberAccessor;
     explicit Var(const ocarina::Expression *expression) noexcept
         : ocarina::detail::Ref<this_type>(expression) {}
-    Var() noexcept
-        : Var(ocarina::Function::current()->local(ocarina::Type::of<this_type>())) {
+    Var(const std::source_location &location = std::source_location::current()) noexcept
+        : Var(ocarina::Function::current()->local(ocarina::Type::of<this_type>(), location)) {
         static_assert(!is_param_struct_v<T>);
         if constexpr (is_struct_v<T>) {
             Ref<T>::set(T{});
@@ -44,11 +46,13 @@ struct Var : public Ref<T> {
     requires ocarina::concepts::non_pointer<std::remove_cvref_t<Arg>> &&
              concepts::different<std::remove_cvref_t<Arg>, Var<this_type>> &&
              requires(ocarina::expr_value_t<this_type> a, ocarina::expr_value_t<Arg> b) { a = b; }
-    Var(Arg &&arg)
-        : Var() { ocarina::detail::assign(*this, std::forward<Arg>(arg)); }
-    explicit Var(ocarina::detail::ArgumentCreation) noexcept
+    Var(Arg &&arg, const std::source_location &location = std::source_location::current())
+        : Var(location) { ocarina::detail::assign(*this, std::forward<Arg>(arg)); }
+    explicit Var(ocarina::detail::ArgumentCreation,
+                 const std::source_location &location = std::source_location::current()) noexcept
         : Var(ocarina::Function::current()->argument(ocarina::Type::of<this_type>())) {}
-    explicit Var(ocarina::detail::ReferenceArgumentCreation) noexcept
+    explicit Var(ocarina::detail::ReferenceArgumentCreation,
+                 const std::source_location &location = std::source_location::current()) noexcept
         : Var(ocarina::Function::current()->reference_argument(ocarina::Type::of<this_type>())) {}
     template<typename Arg>
     requires requires(ocarina::expr_value_t<this_type> a, ocarina::expr_value_t<Arg> b) { a = b; }

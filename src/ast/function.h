@@ -291,7 +291,7 @@ public:
     [[nodiscard]] const RefExpr *dispatch_dim() noexcept;
     [[nodiscard]] const RefExpr *argument(const Type *type) noexcept;
     [[nodiscard]] const RefExpr *reference_argument(const Type *type) noexcept;
-    [[nodiscard]] const RefExpr *local(const Type *type) noexcept;
+    [[nodiscard]] const RefExpr *local(const Type *type, std::source_location location = std::source_location::current()) noexcept;
     [[nodiscard]] const LiteralExpr *literal(const Type *type, basic_literal_t value) noexcept;
     [[nodiscard]] const UnaryExpr *unary(const Type *type, UnaryOp op, const Expression *expression) noexcept;
     [[nodiscard]] const BinaryExpr *binary(const Type *type, BinaryOp op, const Expression *lhs, const Expression *rhs) noexcept;

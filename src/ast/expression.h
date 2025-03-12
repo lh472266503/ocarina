@@ -231,7 +231,7 @@ protected:
 public:
     VariableExpr(Tag tag, const Type *type, Variable variable)
         : Expression(tag, type), variable_(std::move(variable)) {}
-    [[nodiscard]] auto variable() const noexcept { return variable_; }
+    OC_MAKE_MEMBER_GETTER(variable, &)
     [[nodiscard]] Usage usage() const noexcept override;
 };
 
