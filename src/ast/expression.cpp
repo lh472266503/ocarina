@@ -74,7 +74,7 @@ uint64_t MemberExpr::_compute_hash() const noexcept {
 }
 
 CallExpr::CallExpr(const Type *type, const Function *func,
-                   vector<const Expression *> &&args)
+                   list<const Expression *> &&args)
     : Expression(Tag::CALL, type),
       function_(func),
       arguments_(std::move(args)) {
@@ -94,6 +94,27 @@ vector<const Function *> CallExpr::call_chain() const noexcept {
 
 void CallExpr::append_argument(const Expression *expression) noexcept {
     arguments_.push_back(expression);
+}
+
+template<typename Elm>
+[[nodiscard]] auto get_list_iter(const ocarina::list<Elm> &lst, uint index) noexcept {
+    uint counter = 0;
+    for(auto iter = lst.cbegin(); iter != lst.cend(); ++iter, ++counter) {
+        if (counter == index) {
+            return iter;
+        }
+    }
+    return lst.cend();
+}
+
+const Expression *CallExpr::argument(ocarina::uint index) const noexcept {
+    auto ret = get_list_iter(arguments_, index);
+    return *ret;
+}
+
+const CallExpr::Template &CallExpr::template_arg(ocarina::uint index) const noexcept {
+    auto ret = get_list_iter(template_args_, index);
+    return *ret;
 }
 
 uint64_t CallExpr::_compute_hash() const noexcept {

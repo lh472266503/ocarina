@@ -111,7 +111,7 @@ void correct_usage(const CallExpr *expr) noexcept {
         Variable formal_arg = formal_arguments[i];
         Usage &formal_arg_usage = const_cast<Usage &>(expr->function()->variable_usage(formal_arg.uid()));
 
-        const Expression *act_arg = expr->arguments()[i];
+        const Expression *act_arg = expr->argument(i);
         Usage act_arg_usage = act_arg->usage();
 
         Usage combined = bit_or(formal_arg_usage, act_arg_usage);

@@ -268,11 +268,11 @@ public:
     using Template = std::variant<const Type *, uint>;
 
 private:
-    ocarina::vector<const Expression *> arguments_;
+    ocarina::list<const Expression *> arguments_;
     const Function *function_{};
     CallOp call_op_{CallOp::CUSTOM};
     string_view function_name_{};
-    ocarina::vector<Template> template_args_;
+    ocarina::list<Template> template_args_;
 
 private:
     void _mark(Usage) const noexcept override {}
@@ -280,19 +280,21 @@ private:
 
 public:
     CallExpr(const Type *type, const Function *func,
-             ocarina::vector<const Expression *> &&args);
+             ocarina::list<const Expression *> &&args);
     CallExpr(const Type *type, CallOp op,
-             ocarina::vector<const Expression *> &&args,
-             ocarina::vector<Template> &&t_args = {})
+             ocarina::list<const Expression *> &&args,
+             ocarina::list<Template> &&t_args = {})
         : Expression(Tag::CALL, type), call_op_(op),
           arguments_(std::move(args)), template_args_(ocarina::move(t_args)) {}
     CallExpr(const Type *type, string_view func_name,
-             ocarina::vector<const Expression *> &&args)
+             ocarina::list<const Expression *> &&args)
         : Expression(Tag::CALL, type), function_name_(ocarina::move(func_name)),
           arguments_(ocarina::move(args)) {}
     OC_MAKE_CHECK_CONTEXT(Expression, arguments_)
-    [[nodiscard]] ocarina::span<const Expression *const> arguments() const noexcept { return arguments_; }
-    [[nodiscard]] ocarina::span<const Template> template_args() const noexcept { return template_args_; }
+    [[nodiscard]] auto arguments() const noexcept { return arguments_; }
+    [[nodiscard]] const Expression *argument(uint index) const noexcept;
+    [[nodiscard]] auto template_args() const noexcept { return template_args_; }
+    [[nodiscard]] const Template &template_arg(uint index) const noexcept;
     OC_MAKE_MEMBER_GETTER(function_name, &)
     void append_argument(const Expression *expression) noexcept;
     [[nodiscard]] vector<const Function *> call_chain() const noexcept;
