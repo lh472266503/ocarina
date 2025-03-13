@@ -333,6 +333,11 @@ auto outline(Func &&func, const string &desc = "") {
     return detail::CallableOutlineBuilder(desc) % OC_FORWARD(func);
 }
 
+template<typename Func>
+auto outline(const string &desc, Func &&func) {
+    return outline(OC_FORWARD(func), desc);
+}
+
 template<typename T>
 class Kernel {
     static_assert(always_false_v<T>);
