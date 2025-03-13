@@ -297,6 +297,7 @@ void FunctionCorrector::visit(const SubscriptExpr *expr) {
     for (const Expression *const &index : expr->indexes_) {
         visit_expr(index);
     }
+    visit_expr(expr->range());
 }
 
 void FunctionCorrector::visit(const UnaryExpr *expr) {
