@@ -174,13 +174,13 @@ public:
     [[nodiscard]] uint encoded_size() const noexcept override {
         if constexpr (is_scalar_v<value_ty>) {
             static_assert(sizeof(value_ty) <= sizeof(float));
-            return 1;
+            return sizeof(value_ty);
         } else if constexpr (is_vector_v<value_ty>) {
-            return vector_dimension_v<value_ty>;
+            return sizeof(value_ty::scalar_type) * value_ty::dimension;
         } else if constexpr (is_matrix_v<value_ty>) {
-            return sqr(matrix_dimension_v<value_ty>);
+            return sizeof(value_ty::scalar_type) * value_ty::ElementNum;
         } else if constexpr (is_std_vector_v<value_ty>) {
-            return hv().size();
+            return hv().size() * sizeof(value_ty::value_type);
         } else {
             static_assert(always_false_v<value_ty>);
         }
@@ -219,7 +219,7 @@ public:
     }
 
     void decode(const DataAccessor<T> *da) const noexcept override {
-        const DynamicArray<T> array = da->template load_dynamic_array<T>(encoded_size());
+        const DynamicArray<T> array = da->template load_dynamic_array<T>(encoded_size() / sizeof(float));
         const_cast<decltype(device_value_) *>(&device_value_)->emplace(_decode(array));
     }
 

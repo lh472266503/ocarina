@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "encode.h"
+#include "encodable.h"
 #include "rhi/resources/managed.h"
 #include "dsl/printer.h"
 #include "core/platform.h"

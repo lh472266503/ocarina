@@ -8,7 +8,7 @@
 #include "stmt_builder.h"
 #include "core/stl.h"
 #include "core/util.h"
-#include "encode.h"
+#include "encodable.h"
 #include "core/hash.h"
 #include "registrable.h"
 #include "env.h"
@@ -324,11 +324,11 @@ public:
     }
     [[nodiscard]] DataAccessor<U> data_accessor(const ptr_type *object,
                                                 const Uint &data_index) noexcept {
-        return {data_index * object->encoded_size() * uint(sizeof(U)), get_datas(object)};
+        return {data_index * object->encoded_size(), get_datas(object)};
     }
     [[nodiscard]] DataAccessor<U> data_accessor(const ptr_type *object,
                                                 const Uint &data_index) const noexcept {
-        return {data_index * object->encoded_size() * uint(sizeof(U)), get_datas(object)};
+        return {data_index * object->encoded_size(), get_datas(object)};
     }
     [[nodiscard]] datas_type &get_datas(const ptr_type *object) noexcept {
         return type_mgr_.type_map.at(object->type_hash()).data_set;
@@ -393,7 +393,7 @@ public:
             case EType: {
                 type_mgr_.for_each_type([&](TypeData &type_data) {
                     type_data.data_set.set_bindless_array(bindless_array);
-                    type_data.data_set.reserve(type_data.objects.size() * type_data.objects[0]->encoded_size());
+                    type_data.data_set.reserve(type_data.objects.size() * type_data.objects[0]->encoded_size() / sizeof(float));
                     for (ptr_type *object : type_data.objects) {
                         object->encode(type_data.data_set);
                     }
