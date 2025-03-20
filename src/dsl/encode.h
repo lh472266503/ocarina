@@ -47,7 +47,7 @@ public:
     /// for device
     virtual void decode(const DataAccessor<T> *da) const noexcept {}
     virtual void decode() const noexcept {}
-    [[nodiscard]] virtual uint element_num() const noexcept { return 0; }
+    [[nodiscard]] virtual uint encoded_size() const noexcept { return 0; }
     [[nodiscard]] virtual bool has_device_value() const noexcept { return true; }
     virtual void reset_device_value() const noexcept {}
     virtual ~encodable_impl() = default;
@@ -171,7 +171,7 @@ public:
         }
     }
 
-    [[nodiscard]] uint element_num() const noexcept override {
+    [[nodiscard]] uint encoded_size() const noexcept override {
         if constexpr (is_scalar_v<value_ty>) {
             static_assert(sizeof(value_ty) <= sizeof(float));
             return 1;
@@ -219,7 +219,7 @@ public:
     }
 
     void decode(const DataAccessor<T> *da) const noexcept override {
-        const DynamicArray<T> array = da->template load_dynamic_array<T>(element_num());
+        const DynamicArray<T> array = da->template load_dynamic_array<T>(encoded_size());
         const_cast<decltype(device_value_) *>(&device_value_)->emplace(_decode(array));
     }
 
@@ -239,7 +239,7 @@ OC_MAKE_AUTO_MEMBER_FUNC(update)
 OC_MAKE_AUTO_MEMBER_FUNC(decode)
 OC_MAKE_AUTO_MEMBER_FUNC(reset_device_value)
 OC_MAKE_AUTO_MEMBER_FUNC(has_device_value)
-OC_MAKE_AUTO_MEMBER_FUNC(element_num)
+OC_MAKE_AUTO_MEMBER_FUNC(encoded_size)
 }// namespace detail
 
 #define OC_ENCODE_ELEMENT(name) ocarina::detail::encode(name, datas);
@@ -248,11 +248,11 @@ OC_MAKE_AUTO_MEMBER_FUNC(element_num)
 #define OC_DECODE_ELEMENT(name) ocarina::detail::decode(name, da);
 #define OC_RESET_DEVICE_ELEMENT(name) ocarina::detail::reset_device_value(name);
 #define OC_VALID_ELEMENT(name) &&ocarina::detail::has_device_value(name)
-#define OC_SIZE_ELEMENT(name) +ocarina::detail::element_num(name)
+#define OC_SIZE_ELEMENT(name) +ocarina::detail::encoded_size(name)
 
 #define OC_ENCODABLE_FUNC(Super, ...)                                            \
-    [[nodiscard]] uint element_num() const noexcept override {                   \
-        return Super::element_num() MAP(OC_SIZE_ELEMENT, __VA_ARGS__);           \
+    [[nodiscard]] uint encoded_size() const noexcept override {                  \
+        return Super::encoded_size() MAP(OC_SIZE_ELEMENT, __VA_ARGS__);          \
     }                                                                            \
     void encode(RegistrableManaged<encoded_ty> &datas) const noexcept override { \
         Super::encode(datas);                                                    \
