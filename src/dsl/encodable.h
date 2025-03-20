@@ -171,11 +171,11 @@ public:
             static_assert(sizeof(value_ty) <= sizeof(float));
             return sizeof(value_ty);
         } else if constexpr (is_vector_v<value_ty>) {
-            return sizeof(value_ty::scalar_type) * value_ty::dimension;
+            return sizeof(typename value_ty::scalar_type) * value_ty::dimension;
         } else if constexpr (is_matrix_v<value_ty>) {
-            return sizeof(value_ty::scalar_type) * value_ty::ElementNum;
+            return sizeof(typename value_ty::scalar_type) * value_ty::ElementNum;
         } else if constexpr (is_std_vector_v<value_ty>) {
-            return hv().size() * sizeof(value_ty::value_type);
+            return hv().size() * sizeof(typename value_ty::value_type);
         } else {
             static_assert(always_false_v<value_ty>);
         }
