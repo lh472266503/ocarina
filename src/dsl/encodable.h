@@ -35,9 +35,8 @@ struct DataAccessor {
     }
 };
 
-namespace detail {
 template<typename T = encoded_ty>
-class encodable_impl {
+class Encodable {
 public:
     /// for host
     virtual void encode(RegistrableManaged<T> &data) const noexcept {}
@@ -50,12 +49,8 @@ public:
     [[nodiscard]] virtual uint encoded_size() const noexcept { return 0; }
     [[nodiscard]] virtual bool has_device_value() const noexcept { return true; }
     virtual void reset_device_value() const noexcept {}
-    virtual ~encodable_impl() = default;
+    virtual ~Encodable() = default;
 };
-}// namespace detail
-
-template<typename T = encoded_ty>
-class Encodable : public detail::encodable_impl<T> {};
 
 template<typename value_ty, typename T = encoded_ty>
 requires(is_std_vector_v<value_ty> && is_scalar_v<typename value_ty::value_type>) || is_basic_v<value_ty>
