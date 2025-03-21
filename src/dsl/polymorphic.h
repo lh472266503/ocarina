@@ -116,7 +116,7 @@ public:
     }
 };
 
-template<typename T, typename U = float>
+template<typename T, typename U = encoded_ty>
 class Polymorphic : public vector<T> {
 public:
     using Super = vector<T>;

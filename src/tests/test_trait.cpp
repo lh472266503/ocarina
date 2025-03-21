@@ -13,19 +13,19 @@
 
 using namespace ocarina;
 
-struct Data : public Encodable<float>{
+struct Data : public Encodable<encoded_ty>{
     EncodedData<float> f;
     EncodedData<float4> f4;
 
-    OC_ENCODABLE_FUNC(Encodable<float>,f, f4)
+    OC_ENCODABLE_FUNC(Encodable<encoded_ty>,f, f4)
 };
 
 struct Data2 : public Data {
     EncodedData<float3> f3;
-    OC_ENCODABLE_FUNC(Encodable<float>, f3)
+    OC_ENCODABLE_FUNC(Encodable<encoded_ty>, f3)
 };
 
-struct Test : public Encodable<float>{
+struct Test : public Encodable<encoded_ty>{
     EncodedData<float2> a;
     EncodedData<int3> b;
     EncodedData<float> c;
@@ -34,7 +34,7 @@ struct Test : public Encodable<float>{
     EncodedData<float3x3> f;
     RegistrableManaged<float> mw;
     Data2 data;
-    OC_ENCODABLE_FUNC(Encodable<float>,a, b, c, d, e, f,mw, data)
+    OC_ENCODABLE_FUNC(Encodable<encoded_ty>,a, b, c, d, e, f,mw, data)
 };
 
 union oc_scalar{

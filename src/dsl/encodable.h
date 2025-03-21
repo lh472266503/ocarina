@@ -12,7 +12,7 @@ namespace ocarina {
 template<typename T>
 class RegistrableManaged;
 
-using encoded_ty = float;
+using encoded_ty = uint;
 
 template<typename U = encoded_ty>
 requires(sizeof(U) == sizeof(float))
