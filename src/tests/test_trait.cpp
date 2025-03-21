@@ -22,7 +22,7 @@ struct Data : public Encodable<encoded_ty>{
 
 struct Data2 : public Data {
     EncodedData<float3> f3;
-    OC_ENCODABLE_FUNC(Encodable<encoded_ty>, f3)
+    OC_ENCODABLE_FUNC(Data, f3)
 };
 
 struct Test : public Encodable<encoded_ty>{
