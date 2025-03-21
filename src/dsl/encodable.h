@@ -224,7 +224,7 @@ public:
     }
 
     void decode(const DataAccessor<T> *da) const noexcept override {
-        const DynamicArray<T> array = da->template load_dynamic_array<T>(encoded_size() / sizeof(float));
+        const DynamicArray<T> array = da->template load_dynamic_array<T>(encoded_size() / sizeof(T));
         const_cast<decltype(device_value_) *>(&device_value_)->emplace(_decode(array));
     }
 
