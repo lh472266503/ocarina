@@ -322,11 +322,11 @@ public:
             return object == raw_ptr(obj);
         });
     }
-    [[nodiscard]] DataAccessor<U> data_accessor(const ptr_type *object,
+    [[nodiscard]] DataAccessor data_accessor(const ptr_type *object,
                                                 const Uint &data_index) noexcept {
         return {data_index * object->encoded_size(), get_datas(object)};
     }
-    [[nodiscard]] DataAccessor<U> data_accessor(const ptr_type *object,
+    [[nodiscard]] DataAccessor data_accessor(const ptr_type *object,
                                                 const Uint &data_index) const noexcept {
         return {data_index * object->encoded_size(), get_datas(object)};
     }
@@ -429,7 +429,7 @@ public:
             }
             case EType: {
                 dispatch_representative(OC_FORWARD(type_id), [&](auto object) {
-                    DataAccessor<U> da = data_accessor(object, OC_FORWARD(inst_id));
+                    DataAccessor da = data_accessor(object, OC_FORWARD(inst_id));
                     object->decode(&da);
                     func(object);
                     object->reset_device_value();

@@ -90,7 +90,7 @@ int main(int argc, char *argv[]) {
 
 
     Kernel kernel = [&](Float a) {
-        DataAccessor<buffer_ty> da{0u, vv};
+        DataAccessor da{0u, vv};
         t.decode(&da);
         Env::printer().info("a = {} {}", t.a.dv());
         Env::printer().info("b = {} {} {}", t.b.dv());

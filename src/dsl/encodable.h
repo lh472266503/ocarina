@@ -14,9 +14,10 @@ class RegistrableManaged;
 
 using buffer_ty = uint;
 
+namespace detail {
 template<typename U = buffer_ty>
 requires(sizeof(U) == sizeof(float))
-struct DataAccessor {
+struct data_accessor_impl {
     mutable Uint offset;
     const RegistrableManaged<U> &datas;
 
@@ -34,6 +35,9 @@ struct DataAccessor {
         return ret;
     }
 };
+}// namespace detail
+
+using DataAccessor = detail::data_accessor_impl<>;
 
 enum EncodeType {
     Original,
@@ -48,7 +52,7 @@ public:
     virtual void update() const noexcept {}
     virtual void invalidate() const noexcept {}
     /// for device
-    virtual void decode(const DataAccessor<buffer_ty> *da) const noexcept {}
+    virtual void decode(const DataAccessor *da) const noexcept {}
     virtual void decode() const noexcept {}
     [[nodiscard]] virtual uint encoded_size() const noexcept { return 0; }
     [[nodiscard]] virtual bool has_device_value() const noexcept { return true; }
@@ -225,7 +229,7 @@ public:
         }
     }
 
-    void decode(const DataAccessor<T> *da) const noexcept override {
+    void decode(const DataAccessor *da) const noexcept override {
         const DynamicArray<T> array = da->template load_dynamic_array<T>(encoded_size() / sizeof(T));
         const_cast<decltype(device_value_) *>(&device_value_)->emplace(_decode(array));
     }
@@ -234,7 +238,7 @@ public:
         if (data_ == nullptr) {
             return;
         }
-        DataAccessor<T> da{offset_ * sizeof(T), *data_};
+        DataAccessor da{offset_ * sizeof(T), *data_};
         decode(&da);
     }
 };
@@ -269,7 +273,7 @@ OC_MAKE_AUTO_MEMBER_FUNC(encoded_size)
         Super::update(datas);                                                   \
         MAP(OC_UPDATE_ELEMENT, __VA_ARGS__)                                     \
     }                                                                           \
-    void decode(const DataAccessor<buffer_ty> *da) const noexcept override {    \
+    void decode(const DataAccessor *da) const noexcept override {               \
         Super::decode(da);                                                      \
         MAP(OC_DECODE_ELEMENT, __VA_ARGS__)                                     \
     }                                                                           \
