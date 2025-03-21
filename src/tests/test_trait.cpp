@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
     t.mw.register_self();
     t.mw.push_back(9.98);
     t.mw.push_back(9.98);
-    RegistrableManaged<float> vv(ra);
+    RegistrableManaged<encoded_ty> vv(ra);
 
     oc_scalar os{.f = 2.3f};
     os.f = 2.f;
@@ -90,7 +90,7 @@ int main(int argc, char *argv[]) {
 
 
     Kernel kernel = [&](Float a) {
-        DataAccessor<float> da{0u, vv};
+        DataAccessor<encoded_ty> da{0u, vv};
         t.decode(&da);
         Env::printer().info("a = {} {}", t.a.dv());
         Env::printer().info("b = {} {} {}", t.b.dv());
