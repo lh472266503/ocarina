@@ -194,8 +194,8 @@ public:
         } else if constexpr (is_matrix_v<value_ty>) {
             Var<value_ty> ret;
             uint cursor = 0u;
-            for (int i = 0; i < matrix_dimension_v<value_ty>; ++i) {
-                for (int j = 0; j < matrix_dimension_v<value_ty>; ++j) {
+            for (int i = 0; i < value_ty::ColNum; ++i) {
+                for (int j = 0; j < value_ty::RowNum; ++j) {
                     ret[i][j] = as<float>(array[cursor]);
                     ++cursor;
                 }
