@@ -40,16 +40,15 @@ enum EncodeType {
     Uint8,
 };
 
-template<typename T = buffer_ty>
 class Encodable {
 public:
     /// for host
-    virtual void encode(RegistrableManaged<T> &data) const noexcept {}
-    virtual void update(RegistrableManaged<T> &data) const noexcept {}
+    virtual void encode(RegistrableManaged<buffer_ty> &data) const noexcept {}
+    virtual void update(RegistrableManaged<buffer_ty> &data) const noexcept {}
     virtual void update() const noexcept {}
     virtual void invalidate() const noexcept {}
     /// for device
-    virtual void decode(const DataAccessor<T> *da) const noexcept {}
+    virtual void decode(const DataAccessor<buffer_ty> *da) const noexcept {}
     virtual void decode() const noexcept {}
     [[nodiscard]] virtual uint encoded_size() const noexcept { return 0; }
     [[nodiscard]] virtual bool has_device_value() const noexcept { return true; }
@@ -59,7 +58,7 @@ public:
 
 template<typename value_ty, typename T = buffer_ty>
 requires(is_std_vector_v<value_ty> && is_scalar_v<typename value_ty::value_type>) || is_basic_v<value_ty>
-struct EncodedData final : public Encodable<T> {
+struct EncodedData final : public Encodable {
 public:
     using host_ty = std::variant<value_ty, std::function<value_ty()>>;
     using buffer_type = T;
