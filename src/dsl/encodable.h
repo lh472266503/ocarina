@@ -56,6 +56,13 @@ public:
     virtual void decode() const noexcept {}
     [[nodiscard]] virtual uint encoded_size() const noexcept { return 0; }
     [[nodiscard]] virtual bool has_device_value() const noexcept { return true; }
+
+    /**
+     * calculate the offset of current data and store
+     * @param prev_size
+     * @return the size of current add previous data
+     */
+    [[nodiscard]] virtual uint cal_offset(uint prev_size) const noexcept { return 0; }
     virtual void reset_device_value() const noexcept {}
     virtual ~Encodable() = default;
 };
@@ -66,7 +73,7 @@ struct EncodedData final : public Encodable {
 public:
     using host_ty = std::variant<value_ty, std::function<value_ty()>>;
     using buffer_type = T;
-    static constexpr size_t encode_alignment = sizeof(uint);
+    static constexpr size_t max_alignment = sizeof(uint);
 
 private:
     host_ty host_value_{};
@@ -75,6 +82,9 @@ private:
 
     /// origin index in buffer
     mutable uint index_{InvalidUI32};
+
+    /// origin offset in buffer
+    mutable uint offset_{InvalidUI32};
     mutable RegistrableManaged<T> *data_{nullptr};
 
 public:
@@ -182,6 +192,16 @@ public:
         }
     }
 
+    [[nodiscard]] uint alignment() const noexcept {
+        return max_alignment;
+    }
+
+    [[nodiscard]] uint cal_offset(ocarina::uint prev_size) const noexcept override {
+        offset_ = mem_offset(prev_size, alignment());
+        uint ret = offset_ + encoded_size();
+        return ret;
+    }
+
     [[nodiscard]] uint encoded_size() const noexcept override {
         if constexpr (is_scalar_v<value_ty>) {
             static_assert(sizeof(value_ty) <= sizeof(float));
@@ -251,6 +271,7 @@ OC_MAKE_AUTO_MEMBER_FUNC(decode)
 OC_MAKE_AUTO_MEMBER_FUNC(reset_device_value)
 OC_MAKE_AUTO_MEMBER_FUNC(has_device_value)
 OC_MAKE_AUTO_MEMBER_FUNC(encoded_size)
+OC_MAKE_AUTO_MEMBER_FUNC(cal_offset)
 }// namespace detail
 
 #define OC_ENCODE_ELEMENT(name) ocarina::detail::encode(name, datas);
@@ -260,6 +281,7 @@ OC_MAKE_AUTO_MEMBER_FUNC(encoded_size)
 #define OC_RESET_DEVICE_ELEMENT(name) ocarina::detail::reset_device_value(name);
 #define OC_VALID_ELEMENT(name) &&ocarina::detail::has_device_value(name)
 #define OC_SIZE_ELEMENT(name) +ocarina::detail::encoded_size(name)
+#define OC_CAL_OFFSET(name) ret += ocarina::detail::cal_offset(name, ret);
 
 #define OC_ENCODABLE_FUNC(Super, ...)                                           \
     [[nodiscard]] uint encoded_size() const noexcept override {                 \
@@ -287,6 +309,11 @@ OC_MAKE_AUTO_MEMBER_FUNC(encoded_size)
     }                                                                           \
     [[nodiscard]] bool has_device_value() const noexcept override {             \
         return Super::has_device_value() MAP(OC_VALID_ELEMENT, __VA_ARGS__);    \
+    }                                                                           \
+    [[nodiscard]] uint cal_offset(uint prev_size) const noexcept override {     \
+        uint ret = Super::cal_offset(prev_size);                                \
+        MAP(OC_CAL_OFFSET, __VA_ARGS__);                                        \
+        return ret;                                                             \
     }
 
 }// namespace ocarina
