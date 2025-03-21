@@ -35,6 +35,11 @@ struct DataAccessor {
     }
 };
 
+enum EncodeType {
+    Original,
+    Uint8,
+};
+
 template<typename T = encoded_ty>
 class Encodable {
 public:
@@ -57,14 +62,19 @@ requires(is_std_vector_v<value_ty> && is_scalar_v<typename value_ty::value_type>
 struct EncodedData final : public Encodable<T> {
 private:
     using host_ty = std::variant<value_ty, std::function<value_ty()>>;
+
+private:
     host_ty host_value_{};
     optional<dsl_t<value_ty>> device_value_{};
+    EncodeType encode_type_{Original};
+    
     /// origin index in buffer
     mutable uint offset_{InvalidUI32};
     mutable RegistrableManaged<T> *data_{nullptr};
 
 public:
-    explicit EncodedData(value_ty val = value_ty{}) : host_value_(std::move(val)) {}
+    explicit EncodedData(value_ty val = value_ty{}, EncodeType et = Original)
+        : host_value_(std::move(val)), encode_type_(et) {}
     EncodedData &operator=(const value_ty &val) {
         host_value_ = val;
         return *this;
