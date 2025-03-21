@@ -13,11 +13,11 @@
 
 using namespace ocarina;
 
-struct Data : public Encodable<encoded_ty>{
+struct Data : public Encodable<buffer_ty>{
     EncodedData<float> f;
     EncodedData<float4> f4;
 
-    OC_ENCODABLE_FUNC(Encodable<encoded_ty>,f, f4)
+    OC_ENCODABLE_FUNC(Encodable<buffer_ty>,f, f4)
 };
 
 struct Data2 : public Data {
@@ -25,7 +25,7 @@ struct Data2 : public Data {
     OC_ENCODABLE_FUNC(Data, f3)
 };
 
-struct Test : public Encodable<encoded_ty>{
+struct Test : public Encodable<buffer_ty>{
     EncodedData<float2> a;
     EncodedData<int3> b;
     EncodedData<float> c;
@@ -34,7 +34,7 @@ struct Test : public Encodable<encoded_ty>{
     EncodedData<float3x3> f;
     RegistrableManaged<float> mw;
     Data2 data;
-    OC_ENCODABLE_FUNC(Encodable<encoded_ty>,a, b, c, d, e, f,mw, data)
+    OC_ENCODABLE_FUNC(Encodable<buffer_ty>,a, b, c, d, e, f,mw, data)
 };
 
 union oc_scalar{
@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
     t.mw.register_self();
     t.mw.push_back(9.98);
     t.mw.push_back(9.98);
-    RegistrableManaged<encoded_ty> vv(ra);
+    RegistrableManaged<buffer_ty> vv(ra);
 
     oc_scalar os{.f = 2.3f};
     os.f = 2.f;
@@ -90,7 +90,7 @@ int main(int argc, char *argv[]) {
 
 
     Kernel kernel = [&](Float a) {
-        DataAccessor<encoded_ty> da{0u, vv};
+        DataAccessor<buffer_ty> da{0u, vv};
         t.decode(&da);
         Env::printer().info("a = {} {}", t.a.dv());
         Env::printer().info("b = {} {} {}", t.b.dv());

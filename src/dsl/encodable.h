@@ -12,9 +12,9 @@ namespace ocarina {
 template<typename T>
 class RegistrableManaged;
 
-using encoded_ty = uint;
+using buffer_ty = uint;
 
-template<typename U = encoded_ty>
+template<typename U = buffer_ty>
 requires(sizeof(U) == sizeof(float))
 struct DataAccessor {
     mutable Uint offset;
@@ -40,7 +40,7 @@ enum EncodeType {
     Uint8,
 };
 
-template<typename T = encoded_ty>
+template<typename T = buffer_ty>
 class Encodable {
 public:
     /// for host
@@ -57,18 +57,19 @@ public:
     virtual ~Encodable() = default;
 };
 
-template<typename value_ty, typename T = encoded_ty>
+template<typename value_ty, typename T = buffer_ty>
 requires(is_std_vector_v<value_ty> && is_scalar_v<typename value_ty::value_type>) || is_basic_v<value_ty>
 struct EncodedData final : public Encodable<T> {
 public:
     using host_ty = std::variant<value_ty, std::function<value_ty()>>;
+    using buffer_type = T;
     static constexpr size_t encode_alignment = sizeof(uint);
 
 private:
     host_ty host_value_{};
     optional<dsl_t<value_ty>> device_value_{};
     EncodeType encode_type_{Original};
-    
+
     /// origin index in buffer
     mutable uint offset_{InvalidUI32};
     mutable RegistrableManaged<T> *data_{nullptr};
@@ -84,6 +85,7 @@ public:
         host_value_ = val;
         return *this;
     }
+    OC_MAKE_MEMBER_GETTER_SETTER(encode_type, )
     [[nodiscard]] bool has_device_value() const noexcept override { return device_value_.has_value(); }
     void reset_device_value() const noexcept override {
         (const_cast<decltype(device_value_) &>(device_value_)).reset();
@@ -256,32 +258,32 @@ OC_MAKE_AUTO_MEMBER_FUNC(encoded_size)
 #define OC_VALID_ELEMENT(name) &&ocarina::detail::has_device_value(name)
 #define OC_SIZE_ELEMENT(name) +ocarina::detail::encoded_size(name)
 
-#define OC_ENCODABLE_FUNC(Super, ...)                                            \
-    [[nodiscard]] uint encoded_size() const noexcept override {                  \
-        return Super::encoded_size() MAP(OC_SIZE_ELEMENT, __VA_ARGS__);          \
-    }                                                                            \
-    void encode(RegistrableManaged<encoded_ty> &datas) const noexcept override { \
-        Super::encode(datas);                                                    \
-        MAP(OC_ENCODE_ELEMENT, __VA_ARGS__)                                      \
-    }                                                                            \
-    void update(RegistrableManaged<encoded_ty> &datas) const noexcept override { \
-        Super::update(datas);                                                    \
-        MAP(OC_UPDATE_ELEMENT, __VA_ARGS__)                                      \
-    }                                                                            \
-    void decode(const DataAccessor<encoded_ty> *da) const noexcept override {    \
-        Super::decode(da);                                                       \
-        MAP(OC_DECODE_ELEMENT, __VA_ARGS__)                                      \
-    }                                                                            \
-    void invalidate() const noexcept override {                                  \
-        Super::invalidate();                                                     \
-        MAP(OC_INVALIDATE_ELEMENT, __VA_ARGS__)                                  \
-    }                                                                            \
-    void reset_device_value() const noexcept override {                          \
-        Super::reset_device_value();                                             \
-        MAP(OC_RESET_DEVICE_ELEMENT, __VA_ARGS__)                                \
-    }                                                                            \
-    [[nodiscard]] bool has_device_value() const noexcept override {              \
-        return Super::has_device_value() MAP(OC_VALID_ELEMENT, __VA_ARGS__);     \
+#define OC_ENCODABLE_FUNC(Super, ...)                                           \
+    [[nodiscard]] uint encoded_size() const noexcept override {                 \
+        return Super::encoded_size() MAP(OC_SIZE_ELEMENT, __VA_ARGS__);         \
+    }                                                                           \
+    void encode(RegistrableManaged<buffer_ty> &datas) const noexcept override { \
+        Super::encode(datas);                                                   \
+        MAP(OC_ENCODE_ELEMENT, __VA_ARGS__)                                     \
+    }                                                                           \
+    void update(RegistrableManaged<buffer_ty> &datas) const noexcept override { \
+        Super::update(datas);                                                   \
+        MAP(OC_UPDATE_ELEMENT, __VA_ARGS__)                                     \
+    }                                                                           \
+    void decode(const DataAccessor<buffer_ty> *da) const noexcept override {    \
+        Super::decode(da);                                                      \
+        MAP(OC_DECODE_ELEMENT, __VA_ARGS__)                                     \
+    }                                                                           \
+    void invalidate() const noexcept override {                                 \
+        Super::invalidate();                                                    \
+        MAP(OC_INVALIDATE_ELEMENT, __VA_ARGS__)                                 \
+    }                                                                           \
+    void reset_device_value() const noexcept override {                         \
+        Super::reset_device_value();                                            \
+        MAP(OC_RESET_DEVICE_ELEMENT, __VA_ARGS__)                               \
+    }                                                                           \
+    [[nodiscard]] bool has_device_value() const noexcept override {             \
+        return Super::has_device_value() MAP(OC_VALID_ELEMENT, __VA_ARGS__);    \
     }
 
 }// namespace ocarina
