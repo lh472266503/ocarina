@@ -77,7 +77,7 @@ public:
             return xxh3_hash64(&x, sizeof(vector_element_t<T>) * 3u, seed_);
         } else if constexpr (is_3row_matrix_v<T>) {
             uint64t ret = seed_;
-            for (int i = 0; i < std::remove_cvref_t<T>::ColNum; ++i) {
+            for (int i = 0; i < std::remove_cvref_t<T>::col_num; ++i) {
                 ret = Hash64{ret}((*this)(s[i]));
             }
             return ret;

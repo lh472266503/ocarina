@@ -60,8 +60,9 @@ public:
 template<typename value_ty, typename T = encoded_ty>
 requires(is_std_vector_v<value_ty> && is_scalar_v<typename value_ty::value_type>) || is_basic_v<value_ty>
 struct EncodedData final : public Encodable<T> {
-private:
+public:
     using host_ty = std::variant<value_ty, std::function<value_ty()>>;
+    static constexpr size_t encode_alignment = sizeof(uint);
 
 private:
     host_ty host_value_{};
@@ -183,7 +184,7 @@ public:
         } else if constexpr (is_vector_v<value_ty>) {
             return sizeof(typename value_ty::scalar_type) * value_ty::dimension;
         } else if constexpr (is_matrix_v<value_ty>) {
-            return sizeof(typename value_ty::scalar_type) * value_ty::ElementNum;
+            return sizeof(typename value_ty::scalar_type) * value_ty::element_num;
         } else if constexpr (is_std_vector_v<value_ty>) {
             return hv().size() * sizeof(typename value_ty::value_type);
         } else {
@@ -204,8 +205,8 @@ public:
         } else if constexpr (is_matrix_v<value_ty>) {
             Var<value_ty> ret;
             uint cursor = 0u;
-            for (int i = 0; i < value_ty::ColNum; ++i) {
-                for (int j = 0; j < value_ty::RowNum; ++j) {
+            for (int i = 0; i < value_ty::col_num; ++i) {
+                for (int j = 0; j < value_ty::row_num; ++j) {
                     ret[i][j] = as<float>(array[cursor]);
                     ++cursor;
                 }
