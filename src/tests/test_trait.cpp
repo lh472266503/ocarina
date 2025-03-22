@@ -37,24 +37,19 @@ struct Test : public Encodable{
     OC_ENCODABLE_FUNC(Encodable,a, b, c, d, e, f,mw, data)
 };
 
+struct Mat : public Encodable {
+    EncodedData<float> a;
+    EncodedData<float> b;
+    EncodedData<float> c;
+};
+
 union oc_scalar{
     int i;
     uint u;
     float f;
 };
 
-int main(int argc, char *argv[]) {
-    log_level_debug();
-
-    fs::path path(argv[0]);
-    FileManager &file_manager = FileManager::instance();
-    //    file_manager.clear_cache();
-    Device device = file_manager.create_device("cuda");
-    Stream stream = device.create_stream();
-    Env::printer().init(device);
-
-//    auto yy = std::is_de;
-
+void test(Device &device, Stream &stream) {
     Test t;
     t.a = make_float2(1,2);
     t.a = [&]() {
@@ -107,6 +102,25 @@ int main(int argc, char *argv[]) {
     stream << shader(1.5f).dispatch(1);
     stream << synchronize() << commit();
     Env::printer().retrieve_immediately();
+}
+
+void test2(Device &device, Stream &stream) {
+
+}
+
+int main(int argc, char *argv[]) {
+    log_level_debug();
+
+    fs::path path(argv[0]);
+    FileManager &file_manager = FileManager::instance();
+    //    file_manager.clear_cache();
+    Device device = file_manager.create_device("cuda");
+    Stream stream = device.create_stream();
+    Env::printer().init(device);
+
+    test(device, stream);
+    test2(device, stream);
+
 
     return 0;
 
