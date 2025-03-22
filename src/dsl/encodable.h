@@ -56,6 +56,7 @@ public:
     virtual void decode() const noexcept {}
     [[nodiscard]] virtual uint encoded_size() const noexcept { return 0; }
     [[nodiscard]] virtual bool has_device_value() const noexcept { return true; }
+    [[nodiscard]] virtual uint alignment() const noexcept { return 1; }
 
     /**
      * calculate the offset of current data and store
@@ -73,7 +74,7 @@ struct EncodedData final : public Encodable {
 public:
     using host_ty = std::variant<value_ty, std::function<value_ty()>>;
     using buffer_type = T;
-    static constexpr size_t max_alignment = sizeof(uint);
+    static constexpr size_t max_alignment = alignof(uint);
 
 private:
     host_ty host_value_{};
@@ -192,7 +193,7 @@ public:
         }
     }
 
-    [[nodiscard]] uint alignment() const noexcept {
+    [[nodiscard]] uint alignment() const noexcept override {
         return max_alignment;
     }
 
@@ -272,6 +273,7 @@ OC_MAKE_AUTO_MEMBER_FUNC(reset_device_value)
 OC_MAKE_AUTO_MEMBER_FUNC(has_device_value)
 OC_MAKE_AUTO_MEMBER_FUNC(encoded_size)
 OC_MAKE_AUTO_MEMBER_FUNC(cal_offset)
+OC_MAKE_AUTO_MEMBER_FUNC(alignment)
 }// namespace detail
 
 #define OC_ENCODE_ELEMENT(name) ocarina::detail::encode(name, datas);
@@ -282,6 +284,7 @@ OC_MAKE_AUTO_MEMBER_FUNC(cal_offset)
 #define OC_VALID_ELEMENT(name) &&ocarina::detail::has_device_value(name)
 #define OC_SIZE_ELEMENT(name) +ocarina::detail::encoded_size(name)
 #define OC_CAL_OFFSET(name) ret += ocarina::detail::cal_offset(name, ret);
+#define OC_ALIGNMENT(name) ret = ocarina::max(ret, ocarina::detail::alignment(name));
 
 #define OC_ENCODABLE_FUNC(Super, ...)                                           \
     [[nodiscard]] uint encoded_size() const noexcept override {                 \
@@ -312,8 +315,12 @@ OC_MAKE_AUTO_MEMBER_FUNC(cal_offset)
     }                                                                           \
     [[nodiscard]] uint cal_offset(uint prev_size) const noexcept override {     \
         uint ret = Super::cal_offset(prev_size);                                \
-        MAP(OC_CAL_OFFSET, __VA_ARGS__);                                        \
+        MAP(OC_CAL_OFFSET, __VA_ARGS__)                                         \
+        return ret;                                                             \
+    }                                                                           \
+    [[nodiscard]] uint alignment() const noexcept override {                    \
+        uint ret = Super::alignment();                                          \
+        MAP(OC_ALIGNMENT, __VA_ARGS__)                                          \
         return ret;                                                             \
     }
-
 }// namespace ocarina
