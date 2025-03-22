@@ -119,7 +119,17 @@ public:
         OC_ASSERT(has_device_value());
         return *device_value_;
     }
-
+    [[nodiscard]] uint alignment() const noexcept override {
+        switch(encode_type_) {
+            case Original:
+                return 4;
+            case Uint8: {
+                return 1;
+            }
+        }
+        OC_ASSERT(false);
+        return 1;
+    }
     [[nodiscard]] dsl_t<value_ty> operator*() const noexcept {
         if (has_device_value()) {
             return dv();
@@ -191,10 +201,6 @@ public:
         } else {
             init_encode(data);
         }
-    }
-
-    [[nodiscard]] uint alignment() const noexcept override {
-        return max_alignment;
     }
 
     [[nodiscard]] uint cal_offset(ocarina::uint prev_size) const noexcept override {
