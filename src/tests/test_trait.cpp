@@ -37,11 +37,7 @@ struct Test : public Encodable{
     OC_ENCODABLE_FUNC(Encodable,a, b, c, d, e, f,mw, data)
 };
 
-struct Mat : public Encodable {
-    EncodedData<float> a;
-    EncodedData<float> b;
-    EncodedData<float> c;
-};
+
 
 union oc_scalar{
     int i;
@@ -104,8 +100,23 @@ void test(Device &device, Stream &stream) {
     Env::printer().retrieve_immediately();
 }
 
-void test2(Device &device, Stream &stream) {
+struct Mat : public Encodable {
+    EncodedData<float> a;
+    EncodedData<float> b;
+    EncodedData<float> c;
+    OC_ENCODABLE_FUNC(Encodable, a, b, c)
+};
 
+void test2(Device &device, Stream &stream) {
+    BindlessArray ra = device.create_bindless_array();
+
+    Mat m;
+    m.a.set_encode_type(Uint8);
+    m.b.set_encode_type(Uint8);
+
+    m.cal_offset(0);
+
+    return;
 }
 
 int main(int argc, char *argv[]) {

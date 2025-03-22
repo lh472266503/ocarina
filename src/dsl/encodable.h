@@ -120,7 +120,7 @@ public:
         return *device_value_;
     }
     [[nodiscard]] uint alignment() const noexcept override {
-        switch(encode_type_) {
+        switch (encode_type_) {
             case Original:
                 return 4;
             case Uint8: {
@@ -210,18 +210,39 @@ public:
     }
 
     [[nodiscard]] uint encoded_size() const noexcept override {
-        if constexpr (is_scalar_v<value_ty>) {
-            static_assert(sizeof(value_ty) <= sizeof(float));
-            return sizeof(value_ty);
-        } else if constexpr (is_vector_v<value_ty>) {
-            return sizeof(typename value_ty::scalar_type) * value_ty::dimension;
-        } else if constexpr (is_matrix_v<value_ty>) {
-            return sizeof(typename value_ty::scalar_type) * value_ty::element_num;
-        } else if constexpr (is_std_vector_v<value_ty>) {
-            return hv().size() * sizeof(typename value_ty::value_type);
-        } else {
-            static_assert(always_false_v<value_ty>);
+        switch (encode_type_) {
+            case Original: {
+                if constexpr (is_scalar_v<value_ty>) {
+                    static_assert(sizeof(value_ty) <= sizeof(float));
+                    return sizeof(value_ty);
+                } else if constexpr (is_vector_v<value_ty>) {
+                    return sizeof(typename value_ty::scalar_type) * value_ty::dimension;
+                } else if constexpr (is_matrix_v<value_ty>) {
+                    return sizeof(typename value_ty::scalar_type) * value_ty::element_num;
+                } else if constexpr (is_std_vector_v<value_ty>) {
+                    return hv().size() * sizeof(typename value_ty::value_type);
+                } else {
+                    static_assert(always_false_v<value_ty>);
+                }
+            }
+            case Uint8: {
+                if constexpr (is_scalar_v<value_ty>) {
+                    static_assert(sizeof(value_ty) <= sizeof(float));
+                    return sizeof(uint8_t);
+                } else if constexpr (is_vector_v<value_ty>) {
+                    return sizeof(uint8_t) * value_ty::dimension;
+                } else if constexpr (is_matrix_v<value_ty>) {
+                    return sizeof(uint8_t) * value_ty::element_num;
+                } else if constexpr (is_std_vector_v<value_ty>) {
+                    return hv().size() * sizeof(uint8_t);
+                } else {
+                    static_assert(always_false_v<value_ty>);
+                }
+            }
+            default: break;
         }
+        OC_ASSERT(0);
+        return 0;
     }
 
     [[nodiscard]] auto _decode(const DynamicArray<T> &array) const noexcept {
