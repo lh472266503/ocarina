@@ -104,7 +104,8 @@ struct Mat : public Encodable {
     EncodedData<float> a;
     EncodedData<float> b;
     EncodedData<float> c;
-    OC_ENCODABLE_FUNC(Encodable, a, b, c)
+    EncodedData<uint> d;
+    OC_ENCODABLE_FUNC(Encodable, a, b, c, d)
 };
 
 void test2(Device &device, Stream &stream) {
@@ -114,7 +115,7 @@ void test2(Device &device, Stream &stream) {
     m.a.set_encode_type(Uint8);
     m.b.set_encode_type(Uint8);
 
-    m.cal_offset(0);
+    auto s = m.cal_offset(0);
 
     return;
 }

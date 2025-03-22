@@ -63,7 +63,7 @@ public:
      * @param prev_size
      * @return the size of current add previous data
      */
-    virtual uint cal_offset(uint prev_size) const noexcept { return 0; }
+    virtual uint cal_offset(uint prev_size) const noexcept { return prev_size; }
     virtual void reset_device_value() const noexcept {}
     virtual ~Encodable() = default;
 };
@@ -307,7 +307,7 @@ OC_MAKE_AUTO_MEMBER_FUNC(alignment)
 #define OC_RESET_DEVICE_ELEMENT(name) ocarina::detail::reset_device_value(name);
 #define OC_VALID_ELEMENT(name) &&ocarina::detail::has_device_value(name)
 #define OC_SIZE_ELEMENT(name) +ocarina::detail::encoded_size(name)
-#define OC_CAL_OFFSET(name) ret += ocarina::detail::cal_offset(name, ret);
+#define OC_CAL_OFFSET(name) ret = ocarina::detail::cal_offset(name, ret);
 #define OC_ALIGNMENT(name) ret = ocarina::max(ret, ocarina::detail::alignment(name));
 
 #define OC_ENCODABLE_FUNC(Super, ...)                                           \
