@@ -387,6 +387,15 @@ public:
         return InvalidUI32;
     }
 
+    void fill_elements_offset() const noexcept {
+        type_mgr_.for_each_type([&](const TypeData &type_data) {
+            uint size = 0;
+            for (const ptr_type *object : type_data.objects) {
+                size = object->cal_offset(size);
+            }
+        });
+    }
+
     void prepare(BindlessArray &bindless_array, Device &device) noexcept {
         switch (mode_) {
             case EInstance: break;
