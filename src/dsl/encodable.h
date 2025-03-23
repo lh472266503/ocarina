@@ -54,7 +54,7 @@ public:
     /// for device
     virtual void decode(const DataAccessor *da) const noexcept {}
     virtual void decode() const noexcept {}
-    [[nodiscard]] virtual uint encoded_size() const noexcept { return 0; }
+    [[nodiscard]] virtual uint compacted_size() const noexcept { return 0; }
     [[nodiscard]] virtual bool has_device_value() const noexcept { return true; }
     [[nodiscard]] virtual uint alignment() const noexcept { return 1; }
 
@@ -174,11 +174,11 @@ public:
 
     [[nodiscard]] uint cal_offset(ocarina::uint prev_size) const noexcept override {
         offset_ = mem_offset(prev_size, alignment());
-        uint ret = offset_ + encoded_size();
+        uint ret = offset_ + compacted_size();
         return ret;
     }
 
-    [[nodiscard]] uint encoded_size() const noexcept override {
+    [[nodiscard]] uint compacted_size() const noexcept override {
         switch (encode_type_) {
             case Original: {
                 if constexpr (is_scalar_v<value_ty>) {
@@ -247,7 +247,7 @@ public:
     }
 
     void decode(const DataAccessor *da) const noexcept override {
-        const DynamicArray<T> array = da->template load_dynamic_array<T>(encoded_size() / sizeof(T));
+        const DynamicArray<T> array = da->template load_dynamic_array<T>(compacted_size() / sizeof(T));
         const_cast<decltype(device_value_) *>(&device_value_)->emplace(_decode(array));
     }
 
@@ -268,7 +268,7 @@ OC_MAKE_AUTO_MEMBER_FUNC(update)
 OC_MAKE_AUTO_MEMBER_FUNC(decode)
 OC_MAKE_AUTO_MEMBER_FUNC(reset_device_value)
 OC_MAKE_AUTO_MEMBER_FUNC(has_device_value)
-OC_MAKE_AUTO_MEMBER_FUNC(encoded_size)
+OC_MAKE_AUTO_MEMBER_FUNC(compacted_size)
 OC_MAKE_AUTO_MEMBER_FUNC(cal_offset)
 OC_MAKE_AUTO_MEMBER_FUNC(alignment)
 }// namespace detail
@@ -279,13 +279,13 @@ OC_MAKE_AUTO_MEMBER_FUNC(alignment)
 #define OC_DECODE_ELEMENT(name) ocarina::detail::decode(name, da);
 #define OC_RESET_DEVICE_ELEMENT(name) ocarina::detail::reset_device_value(name);
 #define OC_VALID_ELEMENT(name) &&ocarina::detail::has_device_value(name)
-#define OC_SIZE_ELEMENT(name) +ocarina::detail::encoded_size(name)
+#define OC_SIZE_ELEMENT(name) +ocarina::detail::compacted_size(name)
 #define OC_CAL_OFFSET(name) ret = ocarina::detail::cal_offset(name, ret);
 #define OC_ALIGNMENT(name) ret = ocarina::max(ret, ocarina::detail::alignment(name));
 
 #define OC_ENCODABLE_FUNC(Super, ...)                                           \
-    [[nodiscard]] uint encoded_size() const noexcept override {                 \
-        return Super::encoded_size() MAP(OC_SIZE_ELEMENT, __VA_ARGS__);         \
+    [[nodiscard]] uint compacted_size() const noexcept override {               \
+        return Super::compacted_size() MAP(OC_SIZE_ELEMENT, __VA_ARGS__);       \
     }                                                                           \
     void encode(RegistrableManaged<buffer_ty> &datas) const noexcept override { \
         Super::encode(datas);                                                   \
