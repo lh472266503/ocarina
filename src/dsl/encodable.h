@@ -55,7 +55,9 @@ public:
     virtual void decode(const DataAccessor *da) const noexcept {}
     virtual void decode() const noexcept {}
     [[nodiscard]] virtual uint compacted_size() const noexcept { return 0; }
-    [[nodiscard]] virtual uint aligned_size() const noexcept { return cal_offset(0); }
+    [[nodiscard]] virtual uint aligned_size() const noexcept {
+        return mem_offset(cal_offset(0), alignment());
+    }
     [[nodiscard]] virtual bool has_device_value() const noexcept { return true; }
     [[nodiscard]] virtual uint alignment() const noexcept { return 1; }
 
