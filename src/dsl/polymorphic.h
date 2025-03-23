@@ -330,11 +330,11 @@ public:
     }
     [[nodiscard]] DataAccessor data_accessor(const ptr_type *object,
                                              const Uint &data_index) noexcept {
-        return {data_index * object->compacted_size(), get_datas(object)};
+        return {data_index * object->aligned_size(), get_datas(object)};
     }
     [[nodiscard]] DataAccessor data_accessor(const ptr_type *object,
                                              const Uint &data_index) const noexcept {
-        return {data_index * object->compacted_size(), get_datas(object)};
+        return {data_index * object->aligned_size(), get_datas(object)};
     }
     [[nodiscard]] datas_type &get_datas(const ptr_type *object) noexcept {
         return type_mgr_.type_map.at(object->type_hash()).data_set;
@@ -406,7 +406,7 @@ public:
                 type_mgr_.for_each_type([&](TypeData &type_data) {
                     type_data.fill_elements_offset();
                     type_data.data_set.set_bindless_array(bindless_array);
-                    type_data.data_set.resize(type_data.objects.size() * type_data.objects[0]->compacted_size() / sizeof(float));
+                    type_data.data_set.resize(type_data.objects.size() * type_data.objects[0]->aligned_size() / sizeof(float));
                     for (ptr_type *object : type_data.objects) {
                         object->encode(type_data.data_set);
                     }
