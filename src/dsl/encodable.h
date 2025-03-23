@@ -150,16 +150,24 @@ public:
                 data.host_buffer()[index + i] = bit_cast<T>(scalar);
                 break;
             }
-            case Uint8:{
-                OC_ASSERT(is_floating_point_v<Scalar>);
-                OC_ASSERT(scalar <= 1.f);
+            case Uint8: {
+                OC_ASSERT(is_floating_point_v<Scalar> && scalar <= 1.f);
                 uint index = (offset_ + i) / sizeof(buffer_ty);
                 uint ofs = (offset_ + i) % sizeof(buffer_ty);
                 uint8_t val = scalar * 255;
                 auto element = data.host_buffer()[index];
                 switch (ofs) {
                     case 0: {
-                        
+                        uint mask = 0xff000000;
+                    }
+                    case 1: {
+                        uint mask = 0x00ff0000;
+                    }
+                    case 2: {
+                        uint mask = 0x0000ff00;
+                    }
+                    case 3: {
+                        uint mask = 0x000000ff;
                     }
                     default: OC_ASSERT(0); break;
                 }
