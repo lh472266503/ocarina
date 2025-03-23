@@ -129,6 +129,12 @@ protected:
         string class_name;
         datas_type data_set;
         vector<ptr_type *> objects;
+        void fill_elements_offset() const noexcept {
+            uint size = 0;
+            for (const ptr_type *object : objects) {
+                size = object->cal_offset(size);
+            }
+        }
     };
 
     struct {
@@ -323,11 +329,11 @@ public:
         });
     }
     [[nodiscard]] DataAccessor data_accessor(const ptr_type *object,
-                                                const Uint &data_index) noexcept {
+                                             const Uint &data_index) noexcept {
         return {data_index * object->encoded_size(), get_datas(object)};
     }
     [[nodiscard]] DataAccessor data_accessor(const ptr_type *object,
-                                                const Uint &data_index) const noexcept {
+                                             const Uint &data_index) const noexcept {
         return {data_index * object->encoded_size(), get_datas(object)};
     }
     [[nodiscard]] datas_type &get_datas(const ptr_type *object) noexcept {
@@ -389,10 +395,7 @@ public:
 
     void fill_elements_offset() const noexcept {
         type_mgr_.for_each_type([&](const TypeData &type_data) {
-            uint size = 0;
-            for (const ptr_type *object : type_data.objects) {
-                size = object->cal_offset(size);
-            }
+            type_data.fill_elements_offset();
         });
     }
 
@@ -401,8 +404,9 @@ public:
             case EInstance: break;
             case EType: {
                 type_mgr_.for_each_type([&](TypeData &type_data) {
+                    type_data.fill_elements_offset();
                     type_data.data_set.set_bindless_array(bindless_array);
-                    type_data.data_set.reserve(type_data.objects.size() * type_data.objects[0]->encoded_size() / sizeof(float));
+                    type_data.data_set.resize(type_data.objects.size() * type_data.objects[0]->encoded_size() / sizeof(float));
                     for (ptr_type *object : type_data.objects) {
                         object->encode(type_data.data_set);
                     }

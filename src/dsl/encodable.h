@@ -135,36 +135,11 @@ public:
         }
     }
 
-    [[nodiscard]] bool has_encoded() const noexcept { return offset_ != InvalidUI32; }
+    [[nodiscard]] bool has_offset() const noexcept { return offset_ != InvalidUI32; }
     void invalidate() const noexcept override { offset_ = InvalidUI32; }
 
-    void init_encode(RegistrableManaged<T> &data) const noexcept {
-        OC_ASSERT(!has_encoded());
-        offset_ = data.host_buffer().size() * sizeof(buffer_ty);
-        data_ = addressof(data);
-        if constexpr (is_scalar_v<value_ty>) {
-            data.push_back(bit_cast<T>(hv()));
-        } else if constexpr (is_vector_v<value_ty>) {
-            for (int i = 0; i < vector_dimension_v<value_ty>; ++i) {
-                data.push_back(bit_cast<T>(hv()[i]));
-            }
-        } else if constexpr (is_matrix_v<value_ty>) {
-            for (int i = 0; i < matrix_dimension_v<value_ty>; ++i) {
-                for (int j = 0; j < matrix_dimension_v<value_ty>; ++j) {
-                    data.push_back(bit_cast<T>(hv()[i][j]));
-                }
-            }
-        } else if constexpr (is_std_vector_v<value_ty>) {
-            for (int i = 0; i < hv().size(); ++i) {
-                data.push_back(bit_cast<T>(hv()[i]));
-            }
-        } else {
-            static_assert(always_false_v<value_ty>);
-        }
-    }
-
     void update(RegistrableManaged<T> &data) const noexcept override {
-        OC_ASSERT(has_encoded());
+        OC_ASSERT(has_offset());
         if constexpr (is_scalar_v<value_ty>) {
             data.host_buffer()[offset_ / 4] = bit_cast<T>(hv());
         } else if constexpr (is_vector_v<value_ty>) {
@@ -193,11 +168,8 @@ public:
     }
 
     void encode(RegistrableManaged<T> &data) const noexcept override {
-        if (has_encoded()) {
-            update(data);
-        } else {
-            init_encode(data);
-        }
+        data_ = addressof(data);
+        update(data);
     }
 
     [[nodiscard]] uint cal_offset(ocarina::uint prev_size) const noexcept override {
@@ -281,6 +253,7 @@ public:
 
     void decode() const noexcept override {
         if (data_ == nullptr) {
+            OC_ASSERT(0);
             return;
         }
         DataAccessor da{offset_, *data_};
