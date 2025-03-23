@@ -151,6 +151,18 @@ public:
                 break;
             }
             case Uint8:{
+                OC_ASSERT(is_floating_point_v<Scalar>);
+                OC_ASSERT(scalar <= 1.f);
+                uint index = (offset_ + i) / sizeof(buffer_ty);
+                uint ofs = (offset_ + i) % sizeof(buffer_ty);
+                uint8_t val = scalar * 255;
+                auto element = data.host_buffer()[index];
+                switch (ofs) {
+                    case 0: {
+                        
+                    }
+                    default: OC_ASSERT(0); break;
+                }
                 break;
             }
             default: break;
