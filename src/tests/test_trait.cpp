@@ -70,7 +70,7 @@ void test(Device &device, Stream &stream) {
     oc_scalar os{.f = 2.3f};
     os.f = 2.f;
 
-
+    vv.resize(t.aligned_size());
     t.encode(vv);
     vv.reset_device_buffer_immediately(device);
     vv.upload_immediately();
@@ -109,13 +109,39 @@ struct Mat : public Encodable {
 };
 
 void test2(Device &device, Stream &stream) {
-    BindlessArray ra = device.create_bindless_array();
+    BindlessArray ba = device.create_bindless_array();
 
     Mat m;
-    m.a.set_encode_type(Uint8);
-    m.b.set_encode_type(Uint8);
+    m.a = 0.25f;
+    m.b = 0.5f;
+    m.c = 0.75f;
+    m.d = 2;
+//    m.a.set_encode_type(Uint8);
+//    m.b.set_encode_type(Uint8);
 
-    auto s = m.cal_offset(0);
+    auto as = m.aligned_size();
+    RegistrableManaged<buffer_ty> vv(ba);
+    vv.resize(m.aligned_size());
+    m.encode(vv);
+    vv.reset_device_buffer_immediately(device);
+    vv.upload_immediately();
+    vv.register_self();
+    ba.prepare_slotSOA(device);
+    stream << ba->upload_buffer_handles(true) << synchronize();
+
+    Kernel kernel = [&](Float a) {
+        DataAccessor da{0u, vv};
+        m.decode(&da);
+        Env::printer().info("a = {}", m.a.dv());
+        Env::printer().info("b = {}", m.b.dv());
+        Env::printer().info("c = {}", m.c.dv());
+        Env::printer().info("d = {}", m.d.dv());
+
+    };
+    auto shader = device.compile(kernel);
+    stream << shader(1.5f).dispatch(1);
+    stream << synchronize() << commit();
+    Env::printer().retrieve_immediately();
 
     return;
 }
@@ -130,7 +156,7 @@ int main(int argc, char *argv[]) {
     Stream stream = device.create_stream();
     Env::printer().init(device);
 
-    test(device, stream);
+//    test(device, stream);
     test2(device, stream);
 
 
