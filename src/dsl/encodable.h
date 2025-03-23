@@ -139,25 +139,41 @@ public:
     [[nodiscard]] bool has_offset() const noexcept { return offset_ != InvalidUI32; }
     void invalidate() const noexcept override { offset_ = InvalidUI32; }
 
+    template<typename Scalar>
+    requires is_scalar_v<Scalar>
+    void encode_scalar(RegistrableManaged<T> &data, Scalar scalar, uint i = 0u) const noexcept {
+        switch (encode_type_) {
+            case Original: {
+                uint index = offset_ / sizeof(buffer_ty);
+                data.host_buffer()[index + i] = bit_cast<T>(scalar);
+                break;
+            }
+            case Uint8:{
+                break;
+            }
+            default: break;
+        }
+    }
+
     void update(RegistrableManaged<T> &data) const noexcept override {
         OC_ASSERT(has_offset());
         if constexpr (is_scalar_v<value_ty>) {
-            data.host_buffer()[offset_ / 4] = bit_cast<T>(hv());
+            encode_scalar(data, hv());
         } else if constexpr (is_vector_v<value_ty>) {
             for (int i = 0; i < vector_dimension_v<value_ty>; ++i) {
-                data.host_buffer()[offset_ / 4 + i] = bit_cast<T>(hv()[i]);
+                encode_scalar(data, hv()[i], i);
             }
         } else if constexpr (is_matrix_v<value_ty>) {
             uint count = 0;
             for (int i = 0; i < matrix_dimension_v<value_ty>; ++i) {
                 for (int j = 0; j < matrix_dimension_v<value_ty>; ++j) {
-                    data.host_buffer()[offset_ / 4 + count] = bit_cast<T>(hv()[i][j]);
+                    encode_scalar(data, hv()[i][j], count);
                     ++count;
                 }
             }
         } else if constexpr (is_std_vector_v<value_ty>) {
             for (int i = 0; i < hv().size(); ++i) {
-                data.host_buffer()[offset_ / 4 + i] = bit_cast<T>(hv()[i]);
+                encode_scalar(data, hv()[i], i);
             }
         } else {
             static_assert(always_false_v<value_ty>);
