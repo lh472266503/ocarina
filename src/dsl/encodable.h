@@ -78,6 +78,7 @@ public:
     using host_ty = std::variant<value_ty, std::function<value_ty()>>;
     using buffer_type = T;
     static constexpr size_t max_alignment = alignof(uint);
+    static constexpr uint stride = sizeof(buffer_ty);
 
 private:
     host_ty host_value_{};
@@ -152,8 +153,8 @@ public:
             }
             case Uint8: {
                 OC_ASSERT(is_floating_point_v<Scalar> && scalar <= 1.f);
-                uint index = (offset_ + i) / sizeof(buffer_ty);
-                uint ofs = (offset_ + i) % sizeof(buffer_ty);
+                uint index = (offset_ + i) / stride;
+                uint ofs = (offset_ + i) % stride;
                 uint8_t val = scalar * 255;
                 auto element = data.host_buffer()[index];
                 switch (ofs) {
@@ -253,7 +254,9 @@ public:
         return 0;
     }
 
-    [[nodiscard]] auto _decode(const DynamicArray<T> &array, const Uint &index) const noexcept {
+    [[nodiscard]] auto _decode(const DynamicArray<T> &array, const Uint &offset) const noexcept {
+        Uint index = offset / stride;
+        Uint sub_offset = offset % stride;
         if constexpr (is_scalar_v<value_ty>) {
             return as<value_ty>(array[index]);
         } else if constexpr (is_vector_v<value_ty>) {
@@ -291,7 +294,7 @@ public:
     }
 
     void decode(const DynamicArray<ocarina::buffer_ty> &array) const noexcept override {
-        const_cast<decltype(device_value_) *>(&device_value_)->emplace(_decode(array, offset_ / sizeof(buffer_ty)));
+        const_cast<decltype(device_value_) *>(&device_value_)->emplace(_decode(array, offset_));
     }
 };
 
