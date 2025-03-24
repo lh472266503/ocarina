@@ -443,7 +443,6 @@ public:
             case EType: {
                 dispatch_representative(OC_FORWARD(type_id), [&](auto object) {
                     DataAccessor da = data_accessor(object, OC_FORWARD(inst_id));
-//                    object->decode(&da);
                     object->decode(da.load_dynamic_array<buffer_ty>(object->aligned_size() / 4));
                     func(object);
                     object->reset_device_value();

@@ -69,7 +69,6 @@ public:
     /// for device
     virtual void decode(const DataAccessor *da) const noexcept {}
     virtual void decode(const DynamicArray<buffer_ty> &array) const noexcept {}
-    virtual void decode() const noexcept {}
 };
 
 template<typename value_ty, typename T = buffer_ty>
@@ -293,15 +292,6 @@ public:
 
     void decode(const DynamicArray<ocarina::buffer_ty> &array) const noexcept override {
         const_cast<decltype(device_value_) *>(&device_value_)->emplace(_decode(array.sub(offset_ / 4, compacted_size() / 4)));
-    }
-
-    void decode() const noexcept override {
-        if (data_ == nullptr) {
-            OC_ASSERT(0);
-            return;
-        }
-        DataAccessor da{offset_, *data_};
-        decode(&da);
     }
 };
 
