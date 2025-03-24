@@ -59,7 +59,7 @@ public:
         return mem_offset(cal_offset(0), alignment());
     }
     [[nodiscard]] virtual bool has_device_value() const noexcept { return true; }
-    [[nodiscard]] virtual uint alignment() const noexcept { return 1; }
+    [[nodiscard]] virtual uint alignment() const noexcept { return sizeof(buffer_ty); }
 
     /**
      * calculate the offset of current data and store
