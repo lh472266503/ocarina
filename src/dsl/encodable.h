@@ -51,9 +51,6 @@ public:
     virtual void update(RegistrableManaged<buffer_ty> &data) const noexcept {}
     virtual void update() const noexcept {}
     virtual void invalidate() const noexcept {}
-    /// for device
-    virtual void decode(const DataAccessor *da) const noexcept {}
-    virtual void decode() const noexcept {}
     [[nodiscard]] virtual uint compacted_size() const noexcept { return 0; }
     [[nodiscard]] virtual uint aligned_size() const noexcept {
         return mem_offset(cal_offset(0), alignment());
@@ -69,6 +66,10 @@ public:
     virtual uint cal_offset(uint prev_size) const noexcept { return prev_size; }
     virtual void reset_device_value() const noexcept {}
     virtual ~Encodable() = default;
+    /// for device
+    virtual void decode(const DataAccessor *da) const noexcept {}
+    virtual void decode(const DynamicArray<buffer_ty> &array) const noexcept {}
+    virtual void decode() const noexcept {}
 };
 
 template<typename value_ty, typename T = buffer_ty>
@@ -290,6 +291,10 @@ public:
         const_cast<decltype(device_value_) *>(&device_value_)->emplace(_decode(array));
     }
 
+    void decode(const DynamicArray<ocarina::buffer_ty> &array) const noexcept override {
+        const_cast<decltype(device_value_) *>(&device_value_)->emplace(_decode(array.sub(offset_ / 4, compacted_size() / 4)));
+    }
+
     void decode() const noexcept override {
         if (data_ == nullptr) {
             OC_ASSERT(0);
@@ -315,7 +320,8 @@ OC_MAKE_AUTO_MEMBER_FUNC(alignment)
 #define OC_ENCODE_ELEMENT(name) ocarina::detail::encode(name, datas);
 #define OC_UPDATE_ELEMENT(name) ocarina::detail::update(name, datas);
 #define OC_INVALIDATE_ELEMENT(name) ocarina::detail::invalidate(name);
-#define OC_DECODE_ELEMENT(name) ocarina::detail::decode(name, da);
+#define OC_DECODE_ELEMENT_DA(name) ocarina::detail::decode(name, da);
+#define OC_DECODE_ELEMENT(name) ocarina::detail::decode(name, array);
 #define OC_RESET_DEVICE_ELEMENT(name) ocarina::detail::reset_device_value(name);
 #define OC_VALID_ELEMENT(name) &&ocarina::detail::has_device_value(name)
 #define OC_SIZE_ELEMENT(name) +ocarina::detail::compacted_size(name)
@@ -336,6 +342,10 @@ OC_MAKE_AUTO_MEMBER_FUNC(alignment)
     }                                                                           \
     void decode(const DataAccessor *da) const noexcept override {               \
         Super::decode(da);                                                      \
+        MAP(OC_DECODE_ELEMENT_DA, __VA_ARGS__)                                  \
+    }                                                                           \
+    void decode(const DynamicArray<buffer_ty> &array) const noexcept override { \
+        Super::decode(array);                                                   \
         MAP(OC_DECODE_ELEMENT, __VA_ARGS__)                                     \
     }                                                                           \
     void invalidate() const noexcept override {                                 \

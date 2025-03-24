@@ -119,7 +119,7 @@ void test2(Device &device, Stream &stream) {
 //    m.a.set_encode_type(Uint8);
 //    m.b.set_encode_type(Uint8);
 //    m.c.set_encode_type(Uint8);
-    m.d.set_encode_type(Uint8);
+//    m.d.set_encode_type(Uint8);
 
     auto as = m.aligned_size();
 
@@ -136,7 +136,10 @@ void test2(Device &device, Stream &stream) {
 
     Kernel kernel = [&](Float a) {
         DataAccessor da{0u, vv};
-        m.decode(&da);
+//        m.decode(&da);
+
+        auto array = da.load_dynamic_array<buffer_ty>(m.aligned_size() / 4);
+        m.decode(array);
         Env::printer().info("a = {}", m.a.dv());
         Env::printer().info("b = {}", m.b.dv());
         Env::printer().info("c = {}", m.c.dv());
