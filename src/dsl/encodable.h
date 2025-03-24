@@ -253,14 +253,14 @@ public:
         return 0;
     }
 
-    [[nodiscard]] auto _decode(const DynamicArray<T> &array) const noexcept {
+    [[nodiscard]] auto _decode(const DynamicArray<T> &array, const Uint &index) const noexcept {
         if constexpr (is_scalar_v<value_ty>) {
-            return as<value_ty>(array[0]);
+            return as<value_ty>(array[index]);
         } else if constexpr (is_vector_v<value_ty>) {
             Var<value_ty> ret;
             using element_ty = vector_element_t<value_ty>;
             for (int i = 0; i < vector_dimension_v<value_ty>; ++i) {
-                ret[i] = as<element_ty>(array[i]);
+                ret[i] = as<element_ty>(array[index + i]);
             }
             return ret;
         } else if constexpr (is_matrix_v<value_ty>) {
@@ -268,7 +268,7 @@ public:
             uint cursor = 0u;
             for (int i = 0; i < value_ty::col_num; ++i) {
                 for (int j = 0; j < value_ty::row_num; ++j) {
-                    ret[i][j] = as<float>(array[cursor]);
+                    ret[i][j] = as<float>(array[index + cursor]);
                     ++cursor;
                 }
             }
@@ -277,7 +277,7 @@ public:
             using element_ty = typename value_ty::value_type;
             DynamicArray<element_ty> ret{hv().size()};
             for (int i = 0; i < hv().size(); ++i) {
-                ret[i] = as<element_ty>(array[i]);
+                ret[i] = as<element_ty>(array[index + i]);
             }
             return ret;
         } else {
@@ -287,11 +287,11 @@ public:
 
     void decode(const DataAccessor *da) const noexcept override {
         const DynamicArray<T> array = da->template load_dynamic_array<T>(compacted_size() / sizeof(T));
-        const_cast<decltype(device_value_) *>(&device_value_)->emplace(_decode(array));
+        const_cast<decltype(device_value_) *>(&device_value_)->emplace(_decode(array, 0));
     }
 
     void decode(const DynamicArray<ocarina::buffer_ty> &array) const noexcept override {
-        const_cast<decltype(device_value_) *>(&device_value_)->emplace(_decode(array.sub(offset_ / 4, compacted_size() / 4)));
+        const_cast<decltype(device_value_) *>(&device_value_)->emplace(_decode(array, offset_ / sizeof(buffer_ty)));
     }
 };
 
