@@ -103,9 +103,10 @@ void test(Device &device, Stream &stream) {
 struct Mat : public Encodable {
     EncodedData<float> a;
     EncodedData<float> b;
-    EncodedData<float> c;
+//    EncodedData<float> c;
     EncodedData<float> d;
-    OC_ENCODABLE_FUNC(Encodable, a, b, c, d)
+    EncodedData<vector<float>> e;
+    OC_ENCODABLE_FUNC(Encodable, a, b,  d, e)
 };
 
 void test2(Device &device, Stream &stream) {
@@ -114,12 +115,15 @@ void test2(Device &device, Stream &stream) {
     Mat m;
     m.a = 0.25f;
     m.b = 0.5f;
-    m.c = 0.75;
+//    m.c = 0.75;
     m.d = 1;
+    m.e.hv().push_back(0.5f);
+    m.e.hv().push_back(0.25f);
     m.a.set_encode_type(Uint8);
     m.b.set_encode_type(Uint8);
-    m.c.set_encode_type(Uint8);
+//    m.c.set_encode_type(Uint8);
     m.d.set_encode_type(Uint8);
+    m.e.set_encode_type(Uint8);
 
     auto as = m.aligned_size();
 
@@ -140,8 +144,9 @@ void test2(Device &device, Stream &stream) {
         m.decode(array);
         Env::printer().info("a = {}", m.a.dv());
         Env::printer().info("b = {}", m.b.dv());
-        Env::printer().info("c = {}", m.c.dv());
+//        Env::printer().info("c = {}", m.c.dv());
         Env::printer().info("d = {}", m.d.dv());
+        Env::printer().info("e = {} {}", m.e.dv().as_vec2());
 
     };
     auto shader = device.compile(kernel);
