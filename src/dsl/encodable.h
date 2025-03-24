@@ -155,23 +155,32 @@ public:
                 OC_ASSERT(is_floating_point_v<Scalar> && scalar <= 1.f);
                 uint index = (offset_ + i) / stride;
                 uint ofs = (offset_ + i) % stride;
-                uint8_t val = scalar * 255;
-                auto element = data.host_buffer()[index];
+                uint val = scalar * 255;
+                buffer_ty element = data.host_buffer()[index];
+                uint mask = 0;
                 switch (ofs) {
                     case 0: {
-                        uint mask = 0xff000000;
+                        val = val << 24;
+                        mask = 0x00ffffff;
                     }
                     case 1: {
-                        uint mask = 0x00ff0000;
+                        val = val << 16;
+                        mask = 0xff00ffff;
                     }
                     case 2: {
-                        uint mask = 0x0000ff00;
+                        val = val << 8;
+                        mask = 0xffff00ff;
                     }
                     case 3: {
-                        uint mask = 0x000000ff;
+                        mask = 0xffffff00;
                     }
-                    default: OC_ASSERT(0); break;
+                    default:
+                        OC_ASSERT(0);
+                        break;
                 }
+                element = mask & element;
+                element = val | element;
+                data.host_buffer()[index] = element;
                 break;
             }
             default: break;
