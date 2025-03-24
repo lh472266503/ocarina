@@ -39,11 +39,6 @@ struct data_accessor_impl {
 
 using DataAccessor = detail::data_accessor_impl<>;
 
-enum EncodeType {
-    Original,
-    Uint8,
-};
-
 class Encodable {
 public:
     /// for host
@@ -71,6 +66,11 @@ public:
     virtual void decode(const DynamicArray<buffer_ty> &array) const noexcept {}
 };
 
+enum EncodeType {
+    Original,
+    Uint8
+};
+
 template<typename value_ty, typename T = buffer_ty>
 requires(is_std_vector_v<value_ty> && is_scalar_v<typename value_ty::value_type>) || is_basic_v<value_ty>
 struct EncodedData final : public Encodable {
@@ -78,7 +78,7 @@ public:
     using host_ty = std::variant<value_ty, std::function<value_ty()>>;
     using buffer_type = T;
     static constexpr size_t max_alignment = alignof(uint);
-    static constexpr uint stride = sizeof(buffer_ty);
+    static constexpr uint buffer_stride = sizeof(buffer_ty);
 
 private:
     host_ty host_value_{};
@@ -153,8 +153,8 @@ public:
             }
             case Uint8: {
                 OC_ASSERT(is_floating_point_v<Scalar> && scalar <= 1.f);
-                uint index = (offset_ + i) / stride;
-                uint ofs = (offset_ + i) % stride;
+                uint index = (offset_ + i) / buffer_stride;
+                uint ofs = (offset_ + i) % buffer_stride;
                 uint val = scalar * 255;
                 buffer_ty element = data.host_buffer()[index];
                 uint mask = 0;
@@ -162,17 +162,21 @@ public:
                     case 0: {
                         val = val << 24;
                         mask = 0x00ffffff;
+                        break;
                     }
                     case 1: {
                         val = val << 16;
                         mask = 0xff00ffff;
+                        break;
                     }
                     case 2: {
                         val = val << 8;
                         mask = 0xffff00ff;
+                        break;
                     }
                     case 3: {
                         mask = 0xffffff00;
+                        break;
                     }
                     default:
                         OC_ASSERT(0);
@@ -263,16 +267,45 @@ public:
         return 0;
     }
 
+    [[nodiscard]] uint stride() const noexcept {
+        switch (encode_type_) {
+            case Original: return 4;
+            case Uint8: return 1;
+            default: break;
+        }
+        OC_ASSERT(0);
+        return 0;
+    }
+
+    template<typename Scalar>
+    [[nodiscard]] Var<Scalar> decode_scalar(const DynamicArray<T> &array, const Uint &offset) const noexcept {
+        Uint index = offset / buffer_stride;
+        Var<Scalar> ret;
+        switch (encode_type_) {
+            case Original: {
+                ret = as<Scalar>(array[index]);
+                break;
+            }
+            case Uint8: {
+                Uint sub_offset = offset % buffer_stride;
+                break;
+            }
+            default: {
+                OC_ASSERT(0);
+                break;
+            }
+        }
+        return ret;
+    }
+
     [[nodiscard]] auto _decode(const DynamicArray<T> &array, const Uint &offset) const noexcept {
-        Uint index = offset / stride;
-        Uint sub_offset = offset % stride;
         if constexpr (is_scalar_v<value_ty>) {
-            return as<value_ty>(array[index]);
+            return decode_scalar<value_ty>(array, offset);
         } else if constexpr (is_vector_v<value_ty>) {
             Var<value_ty> ret;
             using element_ty = vector_element_t<value_ty>;
             for (int i = 0; i < vector_dimension_v<value_ty>; ++i) {
-                ret[i] = as<element_ty>(array[index + i]);
+                ret[i] = decode_scalar<element_ty>(array, offset + i * stride());
             }
             return ret;
         } else if constexpr (is_matrix_v<value_ty>) {
@@ -280,7 +313,7 @@ public:
             uint cursor = 0u;
             for (int i = 0; i < value_ty::col_num; ++i) {
                 for (int j = 0; j < value_ty::row_num; ++j) {
-                    ret[i][j] = as<float>(array[index + cursor]);
+                    ret[i][j] = decode_scalar<float>(array,offset + cursor * stride());
                     ++cursor;
                 }
             }
@@ -289,7 +322,7 @@ public:
             using element_ty = typename value_ty::value_type;
             DynamicArray<element_ty> ret{hv().size()};
             for (int i = 0; i < hv().size(); ++i) {
-                ret[i] = as<element_ty>(array[index + i]);
+                ret[i] = decode_scalar<element_ty>(array, offset + i * stride());
             }
             return ret;
         } else {

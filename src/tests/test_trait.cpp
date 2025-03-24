@@ -123,8 +123,6 @@ void test2(Device &device, Stream &stream) {
 
     auto as = m.aligned_size();
 
-    as = mem_offset(as, 2);
-
     RegistrableManaged<buffer_ty> vv(ba);
     vv.resize(m.aligned_size());
     m.encode(vv);
