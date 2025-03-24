@@ -103,7 +103,7 @@ void test(Device &device, Stream &stream) {
 struct Mat : public Encodable {
     EncodedData<float> a;
     EncodedData<float> b;
-    EncodedData<uint> c;
+    EncodedData<float> c;
     EncodedData<float> d;
     OC_ENCODABLE_FUNC(Encodable, a, b, c, d)
 };
@@ -114,12 +114,12 @@ void test2(Device &device, Stream &stream) {
     Mat m;
     m.a = 0.25f;
     m.b = 0.5f;
-    m.c = 3;
-    m.d = 0.75f;
-//    m.a.set_encode_type(Uint8);
-//    m.b.set_encode_type(Uint8);
-//    m.c.set_encode_type(Uint8);
-//    m.d.set_encode_type(Uint8);
+    m.c = 0.75;
+    m.d = 1;
+    m.a.set_encode_type(Uint8);
+    m.b.set_encode_type(Uint8);
+    m.c.set_encode_type(Uint8);
+    m.d.set_encode_type(Uint8);
 
     auto as = m.aligned_size();
 
