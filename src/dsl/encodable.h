@@ -158,30 +158,8 @@ public:
                 uint val = scalar * 255;
                 buffer_ty element = data.host_buffer()[index];
                 uint mask = 0;
-                switch (ofs) {
-                    case 0: {
-                        val = val << 24;
-                        mask = 0x00ffffff;
-                        break;
-                    }
-                    case 1: {
-                        val = val << 16;
-                        mask = 0xff00ffff;
-                        break;
-                    }
-                    case 2: {
-                        val = val << 8;
-                        mask = 0xffff00ff;
-                        break;
-                    }
-                    case 3: {
-                        mask = 0xffffff00;
-                        break;
-                    }
-                    default:
-                        OC_ASSERT(0);
-                        break;
-                }
+                val = val << (8 * (3 - ofs));
+                mask = ~(0xff000000 >> (ofs * 8));
                 element = mask & element;
                 element = val | element;
                 data.host_buffer()[index] = element;
