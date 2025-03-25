@@ -267,31 +267,9 @@ public:
             case Uint8: {
                 Uint sub_offset = offset % buffer_stride;
                 Var<T> elm = array[index];
-                switch_(sub_offset, [&]{
-                    case_(0, [&] {
-                        uint mask = 0xff000000;
-                        elm = elm & mask;
-                        elm = elm >> 24;
-                        break_();
-                    });
-                    case_(1, [&] {
-                        uint mask = 0x00ff0000;
-                        elm = elm & mask;
-                        elm = elm >> 16;
-                        break_();
-                    });
-                    case_(2, [&] {
-                        uint mask = 0x0000ff00;
-                        elm = elm & mask;
-                        elm = elm >> 8;
-                        break_();
-                    });
-                    case_(3, [&] {
-                        uint mask = 0x000000ff;
-                        elm = elm & mask;
-                        break_();
-                    });
-                });
+                Uint mask = 0xff000000 >> (sub_offset * 8);
+                elm = elm & mask;
+                elm = elm >> ((3 - sub_offset) * 8);
                 ret = elm * (1.f / 255);
                 break;
             }
