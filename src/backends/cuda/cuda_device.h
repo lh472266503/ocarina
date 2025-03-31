@@ -137,5 +137,6 @@ public:
     void unregister_shared(void *&shared_handle) noexcept override;
     void init_rtx() noexcept override { init_optix_context(); }
     [[nodiscard]] CommandVisitor *command_visitor() noexcept override;
+    void render() noexcept override {}
 };
 }// namespace ocarina

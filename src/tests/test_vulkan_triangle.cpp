@@ -13,6 +13,7 @@
 #include "dsl/dsl.h"
 #include "GUI/window.h"
 #include "util/image.h"
+#include "rhi/renderer.h"
 
 using namespace ocarina;
 
@@ -91,15 +92,62 @@ struct ExampleStruct {
     float d;
 };
 
+class TestRef
+{
+public:
+    TestRef() { ranges.resize(1); }
+    std::vector<int> ranges;
+};
+
+struct TestContainer
+{
+    TestContainer()
+    {
+        m_ref = new TestRef();
+    }
+
+    ~TestContainer()
+    {
+        if (m_ref)
+        {
+            delete m_ref;
+        }
+    }
+
+    TestRef *m_ref = nullptr;
+};
+
+class TestB
+{
+public:
+    TestB(const TestRef &ref) : m_Ref(ref) {}
+
+    const TestRef& GetTestRef()
+    {
+        return m_Ref;
+    }
+private:
+    const TestRef &m_Ref;
+};
+
 
 int main(int argc, char *argv[]) {
-    size_t structSize = sizeof(ExampleStruct);
+    TestContainer *container = new TestContainer();
 
-    std::vector<TestA> test;
+    TestB testB(*(container->m_ref));
+
+    const TestRef &ref = testB.GetTestRef();
+
+    for (size_t i = 0; i < ref.ranges.size(); ++i)
     {
-        TestA a("test right value");
-        //TestA a = "test right value";   compile error because we declare the constructor as explicit
-        test.emplace_back(std::move(a));
+        std::cout << ref.ranges[i] << std::endl;
+    }
+
+    delete container;
+    container = nullptr;
+
+    for (size_t i = 0; i < ref.ranges.size(); ++i) {
+        std::cout << ref.ranges[i] << std::endl;
     }
 
     fs::path path(argv[0]);
@@ -116,8 +164,16 @@ int main(int argc, char *argv[]) {
     handle_ty vertex_shader = device.create_shader_from_file("D:\\github\\Vision\\src\\ocarina\\src\\backends\\vulkan\\builtin\\triangle.vert", ShaderType::VertexShader);
     handle_ty pixel_shader = device.create_shader_from_file("D:\\github\\Vision\\src\\ocarina\\src\\backends\\vulkan\\builtin\\triangle.frag", ShaderType::PixelShader);
 
+    Renderer renderer;
+
     auto image_io = Image::pure_color(make_float4(1, 0, 0, 1), ColorSpace::LINEAR, make_uint2(500));
+    window->set_background(image_io.pixel_ptr<float4>(), make_uint2(800, 600));
     window->run([&](double d) {
-        window->set_background(image_io.pixel_ptr<float4>(), make_uint2(800, 600));
+        
     });
+
+    //while (!window->should_close())
+    //{
+    //    renderer.render();
+    //}
 }
