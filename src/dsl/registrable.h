@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "encode.h"
+#include "encodable.h"
 #include "rhi/resources/managed.h"
 #include "dsl/printer.h"
 #include "core/platform.h"
@@ -12,7 +12,7 @@
 
 namespace ocarina {
 
-class Registrable : public Encodable<encoded_ty> {
+class Registrable : public Encodable {
 protected:
     EncodedData<uint> index_{InvalidUI32};
     EncodedData<uint> length_{InvalidUI32};
@@ -22,7 +22,7 @@ public:
     Registrable() = default;
     explicit Registrable(BindlessArray *bindless_array)
         : bindless_array_(bindless_array) {}
-    OC_ENCODABLE_FUNC(Encodable<encoded_ty>, index_, length_)
+    OC_ENCODABLE_FUNC(Encodable, index_, length_)
     void set_bindless_array(BindlessArray &bindless_array) noexcept {
         bindless_array_ = &bindless_array;
     }

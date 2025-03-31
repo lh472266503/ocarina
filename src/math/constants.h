@@ -48,54 +48,56 @@ inline namespace constants {
 constexpr float shadow_epsilon = 0.0001f;
 
 struct NegInfTy {
-    operator double() const { return -std::numeric_limits<double>::infinity(); }
-    operator float() const { return -std::numeric_limits<float>::infinity(); }
-    operator long long() const { return std::numeric_limits<long long>::min(); }
-    operator unsigned long long() const { return std::numeric_limits<unsigned long long>::min(); }
-    operator long() const { return std::numeric_limits<long>::min(); }
-    operator unsigned long() const { return std::numeric_limits<unsigned long>::min(); }
-    operator int() const { return std::numeric_limits<int>::min(); }
-    operator unsigned int() const { return std::numeric_limits<unsigned int>::min(); }
-    operator short() const { return std::numeric_limits<short>::min(); }
-    operator unsigned short() const { return std::numeric_limits<unsigned short>::min(); }
-    operator char() const { return std::numeric_limits<char>::min(); }
-    operator unsigned char() const { return std::numeric_limits<unsigned char>::min(); }
+    constexpr operator double() const { return -std::numeric_limits<double>::infinity(); }
+    constexpr operator float() const { return -std::numeric_limits<float>::infinity(); }
+    constexpr operator long long() const { return std::numeric_limits<long long>::min(); }
+    constexpr operator unsigned long long() const { return std::numeric_limits<unsigned long long>::min(); }
+    constexpr operator long() const { return std::numeric_limits<long>::min(); }
+    constexpr operator unsigned long() const { return std::numeric_limits<unsigned long>::min(); }
+    constexpr operator int() const { return std::numeric_limits<int>::min(); }
+    constexpr operator unsigned int() const { return std::numeric_limits<unsigned int>::min(); }
+    constexpr operator short() const { return std::numeric_limits<short>::min(); }
+    constexpr operator unsigned short() const { return std::numeric_limits<unsigned short>::min(); }
+    constexpr operator char() const { return std::numeric_limits<char>::min(); }
+    constexpr operator unsigned char() const { return std::numeric_limits<unsigned char>::min(); }
 };
+
+template<typename T>
+struct neg_infinity {
+    static constexpr auto value = std::remove_cvref_t<T>(NegInfTy{});
+};
+OC_DEFINE_TEMPLATE_VALUE(neg_infinity)
 
 struct PosInfTy {
-    operator double() const { return std::numeric_limits<double>::infinity(); }
-    operator float() const { return std::numeric_limits<float>::infinity(); }
-    operator long long() const { return std::numeric_limits<long long>::max(); }
-    operator unsigned long long() const { return std::numeric_limits<unsigned long long>::max(); }
-    operator long() const { return std::numeric_limits<long>::max(); }
-    operator unsigned long() const { return std::numeric_limits<unsigned long>::max(); }
-    operator int() const { return std::numeric_limits<int>::max(); }
-    operator unsigned int() const { return std::numeric_limits<unsigned int>::max(); }
-    operator short() const { return std::numeric_limits<short>::max(); }
-    operator unsigned short() const { return std::numeric_limits<unsigned short>::max(); }
-    operator char() const { return std::numeric_limits<char>::max(); }
-    operator unsigned char() const { return std::numeric_limits<unsigned char>::max(); }
+    constexpr operator double() const { return std::numeric_limits<double>::infinity(); }
+    constexpr operator float() const { return std::numeric_limits<float>::infinity(); }
+    constexpr operator long long() const { return std::numeric_limits<long long>::max(); }
+    constexpr operator unsigned long long() const { return std::numeric_limits<unsigned long long>::max(); }
+    constexpr operator long() const { return std::numeric_limits<long>::max(); }
+    constexpr operator unsigned long() const { return std::numeric_limits<unsigned long>::max(); }
+    constexpr operator int() const { return std::numeric_limits<int>::max(); }
+    constexpr operator unsigned int() const { return std::numeric_limits<unsigned int>::max(); }
+    constexpr operator short() const { return std::numeric_limits<short>::max(); }
+    constexpr operator unsigned short() const { return std::numeric_limits<unsigned short>::max(); }
+    constexpr operator char() const { return std::numeric_limits<char>::max(); }
+    constexpr operator unsigned char() const { return std::numeric_limits<unsigned char>::max(); }
 };
 
+template<typename T>
+struct pos_infinity {
+    static constexpr auto value = std::remove_cvref_t<T>(PosInfTy{});
+};
+OC_DEFINE_TEMPLATE_VALUE(pos_infinity)
+
 struct NaNTy {
-    operator double() const { return std::numeric_limits<double>::quiet_NaN(); }
-    operator float() const { return std::numeric_limits<float>::quiet_NaN(); }
+    constexpr operator double() const { return std::numeric_limits<double>::quiet_NaN(); }
+    constexpr operator float() const { return std::numeric_limits<float>::quiet_NaN(); }
 };
 
 struct UlpTy {
-    operator double() const { return std::numeric_limits<double>::epsilon(); }
-    operator float() const { return std::numeric_limits<float>::epsilon(); }
+    constexpr operator double() const { return std::numeric_limits<double>::epsilon(); }
+    constexpr operator float() const { return std::numeric_limits<float>::epsilon(); }
 };
-
-template<typename T>
-[[nodiscard]] T empty_range_lower() {
-    return (T)NegInfTy();
-}
-
-template<typename T>
-[[nodiscard]] T empty_range_upper() {
-    return (T)PosInfTy();
-}
 
 }// namespace constants
 

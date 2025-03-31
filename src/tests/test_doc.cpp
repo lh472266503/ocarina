@@ -278,10 +278,14 @@ void test_lambda(Device &device, Stream &stream) {
     //    bool abaa = ocarina::is_vector2_v<ocarina::detail::VectorStorage<int, 2>>;
 
     Kernel kernel = [&](Uint i) {
-
-        float_array *arr;
-        Float f1 = 6;
-        Float3 f3;
+        auto arr = DynamicArray<float>{1};
+        outline("principled transmission", [&] {
+            rcp(arr);
+        });
+        return ;
+//        float_array *arr;
+//        Float f1 = 6;
+//        Float3 f3;
 
 
 //        $outline{

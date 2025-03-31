@@ -8,7 +8,7 @@
 #include "stmt_builder.h"
 #include "core/stl.h"
 #include "core/util.h"
-#include "encode.h"
+#include "encodable.h"
 #include "core/hash.h"
 #include "registrable.h"
 #include "env.h"
@@ -116,7 +116,7 @@ public:
     }
 };
 
-template<typename T, typename U = float>
+template<typename T, typename U = buffer_ty>
 class Polymorphic : public vector<T> {
 public:
     using Super = vector<T>;
@@ -129,6 +129,13 @@ protected:
         string class_name;
         datas_type data_set;
         vector<ptr_type *> objects;
+        void fill_elements_offset() const noexcept {
+            uint size = 0;
+            for (const ptr_type *object : objects) {
+                size = object->cal_offset(size);
+                size = mem_offset(size, object->alignment());
+            }
+        }
     };
 
     struct {
@@ -265,6 +272,15 @@ public:
         type_mgr_.clear();
     }
 
+    void remedy() noexcept {
+        type_mgr_.clear();
+        for (auto &elm : *this) {
+            elm->invalidate();
+            elm->reset_type_hash();
+            type_mgr_.add_object(elm);
+        }
+    }
+
     template<typename Index>
     requires concepts::integral<Index>
     [[nodiscard]] const T &operator[](Index i) const {
@@ -313,13 +329,13 @@ public:
             return object == raw_ptr(obj);
         });
     }
-    [[nodiscard]] DataAccessor<U> data_accessor(const ptr_type *object,
-                                                const Uint &data_index) noexcept {
-        return {data_index * object->element_num() * uint(sizeof(U)), get_datas(object)};
+    [[nodiscard]] DataAccessor data_accessor(const ptr_type *object,
+                                             const Uint &data_index) noexcept {
+        return {data_index * object->aligned_size(), get_datas(object)};
     }
-    [[nodiscard]] DataAccessor<U> data_accessor(const ptr_type *object,
-                                                const Uint &data_index) const noexcept {
-        return {data_index * object->element_num() * uint(sizeof(U)), get_datas(object)};
+    [[nodiscard]] DataAccessor data_accessor(const ptr_type *object,
+                                             const Uint &data_index) const noexcept {
+        return {data_index * object->aligned_size(), get_datas(object)};
     }
     [[nodiscard]] datas_type &get_datas(const ptr_type *object) noexcept {
         return type_mgr_.type_map.at(object->type_hash()).data_set;
@@ -378,13 +394,20 @@ public:
         return InvalidUI32;
     }
 
+    void fill_elements_offset() const noexcept {
+        type_mgr_.for_each_type([&](const TypeData &type_data) {
+            type_data.fill_elements_offset();
+        });
+    }
+
     void prepare(BindlessArray &bindless_array, Device &device) noexcept {
         switch (mode_) {
             case EInstance: break;
             case EType: {
                 type_mgr_.for_each_type([&](TypeData &type_data) {
+                    type_data.fill_elements_offset();
                     type_data.data_set.set_bindless_array(bindless_array);
-                    type_data.data_set.reserve(type_data.objects.size() * type_data.objects[0]->element_num());
+                    type_data.data_set.resize(type_data.objects.size() * type_data.objects[0]->aligned_size() / sizeof(float));
                     for (ptr_type *object : type_data.objects) {
                         object->encode(type_data.data_set);
                     }
@@ -420,8 +443,8 @@ public:
             }
             case EType: {
                 dispatch_representative(OC_FORWARD(type_id), [&](auto object) {
-                    DataAccessor<U> da = data_accessor(object, OC_FORWARD(inst_id));
-                    object->decode(&da);
+                    DataAccessor da = data_accessor(object, OC_FORWARD(inst_id));
+                    object->decode(da.load_dynamic_array<buffer_ty>(object->aligned_size() / 4));
                     func(object);
                     object->reset_device_value();
                 });

@@ -8,8 +8,8 @@
 namespace ocarina {
 
 CUDABindlessArray::CUDABindlessArray(CUDADevice *device)
-    : device_(device), buffers_(device, slot_size, "CUDABindlessArray::buffers_"),
-      textures_(device, slot_size, "CUDABindlessArray::textures_") {
+    : device_(device), buffers_(device, c_max_slot_num, "CUDABindlessArray::buffers_"),
+      textures_(device, c_max_slot_num, "CUDABindlessArray::textures_") {
     slot_soa_.buffer_slot = buffers_.head();
     slot_soa_.tex_slot = textures_.head();
 }
@@ -17,12 +17,14 @@ CUDABindlessArray::CUDABindlessArray(CUDADevice *device)
 size_t CUDABindlessArray::emplace_buffer(handle_ty handle, size_t size_in_byte) noexcept {
     auto ret = buffers_.host_buffer().size();
     buffers_.emplace_back(reinterpret_cast<std::byte *>(handle), size_in_byte);
+    OC_ERROR_IF(ret >= c_max_slot_num, ocarina::format("slot_size is {}, buffer_num is {}", c_max_slot_num, ret));
     return ret;
 }
 
 size_t CUDABindlessArray::emplace_texture(handle_ty handle) noexcept {
     auto ret = textures_.host_buffer().size();
     textures_.push_back(handle);
+    OC_ERROR_IF(ret >= c_max_slot_num, ocarina::format("slot_size is {}, tex_num is {}", c_max_slot_num, ret));
     return ret;
 }
 
@@ -88,6 +90,14 @@ size_t CUDABindlessArray::buffer_num() const noexcept {
 
 size_t CUDABindlessArray::texture_num() const noexcept {
     return textures_.host_buffer().size();
+}
+
+size_t CUDABindlessArray::buffer_slots_size() const noexcept {
+    return sizeof(ByteBufferProxy) * c_max_slot_num;
+}
+
+size_t CUDABindlessArray::tex_slots_size() const noexcept {
+    return sizeof(CUtexObject) * c_max_slot_num;
 }
 
 BufferUploadCommand *CUDABindlessArray::upload_texture_handles(bool async) const noexcept {

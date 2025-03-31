@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <source_location>
 #include <utility>
 #include "core/stl.h"
 #include "core/hash.h"
@@ -71,6 +72,8 @@ private:
     const Type *type_{};
     const Function *context_{nullptr};
     uint32_t uid_{};
+    std::source_location src_location_{};
+
     [[nodiscard]] uint64_t _compute_hash() const noexcept override;
     friend class Function;
     Variable(const Function *context,
@@ -85,6 +88,7 @@ private:
 
 public:
     Variable() noexcept = default;
+    OC_MAKE_MEMBER_GETTER_SETTER(src_location, &)
     [[nodiscard]] constexpr const Type *type() const noexcept { return type_; }
     [[nodiscard]] Tag tag() const noexcept;
     [[nodiscard]] constexpr uint uid() const noexcept { return uid_; }

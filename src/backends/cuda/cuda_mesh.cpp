@@ -12,6 +12,7 @@ namespace ocarina {
 
 void CUDAMesh::build_bvh(const BLASBuildCommand *cmd) noexcept {
     device_->use_context([&] {
+        init_build_input();
         OptixAccelBuildOptions accel_options = {};
         accel_options.buildFlags = (OPTIX_BUILD_FLAG_ALLOW_COMPACTION | OPTIX_BUILD_FLAG_PREFER_FAST_TRACE);
         accel_options.motionOptions.numKeys = 1;
@@ -84,4 +85,5 @@ void CUDAMesh::init_build_input() noexcept {
         build_input_.triangleArray.sbtIndexOffsetStrideInBytes = sizeof(uint32_t);
     }
 }
+
 }// namespace ocarina

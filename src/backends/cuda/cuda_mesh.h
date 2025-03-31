@@ -20,9 +20,8 @@ private:
 
 public:
     CUDAMesh(CUDADevice *device, const MeshParams &params)
-        : device_(device), params_(params) {
-        init_build_input();
-    }
+        : device_(device), params_(params) {}
+    void update_mesh(const MeshParams &mesh_params) noexcept { params_ = mesh_params; }
     void init_build_input() noexcept;
     [[nodiscard]] handle_ty blas_handle() const noexcept override { return blas_handle_; }
     [[nodiscard]] uint vertex_num() const noexcept override { return params_.vert_num; }

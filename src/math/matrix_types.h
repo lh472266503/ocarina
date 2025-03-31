@@ -11,9 +11,9 @@ namespace ocarina {
 template<size_t N, size_t M>
 struct Matrix {
 public:
-    static constexpr auto RowNum = M;
-    static constexpr auto ColNum = N;
-    static constexpr auto ElementNum = M * N;
+    static constexpr auto row_num = M;
+    static constexpr auto col_num = N;
+    static constexpr auto element_num = M * N;
     using scalar_type = float;
     using vector_type = Vector<scalar_type, M>;
     using array_t = array<vector_type, N>;
@@ -28,12 +28,12 @@ public:
         : cols_(array_t{static_cast<vector_type>(OC_FORWARD(args))...}) {}
 
     template<typename... Args>
-    requires(sizeof...(Args) == ElementNum && is_all_scalar_v<Args...>)
+    requires(sizeof...(Args) == element_num && is_all_scalar_v<Args...>)
     explicit constexpr Matrix(Args &&...args) noexcept
         : cols_([&]<size_t... i>(std::index_sequence<i...>,
-                                 const array<scalar_type, ElementNum> &arr) {
+                                 const array<scalar_type, element_num> &arr) {
               return array_t{vector_type{addressof(arr.data()[i * M])}...};
-          }(std::make_index_sequence<N>(), array<scalar_type, ElementNum>{static_cast<scalar_type>(OC_FORWARD(args))...})) {
+          }(std::make_index_sequence<N>(), array<scalar_type, element_num>{static_cast<scalar_type>(OC_FORWARD(args))...})) {
     }
 
     template<size_t NN, size_t MM>

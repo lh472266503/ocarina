@@ -243,7 +243,7 @@ public:
 
     auto operator()(prototype_to_callable_invocation_t<Args>... args) const noexcept {
         Function::current()->update_captured_resources(function_.get());
-        vector<const Expression *> arguments{(OC_EXPR(args))...};
+        list<const Expression *> arguments{(OC_EXPR(args))...};
 
         function_->for_each_captured_resource([&](const CapturedResource &captured_resource) {
             const CapturedResource *var = Function::current()->get_captured_resource_by_handle(captured_resource.handle_ptr());
@@ -331,6 +331,11 @@ public:
 template<typename Func>
 auto outline(Func &&func, const string &desc = "") {
     return detail::CallableOutlineBuilder(desc) % OC_FORWARD(func);
+}
+
+template<typename Func>
+auto outline(const string &desc, Func &&func) {
+    return outline(OC_FORWARD(func), desc);
 }
 
 template<typename T>

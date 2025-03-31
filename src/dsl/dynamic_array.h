@@ -28,14 +28,16 @@ public:
     explicit DynamicArray(const Expression *expression)
         : size_(expression->type()->dimension()), expression_(expression) {}
 
-    explicit DynamicArray(size_t num, const Expression *expression = nullptr)
+    explicit DynamicArray(size_t num, const Expression *expression = nullptr,
+                          std::source_location location = std::source_location::current())
         : size_(num),
-          expression_(expression == nullptr ? Function::current()->local(type()) : expression) {}
+          expression_(expression == nullptr ? Function::current()->local(type(), location) : expression) {}
 
     template<typename U>
     requires is_dsl_v<U> || is_basic_v<U>
-    explicit DynamicArray(size_t num, U &&u)
-        : DynamicArray(num, nullptr) {
+    explicit DynamicArray(size_t num, U &&u,
+                          std::source_location location = std::source_location::current())
+        : DynamicArray(num, nullptr, location) {
         for (int i = 0; i < num; ++i) {
             (*this)[i] = u;
         }
@@ -43,22 +45,25 @@ public:
 
     template<typename U>
     requires is_vector_v<U> && concepts::different<std::remove_cvref_t<U>, DynamicArray<T>>
-    explicit DynamicArray(U &&vec) noexcept
-        : DynamicArray(vector_expr_dimension_v<U>) {
+    explicit DynamicArray(U &&vec,
+                          std::source_location location = std::source_location::current()) noexcept
+        : DynamicArray(vector_expr_dimension_v<U>, nullptr, location) {
         for (int i = 0; i < size(); ++i) {
             (*this)[i] = vec[i];
         }
     }
 
-    explicit DynamicArray(const vector<T> &vec) noexcept
-        : DynamicArray(vec.size()) {
+    explicit DynamicArray(const vector<T> &vec,
+                          std::source_location location = std::source_location::current()) noexcept
+        : DynamicArray(vec.size(), nullptr, location) {
         for (int i = 0; i < size(); ++i) {
             (*this)[i] = vec[i];
         }
     }
 
-    DynamicArray(const DynamicArray &other) noexcept
-        : size_{other.size_}, expression_(Function::current()->local(type())) {
+    DynamicArray(const DynamicArray &other,
+                 std::source_location location = std::source_location::current()) noexcept
+        : size_{other.size_}, expression_(Function::current()->local(type(), location)) {
         Function::current()->assign(expression_, other.expression_);
     }
     static DynamicArray<T> zero(uint size) noexcept { return DynamicArray<T>{size, static_cast<T>(0)}; }

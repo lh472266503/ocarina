@@ -138,7 +138,6 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         }
         case CallOp::BYTE_BUFFER_WRITE: OC_GEN_FUNC_NAME(byte_buffer_write); break;
         case CallOp::BYTE_BUFFER_READ: {
-            auto t_args = expr->template_args();
             ocarina::visit(
                 [&]<typename T>(T &&t) {
                     if constexpr (is_integral_v<T>) {
@@ -149,12 +148,11 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
                         current_scratch() << ">";
                     }
                 },
-                t_args[0]);
+                expr->template_arg(0));
             break;
         }
         case CallOp::BINDLESS_ARRAY_TEX_SAMPLE: {
-            auto t_args = expr->template_args();
-            uint N = std::get<uint>(t_args[0]);
+            uint N = std::get<uint>(expr->template_arg(0));
             current_scratch() << "oc_bindless_array_tex_sample<" << N << ">";
             break;
         }
@@ -168,14 +166,12 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         case CallOp::BUFFER_SIZE: OC_GEN_FUNC_NAME(buffer_size); break;
         case CallOp::BYTE_BUFFER_SIZE: OC_GEN_FUNC_NAME(buffer_size); break;
         case CallOp::TEX_SAMPLE: {
-            auto t_args = expr->template_args();
-            uint N = std::get<uint>(t_args[0]);
+            uint N = std::get<uint>(expr->template_arg(0));
             current_scratch() << "oc_tex_sample_float<" << N << ">";
             break;
         }
         case CallOp::TEX_READ: {
-            auto t_args = expr->template_args();
-            auto output_type = t_args[0];
+            auto output_type = expr->template_arg(0);
             current_scratch() << ocarina::format("oc_texture_read<oc_{}>",
                                                  std::get<const Type *>(output_type)->name());
             break;

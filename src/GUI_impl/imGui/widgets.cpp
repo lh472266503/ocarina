@@ -329,22 +329,6 @@ bool ImGuiWidgets::drag_uint4(const string &label, ocarina::uint4 *val, float sp
     return ImGui::DragUint4(label.c_str(), reinterpret_cast<uint *>(val), speed, min, max);
 }
 
-bool ImGuiWidgets::drag_float(const string &label, float *val, float speed, float min, float max) noexcept {
-    return ImGui::DragFloat(label.c_str(), val, speed, min, max);
-}
-
-bool ImGuiWidgets::drag_float2(const string &label, ocarina::float2 *val, float speed, float min, float max) noexcept {
-    return ImGui::DragFloat2(label.c_str(), reinterpret_cast<float *>(val), speed, min, max);
-}
-
-bool ImGuiWidgets::drag_float3(const string &label, ocarina::float3 *val, float speed, float min, float max) noexcept {
-    return ImGui::DragFloat3(label.c_str(), reinterpret_cast<float *>(val), speed, min, max);
-}
-
-bool ImGuiWidgets::drag_float4(const string &label, ocarina::float4 *val, float speed, float min, float max) noexcept {
-    return ImGui::DragFloat4(label.c_str(), reinterpret_cast<float *>(val), speed, min, max);
-}
-
 bool ImGuiWidgets::drag_float(const string &label, float *val, float speed, float min, float max, const char *fmt) noexcept {
     return ImGui::DragFloat(label.c_str(), val, speed, min, max, fmt);
 }

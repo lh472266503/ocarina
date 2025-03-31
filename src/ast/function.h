@@ -291,7 +291,7 @@ public:
     [[nodiscard]] const RefExpr *dispatch_dim() noexcept;
     [[nodiscard]] const RefExpr *argument(const Type *type) noexcept;
     [[nodiscard]] const RefExpr *reference_argument(const Type *type) noexcept;
-    [[nodiscard]] const RefExpr *local(const Type *type) noexcept;
+    [[nodiscard]] const RefExpr *local(const Type *type, OC_APPEND_SRC_LOCATION) noexcept;
     [[nodiscard]] const LiteralExpr *literal(const Type *type, basic_literal_t value) noexcept;
     [[nodiscard]] const UnaryExpr *unary(const Type *type, UnaryOp op, const Expression *expression) noexcept;
     [[nodiscard]] const BinaryExpr *binary(const Type *type, BinaryOp op, const Expression *lhs, const Expression *rhs) noexcept;
@@ -302,10 +302,10 @@ public:
                                                  vector<const Expression *> indexes) noexcept;
     [[nodiscard]] const MemberExpr *swizzle(const Type *type, const Expression *obj, uint16_t mask, uint16_t swizzle_size) noexcept;
     [[nodiscard]] const MemberExpr *member(const Type *type, const Expression *obj, int index) noexcept;
-    const CallExpr *call(const Type *type, SP<const Function> func, ocarina::vector<const Expression *> args) noexcept;
-    const CallExpr *call(const Type *type, string_view func_name, ocarina::vector<const Expression *> args) noexcept;
-    const CallExpr *call_builtin(const Type *type, CallOp op, ocarina::vector<const Expression *> args,
-                                 ocarina::vector<CallExpr::Template> t_args = {}) noexcept;
+    const CallExpr *call(const Type *type, SP<const Function> func, ocarina::list<const Expression *> args) noexcept;
+    const CallExpr *call(const Type *type, string_view func_name, ocarina::list<const Expression *> args) noexcept;
+    const CallExpr *call_builtin(const Type *type, CallOp op, ocarina::list<const Expression *> args,
+                                 ocarina::list<CallExpr::Template> t_args = {}) noexcept;
     void add_header(string_view fn) noexcept;
     [[nodiscard]] ScopeStmt *scope() noexcept;
     [[nodiscard]] IfStmt *if_(const Expression *expr) noexcept;

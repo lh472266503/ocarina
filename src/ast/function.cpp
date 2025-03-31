@@ -319,8 +319,9 @@ const RefExpr *Function::reference_argument(const Type *type) noexcept {
     return _ref(variable);
 }
 
-const RefExpr *Function::local(const Type *type) noexcept {
+const RefExpr *Function::local(const Type *type, std::source_location location) noexcept {
     auto ret = create_expression<RefExpr>(create_variable(type, Variable::Tag::LOCAL));
+    ret->variable().set_src_location(location);
     body()->add_var(ret->variable());
     return ret;
 }
@@ -369,19 +370,19 @@ const MemberExpr *Function::member(const Type *type, const Expression *obj, int 
 }
 
 const CallExpr *Function::call(const Type *type, SP<const Function> func,
-                               ocarina::vector<const Expression *> args) noexcept {
+                               ocarina::list<const Expression *> args) noexcept {
     const Function *ptr = add_used_function(func);
     return create_expression<CallExpr>(type, ptr, std::move(args));
 }
 
 const CallExpr *Function::call(const ocarina::Type *type, string_view func_name,
-                               ocarina::vector<const Expression *> args) noexcept {
+                               ocarina::list<const Expression *> args) noexcept {
     return create_expression<CallExpr>(type, func_name, ocarina::move(args));
 }
 
 const CallExpr *Function::call_builtin(const Type *type, CallOp op,
-                                       ocarina::vector<const Expression *> args,
-                                       ocarina::vector<CallExpr::Template> t_args) noexcept {
+                                       ocarina::list<const Expression *> args,
+                                       ocarina::list<CallExpr::Template> t_args) noexcept {
     if (to_underlying(op) >= to_underlying(CallOp::MAKE_RAY)) {
         set_raytracing(true);
     }

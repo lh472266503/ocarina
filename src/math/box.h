@@ -23,8 +23,8 @@ public:
     vector_t lower, upper;
 
 public:
-    TBox() : lower(empty_range_upper<scalar_t>()),
-             upper(empty_range_lower<scalar_t>()) {}
+    TBox() : lower(pos_infinity_v<scalar_t>),
+             upper(neg_infinity_v<scalar_t>) {}
 
     explicit inline TBox(const vector_t &v)
         : lower(v), upper(v) {}
