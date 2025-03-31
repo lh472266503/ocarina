@@ -128,10 +128,24 @@ enum class PrimitiveType : uint8_t
     TRIANGLE_STRIP = 5//!< triangle strip
 };
 
+struct DescriptorCount {
+    uint32_t ubo : 8;
+    uint32_t srv : 8;
+    uint32_t uav : 8;
+    uint32_t samplers : 8;
+
+    bool operator==(DescriptorCount const &right) const {
+        return ubo == right.ubo && srv == right.srv && uav == right.uav &&
+               samplers == right.samplers;
+    }
+};
+
 //enum CommandListType {
 //    Graphics,///< Graphics command list
 //    Compute, ///< Compute command list
 //    Copy     ///< Copy command list
 //};
+
+
 
 }// namespace ocarina

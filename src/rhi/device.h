@@ -82,6 +82,7 @@ public:
         [[nodiscard]] FileManager *file_manager() noexcept { return file_manager_; }
         virtual void init_rtx() noexcept = 0;
         [[nodiscard]] virtual CommandVisitor *command_visitor() noexcept = 0;
+        virtual void render() noexcept = 0;
     };
 
     using Creator = Device::Impl *(FileManager *);
