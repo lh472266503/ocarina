@@ -72,8 +72,7 @@ private:
     /** @brief List of extensions supported by the device */
     std::vector<std::string> m_supportedExtensions;
     std::vector<const char *> m_enableExtensions;
-    /** @brief Default command pool for the graphics queue family index */
-    VkCommandPool m_commandPool = VK_NULL_HANDLE;
+    
 
 public:
     explicit VulkanDevice(FileManager *file_manager, const ocarina::InstanceCreation &instance_creation);
@@ -106,13 +105,29 @@ public:
     void init_rtx() noexcept override {  }
     [[nodiscard]] CommandVisitor *command_visitor() noexcept override;
     void shutdown();
+    void render() noexcept override;
 
     OC_MAKE_MEMBER_GETTER(logicalDevice, );
 
     OC_MAKE_MEMBER_GETTER(physicalDevice, );
 
     //uint32_t get_queue_family_index
-private:
+    VulkanSwapchain* get_swapchain()
+    {
+        return &m_swapChain;
+    }
+
+    VkDevice operator()()
+    {
+        return logicalDevice_;
+    }
+
+    uint32_t get_memory_type(uint32_t typeBits, VkMemoryPropertyFlags properties, VkBool32 *memTypeFound = nullptr) const;
+    uint32_t get_queue_family_index(QueueType queue_type) const
+    {
+        return queueFamilyIndices_[(uint)queue_type];
+    }
+ private:
     void init_vulkan();
     void create_logical_device();
     void get_enable_features();

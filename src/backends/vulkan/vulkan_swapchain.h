@@ -23,7 +23,22 @@ public:
     void release();
     OC_MAKE_MEMBER_GETTER(swapChain, )
 
-    void queue_present();
+    VkResult queue_present(VkQueue queue, uint32_t imageIndex, VkSemaphore waitSemaphore);
+    OC_MAKE_MEMBER_GETTER(color_format, )
+
+    uint32_t backbuffer_size() const
+    {
+        return backBuffers_.size();
+    }
+
+    OC_MAKE_MEMBER_GETTER(resolution, )
+
+    SwapChainBuffer get_swapchain_buffer(int index)
+    {
+        return backBuffers_[index];
+    }
+
+    VkResult aquire_next_image(VkSemaphore present_complete_semaphore, uint32_t *image_index);
 
 private:
     void setup_backbuffers(const VkSwapchainCreateInfoKHR &swapChainCreateInfo);
@@ -38,13 +53,7 @@ private:
     VulkanDevice *vulkan_device_;
     //uint32_t imageCount_ = 0;
     std::vector<SwapChainBuffer> backBuffers_;
-
-    // Synchronization semaphores
-    struct {
-        // Swap chain image presentation
-        VkSemaphore presentComplete;
-        // Command buffer submission and execution
-        VkSemaphore renderComplete;
-    } semaphores;
+    VkFormat color_format_{VK_FORMAT_R8G8B8A8_UNORM};
+    int2 resolution_;
 };
 }// namespace ocarina

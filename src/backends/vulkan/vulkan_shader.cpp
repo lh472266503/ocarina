@@ -83,11 +83,35 @@ VulkanShader *VulkanShader::create_from_HLSL(Device::Impl *device, ShaderType sh
             DXCCompiler::run_spriv_reflection(compile_result.spriv_codes, compile_input.shader_type, reflection);
 
             vulkan_shader = create(device, shader_type, compile_result.spriv_codes, entry_point);
+            vulkan_shader->get_descriptor_count(reflection);
         }
 
     } 
 
     return vulkan_shader;
+}
+
+void VulkanShader::get_descriptor_count(const ShaderReflection &reflection) {
+    descriptor_count_.ubo = 0;
+    descriptor_count_.uav = 0;
+    descriptor_count_.srv = 0;
+    descriptor_count_.samplers = 0;
+
+    for (auto shader_resource : reflection.shader_resources)
+    {
+        if (shader_resource.shader_type == ShaderReflection::ResourceType::ConstantBuffer)
+        {
+            descriptor_count_.ubo++;
+        }
+        else if (shader_resource.shader_type == ShaderReflection::ResourceType::SRV)
+        {
+            descriptor_count_.srv++;
+        } else if (shader_resource.shader_type == ShaderReflection::ResourceType::UAV) {
+            descriptor_count_.uav++;
+        } else if (shader_resource.shader_type == ShaderReflection::ResourceType::Sampler) {
+            descriptor_count_.samplers++;
+        }
+    }
 }
 
 bool VulkanShader::HLSLToSPRIV(std::span<char> hlsl, VkShaderStageFlagBits stage, const std::string_view &entryPoint, bool outputSymbols, 

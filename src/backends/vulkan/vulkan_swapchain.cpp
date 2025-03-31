@@ -134,24 +134,35 @@ void VulkanSwapchain::create_swapchain(const SwapChainCreation &creation, Vulkan
         vkDestroySwapchainKHR(device, oldSwapchain, nullptr);
     }
 
+    resolution_ = int2(creation.width, creation.height);
     setup_backbuffers(swapchainCI);
-
-    // Semaphore used to ensures that image presentation is complete before starting to submit again
-    VkSemaphoreCreateInfo semaphoreCreateInfo = {VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO};
-    vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &semaphores.presentComplete);
-    vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &semaphores.renderComplete);
 }
 
 void VulkanSwapchain::release()
 {
     VkDevice device = vulkan_device_->logicalDevice();
     release_backbuffers();
-    vkDestroySemaphore(device, semaphores.presentComplete, nullptr);
-    vkDestroySemaphore(device, semaphores.renderComplete, nullptr);
+    
 }
 
-void VulkanSwapchain::queue_present() {
+VkResult VulkanSwapchain::queue_present(VkQueue queue, uint32_t imageIndex, VkSemaphore waitSemaphore) {
+    VkPresentInfoKHR presentInfo = {};
+    presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+    presentInfo.pNext = NULL;
+    presentInfo.swapchainCount = 1;
+    presentInfo.pSwapchains = &swapChain_;
+    presentInfo.pImageIndices = &imageIndex;
+    // Check if a wait semaphore has been specified to wait for before presenting the image
+    if (waitSemaphore != VK_NULL_HANDLE) {
+        presentInfo.pWaitSemaphores = &waitSemaphore;
+        presentInfo.waitSemaphoreCount = 1;
+    }
+    return vkQueuePresentKHR(queue, &presentInfo);
+}
 
+VkResult VulkanSwapchain::aquire_next_image(VkSemaphore present_complete_semaphore, uint32_t* image_index)
+{
+    return vkAcquireNextImageKHR(vulkan_device_->logicalDevice(), swapChain_, UINT64_MAX, present_complete_semaphore, (VkFence)nullptr, image_index);
 }
 
 void VulkanSwapchain::setup_backbuffers(const VkSwapchainCreateInfoKHR &swapChainCreateInfo) {
@@ -260,7 +271,8 @@ VkFormat VulkanSwapchain::get_preferred_colorformat(ColorSpace colorSpace)
     {
         if (vulkanColorSpace == surfaceFormats[i].colorSpace)
         {
-            return surfaceFormats[i].format;
+            color_format_ = surfaceFormats[i].format;
+            return color_format_;
         }
     }
 

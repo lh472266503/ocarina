@@ -251,6 +251,10 @@ void VulkanDevice::shutdown()
     vkDestroyDevice(logicalDevice_, nullptr);
 }
 
+void VulkanDevice::render() noexcept {
+    return VulkanDriver::instance().render();
+}
+
 uint32_t VulkanDevice::getQueueFamilyIndex(uint32_t queueFlags) const {
 
     if ((queueFlags & VK_QUEUE_COMPUTE_BIT) == queueFlags) {
@@ -279,6 +283,28 @@ uint32_t VulkanDevice::getQueueFamilyIndex(uint32_t queueFlags) const {
     }
 
     return InvalidUI32;
+}
+
+uint32_t VulkanDevice::get_memory_type(uint32_t typeBits, VkMemoryPropertyFlags properties, VkBool32* memTypeFound) const
+{
+    for (uint32_t i = 0; i < m_deviceMemoryProperties.memoryTypeCount; i++) {
+        if ((typeBits & 1) == 1) {
+            if ((m_deviceMemoryProperties.memoryTypes[i].propertyFlags & properties) == properties) {
+                if (memTypeFound) {
+                    *memTypeFound = true;
+                }
+                return i;
+            }
+        }
+        typeBits >>= 1;
+    }
+
+    if (memTypeFound) {
+        *memTypeFound = false;
+        return 0;
+    }
+
+    return 0;
 }
 
 }// namespace ocarina

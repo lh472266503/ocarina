@@ -11,7 +11,9 @@
 
 namespace ocarina {
 
-    class VulkanDevice;
+class VulkanDevice;
+struct VulkanDescriptorSetLayout;
+struct ShaderReflection;
 
 class VulkanShader : public Shader<>::Impl {
 private:
@@ -19,8 +21,10 @@ private:
     std::string entry_;
     VulkanDevice *device_ = nullptr;
     VkShaderStageFlagBits stage_;
-
+    DescriptorCount descriptor_count_;
+    //VkDescriptorSetLayout descriptor_set_layout_ = VK_NULL_HANDLE;
     static bool HLSLToSPRIV(std::span<char> hlsl, VkShaderStageFlagBits stage, const std::string_view &entryPoint, bool outputSymbols, std::vector<uint32_t> &outSpriv, std::string &errorLog);
+    void get_descriptor_count(const ShaderReflection &reflection);
 
 public:
     VulkanShader(VulkanDevice *device, std::span<uint32_t> shaderCode, const std::string_view &entryPoint, VkShaderStageFlagBits stage);
@@ -28,6 +32,7 @@ public:
 
     OC_MAKE_MEMBER_GETTER(shader_module, );
     OC_MAKE_MEMBER_GETTER(stage, );
+    OC_MAKE_MEMBER_GETTER(descriptor_count, );
 
     const char* get_entry_point() const
     {
@@ -67,6 +72,7 @@ public:
                 break;
         }
     }
+    
 };
 
 struct ShaderKey {
