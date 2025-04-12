@@ -446,7 +446,7 @@ public:
                     DataAccessor da = data_accessor(object, OC_FORWARD(inst_id));
                     object->decode(da.load_dynamic_array<buffer_ty>(object->aligned_size() / 4));
                     func(object);
-                    object->reset_device_value();
+                    object->after_decode();
                 });
                 break;
             }

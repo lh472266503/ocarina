@@ -59,11 +59,12 @@ public:
      * @return the aligned size of current add previous data
      */
     virtual uint cal_offset(uint prev_size) const noexcept { return prev_size; }
-    virtual void reset_device_value() const noexcept {}
     virtual ~Encodable() = default;
     /// for device
     virtual void decode(const DataAccessor *da) const noexcept {}
     virtual void decode(const DynamicArray<buffer_ty> &array) const noexcept {}
+    virtual void reset_device_value() const noexcept {}
+    virtual void after_decode() const noexcept { reset_device_value(); }
 };
 
 enum EncodeType {
