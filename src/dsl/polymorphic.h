@@ -438,6 +438,7 @@ public:
             case EInstance: {
                 dispatch_instance(OC_FORWARD(inst_id), [&](auto object) {
                     func(object);
+                    object->after_decode();
                 });
                 break;
             }
