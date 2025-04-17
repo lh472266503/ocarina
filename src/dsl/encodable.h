@@ -298,7 +298,7 @@ public:
             uint cursor = 0u;
             for (int i = 0; i < value_ty::col_num; ++i) {
                 for (int j = 0; j < value_ty::row_num; ++j) {
-                    ret[i][j] = decode_scalar<float>(array,offset + cursor * stride());
+                    ret[i][j] = decode_scalar<float>(array, offset + cursor * stride());
                     ++cursor;
                 }
             }
@@ -372,8 +372,8 @@ OC_MAKE_AUTO_MEMBER_FUNC(alignment)
         Super::invalidate();                                                    \
         MAP(OC_INVALIDATE_ELEMENT, __VA_ARGS__)                                 \
     }                                                                           \
-    void after_decode() const noexcept override {                         \
-        Super::after_decode();                                            \
+    void after_decode() const noexcept override {                               \
+        Super::after_decode();                                                  \
         MAP(OC_RESET_DEVICE_ELEMENT, __VA_ARGS__)                               \
     }                                                                           \
     [[nodiscard]] bool has_device_value() const noexcept override {             \
