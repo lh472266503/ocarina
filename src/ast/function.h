@@ -240,12 +240,8 @@ public:
     static auto define_callable(Func &&func) noexcept {
         return _define(Tag::CALLABLE, std::forward<Func>(func));
     }
-    [[nodiscard]] const ScopeStmt *current_scope() const noexcept {
-        return scope_stack_.empty() ? body() : scope_stack_.back();
-    }
-    [[nodiscard]] ScopeStmt *current_scope() noexcept {
-        return scope_stack_.empty() ? body() : scope_stack_.back();
-    }
+    [[nodiscard]] const ScopeStmt *current_scope() const noexcept;
+    [[nodiscard]] ScopeStmt *current_scope() noexcept;
     template<typename Func>
     decltype(auto) with(ScopeStmt *scope, Func &&func) noexcept {
         ScopeGuard guard(scope_stack_, scope);

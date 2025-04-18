@@ -121,7 +121,6 @@ namespace detail {
     }
     return ret;
 }
-
 }// namespace detail
 
 void Function::replace_param_struct_member(const vector<int> &path, const Expression *&expression) noexcept {
@@ -242,6 +241,14 @@ const ScopeStmt *Function::body() const noexcept {
     return &body_;
 }
 
+const ScopeStmt *Function::current_scope() const noexcept {
+    return scope_stack_.empty() ? body() : scope_stack_.back();
+}
+
+ScopeStmt *Function::current_scope() noexcept {
+    return scope_stack_.empty() ? body() : scope_stack_.back();
+}
+
 ScopeStmt *Function::body() noexcept {
     return &body_;
 }
@@ -322,7 +329,7 @@ const RefExpr *Function::reference_argument(const Type *type) noexcept {
 const RefExpr *Function::local(const Type *type, std::source_location location) noexcept {
     auto ret = create_expression<RefExpr>(create_variable(type, Variable::Tag::LOCAL));
     ret->variable().set_src_location(location);
-    body()->add_var(ret->variable());
+    current_scope()->add_var(ret->variable());
     return ret;
 }
 
