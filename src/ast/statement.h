@@ -98,8 +98,8 @@ public:
     [[nodiscard]] ocarina::span<const Statement *const> statements() const noexcept { return statements_; }
     [[nodiscard]] bool empty() const noexcept { return statements_.empty(); }
     [[nodiscard]] auto size() const noexcept { return statements_.size(); }
-    void add_stmt(const Statement *stmt) noexcept { statements_.push_back(stmt); }
-    void add_var(const Variable &variable) noexcept { local_vars_.push_back(variable); }
+    void add_stmt(const Statement *stmt) noexcept;
+    void add_var(const Variable &variable) noexcept;
     OC_MAKE_STATEMENT_COMMON
 };
 

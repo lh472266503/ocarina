@@ -13,6 +13,15 @@ uint64_t ScopeStmt::_compute_hash() const noexcept {
     for (auto &&s : statements_) { h = hash64(s->hash(), h); }
     return h;
 }
+
+void ScopeStmt::add_var(const ocarina::Variable &variable) noexcept {
+    local_vars_.push_back(variable);
+}
+
+void ScopeStmt::add_stmt(const Statement *stmt) noexcept {
+    statements_.push_back(stmt);
+}
+
 uint64_t ReturnStmt::_compute_hash() const noexcept {
     return hash64(expression_ == nullptr ? 0ull : expression_->hash());
 }
