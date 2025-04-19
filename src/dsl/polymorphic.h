@@ -488,9 +488,9 @@ public:
             return;
         }
         Uint corrected = detail::correct_index(index, topology_num(),
-                                               ocarina::format("dispatch_representative {}", typeid(*this).name()),
+                                               ocarina::format("dispatch_topology {}", typeid(*this).name()),
                                                traceback_string(1));
-        comment(ocarina::format("const dispatch_representative, case num = {}", topology_num()));
+        comment(ocarina::format("const dispatch_topology, case num = {}", topology_num()));
         comment(typeid(*this).name());
         if (group_mgr_.size() == 1) {
             ptr_type *elm = group_mgr_.group_map.begin()->second.objects[0];
