@@ -28,7 +28,7 @@ private:
     MemoryBlock _block;
 
 private:
-    [[nodiscard]] uint64_t _compute_hash() const noexcept final {
+    [[nodiscard]] uint64_t compute_hash() const noexcept final {
         return hash64(type()->hash(), _expr->hash());
     }
 
@@ -170,7 +170,7 @@ private:
         Tuple tuple = Tuple{OC_FORWARD(args)...};
         return _create_statement<Stmt>(OC_FORWARD(tuple), std::index_sequence_for<Args...>());
     }
-    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+    [[nodiscard]] uint64_t compute_hash() const noexcept override;
     bool check_context() const noexcept {
         return body_.check_context(this);
     }

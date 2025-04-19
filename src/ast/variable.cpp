@@ -19,7 +19,7 @@ Variable::Variable(const Function *context,
     set_name(std::move(name));
 }
 
-uint64_t Variable::_compute_hash() const noexcept {
+uint64_t Variable::compute_hash() const noexcept {
     auto u0 = static_cast<uint64_t>(uid_);
     auto u1 = static_cast<uint64_t>(tag());
     uint64_t ret = hash64(u0 | (u1 << 32u), type()->hash());

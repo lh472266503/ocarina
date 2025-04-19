@@ -84,7 +84,7 @@ private:
     UnaryOp op_;
 
 private:
-    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+    [[nodiscard]] uint64_t compute_hash() const noexcept override;
 
 public:
     UnaryExpr(const Type *type, UnaryOp op, const Expression *expression)
@@ -103,7 +103,7 @@ private:
     BinaryOp op_;
 
 private:
-    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+    [[nodiscard]] uint64_t compute_hash() const noexcept override;
 
 public:
     BinaryExpr(const Type *type, BinaryOp op, const Expression *lhs, const Expression *rhs) noexcept
@@ -125,7 +125,7 @@ private:
     const Expression *false__{};
 
 private:
-    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+    [[nodiscard]] uint64_t compute_hash() const noexcept override;
 
 public:
     ConditionalExpr(const Type *type, const Expression *pred,
@@ -152,7 +152,7 @@ private:
     IndexVector indexes_;
 
 private:
-    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+    [[nodiscard]] uint64_t compute_hash() const noexcept override;
     void _mark(ocarina::Usage usage) const noexcept override {
         range_->mark(usage);
     }
@@ -187,7 +187,7 @@ private:
     value_type value_;
 
 private:
-    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+    [[nodiscard]] uint64_t compute_hash() const noexcept override;
 
 public:
     LiteralExpr(const Type *type, value_type value)
@@ -204,7 +204,7 @@ private:
 
 private:
     void _mark(Usage) const noexcept override {}
-    uint64_t _compute_hash() const noexcept override {
+    uint64_t compute_hash() const noexcept override {
         return hash64(cast_op_, expression_->hash());
     }
 
@@ -226,7 +226,7 @@ protected:
 
 protected:
     void _mark(Usage usage) const noexcept override;
-    uint64_t _compute_hash() const noexcept override;
+    uint64_t compute_hash() const noexcept override;
 
 public:
     VariableExpr(Tag tag, const Type *type, Variable variable)
@@ -249,7 +249,7 @@ private:
     uint16_t swizzle_size_{0};
 
 private:
-    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+    [[nodiscard]] uint64_t compute_hash() const noexcept override;
 
 public:
     MemberExpr(const Type *type, const Expression *parent, uint16_t index,
@@ -276,7 +276,7 @@ private:
 
 private:
     void _mark(Usage) const noexcept override {}
-    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+    [[nodiscard]] uint64_t compute_hash() const noexcept override;
 
 public:
     CallExpr(const Type *type, const Function *func,

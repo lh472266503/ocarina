@@ -17,7 +17,7 @@ namespace ocarina {
 
 enum PolymorphicMode {
     EInstance = 0,
-    EType = 1
+    ETopology = 1
 };
 
 template<EPort p>
@@ -71,7 +71,7 @@ public:
     template<typename Derive>
     requires std::is_base_of_v<element_ty, Derive>
     Derive *link(UP<Derive> elm) noexcept {
-        uint64_t hash = elm->type_hash();
+        uint64_t hash = elm->topology_hash();
         return link(hash, ocarina::move(elm));
     }
 
@@ -142,7 +142,7 @@ protected:
         map<uint64_t, TypeData> type_map;
 
         void add_object(T t) noexcept {
-            uint64_t hash_code = t->type_hash();
+            uint64_t hash_code = t->topology_hash();
             if (auto iter = type_map.find(hash_code); iter == type_map.cend()) {
                 type_map[hash_code] = TypeData();
                 type_map[hash_code].class_name = typeid(*t).name();
@@ -161,7 +161,7 @@ protected:
             return InvalidUI32;
         }
 
-        [[nodiscard]] uint64_t type_hash(uint type_index) const noexcept {
+        [[nodiscard]] uint64_t topology_hash(uint type_index) const noexcept {
             uint cursor = 0;
             for (auto iter = type_map.cbegin(); iter != type_map.cend(); ++iter, ++cursor) {
                 if (cursor == type_index) {
@@ -229,7 +229,7 @@ protected:
         }
 
         void erase(T t) noexcept {
-            uint64_t hash_code = t->type_hash();
+            uint64_t hash_code = t->topology_hash();
             if (auto iter = type_map.find(hash_code); iter == type_map.cend()) {
                 OC_ASSERT(false);
             }
@@ -276,7 +276,7 @@ public:
         type_mgr_.clear();
         for (auto &elm : *this) {
             elm->invalidate();
-            elm->reset_type_hash();
+            elm->reset_topology_hash();
             type_mgr_.add_object(elm);
         }
     }
@@ -311,20 +311,20 @@ public:
 
     [[nodiscard]] uint all_instance_num() const noexcept { return Super::size(); }
     [[nodiscard]] uint instance_num(const ptr_type *object) const noexcept {
-        uint64_t hash_code = object->type_hash();
+        uint64_t hash_code = object->topology_hash();
         return type_mgr_.type_map.at(hash_code).objects.size();
     }
     [[nodiscard]] uint type_num() const noexcept { return type_mgr_.size(); }
     [[nodiscard]] uint instance_num(uint type_idx) const noexcept {
-        uint64_t hash_code = type_mgr_.type_hash(type_idx);
+        uint64_t hash_code = type_mgr_.topology_hash(type_idx);
         return type_mgr_.type_map.at(hash_code).objects.size();
     }
     [[nodiscard]] uint type_index(const ptr_type *object) const noexcept {
-        uint64_t hash_code = object->type_hash();
+        uint64_t hash_code = object->topology_hash();
         return type_mgr_.type_index(hash_code);
     }
     [[nodiscard]] uint data_index(const ptr_type *object) const noexcept {
-        uint64_t hash_code = object->type_hash();
+        uint64_t hash_code = object->topology_hash();
         return ocarina::get_index(type_mgr_.type_map.at(hash_code).objects, [&](auto obj) {
             return object == raw_ptr(obj);
         });
@@ -338,10 +338,10 @@ public:
         return {data_index * object->aligned_size(), get_datas(object)};
     }
     [[nodiscard]] datas_type &get_datas(const ptr_type *object) noexcept {
-        return type_mgr_.type_map.at(object->type_hash()).data_set;
+        return type_mgr_.type_map.at(object->topology_hash()).data_set;
     }
     [[nodiscard]] const datas_type &get_datas(const ptr_type *object) const noexcept {
-        return type_mgr_.type_map.at(object->type_hash()).data_set;
+        return type_mgr_.type_map.at(object->topology_hash()).data_set;
     }
 
     template<typename Func>
@@ -379,7 +379,7 @@ public:
     }
 
     void set_datas(const ptr_type *object, datas_type &&datas) noexcept {
-        type_mgr_.type_map.at(object->type_hash()).data_set = ocarina::move(datas);
+        type_mgr_.type_map.at(object->topology_hash()).data_set = ocarina::move(datas);
     }
     void set_mode(PolymorphicMode mode) noexcept { mode_ = mode; }
     [[nodiscard]] PolymorphicMode mode() const noexcept { return mode_; }
@@ -387,7 +387,7 @@ public:
         switch (mode_) {
             case EInstance:
                 return ocarina::encode_id<H>(id, type_index(object));
-            case EType:
+            case ETopology:
                 return ocarina::encode_id<H>(data_index(object), type_index(object));
         }
         OC_ASSERT(false);
@@ -403,7 +403,7 @@ public:
     void prepare(BindlessArray &bindless_array, Device &device) noexcept {
         switch (mode_) {
             case EInstance: break;
-            case EType: {
+            case ETopology: {
                 type_mgr_.for_each_type([&](TypeData &type_data) {
                     type_data.fill_elements_offset();
                     type_data.data_set.set_bindless_array(bindless_array);
@@ -442,7 +442,7 @@ public:
                 });
                 break;
             }
-            case EType: {
+            case ETopology: {
                 dispatch_representative(OC_FORWARD(type_id), [&](auto object) {
                     DataAccessor da = data_accessor(object, OC_FORWARD(inst_id));
                     object->decode(da.load_dynamic_array<buffer_ty>(object->aligned_size() / 4));

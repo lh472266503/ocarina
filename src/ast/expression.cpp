@@ -11,7 +11,7 @@ void VariableExpr::_mark(Usage usage) const noexcept {
     variable_.mark_usage(usage);
 }
 
-uint64_t VariableExpr::_compute_hash() const noexcept {
+uint64_t VariableExpr::compute_hash() const noexcept {
     return hash64(variable_.hash(), to_underlying(usage()));
 }
 
@@ -19,7 +19,7 @@ Usage VariableExpr::usage() const noexcept {
     return context()->variable_usage(variable_.uid());
 }
 
-uint64_t LiteralExpr::_compute_hash() const noexcept {
+uint64_t LiteralExpr::compute_hash() const noexcept {
     uint64_t ret = ocarina::visit(
         [&](auto &&arg) {
             return hash64(OC_FORWARD(arg));
@@ -29,25 +29,25 @@ uint64_t LiteralExpr::_compute_hash() const noexcept {
     return ret;
 }
 
-uint64_t SubscriptExpr::_compute_hash() const noexcept {
+uint64_t SubscriptExpr::compute_hash() const noexcept {
     uint64_t ret = range_->hash();
     for_each_index([&](const Expression *index) {
         ret = hash64(index->hash(), ret);
     });
     return ret;
 }
-uint64_t UnaryExpr::_compute_hash() const noexcept {
+uint64_t UnaryExpr::compute_hash() const noexcept {
     return hash64(op_, operand_->hash());
 }
 
-uint64_t BinaryExpr::_compute_hash() const noexcept {
+uint64_t BinaryExpr::compute_hash() const noexcept {
     auto ret = lhs_->hash();
     ret = hash64(op_, ret);
     ret = hash64(ret, rhs_->hash());
     return ret;
 }
 
-uint64_t ConditionalExpr::_compute_hash() const noexcept {
+uint64_t ConditionalExpr::compute_hash() const noexcept {
     auto ret = pred_->hash();
     ret = hash64(true__, ret);
     ret = hash64(ret, false__->hash());
@@ -67,7 +67,7 @@ int MemberExpr::swizzle_index(int idx) const noexcept {
     return ret;
 }
 
-uint64_t MemberExpr::_compute_hash() const noexcept {
+uint64_t MemberExpr::compute_hash() const noexcept {
     return hash64(hash64(member_index_, swizzle_size_),
                   parent_->hash(),
                   variable_.hash());
@@ -117,7 +117,7 @@ const CallExpr::Template &CallExpr::template_arg(ocarina::uint index) const noex
     return *ret;
 }
 
-uint64_t CallExpr::_compute_hash() const noexcept {
+uint64_t CallExpr::compute_hash() const noexcept {
     uint64_t ret = function_ ? function_->hash() : Hash64::default_seed;
     ret = hash64(call_op_, ret);
     ret = hash64(function_name_, ret);

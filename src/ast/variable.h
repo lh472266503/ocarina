@@ -74,7 +74,7 @@ private:
     uint32_t uid_{};
     std::source_location src_location_{};
 
-    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+    [[nodiscard]] uint64_t compute_hash() const noexcept override;
     friend class Function;
     Variable(const Function *context,
              const Type *type, Tag tag, uint uid,

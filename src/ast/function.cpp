@@ -555,7 +555,7 @@ void Function::assign(const Expression *lhs, const Expression *rhs) noexcept {
     create_statement<AssignStmt>(lhs, rhs);
 }
 
-uint64_t Function::_compute_hash() const noexcept {
+uint64_t Function::compute_hash() const noexcept {
     auto ret = ret_ ? ret_->hash() : 0;
     for_each_header([&](string_view fn) {
         ret = hash64(ret, fn);
