@@ -125,7 +125,7 @@ public:
     using datas_type = RegistrableManaged<U>;
 
 protected:
-    struct TypeData {
+    struct GroupData {
         string class_name;
         datas_type data_set;
         vector<ptr_type *> objects;
@@ -139,20 +139,21 @@ protected:
     };
 
     struct {
-        map<uint64_t, TypeData> type_map;
+        /// key : topology hash, value : GroupData
+        map<uint64_t, GroupData> group_map;
 
         void add_object(T t) noexcept {
             uint64_t hash_code = t->topology_hash();
-            if (auto iter = type_map.find(hash_code); iter == type_map.cend()) {
-                type_map[hash_code] = TypeData();
-                type_map[hash_code].class_name = typeid(*t).name();
+            if (auto iter = group_map.find(hash_code); iter == group_map.cend()) {
+                group_map[hash_code] = GroupData();
+                group_map[hash_code].class_name = typeid(*t).name();
             }
-            type_map[hash_code].objects.push_back(raw_ptr(t));
+            group_map[hash_code].objects.push_back(raw_ptr(t));
         }
 
-        [[nodiscard]] uint type_index(uint64_t hash_code) const noexcept {
+        [[nodiscard]] uint topology_index(uint64_t hash_code) const noexcept {
             uint cursor = 0;
-            for (auto iter = type_map.cbegin(); iter != type_map.cend(); ++iter, ++cursor) {
+            for (auto iter = group_map.cbegin(); iter != group_map.cend(); ++iter, ++cursor) {
                 if (hash_code == iter->first) {
                     return cursor;
                 }
@@ -161,10 +162,10 @@ protected:
             return InvalidUI32;
         }
 
-        [[nodiscard]] uint64_t topology_hash(uint type_index) const noexcept {
+        [[nodiscard]] uint64_t topology_hash(uint topology_index) const noexcept {
             uint cursor = 0;
-            for (auto iter = type_map.cbegin(); iter != type_map.cend(); ++iter, ++cursor) {
-                if (cursor == type_index) {
+            for (auto iter = group_map.cbegin(); iter != group_map.cend(); ++iter, ++cursor) {
+                if (cursor == topology_index) {
                     return iter->first;
                 }
             }
@@ -173,28 +174,28 @@ protected:
         }
 
         template<typename Func>
-        void for_each_type(Func &&func) const noexcept {
-            if constexpr (std::invocable<Func, TypeData, uint>) {
+        void for_each_topology(Func &&func) const noexcept {
+            if constexpr (std::invocable<Func, GroupData, uint>) {
                 uint cursor = 0u;
-                for (auto iter = type_map.cbegin(); iter != type_map.cend(); ++iter, ++cursor) {
+                for (auto iter = group_map.cbegin(); iter != group_map.cend(); ++iter, ++cursor) {
                     func(iter->second, cursor);
                 }
             } else {
-                for (const auto &it : type_map) {
+                for (const auto &it : group_map) {
                     func(it.second);
                 }
             }
         }
 
         template<typename Func>
-        void for_each_type(Func &&func) noexcept {
-            if constexpr (std::invocable<Func, TypeData, uint>) {
+        void for_each_topology(Func &&func) noexcept {
+            if constexpr (std::invocable<Func, GroupData, uint>) {
                 uint cursor = 0u;
-                for (auto iter = type_map.begin(); iter != type_map.end(); ++iter, ++cursor) {
+                for (auto iter = group_map.begin(); iter != group_map.end(); ++iter, ++cursor) {
                     func(iter->second, cursor);
                 }
             } else {
-                for (auto &it : type_map) {
+                for (auto &it : group_map) {
                     func(it.second);
                 }
             }
@@ -204,11 +205,11 @@ protected:
         void for_each_representative(Func &&func) const noexcept {
             if constexpr (std::invocable<Func, ptr_type *, uint>) {
                 uint cursor = 0u;
-                for (auto iter = type_map.cbegin(); iter != type_map.cend(); ++iter, ++cursor) {
+                for (auto iter = group_map.cbegin(); iter != group_map.cend(); ++iter, ++cursor) {
                     func(iter->second.objects[0], cursor);
                 }
             } else {
-                for (const auto &it : type_map) {
+                for (const auto &it : group_map) {
                     func(it.second.objects[0]);
                 }
             }
@@ -218,11 +219,11 @@ protected:
         void for_each_representative(Func &&func) noexcept {
             if constexpr (std::invocable<Func, ptr_type *, uint>) {
                 uint cursor = 0u;
-                for (auto iter = type_map.begin(); iter != type_map.end(); ++iter, ++cursor) {
+                for (auto iter = group_map.begin(); iter != group_map.end(); ++iter, ++cursor) {
                     func(iter->second.objects[0], cursor);
                 }
             } else {
-                for (const auto &it : type_map) {
+                for (const auto &it : group_map) {
                     func(it.second.objects[0]);
                 }
             }
@@ -230,27 +231,27 @@ protected:
 
         void erase(T t) noexcept {
             uint64_t hash_code = t->topology_hash();
-            if (auto iter = type_map.find(hash_code); iter == type_map.cend()) {
+            if (auto iter = group_map.find(hash_code); iter == group_map.cend()) {
                 OC_ASSERT(false);
             }
-            auto &lst = type_map[hash_code].objects;
+            auto &lst = group_map[hash_code].objects;
 
             erase_if(lst, [&](auto elm) {
                 return elm == raw_ptr(t);
             });
 
             if (lst.size() == 0) {
-                type_map.erase(hash_code);
+                group_map.erase(hash_code);
             }
         }
 
         void clear() noexcept {
-            type_map.clear();
+            group_map.clear();
         }
 
-        [[nodiscard]] bool empty() const noexcept { return type_map.empty(); }
-        [[nodiscard]] auto size() const noexcept { return type_map.size(); }
-    } type_mgr_;
+        [[nodiscard]] bool empty() const noexcept { return group_map.empty(); }
+        [[nodiscard]] auto size() const noexcept { return group_map.size(); }
+    } group_mgr_;
     PolymorphicMode mode_{EInstance};
 
 public:
@@ -258,26 +259,26 @@ public:
         : mode_(mode) {}
 
     void push_back(T arg) noexcept {
-        type_mgr_.add_object(arg);
+        group_mgr_.add_object(arg);
         Super::push_back(arg);
     }
 
     Super::iterator erase(Super::iterator iter) noexcept {
-        type_mgr_.erase(*iter);
+        group_mgr_.erase(*iter);
         return Super::erase(iter);
     }
 
     void clear() {
         Super ::clear();
-        type_mgr_.clear();
+        group_mgr_.clear();
     }
 
     void remedy() noexcept {
-        type_mgr_.clear();
+        group_mgr_.clear();
         for (auto &elm : *this) {
             elm->invalidate();
             elm->reset_topology_hash();
-            type_mgr_.add_object(elm);
+            group_mgr_.add_object(elm);
         }
     }
 
@@ -295,8 +296,8 @@ public:
 
     bool replace(int index, T new_obj) noexcept {
         ptr_type *ptr = Super::at(index).get();
-        for (auto &item : type_mgr_.type_map) {
-            TypeData &type_data = item.second;
+        for (auto &item : group_mgr_.group_map) {
+            GroupData &type_data = item.second;
             for (int i = 0; i < type_data.objects.size(); ++i) {
                 ptr_type *obj = type_data.objects[i];
                 if (obj == ptr) {
@@ -312,20 +313,20 @@ public:
     [[nodiscard]] uint all_instance_num() const noexcept { return Super::size(); }
     [[nodiscard]] uint instance_num(const ptr_type *object) const noexcept {
         uint64_t hash_code = object->topology_hash();
-        return type_mgr_.type_map.at(hash_code).objects.size();
+        return group_mgr_.group_map.at(hash_code).objects.size();
     }
-    [[nodiscard]] uint type_num() const noexcept { return type_mgr_.size(); }
+    [[nodiscard]] uint topology_num() const noexcept { return group_mgr_.size(); }
     [[nodiscard]] uint instance_num(uint type_idx) const noexcept {
-        uint64_t hash_code = type_mgr_.topology_hash(type_idx);
-        return type_mgr_.type_map.at(hash_code).objects.size();
+        uint64_t hash_code = group_mgr_.topology_hash(type_idx);
+        return group_mgr_.group_map.at(hash_code).objects.size();
     }
-    [[nodiscard]] uint type_index(const ptr_type *object) const noexcept {
+    [[nodiscard]] uint topology_index(const ptr_type *object) const noexcept {
         uint64_t hash_code = object->topology_hash();
-        return type_mgr_.type_index(hash_code);
+        return group_mgr_.topology_index(hash_code);
     }
     [[nodiscard]] uint data_index(const ptr_type *object) const noexcept {
         uint64_t hash_code = object->topology_hash();
-        return ocarina::get_index(type_mgr_.type_map.at(hash_code).objects, [&](auto obj) {
+        return ocarina::get_index(group_mgr_.group_map.at(hash_code).objects, [&](auto obj) {
             return object == raw_ptr(obj);
         });
     }
@@ -338,10 +339,10 @@ public:
         return {data_index * object->aligned_size(), get_datas(object)};
     }
     [[nodiscard]] datas_type &get_datas(const ptr_type *object) noexcept {
-        return type_mgr_.type_map.at(object->topology_hash()).data_set;
+        return group_mgr_.group_map.at(object->topology_hash()).data_set;
     }
     [[nodiscard]] const datas_type &get_datas(const ptr_type *object) const noexcept {
-        return type_mgr_.type_map.at(object->topology_hash()).data_set;
+        return group_mgr_.group_map.at(object->topology_hash()).data_set;
     }
 
     template<typename Func>
@@ -367,36 +368,36 @@ public:
      * tips: Called on the host side code
      */
     void update() noexcept {
-        type_mgr_.for_each_type([&](TypeData &type_data) {
-            if (type_data.data_set.empty()) {
+        group_mgr_.for_each_topology([&](GroupData &group_data) {
+            if (group_data.data_set.empty()) {
                 return;
             }
-            for (ptr_type *object : type_data.objects) {
-                object->encode(type_data.data_set);
+            for (ptr_type *object : group_data.objects) {
+                object->encode(group_data.data_set);
             }
-            type_data.data_set.upload_immediately();
+            group_data.data_set.upload_immediately();
         });
     }
 
     void set_datas(const ptr_type *object, datas_type &&datas) noexcept {
-        type_mgr_.type_map.at(object->topology_hash()).data_set = ocarina::move(datas);
+        group_mgr_.group_map.at(object->topology_hash()).data_set = ocarina::move(datas);
     }
     void set_mode(PolymorphicMode mode) noexcept { mode_ = mode; }
     [[nodiscard]] PolymorphicMode mode() const noexcept { return mode_; }
     [[nodiscard]] uint encode_id(uint id, const ptr_type *object) const noexcept {
         switch (mode_) {
             case EInstance:
-                return ocarina::encode_id<H>(id, type_index(object));
+                return ocarina::encode_id<H>(id, topology_index(object));
             case ETopology:
-                return ocarina::encode_id<H>(data_index(object), type_index(object));
+                return ocarina::encode_id<H>(data_index(object), topology_index(object));
         }
         OC_ASSERT(false);
         return InvalidUI32;
     }
 
     void fill_elements_offset() const noexcept {
-        type_mgr_.for_each_type([&](const TypeData &type_data) {
-            type_data.fill_elements_offset();
+        group_mgr_.for_each_topology([&](const GroupData &group_data) {
+            group_data.fill_elements_offset();
         });
     }
 
@@ -404,18 +405,18 @@ public:
         switch (mode_) {
             case EInstance: break;
             case ETopology: {
-                type_mgr_.for_each_type([&](TypeData &type_data) {
-                    type_data.fill_elements_offset();
-                    type_data.data_set.set_bindless_array(bindless_array);
-                    type_data.data_set.resize(type_data.objects.size() * type_data.objects[0]->aligned_size() / sizeof(float));
-                    for (ptr_type *object : type_data.objects) {
-                        object->encode(type_data.data_set);
+                group_mgr_.for_each_topology([&](GroupData &group_data) {
+                    group_data.fill_elements_offset();
+                    group_data.data_set.set_bindless_array(bindless_array);
+                    group_data.data_set.resize(group_data.objects.size() * group_data.objects[0]->aligned_size() / sizeof(float));
+                    for (ptr_type *object : group_data.objects) {
+                        object->encode(group_data.data_set);
                     }
-                    auto desc = ocarina::format("polymorphic: {}::type_buffer", type_data.class_name.c_str());
-                    type_data.data_set.reset_device_buffer_immediately(device, desc);
-                    type_data.data_set.register_self();
-                    if (!type_data.data_set.empty()) {
-                        type_data.data_set.upload_immediately();
+                    auto desc = ocarina::format("polymorphic: {}::type_buffer", group_data.class_name.c_str());
+                    group_data.data_set.reset_device_buffer_immediately(device, desc);
+                    group_data.data_set.register_self();
+                    if (!group_data.data_set.empty()) {
+                        group_data.data_set.upload_immediately();
                     }
                 });
                 break;
@@ -443,7 +444,7 @@ public:
                 break;
             }
             case ETopology: {
-                dispatch_representative(OC_FORWARD(type_id), [&](auto object) {
+                dispatch_topology(OC_FORWARD(type_id), [&](auto object) {
                     DataAccessor da = data_accessor(object, OC_FORWARD(inst_id));
                     object->decode(da.load_dynamic_array<buffer_ty>(object->aligned_size() / 4));
                     func(object);
@@ -482,23 +483,23 @@ public:
 
     template<typename Index>
     requires is_integral_expr_v<Index>
-    void dispatch_representative(Index index, const std::function<void(const ptr_type *)> &func) const noexcept {
-        if (type_mgr_.empty()) [[unlikely]] {
+    void dispatch_topology(Index index, const std::function<void(const ptr_type *)> &func) const noexcept {
+        if (group_mgr_.empty()) [[unlikely]] {
             return;
         }
-        Uint corrected = detail::correct_index(index, type_num(),
+        Uint corrected = detail::correct_index(index, topology_num(),
                                                ocarina::format("dispatch_representative {}", typeid(*this).name()),
                                                traceback_string(1));
-        comment(ocarina::format("const dispatch_representative, case num = {}", type_num()));
+        comment(ocarina::format("const dispatch_representative, case num = {}", topology_num()));
         comment(typeid(*this).name());
-        if (type_mgr_.size() == 1) {
-            ptr_type *elm = type_mgr_.type_map.begin()->second.objects[0];
+        if (group_mgr_.size() == 1) {
+            ptr_type *elm = group_mgr_.group_map.begin()->second.objects[0];
             comment(typeid(*elm).name());
             func(elm);
             return;
         }
         switch_(corrected, [&] {
-            type_mgr_.for_each_representative([&](ptr_type *elm, uint i) {
+            group_mgr_.for_each_representative([&](ptr_type *elm, uint i) {
                 comment(typeid(*elm).name());
                 case_(i, [&] {
                     func(elm);
@@ -542,12 +543,12 @@ public:
 
     template<typename Func>
     void for_each_representative(Func &&func) const noexcept {
-        type_mgr_.for_each_representative(OC_FORWARD(func));
+        group_mgr_.for_each_representative(OC_FORWARD(func));
     }
 
     template<typename Func>
     void for_each_representative(Func &&func) noexcept {
-        type_mgr_.for_each_representative(OC_FORWARD(func));
+        group_mgr_.for_each_representative(OC_FORWARD(func));
     }
 };
 
