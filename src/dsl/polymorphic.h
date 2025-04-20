@@ -174,7 +174,7 @@ protected:
         }
 
         template<typename Func>
-        void for_each_topology(Func &&func) const noexcept {
+        void for_each_group(Func &&func) const noexcept {
             if constexpr (std::invocable<Func, GroupData, uint>) {
                 uint cursor = 0u;
                 for (auto iter = group_map.cbegin(); iter != group_map.cend(); ++iter, ++cursor) {
@@ -188,7 +188,7 @@ protected:
         }
 
         template<typename Func>
-        void for_each_topology(Func &&func) noexcept {
+        void for_each_group(Func &&func) noexcept {
             if constexpr (std::invocable<Func, GroupData, uint>) {
                 uint cursor = 0u;
                 for (auto iter = group_map.begin(); iter != group_map.end(); ++iter, ++cursor) {
@@ -368,7 +368,7 @@ public:
      * tips: Called on the host side code
      */
     void update() noexcept {
-        group_mgr_.for_each_topology([&](GroupData &group_data) {
+        group_mgr_.for_each_group([&](GroupData &group_data) {
             if (group_data.data_set.empty()) {
                 return;
             }
@@ -396,7 +396,7 @@ public:
     }
 
     void fill_elements_offset() const noexcept {
-        group_mgr_.for_each_topology([&](const GroupData &group_data) {
+        group_mgr_.for_each_group([&](const GroupData &group_data) {
             group_data.fill_elements_offset();
         });
     }
@@ -405,7 +405,7 @@ public:
         switch (mode_) {
             case EInstance: break;
             case ETopology: {
-                group_mgr_.for_each_topology([&](GroupData &group_data) {
+                group_mgr_.for_each_group([&](GroupData &group_data) {
                     group_data.fill_elements_offset();
                     group_data.data_set.set_bindless_array(bindless_array);
                     group_data.data_set.resize(group_data.objects.size() * group_data.objects[0]->aligned_size() / sizeof(float));
