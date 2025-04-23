@@ -73,8 +73,8 @@ enum EncodeType {
 };
 
 template<typename value_ty, typename T = buffer_ty>
-requires(is_std_vector_v<value_ty> && is_scalar_v<typename value_ty::value_type>)
-        || is_basic_v<value_ty> && is_array_v<value_ty>
+requires(is_std_vector_v<value_ty> && is_scalar_v<typename value_ty::value_type>) || is_basic_v<value_ty> ||
+        (is_array_v<value_ty> && std::is_same_v<array_element_t<value_ty>, float>)
 struct EncodedData final : public Encodable {
 public:
     using host_ty = std::variant<value_ty, std::function<value_ty()>>;
