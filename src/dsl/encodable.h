@@ -226,6 +226,8 @@ public:
                     return sizeof(typename value_ty::scalar_type) * value_ty::element_num;
                 } else if constexpr (is_std_vector_v<value_ty>) {
                     return hv().size() * sizeof(typename value_ty::value_type);
+                } else if constexpr (is_array_v<value_ty>) {
+                    return array_dimension_v<value_ty> * sizeof(typename value_ty::value_type);
                 } else {
                     static_assert(always_false_v<value_ty>);
                 }
@@ -240,6 +242,8 @@ public:
                     return sizeof(uint8_t) * value_ty::element_num;
                 } else if constexpr (is_std_vector_v<value_ty>) {
                     return hv().size() * sizeof(uint8_t);
+                } else if constexpr (is_array_v<value_ty>) {
+                    return array_dimension_v<value_ty> * sizeof(uint8_t);
                 } else {
                     static_assert(always_false_v<value_ty>);
                 }
@@ -314,7 +318,12 @@ public:
             }
             return ret;
         } else if constexpr (is_array_v<value_ty>) {
-
+            using element_ty = typename value_ty::value_type;
+            DynamicArray<element_ty> ret{hv().size()};
+            for (int i = 0; i < hv().size(); ++i) {
+                ret[i] = decode_scalar<element_ty>(array, offset + i * stride());
+            }
+            return ret;
         } else {
             static_assert(always_false_v<value_ty>);
         }
