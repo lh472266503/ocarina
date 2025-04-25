@@ -193,7 +193,9 @@ public:
                 encode_scalar(data, hv()[i], i);
             }
         } else if constexpr (is_array_v<value_ty>) {
-
+            for (int i = 0; i < array_dimension_v<value_ty>; ++i) {
+                encode_scalar(data, hv()[i], i);
+            }
         } else {
             static_assert(always_false_v<value_ty>);
         }
@@ -319,8 +321,8 @@ public:
             return ret;
         } else if constexpr (is_array_v<value_ty>) {
             using element_ty = typename value_ty::value_type;
-            DynamicArray<element_ty> ret{hv().size()};
-            for (int i = 0; i < hv().size(); ++i) {
+            Var<value_ty> ret;
+            for (int i = 0; i < array_dimension_v<value_ty>; ++i) {
                 ret[i] = decode_scalar<element_ty>(array, offset + i * stride());
             }
             return ret;
