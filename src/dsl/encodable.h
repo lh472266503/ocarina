@@ -59,11 +59,12 @@ public:
      * @return the aligned size of current add previous data
      */
     virtual uint cal_offset(uint prev_size) const noexcept { return prev_size; }
-    virtual void reset_device_value() const noexcept {}
     virtual ~Encodable() = default;
     /// for device
     virtual void decode(const DataAccessor *da) const noexcept {}
     virtual void decode(const DynamicArray<buffer_ty> &array) const noexcept {}
+    virtual void after_decode() const noexcept { on_after_decode(); }
+    virtual void on_after_decode() const noexcept {}
 };
 
 enum EncodeType {
@@ -72,7 +73,8 @@ enum EncodeType {
 };
 
 template<typename value_ty, typename T = buffer_ty>
-requires(is_std_vector_v<value_ty> && is_scalar_v<typename value_ty::value_type>) || is_basic_v<value_ty>
+requires(is_std_vector_v<value_ty> && is_scalar_v<typename value_ty::value_type>) || is_basic_v<value_ty> ||
+        (is_array_v<value_ty> && std::is_same_v<array_element_t<value_ty>, float>)
 struct EncodedData final : public Encodable {
 public:
     using host_ty = std::variant<value_ty, std::function<value_ty()>>;
@@ -102,7 +104,8 @@ public:
     }
     OC_MAKE_MEMBER_GETTER_SETTER(encode_type, )
     [[nodiscard]] bool has_device_value() const noexcept override { return device_value_.has_value(); }
-    void reset_device_value() const noexcept override {
+    void after_decode() const noexcept override {
+        Encodable::after_decode();
         (const_cast<decltype(device_value_) &>(device_value_)).reset();
     }
     [[nodiscard]] value_ty hv() const noexcept {
@@ -189,6 +192,10 @@ public:
             for (int i = 0; i < hv().size(); ++i) {
                 encode_scalar(data, hv()[i], i);
             }
+        } else if constexpr (is_array_v<value_ty>) {
+            for (int i = 0; i < array_dimension_v<value_ty>; ++i) {
+                encode_scalar(data, hv()[i], i);
+            }
         } else {
             static_assert(always_false_v<value_ty>);
         }
@@ -221,6 +228,8 @@ public:
                     return sizeof(typename value_ty::scalar_type) * value_ty::element_num;
                 } else if constexpr (is_std_vector_v<value_ty>) {
                     return hv().size() * sizeof(typename value_ty::value_type);
+                } else if constexpr (is_array_v<value_ty>) {
+                    return array_dimension_v<value_ty> * sizeof(typename value_ty::value_type);
                 } else {
                     static_assert(always_false_v<value_ty>);
                 }
@@ -235,6 +244,8 @@ public:
                     return sizeof(uint8_t) * value_ty::element_num;
                 } else if constexpr (is_std_vector_v<value_ty>) {
                     return hv().size() * sizeof(uint8_t);
+                } else if constexpr (is_array_v<value_ty>) {
+                    return array_dimension_v<value_ty> * sizeof(uint8_t);
                 } else {
                     static_assert(always_false_v<value_ty>);
                 }
@@ -296,7 +307,7 @@ public:
             uint cursor = 0u;
             for (int i = 0; i < value_ty::col_num; ++i) {
                 for (int j = 0; j < value_ty::row_num; ++j) {
-                    ret[i][j] = decode_scalar<float>(array,offset + cursor * stride());
+                    ret[i][j] = decode_scalar<float>(array, offset + cursor * stride());
                     ++cursor;
                 }
             }
@@ -305,6 +316,13 @@ public:
             using element_ty = typename value_ty::value_type;
             DynamicArray<element_ty> ret{hv().size()};
             for (int i = 0; i < hv().size(); ++i) {
+                ret[i] = decode_scalar<element_ty>(array, offset + i * stride());
+            }
+            return ret;
+        } else if constexpr (is_array_v<value_ty>) {
+            using element_ty = typename value_ty::value_type;
+            Var<value_ty> ret;
+            for (int i = 0; i < array_dimension_v<value_ty>; ++i) {
                 ret[i] = decode_scalar<element_ty>(array, offset + i * stride());
             }
             return ret;
@@ -328,7 +346,7 @@ OC_MAKE_AUTO_MEMBER_FUNC(encode)
 OC_MAKE_AUTO_MEMBER_FUNC(invalidate)
 OC_MAKE_AUTO_MEMBER_FUNC(update)
 OC_MAKE_AUTO_MEMBER_FUNC(decode)
-OC_MAKE_AUTO_MEMBER_FUNC(reset_device_value)
+OC_MAKE_AUTO_MEMBER_FUNC(after_decode)
 OC_MAKE_AUTO_MEMBER_FUNC(has_device_value)
 OC_MAKE_AUTO_MEMBER_FUNC(compacted_size)
 OC_MAKE_AUTO_MEMBER_FUNC(cal_offset)
@@ -340,7 +358,7 @@ OC_MAKE_AUTO_MEMBER_FUNC(alignment)
 #define OC_INVALIDATE_ELEMENT(name) ocarina::detail::invalidate(name);
 #define OC_DECODE_ELEMENT_DA(name) ocarina::detail::decode(name, da);
 #define OC_DECODE_ELEMENT(name) ocarina::detail::decode(name, array);
-#define OC_RESET_DEVICE_ELEMENT(name) ocarina::detail::reset_device_value(name);
+#define OC_RESET_DEVICE_ELEMENT(name) ocarina::detail::after_decode(name);
 #define OC_VALID_ELEMENT(name) &&ocarina::detail::has_device_value(name)
 #define OC_SIZE_ELEMENT(name) +ocarina::detail::compacted_size(name)
 #define OC_CAL_OFFSET(name) ret = ocarina::detail::cal_offset(name, ret);
@@ -370,8 +388,8 @@ OC_MAKE_AUTO_MEMBER_FUNC(alignment)
         Super::invalidate();                                                    \
         MAP(OC_INVALIDATE_ELEMENT, __VA_ARGS__)                                 \
     }                                                                           \
-    void reset_device_value() const noexcept override {                         \
-        Super::reset_device_value();                                            \
+    void after_decode() const noexcept override {                               \
+        Super::after_decode();                                                  \
         MAP(OC_RESET_DEVICE_ELEMENT, __VA_ARGS__)                               \
     }                                                                           \
     [[nodiscard]] bool has_device_value() const noexcept override {             \

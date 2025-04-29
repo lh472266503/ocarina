@@ -401,7 +401,7 @@ private:
     mutable ocarina::string cname_;
     mutable ocarina::vector<string_view> member_name_;
     ocarina::vector<const Type *> members_;
-    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+    [[nodiscard]] uint64_t compute_hash() const noexcept override;
     vector<int> dims_;
     bool builtin_struct_{false};
     bool param_struct_{false};

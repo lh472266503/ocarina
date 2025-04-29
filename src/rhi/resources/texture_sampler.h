@@ -32,7 +32,7 @@ private:
     Address w_address_{Address::EDGE};
 
 protected:
-    [[nodiscard]] uint64_t _compute_hash() const noexcept override {
+    [[nodiscard]] uint64_t compute_hash() const noexcept override {
         return hash64(filter_, u_address_, v_address_, w_address_);
     }
 

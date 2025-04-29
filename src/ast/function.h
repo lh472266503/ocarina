@@ -28,7 +28,7 @@ private:
     MemoryBlock _block;
 
 private:
-    [[nodiscard]] uint64_t _compute_hash() const noexcept final {
+    [[nodiscard]] uint64_t compute_hash() const noexcept final {
         return hash64(type()->hash(), _expr->hash());
     }
 
@@ -170,7 +170,7 @@ private:
         Tuple tuple = Tuple{OC_FORWARD(args)...};
         return _create_statement<Stmt>(OC_FORWARD(tuple), std::index_sequence_for<Args...>());
     }
-    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+    [[nodiscard]] uint64_t compute_hash() const noexcept override;
     bool check_context() const noexcept {
         return body_.check_context(this);
     }
@@ -240,12 +240,8 @@ public:
     static auto define_callable(Func &&func) noexcept {
         return _define(Tag::CALLABLE, std::forward<Func>(func));
     }
-    [[nodiscard]] const ScopeStmt *current_scope() const noexcept {
-        return scope_stack_.empty() ? body() : scope_stack_.back();
-    }
-    [[nodiscard]] ScopeStmt *current_scope() noexcept {
-        return scope_stack_.empty() ? body() : scope_stack_.back();
-    }
+    [[nodiscard]] const ScopeStmt *current_scope() const noexcept;
+    [[nodiscard]] ScopeStmt *current_scope() noexcept;
     template<typename Func>
     decltype(auto) with(ScopeStmt *scope, Func &&func) noexcept {
         ScopeGuard guard(scope_stack_, scope);

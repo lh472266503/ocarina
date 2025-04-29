@@ -85,7 +85,7 @@ private:
     bool is_func_body_{};
 
 private:
-    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+    [[nodiscard]] uint64_t compute_hash() const noexcept override;
 
 public:
     explicit ScopeStmt(bool is_func_body = false) noexcept
@@ -98,14 +98,14 @@ public:
     [[nodiscard]] ocarina::span<const Statement *const> statements() const noexcept { return statements_; }
     [[nodiscard]] bool empty() const noexcept { return statements_.empty(); }
     [[nodiscard]] auto size() const noexcept { return statements_.size(); }
-    void add_stmt(const Statement *stmt) noexcept { statements_.push_back(stmt); }
-    void add_var(const Variable &variable) noexcept { local_vars_.push_back(variable); }
+    void add_stmt(const Statement *stmt) noexcept;
+    void add_var(const Variable &variable) noexcept;
     OC_MAKE_STATEMENT_COMMON
 };
 
 class OC_AST_API BreakStmt : public Statement {
 private:
-    [[nodiscard]] uint64_t _compute_hash() const noexcept override {
+    [[nodiscard]] uint64_t compute_hash() const noexcept override {
         return Hash64::default_seed;
     }
 
@@ -116,7 +116,7 @@ public:
 
 class OC_AST_API ContinueStmt : public Statement {
 private:
-    [[nodiscard]] uint64_t _compute_hash() const noexcept override {
+    [[nodiscard]] uint64_t compute_hash() const noexcept override {
         return Hash64::default_seed;
     }
 
@@ -130,7 +130,7 @@ private:
     const Expression *expression_{nullptr};
 
 private:
-    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+    [[nodiscard]] uint64_t compute_hash() const noexcept override;
 
 public:
     explicit ReturnStmt(const Expression *expr = nullptr) noexcept
@@ -145,7 +145,7 @@ private:
     const Expression *expression_{nullptr};
 
 private:
-    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+    [[nodiscard]] uint64_t compute_hash() const noexcept override;
 
 public:
     explicit ExprStmt(const Expression *expr = nullptr) noexcept
@@ -161,7 +161,7 @@ private:
     const Expression *rhs_{nullptr};
 
 private:
-    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+    [[nodiscard]] uint64_t compute_hash() const noexcept override;
 
 public:
     explicit AssignStmt(const Expression *lhs, const Expression *rhs)
@@ -179,7 +179,7 @@ private:
     ScopeStmt false_branch_{};
 
 private:
-    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+    [[nodiscard]] uint64_t compute_hash() const noexcept override;
 
 public:
     explicit IfStmt(const Expression *condition) : Statement(Tag::IF), condition_(condition) {}
@@ -197,7 +197,7 @@ private:
     std::string string_;
 
 private:
-    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+    [[nodiscard]] uint64_t compute_hash() const noexcept override;
 
 public:
     explicit CommentStmt(const std::string &str)
@@ -212,7 +212,7 @@ private:
     ScopeStmt body_;
 
 private:
-    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+    [[nodiscard]] uint64_t compute_hash() const noexcept override;
 
 public:
     explicit SwitchStmt(const Expression *expr)
@@ -230,7 +230,7 @@ private:
     ScopeStmt body_;
 
 private:
-    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+    [[nodiscard]] uint64_t compute_hash() const noexcept override;
 
 public:
     explicit SwitchCaseStmt(const Expression *expression);
@@ -246,7 +246,7 @@ private:
     ScopeStmt body_;
 
 private:
-    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+    [[nodiscard]] uint64_t compute_hash() const noexcept override;
 
 public:
     SwitchDefaultStmt() : Statement(Tag::SWITCH_DEFAULT) {}
@@ -264,7 +264,7 @@ private:
     ScopeStmt body_;
 
 private:
-    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+    [[nodiscard]] uint64_t compute_hash() const noexcept override;
 
 public:
     ForStmt(const Expression *var, const Expression *cond, const Expression *step)
@@ -283,7 +283,7 @@ private:
     ScopeStmt body_;
 
 private:
-    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+    [[nodiscard]] uint64_t compute_hash() const noexcept override;
 
 public:
     LoopStmt() : Statement(Tag::LOOP) {}
@@ -299,7 +299,7 @@ private:
     ocarina::vector<const Expression *> args_;
 
 private:
-    [[nodiscard]] uint64_t _compute_hash() const noexcept override;
+    [[nodiscard]] uint64_t compute_hash() const noexcept override;
 
 public:
     explicit PrintStmt(string fmt, const vector<const Expression *> &args)

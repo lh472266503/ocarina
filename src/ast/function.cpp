@@ -121,7 +121,6 @@ namespace detail {
     }
     return ret;
 }
-
 }// namespace detail
 
 void Function::replace_param_struct_member(const vector<int> &path, const Expression *&expression) noexcept {
@@ -240,6 +239,14 @@ Function::Function(Function::Tag tag) noexcept
 
 const ScopeStmt *Function::body() const noexcept {
     return &body_;
+}
+
+const ScopeStmt *Function::current_scope() const noexcept {
+    return scope_stack_.empty() ? body() : scope_stack_.back();
+}
+
+ScopeStmt *Function::current_scope() noexcept {
+    return scope_stack_.empty() ? body() : scope_stack_.back();
 }
 
 ScopeStmt *Function::body() noexcept {
@@ -548,7 +555,7 @@ void Function::assign(const Expression *lhs, const Expression *rhs) noexcept {
     create_statement<AssignStmt>(lhs, rhs);
 }
 
-uint64_t Function::_compute_hash() const noexcept {
+uint64_t Function::compute_hash() const noexcept {
     auto ret = ret_ ? ret_->hash() : 0;
     for_each_header([&](string_view fn) {
         ret = hash64(ret, fn);

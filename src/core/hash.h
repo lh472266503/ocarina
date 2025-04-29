@@ -135,37 +135,37 @@ public:
 
 class Hashable : public RTTI {
 private:
-    mutable uint64_t _hash{0u};
-    mutable bool _hash_computed{false};
-    mutable uint64_t _type_hash{0u};
-    mutable bool _type_hash_computed{false};
+    mutable uint64_t hash_{0u};
+    mutable bool hash_computed_{false};
+    mutable uint64_t topology_hash_{0u};
+    mutable bool topology_hash_computed_{false};
 
 protected:
-    [[nodiscard]] virtual uint64_t _compute_hash() const noexcept {
+    [[nodiscard]] virtual uint64_t compute_hash() const noexcept {
         return hash64(class_name(), reinterpret_cast<uint64_t>(this));
     }
-    [[nodiscard]] virtual uint64_t _compute_type_hash() const noexcept {
+    [[nodiscard]] virtual uint64_t compute_topology_hash() const noexcept {
         return hash64(class_name());
     }
 
 public:
-    void reset_hash() const noexcept { _hash_computed = false; }
-    void reset_type_hash() const noexcept { _type_hash_computed = false; }
+    void reset_hash() const noexcept { hash_computed_ = false; }
+    void reset_topology_hash() const noexcept { topology_hash_computed_ = false; }
 
     [[nodiscard]] uint64_t hash() const noexcept {
-        if (!_hash_computed) {
-            _hash = hash64(class_name(), _compute_hash());
-            _hash_computed = true;
+        if (!hash_computed_) {
+            hash_ = hash64(class_name(), compute_hash());
+            hash_computed_ = true;
         }
-        return _hash;
+        return hash_;
     }
 
-    [[nodiscard]] uint64_t type_hash() const noexcept {
-        if (!_type_hash_computed) {
-            _type_hash = hash64(class_name(), _compute_type_hash());
-            _type_hash_computed = true;
+    [[nodiscard]] uint64_t topology_hash() const noexcept {
+        if (!topology_hash_computed_) {
+            topology_hash_ = hash64(class_name(), compute_topology_hash());
+            topology_hash_computed_ = true;
         }
-        return _type_hash;
+        return topology_hash_;
     }
 
     template<typename T>
