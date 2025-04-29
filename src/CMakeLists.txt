@@ -15,6 +15,7 @@ add_subdirectory(util)
 add_subdirectory(math)
 add_subdirectory(GUI_impl)
 add_subdirectory(pyexporter)
+add_subdirectory(framework)
 
 add_library(ocarina-native INTERFACE)
 target_link_libraries(ocarina-native INTERFACE
@@ -27,7 +28,8 @@ target_link_libraries(ocarina-native INTERFACE
         ocarina-GUI
         ocarina-util
         ocarina-math
-        ocarina-core)
+        ocarina-core
+        ocarina-framework)
 
 add_dependencies(ocarina-native ocarina-GUI_impl)
 

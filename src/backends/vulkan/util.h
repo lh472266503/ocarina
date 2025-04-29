@@ -142,6 +142,26 @@ namespace ocarina {
         }
     }
 
+    static VkCullModeFlags get_vulkan_cull_mode(CullingMode cull_mode)
+    {
+        switch (cull_mode) {
+        case ocarina::CullingMode::NONE:
+            return VK_CULL_MODE_NONE;
+        case ocarina::CullingMode::FRONT:
+            return VK_CULL_MODE_FRONT_BIT;
+        case ocarina::CullingMode::BACK:
+            return VK_CULL_MODE_BACK_BIT;
+        case ocarina::CullingMode::FRONT_AND_BACK:
+            return VK_CULL_MODE_FRONT_AND_BACK;
+        default:
+            return VK_CULL_MODE_NONE;
+        }
+    }
+    static VkFrontFace get_vulkan_front_face(bool front)
+    {
+        return front ? VK_FRONT_FACE_CLOCKWISE : VK_FRONT_FACE_COUNTER_CLOCKWISE;
+    }
+
     static VkBool32 get_supported_depth_format(VkPhysicalDevice physicalDevice, VkFormat *depthFormat) {
         // Since all depth formats may be optional, we need to find a suitable depth format to use
         // Start with the highest precision packed format
@@ -162,5 +182,36 @@ namespace ocarina {
         }
 
         return false;
+    }
+
+    static VkBufferUsageFlagBits get_buffer_usage_flag(BufferType buffer_type)
+    {
+        switch (buffer_type)
+        {
+        case BufferType::VertexBuffer:
+            return VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+        case BufferType::IndexBuffer:
+            return VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+        case BufferType::ConstantBuffer:
+            return VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+        }
+        return VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+    }
+
+    static VkMemoryPropertyFlags get_memory_property_flags(DeviceMemoryUsage usage)
+    {
+        switch (usage)
+        {
+        case DeviceMemoryUsage::MEMORY_USAGE_GPU_ONLY:
+            return VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+        case DeviceMemoryUsage::MEMORY_USAGE_CPU_ONLY:
+            return VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+        case DeviceMemoryUsage::MEMORY_USAGE_CPU_TO_GPU:
+            return VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
+        case DeviceMemoryUsage::MEMORY_USAGE_GPU_TO_CPU:
+            return VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
+        default:
+            return VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+        }
     }
     }

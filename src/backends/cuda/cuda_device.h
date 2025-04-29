@@ -119,7 +119,7 @@ public:
                                            const string &desc) noexcept override;
     void destroy_texture(handle_ty handle) noexcept override;
     [[nodiscard]] handle_ty create_shader(const Function &function) noexcept override;
-    [[nodiscard]] handle_ty create_shader_from_file(const std::string &file_name, ShaderType shader_type) noexcept override { return InvalidUI64; }
+    [[nodiscard]] handle_ty create_shader_from_file(const std::string &file_name, ShaderType shader_type, const std::set<string> &options) noexcept override { return InvalidUI64; }
     void destroy_shader(handle_ty handle) noexcept override;
     [[nodiscard]] handle_ty create_accel() noexcept override;
     void destroy_accel(handle_ty handle) noexcept override;
@@ -138,5 +138,7 @@ public:
     void init_rtx() noexcept override { init_optix_context(); }
     [[nodiscard]] CommandVisitor *command_visitor() noexcept override;
     void render() noexcept override {}
+    VertexBuffer* create_vertex_buffer() noexcept override { return nullptr; }
+    IndexBuffer* create_index_buffer(const void *initial_data, uint32_t bytes) noexcept override { return nullptr; }
 };
 }// namespace ocarina

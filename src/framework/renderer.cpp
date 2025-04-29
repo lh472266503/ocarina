@@ -29,4 +29,11 @@ void Renderer::set_release_callback(ReleaseCallback cb) {
     release = cb;
 }
 
+void Renderer::render_frame()
+{
+    double dt = 0;
+    update_frame(dt);
+    render(dt);
+}
+
 }// namespace ocarina

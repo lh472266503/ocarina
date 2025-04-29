@@ -84,6 +84,7 @@ VulkanShader *VulkanShader::create_from_HLSL(Device::Impl *device, ShaderType sh
 
             vulkan_shader = create(device, shader_type, compile_result.spriv_codes, entry_point);
             vulkan_shader->get_descriptor_count(reflection);
+            vulkan_shader->get_vertex_attributes(reflection);
         }
 
     } 
@@ -111,6 +112,20 @@ void VulkanShader::get_descriptor_count(const ShaderReflection &reflection) {
         } else if (shader_resource.shader_type == ShaderReflection::ResourceType::Sampler) {
             descriptor_count_.samplers++;
         }
+    }
+}
+
+void VulkanShader::get_vertex_attributes(const ShaderReflection& reflection)
+{
+    VertexAttribute attrib;
+    for (auto shader_resource : reflection.input_layouts) {
+        if (shader_resource.shader_type == ShaderReflection::ResourceType::InputAttachment) {
+            attrib.binding = shader_resource.register_;
+            attrib.location = shader_resource.descriptor_set;
+            attrib.offset = shader_resource.offset;
+            attrib.format = shader_resource.format;
+            attrib.type = (uint8_t)shader_resource.vertex_attribute_type;
+        } 
     }
 }
 
@@ -185,12 +200,13 @@ bool VulkanShader::HLSLToSPRIV(std::span<char> hlsl, VkShaderStageFlagBits stage
     return true;
 }
 
-handle_ty VulkanShaderManager::get_or_create_from_HLSL(Device::Impl *device,
+VulkanShader* VulkanShaderManager::get_or_create_from_HLSL(VulkanDevice *device,
     ShaderType shader_type,
     const std::string& filename,
+    const std::set<std::string> &options,
     const std::string& entry_point)
 {
-    ShaderKey shader_key{shader_type, filename, entry_point};
+    ShaderKey shader_key{shader_type, filename, entry_point, options};
 
     auto it = vulkan_shaders_.find(shader_key);
     if (it != vulkan_shaders_.end()) {
@@ -201,13 +217,14 @@ handle_ty VulkanShaderManager::get_or_create_from_HLSL(Device::Impl *device,
 
     if (shader != nullptr)
     {
+        shader_keys_.insert({(handle_ty)shader->shader_module(), shader_key});
         vulkan_shaders_.insert(std::make_pair(shader_key, shader));
         //VulkanShaderEntry entry{shader->shader_module(), shader->stage(), shader->get_entry_point()};
         vulkan_shader_entries_.insert(std::make_pair((handle_ty)shader->shader_module(), VulkanShaderEntry{shader->shader_module(), shader->stage(), shader->get_entry_point()}));
-        return (handle_ty)shader->shader_module();
+        return shader;
     }
 
-    return InvalidUI64;
+    return nullptr;
 }
 
 VulkanShaderEntry VulkanShaderManager::get_shader_entry(handle_ty shader_handle) const

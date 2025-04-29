@@ -109,6 +109,7 @@ bool DXCCompiler::preprocess(const char *hlsl, uint32_t size, const std::string 
     }
 
     args.push_back(L"-P");
+    args.push_back(L"-fspv-reflect");
 
     //args.push_back(L"-E");
     //std::wstring wEntry(entryPoint.begin(), entryPoint.end());
@@ -188,6 +189,13 @@ bool DXCCompiler::compile_hlsl_spriv(const CompileInput &input, CompileResult &r
     args.push_back(wEntry.c_str());
     args.push_back(L"-spirv");
     args.push_back(L"-fspv-target-env=vulkan1.1");
+
+    for (auto& option : input.macros)
+    {
+        args.push_back(L"-D");
+        std::wstring woption(option.begin(), option.end());
+        args.push_back(woption.c_str());
+    }
 
     DxcBuffer src_buffer = {
         input.hlsl.data(),
@@ -305,35 +313,111 @@ void DXCCompiler::run_spriv_reflection(const std::vector<uint32_t> &spriv, Shade
         shader_reflection.shader_resources.push_back(shader_resource);
     }
 
+    for (spirv_cross::Resource& resource : resources.sampled_images)
+    {
+        uint32_t set = spirvmodule.get_decoration(resource.id, spv::DecorationDescriptorSet);
+        uint32_t binding = spirvmodule.get_decoration(resource.id, spv::DecorationBinding);
+
+        ShaderReflection::ShaderResource shader_resource;
+        shader_resource.name = spirvmodule.get_name(resource.id);
+        shader_resource.descriptor_set = set;
+        shader_resource.register_ = binding;
+        shader_resource.parameter_type = ShaderReflection::ResourceType::SRV;
+        shader_resource.shader_type = (uint32_t)shader_type;
+        shader_reflection.shader_resources.push_back(shader_resource);
+    }
+
+    for (spirv_cross::Resource& resource : resources.separate_samplers)
+    {
+        uint32_t set = spirvmodule.get_decoration(resource.id, spv::DecorationDescriptorSet);
+        uint32_t binding = spirvmodule.get_decoration(resource.id, spv::DecorationBinding);
+
+        ShaderReflection::ShaderResource shader_resource;
+        shader_resource.name = spirvmodule.get_name(resource.id);
+        shader_resource.descriptor_set = set;
+        shader_resource.register_ = binding;
+        shader_resource.parameter_type = ShaderReflection::ResourceType::Sampler;
+        shader_resource.shader_type = (uint32_t)shader_type;
+        shader_reflection.shader_resources.push_back(shader_resource);
+    }
+
     if (shader_type == ShaderType::VertexShader)
     {
+        uint32_t offset = 0;
+        uint32_t vertex_attrib_index = 0;
+        uint32_t total_size = 0;
         for (spirv_cross::Resource& resource : resources.stage_inputs)
         {
             uint32_t set = spirvmodule.get_decoration(resource.id, spv::DecorationDescriptorSet);
             uint32_t binding = spirvmodule.get_decoration(resource.id, spv::DecorationBinding);
             uint32_t location = spirvmodule.get_decoration(resource.id, spv::DecorationLocation);
+            uint32_t offset_in_hlsl = spirvmodule.get_decoration(resource.id, spv::DecorationOffset);
             spirv_cross::SPIRType spirType = spirvmodule.get_type(resource.type_id);
-            //printf("CB %s at set = %u, binding = %u\n", resource.name.c_str(), set, binding);
 
-            //ReflectionData::ResourceInfo info;
-            //info.m_Name = spirvmodule.get_name(resource.id);
-            //info.m_NameCRC = GetCRC32(info.m_Name);
-            //info.m_Register = binding;
-            //info.m_DescriptorSet = set;
+            VkFormat format = VK_FORMAT_UNDEFINED;
 
-            //info.m_RegisterCount = 1;
-            //info.m_ShaderType = shaderType;
-            //info.m_ParameterType = ReflectionData::Reflect_ConstantBuffer;
+            if (spirType.basetype == spirv_cross::SPIRType::Float) {
+                if (spirType.vecsize == 1)
+                    format = VK_FORMAT_R32_SFLOAT;
+                else if (spirType.vecsize == 2)
+                    format = VK_FORMAT_R32G32_SFLOAT;
+                else if (spirType.vecsize == 3)
+                    format = VK_FORMAT_R32G32B32_SFLOAT;
+                else if (spirType.vecsize == 4)
+                    format = VK_FORMAT_R32G32B32A32_SFLOAT;
+            } else if (spirType.basetype == spirv_cross::SPIRType::Int) {
+                if (spirType.vecsize == 1)
+                    format = VK_FORMAT_R32_SINT;
+                else if (spirType.vecsize == 2)
+                    format = VK_FORMAT_R32G32_SINT;
+                else if (spirType.vecsize == 3)
+                    format = VK_FORMAT_R32G32B32_SINT;
+                else if (spirType.vecsize == 4)
+                    format = VK_FORMAT_R32G32B32A32_SINT;
+            } else if (spirType.basetype == spirv_cross::SPIRType::UInt) {
+                if (spirType.vecsize == 1)
+                    format = VK_FORMAT_R32_UINT;
+                else if (spirType.vecsize == 2)
+                    format = VK_FORMAT_R32G32_UINT;
+                else if (spirType.vecsize == 3)
+                    format = VK_FORMAT_R32G32B32_UINT;
+                else if (spirType.vecsize == 4)
+                    format = VK_FORMAT_R32G32B32A32_UINT;
+            }
 
-            //reflectionData.m_ConstantBufferBindPoints.Update(binding, 1);
-            //reflectionData.m_Resources.push_back(info);
+            uint32_t size = spirType.vecsize * 4;
+
+            if (vertex_attrib_index > 0 && offset_in_hlsl == 0) {
+                offset += total_size;
+            } else {
+                offset = offset_in_hlsl;
+            }
+
             ShaderReflection::ShaderResource shader_resource;
             shader_resource.name = spirvmodule.get_name(resource.id);
             shader_resource.descriptor_set = set;
             shader_resource.register_ = binding;
+            shader_resource.location = location;
+            shader_resource.offset = offset;
             shader_resource.shader_type = (uint32_t)shader_type;
+            shader_resource.parameter_type = ShaderReflection::ResourceType::InputAttachment;
+            shader_resource.format = format;
+            std::string semantic;
+            if (spirvmodule.has_decoration(resource.id, spv::DecorationHlslSemanticGOOGLE)) {
+                semantic = spirvmodule.get_decoration_string(resource.id, spv::DecorationHlslSemanticGOOGLE);
+            } else {
+                if (shader_resource.name.find("in.var.") == 0) {
+                    semantic = shader_resource.name.substr(strlen("in.var."));
+                } else {
+                    semantic = shader_resource.name;
+                }
+            }
+            shader_resource.vertex_attribute_type = VertexAttributeType::from_string(semantic.c_str());
 
             shader_reflection.input_layouts.push_back(shader_resource);
+
+            vertex_attrib_index++;
+            total_size += size;
         }
     }
 }

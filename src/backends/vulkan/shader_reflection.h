@@ -6,8 +6,8 @@
 
 #include "core/stl.h"
 #include "core/concepts.h"
-#include "rhi/resources/shader.h"
-
+#include <vulkan/vulkan.h>
+#include "rhi/graphics_descriptions.h"
 
 namespace ocarina {
 
@@ -34,6 +34,7 @@ struct ShaderReflection{
             register_count = other.register_count;
             parameter_type = other.parameter_type;
             descriptor_set = other.descriptor_set;
+            format = other.format;
             name = other.name;
         }
 
@@ -43,6 +44,7 @@ struct ShaderReflection{
             register_count = other.register_count;
             parameter_type = other.parameter_type;
             descriptor_set = other.descriptor_set;
+            format = other.format;
             name = other.name;
             return *this;
         }
@@ -54,6 +56,7 @@ struct ShaderReflection{
             register_count = rvalue.register_count;
             parameter_type = rvalue.parameter_type;
             descriptor_set = rvalue.descriptor_set;
+            format = rvalue.format;
             name = std::move(rvalue.name);
         }
 
@@ -64,15 +67,20 @@ struct ShaderReflection{
             register_count = rvalue.register_count;
             parameter_type = rvalue.parameter_type;
             descriptor_set = rvalue.descriptor_set;
+            format = rvalue.format;
             name = std::move(rvalue.name);
             return *this;
         }
 
         uint32_t shader_type : 4 = 0;
-        uint32_t register_ : 15 = 0;
-        uint32_t register_count : 10 = 0;
+        uint32_t register_ : 8 = 0;
+        uint32_t register_count : 8 = 0;
+        uint32_t location : 4 = 0;
+        uint32_t offset : 5 = 0;
         uint32_t parameter_type : 3 = 0;
         uint32_t descriptor_set = 0;
+        VkFormat format = VK_FORMAT_UNDEFINED;
+        VertexAttributeType::Enum vertex_attribute_type = VertexAttributeType::Enum::Count;
 
         std::string name;
 

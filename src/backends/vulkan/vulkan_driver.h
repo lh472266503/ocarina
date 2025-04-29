@@ -2,6 +2,7 @@
 #include "core/header.h"
 #include "core/concepts.h"
 #include "core/stl.h"
+#include "rhi/graphics_descriptions.h"
 #include <vulkan/vulkan.h>
 
 namespace ocarina {
@@ -11,6 +12,7 @@ class FileManager;
 class VulkanDevice;
 class VulkanShaderManager;
 class VulkanDescriptorManager;
+class VulkanShader;
 struct InstanceCreation;
 
 class VulkanDriver : public concepts::Noncopyable {
@@ -26,7 +28,11 @@ public:
     void terminate();
     void render();
     inline VkDevice device() const;
-
+    VulkanShader *create_shader(ShaderType shader_type,
+                                const std::string &filename,
+                                const std::set<std::string> &options,
+                                const std::string &entry_point);
+    VulkanShader* get_shader(handle_ty shader) const;
 private:
     void setup_frame_buffer();
     void setup_depth_stencil(uint32_t width, uint32_t height);

@@ -22,13 +22,28 @@ private:
     VulkanDevice *device_ = nullptr;
     VkShaderStageFlagBits stage_;
     DescriptorCount descriptor_count_;
+    std::vector<VertexAttribute> vertex_attributes_;  //only exist in vertex shader
     //VkDescriptorSetLayout descriptor_set_layout_ = VK_NULL_HANDLE;
     static bool HLSLToSPRIV(std::span<char> hlsl, VkShaderStageFlagBits stage, const std::string_view &entryPoint, bool outputSymbols, std::vector<uint32_t> &outSpriv, std::string &errorLog);
     void get_descriptor_count(const ShaderReflection &reflection);
+    void get_vertex_attributes(const ShaderReflection &reflection);
+
+    
 
 public:
     VulkanShader(VulkanDevice *device, std::span<uint32_t> shaderCode, const std::string_view &entryPoint, VkShaderStageFlagBits stage);
     ~VulkanShader() override;
+
+    size_t get_vertex_attribute_count() {
+        return vertex_attributes_.size();
+    }
+
+    VertexAttribute get_vertex_attribute(uint32_t index) const {
+        if (index < vertex_attributes_.size()) {
+            return vertex_attributes_[index];
+        }
+        return VertexAttribute();
+    }
 
     OC_MAKE_MEMBER_GETTER(shader_module, );
     OC_MAKE_MEMBER_GETTER(stage, );
@@ -112,19 +127,31 @@ struct HashShaderKeyFunction {
 
 class VulkanShaderManager : concepts::Noncopyable {
 public:
-    //VulkanShader *get_or_create_from_HLSL(Device::Impl *device,
-    //                               ShaderType shader_type,
-    //                               const std::string &filename,
-    //                               const std::string &entry_point);
-    handle_ty get_or_create_from_HLSL(Device::Impl *device,
+    VulkanShader* get_or_create_from_HLSL(VulkanDevice *device,
                                       ShaderType shader_type,
                                       const std::string &filename,
+                                      const std::set<std::string> &options,
                                       const std::string &entry_point);
 
     VulkanShaderEntry get_shader_entry(handle_ty shader_handle) const;
     void clear(VulkanDevice *device);
+    VulkanShader* get_shader(handle_ty shader_handle) const
+    {
+        auto it = shader_keys_.find(shader_handle);
+        if (it != shader_keys_.end())
+        {
+            auto shader_it = vulkan_shaders_.find(it->second);
+            if (shader_it != vulkan_shaders_.end())
+            {
+                return shader_it->second;
+            }
+        }
+
+        return nullptr;
+    }
 private:
     std::unordered_map<ShaderKey, VulkanShader *, HashShaderKeyFunction> vulkan_shaders_;
+    std::unordered_map<handle_ty, ShaderKey> shader_keys_;
     std::map<handle_ty, VulkanShaderEntry> vulkan_shader_entries_;
 };
 }// namespace ocarina

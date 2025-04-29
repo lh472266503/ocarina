@@ -7,6 +7,9 @@
 #include "util.h"
 #include "vulkan_shader.h"
 #include "vulkan_driver.h"
+#include "vulkan_buffer.h"
+#include "vulkan_vertex_buffer.h"
+#include "vulkan_index_buffer.h"
 
 namespace ocarina {
 
@@ -51,14 +54,15 @@ handle_ty VulkanDevice::create_shader(const Function &function) noexcept {
     return 0;
 }
 
-handle_ty VulkanDevice::create_shader_from_file(const std::string &file_name, ShaderType shader_type) noexcept {
+handle_ty VulkanDevice::create_shader_from_file(const std::string &file_name, ShaderType shader_type, const std::set<string> &options) noexcept {
     //VulkanShader *shader = VulkanShader::create_from_HLSL(this, shader_type, file_name, "main");
-    //if (shader)
-    //{
+    //if (shader) {
     //    return (handle_ty)shader->shader_module();
     //}
-
-
+    VulkanShader* shader = VulkanDriver::instance().create_shader(shader_type, file_name, options, "main");
+    if (shader) {
+        return (handle_ty)shader->shader_module();
+    }
     return InvalidUI64;
 }
 
@@ -253,6 +257,26 @@ void VulkanDevice::shutdown()
 
 void VulkanDevice::render() noexcept {
     return VulkanDriver::instance().render();
+}
+
+VertexBuffer* VulkanDevice::create_vertex_buffer() noexcept
+{
+    VulkanVertexBuffer *vulkan_vertex_buffer = new VulkanVertexBuffer(this);
+    return vulkan_vertex_buffer;
+}
+
+IndexBuffer* VulkanDevice::create_index_buffer(const void* initial_data, uint32_t bytes) noexcept
+{
+    VulkanIndexBuffer* index_buffer = new VulkanIndexBuffer(this, bytes);
+    if (initial_data)
+    {
+        index_buffer->load_from_cpu(initial_data, 0, bytes);
+    }
+    return index_buffer;
+}
+
+VulkanBuffer *VulkanDevice::create_vulkan_buffer(VkBufferUsageFlags usage_flags, VkMemoryPropertyFlags memory_property_flags, VkDeviceSize size, const void *data) {
+    return VulkanBufferManager::instance()->create_vulkan_buffer(this, usage_flags, memory_property_flags, size, data);
 }
 
 uint32_t VulkanDevice::getQueueFamilyIndex(uint32_t queueFlags) const {

@@ -3,11 +3,13 @@
 #include "vulkan_pipeline.h"
 #include "util.h"
 #include "vulkan_shader.h"
+#include "vulkan_vertex_buffer.h"
+#include "vulkan_driver.h"
 
 namespace ocarina {
 
-void VulkanPipelineManager::bind_shader(const VulkanShader &shader, int stage) {
-    pipeline_key_cache_.shaders[stage] = shader.shader_module();
+void VulkanPipelineManager::bind_shader(handle_ty shader, int stage) {
+    pipeline_key_cache_.shaders[stage] = (VkShaderModule)shader;
 }
 
 void VulkanPipelineManager::bind_raster_state(const RasterState& raster_state)
@@ -56,13 +58,34 @@ VulkanPipeline VulkanPipelineManager::get_or_create_pipeline(const PipelineState
     
 
     for (int i = 0; i < PipelineKey::MAX_SHADER_STAGE; ++i) {
-        bind_shader(*(pipeline_state.shaders[i]), i);
+        bind_shader(pipeline_state.shaders[i], i);
     }
     bind_blend_state(pipeline_state.blend_state);
     bind_depth_stencil_state(pipeline_state.depth_stencil_state);
     bind_raster_state(pipeline_state.raster_state);
-    bind_vertex_attributes(pipeline_state.vertex_info.attribute_descriptions.data(), pipeline_state.vertex_info.binding_descriptions.data(), 
-        pipeline_state.vertex_info.attribute_descriptions.size(), pipeline_state.vertex_info.binding_descriptions.size());
+
+    VulkanVertexBuffer* vertex_buffer = static_cast<VulkanVertexBuffer*>(pipeline_state.vertex_buffer);
+
+    /*
+    std::vector<VkVertexInputBindingDescription> binding_descriptions;
+    binding_descriptions.resize(pipeline_state.vertex_bindings.size());
+    for (size_t i = 0; i < pipeline_state.vertex_bindings.size(); ++i) {
+        binding_descriptions[i] = {pipeline_state.vertex_bindings[i].binding, pipeline_state.vertex_bindings[i].stride, VK_VERTEX_INPUT_RATE_VERTEX};
+    }
+
+    std::vector<VkVertexInputAttributeDescription> attribute_descriptions;
+    for (size_t i = 0; i < pipeline_state.vertex_attributes.size(); ++i) {
+        attribute_descriptions[i] = {pipeline_state.vertex_attributes[i].location, pipeline_state.vertex_attributes[i].binding, 
+                                             (VkFormat)pipeline_state.vertex_attributes[i].format, pipeline_state.vertex_attributes[i].offset};
+    }   
+    */
+
+    VulkanShader *vertex_shader = VulkanDriver::instance().get_shader(pipeline_state.shaders[0]);
+    VulkanShader *pixel_shader = VulkanDriver::instance().get_shader(pipeline_state.shaders[1]);
+    VulkanVertexStreamBinding *vertex_binding = vertex_buffer->get_or_create_vertex_binding(vertex_shader);
+
+    bind_vertex_attributes(vertex_binding->attribute_descriptions_.data(), vertex_binding->binding_descriptions_.data(), 
+        vertex_binding->attribute_descriptions_.size(), vertex_binding->binding_descriptions_.size());
     bind_topology(pipeline_state.primitive_type);
 
     auto it = vulkan_pipelines_.find(pipeline_key_cache_);
@@ -72,22 +95,22 @@ VulkanPipeline VulkanPipelineManager::get_or_create_pipeline(const PipelineState
 
     VkPipelineVertexInputStateCreateInfo vertex_input_state = {};
     vertex_input_state.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-    vertex_input_state.vertexBindingDescriptionCount = pipeline_state.vertex_info.binding_descriptions.size();
-    vertex_input_state.pVertexBindingDescriptions = pipeline_state.vertex_info.binding_descriptions.data();
-    vertex_input_state.vertexAttributeDescriptionCount = pipeline_state.vertex_info.attribute_descriptions.size();
-    vertex_input_state.pVertexAttributeDescriptions = pipeline_state.vertex_info.attribute_descriptions.data();
+    vertex_input_state.vertexBindingDescriptionCount = vertex_binding->binding_descriptions_.size();
+    vertex_input_state.pVertexBindingDescriptions = vertex_binding->binding_descriptions_.data();
+    vertex_input_state.vertexAttributeDescriptionCount = vertex_binding->attribute_descriptions_.size();
+    vertex_input_state.pVertexAttributeDescriptions = vertex_binding->attribute_descriptions_.data();
 
     VkPipelineShaderStageCreateInfo shaderStages[2];
     shaderStages[0] = VkPipelineShaderStageCreateInfo{};
     shaderStages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     shaderStages[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
-    shaderStages[0].pName = pipeline_state.shaders[0]->get_entry_point();
+    shaderStages[0].pName = vertex_shader->get_entry_point();
     shaderStages[0].module = pipeline_key_cache_.shaders[0];
 
     shaderStages[1] = VkPipelineShaderStageCreateInfo{};
     shaderStages[1].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     shaderStages[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-    shaderStages[1].pName = pipeline_state.shaders[1]->get_entry_point();
+    shaderStages[1].pName = vertex_shader->get_entry_point();
     shaderStages[0].module = pipeline_key_cache_.shaders[1];
 
     VkGraphicsPipelineCreateInfo pipelineCreateInfo = {};

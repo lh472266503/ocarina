@@ -13,7 +13,8 @@
 #include "dsl/dsl.h"
 #include "GUI/window.h"
 #include "util/image.h"
-#include "rhi/renderer.h"
+#include "framework/renderer.h"
+#include "framework/primitive.h"
 
 using namespace ocarina;
 
@@ -130,6 +131,10 @@ private:
     const TestRef &m_Ref;
 };
 
+void setup_triangle(Primitive& triangle)
+{
+
+}
 
 int main(int argc, char *argv[]) {
     TestContainer *container = new TestContainer();
@@ -161,19 +166,38 @@ int main(int argc, char *argv[]) {
     Device device = Device::create_device("vulkan", instanceCreation);
 
     //Shader
-    handle_ty vertex_shader = device.create_shader_from_file("D:\\github\\Vision\\src\\ocarina\\src\\backends\\vulkan\\builtin\\triangle.vert", ShaderType::VertexShader);
-    handle_ty pixel_shader = device.create_shader_from_file("D:\\github\\Vision\\src\\ocarina\\src\\backends\\vulkan\\builtin\\triangle.frag", ShaderType::PixelShader);
+    std::set<string> options;
+    handle_ty vertex_shader = device.create_shader_from_file("D:\\github\\Vision\\src\\ocarina\\src\\backends\\vulkan\\builtin\\triangle.vert", ShaderType::VertexShader, options);
+    handle_ty pixel_shader = device.create_shader_from_file("D:\\github\\Vision\\src\\ocarina\\src\\backends\\vulkan\\builtin\\triangle.frag", ShaderType::PixelShader, options);
+
+
+    Primitive triangle;
+    std::vector<Primitive> opaques;
+
+    auto setup_triangle = [&](Primitive& triangle) {
+        triangle.set_vertex_shader(vertex_shader);
+        triangle.set_pixel_shader(pixel_shader);
+        
+        VertexBuffer* vertex_buffer = device.create_vertex_buffer();
+
+        opaques.push_back(triangle);
+    };
+
+    auto release_renderer = [&](Primitive& triangle) {
+    };
+
+    triangle.set_geometry_data_setup(setup_triangle);
 
     Renderer renderer;
 
     auto image_io = Image::pure_color(make_float4(1, 0, 0, 1), ColorSpace::LINEAR, make_uint2(500));
     window->set_background(image_io.pixel_ptr<float4>(), make_uint2(800, 600));
     window->run([&](double d) {
-        
+        while (!window->should_close())
+        {
+            //renderer.render();
+        }
     });
 
-    //while (!window->should_close())
-    //{
-    //    renderer.render();
-    //}
+    
 }

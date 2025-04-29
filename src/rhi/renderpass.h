@@ -15,19 +15,33 @@
 #include "graphics_descriptions.h"
 
 namespace ocarina {
+struct PipelineState;
+class IndexBuffer;
 
+struct DrawCallItem {
+    PipelineState* pipeline_state = nullptr;
+    IndexBuffer* index_buffer = nullptr;
+};
 
 class RenderPass {
 public:
     RenderPass() = default;
-    ~RenderPass(){};
+    virtual ~RenderPass(){};
 
-public:
-    class Impl {
-    public:
-        virtual ~Impl() = default;
-        
-    };
+    void clear_draw_call_items() {
+        draw_call_items_.clear();
+    }
+
+    void add_draw_call(DrawCallItem&& item) {
+        draw_call_items_.emplace_back(std::move(item));
+    }
+
+    virtual void begin_render_pass() = 0;
+    virtual void end_render_pass() = 0;
+protected:
+    std::list<DrawCallItem> draw_call_items_;
+    float4 viewport_ = {0, 0, 0, 0};
+    int4 scissor_ = {0, 0, 0, 0};
 };
 
 }// namespace ocarina

@@ -63,6 +63,18 @@ inline VkDevice VulkanDriver::device() const {
     return (*vulkan_device_)();
 }
 
+VulkanShader *VulkanDriver::create_shader(ShaderType shader_type,
+                                          const std::string &filename,
+                                          const std::set<std::string> &options,
+                                          const std::string &entry_point){
+    return vulkan_shader_manager->get_or_create_from_HLSL(vulkan_device_, shader_type, filename, options, entry_point);
+}
+
+VulkanShader* VulkanDriver::get_shader(handle_ty shader) const
+{
+    return vulkan_shader_manager->get_shader(shader);
+}
+
 void VulkanDriver::setup_frame_buffer()
 {
     VulkanSwapchain *swapchain = vulkan_device_->get_swapchain();
@@ -167,6 +179,7 @@ void VulkanDriver::setup_frame_buffer()
 }
 
 void VulkanDriver::setup_depth_stencil(uint32_t width, uint32_t height) {
+    get_supported_depth_format(vulkan_device_->physicalDevice(), &depth_stencil_format);
     VkImageCreateInfo imageCI{};
     imageCI.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
     imageCI.imageType = VK_IMAGE_TYPE_2D;

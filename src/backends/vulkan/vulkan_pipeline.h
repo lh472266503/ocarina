@@ -4,6 +4,7 @@
 #include "core/stl.h"
 #include "core/util.h"
 #include "rhi/graphics_descriptions.h"
+#include "rhi/pipeline_state.h"
 #include <vulkan/vulkan.h>
 #include <functional>
 #include "vulkan_buffer.h"
@@ -12,32 +13,11 @@ namespace ocarina {
 class VulkanShader;
 class VulkanDevice;
 
-struct RasterState {
-    VkCullModeFlags cull_mode : 2;
-    VkFrontFace front_face : 2;
-    VkBool32 depth_bias : 1;
-    VkBool32 depth_clamp : 1;
-    int padding : 26;
+struct VulkanPipeline {
+    VkPipelineCache pipeline_cache_ = VK_NULL_HANDLE;
+    VkPipeline pipeline_ = VK_NULL_HANDLE;
 };
 
-struct BlendState {
-    VkBlendFactor srccolorblend_factor : 5;
-    VkBlendFactor dstcolorblend_factor : 5;
-    VkBlendFactor srcalphablend_factor : 5;
-    VkBlendFactor dstalphablend_factor : 5;
-    BlendOperator colorBlendOp : 4;
-    BlendOperator alphaBlendOp : 4;
-    int padding : 4;
-};
-
-struct DepthStencilState {
-    VkBool32 depth_test_enable : 1;
-    VkBool32 depth_write_enable : 1;
-    SamplerCompareFunc depth_compare_op : 4;   
-    VkBool32 depth_bounds_test_enable : 1;
-    VkBool32 stencil_test_enable : 1;
-    int padding : 25;
-};
 
 struct VertexInputAttributeDescription {
     VertexInputAttributeDescription &operator=(const VkVertexInputAttributeDescription &that) {
@@ -51,8 +31,7 @@ struct VertexInputAttributeDescription {
         return {location, binding, VkFormat(format), offset};
     }
 
-    bool operator==(const VertexInputAttributeDescription& other) const
-    {
+    bool operator==(const VertexInputAttributeDescription &other) const {
         return location == other.location && binding == other.binding && format == other.format && offset == other.format;
     }
     uint8_t location = 0;
@@ -73,15 +52,13 @@ struct VertexInputBindingDescription {
         return {binding, stride, (VkVertexInputRate)inputRate};
     }
 
-    bool operator==(const VkVertexInputBindingDescription& other) const
-    {
+    bool operator==(const VkVertexInputBindingDescription &other) const {
         return binding == other.binding && inputRate == other.inputRate && stride == other.stride;
     }
     uint16_t binding = 0;
     uint16_t inputRate = 0;
     uint32_t stride = 0;
 };
-
 struct PipelineKey
 {
     static constexpr uint16_t MAX_VERTEX_ATTRIBUTES = 16;
@@ -109,20 +86,6 @@ struct PipelineKey
     }
 };
 
-struct PipelineState {
-    static constexpr uint16_t MAX_SHADER_STAGE = 3;
-    VulkanShader *shaders[MAX_SHADER_STAGE];   
-    VulkanVertexInfo vertex_info;
-    //Handle<HwVertexBufferInfo> vertexBufferInfo;           //  4
-    //PipelineLayout pipelineLayout;                         // 16
-    RasterState raster_state;                               //  4
-    BlendState blend_state;
-    DepthStencilState depth_stencil_state;                             // 12
-    PrimitiveType primitive_type = PrimitiveType::TRIANGLES;//  1
-    //uint8_t padding[3] = {};                               //  3
-};
-
-
 struct HashPipelineKeyFunction
 {
     uint64_t operator()(const PipelineKey &pipeline_key) const {
@@ -136,20 +99,19 @@ struct HashPipelineKeyFunction
         hash_combine(res, pipeline_key.topology);
         return res;
     }
-
-    
 };
 
 
-struct VulkanPipeline {
-    VkPipelineCache pipeline_cache_ = VK_NULL_HANDLE;
-    VkPipeline pipeline_ = VK_NULL_HANDLE;
+
+struct VulkanVertexInfo {
+    std::vector<VkVertexInputBindingDescription> binding_descriptions;
+    std::vector<VkVertexInputAttributeDescription> attribute_descriptions;
 };
 
 class VulkanPipelineManager : public concepts::Noncopyable
 {
 public:
-    void bind_shader(const VulkanShader &shader, int stage);
+    void bind_shader(handle_ty shader, int stage);
     void bind_raster_state(const RasterState &raster_state);
     void bind_blend_state(const BlendState &blend_state);
     void bind_depth_stencil_state(const DepthStencilState &depth_stencil_state);

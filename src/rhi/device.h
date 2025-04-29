@@ -47,6 +47,9 @@ class Accel;
 
 class CommandVisitor;
 
+class VertexBuffer;
+class IndexBuffer;
+
 class Device : public concepts::Noncopyable {
 public:
     class Impl : public concepts::Noncopyable {
@@ -63,7 +66,7 @@ public:
                                                        uint level_num, const string &desc) noexcept = 0;
         virtual void destroy_texture(handle_ty handle) noexcept = 0;
         [[nodiscard]] virtual handle_ty create_shader(const Function &function) noexcept = 0;
-        [[nodiscard]] virtual handle_ty create_shader_from_file(const std::string &file_name, ShaderType shader_type) noexcept = 0;
+        [[nodiscard]] virtual handle_ty create_shader_from_file(const std::string &file_name, ShaderType shader_type, const std::set<string> &options) noexcept = 0;
         virtual void destroy_shader(handle_ty handle) noexcept = 0;
         [[nodiscard]] virtual handle_ty create_accel() noexcept = 0;
         virtual void destroy_accel(handle_ty handle) noexcept = 0;
@@ -83,6 +86,8 @@ public:
         virtual void init_rtx() noexcept = 0;
         [[nodiscard]] virtual CommandVisitor *command_visitor() noexcept = 0;
         virtual void render() noexcept = 0;
+        virtual VertexBuffer* create_vertex_buffer() noexcept = 0;
+        virtual IndexBuffer* create_index_buffer(const void *initial_data, uint32_t bytes) noexcept = 0;
     };
 
     using Creator = Device::Impl *(FileManager *);
@@ -119,6 +124,10 @@ public:
         return Buffer<T, Dims...>(impl_.get(), size, stream);
     }
 
+    [[nodiscard]] void destroy_buffer(handle_ty handle) noexcept {
+        impl_->destroy_buffer(handle);
+    }
+
     template<typename T = std::byte>
     [[nodiscard]] Managed<T> create_managed(size_t size) noexcept {
         return Managed<T>(impl_.get(), size);
@@ -153,12 +162,22 @@ public:
         });
     }
 
-    [[nodiscard]] handle_ty create_shader_from_file(const std::string& file_name, ShaderType shader_type)
+    [[nodiscard]] handle_ty create_shader_from_file(const std::string& file_name, ShaderType shader_type, std::set<std::string>& options)
     {
-        return impl_->create_shader_from_file(file_name, shader_type);
+        return impl_->create_shader_from_file(file_name, shader_type, options);
+    }
+
+    [[nodiscard]] VertexBuffer* create_vertex_buffer() {
+        return impl_->create_vertex_buffer();
+    }
+
+    [[nodiscard]] IndexBuffer* create_index_buffer(const void *initial_data, uint32_t bytes) {
+        return impl_->create_index_buffer(initial_data, bytes);
     }
 
     [[nodiscard]] static Device create_device(const string &backend_name, const ocarina::InstanceCreation &instance_creation);
+
+
 };
 
 namespace rhi_global 

@@ -12,6 +12,7 @@
 #include "vulkan_swapchain.h"
 
 namespace ocarina {
+class VulkanBuffer;
 class VulkanDevice : public Device::Impl {
 public:
     static constexpr size_t size(Type::Tag tag) {
@@ -72,7 +73,6 @@ private:
     /** @brief List of extensions supported by the device */
     std::vector<std::string> m_supportedExtensions;
     std::vector<const char *> m_enableExtensions;
-    
 
 public:
     explicit VulkanDevice(FileManager *file_manager, const ocarina::InstanceCreation &instance_creation);
@@ -86,7 +86,7 @@ public:
                                            const string &desc) noexcept override;
     void destroy_texture(handle_ty handle) noexcept override;
     [[nodiscard]] handle_ty create_shader(const Function &function) noexcept override;
-    [[nodiscard]] handle_ty create_shader_from_file(const std::string &file_name, ShaderType shader_type) noexcept override;
+    [[nodiscard]] handle_ty create_shader_from_file(const std::string &file_name, ShaderType shader_type, const std::set<string>& options) noexcept override;
     void destroy_shader(handle_ty handle) noexcept override;
     [[nodiscard]] handle_ty create_accel() noexcept override;
     void destroy_accel(handle_ty handle) noexcept override;
@@ -106,6 +106,9 @@ public:
     [[nodiscard]] CommandVisitor *command_visitor() noexcept override;
     void shutdown();
     void render() noexcept override;
+    VertexBuffer* create_vertex_buffer() noexcept override;
+    IndexBuffer* create_index_buffer(const void *initial_data, uint32_t bytes) noexcept override;
+    VulkanBuffer *create_vulkan_buffer(VkBufferUsageFlags usage_flags, VkMemoryPropertyFlags memory_property_flags, VkDeviceSize size, const void *data = nullptr);
 
     OC_MAKE_MEMBER_GETTER(logicalDevice, );
 
