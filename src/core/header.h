@@ -112,9 +112,9 @@ using handle_ty = uint64_t;
     [[nodiscard]] const auto modifier member() const noexcept { return member##_; } \
     [[nodiscard]] auto modifier member() noexcept { return member##_; }
 
-#define OC_MAKE_MEMBER_SETTER(member)                     \
-    void set_##member(decltype(member##_) val) noexcept { \
-        member##_ = ocarina::move(val);                   \
+#define OC_MAKE_MEMBER_SETTER(member)                            \
+    void set_##member(const decltype(member##_) &val) noexcept { \
+        member##_ = val;                                         \
     }
 
 #define OC_MAKE_MEMBER_GETTER_SETTER(member, modifier) \
