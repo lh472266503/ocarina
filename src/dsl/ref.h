@@ -501,9 +501,9 @@ public:
     }
 };
 
-#define OC_MAKE_STRUCT_MEMBER(m)                                                                                             \
-    dsl_t<std::remove_cvref_t<decltype(this_type::m)>>(m){Function::current()->member(Type::of<this_type>()->get_member(#m), \
-                                                                                      expression(),                          \
+#define OC_MAKE_STRUCT_MEMBER(m)                                                                                          \
+    dsl_t<std::remove_cvref_t<decltype(this_type::m)>>(m){Function::current()->member(Type::of<decltype(this_type::m)>(), \
+                                                                                      expression(),                       \
                                                                                       ocarina::struct_member_tuple<this_type>::member_index(#m))};
 
 #define OC_MAKE_MEMBER_ASSIGNMENT(m) \

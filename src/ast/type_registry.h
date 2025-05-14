@@ -171,7 +171,6 @@ public:
     TypeRegistry &operator=(TypeRegistry &&) = delete;
     [[nodiscard]] static TypeRegistry &instance() noexcept;
     [[nodiscard]] const Type *parse_type(ocarina::string_view desc,
-                                         uint64_t ext_hash = 0u,
                                          string cname = "") noexcept;
     [[nodiscard]] bool is_exist(ocarina::string_view desc, const string &cname) const noexcept;
     [[nodiscard]] bool is_exist(uint64_t hash) const noexcept;
