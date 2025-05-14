@@ -17,7 +17,6 @@ class Buffer;
 template<typename T, int... Dims>
 class BufferView {
 private:
-    size_t element_size_{Buffer<T>::calculate_size()};
     handle_ty handle_{};
     size_t offset_{};
     size_t size_{};
@@ -30,7 +29,7 @@ public:
     BufferView(const Buffer<T, Dims...> &buffer);
     [[nodiscard]] handle_ty handle() const { return handle_; }
     [[nodiscard]] size_t size() const { return size_; }
-    [[nodiscard]] size_t element_size() const noexcept { return element_size_; }
+    [[nodiscard]] static constexpr size_t element_size() noexcept { return sizeof(T); }
     [[nodiscard]] size_t size_in_byte() const noexcept { return size_ * element_size(); }
 
     const BufferProxy<T> &proxy() const noexcept {
@@ -107,37 +106,27 @@ public:
 
 protected:
     size_t size_{};
-    size_t element_size_{0};
     mutable uint gl_handle_{0};
     mutable void *gl_shared_handle_{0};
     mutable BufferProxy<T> proxy_{};
     string name_;
 
 public:
-    Buffer() : element_size_(calculate_size()) {}
+    Buffer() = default;
 
-    [[nodiscard]] size_t element_size() const noexcept {
-        return element_size_;
-    }
+    [[nodiscard]] static constexpr size_t element_size() noexcept { return sizeof(T); }
 
     Buffer(Device::Impl *device, size_t size, const string &desc = "")
-        : RHIResource(device, Tag::BUFFER, device->create_buffer(size * calculate_size(), desc)),
-          size_(size), element_size_(calculate_size()), name_(desc) {
+        : RHIResource(device, Tag::BUFFER, device->create_buffer(size * element_size(), desc)),
+          size_(size), name_(desc) {
         proxy_ptr();
     }
 
     OC_MAKE_MEMBER_GETTER_SETTER(name, )
 
-    static size_t calculate_size() noexcept {
-        if constexpr (is_struct_v<T>) {
-            return Type::of<T>()->size();
-        }
-        return sizeof(T);
-    }
-
     Buffer(BufferView<T, Dims...> buffer_view)
         : RHIResource(nullptr, Tag::BUFFER, buffer_view.head()),
-          size_(buffer_view.size()), element_size_(calculate_size()) {
+          size_(buffer_view.size()) {
         proxy_ptr();
     }
 
@@ -176,7 +165,6 @@ public:
         this->size_ = other.size_;
         this->name_ = std::move(other.name_);
         this->proxy_ = other.proxy_;
-        this->element_size_ = other.element_size_;
     }
 
     // Move assignment
@@ -186,7 +174,6 @@ public:
         this->size_ = other.size_;
         this->name_ = std::move(other.name_);
         this->proxy_ = other.proxy_;
-        this->element_size_ = other.element_size_;
         return *this;
     }
 
