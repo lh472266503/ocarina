@@ -110,9 +110,6 @@ void Type::for_each(TypeVisitor *visitor) {
 }
 
 uint64_t Type::compute_hash() const noexcept {
-//    if (cname_.empty()) {
-//        return hash64(description_);
-//    }
     return hash64(description_, cname_);
 }
 

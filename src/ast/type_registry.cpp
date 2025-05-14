@@ -138,7 +138,7 @@ const Type *TypeRegistry::parse_type(ocarina::string_view desc, uint64_t ext_has
     if (desc == "void") {
         return nullptr;
     }
-    uint64_t hash = _hash(desc, cname);
+    uint64_t hash = compute_hash(desc, cname);
     if (desc.starts_with("d_array")) {
         // dynamic array need change attribute, special handling
         hash = hash64(hash, ext_hash);
@@ -352,11 +352,11 @@ const Type *TypeRegistry::type_at(uint i) const noexcept {
     return _types[i].get();
 }
 
-uint64_t TypeRegistry::_hash(ocarina::string_view desc, const string &cname) noexcept {
+uint64_t TypeRegistry::compute_hash(ocarina::string_view desc, const string &cname) noexcept {
     return Hashable::compute_hash<Type>(hash64(desc, cname));
 }
 bool TypeRegistry::is_exist(ocarina::string_view desc, const string &cname) const noexcept {
-    return is_exist(_hash(desc, cname));
+    return is_exist(compute_hash(desc, cname));
 }
 
 bool TypeRegistry::is_exist(uint64_t hash) const noexcept {

@@ -155,7 +155,6 @@ public:
     TypeRegistry() = default;
 
 private:
-    [[nodiscard]] static uint64_t _hash(ocarina::string_view desc, const string &cname) noexcept;
     void parse_vector(Type *type, ocarina::string_view desc) noexcept;
     void parse_matrix(Type *type, ocarina::string_view desc) noexcept;
     void parse_array(Type *type, ocarina::string_view desc) noexcept;
@@ -168,6 +167,7 @@ private:
     void parse_bindless_array(Type *type, ocarina::string_view desc) noexcept;
 
 public:
+    [[nodiscard]] static uint64_t compute_hash(ocarina::string_view desc, const string &cname) noexcept;
     TypeRegistry &operator=(const TypeRegistry &) = delete;
     TypeRegistry &operator=(TypeRegistry &&) = delete;
     [[nodiscard]] static TypeRegistry &instance() noexcept;
