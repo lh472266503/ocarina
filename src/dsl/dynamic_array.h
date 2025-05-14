@@ -99,6 +99,24 @@ public:
         return ret;
     }
 
+    template<typename U, size_t N>
+    static DynamicArray<T> create(Vector<U, N> vec) noexcept {
+        DynamicArray<T> ret{N};
+        for (uint i = 0; i < N; ++i) {
+            ret[i] = vec[i];
+        }
+        return ret;
+    }
+
+    template<typename U, size_t N>
+    static DynamicArray<T> create(const Var<Vector<U, N>> &vec) noexcept {
+        DynamicArray<T> ret{N};
+        for (uint i = 0; i < N; ++i) {
+            ret[i] = vec[i];
+        }
+        return ret;
+    }
+
     template<typename... Args>
     static DynamicArray<T> create(Args &&...args) noexcept {
         return create(ocarina::array<Var<T>, sizeof...(args)>{OC_FORWARD(args)...});
