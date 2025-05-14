@@ -100,7 +100,7 @@ public:
     }
 
     template<typename U, size_t N>
-    static DynamicArray<T> create(Vector<U, N> vec) noexcept {
+    static DynamicArray<T> from_vec(Vector<U, N> vec) noexcept {
         DynamicArray<T> ret{N};
         for (uint i = 0; i < N; ++i) {
             ret[i] = vec[i];
@@ -109,7 +109,7 @@ public:
     }
 
     template<typename U, size_t N>
-    static DynamicArray<T> create(const Var<Vector<U, N>> &vec) noexcept {
+    static DynamicArray<T> from_vec(const Var<Vector<U, N>> &vec) noexcept {
         DynamicArray<T> ret{N};
         for (uint i = 0; i < N; ++i) {
             ret[i] = vec[i];
