@@ -3,6 +3,8 @@
 //
 
 #include "type.h"
+
+#include <utility>
 #include "type_registry.h"
 
 namespace ocarina {
@@ -11,8 +13,8 @@ size_t Type::count() noexcept {
     return TypeRegistry::instance().type_count();
 }
 
-const Type *Type::from(std::string_view description) noexcept {
-    return TypeRegistry::instance().type_from(description);
+const Type *Type::from(std::string_view description, ocarina::string cname) noexcept {
+    return TypeRegistry::instance().type_from(description, "");
 }
 
 const Type *Type::at(uint32_t uid) noexcept {
@@ -107,7 +109,12 @@ void Type::for_each(TypeVisitor *visitor) {
     TypeRegistry::instance().for_each(visitor);
 }
 
-uint64_t Type::compute_hash() const noexcept { return hash64(description_);}
+uint64_t Type::compute_hash() const noexcept {
+//    if (cname_.empty()) {
+//        return hash64(description_);
+//    }
+    return hash64(description_, cname_);
+}
 
 void Type::update_name(ocarina::string_view desc) noexcept {
     switch (tag_) {

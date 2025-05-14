@@ -427,7 +427,7 @@ public:
 
     template<typename T>
     [[nodiscard]] static auto of(T &&) noexcept { return of<std::remove_cvref_t<T>>(); }
-    [[nodiscard]] static const Type *from(ocarina::string_view description) noexcept;
+    [[nodiscard]] static const Type *from(ocarina::string_view description, ocarina::string cname = "") noexcept;
     [[nodiscard]] static const Type *at(uint32_t uid) noexcept;
     [[nodiscard]] static size_t count() noexcept;
     void update_dynamic_member_length(ocarina::string_view member_name, uint length) const noexcept;

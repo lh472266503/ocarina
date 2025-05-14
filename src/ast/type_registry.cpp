@@ -134,11 +134,11 @@ namespace detail {
  * MATRIX: matrix<2> | matrix<3> | matrix<4>
  * STRUCT: struct<4,TYPE...> | struct<8,TYPE...> | struct<16,TYPE...>
  */
-const Type *TypeRegistry::parse_type(ocarina::string_view desc, uint64_t ext_hash) noexcept {
+const Type *TypeRegistry::parse_type(ocarina::string_view desc, uint64_t ext_hash, string cname) noexcept {
     if (desc == "void") {
         return nullptr;
     }
-    uint64_t hash = _hash(desc);
+    uint64_t hash = _hash(desc, cname);
     if (desc.starts_with("d_array")) {
         // dynamic array need change attribute, special handling
         hash = hash64(hash, ext_hash);
@@ -338,8 +338,8 @@ void TypeRegistry::try_add_to_current_function(const ocarina::Type *type) noexce
     }
 }
 
-const Type *TypeRegistry::type_from(ocarina::string_view desc) noexcept {
-    return parse_type(desc);
+const Type *TypeRegistry::type_from(ocarina::string_view desc, string cname) noexcept {
+    return parse_type(desc, 0, std::move(cname));
 }
 
 size_t TypeRegistry::type_count() const noexcept {
@@ -352,11 +352,11 @@ const Type *TypeRegistry::type_at(uint i) const noexcept {
     return _types[i].get();
 }
 
-uint64_t TypeRegistry::_hash(ocarina::string_view desc) noexcept {
-    return Hashable::compute_hash<Type>(hash64(desc));
+uint64_t TypeRegistry::_hash(ocarina::string_view desc, const string &cname) noexcept {
+    return Hashable::compute_hash<Type>(hash64(desc, cname));
 }
-bool TypeRegistry::is_exist(ocarina::string_view desc) const noexcept {
-    return is_exist(_hash(desc));
+bool TypeRegistry::is_exist(ocarina::string_view desc, const string &cname) const noexcept {
+    return is_exist(_hash(desc, cname));
 }
 
 bool TypeRegistry::is_exist(uint64_t hash) const noexcept {

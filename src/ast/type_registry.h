@@ -16,7 +16,17 @@ template<typename T>
 const Type *Type::of() noexcept {
     using raw_type = std::remove_cvref_t<T>;
     constexpr bool is_builtin = is_builtin_struct_v<raw_type>;
-    auto ret = Type::from(TypeDesc<raw_type>::description());
+    string cname = "";
+    if constexpr (ocarina::is_struct_v<T>) {
+        if constexpr (requires {
+                          Var<T>::cname;
+                      }) {
+            cname = Var<T>::cname;
+        } else {
+            cname = string(TypeDesc<raw_type>::description());
+        }
+    }
+    auto ret = Type::from(TypeDesc<raw_type>::description(), std::move(cname));
     if constexpr (ocarina::is_struct_v<T>) {
         if constexpr (requires {
                           Var<T>::cname;
@@ -145,7 +155,7 @@ public:
     TypeRegistry() = default;
 
 private:
-    [[nodiscard]] static uint64_t _hash(ocarina::string_view desc) noexcept;
+    [[nodiscard]] static uint64_t _hash(ocarina::string_view desc, const string &cname) noexcept;
     void parse_vector(Type *type, ocarina::string_view desc) noexcept;
     void parse_matrix(Type *type, ocarina::string_view desc) noexcept;
     void parse_array(Type *type, ocarina::string_view desc) noexcept;
@@ -162,10 +172,11 @@ public:
     TypeRegistry &operator=(TypeRegistry &&) = delete;
     [[nodiscard]] static TypeRegistry &instance() noexcept;
     [[nodiscard]] const Type *parse_type(ocarina::string_view desc,
-                                         uint64_t ext_hash = 0u) noexcept;
-    [[nodiscard]] bool is_exist(ocarina::string_view desc) const noexcept;
+                                         uint64_t ext_hash = 0u,
+                                         string cname = "") noexcept;
+    [[nodiscard]] bool is_exist(ocarina::string_view desc, const string &cname) const noexcept;
     [[nodiscard]] bool is_exist(uint64_t hash) const noexcept;
-    [[nodiscard]] const Type *type_from(ocarina::string_view desc) noexcept;
+    [[nodiscard]] const Type *type_from(ocarina::string_view desc, string cname) noexcept;
     [[nodiscard]] const Type *type_at(uint i) const noexcept;
     [[nodiscard]] size_t type_count() const noexcept;
     void add_type(ocarina::unique_ptr<Type> type);
