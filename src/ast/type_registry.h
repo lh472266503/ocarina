@@ -158,7 +158,6 @@ private:
     void parse_vector(Type *type, ocarina::string_view desc) noexcept;
     void parse_matrix(Type *type, ocarina::string_view desc) noexcept;
     void parse_array(Type *type, ocarina::string_view desc) noexcept;
-    void parse_dynamic_array(Type *type, ocarina::string_view desc) noexcept;
     void parse_buffer(Type *type, ocarina::string_view desc) noexcept;
     void parse_texture(Type *type, ocarina::string_view desc) noexcept;
     void parse_accel(Type *type, ocarina::string_view desc) noexcept;

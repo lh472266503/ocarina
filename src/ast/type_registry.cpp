@@ -85,7 +85,6 @@ namespace detail {
         ret == "struct"sv ||
         ret == "buffer"sv ||
         ret == "texture"sv ||
-        ret == "d_array"sv ||
         ret == "array"sv) {
         auto [start, end] = bracket_matching_near(str);
         ret = str.substr(0, end + 1);
@@ -139,10 +138,6 @@ const Type *TypeRegistry::parse_type(ocarina::string_view desc, uint64_t ext_has
         return nullptr;
     }
     uint64_t hash = compute_hash(desc, cname);
-    if (desc.starts_with("d_array")) {
-        // dynamic array need change attribute, special handling
-        hash = hash64(hash, ext_hash);
-    }
     if (auto iter = _type_set.find(hash); iter != _type_set.cend()) {
         try_add_to_current_function(*iter);
         return *iter;
@@ -179,8 +174,6 @@ const Type *TypeRegistry::parse_type(ocarina::string_view desc, uint64_t ext_has
         parse_matrix(type.get(), desc);
     } else if (desc.starts_with("array")) {
         parse_array(type.get(), desc);
-    } else if (desc.starts_with("d_array")) {
-        parse_dynamic_array(type.get(), desc);
     } else if (desc.starts_with("struct")) {
         parse_struct(type.get(), desc);
     } else if (desc.starts_with("bytebuffer")) {
@@ -318,11 +311,6 @@ void TypeRegistry::parse_array(Type *type, ocarina::string_view desc) noexcept {
     type->alignment_ = alignment;
     type->dimension_ = len;
     type->size_ = size;
-}
-
-void TypeRegistry::parse_dynamic_array(Type *type, ocarina::string_view desc) noexcept {
-    auto p = desc.substr(2);
-    parse_array(type, desc.substr(2));
 }
 
 void TypeRegistry::add_type(ocarina::unique_ptr<Type> type) {

@@ -98,22 +98,6 @@ struct TypeDesc<ocarina::Matrix<N, M>> {
     }
 };
 
-template<typename T>
-struct TypeDesc<vector<T>> {
-    static_assert(alignof(T) >= 4u);
-
-    static ocarina::string &description() noexcept {
-        static thread_local auto s = ocarina::format(
-            "d_array<{},0>",
-            TypeDesc<T>::description());
-        return s;
-    }
-
-    static ocarina::string &name() noexcept {
-        return description();
-    }
-};
-
 template<typename T, size_t N>
 struct TypeDesc<ocarina::array<T, N>> {
     static_assert(alignof(T) >= 4u);
