@@ -105,7 +105,6 @@ int main(int argc, char *argv[]) {
     //    return 0;
     log_level_debug();
     auto type = Type::of<Triangle>();
-    type->update_dynamic_member_length("f", 3);
 
 //    test();
 
