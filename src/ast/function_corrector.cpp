@@ -52,11 +52,6 @@ void FunctionCorrector::process_capture(const Expression *&expression, Function 
     }
 }
 
-void FunctionCorrector::process_subscript_expr(const Expression *&expression, Function *cur_func) noexcept {
-    expression->accept(*this);
-    process_capture(const_cast<const Expression *&>(expression), cur_func);
-}
-
 void FunctionCorrector::visit_expr(const Expression *const &expression, Function *cur_func) noexcept {
     cur_func = cur_func == nullptr ? current_function() : cur_func;
     if (expression == nullptr) {
@@ -72,10 +67,6 @@ void FunctionCorrector::visit_expr(const Expression *const &expression, Function
         case Expression::Tag::MEMBER: {
             static_cast<const VariableExpr *>(expression)->variable().mark_used();
             process_member_expr(const_cast<const Expression *&>(expression), cur_func);
-            break;
-        }
-        case Expression::Tag::SUBSCRIPT: {
-            process_subscript_expr(const_cast<const Expression *&>(expression), cur_func);
             break;
         }
         default: {
@@ -297,7 +288,7 @@ void FunctionCorrector::visit(const SubscriptExpr *expr) {
     for (const Expression *const &index : expr->indexes_) {
         visit_expr(index);
     }
-    visit_expr(expr->range());
+    visit_expr(expr->range_);
 }
 
 void FunctionCorrector::visit(const UnaryExpr *expr) {

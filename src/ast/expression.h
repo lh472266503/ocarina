@@ -162,7 +162,9 @@ public:
         : Expression(Tag::SUBSCRIPT, type), range_(range) {
         indexes_.push_back(index);
     }
-    OC_MAKE_CHECK_CONTEXT(Expression, range_, indexes_)
+    bool check_context(const Function *ctx) const noexcept override {
+        return detail::check_context((range_), ctx) && detail::check_context((indexes_), ctx);
+    }
     SubscriptExpr(const Type *type, const Expression *range, IndexVector indexes)
         : Expression(Tag::SUBSCRIPT, type), range_(range), indexes_(ocarina::move(indexes)) {
     }
