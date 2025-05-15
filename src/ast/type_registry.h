@@ -16,17 +16,7 @@ template<typename T>
 const Type *Type::of() noexcept {
     using raw_type = std::remove_cvref_t<T>;
     constexpr bool is_builtin = is_builtin_struct_v<raw_type>;
-    string cname = "";
-    if constexpr (ocarina::is_struct_v<T>) {
-        if constexpr (requires {
-                          Var<T>::cname;
-                      }) {
-            cname = Var<T>::cname;
-        } else {
-            cname = string(TypeDesc<raw_type>::description());
-        }
-    }
-    auto ret = Type::from(TypeDesc<raw_type>::description());
+    const Type *ret = Type::from(TypeDesc<raw_type>::description());
     if constexpr (ocarina::is_struct_v<T>) {
         if constexpr (requires {
                           Var<T>::cname;

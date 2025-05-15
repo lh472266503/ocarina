@@ -246,7 +246,6 @@ void TypeRegistry::parse_matrix(Type *type, ocarina::string_view desc) noexcept 
 
 void TypeRegistry::parse_struct(Type *type, string_view desc) noexcept {
     type->tag_ = Type::Tag::STRUCTURE;
-    uint64_t ext_hash = hash64(desc);
     auto lst = detail::find_content(desc);
     auto alignment_str = lst[0];
     bool is_builtin_struct = lst[1] == "true";
