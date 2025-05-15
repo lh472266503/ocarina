@@ -22,6 +22,12 @@ public:
 };
 OC_STRUCT(,Triangle, i, j, k){};
 
+struct Triangle2 {
+public:
+    Triangle t;
+};
+OC_STRUCT(,Triangle2,t){};
+
 auto get_cube(float x = 1, float y = 1, float z = 1) {
     x = x / 2.f;
     y = y / 2.f;
@@ -99,7 +105,7 @@ void test() {
 }
 
 int main(int argc, char *argv[]) {
-
+    Type::of<Triangle2>();
     //    func(1, 2, 3, 4, 5, 6, 7, 8, 18);
     //
     //    return 0;

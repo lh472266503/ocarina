@@ -132,9 +132,9 @@ public:
         }
     };
 
-    ocarina::vector<ocarina::unique_ptr<Type>> _types;
-    ocarina::unordered_set<Type *, TypePtrHash, TypePtrEqual> _type_set;
-    mutable std::mutex _mutex;
+    ocarina::vector<ocarina::unique_ptr<Type>> types_;
+    ocarina::unordered_set<Type *, TypePtrHash, TypePtrEqual> type_set_;
+    mutable std::mutex mutex_;
     TypeRegistry() = default;
 
 private:

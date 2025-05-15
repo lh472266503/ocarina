@@ -138,7 +138,7 @@ const Type *TypeRegistry::parse_type(ocarina::string_view desc) noexcept {
         return nullptr;
     }
     uint64_t hash = compute_hash(desc);
-    if (auto iter = _type_set.find(hash); iter != _type_set.cend()) {
+    if (auto iter = type_set_.find(hash); iter != type_set_.cend()) {
         try_add_to_current_function(*iter);
         return *iter;
     }
@@ -315,10 +315,10 @@ void TypeRegistry::parse_array(Type *type, ocarina::string_view desc) noexcept {
 }
 
 void TypeRegistry::add_type(ocarina::unique_ptr<Type> type) {
-    _type_set.insert(type.get());
-    type->index_ = _types.size();
+    type_set_.insert(type.get());
+    type->index_ = types_.size();
     try_add_to_current_function(type.get());
-    _types.push_back(std::move(type));
+    types_.push_back(std::move(type));
 }
 
 void TypeRegistry::try_add_to_current_function(const ocarina::Type *type) noexcept {
@@ -332,13 +332,13 @@ const Type *TypeRegistry::type_from(ocarina::string_view desc) noexcept {
 }
 
 size_t TypeRegistry::type_count() const noexcept {
-    std::unique_lock lock{_mutex};
-    return _types.size();
+    std::unique_lock lock{mutex_};
+    return types_.size();
 }
 
 const Type *TypeRegistry::type_at(uint i) const noexcept {
-    std::unique_lock lock{_mutex};
-    return _types[i].get();
+    std::unique_lock lock{mutex_};
+    return types_[i].get();
 }
 
 uint64_t TypeRegistry::compute_hash(ocarina::string_view desc) noexcept {
@@ -349,11 +349,11 @@ bool TypeRegistry::is_exist(ocarina::string_view desc) const noexcept {
 }
 
 bool TypeRegistry::is_exist(uint64_t hash) const noexcept {
-    return _type_set.find(hash) != _type_set.cend();
+    return type_set_.find(hash) != type_set_.cend();
 }
 
 void TypeRegistry::for_each(TypeVisitor *visitor) const noexcept {
-    for (const auto &t : _types) {
+    for (const auto &t : types_) {
         visitor->visit(t.get());
     }
 }
