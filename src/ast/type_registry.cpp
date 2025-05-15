@@ -21,7 +21,7 @@ namespace detail {
 }
 
 [[nodiscard]] bool is_letter_or_num(char ch) noexcept {
-    return std::isalnum(ch) || ch == '_';
+    return std::isalnum(ch) || ch == '_' || ch == ':';
 }
 
 [[nodiscard]] bool is_num(char ch) noexcept {
@@ -247,18 +247,20 @@ void TypeRegistry::parse_matrix(Type *type, ocarina::string_view desc) noexcept 
 void TypeRegistry::parse_struct(Type *type, string_view desc) noexcept {
     type->tag_ = Type::Tag::STRUCTURE;
     auto lst = detail::find_content(desc);
-    auto alignment_str = lst[0];
-    bool is_builtin_struct = lst[1] == "true";
+    type->cname_ = lst[0];
+    auto alignment_str = lst[1];
+    bool is_builtin_struct = lst[2] == "true";
     type->builtin_struct_ = is_builtin_struct;
-    bool is_param_struct = lst[2] == "true";
+    bool is_param_struct = lst[3] == "true";
     type->param_struct_ = is_param_struct;
     auto alignment = std::stoi(string(alignment_str));
     type->alignment_ = alignment;
     auto size = 0u;
-    for (int i = 3; i < lst.size(); ++i) {
+    static constexpr uint member_offset = 4;
+    for (int i = member_offset; i < lst.size(); ++i) {
         auto type_str = lst[i];
         type->members_.push_back(parse_type(type_str));
-        auto member = type->members_[i - 3];
+        auto member = type->members_[i - member_offset];
         size = mem_offset(size, member->alignment());
         size += member->size();
     }

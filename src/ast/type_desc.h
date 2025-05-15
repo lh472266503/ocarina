@@ -182,7 +182,7 @@ template<typename... T>
 struct TypeDesc<ocarina::tuple<T...>> {
     static ocarina::string &description() noexcept {
         static thread_local ocarina::string str = []() -> ocarina::string {
-            auto ret = ocarina::format("struct<{},false,false", alignof(ocarina::tuple<T...>));
+            auto ret = ocarina::format("struct<_Tuple,{},false,false", alignof(ocarina::tuple<T...>));
             (ret.append(",").append(TypeDesc<T>::description()), ...);
             ret.append(">");
             return ret;
@@ -210,21 +210,21 @@ struct TypeDesc<BindlessArray> {
 #define OC_MAKE_STRUCT_MEMBER_DESC(member) \
     ocarina::TypeDesc<std::remove_cvref_t<decltype(this_type::member)>>::description()
 
-#define OC_MAKE_STRUCT_DESC(S, ...)                                                  \
-    template<>                                                                       \
-    struct ocarina::TypeDesc<S> {                                                    \
-        using this_type = S;                                                         \
-        static ocarina::string description() noexcept {                              \
-            static thread_local ocarina::string s = ocarina::format(                 \
-                "struct<{},{},{}" MAP(OC_MAKE_STRUCT_MEMBER_FMT, ##__VA_ARGS__) ">", \
-                alignof(this_type), ocarina::is_builtin_struct_v<this_type>,         \
-                ocarina::is_param_struct_v<this_type>,                               \
-                MAP_LIST(OC_MAKE_STRUCT_MEMBER_DESC, ##__VA_ARGS__));                \
-            return s;                                                                \
-        }                                                                            \
-        static constexpr string_view name() noexcept {                               \
-            return #S;                                                               \
-        }                                                                            \
+#define OC_MAKE_STRUCT_DESC(S, ...)                                                         \
+    template<>                                                                              \
+    struct ocarina::TypeDesc<S> {                                                           \
+        using this_type = S;                                                                \
+        static ocarina::string description() noexcept {                                     \
+            static thread_local ocarina::string s = ocarina::format(                        \
+                "struct<" #S ",{},{},{}" MAP(OC_MAKE_STRUCT_MEMBER_FMT, ##__VA_ARGS__) ">", \
+                alignof(this_type), ocarina::is_builtin_struct_v<this_type>,                \
+                ocarina::is_param_struct_v<this_type>,                                      \
+                MAP_LIST(OC_MAKE_STRUCT_MEMBER_DESC, ##__VA_ARGS__));                       \
+            return s;                                                                       \
+        }                                                                                   \
+        static constexpr string_view name() noexcept {                                      \
+            return #S;                                                                      \
+        }                                                                                   \
     };
 
 }// namespace ocarina

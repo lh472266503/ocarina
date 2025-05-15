@@ -19,13 +19,6 @@ const Type *Type::of() noexcept {
     const Type *ret = Type::from(TypeDesc<raw_type>::description());
     if constexpr (ocarina::is_struct_v<T>) {
         if constexpr (requires {
-                          Var<T>::cname;
-                      }) {
-            ret->set_cname(Var<T>::cname);
-        } else {
-            ret->set_cname(string(ret->description()));
-        }
-        if constexpr (requires {
                           ocarina::struct_member_tuple<raw_type>::members;
                       }) {
             constexpr auto arr = ocarina::struct_member_tuple<raw_type>::members;
