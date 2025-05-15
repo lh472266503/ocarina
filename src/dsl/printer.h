@@ -146,7 +146,7 @@ void Printer::_log_to_buffer(Uint offset, uint index, const Current &cur, const 
             Uint high_bits = cur >> 32;
             Uint low_bits = cur & 0xFFFFFFFF;
             buffer_.write(offset + index, high_bits, false);
-            index ++;
+            index++;
             buffer_.write(offset + index, low_bits, false);
         } else if constexpr (is_integral_v<type> || is_boolean_v<type>) {
             buffer_.write(offset + index, cast<uint>(cur), false);
@@ -187,7 +187,7 @@ void Printer::_log(spdlog::level::level_enum level, const string &fmt, const Arg
     Uint item_index = static_cast<uint>(items_.size());
 
     comment("start log >>>>>>>>>> ");
-    outline([&] {
+    outline("log output", [&] {
         Uint offset = buffer_.atomic(last).fetch_add(total_size + 1);
         if_(offset < last, [&] {
             buffer_.write(offset, item_index, false);
@@ -195,8 +195,7 @@ void Printer::_log(spdlog::level::level_enum level, const string &fmt, const Arg
         if_(offset + total_size < last, [&] {
             _log_to_buffer(offset + 1, 0, OC_FORWARD(args)...);
         });
-    },
-            "log output");
+    });
     comment("end log <<<<<<<<<<");
     desc_ = "";
 
@@ -205,7 +204,7 @@ void Printer::_log(spdlog::level::level_enum level, const string &fmt, const Arg
     // todo change to index_sequence
     auto convert = [&](const auto &arg) noexcept {
         using T = std::remove_cvref_t<decltype(arg)>;
-        uint old_cursor = cursor ++;
+        uint old_cursor = cursor++;
         if constexpr (is_dsl_v<T>) {
             uint old_offset = offset;
             offset += size_arr[old_cursor];
