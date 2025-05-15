@@ -133,11 +133,11 @@ namespace detail {
  * MATRIX: matrix<2> | matrix<3> | matrix<4>
  * STRUCT: struct<4,TYPE...> | struct<8,TYPE...> | struct<16,TYPE...>
  */
-const Type *TypeRegistry::parse_type(ocarina::string_view desc, string cname) noexcept {
+const Type *TypeRegistry::parse_type(ocarina::string_view desc) noexcept {
     if (desc == "void") {
         return nullptr;
     }
-    uint64_t hash = compute_hash(desc, cname);
+    uint64_t hash = compute_hash(desc);
     if (auto iter = _type_set.find(hash); iter != _type_set.cend()) {
         try_add_to_current_function(*iter);
         return *iter;
@@ -326,8 +326,8 @@ void TypeRegistry::try_add_to_current_function(const ocarina::Type *type) noexce
     }
 }
 
-const Type *TypeRegistry::type_from(ocarina::string_view desc, string cname) noexcept {
-    return parse_type(desc, std::move(cname));
+const Type *TypeRegistry::type_from(ocarina::string_view desc) noexcept {
+    return parse_type(desc);
 }
 
 size_t TypeRegistry::type_count() const noexcept {
@@ -340,11 +340,11 @@ const Type *TypeRegistry::type_at(uint i) const noexcept {
     return _types[i].get();
 }
 
-uint64_t TypeRegistry::compute_hash(ocarina::string_view desc, const string &cname) noexcept {
+uint64_t TypeRegistry::compute_hash(ocarina::string_view desc) noexcept {
     return Hashable::compute_hash<Type>(hash64(desc));
 }
-bool TypeRegistry::is_exist(ocarina::string_view desc, const string &cname) const noexcept {
-    return is_exist(compute_hash(desc, cname));
+bool TypeRegistry::is_exist(ocarina::string_view desc) const noexcept {
+    return is_exist(compute_hash(desc));
 }
 
 bool TypeRegistry::is_exist(uint64_t hash) const noexcept {

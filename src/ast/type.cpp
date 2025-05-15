@@ -13,8 +13,8 @@ size_t Type::count() noexcept {
     return TypeRegistry::instance().type_count();
 }
 
-const Type *Type::from(std::string_view description, ocarina::string cname) noexcept {
-    return TypeRegistry::instance().type_from(description, std::move(cname));
+const Type *Type::from(std::string_view description) noexcept {
+    return TypeRegistry::instance().type_from(description);
 }
 
 const Type *Type::at(uint32_t uid) noexcept {

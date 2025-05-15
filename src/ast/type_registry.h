@@ -26,7 +26,7 @@ const Type *Type::of() noexcept {
             cname = string(TypeDesc<raw_type>::description());
         }
     }
-    auto ret = Type::from(TypeDesc<raw_type>::description(), std::move(cname));
+    auto ret = Type::from(TypeDesc<raw_type>::description());
     if constexpr (ocarina::is_struct_v<T>) {
         if constexpr (requires {
                           Var<T>::cname;
@@ -166,15 +166,14 @@ private:
     void parse_bindless_array(Type *type, ocarina::string_view desc) noexcept;
 
 public:
-    [[nodiscard]] static uint64_t compute_hash(ocarina::string_view desc, const string &cname) noexcept;
+    [[nodiscard]] static uint64_t compute_hash(ocarina::string_view desc) noexcept;
     TypeRegistry &operator=(const TypeRegistry &) = delete;
     TypeRegistry &operator=(TypeRegistry &&) = delete;
     [[nodiscard]] static TypeRegistry &instance() noexcept;
-    [[nodiscard]] const Type *parse_type(ocarina::string_view desc,
-                                         string cname = "") noexcept;
-    [[nodiscard]] bool is_exist(ocarina::string_view desc, const string &cname) const noexcept;
+    [[nodiscard]] const Type *parse_type(ocarina::string_view desc) noexcept;
+    [[nodiscard]] bool is_exist(ocarina::string_view desc) const noexcept;
     [[nodiscard]] bool is_exist(uint64_t hash) const noexcept;
-    [[nodiscard]] const Type *type_from(ocarina::string_view desc, string cname) noexcept;
+    [[nodiscard]] const Type *type_from(ocarina::string_view desc) noexcept;
     [[nodiscard]] const Type *type_at(uint i) const noexcept;
     [[nodiscard]] size_t type_count() const noexcept;
     void add_type(ocarina::unique_ptr<Type> type);
