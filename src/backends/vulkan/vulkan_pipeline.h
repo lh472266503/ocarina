@@ -120,7 +120,16 @@ struct HashPipelineKeyFunction
     }
 };
 
-
+struct HashPipelineLayoutKeyFunction
+{
+    uint64_t operator()(const PipelineLayoutKey &pipeline_layout_key) const {
+        std::size_t res = 0;
+        for (uint8_t i = 0; i < pipeline_layout_key.descriptor_set_count; ++i) {
+            hash_combine(res, pipeline_layout_key.descriptor_set_layouts[i]);
+        }
+        return res;
+    }
+};
 
 struct VulkanVertexInfo {
     std::vector<VkVertexInputBindingDescription> binding_descriptions;
@@ -147,6 +156,6 @@ private:
     std::unordered_map<PipelineKey, VulkanPipeline, HashPipelineKeyFunction> vulkan_pipelines_;
     PipelineKey pipeline_key_cache_;
 
-    std::unordered_map<PipelineLayoutKey, VkPipelineLayout> pipeline_layouts_;
+    std::unordered_map<PipelineLayoutKey, VkPipelineLayout, HashPipelineLayoutKeyFunction> pipeline_layouts_;
 };
 }// namespace ocarina
