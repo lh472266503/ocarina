@@ -25,6 +25,7 @@ public:
 
     VkResult queue_present(VkQueue queue, uint32_t imageIndex, VkSemaphore waitSemaphore);
     OC_MAKE_MEMBER_GETTER(color_format, )
+    OC_MAKE_MEMBER_GETTER(depth_format, )
 
     uint32_t backbuffer_size() const
     {
@@ -42,7 +43,9 @@ public:
 
 private:
     void setup_backbuffers(const VkSwapchainCreateInfoKHR &swapChainCreateInfo);
+    void setup_depth_stencil();
     void release_backbuffers();
+    void release_depth_stencil();
     VkPresentModeKHR get_preferred_presentmode(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, bool vsync);
     VkFormat get_preferred_colorformat(ColorSpace colorSpace);
 
@@ -54,6 +57,13 @@ private:
     //uint32_t imageCount_ = 0;
     std::vector<SwapChainBuffer> backBuffers_;
     VkFormat color_format_{VK_FORMAT_R8G8B8A8_UNORM};
-    int2 resolution_;
+    uint2 resolution_;
+    VkFormat depth_format_{VK_FORMAT_D24_UNORM_S8_UINT};
+
+    struct {
+        VkImage image = VK_NULL_HANDLE;
+        VkDeviceMemory mem = VK_NULL_HANDLE;
+        VkImageView view = VK_NULL_HANDLE;
+    } depth_stencil;
 };
 }// namespace ocarina

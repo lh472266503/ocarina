@@ -134,15 +134,16 @@ void VulkanSwapchain::create_swapchain(const SwapChainCreation &creation, Vulkan
         vkDestroySwapchainKHR(device, oldSwapchain, nullptr);
     }
 
-    resolution_ = int2(creation.width, creation.height);
+    resolution_ = uint2(creation.width, creation.height);
     setup_backbuffers(swapchainCI);
+    setup_depth_stencil();
 }
 
 void VulkanSwapchain::release()
 {
     VkDevice device = vulkan_device_->logicalDevice();
     release_backbuffers();
-    
+    release_depth_stencil();
 }
 
 VkResult VulkanSwapchain::queue_present(VkQueue queue, uint32_t imageIndex, VkSemaphore waitSemaphore) {
@@ -204,6 +205,49 @@ void VulkanSwapchain::setup_backbuffers(const VkSwapchainCreateInfoKHR &swapChai
     }
 }
 
+void VulkanSwapchain::setup_depth_stencil()
+{
+    VkDevice device = vulkan_device_->logicalDevice();
+
+    VkImageCreateInfo imageCI{};
+    imageCI.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+    imageCI.imageType = VK_IMAGE_TYPE_2D;
+    imageCI.format = depth_format_;
+    imageCI.extent = {(uint32_t)resolution_.x, (uint32_t)resolution_.y, 1};
+    imageCI.mipLevels = 1;
+    imageCI.arrayLayers = 1;
+    imageCI.samples = VK_SAMPLE_COUNT_1_BIT;
+    imageCI.tiling = VK_IMAGE_TILING_OPTIMAL;
+    imageCI.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+
+    VK_CHECK_RESULT(vkCreateImage(device, &imageCI, nullptr, &depth_stencil.image));
+    VkMemoryRequirements mem_reqs{};
+    vkGetImageMemoryRequirements(device, depth_stencil.image, &mem_reqs);
+
+    VkMemoryAllocateInfo memAllloc{};
+    memAllloc.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+    memAllloc.allocationSize = mem_reqs.size;
+    memAllloc.memoryTypeIndex = vulkan_device_->get_memory_type(mem_reqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    VK_CHECK_RESULT(vkAllocateMemory(device, &memAllloc, nullptr, &depth_stencil.mem));
+    VK_CHECK_RESULT(vkBindImageMemory(device, depth_stencil.image, depth_stencil.mem, 0));
+
+    VkImageViewCreateInfo imageViewCI{};
+    imageViewCI.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+    imageViewCI.viewType = VK_IMAGE_VIEW_TYPE_2D;
+    imageViewCI.image = depth_stencil.image;
+    imageViewCI.format = depth_format_;
+    imageViewCI.subresourceRange.baseMipLevel = 0;
+    imageViewCI.subresourceRange.levelCount = 1;
+    imageViewCI.subresourceRange.baseArrayLayer = 0;
+    imageViewCI.subresourceRange.layerCount = 1;
+    imageViewCI.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+    // Stencil aspect should only be set on depth + stencil formats (VK_FORMAT_D16_UNORM_S8_UINT..VK_FORMAT_D32_SFLOAT_S8_UINT
+    if (depth_format_ >= VK_FORMAT_D16_UNORM_S8_UINT) {
+        imageViewCI.subresourceRange.aspectMask |= VK_IMAGE_ASPECT_STENCIL_BIT;
+    }
+    VK_CHECK_RESULT(vkCreateImageView(device, &imageViewCI, nullptr, &depth_stencil.view));
+}
+
 void VulkanSwapchain::release_backbuffers()
 {
     for (size_t i = 0; i < backBuffers_.size(); i++) {
@@ -212,6 +256,23 @@ void VulkanSwapchain::release_backbuffers()
     }
 
     backBuffers_.clear();
+}
+
+void VulkanSwapchain::release_depth_stencil()
+{
+    VkDevice device = vulkan_device_->logicalDevice();
+    if (depth_stencil.view != VK_NULL_HANDLE) {
+        vkDestroyImageView(vulkan_device_->logicalDevice(), depth_stencil.view, nullptr);
+        depth_stencil.view = VK_NULL_HANDLE;
+    }
+    if (depth_stencil.image != VK_NULL_HANDLE) {
+        vkDestroyImage(vulkan_device_->logicalDevice(), depth_stencil.image, nullptr);
+        depth_stencil.image = VK_NULL_HANDLE;
+    }
+    if (depth_stencil.mem != VK_NULL_HANDLE) {
+        vkFreeMemory(vulkan_device_->logicalDevice(), depth_stencil.mem, nullptr);
+        depth_stencil.mem = VK_NULL_HANDLE;
+    }
 }
 
 VkPresentModeKHR VulkanSwapchain::get_preferred_presentmode(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, bool vsync)

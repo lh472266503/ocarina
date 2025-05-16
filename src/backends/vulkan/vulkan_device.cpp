@@ -275,6 +275,16 @@ IndexBuffer* VulkanDevice::create_index_buffer(const void* initial_data, uint32_
     return index_buffer;
 }
 
+void VulkanDevice::begin_frame() noexcept
+{
+    VulkanDriver::instance().begin_frame();
+}
+
+void VulkanDevice::end_frame() noexcept
+{
+    VulkanDriver::instance().end_frame();
+}
+
 VulkanBuffer *VulkanDevice::create_vulkan_buffer(VkBufferUsageFlags usage_flags, VkMemoryPropertyFlags memory_property_flags, VkDeviceSize size, const void *data) {
     return VulkanBufferManager::instance()->create_vulkan_buffer(this, usage_flags, memory_property_flags, size, data);
 }

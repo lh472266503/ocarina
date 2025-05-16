@@ -88,6 +88,8 @@ public:
         virtual void render() noexcept = 0;
         virtual VertexBuffer* create_vertex_buffer() noexcept = 0;
         virtual IndexBuffer* create_index_buffer(const void *initial_data, uint32_t bytes) noexcept = 0;
+        virtual void begin_frame() noexcept = 0;
+        virtual void end_frame() noexcept = 0;
     };
 
     using Creator = Device::Impl *(FileManager *);
@@ -173,6 +175,14 @@ public:
 
     [[nodiscard]] IndexBuffer* create_index_buffer(const void *initial_data, uint32_t bytes) {
         return impl_->create_index_buffer(initial_data, bytes);
+    }
+
+    [[nodiscard]] void begin_frame() {
+        impl_->begin_frame();
+    }
+
+    [[nodiscard]] void end_frame() {
+        impl_->end_frame();
     }
 
     [[nodiscard]] static Device create_device(const string &backend_name, const ocarina::InstanceCreation &instance_creation);

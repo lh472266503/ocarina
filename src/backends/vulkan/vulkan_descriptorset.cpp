@@ -1,6 +1,8 @@
 
 #include "vulkan_device.h"
 #include "vulkan_descriptorset.h"
+#include "vulkan_shader.h"
+#include "util.h"
 
 namespace ocarina {
 
@@ -96,7 +98,66 @@ VkDescriptorSet VulkanDescriptorManager::get_descriptor_set(const VulkanDescript
     return ret;
 }
 
-void VulkanDescriptorManager::clear(VulkanDevice* device)
+VkDescriptorSetLayout VulkanDescriptorManager::create_descriptor_set_layout(VulkanShader **shaders, uint32_t shaders_count) {
+    constexpr uint32_t max_bindings = 256;
+    static VkDescriptorSetLayoutBinding bindings[max_bindings];
+    VkDescriptorSetLayoutBinding binding;
+    uint32_t binding_index = 0;
+    for (size_t i = 0; i < shaders_count; i++) {
+        VulkanShader* shader = shaders[i];
+        
+        binding.stageFlags = shader->stage();
+
+        DescriptorCount descriptor_count = shader->descriptor_count();
+        for (uint8_t j = 0; j < descriptor_count.ubo; ++j)
+        {
+            binding.binding = binding_index;
+            binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            binding.descriptorCount = 1;
+            binding.pImmutableSamplers = nullptr;
+            bindings[binding_index++] = binding;
+        }
+
+        for (uint8_t j = 0; j < descriptor_count.srv; ++j)
+        {
+            binding.binding = binding_index;
+            binding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+            binding.descriptorCount = 1;
+            binding.pImmutableSamplers = nullptr;
+            bindings[binding_index++] = binding;
+        }
+
+        for (uint8_t j = 0; j < descriptor_count.uav; ++j)
+        {
+            binding.binding = binding_index;
+            binding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+            binding.descriptorCount = 1;
+            binding.pImmutableSamplers = nullptr;
+            bindings[binding_index++] = binding;
+        }
+
+        for (uint8_t j = 0; j < descriptor_count.samplers; ++j)
+        {
+            binding.binding = binding_index;
+            binding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
+            binding.descriptorCount = 1;
+            binding.pImmutableSamplers = nullptr;
+            bindings[binding_index++] = binding;
+        }
+    }
+
+    VkDescriptorSetLayoutCreateInfo info;
+    info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    info.pBindings = bindings;
+    info.bindingCount = binding_index;
+
+    VkDescriptorSetLayout descriptorSetLayout;
+    VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device_->logicalDevice(), &info, nullptr, &descriptorSetLayout));
+
+    return descriptorSetLayout;
+}
+
+void VulkanDescriptorManager::clear()
 {
     pools_.clear();
 }

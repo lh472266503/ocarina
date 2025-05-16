@@ -109,6 +109,8 @@ public:
     VertexBuffer* create_vertex_buffer() noexcept override;
     IndexBuffer* create_index_buffer(const void *initial_data, uint32_t bytes) noexcept override;
     VulkanBuffer *create_vulkan_buffer(VkBufferUsageFlags usage_flags, VkMemoryPropertyFlags memory_property_flags, VkDeviceSize size, const void *data = nullptr);
+    void begin_frame() noexcept override;
+    void end_frame() noexcept override;
 
     OC_MAKE_MEMBER_GETTER(logicalDevice, );
 

@@ -4,6 +4,7 @@
 #include "core/stl.h"
 #include "rhi/graphics_descriptions.h"
 #include <vulkan/vulkan.h>
+#include "vulkan_pipeline.h"
 
 namespace ocarina {
 class VulkanPipelineManager;
@@ -14,6 +15,7 @@ class VulkanShaderManager;
 class VulkanDescriptorManager;
 class VulkanShader;
 struct InstanceCreation;
+struct PipelineState;
 
 class VulkanDriver : public concepts::Noncopyable {
 public:
@@ -24,7 +26,7 @@ public:
         return s_instance;
     }
     VulkanDevice *create_device(FileManager *file_manager, const InstanceCreation &instance_creation);
-    void bind_pipeline(const VulkanPipeline &pipeline);
+    void bind_pipeline(VkPipelineLayout pipeline_layout, const VulkanPipeline &pipeline);
     void terminate();
     void render();
     inline VkDevice device() const;
@@ -33,6 +35,20 @@ public:
                                 const std::set<std::string> &options,
                                 const std::string &entry_point);
     VulkanShader* get_shader(handle_ty shader) const;
+    OC_MAKE_MEMBER_GETTER(current_buffer, )
+    VkCommandBuffer get_current_command_buffer() const
+    {
+        return draw_cmd_buffers[current_buffer_];
+    }
+
+    std::tuple<VkPipelineLayout, VulkanPipeline> get_pipeline(const PipelineState &pipeline_state);
+
+    void begin_frame();
+    void end_frame();
+
+    VkDescriptorSetLayout create_descriptor_set_layout(VulkanShader **shaders, uint32_t shaders_count);
+    VkPipelineLayout get_pipeline_layout(VkDescriptorSetLayout *descriptset_layouts, uint8_t descriptset_layouts_count);
+
 private:
     void setup_frame_buffer();
     void setup_depth_stencil(uint32_t width, uint32_t height);
@@ -61,7 +77,7 @@ private:
     // Command buffers used for rendering
     std::vector<VkCommandBuffer> draw_cmd_buffers;
     // Active frame buffer index
-    uint32_t current_buffer = 0;
+    uint32_t current_buffer_ = 0;
 
     struct {
         VkImage image;

@@ -267,6 +267,31 @@ enum class DeviceMemoryUsage : uint8_t {
 //    Copy     ///< Copy command list
 //};
 
+enum class TextureUsageFlags : uint32_t {
+    None = (0 << 0),            ///
+    RenderTarget = (1 << 1),   /// Can bind as a render target.
+    DepthStencil = (1 << 2),   /// Can bind as a depth stencil.
+    CopySrc = (1 << 3),        /// Can bind as a copy source.
+    CopyDst = (1 << 4),        /// Can bind as a copy destination.
+    SwapChain = (1 << 5),      /// Can bind as a swap chain
+    ShaderReadWrite = (1 << 6),/// Can bind as for read write access from all shader stages (UAV).
+    ShaderReadOnly = (1 << 7)  /// Can bind as for read only access from all shader stages (SRV).
+};
 
+struct RenderTargetCreation {
+    PixelStorage format = PixelStorage::BYTE4; ///< Back buffers format.
+    bool srgb = false;///< Back buffers sRGB.
+    uint32_t width = 800;          ///< Back buffers width.
+    uint32_t height = 600;              ///< Back buffers height.
+    uint32_t mipmaps = 1;      ///< mipmap level count.
+    uint32_t array_size = 1;  /// texture array size
+    uint32_t msaa_samples = 1;  /// msaa samples
+    TextureUsageFlags usage = TextureUsageFlags::None; ///< texture usage
+};
+
+struct RenderPassCreation
+{
+
+};
 
 }// namespace ocarina

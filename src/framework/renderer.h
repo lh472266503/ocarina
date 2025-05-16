@@ -13,10 +13,12 @@
 
 namespace ocarina {
 class Primitive;
+class RenderPass;
+class Device;
 
 class Renderer : public concepts::Noncopyable {
 public:
-    Renderer() = default;
+    Renderer(Device *device) : device_(device) {}
     ~Renderer();
 
     using UpdateFrameCallBack = ocarina::function<void(double)>;
@@ -38,14 +40,14 @@ public:
     }
 
     void render_frame();
-    void add_opaque_primitive(Primitive* primitive)
+    void add_render_pass(RenderPass* render_pass)
     {
-        opaque_primitives_.push_back(primitive);
+        render_passes_.emplace_back(render_pass);
     }
 
-    void add_transparent_primitive(Primitive* primitive)
+    void remove_render_pass(RenderPass* render_pass)
     {
-        transparent_primitives_.push_back(primitive);
+        render_passes_.remove(render_pass);
     }
 
 private:
@@ -54,10 +56,10 @@ private:
     RenderCallback render = nullptr;
     ReleaseCallback release = nullptr;
     float4 clear_color = {0, 0, 0, 1};
-
+    
 protected:
-    std::list<Primitive*> opaque_primitives_;
-    std::list<Primitive*> transparent_primitives_;
+    std::list<RenderPass*> render_passes_;
+    Device* device_ = nullptr;
 };
 
 }// namespace ocarina

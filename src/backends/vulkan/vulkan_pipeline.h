@@ -86,6 +86,25 @@ struct PipelineKey
     }
 };
 
+struct PipelineLayoutKey
+{
+    constexpr static uint8_t MAX_DESCRIPTOR_SET = 4;
+    std::array < VkDescriptorSetLayout, MAX_DESCRIPTOR_SET> descriptor_set_layouts = {VK_NULL_HANDLE};
+    uint8_t descriptor_set_count = 0;
+
+    bool operator==(const PipelineLayoutKey &other) const {
+        if (descriptor_set_count != other.descriptor_set_count) {
+            return false;
+        }
+        for (uint8_t i = 0; i < descriptor_set_count; ++i) {
+            if (descriptor_set_layouts[i] != other.descriptor_set_layouts[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+};
+
 struct HashPipelineKeyFunction
 {
     uint64_t operator()(const PipelineKey &pipeline_key) const {
@@ -119,11 +138,15 @@ public:
     void bind_vertex_attributes(VkVertexInputAttributeDescription const *attributes,
                                 VkVertexInputBindingDescription const *binds, uint8_t attr_count, uint8_t bind_desc_count);
     void bind_topology(PrimitiveType primitive_type);
-    VulkanPipeline get_or_create_pipeline(const PipelineState& pipeline_state, VulkanDevice* device);
+    std::tuple<VkPipelineLayout, VulkanPipeline> get_or_create_pipeline(const PipelineState &pipeline_state, VulkanDevice *device);
     void clear(VulkanDevice *device);
+
+    VkPipelineLayout get_pipeline_layout(VulkanDevice *device, VkDescriptorSetLayout *descriptset_layouts, uint8_t descriptset_layouts_count);
 
 private:
     std::unordered_map<PipelineKey, VulkanPipeline, HashPipelineKeyFunction> vulkan_pipelines_;
     PipelineKey pipeline_key_cache_;
+
+    std::unordered_map<PipelineLayoutKey, VkPipelineLayout> pipeline_layouts_;
 };
 }// namespace ocarina

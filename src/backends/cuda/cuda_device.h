@@ -140,5 +140,7 @@ public:
     void render() noexcept override {}
     VertexBuffer* create_vertex_buffer() noexcept override { return nullptr; }
     IndexBuffer* create_index_buffer(const void *initial_data, uint32_t bytes) noexcept override { return nullptr; }
+    void begin_frame() noexcept override {}
+    void end_frame() noexcept override {}
 };
 }// namespace ocarina

@@ -214,4 +214,57 @@ namespace ocarina {
             return VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
         }
     }
+
+    static VkSampleCountFlagBits get_vulkan_sample_count(uint sample_count)
+    {
+        switch (sample_count)
+        {
+        case 1:
+            return VK_SAMPLE_COUNT_1_BIT;
+        case 2:
+            return VK_SAMPLE_COUNT_2_BIT;
+        case 4:
+            return VK_SAMPLE_COUNT_4_BIT;
+        case 8:
+            return VK_SAMPLE_COUNT_8_BIT;
+        case 16:
+            return VK_SAMPLE_COUNT_16_BIT;
+        default:
+            return VK_SAMPLE_COUNT_1_BIT;
+        }
+    }
+
+    static VkImageUsageFlagBits get_vulkan_image_usage_flag(uint32_t image_usage)
+    {
+        uint32_t usage = 0;
+        if (image_usage & static_cast<uint32_t>(TextureUsageFlags::ShaderReadOnly)) {
+            usage |= VK_IMAGE_USAGE_SAMPLED_BIT;
+        }
+
+        if (image_usage & static_cast<uint32_t>(TextureUsageFlags::ShaderReadWrite)) {
+            usage |= (VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
+        }
+
+        if (image_usage & static_cast<uint32_t>(TextureUsageFlags::RenderTarget)) {
+            usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+        }
+
+        if (image_usage & static_cast<uint32_t>(TextureUsageFlags::DepthStencil)) {
+            usage |= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+        }
+
+        if (image_usage & static_cast<uint32_t>(TextureUsageFlags::CopySrc)) {
+            usage |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+        }
+
+        if (image_usage & static_cast<uint32_t>(TextureUsageFlags::CopyDst)) {
+            usage |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+        }
+
+        if (image_usage & static_cast<uint32_t>(TextureUsageFlags::SwapChain)) {
+            usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+        }
+
+        return static_cast<VkImageUsageFlagBits>(usage);
+    }
     }

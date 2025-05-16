@@ -43,11 +43,7 @@ struct DepthStencilState {
 struct PipelineState {
     static constexpr uint16_t MAX_SHADER_STAGE = 3;
     handle_ty shaders[MAX_SHADER_STAGE];
-    //std::vector<VertexAttribute> vertex_attributes;
-    //std::vector<VertexBinding> vertex_bindings;
-    //VulkanVertexInfo vertex_info;
-    //Handle<HwVertexBufferInfo> vertexBufferInfo;           
-    //PipelineLayout pipelineLayout;            
+    handle_ty descriptorset_layout = InvalidUI64;        
     VertexBuffer *vertex_buffer = nullptr;             
     RasterState raster_state;//  4
     BlendState blend_state;

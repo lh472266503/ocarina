@@ -4,19 +4,13 @@
 
 #pragma once
 
-#include "core/header.h"
 #include "core/stl.h"
-#include "dsl/func.h"
-#include "dsl/rtx_type.h"
-#include "core/image_base.h"
-#include "core/concepts.h"
-#include "core/thread_pool.h"
-#include "params.h"
 #include "graphics_descriptions.h"
 
 namespace ocarina {
 struct PipelineState;
 class IndexBuffer;
+class RenderTarget;
 
 struct DrawCallItem {
     PipelineState* pipeline_state = nullptr;
@@ -25,7 +19,7 @@ struct DrawCallItem {
 
 class RenderPass {
 public:
-    RenderPass() = default;
+    RenderPass(const RenderPassCreation &render_pass_creation) {}
     virtual ~RenderPass(){};
 
     void clear_draw_call_items() {
@@ -36,12 +30,31 @@ public:
         draw_call_items_.emplace_back(std::move(item));
     }
 
+    void add_render_target(RenderTarget* render_target) {
+        OC_ASSERT(render_target_count_ < kMaxRenderTargets);
+        render_target_[render_target_count_++] = render_target;
+    }
+
     virtual void begin_render_pass() = 0;
     virtual void end_render_pass() = 0;
+    virtual void draw_items() = 0;
 protected:
+    bool is_use_swapchain_framebuffer() const {
+        return render_target_count_ == 0;
+    }
+
     std::list<DrawCallItem> draw_call_items_;
     float4 viewport_ = {0, 0, 0, 0};
     int4 scissor_ = {0, 0, 0, 0};
+    uint2 size_ = {0, 0};
+
+    std::string name_ = "RenderPass";
+
+    //if render_target_count == 0, use the swapchain backbuffer as render target
+    uint32_t render_target_count_ = 0;
+    constexpr static const int kMaxRenderTargets = 8;
+    RenderTarget *render_target_[kMaxRenderTargets] = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
+    RenderTarget* depth_stencil_target_ = nullptr;
 };
 
 }// namespace ocarina

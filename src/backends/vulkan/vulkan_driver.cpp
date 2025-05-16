@@ -10,9 +10,7 @@
 namespace ocarina {
 
 VulkanDriver::VulkanDriver() {
-    vulkan_pipeline_manager = std::make_unique<VulkanPipelineManager>();
-    vulkan_shader_manager = std::make_unique<VulkanShaderManager>();
-    vulkan_descriptor_manager = std::make_unique<VulkanDescriptorManager>();
+    
 }
 
 VulkanDriver::~VulkanDriver() {
@@ -33,30 +31,33 @@ VulkanDevice* VulkanDriver::create_device(FileManager* file_manager, const Insta
     return vulkan_device_;
 }
 
-void VulkanDriver::bind_pipeline(const VulkanPipeline& pipeline)
-{
-    //vkCmdBindPipeline(cmdbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, cacheEntry->handle);
+void VulkanDriver::bind_pipeline(VkPipelineLayout pipeline_layout, const VulkanPipeline &pipeline) {
+    VkCommandBuffer current_buffer = get_current_command_buffer();
+
+    //vkCmdBindDescriptorSets(current_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout);
+    vkCmdBindPipeline(current_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.pipeline_);
+
 }
 
 void VulkanDriver::terminate()
 {
     release_frame_buffer();
     vulkan_pipeline_manager->clear(vulkan_device_);
-    vulkan_descriptor_manager->clear(vulkan_device_);
+    vulkan_descriptor_manager->clear();
     vkDestroySemaphore(device(), semaphores.presentComplete, nullptr);
     vkDestroySemaphore(device(), semaphores.renderComplete, nullptr);
 }
 
 void VulkanDriver::render()
 {
-    prepare_frame();
+    //prepare_frame();
     submit_info.commandBufferCount = 1;
-    submit_info.pCommandBuffers = &draw_cmd_buffers[current_buffer];
+    submit_info.pCommandBuffers = &draw_cmd_buffers[current_buffer_];
 
     // Submit to queue
     vkQueueSubmit(graphics_queue, 1, &submit_info, VK_NULL_HANDLE);
 
-    vulkan_device_->get_swapchain()->queue_present(graphics_queue, current_buffer, semaphores.renderComplete);
+    vulkan_device_->get_swapchain()->queue_present(graphics_queue, current_buffer_, semaphores.renderComplete);
 }
 
 inline VkDevice VulkanDriver::device() const {
@@ -78,7 +79,7 @@ VulkanShader* VulkanDriver::get_shader(handle_ty shader) const
 void VulkanDriver::setup_frame_buffer()
 {
     VulkanSwapchain *swapchain = vulkan_device_->get_swapchain();
-    int2 resolution = swapchain->resolution();
+    uint2 resolution = swapchain->resolution();
     //first create the frame buffer attach renderpass
     std::array<VkAttachmentDescription, 2> attachments = {};
     // Color attachment
@@ -271,6 +272,9 @@ void VulkanDriver::release_command_buffers() {
 
 void VulkanDriver::initialize()
 {
+    vulkan_pipeline_manager = std::make_unique<VulkanPipelineManager>();
+    vulkan_shader_manager = std::make_unique<VulkanShaderManager>();
+    vulkan_descriptor_manager = std::make_unique<VulkanDescriptorManager>(vulkan_device_);
     setup_frame_buffer();
     //get the graphics queue
     vkGetDeviceQueue(device(), vulkan_device_->get_queue_family_index(QueueType::Graphics), 0, &graphics_queue);
@@ -280,7 +284,7 @@ void VulkanDriver::prepare_frame()
 {
     // Acquire the next image from the swap chain
     VulkanSwapchain* swapchain = vulkan_device_->get_swapchain();
-    VkResult result = swapchain->aquire_next_image(semaphores.presentComplete, &current_buffer);
+    VkResult result = swapchain->aquire_next_image(semaphores.presentComplete, &current_buffer_);
     // Recreate the swapchain if it's no longer compatible with the surface (OUT_OF_DATE)
     // SRS - If no longer optimal (VK_SUBOPTIMAL_KHR), wait until submitFrame() in case number of swapchain images will change on resize
     if ((result == VK_ERROR_OUT_OF_DATE_KHR) || (result == VK_SUBOPTIMAL_KHR)) {
@@ -292,13 +296,15 @@ void VulkanDriver::prepare_frame()
         VK_CHECK_RESULT(result);
     }
 
-    int2 resolution = swapchain->resolution();
+    uint2 resolution = swapchain->resolution();
 
     VkCommandBufferBeginInfo infoCmd;
     infoCmd.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     infoCmd.pInheritanceInfo = nullptr;
     infoCmd.pNext = nullptr;
     infoCmd.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+    VK_CHECK_RESULT(vkBeginCommandBuffer(draw_cmd_buffers[current_buffer_], &infoCmd));
 
     VkClearValue clearValues[2];
     VkClearColorValue defaultClearColor = {{0.025f, 0.025f, 0.025f, 1.0f}};
@@ -316,11 +322,11 @@ void VulkanDriver::prepare_frame()
     renderPassBeginInfo.pClearValues = clearValues;
 
     // Set target frame buffer
-    renderPassBeginInfo.framebuffer = frame_buffers[current_buffer];
+    renderPassBeginInfo.framebuffer = frame_buffers[current_buffer_];
 
-    VK_CHECK_RESULT(vkBeginCommandBuffer(draw_cmd_buffers[current_buffer], &infoCmd));
+    
 
-    vkCmdBeginRenderPass(draw_cmd_buffers[current_buffer], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+    vkCmdBeginRenderPass(draw_cmd_buffers[current_buffer_], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
     VkViewport viewport = {
         .x = 0.0f,
@@ -329,30 +335,52 @@ void VulkanDriver::prepare_frame()
         .height = (float)resolution.y,
         .minDepth = 0.0f,
         .maxDepth = 1.0f};
-    vkCmdSetViewport(draw_cmd_buffers[current_buffer], 0, 1, &viewport);
+    vkCmdSetViewport(draw_cmd_buffers[current_buffer_], 0, 1, &viewport);
 
     VkRect2D scissor;
     scissor.offset = {0, 0};
     scissor.extent = {(uint32_t)resolution.x, (uint32_t)resolution.y};
-    vkCmdSetScissor(draw_cmd_buffers[current_buffer], 0, 1, &scissor);
+    vkCmdSetScissor(draw_cmd_buffers[current_buffer_], 0, 1, &scissor);
 
-    //vkCmdBindDescriptorSets(draw_cmd_buffers[current_buffer], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSet, 0, NULL);
-    //vkCmdBindPipeline(draw_cmd_buffers[current_buffer], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.solid);
+    vkCmdEndRenderPass(draw_cmd_buffers[current_buffer_]);
 
-    //VkDeviceSize offsets[1] = {0};
-    //vkCmdBindVertexBuffers(draw_cmd_buffers[current_buffer], 0, 1, &vertexBuffer.buffer, offsets);
-    //vkCmdBindIndexBuffer(draw_cmd_buffers[current_buffer], indexBuffer.buffer, 0, VK_INDEX_TYPE_UINT32);
-
-    //vkCmdDrawIndexed(draw_cmd_buffers[current_buffer], indexCount, 1, 0, 0, 0);
-
-    vkCmdEndRenderPass(draw_cmd_buffers[current_buffer]);
-
-    VK_CHECK_RESULT(vkEndCommandBuffer(draw_cmd_buffers[current_buffer]));
+    VK_CHECK_RESULT(vkEndCommandBuffer(draw_cmd_buffers[current_buffer_]));
 }
 
 void VulkanDriver::window_resize()
 {
 
+}
+
+std::tuple<VkPipelineLayout, VulkanPipeline> VulkanDriver::get_pipeline(const PipelineState &pipeline_state) {
+    return vulkan_pipeline_manager->get_or_create_pipeline(pipeline_state, vulkan_device_);
+}
+
+void VulkanDriver::begin_frame()
+{
+    VulkanSwapchain *swapchain = vulkan_device_->get_swapchain();
+    VkResult result = swapchain->aquire_next_image(semaphores.presentComplete, &current_buffer_);
+
+    VkCommandBufferBeginInfo infoCmd;
+    infoCmd.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    infoCmd.pInheritanceInfo = nullptr;
+    infoCmd.pNext = nullptr;
+    infoCmd.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+    VK_CHECK_RESULT(vkBeginCommandBuffer(draw_cmd_buffers[current_buffer_], &infoCmd));
+}
+
+void VulkanDriver::end_frame()
+{
+    vkEndCommandBuffer(draw_cmd_buffers[current_buffer_]);
+}
+
+VkDescriptorSetLayout VulkanDriver::create_descriptor_set_layout(VulkanShader **shaders, uint32_t shaders_count) {
+    return vulkan_descriptor_manager->create_descriptor_set_layout(shaders, shaders_count);
+}
+
+VkPipelineLayout VulkanDriver::get_pipeline_layout(VkDescriptorSetLayout *descriptset_layouts, uint8_t descriptset_layouts_count) {
+    return vulkan_pipeline_manager->get_pipeline_layout(vulkan_device_, descriptset_layouts, descriptset_layouts_count);
 }
 
 }// namespace ocarina

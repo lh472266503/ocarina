@@ -12,6 +12,7 @@
 namespace ocarina {
 
 class VulkanDevice;
+class VulkanShader;
 
 class VulkanDescriptor {
 public:
@@ -92,12 +93,17 @@ private :
 
 class VulkanDescriptorManager : public concepts::Noncopyable {
 public:
+    VulkanDescriptorManager(VulkanDevice *device) : device_(device) {
+    }
     ~VulkanDescriptorManager(){};
 
     VkDescriptorSet get_descriptor_set(const VulkanDescriptorSetLayout &layout, VulkanDevice *device);
-    void clear(VulkanDevice *device);
+    void clear();
+
+    VkDescriptorSetLayout create_descriptor_set_layout(VulkanShader **shaders, uint32_t shaders_count);
 
 private:
+    VulkanDevice *device_ = nullptr;
     std::vector<std::unique_ptr<VulkanDescriptorPool>> pools_;
 };
 
