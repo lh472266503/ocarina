@@ -131,18 +131,18 @@ public:
     }
 };
 
-#define VISION_DEFINE_BOX(scalar_t, suffix)   \
+#define OC_DEFINE_BOX(scalar_t, suffix)   \
     using Box##2##suffix = TBox<scalar_t, 2>; \
     using Box##3##suffix = TBox<scalar_t, 3>; \
     using Box##4##suffix = TBox<scalar_t, 4>;
 
-VISION_DEFINE_BOX(int32_t, i);
-VISION_DEFINE_BOX(uint32_t, u);
-VISION_DEFINE_BOX(float, f);
-VISION_DEFINE_BOX(double, d);
-VISION_DEFINE_BOX(int64_t, l);
+OC_DEFINE_BOX(int32_t, i);
+OC_DEFINE_BOX(uint32_t, u);
+OC_DEFINE_BOX(float, f);
+OC_DEFINE_BOX(double, d);
+OC_DEFINE_BOX(int64_t, l);
 
-#undef VISION_DEFINE_BOX
+#undef OC_DEFINE_BOX
 
 template<EPort p = D>
 [[nodiscard]] oc_bool<p> in_screen(const oc_int2<p> &pixel,
