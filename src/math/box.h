@@ -12,9 +12,7 @@
 #include "dsl/struct.h"
 #include "dsl/builtin.h"
 
-namespace ocarina {
-
-inline namespace math {
+namespace ocarina::inline math {
 template<typename T, size_t N>
 struct TBox {
 public:
@@ -152,7 +150,7 @@ template<EPort p = D>
 
 }
 
-}// namespace ocarina::math
+// namespace ocarina::math
 
 // clang-format off
 OC_STRUCT(ocarina, Box2u, lower, upper) {
