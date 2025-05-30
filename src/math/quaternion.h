@@ -8,7 +8,7 @@
 #include "dsl/dsl.h"
 #include "geometry.h"
 
-namespace vision {
+namespace ocarina {
 
 template<EPort p>
 class oc_quaternion {
@@ -132,4 +132,4 @@ public:
 using quaternion = oc_quaternion<H>;
 using Quaternion = oc_quaternion<D>;
 
-}// namespace vision
+}// namespace ocarina
