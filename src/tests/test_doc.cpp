@@ -566,6 +566,9 @@ template<size_t N, size_t M, size_t Dim>
 }
 
 int main(int argc, char *argv[]) {
+
+    float3x2 m2x = float3x2(1.f, 1.f, 1.f, 1.f, 1.f ,1.f);
+
     auto m = (float3x2() * float2x3());
     cout << to_str(m) << endl;
 

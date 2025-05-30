@@ -32,8 +32,8 @@ public:
     explicit constexpr Matrix(Args &&...args) noexcept
         : cols_([&]<size_t... i>(std::index_sequence<i...>,
                                  const array<scalar_type, element_num> &arr) {
-              return array_t{vector_type{addressof(arr.data()[i * M])}...};
-          }(std::make_index_sequence<N>(), array<scalar_type, element_num>{static_cast<scalar_type>(OC_FORWARD(args))...})) {
+              return array_t{vector_type{addressof(arr.data()[i * N])}...};
+          }(std::make_index_sequence<M>(), array<scalar_type, element_num>{static_cast<scalar_type>(OC_FORWARD(args))...})) {
     }
 
     template<size_t NN, size_t MM>
@@ -62,7 +62,7 @@ public:
     [[nodiscard]] Matrix<N, M> func(Matrix<N, M> m) noexcept { \
         return [&]<size_t... i>(std::index_sequence<i...>) {   \
             return ocarina::Matrix<N, M>(func(m[i])...);       \
-        }(std::make_index_sequence<N>());                      \
+        }(std::make_index_sequence<M>());                      \
     }
 
 OC_MATRIX_UNARY_FUNC(rcp)
@@ -136,14 +136,14 @@ template<size_t N, size_t M>
 [[nodiscard]] constexpr auto operator-(ocarina::Matrix<N, M> m) {
     return [&]<size_t... i>(std::index_sequence<i...>) {
         return ocarina::Matrix<N, M>((-m[i])...);
-    }(std::make_index_sequence<N>());
+    }(std::make_index_sequence<M>());
 }
 
 template<size_t N, size_t M>
 [[nodiscard]] constexpr auto operator*(ocarina::Matrix<N, M> m, float s) {
     return [&]<size_t... i>(std::index_sequence<i...>) {
         return ocarina::Matrix<N, M>((m[i] * s)...);
-    }(std::make_index_sequence<N>());
+    }(std::make_index_sequence<M>());
 }
 
 template<size_t N, size_t M>
@@ -174,7 +174,7 @@ template<size_t N, size_t M>
 [[nodiscard]] constexpr auto operator+(ocarina::Matrix<N, M> lhs, ocarina::Matrix<N, M> rhs) noexcept {
     return [&]<size_t... i>(std::index_sequence<i...>) {
         return ocarina::Matrix<N, M>(lhs[i] + rhs[i]...);
-    }(std::make_index_sequence<N>());
+    }(std::make_index_sequence<M>());
 }
 
 template<size_t N, size_t M>
