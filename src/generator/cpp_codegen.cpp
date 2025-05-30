@@ -43,8 +43,8 @@ struct LiteralPrinter {
     void operator()(Matrix<N, M> m) {
         auto printer = *this;
         scratch << TYPE_PREFIX << Type::of<Matrix<N, M>>()->name() << "(";
-        for (int i = 0; i < N; ++i) {
-            const char *token = i == N - 1 ? ")" : ",";
+        for (int i = 0; i < M; ++i) {
+            const char *token = i == M - 1 ? ")" : ",";
             printer(m[i]);
             scratch << token;
         }
