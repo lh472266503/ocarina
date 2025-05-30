@@ -11,19 +11,19 @@ namespace ocarina {
 template<size_t N, size_t M>
 struct Matrix {
 public:
-    static constexpr auto row_num = N;
-    static constexpr auto col_num = M;
+    static constexpr auto row_num = M;
+    static constexpr auto col_num = N;
     static constexpr auto element_num = M * N;
     using scalar_type = float;
-    using vector_type = Vector<scalar_type, N>;
-    using array_t = array<vector_type, M>;
+    using vector_type = Vector<scalar_type, M>;
+    using array_t = array<vector_type, N>;
 
 private:
     array_t cols_{};
 
 public:
     template<typename... Args>
-    requires(sizeof...(Args) == M)
+    requires(sizeof...(Args) == N)
     explicit constexpr Matrix(Args &&...args) noexcept
         : cols_(array_t{static_cast<vector_type>(OC_FORWARD(args))...}) {}
 
@@ -40,8 +40,8 @@ public:
     requires(NN >= N && MM >= M)
     explicit constexpr Matrix(Matrix<NN, MM> mat) noexcept
         : cols_{[&]<size_t... i>(std::index_sequence<i...>) {
-              return std::array<Vector<float, N>, M>{Vector<float, N>{mat[i]}...};
-          }(std::make_index_sequence<M>())} {}
+              return std::array<Vector<float, M>, N>{Vector<float, M>{mat[i]}...};
+          }(std::make_index_sequence<N>())} {}
 
     constexpr Matrix(scalar_type s = 1) noexcept
         : cols_([&]<size_t... i>(std::index_sequence<i...>) {
@@ -212,16 +212,16 @@ OC_MAKE_MATRIX_(4, 2)
 OC_MAKE_MATRIX_(4, 3)
 OC_MAKE_MATRIX_(4, 4)
 
-template<size_t M, size_t N>
-[[nodiscard]] constexpr Matrix<N, M> transpose(const Matrix<M, N> &mat) noexcept {
-    Matrix<N, M> ret = make_float<N, M>();
-    auto func_m = [&]<size_t... m>(size_t i, std::index_sequence<m...>) {
-        return Vector<float, N>((mat[m][i])...);
+template<size_t N, size_t M>
+[[nodiscard]] constexpr Matrix<M, N> transpose(const Matrix<N, M> &mat) noexcept {
+    Matrix<M, N> ret = make_float<M, N>();
+    auto func_n = [&]<size_t... n>(size_t i, std::index_sequence<n...>) {
+        return Vector<float, N>((mat[n][i])...);
     };
-    auto func_n = [&]<size_t... n>(std::index_sequence<n...>) {
-        return Matrix<N, M>(func_m(n, std::make_index_sequence<N>())...);
+    auto func_m = [&]<size_t... m>(std::index_sequence<m...>) {
+        return Matrix<M, N>(func_n(m, std::make_index_sequence<N>())...);
     };
-    return func_n(std::make_index_sequence<M>());
+    return func_m(std::make_index_sequence<M>());
 }
 
 [[nodiscard]] constexpr auto make_float3x3(float2x2 m) noexcept {
@@ -237,12 +237,12 @@ template<size_t M, size_t N>
                     float4{0.0f, 0.0f, 0.0f, 1.0f}};
 }
 
-[[nodiscard]] constexpr auto make_float4x4(float4x3 m) noexcept {
+[[nodiscard]] constexpr auto make_float4x4(float3x4 m) noexcept {
     return float4x4{m[0], m[1], m[2],
                     float4{0.0f, 0.0f, 0.0f, 1.0f}};
 }
 
-[[nodiscard]] constexpr auto make_float4x4(float3x4 m) noexcept {
+[[nodiscard]] constexpr auto make_float4x4(float4x3 m) noexcept {
     return float4x4{make_float4(m[0], 0.0f),
                     make_float4(m[1], 0.0f),
                     make_float4(m[2], 0.0f),
