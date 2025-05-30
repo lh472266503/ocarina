@@ -278,10 +278,14 @@ void test_lambda(Device &device, Stream &stream) {
     //    bool abaa = ocarina::is_vector2_v<ocarina::detail::VectorStorage<int, 2>>;
 
     Kernel kernel = [&](Uint i) {
-        auto arr = DynamicArray<float>{1};
-        outline("principled transmission", [&] {
-            rcp(arr);
-        });
+
+        Float3x4 m3 = float3x4{};
+        Float4x3 m4 = float4x3{};
+
+//        auto arr = DynamicArray<float>{1};
+//        outline("principled transmission", [&] {
+//            rcp(arr);
+//        });
         return ;
 //        float_array *arr;
 //        Float f1 = 6;
@@ -547,16 +551,29 @@ void test_parameter_struct(Device &device, Stream &stream) {
     stream << synchronize() << commit();
 }
 
+template<size_t N, size_t M>
+[[nodiscard]] constexpr auto mul(ocarina::Matrix<N, M> m, ocarina::Vector<float, M> v) noexcept {
+    return [&]<size_t... i>(std::index_sequence<i...>) {
+        return ((v[i] * m[i]) + ...);
+    }(std::make_index_sequence<M>());
+}
+
+template<size_t N, size_t M, size_t Dim>
+[[nodiscard]] constexpr auto mul(ocarina::Matrix<N, Dim> lhs, ocarina::Matrix<Dim, M> rhs) noexcept {
+    return [&]<size_t... i>(std::index_sequence<i...>) {
+        return ocarina::Matrix<N, M>(mul(lhs , rhs[i])...);
+    }(std::make_index_sequence<M>());
+}
+
 int main(int argc, char *argv[]) {
-    auto m = float3x2() * float2x3();
+    auto m = (float3x2() * float2x3());
     cout << to_str(m) << endl;
 
-    auto m2 = float2x3() * float3x2();
+    auto m2 = (float2x3() * float3x2());
     cout << to_str(m2) << endl;
-
-    auto m3 = float2x3() * float4x2();
+//
+    auto m3 = (float4x2()* float2x3());
     cout << to_str(m3) << endl;
-//    return 0;
     fs::path path(argv[0]);
     FileManager &file_manager = FileManager::instance();
 

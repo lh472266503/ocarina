@@ -321,15 +321,15 @@ namespace ocarina {
 template<size_t N, size_t M>
 struct Matrix {
 public:
-    static constexpr auto RowNum = M;
-    static constexpr auto ColNum = N;
+    static constexpr auto RowNum = N;
+    static constexpr auto ColNum = M;
     static constexpr auto ElementNum = M * N;
     using scalar_type = float;
-    using vector_type = Vector<scalar_type, M>;
-    using array_t = oc_array<vector_type, N>;
+    using vector_type = Vector<scalar_type, N>;
+    using array_t = oc_array<vector_type, M>;
 
 private:
-    oc_array<vector_type, N> cols_{};
+    array_t cols_{};
 
 public:
     template<size_t... i>
@@ -344,17 +344,17 @@ public:
         : cols_(diagonal_helper(make_index_sequence<N>(), s)) {
     }
 
-    template<typename... Args, enable_if_t<sizeof...(Args) == N, int> = 0>
-    constexpr Matrix(Args... args) noexcept : cols_(oc_array<vector_type, N>{args...}) {}
+    template<typename... Args, enable_if_t<sizeof...(Args) == M, int> = 0>
+    constexpr Matrix(Args... args) noexcept : cols_(array_t{args...}) {}
 
     template<size_t NN, size_t MM, size_t... i>
     [[nodiscard]] static constexpr auto construct_helper(Matrix<NN, MM> mat, index_sequence<i...>) {
-        return oc_array<Vector<float, M>, N>{Vector<float, M>{mat[i]}...};
+        return oc_array<Vector<float, N>, M>{Vector<float, N>{mat[i]}...};
     }
 
     template<size_t NN, size_t MM, enable_if_t<(NN >= N && MM >= M), int> = 0>
     explicit constexpr Matrix(Matrix<NN, MM> mat) noexcept
-        : cols_{construct_helper(mat, make_index_sequence<N>())} {}
+        : cols_{construct_helper(mat, make_index_sequence<M>())} {}
 
     template<size_t... i>
     [[nodiscard]] static constexpr array_t construct_helper(ocarina::index_sequence<i...>,
@@ -412,12 +412,12 @@ OC_MAKE_MATRIX(4, 4)
                     float4{0.0f, 0.0f, 0.0f, 1.0f}};
 }
 
-[[nodiscard]] constexpr auto make_float4x4(float3x4 m) noexcept {
+[[nodiscard]] constexpr auto make_float4x4(float4x3 m) noexcept {
     return float4x4{m[0], m[1], m[2],
                     float4{0.0f, 0.0f, 0.0f, 1.0f}};
 }
 
-[[nodiscard]] constexpr auto make_float4x4(float4x3 m) noexcept {
+[[nodiscard]] constexpr auto make_float4x4(float3x4 m) noexcept {
     return float4x4{float4(m[0].x, m[0].y, m[0].z, 0.0f),
                     float4(m[1].x, m[1].y, m[1].z, 0.0f),
                     float4(m[2].x, m[2].y, m[2].z, 0.0f),
@@ -431,19 +431,19 @@ OC_MAKE_MATRIX(4, 4)
                     float4{0.0f, 0.0f, 0.0f, 1.0f}};
 }
 
-template<size_t N, size_t M, size_t... n>
-constexpr Vector<float, N> transpose_helper_n(const Matrix<N, M> &mat, size_t i, index_sequence<n...>) {
-    return Vector<float, N>((mat[n][i])...);
+template<size_t N, size_t M, size_t... m>
+constexpr Vector<float, N> transpose_helper_m(const Matrix<M, N> &mat, size_t i, index_sequence<m...>) {
+    return Vector<float, N>((mat[m][i])...);
 }
 
-template<size_t N, size_t M, size_t... m>
-constexpr Matrix<M, N> transpose_helper_m(const Matrix<N, M> &mat, index_sequence<m...>) {
-    return Matrix<M, N>(transpose_helper_n(mat, m, make_index_sequence<N>())...);
+template<size_t N, size_t M, size_t... n>
+constexpr Matrix<N, M> transpose_helper_n(const Matrix<M, N> &mat, index_sequence<n...>) {
+    return Matrix<N, M>(transpose_helper_m(mat, n, make_index_sequence<N>())...);
 }
 
 template<size_t N, size_t M>
-[[nodiscard]] constexpr Matrix<M, N> transpose(const Matrix<N, M> &mat) noexcept {
-    return transpose_helper_m(mat, make_index_sequence<M>());
+[[nodiscard]] constexpr Matrix<N, M> transpose(const Matrix<M, N> &mat) noexcept {
+    return transpose_helper_n(mat, make_index_sequence<M>());
 }
 
 }// namespace ocarina
@@ -484,28 +484,28 @@ template<size_t N, size_t M>
 
 namespace ocarina {
 template<size_t N, size_t M, size_t... i>
-__device__ constexpr auto multiply_impl(const ocarina::Matrix<N, M> &m, const ocarina::Vector<float, N> &v,
+__device__ constexpr auto multiply_impl(const ocarina::Matrix<N, M> &m, const ocarina::Vector<float, M> &v,
                                         ocarina::index_sequence<i...>) noexcept {
     return ((v[i] * m[i]) + ...);
 }
 }// namespace ocarina
 
 template<size_t N, size_t M>
-[[nodiscard]] __device__ constexpr auto operator*(ocarina::Matrix<N, M> m, ocarina::Vector<float, N> v) noexcept {
-    return ocarina::multiply_impl(m, v, ocarina::make_index_sequence<N>());
+[[nodiscard]] __device__ constexpr auto operator*(ocarina::Matrix<N, M> m, ocarina::Vector<float, M> v) noexcept {
+    return ocarina::multiply_impl(m, v, ocarina::make_index_sequence<M>());
 }
 
 namespace ocarina {
 template<size_t N, size_t M, size_t Dim, size_t... i>
-__device__ constexpr auto multiply_matrices_impl(const ocarina::Matrix<N, M> &lhs, const ocarina::Matrix<Dim, N> &rhs,
+__device__ constexpr auto multiply_matrices_impl(const ocarina::Matrix<N, Dim> &lhs, const ocarina::Matrix<Dim, M> &rhs,
                                                  ocarina::index_sequence<i...>) noexcept {
-    return ocarina::Matrix<Dim, M>{(lhs * rhs[i])...};
+    return ocarina::Matrix<N, M>{(lhs * rhs[i])...};
 }
 }// namespace ocarina
 
 template<size_t N, size_t M, size_t Dim>
-[[nodiscard]] __device__ constexpr auto operator*(ocarina::Matrix<N, M> lhs, ocarina::Matrix<Dim, N> rhs) noexcept {
-    return ocarina::multiply_matrices_impl(lhs, rhs, ocarina::make_index_sequence<Dim>());
+[[nodiscard]] __device__ constexpr auto operator*(ocarina::Matrix<N, Dim> lhs, ocarina::Matrix<Dim, M> rhs) noexcept {
+    return ocarina::multiply_matrices_impl(lhs, rhs, ocarina::make_index_sequence<M>());
 }
 
 namespace ocarina {

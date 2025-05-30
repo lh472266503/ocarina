@@ -41,7 +41,7 @@ struct is_3row_matrix {
 };
 
 template<size_t N>
-struct is_3row_matrix<Matrix<N, 3>> {
+struct is_3row_matrix<Matrix<3, N>> {
     static constexpr bool value = true;
 };
 
