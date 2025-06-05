@@ -234,6 +234,12 @@ public:
         }
     }
 
+    [[nodiscard]] DynamicArray<T> clamp(const Var<T> &min_, const Var<T> &max_) const noexcept {
+        return map([&](const Var<T> &val) {
+            return ocarina::clamp(val, min_, max_);
+        });
+    }
+
     [[nodiscard]] Var<T> sum() const noexcept {
         return reduce(0.f, [](auto r, auto x) noexcept { return r + x; });
     }
