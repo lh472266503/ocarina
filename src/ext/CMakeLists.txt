@@ -27,9 +27,10 @@ add_subdirectory(EASTL)
 target_include_directories(EASTL PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/EASTL/include)
 target_link_libraries(ocarina-ext PUBLIC EASTL)
 
-add_subdirectory(pybind11)
 
-
+if (${OCARINA_PY})
+    add_subdirectory(pybind11)
+endif ()
 
 add_subdirectory(tinyexr)
 

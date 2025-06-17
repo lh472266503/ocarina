@@ -14,7 +14,10 @@ add_subdirectory(backends)
 add_subdirectory(util)
 add_subdirectory(math)
 add_subdirectory(GUI_impl)
-add_subdirectory(pyexporter)
+
+if (${OCARINA_PY})
+    add_subdirectory(pyexporter)
+endif ()
 
 add_library(ocarina-native INTERFACE)
 target_link_libraries(ocarina-native INTERFACE
