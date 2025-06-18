@@ -28,10 +28,6 @@ target_include_directories(EASTL PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/EASTL/includ
 target_link_libraries(ocarina-ext PUBLIC EASTL)
 
 
-if (${OCARINA_PY})
-    add_subdirectory(pybind11)
-endif ()
-
 add_subdirectory(tinyexr)
 
 add_subdirectory(spdlog)
@@ -51,14 +47,18 @@ add_library(ocarina-gui-ext INTERFACE)
 target_link_libraries(ocarina-gui-ext INTERFACE glfw_config ocarina-imgui)
 
 cmake_policy(SET CMP0148 NEW)
-find_package(Python REQUIRED COMPONENTS Interpreter Development)
-include_directories(${PYTHON_INCLUDE_DIRS})
-link_directories(${PYTHON_LIBRARIES})
 
-target_include_directories(ocarina-ext INTERFACE
-        ${CMAKE_CURRENT_SOURCE_DIR}/pybind11/include/pybind11
-        ${CMAKE_CURRENT_SOURCE_DIR}/pybind11/include
-        ${PYTHON_INCLUDE_DIRS})
+if (${OCARINA_PY})
+    add_subdirectory(pybind11)
+    find_package(Python REQUIRED COMPONENTS Interpreter Development)
+    include_directories(${PYTHON_INCLUDE_DIRS})
+    link_directories(${PYTHON_LIBRARIES})
+    target_include_directories(ocarina-ext INTERFACE
+            ${CMAKE_CURRENT_SOURCE_DIR}/pybind11/include/pybind11
+            ${CMAKE_CURRENT_SOURCE_DIR}/pybind11/include
+            ${PYTHON_INCLUDE_DIRS})
+endif ()
+
 
 target_link_libraries(ocarina-ext
         PUBLIC
