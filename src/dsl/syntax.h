@@ -22,7 +22,7 @@
     *[&](::ocarina::Case case_,                                                                                                    \
          ::ocarina::Default default_) noexcept
 
-#define $case(...) ::ocarina::detail::CaseStmtBuilder::create_with_source_location("switch case: " + $source_location, __VA_ARGS__) \
+#define $case(...) case_("switch case: " + $source_location, __VA_ARGS__) \
     *[&](::ocarina::Break break_) noexcept
 
 #define $break break_("break: " + $source_location)

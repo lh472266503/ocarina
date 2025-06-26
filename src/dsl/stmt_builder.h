@@ -231,9 +231,10 @@ public:
         return detail::CaseStmtBuilder::create_with_source_location(str, OC_FORWARD(case_expr));
     }
 
-    template<typename T, typename Body>
-    void operator()(T &&t, Body &&body) noexcept {
-        detail::CaseStmtBuilder::create(std::forward<T>(t)) * std::forward<Body>(body);
+    template<typename CaseExpr, typename Body>
+    requires concepts::integral<CaseExpr>
+    void operator()(CaseExpr &&t, Body &&body) noexcept {
+        detail::CaseStmtBuilder::create(std::forward<CaseExpr>(t)) * std::forward<Body>(body);
     }
 };
 
