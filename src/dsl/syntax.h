@@ -26,7 +26,7 @@
     *[&](::ocarina::Break break_) noexcept
 
 #define $break break_("break: " + $source_location)
-#define $default ::ocarina::detail::DefaultStmtBuilder("default: " + $source_location) *[&](::ocarina::Break break_) noexcept
+#define $default default_("default: " + $source_location) *[&](::ocarina::Break break_) noexcept
 #define $continue continue_("continue: " + $source_location)
 
 #define $loop ::ocarina::detail::LoopStmtBuilder::create_with_source_location("loop: " + $source_location) \

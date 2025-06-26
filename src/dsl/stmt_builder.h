@@ -270,6 +270,7 @@ public:
     }
 
     template<typename Body>
+    requires std::is_invocable_v<Body, Break>
     void operator()(Body &&body) noexcept {
         detail::DefaultStmtBuilder() * std::forward<Body>(body);
     }
