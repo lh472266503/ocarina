@@ -78,9 +78,9 @@ template<typename T, typename Arg>
     }
 }
 
-class BreakExecutable {
+class Break {
 public:
-    BreakExecutable() = default;
+    Break() = default;
     void operator()(const string &str = "", std::source_location = {}) {
         if (!str.empty()) {
             comment(str);
@@ -89,9 +89,9 @@ public:
     }
 };
 
-class ContinueExecutable {
+class Continue {
 public:
-    ContinueExecutable() = default;
+    Continue() = default;
     void operator()(const string &str = "", std::source_location = {}) {
         if (!str.empty()) {
             comment(str);
@@ -215,11 +215,29 @@ public:
     template<typename Body>
     void operator*(Body &&body) noexcept {
         Function::current()->with(case_stmt_->body(), [&] {
-            body(BreakExecutable{});
+            body(Break{});
         });
     }
 };
 
+}// namespace detail
+
+class Case {
+public:
+    Case() = default;
+    template<typename CaseExpr>
+    requires concepts::integral<CaseExpr>
+    [[nodiscard]] detail::CaseStmtBuilder operator()(const string &str, CaseExpr &&case_expr) {
+        return detail::CaseStmtBuilder::create_with_source_location(str, OC_FORWARD(case_expr));
+    }
+
+    template<typename T, typename Body>
+    void operator()(T &&t, Body &&body) noexcept {
+        detail::CaseStmtBuilder::create(std::forward<T>(t)) * std::forward<Body>(body);
+    }
+};
+
+namespace detail {
 class DefaultStmtBuilder {
 private:
     SwitchDefaultStmt *default_stmt_{};
@@ -236,25 +254,20 @@ public:
     template<typename Body>
     void operator*(Body &&body) noexcept {
         Function::current()->with(default_stmt_->body(), [&] {
-            body(BreakExecutable{});
+            body(Break{});
         });
     }
 };
 
 }// namespace detail
 
-class CaseBuilder {
+class Default {
 public:
-    CaseBuilder() = default;
-    template<typename T, typename Body>
-    void operator()(T &&t, Body &&body) {
-        detail::CaseStmtBuilder::create(std::forward<T>(t)) * std::forward<Body>(body);
+    Default() = default;
+    [[nodiscard]] detail::DefaultStmtBuilder operator()(const string &str) noexcept {
+        return detail::DefaultStmtBuilder(str);
     }
-};
 
-class DefaultBuilder {
-public:
-    DefaultBuilder() = default;
     template<typename Body>
     void operator()(Body &&body) noexcept {
         detail::DefaultStmtBuilder() * std::forward<Body>(body);
@@ -303,7 +316,7 @@ public:
     template<typename Body>
     SwitchStmtBuilder &operator*(Body &&func) && noexcept {
         Function::current()->with(switch_stmt_->body(), [&] {
-            func(CaseBuilder{}, DefaultBuilder{});
+            func(Case{}, Default{});
         });
         return *this;
     }
@@ -373,7 +386,7 @@ public:
     template<typename Body>
     void operator*(Body &&body) noexcept {
         Function::current()->with(loop_->body(), [&] {
-            body(ContinueExecutable{}, BreakExecutable());
+            body(Continue{}, Break());
         });
     }
 };
@@ -384,21 +397,21 @@ void loop(Body &&body) noexcept {
     detail::LoopStmtBuilder::create() * std::forward<Body>(body);
 }
 
-//template<typename Condition, typename Body>
-//void while_(Condition &&cond, Body &&body) noexcept {
-//    detail::LoopStmtBuilder::create() * [&]() noexcept {
-//        if constexpr (std::is_invocable_v<Condition>) {
-//            if_(!cond(), [&] {
-//                break_();
-//            });
-//        } else {
-//            if_(!cond, [&] {
-//                break_();
-//            });
-//        }
-//        body();
-//    };
-//}
+template<typename Condition, typename Body>
+void while_(Condition &&cond, Body &&body) noexcept {
+    detail::LoopStmtBuilder::create() * [&]() noexcept {
+        if constexpr (std::is_invocable_v<Condition>) {
+            if_(!cond(), [&] {
+                syntax::break_();
+            });
+        } else {
+            if_(!cond, [&] {
+                syntax::break_();
+            });
+        }
+        body();
+    };
+}
 
 namespace detail {
 template<typename T = int, typename U = T, typename V = U>
@@ -427,7 +440,7 @@ public:
     template<typename Body>
     void operator/(Body &&body) noexcept {
         Function::current()->with(for_stmt_->body(), [&]() noexcept {
-            body(var_, ContinueExecutable{}, BreakExecutable());
+            body(var_, Continue{}, Break());
         });
     }
 };
