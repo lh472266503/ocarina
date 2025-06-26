@@ -40,5 +40,4 @@ namespace detail {
 }
 
 }// namespace detail
-
 }// namespace ocarina
