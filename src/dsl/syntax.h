@@ -30,7 +30,7 @@
 #define $while(...) ::ocarina::detail::LoopStmtBuilder::create_with_source_location("while: " + $source_location) / \
                         [&]() noexcept {                                                                            \
                             if_(!(__VA_ARGS__), [&] {                                                               \
-                                break_();                                                                           \
+                                ocarina::syntax::break_();                                                          \
                             });                                                                                     \
                         } *[&](::ocarina::ContinueExecutable continue_,                                             \
                                ::ocarina::BreakExecutable break_) noexcept
