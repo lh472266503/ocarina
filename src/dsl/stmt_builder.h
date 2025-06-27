@@ -78,12 +78,13 @@ template<typename T, typename Arg>
     }
 }
 
-namespace detail {
-
 class BreakExecutable {
 public:
     BreakExecutable() = default;
-    void operator()(std::source_location = {}) {
+    void operator()(const string &str = "", std::source_location = {}) {
+        if (!str.empty()) {
+            comment(str);
+        }
         Function::current()->break_();
     }
 };
@@ -91,10 +92,15 @@ public:
 class ContinueExecutable {
 public:
     ContinueExecutable() = default;
-    void operator()(std::source_location = {}) {
+    void operator()(const string &str = "", std::source_location = {}) {
+        if (!str.empty()) {
+            comment(str);
+        }
         Function::current()->continue_();
     }
 };
+
+namespace detail {
 
 class ScopeStmtBuilder {
 private:
@@ -208,7 +214,7 @@ public:
 
     template<typename Body>
     void operator*(Body &&body) noexcept {
-        Function::current()->with(case_stmt_->body(), [&]{
+        Function::current()->with(case_stmt_->body(), [&] {
             body(BreakExecutable{});
         });
     }
@@ -229,7 +235,7 @@ public:
 
     template<typename Body>
     void operator*(Body &&body) noexcept {
-        Function::current()->with(default_stmt_->body(), [&]{
+        Function::current()->with(default_stmt_->body(), [&] {
             body(BreakExecutable{});
         });
     }
@@ -274,7 +280,7 @@ public:
 
     template<typename Body>
     SwitchStmtBuilder &operator*(Body &&func) && noexcept {
-        Function::current()->with(switch_stmt_->body(), [&]{
+        Function::current()->with(switch_stmt_->body(), [&] {
             func();
         });
         return *this;
@@ -298,16 +304,17 @@ void case_(T &&t, Body &&body) noexcept {
     detail::CaseStmtBuilder::create(std::forward<T>(t)) * std::forward<Body>(body);
 }
 
+template<typename Body>
+void default_(Body &&body) noexcept {
+    detail::DefaultStmtBuilder() * std::forward<Body>(body);
+}
+
+namespace syntax {
 inline void break_(const string &str = "") noexcept {
     if (!str.empty()) {
         comment(str);
     }
     Function::current()->break_();
-}
-
-template<typename Body>
-void default_(Body &&body) noexcept {
-    detail::DefaultStmtBuilder() * std::forward<Body>(body);
 }
 
 inline void continue_(const string &str = "") noexcept {
@@ -316,6 +323,7 @@ inline void continue_(const string &str = "") noexcept {
     }
     Function::current()->continue_();
 }
+}// namespace syntax
 
 namespace detail {
 class LoopStmtBuilder {
@@ -342,7 +350,7 @@ public:
 
     template<typename Body>
     void operator*(Body &&body) noexcept {
-        Function::current()->with(loop_->body(), [&]{
+        Function::current()->with(loop_->body(), [&] {
             body(ContinueExecutable{}, BreakExecutable());
         });
     }
@@ -354,21 +362,21 @@ void loop(Body &&body) noexcept {
     detail::LoopStmtBuilder::create() * std::forward<Body>(body);
 }
 
-template<typename Condition, typename Body>
-void while_(Condition &&cond, Body &&body) noexcept {
-    detail::LoopStmtBuilder::create() * [&]() noexcept {
-        if constexpr (std::is_invocable_v<Condition>) {
-            if_(!cond(), [&] {
-                break_();
-            });
-        } else {
-            if_(!cond, [&] {
-                break_();
-            });
-        }
-        body();
-    };
-}
+//template<typename Condition, typename Body>
+//void while_(Condition &&cond, Body &&body) noexcept {
+//    detail::LoopStmtBuilder::create() * [&]() noexcept {
+//        if constexpr (std::is_invocable_v<Condition>) {
+//            if_(!cond(), [&] {
+//                break_();
+//            });
+//        } else {
+//            if_(!cond, [&] {
+//                break_();
+//            });
+//        }
+//        body();
+//    };
+//}
 
 namespace detail {
 template<typename T = int, typename U = T, typename V = U>
@@ -468,7 +476,7 @@ auto range(Begin &&begin, End &&end, Step &&step) noexcept {
                                                       make_expr(std::forward<Step>(step)));
 }
 
-template<typename ...Args>
+template<typename... Args>
 auto range_with_source_location(const string &str, Args &&...args) noexcept {
     comment(str);
     return range(OC_FORWARD(args)...);
