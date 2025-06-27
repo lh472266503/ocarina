@@ -19,9 +19,10 @@
 #define $comment(...) ::ocarina::comment(#__VA_ARGS__);
 
 #define $switch(...) ::ocarina::detail::SwitchStmtBuilder::create_with_source_location("switch: " + $source_location, __VA_ARGS__) *[&]() noexcept
-#define $case(...) ::ocarina::detail::CaseStmtBuilder::create_with_source_location("switch case: " + $source_location, __VA_ARGS__) *[&]() noexcept
+#define $case(...) ::ocarina::detail::CaseStmtBuilder::create_with_source_location("switch case: " + $source_location, __VA_ARGS__) * \
+                                                                                    [&](::ocarina::detail::BreakExecutable break_) noexcept
 #define $break ::ocarina::break_("break: " + $source_location)
-#define $default ::ocarina::detail::DefaultStmtBuilder("default: " + $source_location) *[&]() noexcept
+#define $default ::ocarina::detail::DefaultStmtBuilder("default: " + $source_location) *[&](::ocarina::detail::BreakExecutable break_) noexcept
 #define $continue ::ocarina::continue_("continue: " + $source_location)
 
 #define $loop ::ocarina::detail::LoopStmtBuilder::create_with_source_location("loop: " + $source_location) * \

@@ -209,7 +209,7 @@ public:
     template<typename Body>
     void operator*(Body &&body) noexcept {
         Function::current()->with(case_stmt_->body(), [&]{
-            body();
+            body(BreakExecutable{});
         });
     }
 };
@@ -230,7 +230,7 @@ public:
     template<typename Body>
     void operator*(Body &&body) noexcept {
         Function::current()->with(default_stmt_->body(), [&]{
-            body();
+            body(BreakExecutable{});
         });
     }
 };

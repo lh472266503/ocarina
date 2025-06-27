@@ -89,9 +89,15 @@ public:
         switch_(index, [&] {
             for (int i = 0; i < Super::size(); ++i) {
                 comment(typeid(*Super::at(i)).name());
-                case_(i, [&] {func(raw_ptr(Super::at(i)));break_(); });
+                case_(i, [&](detail::BreakExecutable break_) {
+                    func(raw_ptr(Super::at(i)));
+                    break_();
+                });
             }
-            default_([&] { unreachable();break_(); });
+            default_([&](detail::BreakExecutable break_) {
+                unreachable();
+                break_();
+            });
         });
     }
 
@@ -109,9 +115,15 @@ public:
         switch_(index, [&] {
             for (int i = 0; i < Super::size(); ++i) {
                 comment(typeid(*Super::at(i)).name());
-                case_(i, [&] {func(raw_ptr(Super::at(i)));break_(); });
+                case_(i, [&](detail::BreakExecutable break_) {
+                    func(raw_ptr(Super::at(i)));
+                    break_();
+                });
             }
-            default_([&] { unreachable();break_(); });
+            default_([&](detail::BreakExecutable break_) {
+                unreachable();
+                break_();
+            });
         });
     }
 };
@@ -475,9 +487,15 @@ public:
         switch_(corrected, [&] {
             for (int i = 0; i < Super::size(); ++i) {
                 comment(typeid(*Super::at(i)).name());
-                case_(i, [&] {func(raw_ptr(Super::at(i)));break_(); });
+                case_(i, [&](detail::BreakExecutable break_) {
+                    func(raw_ptr(Super::at(i)));
+                    break_();
+                });
             }
-            default_([&] {unreachable();break_(); });
+            default_([&](detail::BreakExecutable break_) {
+                unreachable();
+                break_();
+            });
         });
     }
 
@@ -501,12 +519,15 @@ public:
         switch_(corrected, [&] {
             group_mgr_.for_each_representative([&](ptr_type *elm, uint i) {
                 comment(typeid(*elm).name());
-                case_(i, [&] {
+                case_(i, [&](detail::BreakExecutable break_) {
                     func(elm);
                     break_();
                 });
             });
-            default_([&] {unreachable();break_(); });
+            default_([&](detail::BreakExecutable break_) {
+                unreachable();
+                break_();
+            });
         });
     }
 
