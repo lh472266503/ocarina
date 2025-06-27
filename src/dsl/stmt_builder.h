@@ -4,8 +4,9 @@
 
 #pragma once
 
-#include "dsl/var.h"
-#include "dsl/expr.h"
+#include "func_traits.h"
+#include "var.h"
+#include "expr.h"
 #include "ast/function.h"
 #include "operators.h"
 
@@ -78,6 +79,22 @@ template<typename T, typename Arg>
 }
 
 namespace detail {
+
+class BreakExecutable {
+public:
+    BreakExecutable() = default;
+    void operator()(std::source_location = {}) {
+        Function::current()->break_();
+    }
+};
+
+class ContinueExecutable {
+public:
+    ContinueExecutable() = default;
+    void operator()(std::source_location = {}) {
+        Function::current()->continue_();
+    }
+};
 
 class ScopeStmtBuilder {
 private:
@@ -191,7 +208,9 @@ public:
 
     template<typename Body>
     void operator*(Body &&body) noexcept {
-        Function::current()->with(_case_stmt->body(), std::forward<Body>(body));
+        Function::current()->with(_case_stmt->body(), [&]{
+            body();
+        });
     }
 };
 
@@ -210,7 +229,9 @@ public:
 
     template<typename Body>
     void operator*(Body &&body) noexcept {
-        Function::current()->with(_default_stmt->body(), std::forward<Body>(body));
+        Function::current()->with(_default_stmt->body(), [&]{
+            body();
+        });
     }
 };
 
@@ -253,7 +274,9 @@ public:
 
     template<typename Body>
     SwitchStmtBuilder &operator*(Body &&func) && noexcept {
-        Function::current()->with(_switch_stmt->body(), std::forward<Body>(func));
+        Function::current()->with(_switch_stmt->body(), [&]{
+            func();
+        });
         return *this;
     }
 };
@@ -319,7 +342,9 @@ public:
 
     template<typename Body>
     void operator*(Body &&body) noexcept {
-        Function::current()->with(_loop->body(), std::forward<Body>(body));
+        Function::current()->with(_loop->body(), [&]{
+            body();
+        });
     }
 };
 }// namespace detail
