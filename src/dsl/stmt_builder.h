@@ -397,7 +397,7 @@ public:
     template<typename Body>
     void operator/(Body &&body) noexcept {
         Function::current()->with(for_stmt_->body(), [&]() noexcept {
-            body(var_);
+            body(var_, ContinueExecutable{}, BreakExecutable());
         });
     }
 };

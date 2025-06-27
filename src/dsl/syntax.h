@@ -25,13 +25,17 @@
 #define $continue ::ocarina::continue_("continue: " + $source_location)
 
 #define $loop ::ocarina::detail::LoopStmtBuilder::create_with_source_location("loop: " + $source_location) *[&]() noexcept
-#define $while(...) ::ocarina::detail::LoopStmtBuilder::create_with_source_location("while: " + $source_location) / [&]() noexcept { \
-    if_(!(__VA_ARGS__), [&] {                                                                                                        \
-        break_();                                                                                                                    \
-    });                                                                                                                              \
-} *[&]() noexcept
+#define $while(...) ::ocarina::detail::LoopStmtBuilder::create_with_source_location("while: " + $source_location) / \
+                        [&]() noexcept {                                                                            \
+                            if_(!(__VA_ARGS__), [&] {                                                               \
+                                break_();                                                                           \
+                            });                                                                                     \
+                        } *[&]() noexcept
 
-#define $for(v, ...) ::ocarina::detail::range_with_source_location("for: " + $source_location, __VA_ARGS__) / [&](auto v) noexcept
+#define $for(v, ...) ::ocarina::detail::range_with_source_location("for: " + $source_location, __VA_ARGS__) / \
+                         [&](auto v,                                                                          \
+                             ::ocarina::detail::ContinueExecutable continue_,                                 \
+                             ::ocarina::detail::BreakExecutable break_) noexcept
 
 #define $return(...) ::ocarina::return_(__VA_ARGS__)
 
