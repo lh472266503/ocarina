@@ -98,26 +98,26 @@ public:
 
 class ScopeStmtBuilder {
 private:
-    string _str{};
+    string str_{};
 
 public:
-    explicit ScopeStmtBuilder(const string &str) : _str(str) {}
+    explicit ScopeStmtBuilder(const string &str) : str_(str) {}
     template<typename Body>
     void operator+(Body &&body) noexcept {
-        comment("start " + _str);
+        comment("start " + str_);
         auto scope = Function::current()->scope();
         Function::current()->with(scope, OC_FORWARD(body));
-        comment("end " + _str);
+        comment("end " + str_);
     }
 };
 
 class IfStmtBuilder {
 private:
-    IfStmt *_if{nullptr};
+    IfStmt *if_{nullptr};
 
 public:
     IfStmtBuilder() = default;
-    explicit IfStmtBuilder(IfStmt *stmt) : _if(stmt) {}
+    explicit IfStmtBuilder(IfStmt *stmt) : if_(stmt) {}
 
     template<typename Condition>
     requires concepts::bool_able<expr_value_t<Condition>>
@@ -135,18 +135,18 @@ public:
 
     template<typename TrueBranch>
     IfStmtBuilder &operator/(TrueBranch &&true_branch) noexcept {
-        Function::current()->with(_if->true_branch(), std::forward<TrueBranch>(true_branch));
+        Function::current()->with(if_->true_branch(), std::forward<TrueBranch>(true_branch));
         return *this;
     }
 
     template<typename Func>
     IfStmtBuilder operator*(Func &&func) noexcept {
-        return Function::current()->with(_if->false_branch(), std::forward<Func>(func));
+        return Function::current()->with(if_->false_branch(), std::forward<Func>(func));
     }
 
     template<typename FalseBranch>
     void operator%(FalseBranch &&false_branch) noexcept {
-        Function::current()->with(_if->false_branch(), std::forward<FalseBranch>(false_branch));
+        Function::current()->with(if_->false_branch(), std::forward<FalseBranch>(false_branch));
     }
 
     template<typename Condition, typename TrueBranch>
@@ -186,11 +186,11 @@ namespace detail {
 
 class CaseStmtBuilder {
 private:
-    SwitchCaseStmt *_case_stmt{nullptr};
+    SwitchCaseStmt *case_stmt_{nullptr};
 
 public:
     explicit CaseStmtBuilder(SwitchCaseStmt *stmt)
-        : _case_stmt(stmt) {}
+        : case_stmt_(stmt) {}
 
     template<typename CaseExpr>
     requires concepts::integral<CaseExpr>
@@ -208,7 +208,7 @@ public:
 
     template<typename Body>
     void operator*(Body &&body) noexcept {
-        Function::current()->with(_case_stmt->body(), [&]{
+        Function::current()->with(case_stmt_->body(), [&]{
             body();
         });
     }
@@ -216,20 +216,20 @@ public:
 
 class DefaultStmtBuilder {
 private:
-    SwitchDefaultStmt *_default_stmt{};
+    SwitchDefaultStmt *default_stmt_{};
 
 public:
     DefaultStmtBuilder() noexcept
-        : _default_stmt(Function::current()->switch_default()) {}
+        : default_stmt_(Function::current()->switch_default()) {}
 
     DefaultStmtBuilder(const string &str) noexcept
-        : _default_stmt(Function::current()->switch_default()) {
+        : default_stmt_(Function::current()->switch_default()) {
         comment(str);
     }
 
     template<typename Body>
     void operator*(Body &&body) noexcept {
-        Function::current()->with(_default_stmt->body(), [&]{
+        Function::current()->with(default_stmt_->body(), [&]{
             body();
         });
     }
@@ -237,11 +237,11 @@ public:
 
 class SwitchStmtBuilder {
 private:
-    SwitchStmt *_switch_stmt{nullptr};
+    SwitchStmt *switch_stmt_{nullptr};
 
 public:
     explicit SwitchStmtBuilder(SwitchStmt *stmt)
-        : _switch_stmt(stmt) {}
+        : switch_stmt_(stmt) {}
 
     template<typename T>
     requires concepts::switch_able<expr_value_t<T>>
@@ -259,7 +259,7 @@ public:
 
     template<typename CaseExpr, typename Body>
     SwitchStmtBuilder &case_(CaseExpr &&case_expr, Body &&body) noexcept {
-        Function::current()->with(_switch_stmt->body(), [&] {
+        Function::current()->with(switch_stmt_->body(), [&] {
             CaseStmtBuilder::create(std::forward<CaseExpr>(case_expr)) * std::forward<Body>(body);
         });
         return *this;
@@ -267,14 +267,14 @@ public:
 
     template<typename Body>
     void default_(Body &&body) noexcept {
-        Function::current()->with(_switch_stmt->body(), [&] {
+        Function::current()->with(switch_stmt_->body(), [&] {
             DefaultStmtBuilder() * std::forward<Body>(body);
         });
     }
 
     template<typename Body>
     SwitchStmtBuilder &operator*(Body &&func) && noexcept {
-        Function::current()->with(_switch_stmt->body(), [&]{
+        Function::current()->with(switch_stmt_->body(), [&]{
             func();
         });
         return *this;
@@ -320,10 +320,10 @@ inline void continue_(const string &str = "") noexcept {
 namespace detail {
 class LoopStmtBuilder {
 private:
-    LoopStmt *_loop{};
+    LoopStmt *loop_{};
 
 public:
-    explicit LoopStmtBuilder(LoopStmt *loop) noexcept : _loop(loop) {}
+    explicit LoopStmtBuilder(LoopStmt *loop) noexcept : loop_(loop) {}
 
     static auto create() noexcept {
         return LoopStmtBuilder(Function::current()->loop());
@@ -336,13 +336,13 @@ public:
 
     template<typename Func>
     LoopStmtBuilder &operator/(Func &&func) noexcept {
-        Function::current()->with(_loop->body(), std::forward<Func>(func));
+        Function::current()->with(loop_->body(), std::forward<Func>(func));
         return *this;
     }
 
     template<typename Body>
     void operator*(Body &&body) noexcept {
-        Function::current()->with(_loop->body(), [&]{
+        Function::current()->with(loop_->body(), [&]{
             body();
         });
     }
@@ -374,30 +374,30 @@ namespace detail {
 template<typename T = int, typename U = T, typename V = U>
 class ForStmtBuilder {
 private:
-    Var<T> _var;
-    Var<U> _end;
-    Var<V> _step;
-    ForStmt *_for_stmt;
+    Var<T> var_;
+    Var<U> end_;
+    Var<V> step_;
+    ForStmt *for_stmt_;
 
 public:
     ForStmtBuilder(const Var<T> &begin, const Var<U> &end, const Var<V> &step)
-        : _var(begin),
-          _end(end),
-          _step(step) {
+        : var_(begin),
+          end_(end),
+          step_(step) {
         const BinaryExpr *negative_step = Function::current()->binary(Type::of<bool>(), BinaryOp::LESS,
-                                                                      _step.expression(), OC_EXPR(T(0)));
+                                                                      step_.expression(), OC_EXPR(T(0)));
         const BinaryExpr *condition = Function::current()->binary(Type::of<bool>(), BinaryOp::LESS,
-                                                                  _var.expression(), _end.expression());
+                                                                  var_.expression(), end_.expression());
         condition = Function::current()->binary(Type::of<bool>(), BinaryOp::BIT_XOR, negative_step, condition);
-        _for_stmt = Function::current()->for_(_var.expression(),
+        for_stmt_ = Function::current()->for_(var_.expression(),
                                               condition,
-                                              _step.expression());
+                                              step_.expression());
     }
 
     template<typename Body>
     void operator/(Body &&body) noexcept {
-        Function::current()->with(_for_stmt->body(), [&]() noexcept {
-            body(_var);
+        Function::current()->with(for_stmt_->body(), [&]() noexcept {
+            body(var_);
         });
     }
 };
