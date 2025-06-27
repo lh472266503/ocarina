@@ -86,7 +86,7 @@ public:
             func(raw_ptr(Super::at(0u)));
             return;
         }
-        switch_(index, [&] {
+        switch_(index, [&](CaseBuilder case_, DefaultBuilder default_) {
             for (int i = 0; i < Super::size(); ++i) {
                 comment(typeid(*Super::at(i)).name());
                 case_(i, [&](BreakExecutable break_) {
@@ -112,7 +112,7 @@ public:
             func(raw_ptr(Super::at(0u)));
             return;
         }
-        switch_(index, [&] {
+        switch_(index, [&](CaseBuilder case_, DefaultBuilder default_) {
             for (int i = 0; i < Super::size(); ++i) {
                 comment(typeid(*Super::at(i)).name());
                 case_(i, [&](BreakExecutable break_) {
@@ -484,7 +484,7 @@ public:
             func(raw_ptr(Super::at(0u)));
             return;
         }
-        switch_(corrected, [&] {
+        switch_(corrected, [&](CaseBuilder case_, DefaultBuilder default_) {
             for (int i = 0; i < Super::size(); ++i) {
                 comment(typeid(*Super::at(i)).name());
                 case_(i, [&](BreakExecutable break_) {
@@ -516,7 +516,7 @@ public:
             func(elm);
             return;
         }
-        switch_(corrected, [&] {
+        switch_(corrected, [&](CaseBuilder case_, DefaultBuilder default_) {
             group_mgr_.for_each_representative([&](ptr_type *elm, uint i) {
                 comment(typeid(*elm).name());
                 case_(i, [&](BreakExecutable break_) {

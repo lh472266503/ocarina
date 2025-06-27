@@ -241,6 +241,28 @@ public:
     }
 };
 
+}// namespace detail
+
+class CaseBuilder {
+public:
+    CaseBuilder() = default;
+    template<typename T, typename Body>
+    void operator()(T &&t, Body &&body) {
+        detail::CaseStmtBuilder::create(std::forward<T>(t)) * std::forward<Body>(body);
+    }
+};
+
+class DefaultBuilder {
+public:
+    DefaultBuilder() = default;
+    template<typename Body>
+    void operator()(Body &&body) noexcept {
+        detail::DefaultStmtBuilder() * std::forward<Body>(body);
+    }
+};
+
+namespace detail {
+
 class SwitchStmtBuilder {
 private:
     SwitchStmt *switch_stmt_{nullptr};
@@ -281,7 +303,7 @@ public:
     template<typename Body>
     SwitchStmtBuilder &operator*(Body &&func) && noexcept {
         Function::current()->with(switch_stmt_->body(), [&] {
-            func();
+            func(CaseBuilder{}, DefaultBuilder{});
         });
         return *this;
     }
