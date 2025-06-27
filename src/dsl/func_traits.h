@@ -59,10 +59,10 @@ OC_MAKE_MEMBER_FUNC_SIGNATURE(const volatile noexcept)
 }// namespace detail
 
 template<typename T>
-using canonical_signature = detail::canonical_signature<T>;
+using canonical_signature = detail::canonical_signature<std::remove_cvref_t<T>>;
 
 template<typename T>
-using canonical_signature_t = typename detail::canonical_signature<T>::type;
+using canonical_signature_t = typename canonical_signature<T>::type;
 
 namespace detail {
 template<typename T>
