@@ -343,7 +343,7 @@ public:
     template<typename Body>
     void operator*(Body &&body) noexcept {
         Function::current()->with(loop_->body(), [&]{
-            body();
+            body(ContinueExecutable{}, BreakExecutable());
         });
     }
 };
