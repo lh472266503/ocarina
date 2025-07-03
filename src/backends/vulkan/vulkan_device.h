@@ -105,12 +105,15 @@ public:
     void init_rtx() noexcept override {  }
     [[nodiscard]] CommandVisitor *command_visitor() noexcept override;
     void shutdown();
-    void render() noexcept override;
+    void submit_frame() noexcept override;
     VertexBuffer* create_vertex_buffer() noexcept override;
-    IndexBuffer* create_index_buffer(const void *initial_data, uint32_t bytes) noexcept override;
+    IndexBuffer* create_index_buffer(const void *initial_data, uint32_t indices_count, bool bit16) noexcept override;
     VulkanBuffer *create_vulkan_buffer(VkBufferUsageFlags usage_flags, VkMemoryPropertyFlags memory_property_flags, VkDeviceSize size, const void *data = nullptr);
     void begin_frame() noexcept override;
     void end_frame() noexcept override;
+    RenderPass* create_render_pass(const RenderPassCreation& render_pass_creation) noexcept override;
+    void destroy_render_pass(RenderPass* render_pass) noexcept override;
+    DescriptorSetLayout *create_descriptor_set_layout(void **shaders, uint32_t shaders_count) noexcept override;    
 
     OC_MAKE_MEMBER_GETTER(logicalDevice, );
 

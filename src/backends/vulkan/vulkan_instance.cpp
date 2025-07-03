@@ -8,6 +8,7 @@
 #if defined(_WIN32)
 #include <vulkan/vulkan_win32.h>
 #endif
+#include "vulkan_debug.h"
 
 namespace ocarina {
 
@@ -17,6 +18,7 @@ VulkanInstance::VulkanInstance(const InstanceCreation& instanceCreation) {
     appInfo.pApplicationName = instanceCreation.applicationName;
     appInfo.pEngineName = instanceCreation.applicationName;
     appInfo.apiVersion = VK_API_VERSION_1_1;
+    validation_ = instanceCreation.validation;
 
     std::vector<const char *> instanceExtensions = {VK_KHR_SURFACE_EXTENSION_NAME};
 
@@ -42,12 +44,13 @@ VulkanInstance::VulkanInstance(const InstanceCreation& instanceCreation) {
 #elif defined(VK_USE_PLATFORM_SCREEN_QNX)
     instanceExtensions.push_back(VK_QNX_SCREEN_SURFACE_EXTENSION_NAME);
 #endif
+    
 
     // Get extensions supported by the instance and store for later use
     uint32_t extCount = 0;
     vkEnumerateInstanceExtensionProperties(nullptr, &extCount, nullptr);
+    std::vector<VkExtensionProperties> extensions(extCount);
     if (extCount > 0) {
-        std::vector<VkExtensionProperties> extensions(extCount);
         if (vkEnumerateInstanceExtensionProperties(nullptr, &extCount, &extensions.front()) == VK_SUCCESS) {
             for (VkExtensionProperties &extension : extensions) {
                 m_supportedInstanceExtensions.push_back(extension.extensionName);
@@ -55,15 +58,31 @@ VulkanInstance::VulkanInstance(const InstanceCreation& instanceCreation) {
         }
     }
 
+    if (validation_ && std::find(m_supportedInstanceExtensions.begin(), m_supportedInstanceExtensions.end(), VK_EXT_DEBUG_UTILS_EXTENSION_NAME)
+        != m_supportedInstanceExtensions.end())
+    {
+        instanceExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+    }
+
     VkInstanceCreateInfo instanceCreateInfo = {};
     instanceCreateInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     instanceCreateInfo.pNext = NULL;
     instanceCreateInfo.pApplicationInfo = &appInfo;
 
+    VkDebugUtilsMessengerCreateInfoEXT debugUtilsMessengerCI{};
+    if (validation_) {
+        debugUtilsMessengerCI.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+        debugUtilsMessengerCI.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+        debugUtilsMessengerCI.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT;
+        debugUtilsMessengerCI.pfnUserCallback = debug_message_callback;
+        debugUtilsMessengerCI.pNext = instanceCreateInfo.pNext;
+        instanceCreateInfo.pNext = &debugUtilsMessengerCI;
+    }
+
     // The VK_LAYER_KHRONOS_validation contains all current validation functionality.
     // Note that on Android this layer requires at least NDK r20
     const char *validationLayerName = "VK_LAYER_KHRONOS_validation";
-    if (instanceCreation.validation) {
+    if (validation_) {
         // Check if this layer is available at instance level
         uint32_t instanceLayerCount;
         vkEnumerateInstanceLayerProperties(&instanceLayerCount, nullptr);
@@ -90,10 +109,19 @@ VulkanInstance::VulkanInstance(const InstanceCreation& instanceCreation) {
 
     VkResult result = vkCreateInstance(&instanceCreateInfo, nullptr, &instance_);
     VK_CHECK_RESULT(result);
+
+    if (validation_)
+    {
+        setup_debugging(instance_);
+    }
 }
 
 VulkanInstance::~VulkanInstance()
 {
+    if (validation_)
+    {
+        free_debug_callback(instance_);
+    }
     vkDestroyInstance(instance_, nullptr);
 }
 

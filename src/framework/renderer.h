@@ -60,6 +60,8 @@ private:
 protected:
     std::list<RenderPass*> render_passes_;
     Device* device_ = nullptr;
+
+    
 };
 
 }// namespace ocarina

@@ -83,8 +83,9 @@ VulkanShader *VulkanShader::create_from_HLSL(Device::Impl *device, ShaderType sh
             DXCCompiler::run_spriv_reflection(compile_result.spriv_codes, compile_input.shader_type, reflection);
 
             vulkan_shader = create(device, shader_type, compile_result.spriv_codes, entry_point);
-            vulkan_shader->get_descriptor_count(reflection);
-            vulkan_shader->get_vertex_attributes(reflection);
+            vulkan_shader->get_shader_variables(reflection);
+            if (shader_type == ShaderType::VertexShader)
+                vulkan_shader->get_vertex_attributes(reflection);
         }
 
     } 
@@ -92,26 +93,27 @@ VulkanShader *VulkanShader::create_from_HLSL(Device::Impl *device, ShaderType sh
     return vulkan_shader;
 }
 
-void VulkanShader::get_descriptor_count(const ShaderReflection &reflection) {
-    descriptor_count_.ubo = 0;
-    descriptor_count_.uav = 0;
-    descriptor_count_.srv = 0;
-    descriptor_count_.samplers = 0;
+void VulkanShader::get_shader_variables(const ShaderReflection &reflection) {
 
+    VulkanShaderVariableBinding variable;
+    variable.shader_stage = stage_;
     for (auto shader_resource : reflection.shader_resources)
     {
-        if (shader_resource.shader_type == ShaderReflection::ResourceType::ConstantBuffer)
+        strcpy(variable.name, shader_resource.name.c_str());
+        variable.binding = shader_resource.location;
+        if (shader_resource.parameter_type == ShaderReflection::ResourceType::ConstantBuffer)
         {
-            descriptor_count_.ubo++;
-        }
-        else if (shader_resource.shader_type == ShaderReflection::ResourceType::SRV)
+            variable.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        } else if (shader_resource.parameter_type == ShaderReflection::ResourceType::SRV)
         {
-            descriptor_count_.srv++;
-        } else if (shader_resource.shader_type == ShaderReflection::ResourceType::UAV) {
-            descriptor_count_.uav++;
-        } else if (shader_resource.shader_type == ShaderReflection::ResourceType::Sampler) {
-            descriptor_count_.samplers++;
+            variable.type = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+        } else if (shader_resource.parameter_type == ShaderReflection::ResourceType::UAV) {
+            variable.type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+        } else if (shader_resource.parameter_type == ShaderReflection::ResourceType::Sampler) {
+            variable.type = VK_DESCRIPTOR_TYPE_SAMPLER;
         }
+
+        variables_.push_back(variable);
     }
 }
 
@@ -119,12 +121,14 @@ void VulkanShader::get_vertex_attributes(const ShaderReflection& reflection)
 {
     VertexAttribute attrib;
     for (auto shader_resource : reflection.input_layouts) {
-        if (shader_resource.shader_type == ShaderReflection::ResourceType::InputAttachment) {
+        if (shader_resource.parameter_type == ShaderReflection::ResourceType::InputAttachment) {
             attrib.binding = shader_resource.register_;
-            attrib.location = shader_resource.descriptor_set;
+            attrib.location = shader_resource.location;
             attrib.offset = shader_resource.offset;
             attrib.format = shader_resource.format;
             attrib.type = (uint8_t)shader_resource.vertex_attribute_type;
+
+            vertex_attributes_.push_back(attrib);
         } 
     }
 }
@@ -217,7 +221,7 @@ VulkanShader* VulkanShaderManager::get_or_create_from_HLSL(VulkanDevice *device,
 
     if (shader != nullptr)
     {
-        shader_keys_.insert({(handle_ty)shader->shader_module(), shader_key});
+        shaders_.insert({(handle_ty)shader->shader_module(), shader });
         vulkan_shaders_.insert(std::make_pair(shader_key, shader));
         //VulkanShaderEntry entry{shader->shader_module(), shader->stage(), shader->get_entry_point()};
         vulkan_shader_entries_.insert(std::make_pair((handle_ty)shader->shader_module(), VulkanShaderEntry{shader->shader_module(), shader->stage(), shader->get_entry_point()}));

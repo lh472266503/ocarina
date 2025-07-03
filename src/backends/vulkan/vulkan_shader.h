@@ -12,20 +12,49 @@
 namespace ocarina {
 
 class VulkanDevice;
-struct VulkanDescriptorSetLayout;
+class VulkanDescriptorSetLayout;
 struct ShaderReflection;
+struct ShaderKey;
+
+struct VulkanShaderVariableBinding
+{
+    char name[256] = { 0 };
+    uint32_t binding = 0;
+    VkDescriptorType type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    VkShaderStageFlags shader_stage = VK_SHADER_STAGE_VERTEX_BIT;
+    uint32_t count = 1;
+    VulkanShaderVariableBinding() = default;
+    VulkanShaderVariableBinding(const VulkanShaderVariableBinding& other)
+    {
+        binding = other.binding;
+        type = other.type;
+        count = other.count;
+        shader_stage = other.shader_stage;
+        strcpy(name, other.name);
+    }
+
+    VulkanShaderVariableBinding& operator = (const VulkanShaderVariableBinding& other)
+    {
+        binding = other.binding;
+        type = other.type;
+        count = other.count;
+        shader_stage = other.shader_stage;
+        strcpy(name, other.name);
+    }
+};
 
 class VulkanShader : public Shader<>::Impl {
+public:
+    
 private:
     VkShaderModule shader_module_ = VK_NULL_HANDLE;
     std::string entry_;
     VulkanDevice *device_ = nullptr;
     VkShaderStageFlagBits stage_;
-    DescriptorCount descriptor_count_;
+    std::vector< VulkanShaderVariableBinding> variables_;
     std::vector<VertexAttribute> vertex_attributes_;  //only exist in vertex shader
-    //VkDescriptorSetLayout descriptor_set_layout_ = VK_NULL_HANDLE;
     static bool HLSLToSPRIV(std::span<char> hlsl, VkShaderStageFlagBits stage, const std::string_view &entryPoint, bool outputSymbols, std::vector<uint32_t> &outSpriv, std::string &errorLog);
-    void get_descriptor_count(const ShaderReflection &reflection);
+    void get_shader_variables(const ShaderReflection &reflection);
     void get_vertex_attributes(const ShaderReflection &reflection);
 
     
@@ -47,7 +76,7 @@ public:
 
     OC_MAKE_MEMBER_GETTER(shader_module, );
     OC_MAKE_MEMBER_GETTER(stage, );
-    OC_MAKE_MEMBER_GETTER(descriptor_count, );
+    //OC_MAKE_MEMBER_GETTER(descriptor_count, );
 
     const char* get_entry_point() const
     {
@@ -88,6 +117,14 @@ public:
         }
     }
     
+    uint32_t get_shader_variables_count() const
+    {
+        return variables_.size();
+    }
+    const VulkanShaderVariableBinding& get_shader_variable(size_t index)
+    {
+        return variables_[index];
+    }
 };
 
 struct ShaderKey {
@@ -137,21 +174,17 @@ public:
     void clear(VulkanDevice *device);
     VulkanShader* get_shader(handle_ty shader_handle) const
     {
-        auto it = shader_keys_.find(shader_handle);
-        if (it != shader_keys_.end())
+        auto it = shaders_.find(shader_handle);
+        if (it != shaders_.end())
         {
-            auto shader_it = vulkan_shaders_.find(it->second);
-            if (shader_it != vulkan_shaders_.end())
-            {
-                return shader_it->second;
-            }
+            return it->second;
         }
 
         return nullptr;
     }
 private:
-    std::unordered_map<ShaderKey, VulkanShader *, HashShaderKeyFunction> vulkan_shaders_;
-    std::unordered_map<handle_ty, ShaderKey> shader_keys_;
+    std::unordered_map<ShaderKey, VulkanShader*, HashShaderKeyFunction> vulkan_shaders_;
+    std::unordered_map<handle_ty, VulkanShader*> shaders_;
     std::map<handle_ty, VulkanShaderEntry> vulkan_shader_entries_;
 };
 }// namespace ocarina

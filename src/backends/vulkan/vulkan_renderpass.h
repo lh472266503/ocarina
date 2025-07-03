@@ -30,5 +30,6 @@ private:
     VulkanDevice *device_ = nullptr;
     VkRenderPassBeginInfo render_pass_begin_info_ = {};
     VkClearValue clear_values[kMaxRenderTargets + 1];
+    VkFramebuffer vulkan_frame_buffer_ = VK_NULL_HANDLE;
 };
 }// namespace ocarina

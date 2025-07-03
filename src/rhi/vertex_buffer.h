@@ -28,7 +28,7 @@ struct VertexStream {
     uint32_t offset = 0;  // offset in bytes
     uint32_t stride = 0;  // stride in bytes
     void *data = nullptr;  // pointer to the data
-    handle_ty buffer_handle = InvalidUI64;  // handle to the buffer
+    handle_ty buffer = 0;// handle to the buffer pointer
 
     //get the size of the stream in bytes
     uint32_t get_size() const {
@@ -38,8 +38,8 @@ struct VertexStream {
 
 class VertexBuffer {
 public:
-    VertexBuffer() = default;
-    ~VertexBuffer();
+    VertexBuffer(Device::Impl *device) : device_(device) {}
+    virtual ~VertexBuffer();
 
     static VertexBuffer *create_vertex_buffer(Device::Impl *device);
     static void release_vertex_buffer(Device::Impl *device, VertexBuffer *vertex_buffer);
@@ -69,9 +69,15 @@ public:
         return &vertex_streams_[(uint8_t)attribute_type];
     }
 
+    bool is_dirty() const
+    {
+        return dirty_;
+    }
+
+    void upload_data();
 protected:
 
-    virtual void upload_data(VertexAttributeType::Enum type) = 0;
+    virtual void upload_attribute_data(VertexAttributeType::Enum type, const void* data, uint64_t offset = 0) = 0;
 
     uint32_t vertex_count_ = 0;
     //handle_ty buffer_handle_ = InvalidUI32;
@@ -84,6 +90,7 @@ protected:
     //std::vector<Vector4> colors_;
 
     VertexStream vertex_streams_[(uint8_t)VertexAttributeType::Enum::Count];
+    bool dirty_ = false;
 };
 
 }// namespace ocarina

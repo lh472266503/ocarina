@@ -10,11 +10,18 @@
 #include "vulkan_driver.h"
 #include "rhi/pipeline_state.h"
 #include "vulkan_pipeline.h"
+#include "vulkan_rendertarget.h"
+#include "vulkan_index_buffer.h"
+#include "vulkan_vertex_buffer.h"
 
 namespace ocarina {
 
 VulkanRenderPass::VulkanRenderPass(VulkanDevice *device, const RenderPassCreation &render_pass_creation) : RenderPass(render_pass_creation), device_(device) {
+    render_target_count_ = render_pass_creation.render_target_count;
 
+    for (uint8_t i = 0; i < render_target_count_; ++i) {
+        render_target_[i] = ocarina::new_with_allocator<VulkanRenderTarget>(device, render_pass_creation.render_targets[i]);
+    }
 }
 
 VulkanRenderPass::~VulkanRenderPass() {
@@ -25,6 +32,7 @@ VulkanRenderPass::~VulkanRenderPass() {
 }
 
 void VulkanRenderPass::begin_render_pass() {
+    setup_render_pass();
     // Implementation for beginning the render pass
     VulkanDriver& driver = VulkanDriver::instance();
     VkCommandBuffer current_buffer = driver.get_current_command_buffer();
@@ -38,6 +46,15 @@ void VulkanRenderPass::begin_render_pass() {
     renderPassBeginInfo.renderArea.extent.height = size_.y;
     renderPassBeginInfo.clearValueCount = is_use_swapchain_framebuffer() ? 2 : render_target_count_ + 1;
     renderPassBeginInfo.pClearValues = clear_values;
+
+    if (render_target_count_ == 0)
+    {
+        renderPassBeginInfo.framebuffer = driver.get_frame_buffer(driver.current_buffer());
+    }
+    else
+    {
+        renderPassBeginInfo.framebuffer = vulkan_frame_buffer_;
+    }
 
     vkCmdBeginRenderPass(current_buffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
@@ -65,8 +82,15 @@ void VulkanRenderPass::end_render_pass() {
 void VulkanRenderPass::draw_items() {
     VulkanDriver& driver = VulkanDriver::instance();
     for (const auto& item : draw_call_items_) {
-        VulkanPipeline pipeline = driver.get_pipeline(*item.pipeline_state);
-        driver.bind_pipeline(pipeline);
+        auto pipeline = driver.get_pipeline(*item.pipeline_state, render_pass_);
+        VkPipelineLayout pipeline_layout = std::get<0>(pipeline);
+        VulkanPipeline vk_pipeline = std::get<1>(pipeline);
+        driver.bind_pipeline(pipeline_layout, vk_pipeline);
+
+        VulkanVertexBuffer* vertex_buffer = static_cast<VulkanVertexBuffer*>(item.pipeline_state->vertex_buffer);
+        VulkanShader *vertex_shader = reinterpret_cast<VulkanShader *>(item.pipeline_state->shaders[0]);//driver.get_shader(item.pipeline_state->shaders[0]);
+        driver.set_vertex_buffer(*(vertex_buffer->get_or_create_vertex_binding(vertex_shader)));
+        driver.draw_triangles(static_cast<VulkanIndexBuffer*>(item.index_buffer));
     }
 }
 
@@ -152,6 +176,13 @@ void VulkanRenderPass::setup_render_pass() {
         renderPassInfo.pDependencies = dependencies.data();
 
         VK_CHECK_RESULT(vkCreateRenderPass(device, &renderPassInfo, nullptr, &render_pass_));
+    }
+    else
+    {
+        for (uint8_t i = 0; i < render_target_count_; ++i)
+        {
+            //create attachments by rendertarget
+        }
     }
 }
 

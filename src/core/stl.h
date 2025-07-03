@@ -172,6 +172,43 @@ template<typename To, typename From>
     return std::unique_ptr<To>(casted);
 }
 
+
+struct unique_allocator {
+    unique_allocator() = default;
+    template<typename T>
+    [[nodiscard]] T *allocate(size_t n) const noexcept {
+        return static_cast<T *>(::operator new(n * sizeof(T)));
+    }
+    template<typename T>
+    void deallocate(T *p, size_t) const noexcept {
+        deallocate(p);
+    }
+};
+
+template<typename T, typename Alloc>
+struct unique_deleter {
+    Alloc alloc;
+    void operator()(T *ptr) {
+        if (ptr) {
+            ptr->~T();
+            alloc.deallocate(ptr, 1);
+        }
+    }
+};
+
+template<typename T, typename Alloc = unique_allocator, typename... Args>
+std::unique_ptr<T> make_unique_with_allocator(Args &&...args) {
+    //auto deleter = [](T *p) {
+    //    std::destroy_at(p);
+    //    deallocate(p);
+    //};
+    Alloc alloc;
+    //return {ptr, std::bind(deleter, std::placeholders::_1, allocate<T>, 1)};
+    T *rawPtr = alloc.allocate<T>(1);
+    new (rawPtr) T(std::forward<Args>(args)...);
+    return std::unique_ptr<T>(rawPtr);//std::unique_ptr<T, unique_deleter<T, Alloc>>(rawPtr, unique_deleter<T, Alloc>{alloc});
+}
+
 template<typename... Ts>
 using UP = unique_ptr<Ts...>;
 

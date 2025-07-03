@@ -11,10 +11,10 @@ class VulkanDevice;
 
 class VulkanIndexBuffer : public IndexBuffer {
 public:
-    VulkanIndexBuffer(VulkanDevice *device, uint32_t size);
+    VulkanIndexBuffer(VulkanDevice *device, const void* initial_data, uint32_t indices_count, bool bit16);
     ~VulkanIndexBuffer();
-    void load_from_cpu(const void *cpuData, uint32_t byteOffset,
-                     uint32_t numBytes);
+    void load_from_cpu(const void *cpu_data, uint32_t byte_offset,
+                     uint32_t num_bytes);
 
     VkBuffer buffer_handle() const
     {

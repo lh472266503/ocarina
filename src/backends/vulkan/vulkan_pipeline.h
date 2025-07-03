@@ -34,6 +34,10 @@ struct VertexInputAttributeDescription {
     bool operator==(const VertexInputAttributeDescription &other) const {
         return location == other.location && binding == other.binding && format == other.format && offset == other.format;
     }
+
+    bool operator!=(const VertexInputAttributeDescription &other) const {
+        return !(*this == other);
+    }
     uint8_t location = 0;
     uint8_t binding = 0;
     uint16_t format = 0;
@@ -55,6 +59,11 @@ struct VertexInputBindingDescription {
     bool operator==(const VkVertexInputBindingDescription &other) const {
         return binding == other.binding && inputRate == other.inputRate && stride == other.stride;
     }
+
+    bool operator!=(const VkVertexInputBindingDescription &other) const {
+        return !(*this == other);
+    }
+
     uint16_t binding = 0;
     uint16_t inputRate = 0;
     uint32_t stride = 0;
@@ -64,25 +73,39 @@ struct PipelineKey
     static constexpr uint16_t MAX_VERTEX_ATTRIBUTES = 16;
     static constexpr uint16_t MAX_SHADER_STAGE = 2;
     VkShaderModule shaders[MAX_SHADER_STAGE] = {VK_NULL_HANDLE};
-    VkRenderPass render_pass;
-    RasterState raster_state;
-    BlendState blend_state;
-    DepthStencilState depth_stencil_state;
+    VkRenderPass render_pass = VK_NULL_HANDLE;
+    RasterState raster_state = {};
+    BlendState blend_state = {};
+    DepthStencilState depth_stencil_state = {};
     VkPipelineLayout pipeline_layout;
     VkPrimitiveTopology topology;
     VertexInputAttributeDescription vertex_input_attributes[MAX_VERTEX_ATTRIBUTES];
     VertexInputBindingDescription vertex_input_binding[MAX_VERTEX_ATTRIBUTES];
+    MultiSampleState multi_sample_state = {};
 
     //we don't need to consider the vertex attribute here, because vertex attributes are assiociate to shader module.
     bool operator==(const PipelineKey &other) const {
-        return *(int *)&raster_state == *(int *)&other.raster_state &&
+        bool states_comp = *(int *)&raster_state == *(int *)&other.raster_state &&
                render_pass == other.render_pass &&
                shaders[0] == other.shaders[0] &&
                shaders[1] == other.shaders[1] &&
                *(int *)&blend_state == *(int *)&other.blend_state &&
                *(int *)&depth_stencil_state == *(int *)&other.depth_stencil_state && 
             topology == other.topology &&
-            pipeline_layout == other.pipeline_layout;
+            pipeline_layout == other.pipeline_layout &&
+            *(int *)&multi_sample_state == *(int *)&other.multi_sample_state;
+
+        if (states_comp)
+        {
+            for (uint8_t i = 0; i < MAX_VERTEX_ATTRIBUTES; ++i) {
+                if (vertex_input_attributes[i] != other.vertex_input_attributes[i] ||
+                    vertex_input_binding[i] != other.vertex_input_binding[i]) {
+                    return false;
+                }
+            }
+        }
+        
+        return states_comp;
     }
 };
 
@@ -139,7 +162,7 @@ struct VulkanVertexInfo {
 class VulkanPipelineManager : public concepts::Noncopyable
 {
 public:
-    void bind_shader(handle_ty shader, int stage);
+    void bind_shader(VkShaderModule shader, int stage);
     void bind_raster_state(const RasterState &raster_state);
     void bind_blend_state(const BlendState &blend_state);
     void bind_depth_stencil_state(const DepthStencilState &depth_stencil_state);
@@ -147,7 +170,10 @@ public:
     void bind_vertex_attributes(VkVertexInputAttributeDescription const *attributes,
                                 VkVertexInputBindingDescription const *binds, uint8_t attr_count, uint8_t bind_desc_count);
     void bind_topology(PrimitiveType primitive_type);
-    std::tuple<VkPipelineLayout, VulkanPipeline> get_or_create_pipeline(const PipelineState &pipeline_state, VulkanDevice *device);
+    void bind_render_pass(VkRenderPass render_pass) {
+        pipeline_key_cache_.render_pass = render_pass;
+    }
+    std::tuple<VkPipelineLayout, VulkanPipeline> get_or_create_pipeline(const PipelineState &pipeline_state, VulkanDevice *device, VkRenderPass render_pass);
     void clear(VulkanDevice *device);
 
     VkPipelineLayout get_pipeline_layout(VulkanDevice *device, VkDescriptorSetLayout *descriptset_layouts, uint8_t descriptset_layouts_count);

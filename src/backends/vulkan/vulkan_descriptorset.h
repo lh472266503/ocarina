@@ -7,6 +7,7 @@
 #include "core/stl.h"
 #include "core/concepts.h"
 #include "rhi/resources/shader.h"
+#include "rhi/descriptor_set.h"
 #include <vulkan/vulkan.h>
 
 namespace ocarina {
@@ -14,38 +15,62 @@ namespace ocarina {
 class VulkanDevice;
 class VulkanShader;
 
-class VulkanDescriptor {
-public:
-
-private:
+struct VulkanDescriptor {
     union DescriptorInfos {
         VkDescriptorBufferInfo buffer_info;
         VkDescriptorImageInfo image_info;
         VkBufferView buffer_view;
     };
     DescriptorInfos info_;
-    VkDescriptorType type_;
+    
+    std::string name_;
 };
 
-class VulkanDescriptorSet {
+class VulkanDescriptorSet : public DescriptorSet {
 private:
     VkDescriptorSet descriptor_set_ = VK_NULL_HANDLE;
     
 public:
-    //VulkanDescriptorSet(VulkanDevice *device);
+    VulkanDescriptorSet(VulkanDevice* device, VkDescriptorPool pool);
+    ~VulkanDescriptorSet() override;
     OC_MAKE_MEMBER_GETTER(descriptor_set, );
 
     void copy_descriptors(VulkanDescriptor *descriptor);
+    VulkanDevice* device_;
 };
 
 
 
-struct VulkanDescriptorSetLayout {
+class VulkanDescriptorSetLayout : public DescriptorSetLayout {
     static constexpr uint8_t MAX_BINDINGS = 16;
-    
+public:
+    VulkanDescriptorSetLayout(VulkanDevice* device);
+    ~VulkanDescriptorSetLayout() override;
+    void add_binding(const char* name,
+        uint32_t binding,
+        VkDescriptorType descriptor_type,
+        VkShaderStageFlags stage_flags,
+        uint32_t count = 1);
 
-    DescriptorCount descriptor_count;
-    VkDescriptorSetLayout layout_;
+    void build_layout();
+
+    DescriptorCount get_descriptor_count() const noexcept {
+        return descriptor_count_;
+    }
+
+    OC_MAKE_MEMBER_GETTER(layout, );
+
+    std::unique_ptr<DescriptorSet> allocate_descriptor_set() override;
+private:
+    DescriptorCount descriptor_count_;
+    VkDescriptorSetLayout layout_ = VK_NULL_HANDLE;
+
+    std::unordered_map<uint32_t, uint32_t> name_to_bindings_;
+    std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> bindings_;
+
+    VulkanDevice* device_ = nullptr;
+
+    VkDescriptorPool descriptor_pool_ = VK_NULL_HANDLE;
 };
 
 struct DescriptorPoolCreation {
@@ -97,14 +122,14 @@ public:
     }
     ~VulkanDescriptorManager(){};
 
-    VkDescriptorSet get_descriptor_set(const VulkanDescriptorSetLayout &layout, VulkanDevice *device);
+    //VkDescriptorSet get_descriptor_set(const VulkanDescriptorSetLayout &layout, VulkanDevice *device);
     void clear();
 
-    VkDescriptorSetLayout create_descriptor_set_layout(VulkanShader **shaders, uint32_t shaders_count);
+    VulkanDescriptorSetLayout* create_descriptor_set_layout(VulkanShader **shaders, uint32_t shaders_count);
 
 private:
     VulkanDevice *device_ = nullptr;
-    std::vector<std::unique_ptr<VulkanDescriptorPool>> pools_;
+    std::unordered_map<uint64_t, VulkanDescriptorSetLayout*> descriptor_set_layouts_;
 };
 
 }// namespace ocarina

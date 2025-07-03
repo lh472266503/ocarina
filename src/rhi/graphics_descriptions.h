@@ -11,7 +11,11 @@ namespace ocarina {
 
 struct InstanceCreation {
     const char *applicationName;
+#ifdef _DEBUG
+    bool validation = true;
+#else
     bool validation = false;
+#endif
     std::vector<const char *> instanceExtentions;
     uint64_t windowHandle = InvalidUI64;
 };
@@ -278,6 +282,26 @@ enum class TextureUsageFlags : uint32_t {
     ShaderReadOnly = (1 << 7)  /// Can bind as for read only access from all shader stages (SRV).
 };
 
+enum class MultiSampleCount : uint8_t {
+    SAMPLE_COUNT_1 = 0, ///< 1 sample per pixel.
+    SAMPLE_COUNT_2 = 1, ///< 2 samples per pixel.
+    SAMPLE_COUNT_4 = 2, ///< 4 samples per pixel.
+    SAMPLE_COUNT_8 = 3, ///< 8 samples per pixel.
+    SAMPLE_COUNT_16 = 4,///< 16 samples per pixel.
+    SAMPLE_COUNT_32 = 5,///< 32 samples per pixel.
+    SAMPLE_COUNT_64 = 6,///< 64 samples per pixel.
+};
+
+enum class ColorMask : uint8_t
+{
+    ColorMaskNone = 0,  ///< No channel mask.
+    ColorMaskR = 1 << 0,///< Red channel mask.
+    ColorMaskG = 1 << 1,///< Green channel mask.
+    ColorMaskB = 1 << 2,///< Blue channel mask.
+    ColorMaskA = 1 << 3,///< Alpha channel mask.
+    ColorMaskAll = ColorMaskR | ColorMaskG | ColorMaskB | ColorMaskA///< All channels mask.
+};
+
 struct RenderTargetCreation {
     PixelStorage format = PixelStorage::BYTE4; ///< Back buffers format.
     bool srgb = false;///< Back buffers sRGB.
@@ -291,7 +315,9 @@ struct RenderTargetCreation {
 
 struct RenderPassCreation
 {
-
+    constexpr static uint32_t MAX_RENDER_TARGETS = 8;
+    RenderTargetCreation render_targets[MAX_RENDER_TARGETS]; ///< render target
+    uint32_t render_target_count = 0; ///< render target count, 0 use swapchain
 };
 
 }// namespace ocarina

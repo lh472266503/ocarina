@@ -55,8 +55,7 @@ static std::string errorString(VkResult errorCode) {
 namespace ocarina {
 #define IS_VK_NULL_HANDLE(h) (h == VK_NULL_HANDLE)
 
-    static VkFormat get_vulkan_format(PixelStorage format, bool srgb)
-    {
+static VkFormat get_vulkan_format(PixelStorage format, bool srgb) {
     switch (format) {
         case ocarina::PixelStorage::BYTE1:
             return srgb ? VK_FORMAT_R8_SRGB : VK_FORMAT_A8_UNORM_KHR;
@@ -90,24 +89,21 @@ namespace ocarina {
             break;
             return VK_FORMAT_R8G8B8A8_UNORM;
     }
-    }
+}
 
-    static VkColorSpaceKHR colorspace_vulkan(const ColorSpace colorSpace) {
-        switch (colorSpace)
-        {
+static VkColorSpaceKHR colorspace_vulkan(const ColorSpace colorSpace) {
+    switch (colorSpace) {
         case ColorSpace::SRGB:
             //return VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
         case ColorSpace::LINEAR:
             return VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
         default:
             return VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
-        }
     }
+}
 
-    static VkPrimitiveTopology get_vulkan_topology(PrimitiveType primitive_type)
-    {
-        switch (primitive_type)
-        {
+static VkPrimitiveTopology get_vulkan_topology(PrimitiveType primitive_type) {
+    switch (primitive_type) {
         case PrimitiveType::TRIANGLES:
             return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
         case PrimitiveType::TRIANGLE_STRIP:
@@ -120,12 +116,11 @@ namespace ocarina {
             return VK_PRIMITIVE_TOPOLOGY_LINE_STRIP;
         default:
             return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-        }
     }
+}
 
-    static VkShaderStageFlagBits get_vulkan_shader_stage(ShaderType shader_type)
-    {
-        switch (shader_type) {
+static VkShaderStageFlagBits get_vulkan_shader_stage(ShaderType shader_type) {
+    switch (shader_type) {
         case ocarina::ShaderType::VertexShader:
             return VK_SHADER_STAGE_VERTEX_BIT;
         case ocarina::ShaderType::PixelShader:
@@ -139,12 +134,11 @@ namespace ocarina {
         case ocarina::ShaderType::NumShaderType:
         default:
             return VK_SHADER_STAGE_VERTEX_BIT;
-        }
     }
+}
 
-    static VkCullModeFlags get_vulkan_cull_mode(CullingMode cull_mode)
-    {
-        switch (cull_mode) {
+static VkCullModeFlags get_vulkan_cull_mode(CullingMode cull_mode) {
+    switch (cull_mode) {
         case ocarina::CullingMode::NONE:
             return VK_CULL_MODE_NONE;
         case ocarina::CullingMode::FRONT:
@@ -155,53 +149,48 @@ namespace ocarina {
             return VK_CULL_MODE_FRONT_AND_BACK;
         default:
             return VK_CULL_MODE_NONE;
-        }
     }
-    static VkFrontFace get_vulkan_front_face(bool front)
-    {
-        return front ? VK_FRONT_FACE_CLOCKWISE : VK_FRONT_FACE_COUNTER_CLOCKWISE;
-    }
+}
+static VkFrontFace get_vulkan_front_face(bool front) {
+    return front ? VK_FRONT_FACE_CLOCKWISE : VK_FRONT_FACE_COUNTER_CLOCKWISE;
+}
 
-    static VkBool32 get_supported_depth_format(VkPhysicalDevice physicalDevice, VkFormat *depthFormat) {
-        // Since all depth formats may be optional, we need to find a suitable depth format to use
-        // Start with the highest precision packed format
-        std::vector<VkFormat> formatList = {
-            VK_FORMAT_D32_SFLOAT_S8_UINT,
-            VK_FORMAT_D32_SFLOAT,
-            VK_FORMAT_D24_UNORM_S8_UINT,
-            VK_FORMAT_D16_UNORM_S8_UINT,
-            VK_FORMAT_D16_UNORM};
+static VkBool32 get_supported_depth_format(VkPhysicalDevice physicalDevice, VkFormat *depthFormat) {
+    // Since all depth formats may be optional, we need to find a suitable depth format to use
+    // Start with the highest precision packed format
+    std::vector<VkFormat> formatList = {
+        VK_FORMAT_D32_SFLOAT_S8_UINT,
+        VK_FORMAT_D32_SFLOAT,
+        VK_FORMAT_D24_UNORM_S8_UINT,
+        VK_FORMAT_D16_UNORM_S8_UINT,
+        VK_FORMAT_D16_UNORM};
 
-        for (auto &format : formatList) {
+    for (auto &format : formatList) {
         VkFormatProperties formatProps;
         vkGetPhysicalDeviceFormatProperties(physicalDevice, format, &formatProps);
         if (formatProps.optimalTilingFeatures & VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT) {
             *depthFormat = format;
             return true;
         }
-        }
-
-        return false;
     }
 
-    static VkBufferUsageFlagBits get_buffer_usage_flag(BufferType buffer_type)
-    {
-        switch (buffer_type)
-        {
+    return false;
+}
+
+static VkBufferUsageFlagBits get_buffer_usage_flag(BufferType buffer_type) {
+    switch (buffer_type) {
         case BufferType::VertexBuffer:
             return VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
         case BufferType::IndexBuffer:
             return VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
         case BufferType::ConstantBuffer:
             return VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-        }
-        return VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
     }
+    return VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+}
 
-    static VkMemoryPropertyFlags get_memory_property_flags(DeviceMemoryUsage usage)
-    {
-        switch (usage)
-        {
+static VkMemoryPropertyFlags get_memory_property_flags(DeviceMemoryUsage usage) {
+    switch (usage) {
         case DeviceMemoryUsage::MEMORY_USAGE_GPU_ONLY:
             return VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
         case DeviceMemoryUsage::MEMORY_USAGE_CPU_ONLY:
@@ -212,13 +201,11 @@ namespace ocarina {
             return VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
         default:
             return VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-        }
     }
+}
 
-    static VkSampleCountFlagBits get_vulkan_sample_count(uint sample_count)
-    {
-        switch (sample_count)
-        {
+static VkSampleCountFlagBits get_vulkan_sample_count(uint sample_count) {
+    switch (sample_count) {
         case 1:
             return VK_SAMPLE_COUNT_1_BIT;
         case 2:
@@ -231,40 +218,137 @@ namespace ocarina {
             return VK_SAMPLE_COUNT_16_BIT;
         default:
             return VK_SAMPLE_COUNT_1_BIT;
-        }
+    }
+}
+
+static VkImageUsageFlagBits get_vulkan_image_usage_flag(uint32_t image_usage) {
+    uint32_t usage = 0;
+    if (image_usage & static_cast<uint32_t>(TextureUsageFlags::ShaderReadOnly)) {
+        usage |= VK_IMAGE_USAGE_SAMPLED_BIT;
     }
 
-    static VkImageUsageFlagBits get_vulkan_image_usage_flag(uint32_t image_usage)
-    {
-        uint32_t usage = 0;
-        if (image_usage & static_cast<uint32_t>(TextureUsageFlags::ShaderReadOnly)) {
-            usage |= VK_IMAGE_USAGE_SAMPLED_BIT;
-        }
-
-        if (image_usage & static_cast<uint32_t>(TextureUsageFlags::ShaderReadWrite)) {
-            usage |= (VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
-        }
-
-        if (image_usage & static_cast<uint32_t>(TextureUsageFlags::RenderTarget)) {
-            usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-        }
-
-        if (image_usage & static_cast<uint32_t>(TextureUsageFlags::DepthStencil)) {
-            usage |= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
-        }
-
-        if (image_usage & static_cast<uint32_t>(TextureUsageFlags::CopySrc)) {
-            usage |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
-        }
-
-        if (image_usage & static_cast<uint32_t>(TextureUsageFlags::CopyDst)) {
-            usage |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-        }
-
-        if (image_usage & static_cast<uint32_t>(TextureUsageFlags::SwapChain)) {
-            usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-        }
-
-        return static_cast<VkImageUsageFlagBits>(usage);
+    if (image_usage & static_cast<uint32_t>(TextureUsageFlags::ShaderReadWrite)) {
+        usage |= (VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
     }
+
+    if (image_usage & static_cast<uint32_t>(TextureUsageFlags::RenderTarget)) {
+        usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
     }
+
+    if (image_usage & static_cast<uint32_t>(TextureUsageFlags::DepthStencil)) {
+        usage |= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+    }
+
+    if (image_usage & static_cast<uint32_t>(TextureUsageFlags::CopySrc)) {
+        usage |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+    }
+
+    if (image_usage & static_cast<uint32_t>(TextureUsageFlags::CopyDst)) {
+        usage |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+    }
+
+    if (image_usage & static_cast<uint32_t>(TextureUsageFlags::SwapChain)) {
+        usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+    }
+
+    return static_cast<VkImageUsageFlagBits>(usage);
+}
+
+static VkSampleCountFlagBits get_vulkan_sample_count_flag_bit(MultiSampleCount sample_count) {
+    switch (sample_count) {
+        case MultiSampleCount::SAMPLE_COUNT_1:
+            return VK_SAMPLE_COUNT_1_BIT;
+        case MultiSampleCount::SAMPLE_COUNT_2:
+            return VK_SAMPLE_COUNT_2_BIT;
+        case MultiSampleCount::SAMPLE_COUNT_4:
+            return VK_SAMPLE_COUNT_4_BIT;
+        case MultiSampleCount::SAMPLE_COUNT_8:
+            return VK_SAMPLE_COUNT_8_BIT;
+        case MultiSampleCount::SAMPLE_COUNT_16:
+            return VK_SAMPLE_COUNT_16_BIT;
+        case MultiSampleCount::SAMPLE_COUNT_32:
+            return VK_SAMPLE_COUNT_32_BIT;
+        case MultiSampleCount::SAMPLE_COUNT_64:
+            return VK_SAMPLE_COUNT_64_BIT;
+        default:
+            return VK_SAMPLE_COUNT_1_BIT;
+    }
+}
+
+static VkColorComponentFlagBits get_vulkan_color_component_flag_bits(ColorMask color_mask)
+{
+    uint32_t flags = 0;
+    uint8_t mask = (uint8_t)color_mask;
+    if (mask & (uint8_t)ColorMask::ColorMaskR) {
+        flags |= VK_COLOR_COMPONENT_R_BIT;
+    }
+    if (mask & (uint8_t)ColorMask::ColorMaskG) {
+        flags |= VK_COLOR_COMPONENT_G_BIT;
+    }
+    if (mask & (uint8_t)ColorMask::ColorMaskB) {
+        flags |= VK_COLOR_COMPONENT_B_BIT;
+    }
+    if (mask & (uint8_t)ColorMask::ColorMaskA) {
+        flags |= VK_COLOR_COMPONENT_A_BIT;
+    }
+    return (VkColorComponentFlagBits)flags;
+}
+
+static VkBlendOp get_vulkan_blend_op(BlendOperator op)
+{
+    switch (op) {
+        case BlendOperator::ADD:
+            return VK_BLEND_OP_ADD;
+        case BlendOperator::SUBTRACT:
+            return VK_BLEND_OP_SUBTRACT;
+        case BlendOperator::REVERSE_SUBTRACT:
+            return VK_BLEND_OP_REVERSE_SUBTRACT;
+        case BlendOperator::MIN:
+            return VK_BLEND_OP_MIN;
+        case BlendOperator::MAX:
+            return VK_BLEND_OP_MAX;
+        default:
+            return VK_BLEND_OP_ADD;
+    }
+}
+
+static VkBlendFactor get_vulkan_blend_factor(BlendFunction blend_function) {
+    switch (blend_function) {
+        case BlendFunction::ZERO:
+            return VK_BLEND_FACTOR_ZERO;
+        case BlendFunction::ONE:
+            return VK_BLEND_FACTOR_ONE;
+        case BlendFunction::SRC_COLOR:
+            return VK_BLEND_FACTOR_SRC_COLOR;
+        case BlendFunction::ONE_MINUS_SRC_COLOR:
+            return VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR;
+        case BlendFunction::DST_COLOR:
+            return VK_BLEND_FACTOR_DST_COLOR;
+        default:
+            return VK_BLEND_FACTOR_ZERO;
+    }
+}
+
+static VkCompareOp get_vulkan_compare_op(SamplerCompareFunc func)
+{
+    switch (func) {
+        case SamplerCompareFunc::LE:
+            return VK_COMPARE_OP_LESS_OR_EQUAL;
+        case SamplerCompareFunc::GE:
+            return VK_COMPARE_OP_GREATER_OR_EQUAL;
+        case SamplerCompareFunc::L:
+            return VK_COMPARE_OP_LESS;
+        case SamplerCompareFunc::G:
+            return VK_COMPARE_OP_GREATER;
+        case SamplerCompareFunc::E:
+            return VK_COMPARE_OP_EQUAL;
+        case SamplerCompareFunc::NE:
+            return VK_COMPARE_OP_NOT_EQUAL;
+        case SamplerCompareFunc::A:
+            return VK_COMPARE_OP_ALWAYS;
+        default:
+            return VK_COMPARE_OP_NEVER;
+    }
+}
+
+}// namespace ocarina

@@ -18,6 +18,7 @@ public:
     using UpdateCallback = ocarina::function<void(double)>;
     using BeginFrame = ocarina::function<void()>;
     using EndFrame = ocarina::function<void()>;
+
 protected:
     MouseButtonCallback mouse_button_callback_;
     CursorPositionCallback cursor_position_callback_;
@@ -60,7 +61,7 @@ public:
     virtual Window &set_scroll_callback(ScrollCallback cb) noexcept;
     virtual Window &set_begin_frame_callback(BeginFrame cb) noexcept;
     virtual Window &set_end_frame_callback(EndFrame cb) noexcept;
-    virtual void gen_buffer(uint &handle,uint size_in_byte) const noexcept = 0;
+    virtual void gen_buffer(uint &handle, uint size_in_byte) const noexcept = 0;
     virtual void bind_buffer(uint &handle, uint size_in_byte) const noexcept = 0;
     virtual void unbind_buffer(uint &handle) const noexcept = 0;
     virtual void set_background(const uchar4 *pixels, uint2 size) noexcept = 0;
@@ -85,8 +86,25 @@ public:
     }
     virtual void show_window() noexcept = 0;
     virtual void hide_window() noexcept = 0;
-};
 
+    class WindowLoop {
+    public:
+        WindowLoop(Window *window) : window_(window) {
+            if (window_) {
+                window_->_begin_frame();
+            }
+        }
+
+        ~WindowLoop() {
+            if (window_) {
+                window_->_end_frame();
+            }
+        }
+
+    private:
+        Window *window_{nullptr};
+    };
+};
 void dependency_window();
 
 }// namespace ocarina

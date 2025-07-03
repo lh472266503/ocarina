@@ -15,5 +15,6 @@ public:
 private:
     std::vector<std::string> m_supportedInstanceExtensions;
     VkInstance instance_;
+    bool validation_ = false;
 };
 }// namespace ocarina

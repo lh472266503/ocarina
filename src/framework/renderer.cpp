@@ -21,10 +21,16 @@ void Renderer::set_render_callback(RenderCallback cb) {
 
 void Renderer::set_setup_callback(SetupCallback cb) {
     setup = cb;
+    if (setup) {
+        setup();
+    }
 }
 
 void Renderer::set_release_callback(ReleaseCallback cb) {
     release = cb;
+    if (release) {
+        release();
+    }
 }
 
 void Renderer::render_frame()
@@ -43,7 +49,9 @@ void Renderer::render_frame()
             render_pass->draw_items();
             render_pass->end_render_pass();
         }
+        
         device_->end_frame();
+        device_->submit_frame();
     }
 }
 

@@ -6,6 +6,135 @@
 
 namespace ocarina {
 
+VulkanDescriptorSet::VulkanDescriptorSet(VulkanDevice* device, VkDescriptorPool pool)
+{
+
+}
+
+VulkanDescriptorSet::~VulkanDescriptorSet()
+{
+
+}
+
+VulkanDescriptorSetLayout::VulkanDescriptorSetLayout(VulkanDevice* device) : device_(device)
+{
+
+}
+
+VulkanDescriptorSetLayout::~VulkanDescriptorSetLayout()
+{
+    if (descriptor_pool_ != VK_NULL_HANDLE)
+    {
+        vkDestroyDescriptorPool(device_->logicalDevice(), descriptor_pool_, nullptr);
+    }
+
+    if (layout_ != VK_NULL_HANDLE)
+    {
+        vkDestroyDescriptorSetLayout(device_->logicalDevice(), layout_, nullptr);
+    }
+}
+
+void VulkanDescriptorSetLayout::add_binding(const char* name,
+    uint32_t binding,
+    VkDescriptorType descriptor_type,
+    VkShaderStageFlags stage_flags,
+    uint32_t count)
+{
+    char *end;
+    uint32_t nameid = std::strtoll(name, &end, 10);
+
+    if (name_to_bindings_.find(nameid) == name_to_bindings_.end())
+    {
+        name_to_bindings_.insert(std::make_pair(nameid, binding));
+        VkDescriptorSetLayoutBinding descriptor_binding;
+        descriptor_binding.binding = binding;
+        descriptor_binding.descriptorType = descriptor_type;
+        descriptor_binding.stageFlags = stage_flags; 
+        descriptor_binding.descriptorCount = count; 
+
+        bindings_.insert(std::make_pair(binding, descriptor_binding));
+
+        switch (descriptor_type)
+        {
+        case VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE:
+            descriptor_count_.srv++;
+            break;
+        case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER:
+            descriptor_count_.ubo++;
+            break;
+        case VK_DESCRIPTOR_TYPE_STORAGE_IMAGE:
+            descriptor_count_.uav++;
+            break;
+        case VK_DESCRIPTOR_TYPE_SAMPLER:
+            descriptor_count_.samplers++;
+            break;
+        }
+    }
+}
+
+void VulkanDescriptorSetLayout::build_layout()
+{
+    std::vector<VkDescriptorSetLayoutBinding> layout_bindings;
+    layout_bindings.reserve(bindings_.size());
+    for (auto& it : bindings_)
+    {
+        layout_bindings.push_back(it.second);
+    }
+    VkDescriptorSetLayoutCreateInfo info{};
+    info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    info.pNext = nullptr;
+    info.bindingCount = (uint32_t)layout_bindings.size();
+    info.pBindings = layout_bindings.data();
+    VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device_->logicalDevice(), &info, nullptr, &layout_));
+
+    VkDescriptorSetLayout layouts[1] = { layout_ };
+    VkDescriptorPoolSize sizes[4];
+    uint8_t npools = 0;
+
+    if (descriptor_count_.ubo > 0)
+    {
+        sizes[npools++] = {
+            .type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+            .descriptorCount = descriptor_count_.ubo };
+    }
+
+    if (descriptor_count_.srv > 0)
+    {
+        sizes[npools++] = {
+            .type = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
+            .descriptorCount = descriptor_count_.ubo };
+    }
+
+    if (descriptor_count_.uav > 0)
+    {
+        sizes[npools++] = {
+            .type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+            .descriptorCount = descriptor_count_.uav };
+    }
+
+    if (descriptor_count_.samplers > 0)
+    {
+        sizes[npools++] = {
+            .type = VK_DESCRIPTOR_TYPE_SAMPLER,
+            .descriptorCount = descriptor_count_.samplers };
+    }
+
+    VkDescriptorPoolCreateInfo pool_create_info{};
+    pool_create_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    pool_create_info.poolSizeCount = npools;
+    pool_create_info.pPoolSizes = sizes;
+    pool_create_info.maxSets = 1;
+
+    pool_create_info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+
+    VK_CHECK_RESULT(vkCreateDescriptorPool(device_->logicalDevice(), &pool_create_info, nullptr, &descriptor_pool_));
+}
+
+std::unique_ptr<DescriptorSet> VulkanDescriptorSetLayout::allocate_descriptor_set() {
+    //ocarina::make_unique_with_allocator<VulkanDescriptorSet>(device_, descriptor_pool_);
+    return ocarina::make_unique_with_allocator<VulkanDescriptorSet>(device_, descriptor_pool_);
+}
+
 VulkanDescriptorPool::VulkanDescriptorPool(const DescriptorPoolCreation &creation, VulkanDevice *device) : device_(device), descriptor_pool_creation_(creation) {
     VkDescriptorPoolSize sizes[4];
     uint8_t npools = 0;
@@ -76,90 +205,54 @@ VkDescriptorSet VulkanDescriptorPool::get_descriptor_set(VkDescriptorSetLayout l
     return vkSet;
 }
 
-VkDescriptorSet VulkanDescriptorManager::get_descriptor_set(const VulkanDescriptorSetLayout &layout, VulkanDevice *device) {
-    for (auto &pool : pools_) {
-        if (!pool->can_allocate(layout.descriptor_count)) {
-            continue;
-        }
-        else
-        {
-            return pool->get_descriptor_set(layout.layout_);
-        }
+
+VulkanDescriptorSetLayout* VulkanDescriptorManager::create_descriptor_set_layout(VulkanShader **shaders, uint32_t shaders_count) {
+
+    uint64_t key = 0;
+    uint32_t shiftbit = 32;
+    for (uint32_t i = 0; i < shaders_count; ++i)
+    {
+        uint64_t handle = (uint64_t)shaders[i]->shader_module() << shiftbit;
+        key |= handle;
+        shiftbit -= 32;
     }
 
-    DescriptorPoolCreation pool_creation;
-    pool_creation.ubo = layout.descriptor_count.ubo;
-    pool_creation.srv = layout.descriptor_count.srv;
-    pool_creation.uav = layout.descriptor_count.uav;
-    pool_creation.samplers = layout.descriptor_count.samplers;
-    pools_.push_back(std::make_unique<VulkanDescriptorPool>(pool_creation, device));
-    auto &pool = pools_.back();
-    auto ret = pool->get_descriptor_set(layout.layout_);
-    return ret;
-}
+    auto it = descriptor_set_layouts_.find(key);
+    if (it != descriptor_set_layouts_.end())
+    {
+        return it->second;
+    }
+    VulkanDescriptorSetLayout* layout = ocarina::new_with_allocator<VulkanDescriptorSetLayout>(device_);
 
-VkDescriptorSetLayout VulkanDescriptorManager::create_descriptor_set_layout(VulkanShader **shaders, uint32_t shaders_count) {
-    constexpr uint32_t max_bindings = 256;
-    static VkDescriptorSetLayoutBinding bindings[max_bindings];
-    VkDescriptorSetLayoutBinding binding;
-    uint32_t binding_index = 0;
-    for (size_t i = 0; i < shaders_count; i++) {
+    for (uint32_t i = 0; i < shaders_count; ++i)
+    {
         VulkanShader* shader = shaders[i];
-        
-        binding.stageFlags = shader->stage();
 
-        DescriptorCount descriptor_count = shader->descriptor_count();
-        for (uint8_t j = 0; j < descriptor_count.ubo; ++j)
+        uint32_t variables_count = shader->get_shader_variables_count();
+        for (uint32_t j = 0; j < variables_count; ++j)
         {
-            binding.binding = binding_index;
-            binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-            binding.descriptorCount = 1;
-            binding.pImmutableSamplers = nullptr;
-            bindings[binding_index++] = binding;
-        }
-
-        for (uint8_t j = 0; j < descriptor_count.srv; ++j)
-        {
-            binding.binding = binding_index;
-            binding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-            binding.descriptorCount = 1;
-            binding.pImmutableSamplers = nullptr;
-            bindings[binding_index++] = binding;
-        }
-
-        for (uint8_t j = 0; j < descriptor_count.uav; ++j)
-        {
-            binding.binding = binding_index;
-            binding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
-            binding.descriptorCount = 1;
-            binding.pImmutableSamplers = nullptr;
-            bindings[binding_index++] = binding;
-        }
-
-        for (uint8_t j = 0; j < descriptor_count.samplers; ++j)
-        {
-            binding.binding = binding_index;
-            binding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
-            binding.descriptorCount = 1;
-            binding.pImmutableSamplers = nullptr;
-            bindings[binding_index++] = binding;
+            const VulkanShaderVariableBinding& binding = shader->get_shader_variable(j);
+            layout->add_binding(binding.name, binding.binding, binding.type, binding.shader_stage, binding.count);
         }
     }
 
-    VkDescriptorSetLayoutCreateInfo info;
-    info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-    info.pBindings = bindings;
-    info.bindingCount = binding_index;
+    layout->build_layout();
 
-    VkDescriptorSetLayout descriptorSetLayout;
-    VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device_->logicalDevice(), &info, nullptr, &descriptorSetLayout));
+    descriptor_set_layouts_.insert(std::make_pair(key, layout));
 
-    return descriptorSetLayout;
+    return layout;
 }
 
 void VulkanDescriptorManager::clear()
 {
-    pools_.clear();
+    //pools_.clear();
+    for (auto layout : descriptor_set_layouts_)
+    {
+        VulkanDescriptorSetLayout* descriptor_set_layout = layout.second;
+        ocarina::delete_with_allocator<VulkanDescriptorSetLayout>(descriptor_set_layout);
+    }
+
+    descriptor_set_layouts_.clear();
 }
 
 }// namespace ocarina

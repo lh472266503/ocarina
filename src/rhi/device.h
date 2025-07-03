@@ -49,6 +49,8 @@ class CommandVisitor;
 
 class VertexBuffer;
 class IndexBuffer;
+class RenderPass;
+class DescriptorSetLayout;
 
 class Device : public concepts::Noncopyable {
 public:
@@ -85,11 +87,14 @@ public:
         [[nodiscard]] FileManager *file_manager() noexcept { return file_manager_; }
         virtual void init_rtx() noexcept = 0;
         [[nodiscard]] virtual CommandVisitor *command_visitor() noexcept = 0;
-        virtual void render() noexcept = 0;
+        virtual void submit_frame() noexcept = 0;
         virtual VertexBuffer* create_vertex_buffer() noexcept = 0;
-        virtual IndexBuffer* create_index_buffer(const void *initial_data, uint32_t bytes) noexcept = 0;
+        virtual IndexBuffer* create_index_buffer(const void *initial_data, uint32_t indices_count, bool bit16) noexcept = 0;
         virtual void begin_frame() noexcept = 0;
         virtual void end_frame() noexcept = 0;
+        virtual RenderPass* create_render_pass(const RenderPassCreation& render_pass_creation) noexcept = 0;
+        virtual void destroy_render_pass(RenderPass* render_pass) noexcept = 0;
+        virtual DescriptorSetLayout *create_descriptor_set_layout(void **shaders, uint32_t shaders_count) noexcept = 0;
     };
 
     using Creator = Device::Impl *(FileManager *);
@@ -173,8 +178,8 @@ public:
         return impl_->create_vertex_buffer();
     }
 
-    [[nodiscard]] IndexBuffer* create_index_buffer(const void *initial_data, uint32_t bytes) {
-        return impl_->create_index_buffer(initial_data, bytes);
+    [[nodiscard]] IndexBuffer* create_index_buffer(const void *initial_data, uint32_t indices_count, bool bit16 = true) {
+        return impl_->create_index_buffer(initial_data, indices_count, bit16);
     }
 
     [[nodiscard]] void begin_frame() {
@@ -183,6 +188,22 @@ public:
 
     [[nodiscard]] void end_frame() {
         impl_->end_frame();
+    }
+
+    [[nodiscard]] void submit_frame() {
+        impl_->submit_frame();
+    }
+
+    [[nodiscard]] RenderPass* create_render_pass(const RenderPassCreation& render_pass_creation) {
+        return impl_->create_render_pass(render_pass_creation);
+    }
+
+    [[nodiscard]] void destroy_render_pass(RenderPass* render_pass) {
+        impl_->destroy_render_pass(render_pass);
+    }
+
+    [[nodiscard]] DescriptorSetLayout *create_descriptor_set_layout(void **shaders, uint32_t shaders_count) {
+        return impl_->create_descriptor_set_layout(shaders, shaders_count);
     }
 
     [[nodiscard]] static Device create_device(const string &backend_name, const ocarina::InstanceCreation &instance_creation);

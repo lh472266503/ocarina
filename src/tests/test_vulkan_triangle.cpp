@@ -10,11 +10,13 @@
 #include <windows.h>
 #include "math/base.h"
 #include "util/image.h"
-#include "dsl/dsl.h"
+#include "rhi/vertex_buffer.h"
+#include "rhi/index_buffer.h"
+#include "rhi/resources/buffer.h"
 #include "GUI/window.h"
-#include "util/image.h"
 #include "framework/renderer.h"
 #include "framework/primitive.h"
+#include "rhi/descriptor_set.h"
 
 using namespace ocarina;
 
@@ -131,10 +133,18 @@ private:
     const TestRef &m_Ref;
 };
 
-void setup_triangle(Primitive& triangle)
+struct PerframeUniformBuffer
 {
+    float4x4 view_matrix;
+    float4x4 projection_matrix;
+};
 
-}
+struct PerframeUBOWriter
+{
+    PerframeUniformBuffer per_frame_uniform_buffer = {};
+    std::unique_ptr<Buffer<std::byte>> per_frame_buffer_ = nullptr;
+    std::unique_ptr<DescriptorSet> per_frame_descriptor_set_ = nullptr;
+};
 
 int main(int argc, char *argv[]) {
     TestContainer *container = new TestContainer();
@@ -172,30 +182,60 @@ int main(int argc, char *argv[]) {
 
 
     Primitive triangle;
-    std::vector<Primitive> opaques;
+    //std::vector<Primitive> opaques;
+    PipelineState pipeline_state;
+    pipeline_state.shaders[0] = vertex_shader;
+    pipeline_state.shaders[1] = pixel_shader;
+    pipeline_state.blend_state = BlendState::Opaque();
+    pipeline_state.raster_state = RasterState::Default();
+    pipeline_state.depth_stencil_state = DepthStencilState::Default();
 
     auto setup_triangle = [&](Primitive& triangle) {
         triangle.set_vertex_shader(vertex_shader);
         triangle.set_pixel_shader(pixel_shader);
         
         VertexBuffer* vertex_buffer = device.create_vertex_buffer();
+        float3 positions[3] = { {  1.0f,  1.0f, 0.0f }, { -1.0f,  1.0f, 0.0f }, {  0.0f, -1.0f, 0.0f } };
+        vertex_buffer->add_vertex_stream(VertexAttributeType::Enum::Position, 3, sizeof(float3), (const void*)&positions[0]);
+        float4 colors[3] = {{1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}};
+        vertex_buffer->add_vertex_stream(VertexAttributeType::Enum::Color0, 3, sizeof(float4), (const void*)&colors[0]);
 
-        opaques.push_back(triangle);
+        triangle.set_vertex_buffer(vertex_buffer);
+        pipeline_state.vertex_buffer = vertex_buffer;
+
+        // Setup indices
+        std::vector<uint32_t> indices{ 0, 1, 2 };
+        uint32_t indices_count = static_cast<uint32_t>(indices.size());
+        uint32_t indices_bytes = indices_count * sizeof(uint32_t);
+        IndexBuffer* index_buffer = device.create_index_buffer(indices.data(), indices_bytes);
+        triangle.set_index_buffer(index_buffer);
+        triangle.set_pipeline_state(pipeline_state);
+        //opaques.push_back(triangle);
     };
 
-    auto release_renderer = [&](Primitive& triangle) {
+    auto setup_renderer = [&]() {
+        // Setup renderer if needed
+        };
+
+    auto release_renderer = [&]() {
     };
 
     triangle.set_geometry_data_setup(setup_triangle);
 
-    Renderer renderer;
+    Renderer renderer(&device);
+
+    RenderPassCreation render_pass_creation;
+    RenderPass* render_pass = device.create_render_pass(render_pass_creation);
+    render_pass->add_draw_call(triangle.get_draw_call_item(&device));
+    renderer.add_render_pass(render_pass);
 
     auto image_io = Image::pure_color(make_float4(1, 0, 0, 1), ColorSpace::LINEAR, make_uint2(500));
     window->set_background(image_io.pixel_ptr<float4>(), make_uint2(800, 600));
     window->run([&](double d) {
         while (!window->should_close())
         {
-            //renderer.render();
+            Window::WindowLoop win_loop(window.get());
+            renderer.render_frame();
         }
     });
 

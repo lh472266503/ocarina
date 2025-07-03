@@ -41,6 +41,16 @@ public:
 
     VkResult aquire_next_image(VkSemaphore present_complete_semaphore, uint32_t *image_index);
 
+    struct DepthStencil{
+        VkImage image = VK_NULL_HANDLE;
+        VkDeviceMemory mem = VK_NULL_HANDLE;
+        VkImageView view = VK_NULL_HANDLE;
+    } depth_stencil;
+
+    DepthStencil get_depth_stencil() const
+    {
+        return depth_stencil;
+    }
 private:
     void setup_backbuffers(const VkSwapchainCreateInfoKHR &swapChainCreateInfo);
     void setup_depth_stencil();
@@ -60,10 +70,6 @@ private:
     uint2 resolution_;
     VkFormat depth_format_{VK_FORMAT_D24_UNORM_S8_UINT};
 
-    struct {
-        VkImage image = VK_NULL_HANDLE;
-        VkDeviceMemory mem = VK_NULL_HANDLE;
-        VkImageView view = VK_NULL_HANDLE;
-    } depth_stencil;
+    
 };
 }// namespace ocarina

@@ -20,6 +20,7 @@ VertexBuffer *VertexBuffer::create_vertex_buffer(Device::Impl *device) {
 }
 
 void VertexBuffer::release_vertex_buffer(Device::Impl *device, VertexBuffer *vertex_buffer) {
+    /*
     for (auto& stream : vertex_buffer->vertex_streams_) {
         if (stream.data) {
             delete[] stream.data;
@@ -30,6 +31,7 @@ void VertexBuffer::release_vertex_buffer(Device::Impl *device, VertexBuffer *ver
             stream.buffer_handle = InvalidUI64;
         }
     }
+    */
 }
 
 void VertexBuffer::add_vertex_stream(VertexAttributeType::Enum type, uint32_t count, uint32_t stride, const void *data) {
@@ -42,10 +44,24 @@ void VertexBuffer::add_vertex_stream(VertexAttributeType::Enum type, uint32_t co
         vertex_streams_[(uint8_t)type].data = new uint8_t[count * stride];
         memcpy(vertex_streams_[(uint8_t)type].data, data, count * stride);
     }
-
+    vertex_streams_[(uint8_t)type].type = type;
     vertex_streams_[(uint8_t)type].count = count;
     vertex_streams_[(uint8_t)type].stride = stride;
     vertex_streams_[(uint8_t)type].offset = 0;
+
+    dirty_ = true;
+}
+
+void VertexBuffer::upload_data()
+{
+    for (auto& stream : vertex_streams_)
+    {
+        if (stream.data)
+        {
+            upload_attribute_data(stream.type, stream.data, stream.offset);
+        }
+    }
+    dirty_ = false;
 }
 
 }// namespace ocarina

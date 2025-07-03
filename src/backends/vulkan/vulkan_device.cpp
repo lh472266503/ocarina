@@ -10,6 +10,7 @@
 #include "vulkan_buffer.h"
 #include "vulkan_vertex_buffer.h"
 #include "vulkan_index_buffer.h"
+#include "vulkan_renderpass.h"
 
 namespace ocarina {
 
@@ -61,9 +62,9 @@ handle_ty VulkanDevice::create_shader_from_file(const std::string &file_name, Sh
     //}
     VulkanShader* shader = VulkanDriver::instance().create_shader(shader_type, file_name, options, "main");
     if (shader) {
-        return (handle_ty)shader->shader_module();
+        return (handle_ty)shader;
     }
-    return InvalidUI64;
+    return 0;
 }
 
 handle_ty VulkanDevice::create_mesh(const MeshParams &params) noexcept {
@@ -107,7 +108,10 @@ void VulkanDevice::unregister_shared(void *&shared_handle) noexcept {
 }
 
 void VulkanDevice::destroy_buffer(handle_ty handle) noexcept {
-    
+    VulkanBuffer* buffer = (VulkanBuffer*)handle;
+    if (buffer) {
+        ocarina::delete_with_allocator<VulkanBuffer>(buffer);
+    }
 }
 
 void VulkanDevice::destroy_shader(handle_ty handle) noexcept {
@@ -255,23 +259,19 @@ void VulkanDevice::shutdown()
     vkDestroyDevice(logicalDevice_, nullptr);
 }
 
-void VulkanDevice::render() noexcept {
-    return VulkanDriver::instance().render();
+void VulkanDevice::submit_frame() noexcept {
+    return VulkanDriver::instance().submit_frame();
 }
 
 VertexBuffer* VulkanDevice::create_vertex_buffer() noexcept
 {
-    VulkanVertexBuffer *vulkan_vertex_buffer = new VulkanVertexBuffer(this);
+    VulkanVertexBuffer *vulkan_vertex_buffer = ocarina::new_with_allocator<VulkanVertexBuffer>(this);
     return vulkan_vertex_buffer;
 }
 
-IndexBuffer* VulkanDevice::create_index_buffer(const void* initial_data, uint32_t bytes) noexcept
+IndexBuffer* VulkanDevice::create_index_buffer(const void* initial_data, uint32_t indices_count, bool bit16) noexcept
 {
-    VulkanIndexBuffer* index_buffer = new VulkanIndexBuffer(this, bytes);
-    if (initial_data)
-    {
-        index_buffer->load_from_cpu(initial_data, 0, bytes);
-    }
+    VulkanIndexBuffer *index_buffer = ocarina::new_with_allocator<VulkanIndexBuffer>(this, initial_data, indices_count, bit16);
     return index_buffer;
 }
 
@@ -285,8 +285,25 @@ void VulkanDevice::end_frame() noexcept
     VulkanDriver::instance().end_frame();
 }
 
+RenderPass* VulkanDevice::create_render_pass(const RenderPassCreation& render_pass_creation) noexcept
+{
+    return VulkanDriver::instance().create_render_pass(render_pass_creation);
+}
+
+void VulkanDevice::destroy_render_pass(RenderPass* render_pass) noexcept
+{
+    VulkanDriver::instance().destroy_render_pass(static_cast<VulkanRenderPass*>(render_pass));
+}
+
+DescriptorSetLayout *VulkanDevice::create_descriptor_set_layout(void **shaders, uint32_t shaders_count) noexcept {
+    VulkanShader **vulkan_shaders = reinterpret_cast<VulkanShader **>(shaders);
+    VulkanDescriptorSetLayout* layout = VulkanDriver::instance().create_descriptor_set_layout(vulkan_shaders, shaders_count);
+    return (DescriptorSetLayout *)layout;
+}
+
 VulkanBuffer *VulkanDevice::create_vulkan_buffer(VkBufferUsageFlags usage_flags, VkMemoryPropertyFlags memory_property_flags, VkDeviceSize size, const void *data) {
-    return VulkanBufferManager::instance()->create_vulkan_buffer(this, usage_flags, memory_property_flags, size, data);
+    //return VulkanBufferManager::instance()->create_vulkan_buffer(this, usage_flags, memory_property_flags, size, data);
+    return ocarina::new_with_allocator<VulkanBuffer>(this, usage_flags, memory_property_flags, size, data);
 }
 
 uint32_t VulkanDevice::getQueueFamilyIndex(uint32_t queueFlags) const {

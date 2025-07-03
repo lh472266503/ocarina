@@ -6,6 +6,9 @@
 #include "rhi/graphics_descriptions.h"
 #include "vulkan_shader.h"
 #include "vulkan_descriptorset.h"
+#include "vulkan_renderpass.h"
+#include "vulkan_vertex_buffer.h"
+#include "vulkan_index_buffer.h"
 
 namespace ocarina {
 
@@ -46,11 +49,14 @@ void VulkanDriver::terminate()
     vulkan_descriptor_manager->clear();
     vkDestroySemaphore(device(), semaphores.presentComplete, nullptr);
     vkDestroySemaphore(device(), semaphores.renderComplete, nullptr);
+    release_command_buffers();
+    release_command_pool();
 }
 
-void VulkanDriver::render()
-{
+void VulkanDriver::submit_frame() {
     //prepare_frame();
+    VkPipelineStageFlags wait_stages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+    submit_info.pWaitDstStageMask = wait_stages;
     submit_info.commandBufferCount = 1;
     submit_info.pCommandBuffers = &draw_cmd_buffers[current_buffer_];
 
@@ -58,6 +64,8 @@ void VulkanDriver::render()
     vkQueueSubmit(graphics_queue, 1, &submit_info, VK_NULL_HANDLE);
 
     vulkan_device_->get_swapchain()->queue_present(graphics_queue, current_buffer_, semaphores.renderComplete);
+
+    VK_CHECK_RESULT(vkQueueWaitIdle(graphics_queue));
 }
 
 inline VkDevice VulkanDriver::device() const {
@@ -92,8 +100,7 @@ void VulkanDriver::setup_frame_buffer()
     attachments[0].initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
     attachments[0].finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
     // Depth attachment
-    VkFormat depth_format;
-    get_supported_depth_format(vulkan_device_->physicalDevice(), &depth_format);
+    VkFormat depth_format = swapchain->depth_format();
     attachments[1].format = depth_format;
     attachments[1].samples = VK_SAMPLE_COUNT_1_BIT;
     attachments[1].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
@@ -156,6 +163,8 @@ void VulkanDriver::setup_frame_buffer()
     //create framebuffer
     VkImageView imageview_attachments[2];
 
+    VulkanSwapchain::DepthStencil depth_stencil = swapchain->get_depth_stencil();
+
     // Depth/Stencil attachment is the same for all frame buffers
     imageview_attachments[1] = depth_stencil.view;
 
@@ -175,10 +184,9 @@ void VulkanDriver::setup_frame_buffer()
         imageview_attachments[0] = swapchain->get_swapchain_buffer(i).imageView_;
         VK_CHECK_RESULT(vkCreateFramebuffer(device(), &frameBufferCreateInfo, nullptr, &frame_buffers[i]));
     }
-
-    setup_depth_stencil(resolution.x, resolution.y);
 }
 
+/*
 void VulkanDriver::setup_depth_stencil(uint32_t width, uint32_t height) {
     get_supported_depth_format(vulkan_device_->physicalDevice(), &depth_stencil_format);
     VkImageCreateInfo imageCI{};
@@ -219,6 +227,7 @@ void VulkanDriver::setup_depth_stencil(uint32_t width, uint32_t height) {
     }
     VK_CHECK_RESULT(vkCreateImageView(device(), &imageViewCI, nullptr, &depth_stencil.view));
 }
+*/
 
 void VulkanDriver::release_frame_buffer()
 {
@@ -228,10 +237,6 @@ void VulkanDriver::release_frame_buffer()
     for (uint32_t i = 0; i < frame_buffers.size(); i++) {
         vkDestroyFramebuffer(device(), frame_buffers[i], nullptr);
     }
-
-    vkDestroyImageView(device(), depth_stencil.view, nullptr);
-    vkDestroyImage(device(), depth_stencil.image, nullptr);
-    vkFreeMemory(device(), depth_stencil.mem, nullptr);
 }
 
 void VulkanDriver::create_command_pool()
@@ -278,6 +283,14 @@ void VulkanDriver::initialize()
     setup_frame_buffer();
     //get the graphics queue
     vkGetDeviceQueue(device(), vulkan_device_->get_queue_family_index(QueueType::Graphics), 0, &graphics_queue);
+    create_command_pool();
+    create_command_buffers();
+
+    submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submit_info.waitSemaphoreCount = 1;
+    submit_info.pWaitSemaphores = &semaphores.presentComplete;
+    submit_info.signalSemaphoreCount = 1;
+    submit_info.pSignalSemaphores = &semaphores.renderComplete;
 }
 
 void VulkanDriver::prepare_frame()
@@ -352,8 +365,8 @@ void VulkanDriver::window_resize()
 
 }
 
-std::tuple<VkPipelineLayout, VulkanPipeline> VulkanDriver::get_pipeline(const PipelineState &pipeline_state) {
-    return vulkan_pipeline_manager->get_or_create_pipeline(pipeline_state, vulkan_device_);
+std::tuple<VkPipelineLayout, VulkanPipeline> VulkanDriver::get_pipeline(const PipelineState &pipeline_state, VkRenderPass render_pass) {
+    return vulkan_pipeline_manager->get_or_create_pipeline(pipeline_state, vulkan_device_, render_pass);
 }
 
 void VulkanDriver::begin_frame()
@@ -361,11 +374,8 @@ void VulkanDriver::begin_frame()
     VulkanSwapchain *swapchain = vulkan_device_->get_swapchain();
     VkResult result = swapchain->aquire_next_image(semaphores.presentComplete, &current_buffer_);
 
-    VkCommandBufferBeginInfo infoCmd;
+    VkCommandBufferBeginInfo infoCmd{};
     infoCmd.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    infoCmd.pInheritanceInfo = nullptr;
-    infoCmd.pNext = nullptr;
-    infoCmd.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
     VK_CHECK_RESULT(vkBeginCommandBuffer(draw_cmd_buffers[current_buffer_], &infoCmd));
 }
@@ -375,7 +385,120 @@ void VulkanDriver::end_frame()
     vkEndCommandBuffer(draw_cmd_buffers[current_buffer_]);
 }
 
-VkDescriptorSetLayout VulkanDriver::create_descriptor_set_layout(VulkanShader **shaders, uint32_t shaders_count) {
+VulkanRenderPass* VulkanDriver::create_render_pass(const RenderPassCreation& render_pass_creation) {
+    return ocarina::new_with_allocator<VulkanRenderPass>(vulkan_device_, render_pass_creation);
+}
+
+void VulkanDriver::destroy_render_pass(VulkanRenderPass* render_pass) {
+    ocarina::delete_with_allocator<VulkanRenderPass>(render_pass);
+}
+
+VkResult VulkanDriver::copy_buffer(VulkanBuffer* src, VulkanBuffer* dst)
+{
+    VkCommandBufferAllocateInfo cmd_buffer_allocate{};
+    cmd_buffer_allocate.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    cmd_buffer_allocate.commandPool = command_pool;
+    cmd_buffer_allocate.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    cmd_buffer_allocate.commandBufferCount = 1;
+
+    VkCommandBuffer cmd_buffer;
+    VK_CHECK_RESULT(vkAllocateCommandBuffers(device(), &cmd_buffer_allocate, &cmd_buffer));
+
+    VkCommandBufferBeginInfo cmd_buffer_begin{};
+    cmd_buffer_begin.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    vkBeginCommandBuffer(cmd_buffer, &cmd_buffer_begin);
+
+    VkBufferCopy buffer_copy{};
+
+    buffer_copy.size = src->size();
+
+
+    vkCmdCopyBuffer(cmd_buffer, src->buffer_handle(), dst->buffer_handle(), 1, &buffer_copy);
+
+    //flushCommandBuffer(copyCmd, queue);
+    vkEndCommandBuffer(cmd_buffer);
+
+    
+    // Create fence to ensure that the command buffer has finished executing
+    VkFenceCreateInfo fence_info{};
+    fence_info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+    fence_info.flags = 0;
+    fence_info.pNext = nullptr;
+    VkFence fence;
+    VK_CHECK_RESULT(vkCreateFence(device(), &fence_info, nullptr, &fence));
+    // Submit to the queue
+    VkSubmitInfo submitInfo = {};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &cmd_buffer;
+    VK_CHECK_RESULT(vkQueueSubmit(graphics_queue, 1, &submitInfo, fence));
+    // Wait for the fence to signal that command buffer has finished executing
+    VK_CHECK_RESULT(vkWaitForFences(device(), 1, &fence, VK_TRUE, std::numeric_limits<uint64_t>::max()));
+    vkDestroyFence(device(), fence, nullptr);
+
+    vkFreeCommandBuffers(device(), command_pool, 1, &cmd_buffer);
+
+    return VK_SUCCESS;
+}
+
+VkResult VulkanDriver::copy_buffer(VulkanBuffer* src, VkBuffer dst)
+{
+    VkCommandBufferAllocateInfo cmd_buffer_allocate{};
+    cmd_buffer_allocate.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    cmd_buffer_allocate.commandPool = command_pool;
+    cmd_buffer_allocate.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    cmd_buffer_allocate.commandBufferCount = 1;
+
+    VkCommandBuffer cmd_buffer;
+    VK_CHECK_RESULT(vkAllocateCommandBuffers(device(), &cmd_buffer_allocate, &cmd_buffer));
+
+    VkCommandBufferBeginInfo cmd_buffer_begin{};
+    cmd_buffer_begin.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    vkBeginCommandBuffer(cmd_buffer, &cmd_buffer_begin);
+
+    VkBufferCopy buffer_copy{};
+
+    buffer_copy.size = src->size();
+
+    vkCmdCopyBuffer(cmd_buffer, src->buffer_handle(), dst, 1, &buffer_copy);
+
+    //flushCommandBuffer(copyCmd, queue);
+    vkEndCommandBuffer(cmd_buffer);
+
+    // Create fence to ensure that the command buffer has finished executing
+    VkFenceCreateInfo fence_info{};
+    fence_info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+    fence_info.flags = 0;
+    fence_info.pNext = nullptr;
+    VkFence fence;
+    VK_CHECK_RESULT(vkCreateFence(device(), &fence_info, nullptr, &fence));
+    // Submit to the queue
+    VkSubmitInfo submitInfo = {};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &cmd_buffer;
+    VK_CHECK_RESULT(vkQueueSubmit(graphics_queue, 1, &submitInfo, fence));
+    // Wait for the fence to signal that command buffer has finished executing
+    VK_CHECK_RESULT(vkWaitForFences(device(), 1, &fence, VK_TRUE, std::numeric_limits<uint64_t>::max()));
+    vkDestroyFence(device(), fence, nullptr);
+
+    vkFreeCommandBuffers(device(), command_pool, 1, &cmd_buffer);
+
+    return VK_SUCCESS;
+}
+
+void VulkanDriver::set_vertex_buffer(const VulkanVertexStreamBinding& vertex_stream) {
+    VkCommandBuffer current_buffer = get_current_command_buffer();
+    vkCmdBindVertexBuffers(current_buffer, 0, vertex_stream.buffers_.size(), vertex_stream.buffers_.data(), vertex_stream.offsets_.data());
+}
+
+void VulkanDriver::draw_triangles(VulkanIndexBuffer* index_buffer) {
+    VkCommandBuffer current_buffer = get_current_command_buffer();
+    vkCmdBindIndexBuffer(current_buffer, index_buffer->buffer_handle(), 0, index_buffer->is_16_bit() ? VK_INDEX_TYPE_UINT16 : VK_INDEX_TYPE_UINT32);
+    vkCmdDrawIndexed(current_buffer, index_buffer->get_index_count(), 1, 0, 0, 0);
+}
+
+VulkanDescriptorSetLayout* VulkanDriver::create_descriptor_set_layout(VulkanShader **shaders, uint32_t shaders_count) {
     return vulkan_descriptor_manager->create_descriptor_set_layout(shaders, shaders_count);
 }
 

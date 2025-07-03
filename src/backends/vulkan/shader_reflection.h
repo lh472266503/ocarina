@@ -36,6 +36,8 @@ struct ShaderReflection{
             descriptor_set = other.descriptor_set;
             format = other.format;
             name = other.name;
+            location = other.location;
+            vertex_attribute_type = other.vertex_attribute_type;
         }
 
         ShaderResource &operator=(const ShaderResource &other) {
@@ -46,6 +48,8 @@ struct ShaderReflection{
             descriptor_set = other.descriptor_set;
             format = other.format;
             name = other.name;
+            location = other.location;
+            vertex_attribute_type = other.vertex_attribute_type;
             return *this;
         }
 
@@ -58,6 +62,8 @@ struct ShaderReflection{
             descriptor_set = rvalue.descriptor_set;
             format = rvalue.format;
             name = std::move(rvalue.name);
+            location = rvalue.location;
+            vertex_attribute_type = rvalue.vertex_attribute_type;
         }
 
         ShaderResource& operator=(ShaderResource&& rvalue) noexcept
@@ -69,6 +75,8 @@ struct ShaderReflection{
             descriptor_set = rvalue.descriptor_set;
             format = rvalue.format;
             name = std::move(rvalue.name);
+            location = rvalue.location;
+            vertex_attribute_type = rvalue.vertex_attribute_type;
             return *this;
         }
 

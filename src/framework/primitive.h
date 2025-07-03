@@ -11,16 +11,20 @@
 #include "rhi/params.h"
 #include "rhi/graphics_descriptions.h"
 #include "rhi/pipeline_state.h"
+#include "rhi/renderpass.h"
 
 namespace ocarina {
 class VertexBuffer;
 class IndexBuffer;
 template <class T>
 class Shader;
+class DescriptorSet;
+class DescriptorSetLayout;
+class Device;
 
 class Primitive {
 public:
-    Primitive() = default;
+    Primitive() {}
     ~Primitive();
 
     //Primitive(Primitive &&right);
@@ -31,7 +35,7 @@ public:
 
     using GeometryDataSetup = ocarina::function<void(Primitive&)>;
 
-    void set_geometry_data_setup(GeometryDataSetup setup) { geometry_data_setup_ = setup; }
+    void set_geometry_data_setup(GeometryDataSetup setup);
     void set_vertex_buffer(VertexBuffer *vertex_buffer);
     void set_index_buffer(IndexBuffer *index_buffer);
     void set_vertex_shader(handle_ty vertex_shader);
@@ -63,6 +67,8 @@ public:
         return world_matrix_;
     }
 
+    DrawCallItem get_draw_call_item(Device *device);
+
 private:
     VertexBuffer* vertex_buffer_;
     IndexBuffer* index_buffer_;
@@ -75,6 +81,9 @@ private:
     float4x4 world_matrix_;
     float3 position_;
     bool transform_dirty_ = true;
+
+    unique_ptr<DescriptorSet> descriptor_set_ = nullptr;
+    DescriptorSetLayout* descriptor_set_layout_ = nullptr;
 };
 
 }// namespace ocarina
