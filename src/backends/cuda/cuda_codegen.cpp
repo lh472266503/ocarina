@@ -89,7 +89,7 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         case CallOp::DEGREES: OC_GEN_FUNC_NAME(degrees); break;
         case CallOp::RADIANS: OC_GEN_FUNC_NAME(radians); break;
         case CallOp::SATURATE: OC_GEN_FUNC_NAME(saturate); break;
-        case CallOp::SYNCHRONIZE_BLOCK: OC_ASSERT(0); break;
+        case CallOp::SYNCHRONIZE_BLOCK: current_scratch() << "__syncthreads"; break;
         case CallOp::MAKE_BOOL2: OC_GEN_FUNC_NAME(make_bool2); break;
         case CallOp::MAKE_BOOL3: OC_GEN_FUNC_NAME(make_bool3); break;
         case CallOp::MAKE_BOOL4: OC_GEN_FUNC_NAME(make_bool4); break;

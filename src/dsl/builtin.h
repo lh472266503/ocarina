@@ -424,4 +424,8 @@ inline void unreachable() noexcept {
     Function::current()->expr_statement(Function::current()->call_builtin(nullptr, CallOp::UNREACHABLE, {}));
 }
 
+inline void synchronize_block() noexcept {
+    Function::current()->expr_statement(Function::current()->call_builtin(nullptr, CallOp::SYNCHRONIZE_BLOCK, {}));
+}
+
 }// namespace ocarina
