@@ -130,10 +130,17 @@ public:
     static constexpr AccessMode access_mode = SOA;
 
 private:
-    ocarina::BufferStorage<TBuffer> buffer_var_{};
+    TBuffer buffer_view_{};
     ocarina::uint view_size_{};
     ocarina::uint offset_{};
     ocarina::uint stride_{};
+
+public:
+    SOAView() = default;
+    SOAView(TBuffer bv, uint view_size = ocarina::InvalidUI32,
+            uint ofs = 0u, uint stride = type_size)
+        : buffer_view_(bv), view_size_(ocarina::min(view_size, uint(buffer_view_.size_in_byte()))),
+          stride_(stride) {}
 };
 
 }// namespace ocarina
@@ -144,8 +151,6 @@ OC_MAKE_ATOMIC_SOA_VAR(template<typename TBuffer>, float)
 OC_MAKE_ATOMIC_SOA_VAR(template<typename TBuffer>, int)
 OC_MAKE_ATOMIC_SOA_VAR(template<typename T OC_COMMA ocarina::uint N OC_COMMA typename TBuffer>,
                        ocarina::Vector<T OC_COMMA N>)
-
-
 
 #define OC_MAKE_SOA_MEMBER(field_name) ocarina::SOAViewVar<decltype(struct_type::field_name), TBuffer> field_name;
 
