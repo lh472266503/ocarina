@@ -166,7 +166,7 @@ public:
 
     template<typename T>
     [[nodiscard]] BufferView<T> view_as(size_t offset = 0, size_t size = 0) const noexcept {
-        return view().view_as<T>(offset, size);
+        return view().template view_as<T>(offset, size);
     }
 
     template<typename... Args>

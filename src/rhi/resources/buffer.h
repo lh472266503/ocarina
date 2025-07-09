@@ -44,6 +44,15 @@ public:
         return &proxy();
     }
 
+    template<typename Dst>
+    [[nodiscard]] BufferView<Dst> view_as(size_t offset = 0, size_t size = 0) const noexcept {
+        size = size == 0 ? size_ - offset : size;
+        return BufferView<Dst>(handle_,
+                               (offset_ + offset) * sizeof(T) / sizeof(Dst),
+                               size * sizeof(T) / sizeof(Dst),
+                               total_size_ * sizeof(T) / sizeof(Dst));
+    }
+
     BufferView(handle_ty handle, size_t offset, size_t size, size_t total_size)
         : handle_(handle), offset_(offset), size_(size), total_size_(total_size) {}
 
@@ -151,6 +160,11 @@ public:
 
     void register_shared() const noexcept {
         device()->register_shared_buffer(gl_shared_handle_, gl_handle_);
+    }
+
+    template<typename Dst>
+    [[nodiscard]] BufferView<Dst> view_as(size_t offset = 0, size_t size = 0) const noexcept {
+        return view().template view_as<Dst>(offset, size);
     }
 
     void mapping() const noexcept {
