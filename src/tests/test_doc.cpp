@@ -148,10 +148,10 @@ void test_compute_shader(Device &device, Stream &stream) {
 //List< float4x4 ,SOA, BindlessArrayByteBuffer> list = create_list<float4x4, SOA>(bindless_array.byte_buffer_var(byte_handle));
         List<float4x4 ,  SOA,ByteBufferVar> list = create_list<float4x4, SOA>(byte_buffer_var);
         //        return ;
-        //        auto soa = ba.byte_buffer_var(byte_handle).soa_view<Elm>();
-        //                auto soa = ba.byte_buffer_var(byte_handle).aos_view<Elm>();
-        //        auto soa = lst.buffer().soa_view<Elm>();
-        //        auto soa = list.buffer().soa_view<Elm>();
+        //        auto soa = ba.byte_buffer_var(byte_handle).soa_view_var<Elm>();
+        //                auto soa = ba.byte_buffer_var(byte_handle).aos_view_var<Elm>();
+        //        auto soa = lst.buffer().soa_view_var<Elm>();
+        //        auto soa = list.buffer().soa_view_var<Elm>();
 //        list.count() = 2;
         list.push_back( make_float4x4(dispatch_id() * 1.f));
         ml.write(dispatch_id(), make_float4x4(dispatch_id() * 2.f));
@@ -159,7 +159,7 @@ void test_compute_shader(Device &device, Stream &stream) {
         //      fbuffer.write(11, float4x4{6});
         //      $info("{} ", list.advance_index());
         //      auto soa1 = soa;a
-//        auto soa = byte_buffer_var.soa_view<Elm>();
+//        auto soa = byte_buffer_var.soa_view_var<Elm>();
 //        soa.write(0, make_float4x4(1.f * dispatch_id() + 1));
         //        list.at(dispatch_id()) = make_float4x4(1.f * dispatch_id() + 1);
                         Var a = list.read(dispatch_id());

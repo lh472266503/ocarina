@@ -229,13 +229,13 @@ public:
     }
 
     template<typename Elm, typename int_type = uint>
-    [[nodiscard]] SOAView<Elm, Ref<ByteBuffer>> soa_view(const Var<int_type> &view_size = InvalidUI32) const noexcept {
-        return SOAView<Elm, Ref<ByteBuffer>>(*this, view_size);
+    [[nodiscard]] SOAViewVar<Elm, Ref<ByteBuffer>> soa_view_var(const Var<int_type> &view_size = InvalidUI32) const noexcept {
+        return SOAViewVar<Elm, Ref<ByteBuffer>>(*this, view_size);
     }
 
     template<typename Elm, typename int_type = uint>
-    [[nodiscard]] AOSView<Elm, Ref<ByteBuffer>> aos_view(const Var<int_type> &view_size = InvalidUI32) const noexcept {
-        return AOSView<Elm, Ref<ByteBuffer>>(*this, view_size);
+    [[nodiscard]] AOSViewVar<Elm, Ref<ByteBuffer>> aos_view_var(const Var<int_type> &view_size = InvalidUI32) const noexcept {
+        return AOSViewVar<Elm, Ref<ByteBuffer>>(*this, view_size);
     }
 };
 
@@ -402,13 +402,13 @@ public:
     }
 
     template<typename Elm, typename int_type = uint>
-    [[nodiscard]] SOAView<Elm, BindlessArrayByteBuffer> soa_view(const Var<int_type> &view_size = InvalidUI32) const noexcept {
-        return SOAView<Elm, BindlessArrayByteBuffer>(*this, view_size);
+    [[nodiscard]] SOAViewVar<Elm, BindlessArrayByteBuffer> soa_view_var(const Var<int_type> &view_size = InvalidUI32) const noexcept {
+        return SOAViewVar<Elm, BindlessArrayByteBuffer>(*this, view_size);
     }
 
     template<typename Elm, typename int_type = uint>
-    [[nodiscard]] AOSView<Elm, BindlessArrayByteBuffer> aos_view(const Var<int_type> &view_size = InvalidUI32) const noexcept {
-        return AOSView<Elm, BindlessArrayByteBuffer>(*this, view_size);
+    [[nodiscard]] AOSViewVar<Elm, BindlessArrayByteBuffer> aos_view_var(const Var<int_type> &view_size = InvalidUI32) const noexcept {
+        return AOSViewVar<Elm, BindlessArrayByteBuffer>(*this, view_size);
     }
 
     template<typename T, typename Offset>
@@ -495,9 +495,9 @@ public:
 
     template<typename Elm, typename Index>
     requires concepts::integral<expr_value_t<Index>>
-    [[nodiscard]] SOAView<Elm, BindlessArrayByteBuffer> soa_view(Index &&index, const string &desc = "",
-                                                                 uint buffer_num = 0) noexcept {
-        return byte_buffer_var(OC_FORWARD(index), desc, buffer_num).template soa_view<Elm>();
+    [[nodiscard]] SOAViewVar<Elm, BindlessArrayByteBuffer> soa_view_var(Index &&index, const string &desc = "",
+                                                                        uint buffer_num = 0) noexcept {
+        return byte_buffer_var(OC_FORWARD(index), desc, buffer_num).template soa_view_var<Elm>();
     }
 };
 

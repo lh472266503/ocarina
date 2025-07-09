@@ -45,10 +45,10 @@ class TriangleHit;
 class Ray;
 
 template<typename T, typename TBuffer>
-struct SOAView;
+struct SOAViewVar;
 
 template<typename T, typename TBuffer>
-struct AOSView;
+struct AOSViewVar;
 
 namespace detail {
 

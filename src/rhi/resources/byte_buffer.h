@@ -239,13 +239,13 @@ public:
     }
 
     template<typename Elm, typename int_type = uint>
-    [[nodiscard]] auto soa_view(const Var<int_type> &view_size = InvalidUI32) const noexcept {
-        return expr().soa_view<Elm>(view_size);
+    [[nodiscard]] auto soa_view_var(const Var<int_type> &view_size = InvalidUI32) const noexcept {
+        return expr().soa_view_var<Elm>(view_size);
     }
 
     template<typename Elm, typename int_type = uint>
-    [[nodiscard]] auto aos_view(const Var<int_type> &view_size = InvalidUI32) const noexcept {
-        return expr().aos_view<Elm>(view_size);
+    [[nodiscard]] auto aos_view_var(const Var<int_type> &view_size = InvalidUI32) const noexcept {
+        return expr().aos_view_var<Elm>(view_size);
     }
 
     template<typename Target = uint, typename Index>
