@@ -31,6 +31,8 @@ public:
     [[nodiscard]] size_t size() const { return size_; }
     [[nodiscard]] static constexpr size_t element_size() noexcept { return sizeof(T); }
     [[nodiscard]] size_t size_in_byte() const noexcept { return size_ * element_size(); }
+    [[nodiscard]] size_t offset() const noexcept { return offset_; }
+    [[nodiscard]] size_t offset_in_byte() const noexcept { return offset_ * element_size(); }
 
     const BufferProxy<T> &proxy() const noexcept {
         proxy_.handle = reinterpret_cast<T *>(head());
@@ -57,15 +59,19 @@ public:
     template<typename Arg>
     requires is_buffer_or_view_v<Arg> && std::is_same_v<buffer_element_t<Arg>, T>
     [[nodiscard]] BufferCopyCommand *copy_from(const Arg &src, uint dst_offset = 0) noexcept {
-        return BufferCopyCommand::create(src.head(), head(), 0, dst_offset * element_size(),
+        return BufferCopyCommand::create(src.handle(), handle(),
+                                         src.offset_in_byte(),
+                                         (dst_offset + offset_) * element_size(),
                                          src.size_in_byte(), true);
     }
 
     template<typename Arg>
     requires is_buffer_or_view_v<Arg> && std::is_same_v<buffer_element_t<Arg>, T>
     [[nodiscard]] BufferCopyCommand *copy_to(Arg &dst, uint src_offset = 0) noexcept {
-        return BufferCopyCommand::create(head(), dst.head(), src_offset * element_size(),
-                                         0, dst.size_in_byte(), true);
+        return BufferCopyCommand::create(handle(), dst.handle(),
+                                         (src_offset + offset_) * element_size(),
+                                         dst.offset_in_byte(),
+                                         dst.size_in_byte(), true);
     }
 
     [[nodiscard]] BufferUploadCommand *upload(const void *data, bool async = true) const noexcept {
@@ -125,7 +131,7 @@ public:
     OC_MAKE_MEMBER_GETTER_SETTER(name, )
 
     Buffer(BufferView<T, Dims...> buffer_view)
-        : RHIResource(nullptr, Tag::BUFFER, buffer_view.head()),
+        : RHIResource(nullptr, Tag::BUFFER, buffer_view.handle()),
           size_(buffer_view.size()) {
         proxy_ptr();
     }
