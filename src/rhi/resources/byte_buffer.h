@@ -63,7 +63,9 @@ public:
 
     [[nodiscard]] BufferCopyCommand *copy_from(const ByteBufferView &src, bool async = true,
                                                uint dst_offset = 0) noexcept {
-        return BufferCopyCommand::create(src.head(), head(), 0, dst_offset * element_size(),
+        return BufferCopyCommand::create(src.handle(), handle(),
+                                         src.offset(),
+                                         (dst_offset + offset_) * element_size(),
                                          src.size_in_byte(), true);
     }
 
@@ -71,8 +73,10 @@ public:
     requires is_buffer_or_view_v<Arg>
     [[nodiscard]] BufferCopyCommand *copy_to(Arg &dst, uint src_offset = 0,
                                              bool async = true) noexcept {
-        return BufferCopyCommand::create(head(), dst.head(), src_offset * element_size(),
-                                         0, dst.size_in_byte(), true);
+        return BufferCopyCommand::create(handle(), dst.handle(),
+                                         (src_offset + offset_) * element_size(),
+                                         dst.offset_in_byte(),
+                                         dst.size_in_byte(), true);
     }
 
     [[nodiscard]] BufferDownloadCommand *download(void *data, uint src_offset = 0,
@@ -111,7 +115,7 @@ public:
           size_(size) {}
 
     ByteBuffer(ByteBufferView buffer_view)
-        : RHIResource(nullptr, Tag::BUFFER, buffer_view.head()),
+        : RHIResource(nullptr, Tag::BUFFER, buffer_view.handle()),
           size_(buffer_view.size()) {}
 
     /// head of the buffer
