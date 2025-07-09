@@ -170,7 +170,6 @@ void GLWindow::set_background(const Buffer<ocarina::float4> &buffer, ocarina::ui
         texture_ = ocarina::make_unique<GLTexture>();
     }
     texture_->bind();
-    bind_buffer(buffer.gl_handle(), buffer.size_in_byte());
 }
 
 void GLWindow::unbind_buffer(ocarina::uint &handle) const noexcept {

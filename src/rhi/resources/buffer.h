@@ -121,8 +121,6 @@ public:
 
 protected:
     size_t size_{};
-    mutable uint gl_handle_{0};
-    mutable void *gl_shared_handle_{0};
     mutable BufferProxy<T> proxy_{};
     string name_;
 
@@ -145,9 +143,6 @@ public:
         proxy_ptr();
     }
 
-    [[nodiscard]] uint &gl_handle() const noexcept { return gl_handle_; }
-    [[nodiscard]] void *&gl_shared_handle() const noexcept { return gl_shared_handle_; }
-
     void destroy() override {
         _destroy();
         size_ = 0;
@@ -158,25 +153,9 @@ public:
         return BufferView<T>(handle_, offset, size, size_);
     }
 
-    void register_shared() const noexcept {
-        device()->register_shared_buffer(gl_shared_handle_, gl_handle_);
-    }
-
     template<typename Dst>
     [[nodiscard]] BufferView<Dst> view_as(size_t offset = 0, size_t size = 0) const noexcept {
         return view().template view_as<Dst>(offset, size);
-    }
-
-    void mapping() const noexcept {
-        device()->mapping_shared_buffer(gl_shared_handle_, const_cast<handle_ty &>(handle_));
-    }
-
-    void unmapping() const noexcept {
-        device()->unmapping_shared(gl_shared_handle_);
-    }
-
-    void unregister_shared() const noexcept {
-        device()->unregister_shared(gl_shared_handle_);
     }
 
     // Move constructor
