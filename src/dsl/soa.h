@@ -195,7 +195,7 @@ OC_MAKE_ATOMIC_SOA_VAR(template<typename T OC_COMMA ocarina::uint N OC_COMMA typ
 //OC_MAKE_STRUCT_soa_view_var(template<typename T OC_COMMA typename TBuffer>, ocarina::Vector<T OC_COMMA 3>, x, y, z)
 //OC_MAKE_STRUCT_soa_view_var(template<typename T OC_COMMA typename TBuffer>, ocarina::Vector<T OC_COMMA 4>, x, y, z, w)
 
-#define OC_MAKE_ARRAY_soa_view_var(TemplateArgs, TypeName, ElementType)                 \
+#define OC_MAKE_ARRAY_SOA_VIEW_VAR(TemplateArgs, TypeName, ElementType)                 \
     TemplateArgs struct ocarina::SOAViewVar<TypeName, TBuffer> {                        \
     public:                                                                             \
         using struct_type = TypeName;                                                   \
@@ -269,9 +269,9 @@ OC_MAKE_ATOMIC_SOA_VAR(template<typename T OC_COMMA ocarina::uint N OC_COMMA typ
         }                                                                               \
     };
 
-OC_MAKE_ARRAY_soa_view_var(template<ocarina::uint N OC_COMMA ocarina::uint M OC_COMMA typename TBuffer>,
+OC_MAKE_ARRAY_SOA_VIEW_VAR(template<ocarina::uint N OC_COMMA ocarina::uint M OC_COMMA typename TBuffer>,
                            ocarina::Matrix<N OC_COMMA M>, Vector<float OC_COMMA M>)
-    OC_MAKE_ARRAY_soa_view_var(template<ocarina::uint N OC_COMMA typename T OC_COMMA typename TBuffer>,
+    OC_MAKE_ARRAY_SOA_VIEW_VAR(template<ocarina::uint N OC_COMMA typename T OC_COMMA typename TBuffer>,
                                ocarina::array<T OC_COMMA N>, T)
 
         namespace ocarina {
