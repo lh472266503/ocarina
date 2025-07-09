@@ -75,7 +75,7 @@ public:
     }
 
     [[nodiscard]] BufferUploadCommand *upload(const void *data, bool async = true) const noexcept {
-        return BufferUploadCommand::create(data, head(), size_in_byte(), async);
+        return BufferUploadCommand::create(data, handle(), offset_in_byte(), size_in_byte(), async);
     }
 
     [[nodiscard]] BufferUploadCommand *upload_sync(const void *data) const noexcept {
@@ -83,7 +83,7 @@ public:
     }
 
     [[nodiscard]] BufferDownloadCommand *download(void *data, uint src_offset = 0, bool async = true) const noexcept {
-        return BufferDownloadCommand::create(data, head() + src_offset * element_size(),
+        return BufferDownloadCommand::create(data, handle(), src_offset * element_size(),
                                              size_in_byte(), async);
     }
 

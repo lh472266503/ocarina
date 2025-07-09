@@ -57,6 +57,8 @@ public:
     [[nodiscard]] size_t size() const { return size_; }
     [[nodiscard]] size_t element_size() const noexcept { return 1; }
     [[nodiscard]] size_t size_in_byte() const noexcept { return size_ * element_size(); }
+    OC_MAKE_MEMBER_GETTER(handle, )
+    OC_MAKE_MEMBER_GETTER(offset, )
     [[nodiscard]] handle_ty head() const { return handle_ + offset_ * element_size(); }
 
     [[nodiscard]] BufferCopyCommand *copy_from(const ByteBufferView &src, bool async = true,
@@ -75,12 +77,12 @@ public:
 
     [[nodiscard]] BufferDownloadCommand *download(void *data, uint src_offset = 0,
                                                   bool async = true) const noexcept {
-        return BufferDownloadCommand::create(data, head() + src_offset * element_size(),
+        return BufferDownloadCommand::create(data, handle(), src_offset * element_size(),
                                              size_in_byte(), async);
     }
 
     [[nodiscard]] BufferUploadCommand *upload(const void *data, bool async = true) const noexcept {
-        return BufferUploadCommand::create(data, head(), size_in_byte(), async);
+        return BufferUploadCommand::create(data, handle(), offset(), size_in_byte(), async);
     }
 
     [[nodiscard]] BufferByteSetCommand *byte_set(uchar value, bool async = true) const noexcept {
@@ -88,7 +90,7 @@ public:
     }
 
     [[nodiscard]] BufferUploadCommand *upload_sync(const void *data) const noexcept {
-        return BufferUploadCommand::create(data, head(), size_in_byte(), false);
+        return upload(data, false);
     }
 
     [[nodiscard]] BufferByteSetCommand *reset(bool async = true) const noexcept {

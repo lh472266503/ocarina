@@ -168,8 +168,8 @@ protected:
     size_t device_offset_{};
 
 protected:
-    DataOpCommand(handle_ty hp, handle_ty dp, bool async)
-        : Command(async), host_ptr_(hp), device_handle_(dp) {}
+    DataOpCommand(handle_ty hp, handle_ty dp, size_t d_offset, bool async)
+        : Command(async), host_ptr_(hp), device_offset_(d_offset), device_handle_(dp) {}
 
 public:
     template<typename T = handle_ty>
@@ -186,8 +186,8 @@ private:
     size_t size_in_bytes_{};
 
 protected:
-    BufferOpCommand(handle_ty hp, handle_ty dp, size_t size, bool async)
-        : DataOpCommand(hp, dp, async), size_in_bytes_(size) {}
+    BufferOpCommand(handle_ty hp, handle_ty dp, size_t offset, size_t size, bool async)
+        : DataOpCommand(hp, dp, offset, async), size_in_bytes_(size) {}
 
 public:
     [[nodiscard]] size_t size_in_bytes() const noexcept { return size_in_bytes_; }
@@ -221,8 +221,8 @@ public:
 
 class BufferUploadCommand final : public BufferOpCommand {
 public:
-    BufferUploadCommand(const void *hp, handle_ty dp, size_t size, bool async = true)
-        : BufferOpCommand(reinterpret_cast<handle_ty>(hp), dp, size, async) {}
+    BufferUploadCommand(const void *hp, handle_ty dp, size_t d_offset, size_t size, bool async)
+        : BufferOpCommand(reinterpret_cast<handle_ty>(hp), dp, d_offset, size, async) {}
     OC_MAKE_CMD_COMMON_FUNC(BufferUploadCommand)
 };
 
@@ -253,8 +253,8 @@ public:
 
 class BufferDownloadCommand final : public BufferOpCommand {
 public:
-    BufferDownloadCommand(void *hp, handle_ty dp, size_t size, bool async = true)
-        : BufferOpCommand(reinterpret_cast<handle_ty>(hp), dp, size, async) {}
+    BufferDownloadCommand(void *hp, handle_ty dp, size_t d_offset, size_t size, bool async)
+        : BufferOpCommand(reinterpret_cast<handle_ty>(hp), dp, d_offset, size, async) {}
     OC_MAKE_CMD_COMMON_FUNC(BufferDownloadCommand)
 };
 
@@ -265,9 +265,9 @@ private:
 
 public:
     TextureOpCommand(handle_ty data, handle_ty device_handle, uint2 resolution, PixelStorage storage, bool async)
-        : DataOpCommand(data, device_handle, async), pixel_storage_(storage), resolution_(resolution.x, resolution.y, 1) {}
+        : DataOpCommand(data, device_handle, 0, async), pixel_storage_(storage), resolution_(resolution.x, resolution.y, 1) {}
     TextureOpCommand(handle_ty data, handle_ty device_handle, uint3 resolution, PixelStorage storage, bool async)
-        : DataOpCommand(data, device_handle, async), pixel_storage_(storage), resolution_(resolution) {}
+        : DataOpCommand(data, device_handle, 0, async), pixel_storage_(storage), resolution_(resolution) {}
     [[nodiscard]] PixelStorage pixel_storage() const noexcept { return pixel_storage_; }
     [[nodiscard]] size_t width() const noexcept { return resolution_.x; }
     [[nodiscard]] size_t height() const noexcept { return resolution_.y; }

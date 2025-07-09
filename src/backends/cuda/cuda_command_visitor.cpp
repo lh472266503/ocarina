@@ -14,13 +14,13 @@ namespace ocarina {
 void CUDACommandVisitor::visit(const BufferUploadCommand *cmd) noexcept {
     OC_ASSERT((cmd->device_handle() == 0) == (cmd->host_ptr() == 0));
     if (cmd->async() && stream_) {
-        OC_CU_CHECK(cuMemcpyHtoDAsync(cmd->device_handle(),
+        OC_CU_CHECK(cuMemcpyHtoDAsync(cmd->device_handle() + cmd->device_offset(),
                                       cmd->host_ptr<const void *>(),
                                       cmd->size_in_bytes(),
                                       stream_));
     } else {
         device_->use_context([&] {
-            OC_CU_CHECK(cuMemcpyHtoD(cmd->device_handle(),
+            OC_CU_CHECK(cuMemcpyHtoD(cmd->device_handle() + cmd->device_offset(),
                                      cmd->host_ptr<const void *>(),
                                      cmd->size_in_bytes()));
         });
@@ -80,13 +80,13 @@ void CUDACommandVisitor::visit(const BufferDownloadCommand *cmd) noexcept {
     OC_ASSERT((cmd->device_handle() == 0) == (cmd->host_ptr() == 0));
     if (cmd->async() && stream_) {
         OC_CU_CHECK(cuMemcpyDtoHAsync(cmd->host_ptr<void *>(),
-                                      cmd->device_handle(),
+                                      cmd->device_handle() + cmd->device_offset(),
                                       cmd->size_in_bytes(),
                                       stream_));
     } else {
         device_->use_context([&] {
             OC_CU_CHECK(cuMemcpyDtoH(cmd->host_ptr<void *>(),
-                                     cmd->device_handle(),
+                                     cmd->device_handle() + cmd->device_offset(),
                                      cmd->size_in_bytes()));
         });
     }
