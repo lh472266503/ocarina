@@ -11,6 +11,8 @@
 #include "vulkan_vertex_buffer.h"
 #include "vulkan_index_buffer.h"
 #include "vulkan_renderpass.h"
+#include "vulkan_descriptorset.h"
+#include "vulkan_descriptorset_writer.h"
 
 namespace ocarina {
 
@@ -299,6 +301,12 @@ DescriptorSetLayout *VulkanDevice::create_descriptor_set_layout(void **shaders, 
     VulkanShader **vulkan_shaders = reinterpret_cast<VulkanShader **>(shaders);
     VulkanDescriptorSetLayout* layout = VulkanDriver::instance().create_descriptor_set_layout(vulkan_shaders, shaders_count);
     return (DescriptorSetLayout *)layout;
+}
+
+DescriptorSetWriter *VulkanDevice::create_descriptor_set_writer(DescriptorSet *descriptor_set, void **shaders, uint32_t shaders_count) noexcept {
+    VulkanDescriptorSet *vulkan_descriptor_set = static_cast<VulkanDescriptorSet *>(descriptor_set);
+    VulkanShader **vulkan_shaders = reinterpret_cast<VulkanShader **>(shaders);
+    return ocarina::new_with_allocator<VulkanDescriptorSetWriter>(this, vulkan_shaders, shaders_count, vulkan_descriptor_set);
 }
 
 VulkanBuffer *VulkanDevice::create_vulkan_buffer(VkBufferUsageFlags usage_flags, VkMemoryPropertyFlags memory_property_flags, VkDeviceSize size, const void *data) {

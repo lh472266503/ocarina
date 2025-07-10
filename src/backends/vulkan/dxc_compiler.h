@@ -8,6 +8,8 @@
 #include "core/concepts.h"
 #include "rhi/resources/shader.h"
 #include <vulkan/vulkan.h>
+#include "rhi/graphics_descriptions.h"
+#include "spirv_cross.hpp"
 
 namespace ocarina {
 
@@ -45,6 +47,7 @@ public:
     DXCCompiler operator=(DXCCompiler &&) = delete;
     ~DXCCompiler() {}
 
-   
+private:
+    static ShaderVariableType get_shader_variable_type(uint32_t vec_size, uint32_t column_size, const spirv_cross::SPIRType& type);
 };
 }// namespace ocarina

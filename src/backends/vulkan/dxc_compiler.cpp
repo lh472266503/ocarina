@@ -9,7 +9,7 @@
 #include <Windows.h>
 #include "dxcapi.h"
 #include <wrl/client.h>
-#include "spirv_cross.hpp"
+
 using namespace Microsoft::WRL;
 #endif
 
@@ -43,7 +43,8 @@ public:
         return E_FAIL;
     }
 
-    HRESULT STDMETHODCALLTYPE LoadSource(_In_ LPCWSTR pFilename, _COM_Outptr_result_maybenull_ IDxcBlob **ppIncludeSource) override {
+    HRESULT STDMETHODCALLTYPE 
+        LoadSource(_In_ LPCWSTR pFilename, _COM_Outptr_result_maybenull_ IDxcBlob **ppIncludeSource) override {
         ComPtr<IDxcBlobEncoding> pEncoding;
         std::string file_name = wstring_to_string(pFilename);
         std::string path = get_file_directory(file_name);//Paths::Normalize(UNICODE_TO_MULTIBYTE(pFilename));
@@ -282,35 +283,61 @@ void DXCCompiler::run_spriv_reflection(const std::vector<uint32_t> &spriv, Shade
     for (spirv_cross::Resource &resource : resources.uniform_buffers) {
         uint32_t set = spirvmodule.get_decoration(resource.id, spv::DecorationDescriptorSet);
         uint32_t binding = spirvmodule.get_decoration(resource.id, spv::DecorationBinding);
-        //printf("CB %s at set = %u, binding = %u\n", resource.name.c_str(), set, binding);
 
-        //ReflectionData::ResourceInfo info;
-        //info.m_Name = spirvmodule.get_name(resource.id);
-        //info.m_NameCRC = GetCRC32(info.m_Name);
-        //info.m_Register = binding;
-        //info.m_DescriptorSet = set;
+        const spirv_cross::SPIRType &type = spirvmodule.get_type(resource.base_type_id);
+        uint32_t size = spirvmodule.get_declared_struct_size(type);
 
-        //info.m_RegisterCount = 1;
-        //info.m_ShaderType = shaderType;
-        //info.m_ParameterType = ReflectionData::Reflect_ConstantBuffer;
+        ShaderReflection::UniformBuffer ubo{};
+        ubo.name = spirvmodule.get_name(resource.id);
+        ubo.size = size;
+        ubo.binding = binding;
 
-        //reflectionData.m_ConstantBufferBindPoints.Update(binding, 1);
-        //reflectionData.m_Resources.push_back(info);
-        ShaderReflection::ShaderResource shader_resource;
-        shader_resource.name = spirvmodule.get_name(resource.id);
-        shader_resource.descriptor_set = set;
-        shader_resource.register_ = binding;
-        shader_resource.parameter_type = ShaderReflection::ResourceType::ConstantBuffer;
-        shader_resource.shader_type = (uint32_t)shader_type;
+        // Now loop through all members
+        for (uint32_t i = 0; i < type.member_types.size(); ++i) {
+            ShaderReflection::ShaderVariable shader_variable{};
+            shader_variable.name = spirvmodule.get_member_name(resource.base_type_id, i);
+            shader_variable.size = spirvmodule.get_declared_struct_member_size(type, i);
+            
+            shader_variable.offset = spirvmodule.type_struct_member_offset(type, i);
+            const spirv_cross::SPIRType &member_type = spirvmodule.get_type(type.member_types[i]);
+            uint32_t vec_size = member_type.vecsize;// e.g. 4 for float4
+            uint32_t columns = member_type.columns; // 4 columns = matrix
+            uint32_t array_size = member_type.array.size() > 0 ? member_type.array[0] : 0;
 
-        spirv_cross::SmallVector<spirv_cross::BufferRange> ranges = spirvmodule.get_active_buffer_ranges(resource.id);
-        //spirvmodule.get_active_interface_variables
-        for (spirv_cross::BufferRange& range : ranges)
-        {
-            //range.
+            shader_variable.variable_type = get_shader_variable_type(vec_size, columns, member_type);
+            ubo.shader_variables.emplace_back(std::move(shader_variable)); 
         }
+        shader_reflection.uniform_buffers.emplace_back(std::move(ubo));
+    }
 
-        shader_reflection.shader_resources.push_back(shader_resource);
+    for (spirv_cross::Resource &resource : resources.push_constant_buffers) {
+        uint32_t set = spirvmodule.get_decoration(resource.id, spv::DecorationDescriptorSet);
+        uint32_t binding = spirvmodule.get_decoration(resource.id, spv::DecorationBinding);
+
+        const spirv_cross::SPIRType &type = spirvmodule.get_type(resource.base_type_id);
+        uint32_t size = spirvmodule.get_declared_struct_size(type);
+
+        ShaderReflection::UniformBuffer push_constant{};
+        push_constant.name = spirvmodule.get_name(resource.id);
+        push_constant.size = size;
+
+        // Now loop through all members
+        for (uint32_t i = 0; i < type.member_types.size(); ++i) {
+            ShaderReflection::ShaderVariable shader_variable{};
+            shader_variable.name = spirvmodule.get_member_name(resource.base_type_id, i);
+            shader_variable.size = spirvmodule.get_declared_struct_member_size(type, i);
+
+            shader_variable.offset = spirvmodule.type_struct_member_offset(type, i);
+
+            const spirv_cross::SPIRType &member_type = spirvmodule.get_type(type.member_types[i]);
+            uint32_t vec_size = member_type.vecsize;// e.g. 4 for float4
+            uint32_t columns = member_type.columns; // 4 columns = matrix
+            uint32_t array_size = member_type.array.size() > 0 ? member_type.array[0] : 0;
+
+            shader_variable.variable_type = get_shader_variable_type(vec_size, columns, member_type);
+            push_constant.shader_variables.emplace_back(std::move(shader_variable));
+        }
+        shader_reflection.push_constant_buffers.emplace_back(std::move(push_constant));
     }
 
     for (spirv_cross::Resource& resource : resources.sampled_images)
@@ -324,7 +351,7 @@ void DXCCompiler::run_spriv_reflection(const std::vector<uint32_t> &spriv, Shade
         shader_resource.register_ = binding;
         shader_resource.parameter_type = ShaderReflection::ResourceType::SRV;
         shader_resource.shader_type = (uint32_t)shader_type;
-        shader_reflection.shader_resources.push_back(shader_resource);
+        shader_reflection.shader_resources.push_back(std::move(shader_resource));
     }
 
     for (spirv_cross::Resource& resource : resources.separate_samplers)
@@ -338,7 +365,7 @@ void DXCCompiler::run_spriv_reflection(const std::vector<uint32_t> &spriv, Shade
         shader_resource.register_ = binding;
         shader_resource.parameter_type = ShaderReflection::ResourceType::Sampler;
         shader_resource.shader_type = (uint32_t)shader_type;
-        shader_reflection.shader_resources.push_back(shader_resource);
+        shader_reflection.shader_resources.push_back(std::move(shader_resource));
     }
 
     if (shader_type == ShaderType::VertexShader)
@@ -414,12 +441,37 @@ void DXCCompiler::run_spriv_reflection(const std::vector<uint32_t> &spriv, Shade
             }
             shader_resource.vertex_attribute_type = VertexAttributeType::from_string(semantic.c_str());
 
-            shader_reflection.input_layouts.push_back(shader_resource);
+            shader_reflection.input_layouts.push_back(std::move(shader_resource));
 
             vertex_attrib_index++;
             total_size += size;
         }
     }
+}
+
+ShaderVariableType DXCCompiler::get_shader_variable_type(uint32_t vec_size, uint32_t column_size, const spirv_cross::SPIRType &type) {
+    if (type.basetype == spirv_cross::SPIRType::Float) {
+        if (vec_size == 1 && column_size == 1)
+            return ShaderVariableType::FLOAT;
+        else if (vec_size == 2 && column_size == 1)
+            return ShaderVariableType::FLOAT2;
+        else if (vec_size == 3 && column_size == 1)
+            return ShaderVariableType::FLOAT3;
+        else if (vec_size == 4 && column_size == 1)
+            return ShaderVariableType::FLOAT4;
+        else if (vec_size == 4 && column_size == 4)
+            return ShaderVariableType::FLOAT4X4;
+    } else if (type.basetype == spirv_cross::SPIRType::Int || type.basetype == spirv_cross::SPIRType::UInt) {
+        if (vec_size == 1 && column_size == 1)
+            return ShaderVariableType::INT;
+        else if (vec_size == 2 && column_size == 1)
+            return ShaderVariableType::INT2;
+        else if (vec_size == 3 && column_size == 1)
+            return ShaderVariableType::INT3;
+        else if (vec_size == 4 && column_size == 1)
+            return ShaderVariableType::INT4;
+    }
+    return ShaderVariableType::FLOAT;
 }
 
 }// namespace ocarina

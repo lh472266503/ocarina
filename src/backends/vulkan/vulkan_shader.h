@@ -8,21 +8,22 @@
 #include "core/concepts.h"
 #include "rhi/resources/shader.h"
 #include <vulkan/vulkan.h>
-
+#include "shader_reflection.h"
 namespace ocarina {
 
 class VulkanDevice;
 class VulkanDescriptorSetLayout;
-struct ShaderReflection;
 struct ShaderKey;
 
 struct VulkanShaderVariableBinding
 {
+    
     char name[256] = { 0 };
     uint32_t binding = 0;
     VkDescriptorType type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     VkShaderStageFlags shader_stage = VK_SHADER_STAGE_VERTEX_BIT;
     uint32_t count = 1;
+    uint32_t size = 0;// size in bytes, only used for constant buffer
     VulkanShaderVariableBinding() = default;
     VulkanShaderVariableBinding(const VulkanShaderVariableBinding& other)
     {
@@ -30,6 +31,7 @@ struct VulkanShaderVariableBinding
         type = other.type;
         count = other.count;
         shader_stage = other.shader_stage;
+        size = other.size;
         strcpy(name, other.name);
     }
 
@@ -39,8 +41,11 @@ struct VulkanShaderVariableBinding
         type = other.type;
         count = other.count;
         shader_stage = other.shader_stage;
+        size = other.size;
         strcpy(name, other.name);
     }
+
+    std::vector<ShaderReflection::ShaderVariable> shader_variables_;
 };
 
 class VulkanShader : public Shader<>::Impl {

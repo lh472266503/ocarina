@@ -23,7 +23,6 @@ public:
     virtual ~IndexBuffer();
 
     static IndexBuffer *create_index_buffer(Device::Impl *device, void *initial_data, uint32_t indices_count, bool bit16 = true);
-    static void release_index_buffer(Device::Impl *device, IndexBuffer *vertex_buffer);
 
     //OC_MAKE_MEMBER_GETTER(buffer_handle, );
 

@@ -14,31 +14,26 @@ namespace ocarina {
 
 class VulkanDevice;
 class VulkanShader;
+class VulkanBuffer;
+class VulkanDescriptorSet;
 
-struct VulkanDescriptor {
-    union DescriptorInfos {
-        VkDescriptorBufferInfo buffer_info;
-        VkDescriptorImageInfo image_info;
-        VkBufferView buffer_view;
-    };
-    DescriptorInfos info_;
-    
+class VulkanDescriptor
+{
+public:
+    uint32_t binding = 0;
     std::string name_;
 };
 
-class VulkanDescriptorSet : public DescriptorSet {
-private:
-    VkDescriptorSet descriptor_set_ = VK_NULL_HANDLE;
-    
+class VulkanDescriptorBuffer : public VulkanDescriptor {
 public:
-    VulkanDescriptorSet(VulkanDevice* device, VkDescriptorPool pool);
-    ~VulkanDescriptorSet() override;
-    OC_MAKE_MEMBER_GETTER(descriptor_set, );
-
-    void copy_descriptors(VulkanDescriptor *descriptor);
-    VulkanDevice* device_;
+    VkDescriptorBufferInfo buffer_info = {};
+    VulkanBuffer *buffer_;
+    
 };
 
+class VulkanDescriptorImage : public VulkanDescriptor{
+
+};
 
 
 class VulkanDescriptorSetLayout : public DescriptorSetLayout {
@@ -59,6 +54,7 @@ public:
     }
 
     OC_MAKE_MEMBER_GETTER(layout, );
+    OC_MAKE_MEMBER_GETTER(descriptor_pool, );
 
     std::unique_ptr<DescriptorSet> allocate_descriptor_set() override;
 private:
@@ -71,6 +67,21 @@ private:
     VulkanDevice* device_ = nullptr;
 
     VkDescriptorPool descriptor_pool_ = VK_NULL_HANDLE;
+};
+
+class VulkanDescriptorSet : public DescriptorSet {
+private:
+    VkDescriptorSet descriptor_set_ = VK_NULL_HANDLE;
+    VulkanDescriptorSetLayout *layout_ = nullptr;
+    VulkanDevice *device_ = nullptr;
+
+public:
+    VulkanDescriptorSet(VulkanDevice *device, VulkanDescriptorSetLayout* layout);
+    ~VulkanDescriptorSet() override;
+    OC_MAKE_MEMBER_GETTER(descriptor_set, );
+
+    //void copy_descriptors(VulkanDescriptor *descriptor);
+    
 };
 
 struct DescriptorPoolCreation {

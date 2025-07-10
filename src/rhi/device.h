@@ -50,7 +50,9 @@ class CommandVisitor;
 class VertexBuffer;
 class IndexBuffer;
 class RenderPass;
+class DescriptorSet;
 class DescriptorSetLayout;
+class DescriptorSetWriter;
 
 class Device : public concepts::Noncopyable {
 public:
@@ -95,6 +97,7 @@ public:
         virtual RenderPass* create_render_pass(const RenderPassCreation& render_pass_creation) noexcept = 0;
         virtual void destroy_render_pass(RenderPass* render_pass) noexcept = 0;
         virtual DescriptorSetLayout *create_descriptor_set_layout(void **shaders, uint32_t shaders_count) noexcept = 0;
+        virtual DescriptorSetWriter *create_descriptor_set_writer(DescriptorSet *descriptor_set, void **shaders, uint32_t shaders_count) noexcept = 0;
     };
 
     using Creator = Device::Impl *(FileManager *);
@@ -204,6 +207,10 @@ public:
 
     [[nodiscard]] DescriptorSetLayout *create_descriptor_set_layout(void **shaders, uint32_t shaders_count) {
         return impl_->create_descriptor_set_layout(shaders, shaders_count);
+    }
+
+    [[nodiscard]] DescriptorSetWriter *create_descriptor_set_writer(DescriptorSet *descriptor_set, void **shaders, uint32_t shaders_count) {
+        return impl_->create_descriptor_set_writer(descriptor_set, shaders, shaders_count);
     }
 
     [[nodiscard]] static Device create_device(const string &backend_name, const ocarina::InstanceCreation &instance_creation);

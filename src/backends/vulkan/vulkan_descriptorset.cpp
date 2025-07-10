@@ -6,14 +6,23 @@
 
 namespace ocarina {
 
-VulkanDescriptorSet::VulkanDescriptorSet(VulkanDevice* device, VkDescriptorPool pool)
-{
+VulkanDescriptorSet::VulkanDescriptorSet(VulkanDevice *device, VulkanDescriptorSetLayout *layout) : layout_(layout), device_(device) {
+    VkDescriptorSetAllocateInfo allocInfo{};
+    allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    allocInfo.descriptorPool = layout->descriptor_pool();
+    VkDescriptorSetLayout layouts[1] = {layout->layout()};
+    allocInfo.pSetLayouts = layouts;
+    allocInfo.descriptorSetCount = 1;
+
+    // Might want to create a "DescriptorPoolManager" class that handles this case, and builds
+    // a new pool whenever an old pool fills up. But this is beyond our current scope
+    VK_CHECK_RESULT(vkAllocateDescriptorSets(device->logicalDevice(), &allocInfo, &descriptor_set_));
 
 }
 
 VulkanDescriptorSet::~VulkanDescriptorSet()
 {
-
+    vkFreeDescriptorSets(device_->logicalDevice(), layout_->descriptor_pool(), 1, &descriptor_set_);
 }
 
 VulkanDescriptorSetLayout::VulkanDescriptorSetLayout(VulkanDevice* device) : device_(device)
@@ -132,7 +141,7 @@ void VulkanDescriptorSetLayout::build_layout()
 
 std::unique_ptr<DescriptorSet> VulkanDescriptorSetLayout::allocate_descriptor_set() {
     //ocarina::make_unique_with_allocator<VulkanDescriptorSet>(device_, descriptor_pool_);
-    return ocarina::make_unique_with_allocator<VulkanDescriptorSet>(device_, descriptor_pool_);
+    return ocarina::make_unique_with_allocator<VulkanDescriptorSet>(device_, this);
 }
 
 VulkanDescriptorPool::VulkanDescriptorPool(const DescriptorPoolCreation &creation, VulkanDevice *device) : device_(device), descriptor_pool_creation_(creation) {

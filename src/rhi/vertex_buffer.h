@@ -42,7 +42,6 @@ public:
     virtual ~VertexBuffer();
 
     static VertexBuffer *create_vertex_buffer(Device::Impl *device);
-    static void release_vertex_buffer(Device::Impl *device, VertexBuffer *vertex_buffer);
 
     void add_vertex_stream(VertexAttributeType::Enum type, uint32_t count, uint32_t stride, const void *data);
 

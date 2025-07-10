@@ -9,7 +9,6 @@
 
 namespace ocarina {
 VertexBuffer::~VertexBuffer() {
-    release_vertex_buffer(device_, this);
 }
 
 VertexBuffer *VertexBuffer::create_vertex_buffer(Device::Impl *device) {
@@ -19,20 +18,6 @@ VertexBuffer *VertexBuffer::create_vertex_buffer(Device::Impl *device) {
     return buffer;
 }
 
-void VertexBuffer::release_vertex_buffer(Device::Impl *device, VertexBuffer *vertex_buffer) {
-    /*
-    for (auto& stream : vertex_buffer->vertex_streams_) {
-        if (stream.data) {
-            delete[] stream.data;
-            stream.data = nullptr;
-        }
-        if (stream.buffer_handle != InvalidUI64) {
-            device->destroy_buffer(stream.buffer_handle);
-            stream.buffer_handle = InvalidUI64;
-        }
-    }
-    */
-}
 
 void VertexBuffer::add_vertex_stream(VertexAttributeType::Enum type, uint32_t count, uint32_t stride, const void *data) {
     if (vertex_streams_[(uint8_t)type].data) {

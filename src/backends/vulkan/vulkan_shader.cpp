@@ -13,7 +13,7 @@
 #include <wrl/client.h>
 using namespace Microsoft::WRL;
 #endif
-#include "shader_reflection.h"
+
 #include "dxc_compiler.h"
 
 namespace ocarina {
@@ -97,10 +97,13 @@ void VulkanShader::get_shader_variables(const ShaderReflection &reflection) {
 
     VulkanShaderVariableBinding variable;
     variable.shader_stage = stage_;
-    for (auto shader_resource : reflection.shader_resources)
+    for (auto& shader_resource : reflection.shader_resources)
     {
         strcpy(variable.name, shader_resource.name.c_str());
         variable.binding = shader_resource.location;
+        variable.size = shader_resource.size;
+        variable.count = shader_resource.register_count;
+        
         if (shader_resource.parameter_type == ShaderReflection::ResourceType::ConstantBuffer)
         {
             variable.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -113,6 +116,19 @@ void VulkanShader::get_shader_variables(const ShaderReflection &reflection) {
             variable.type = VK_DESCRIPTOR_TYPE_SAMPLER;
         }
 
+        variables_.push_back(variable);
+    }
+
+    for (auto& ubo : reflection.uniform_buffers)
+    {
+        VulkanShaderVariableBinding variable;
+        strcpy(variable.name, ubo.name.c_str());
+        variable.binding = ubo.binding;
+        variable.size = ubo.size;
+        variable.count = 1;// UBO is always 1
+        variable.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        variable.shader_stage = stage_;
+        variable.shader_variables_ = std::move(ubo.shader_variables);
         variables_.push_back(variable);
     }
 }

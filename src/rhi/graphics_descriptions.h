@@ -20,6 +20,21 @@ struct InstanceCreation {
     uint64_t windowHandle = InvalidUI64;
 };
 
+enum class ShaderVariableType : uint8_t
+{
+    FLOAT,
+    FLOAT2,
+    FLOAT3,
+    FLOAT4,
+    INT,
+    INT2,
+    INT3,
+    INT4,
+    FLOAT4X3,
+    FLOAT4X4,
+    COUNT,
+};
+
 struct SwapChainCreation {
     PixelStorage format = PixelStorage::BYTE4; ///< Back buffers format.
     ColorSpace colorSpace = ColorSpace::SRGB;   ///< Back buffers color space.

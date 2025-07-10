@@ -7,14 +7,21 @@ struct VSInput
 [[vk::location(1)]] float4 Color : COLOR0;
 };
 
-struct UBO
-{
+
+cbuffer ubo : register(b0) 
+{ 
 	float4x4 projectionMatrix;
-	float4x4 modelMatrix;
+
 	float4x4 viewMatrix;
 };
 
-cbuffer ubo : register(b0) { UBO ubo; }
+struct PushConstants
+{
+    float4x4 modelMatrix;
+};
+
+[[vk::push_constant]]
+PushConstants pushConstants;
 
 struct VSOutput
 {
@@ -26,7 +33,7 @@ VSOutput main(VSInput input)
 {
 	VSOutput output = (VSOutput)0;
 	output.Color = input.Color;
-	output.Pos = mul(ubo.projectionMatrix, mul(ubo.viewMatrix, mul(ubo.modelMatrix, float4(input.Pos.xyz, 1.0))));
+	output.Pos = mul(projectionMatrix, mul(viewMatrix, mul(pushConstants.modelMatrix, float4(input.Pos.xyz, 1.0))));
 	if (AnyIsNaN(output.Pos))
 	{
 		output.Color = float4(1, 0, 0, 1);

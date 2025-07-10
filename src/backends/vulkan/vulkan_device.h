@@ -114,6 +114,7 @@ public:
     RenderPass* create_render_pass(const RenderPassCreation& render_pass_creation) noexcept override;
     void destroy_render_pass(RenderPass* render_pass) noexcept override;
     DescriptorSetLayout *create_descriptor_set_layout(void **shaders, uint32_t shaders_count) noexcept override;    
+    DescriptorSetWriter *create_descriptor_set_writer(DescriptorSet *descriptor_set, void** shaders, uint32_t shaders_count) noexcept override;
 
     OC_MAKE_MEMBER_GETTER(logicalDevice, );
 
