@@ -33,6 +33,7 @@ public:
     [[nodiscard]] size_t size_in_byte() const noexcept { return size_ * element_size(); }
     [[nodiscard]] size_t offset() const noexcept { return offset_; }
     [[nodiscard]] size_t offset_in_byte() const noexcept { return offset_ * element_size(); }
+    OC_MAKE_MEMBER_GETTER(total_size, )
 
     const BufferProxy<T> &proxy() const noexcept {
         proxy_.handle = reinterpret_cast<T *>(head());

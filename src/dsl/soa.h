@@ -121,28 +121,6 @@ struct SOAView {
         }                                                                                     \
     };
 
-template<typename TBuffer>
-struct ocarina::SOAView<ocarina::uint, TBuffer> {
-public:
-    static_assert(is_valid_buffer_element_v<ocarina::uint>);
-    using atomic_type = ocarina::uint;
-    static constexpr ocarina::uint type_size = sizeof(atomic_type);
-    static constexpr AccessMode access_mode = SOA;
-
-private:
-    TBuffer buffer_view_{};
-    ocarina::uint view_size_{};
-    ocarina::uint offset_{};
-    ocarina::uint stride_{};
-
-public:
-    SOAView() = default;
-    SOAView(TBuffer bv, uint view_size = ocarina::InvalidUI32,
-            uint ofs = 0u, uint stride = type_size)
-        : buffer_view_(bv), view_size_(ocarina::min(view_size, uint(buffer_view_.size_in_byte()))),
-          stride_(stride) {}
-};
-
 }// namespace ocarina
 
 OC_MAKE_ATOMIC_SOA_VAR(template<typename TBuffer>, ocarina::uint)
@@ -151,6 +129,44 @@ OC_MAKE_ATOMIC_SOA_VAR(template<typename TBuffer>, float)
 OC_MAKE_ATOMIC_SOA_VAR(template<typename TBuffer>, int)
 OC_MAKE_ATOMIC_SOA_VAR(template<typename T OC_COMMA ocarina::uint N OC_COMMA typename TBuffer>,
                        ocarina::Vector<T OC_COMMA N>)
+
+#define OC_MAKE_ATOMIC_SOA_VIEW(TemplateArgs, TypeName)                                                 \
+    TemplateArgs                                                                                        \
+    requires ocarina::is_buffer_view_v<TBuffer>                                                         \
+    struct ocarina::SOAView<TypeName, TBuffer> {                                                        \
+    public:                                                                                             \
+        static_assert(is_valid_buffer_element_v<TypeName>);                                             \
+        using atomic_type = TypeName;                                                                   \
+        static constexpr ocarina::uint type_size = sizeof(atomic_type);                                 \
+        static constexpr AccessMode access_mode = SOA;                                                  \
+                                                                                                        \
+    private:                                                                                            \
+        TBuffer buffer_view_{};                                                                         \
+        ocarina::uint view_size_{};                                                                     \
+        ocarina::uint offset_{};                                                                        \
+        ocarina::uint stride_{};                                                                        \
+                                                                                                        \
+    public:                                                                                             \
+        SOAView() = default;                                                                            \
+        SOAView(TBuffer bv, uint view_size = ocarina::InvalidUI32,                                      \
+                uint ofs = 0u, uint stride = type_size)                                                 \
+            : buffer_view_(bv), view_size_(ocarina::min(view_size, uint(buffer_view_.size_in_byte()))), \
+              stride_(stride) {}                                                                        \
+                                                                                                        \
+        [[nodiscard]] TBuffer view() const noexcept {                                                   \
+            return TBuffer{buffer_view_.handle(),                                                       \
+                           offset_,                                                                     \
+                           view_size_,                                                                  \
+                           buffer_view_.total_size()};                                                  \
+        }                                                                                               \
+    };
+
+OC_MAKE_ATOMIC_SOA_VIEW(template<typename TBuffer>, ocarina::uint)
+OC_MAKE_ATOMIC_SOA_VIEW(template<typename TBuffer>, ocarina::uint64t)
+OC_MAKE_ATOMIC_SOA_VIEW(template<typename TBuffer>, float)
+OC_MAKE_ATOMIC_SOA_VIEW(template<typename TBuffer>, int)
+OC_MAKE_ATOMIC_SOA_VIEW(template<typename T OC_COMMA ocarina::uint N OC_COMMA typename TBuffer>,
+                        ocarina::Vector<T OC_COMMA N>)
 
 #define OC_MAKE_SOA_MEMBER(field_name) ocarina::SOAViewVar<decltype(struct_type::field_name), TBuffer> field_name;
 
