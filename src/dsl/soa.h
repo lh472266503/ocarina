@@ -152,6 +152,10 @@ struct SOAView {
                            view_size_,                                                                  \
                            buffer_view_.total_size()};                                                  \
         }                                                                                               \
+                                                                                                        \
+        [[nodiscard]] ocarina::uint size_in_byte() const noexcept {                                     \
+            return view_size_ / stride_ * type_size;                                                    \
+        }                                                                                               \
     };
 
 #define OC_MAKE_ATOMIC_SOA_VAR_VIEW(TemplateArgs, TypeName) \
@@ -167,28 +171,30 @@ OC_MAKE_ATOMIC_SOA_VAR(template<typename T OC_COMMA ocarina::uint N OC_COMMA typ
 OC_MAKE_ATOMIC_SOA_VIEW(template<typename T OC_COMMA ocarina::uint N OC_COMMA typename TBuffer>,
                         ocarina::Vector<T OC_COMMA N>)
 
-#define OC_MAKE_SOA_MEMBER(field_name) ocarina::SOAViewVar<decltype(struct_type::field_name), TBuffer> field_name;
+///#region make structure soa
 
-#define OC_MAKE_SOA_MEMBER_CONSTRUCT(field_name)                                                                         \
+#define OC_MAKE_SOA_VAR_MEMBER(field_name) ocarina::SOAViewVar<decltype(struct_type::field_name), TBuffer> field_name;
+
+#define OC_MAKE_SOA_VAR_MEMBER_CONSTRUCT(field_name)                                                                     \
     field_name = ocarina::SOAViewVar<decltype(struct_type::field_name), TBuffer>(buffer_var, view_size, offset, stride); \
     offset += field_name.size_in_byte();
 
-#define OC_MAKE_SOA_MEMBER_READ(field_name) ret.field_name = field_name.read(OC_FORWARD(index));
+#define OC_MAKE_SOA_VAR_MEMBER_READ(field_name) ret.field_name = field_name.read(OC_FORWARD(index));
 
-#define OC_MAKE_SOA_MEMBER_WRITE(field_name) field_name.write(OC_FORWARD(index), val.field_name);
+#define OC_MAKE_SOA_VAR_MEMBER_WRITE(field_name) field_name.write(OC_FORWARD(index), val.field_name);
 
-#define OC_MAKE_SOA_MEMBER_SIZE(field_name) ret += field_name.size_in_byte();
+#define OC_MAKE_SOA_VAR_MEMBER_SIZE(field_name) ret += field_name.size_in_byte();
 
 #define OC_MAKE_STRUCT_SOA_VAR(TemplateArgs, S, ...)                                    \
     TemplateArgs struct ocarina::SOAViewVar<S, TBuffer> {                               \
     public:                                                                             \
         using struct_type = S;                                                          \
-        static_assert(is_valid_buffer_element_v<struct_type>);                          \
+        static_assert(ocarina::is_valid_buffer_element_v<struct_type>);                 \
         static constexpr ocarina::uint type_size = sizeof(struct_type);                 \
         static constexpr AccessMode access_mode = SOA;                                  \
                                                                                         \
     public:                                                                             \
-        MAP(OC_MAKE_SOA_MEMBER, ##__VA_ARGS__)                                          \
+        MAP(OC_MAKE_SOA_VAR_MEMBER, ##__VA_ARGS__)                                      \
     public:                                                                             \
         SOAViewVar() = default;                                                         \
         explicit SOAViewVar(const TBuffer &buffer_var,                                  \
@@ -197,7 +203,7 @@ OC_MAKE_ATOMIC_SOA_VIEW(template<typename T OC_COMMA ocarina::uint N OC_COMMA ty
                             ocarina::uint stride = type_size) {                         \
             view_size = ocarina::min(buffer_var.template size_in_byte<ocarina::uint>(), \
                                      view_size);                                        \
-            MAP(OC_MAKE_SOA_MEMBER_CONSTRUCT, ##__VA_ARGS__)                            \
+            MAP(OC_MAKE_SOA_VAR_MEMBER_CONSTRUCT, ##__VA_ARGS__)                        \
         }                                                                               \
                                                                                         \
         template<typename Index>                                                        \
@@ -206,7 +212,7 @@ OC_MAKE_ATOMIC_SOA_VIEW(template<typename T OC_COMMA ocarina::uint N OC_COMMA ty
             return ocarina::outline(                                                    \
                 [&] {                                                                   \
                     ocarina::Var<struct_type> ret;                                      \
-                    MAP(OC_MAKE_SOA_MEMBER_READ, ##__VA_ARGS__)                         \
+                    MAP(OC_MAKE_SOA_VAR_MEMBER_READ, ##__VA_ARGS__)                     \
                     return ret;                                                         \
                 },                                                                      \
                 "SOAViewVar<" #S ">::read");                                            \
@@ -217,7 +223,7 @@ OC_MAKE_ATOMIC_SOA_VIEW(template<typename T OC_COMMA ocarina::uint N OC_COMMA ty
         void write(Index &&index, const ocarina::Var<struct_type> &val) noexcept {      \
             ocarina::outline(                                                           \
                 [&] {                                                                   \
-                    MAP(OC_MAKE_SOA_MEMBER_WRITE, ##__VA_ARGS__)                        \
+                    MAP(OC_MAKE_SOA_VAR_MEMBER_WRITE, ##__VA_ARGS__)                    \
                 },                                                                      \
                 "SOAViewVar<" #S ">::write");                                           \
         }                                                                               \
@@ -226,12 +232,46 @@ OC_MAKE_ATOMIC_SOA_VIEW(template<typename T OC_COMMA ocarina::uint N OC_COMMA ty
             return ocarina::outline(                                                    \
                 [&] {                                                                   \
                     ocarina::Var<int_type> ret = 0;                                     \
-                    MAP(OC_MAKE_SOA_MEMBER_SIZE, ##__VA_ARGS__)                         \
+                    MAP(OC_MAKE_SOA_VAR_MEMBER_SIZE, ##__VA_ARGS__)                     \
                     return ret;                                                         \
                 },                                                                      \
                 "SOAViewVar<" #S ">::size_in_byte");                                    \
         }                                                                               \
     };
+
+///#endregion
+
+struct Test {
+    float4 a;
+    float4 b;
+};
+
+template<typename TBuffer>
+struct ocarina::SOAView<Test, TBuffer> {
+public:
+    using struct_type = Test;
+    static constexpr ocarina::uint type_size = sizeof(struct_type);
+    static constexpr AccessMode access_mode = SOA;
+
+public:
+    ocarina::SOAView<decltype(struct_type::a), TBuffer> a;
+    ocarina::SOAView<decltype(struct_type::b), TBuffer> b;
+
+public:
+    SOAView() = default;
+    explicit SOAView(TBuffer bv, ocarina::uint view_size = ocarina::InvalidUI32,
+                     ocarina::uint ofs = 0u, ocarina::uint stride = type_size) {
+        view_size = ocarina::min(bv.template size_in_byte<ocarina::uint>(), view_size);
+        a = SOAView<decltype(a), TBuffer>(bv, view_size, ofs, stride);
+        ofs += a.size_in_byte();
+        b = SOAView<decltype(b), TBuffer>(bv, view_size, ofs, stride);
+        ofs += b.size_in_byte();
+    }
+
+    [[nodiscard]] ocarina::uint size_in_byte() const noexcept {
+        return a.size_in_byte() + b.size_in_byte();
+    }
+};
 
 #define OC_MAKE_ARRAY_SOA_VAR(TemplateArgs, TypeName, ElementType)                      \
     TemplateArgs struct ocarina::SOAViewVar<TypeName, TBuffer> {                        \
