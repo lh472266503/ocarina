@@ -64,6 +64,8 @@ struct SOAView {
     static_assert(always_false_v<T, TBufferView>, "The SOAViewVar template must be specialized");
 };
 
+}// namespace ocarina
+
 #define OC_MAKE_ATOMIC_SOA_VAR(TemplateArgs, TypeName)                                        \
     TemplateArgs struct ocarina::SOAViewVar<TypeName, TBuffer> {                              \
     public:                                                                                   \
@@ -121,15 +123,6 @@ struct SOAView {
         }                                                                                     \
     };
 
-}// namespace ocarina
-
-OC_MAKE_ATOMIC_SOA_VAR(template<typename TBuffer>, ocarina::uint)
-OC_MAKE_ATOMIC_SOA_VAR(template<typename TBuffer>, ocarina::uint64t)
-OC_MAKE_ATOMIC_SOA_VAR(template<typename TBuffer>, float)
-OC_MAKE_ATOMIC_SOA_VAR(template<typename TBuffer>, int)
-OC_MAKE_ATOMIC_SOA_VAR(template<typename T OC_COMMA ocarina::uint N OC_COMMA typename TBuffer>,
-                       ocarina::Vector<T OC_COMMA N>)
-
 #define OC_MAKE_ATOMIC_SOA_VIEW(TemplateArgs, TypeName)                                                 \
     TemplateArgs                                                                                        \
     requires ocarina::is_buffer_view_v<TBuffer>                                                         \
@@ -161,12 +154,16 @@ OC_MAKE_ATOMIC_SOA_VAR(template<typename T OC_COMMA ocarina::uint N OC_COMMA typ
         }                                                                                               \
     };
 
-OC_MAKE_ATOMIC_SOA_VIEW(template<typename TBuffer>, ocarina::uint)
-OC_MAKE_ATOMIC_SOA_VIEW(template<typename TBuffer>, ocarina::uint64t)
-OC_MAKE_ATOMIC_SOA_VIEW(template<typename TBuffer>, float)
-OC_MAKE_ATOMIC_SOA_VIEW(template<typename TBuffer>, int)
-OC_MAKE_ATOMIC_SOA_VIEW(template<typename T OC_COMMA ocarina::uint N OC_COMMA typename TBuffer>,
-                        ocarina::Vector<T OC_COMMA N>)
+#define OC_MAKE_ATOMIC_SOA_VAR_VIEW(TemplateArgs, TypeName) \
+    OC_MAKE_ATOMIC_SOA_VAR(TemplateArgs, TypeName)          \
+    OC_MAKE_ATOMIC_SOA_VIEW(TemplateArgs, TypeName)
+
+OC_MAKE_ATOMIC_SOA_VAR_VIEW(template<typename TBuffer>, ocarina::uint)
+OC_MAKE_ATOMIC_SOA_VAR_VIEW(template<typename TBuffer>, ocarina::uint64t)
+OC_MAKE_ATOMIC_SOA_VAR_VIEW(template<typename TBuffer>, float)
+OC_MAKE_ATOMIC_SOA_VAR_VIEW(template<typename TBuffer>, int)
+OC_MAKE_ATOMIC_SOA_VAR_VIEW(template<typename T OC_COMMA ocarina::uint N OC_COMMA typename TBuffer>,
+                            ocarina::Vector<T OC_COMMA N>)
 
 #define OC_MAKE_SOA_MEMBER(field_name) ocarina::SOAViewVar<decltype(struct_type::field_name), TBuffer> field_name;
 
