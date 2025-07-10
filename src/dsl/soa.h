@@ -364,53 +364,59 @@ OC_MAKE_ARRAY_SOA_VAR(template<ocarina::uint N OC_COMMA ocarina::uint M OC_COMMA
 OC_MAKE_ARRAY_SOA_VAR(template<ocarina::uint N OC_COMMA typename T OC_COMMA typename TBuffer>,
                       ocarina::array<T OC_COMMA N>, T)
 
-template<ocarina::uint N, ocarina::uint M, typename TBuffer>
-struct ocarina::SOAView<Matrix<N, M>, TBuffer> {
-public:
-    using struct_type = Matrix<N, M>;
-    static_assert(is_valid_buffer_element_v<struct_type>);
-    static constexpr AccessMode access_mode = SOA;
-    using element_type = Vector<float, M>;
-    static constexpr ocarina::uint type_size = sizeof(struct_type);
-
-private:
-    ocarina::array<ocarina::SOAView<element_type, TBuffer>, N> array_{};
-
-public:
-    SOAView() = default;
-    explicit SOAView(TBuffer bv, uint view_size = ocarina::InvalidUI32,
-                     uint offset = 0u, uint stride = type_size) {
-        view_size = ocarina::min(bv.size_in_byte(), view_size);
-        for (uint i = 0; i < N; ++i) {
-            array_[i] = ocarina::SOAView{bv, view_size, offset, stride};
-            offset += array_[i].size_in_byte();
-        }
-    }
-    [[nodiscard]] ocarina::uint size_in_byte() const noexcept {
-        uint ret = 0u;
-        for (int i = 0; i < N; ++i) {
-            ret += array_[i].size_in_byte();
-        }
-        return ret;
-    }
-    [[nodiscard]] TBuffer view() const noexcept {
-        auto first_view = array_[0].view();
-        return TBuffer{first_view.handle(), first_view.offset(), size_in_byte(), first_view.total_size()};
-    }
-    [[nodiscard]] auto operator[](size_t index) const noexcept {
-        return array_[index];
-    }
-    [[nodiscard]] auto &operator[](size_t index) noexcept {
-        return array_[index];
-    }
-};
-
 namespace ocarina {
 template<typename Elm, typename TBuffer>
 [[nodiscard]] SOAViewVar<Elm, TBuffer> make_soa_view_var(TBuffer &buffer) noexcept {
     return SOAViewVar<Elm, TBuffer>(buffer);
 }
 }// namespace ocarina
+
+#define OC_MAKE_ARRAY_SOA_VIEW(TemplateArgs, TypeName, ElementType)          \
+    TemplateArgs struct ocarina::SOAView<TypeName, TBuffer> {                \
+    public:                                                                  \
+        using struct_type = TypeName;                                        \
+        static_assert(is_valid_buffer_element_v<struct_type>);               \
+        static constexpr AccessMode access_mode = SOA;                       \
+        using element_type = ElementType;                                    \
+        static constexpr ocarina::uint type_size = sizeof(struct_type);      \
+                                                                             \
+    private:                                                                 \
+        ocarina::array<ocarina::SOAView<element_type, TBuffer>, N> array_{}; \
+                                                                             \
+    public:                                                                  \
+        SOAView() = default;                                                 \
+        explicit SOAView(TBuffer bv, uint view_size = ocarina::InvalidUI32,  \
+                         uint offset = 0u, uint stride = type_size) {        \
+            view_size = ocarina::min(bv.size_in_byte(), view_size);          \
+            for (uint i = 0; i < N; ++i) {                                   \
+                array_[i] = ocarina::SOAView{bv, view_size, offset, stride}; \
+                offset += array_[i].size_in_byte();                          \
+            }                                                                \
+        }                                                                    \
+        [[nodiscard]] ocarina::uint size_in_byte() const noexcept {          \
+            uint ret = 0u;                                                   \
+            for (int i = 0; i < N; ++i) {                                    \
+                ret += array_[i].size_in_byte();                             \
+            }                                                                \
+            return ret;                                                      \
+        }                                                                    \
+        [[nodiscard]] TBuffer view() const noexcept {                        \
+            auto first_view = array_[0].view();                              \
+            return TBuffer{first_view.handle(), first_view.offset(),         \
+                           size_in_byte(), first_view.total_size()};         \
+        }                                                                    \
+        [[nodiscard]] auto operator[](size_t index) const noexcept {         \
+            return array_[index];                                            \
+        }                                                                    \
+        [[nodiscard]] auto &operator[](size_t index) noexcept {              \
+            return array_[index];                                            \
+        }                                                                    \
+    };
+
+OC_MAKE_ARRAY_SOA_VIEW(template<ocarina::uint N OC_COMMA ocarina::uint M OC_COMMA typename TBuffer>,
+                       ocarina::Matrix<N OC_COMMA M>, Vector<float OC_COMMA M>)
+OC_MAKE_ARRAY_SOA_VIEW(template<ocarina::uint N OC_COMMA typename T OC_COMMA typename TBuffer>,
+                       ocarina::array<T OC_COMMA N>, T)
 
 namespace ocarina {
 
