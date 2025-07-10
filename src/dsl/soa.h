@@ -243,11 +243,6 @@ OC_MAKE_ATOMIC_SOA_VIEW(template<typename T OC_COMMA ocarina::uint N OC_COMMA ty
 
 ///#endregion
 
-struct Test {
-    float a;
-    float b;
-};
-
 #define OC_MAKE_STRUCT_SOA_VIEW_MEMBER(member_name) \
     ocarina::SOAView<decltype(struct_type::member_name), TBuffer> member_name;
 
