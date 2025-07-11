@@ -144,6 +144,7 @@ struct SOAView {
         SOAView(TBuffer bv, uint view_size = ocarina::InvalidUI32,                                      \
                 uint ofs = 0u, uint stride = type_size)                                                 \
             : buffer_view_(bv), view_size_(ocarina::min(view_size, uint(buffer_view_.size_in_byte()))), \
+              offset_(ofs),                                                                             \
               stride_(stride) {}                                                                        \
                                                                                                         \
         OC_MAKE_MEMBER_GETTER(offset, )                                                                 \
