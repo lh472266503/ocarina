@@ -18,7 +18,13 @@ class ByteBufferView : public BufferView<std::byte> {
 public:
     using Super = BufferView<std::byte>;
     using Super::Super;
+
+public:
     explicit ByteBufferView(const ByteBuffer &buffer);
+    template<typename T>
+    explicit ByteBufferView(const BufferView<T> &bv)
+        : Super(bv.handle(), bv.offset_in_byte(),
+                bv.size_in_byte(), bv.total_size_in_byte()) {}
 };
 
 class ByteBuffer : public RHIResource {
