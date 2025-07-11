@@ -368,6 +368,12 @@ template<typename Elm, typename TBuffer>
 [[nodiscard]] SOAViewVar<Elm, TBuffer> make_soa_view_var(TBuffer &buffer) noexcept {
     return SOAViewVar<Elm, TBuffer>(buffer);
 }
+
+template<typename Elm, typename TBuffer>
+requires ocarina::is_byte_buffer_view_v<TBuffer>
+[[nodiscard]] SOAView<Elm, TBuffer> make_soa_view(TBuffer &buffer) noexcept {
+    return SOAView<Elm, TBuffer>(buffer);
+}
 }// namespace ocarina
 
 #define OC_MAKE_ARRAY_SOA_VIEW(TemplateArgs, TypeName, ElementType)          \
