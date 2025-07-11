@@ -189,7 +189,6 @@ OC_MAKE_ATOMIC_SOA_VIEW(template<typename T OC_COMMA ocarina::uint N OC_COMMA ty
 
 #define OC_MAKE_STRUCT_SOA_VAR(TemplateArgs, S, ...)                                    \
     TemplateArgs                                                                        \
-    requires ocarina::is_byte_buffer_view_v<TBuffer>                                    \
     struct ocarina::SOAViewVar<S, TBuffer> {                                            \
     public:                                                                             \
         using struct_type = S;                                                          \
