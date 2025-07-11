@@ -476,7 +476,13 @@ struct buffer_element_impl<BufferView<T>> {
     using type = T;
 };
 
-}// namespace detail
+template<typename T>
+struct is_byte_buffer_view : public std::false_type {};
+
+template<>
+struct is_byte_buffer_view<ByteBufferView> : public std::true_type {};
+
+};// namespace detail
 
 template<typename T>
 using buffer_element = detail::buffer_element_impl<std::remove_cvref_t<T>>;
@@ -493,6 +499,10 @@ OC_DEFINE_TEMPLATE_VALUE(is_buffer_view)
 template<typename T>
 using is_buffer_or_view = std::disjunction<is_buffer<T>, is_buffer_view<T>>;
 OC_DEFINE_TEMPLATE_VALUE(is_buffer_or_view)
+
+template<typename T>
+using is_byte_buffer_view = detail::is_byte_buffer_view<std::remove_cvref_t<T>>;
+OC_DEFINE_TEMPLATE_VALUE(is_byte_buffer_view)
 
 namespace detail {
 

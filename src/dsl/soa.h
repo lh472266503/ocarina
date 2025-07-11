@@ -125,7 +125,7 @@ struct SOAView {
 
 #define OC_MAKE_ATOMIC_SOA_VIEW(TemplateArgs, TypeName)                                                 \
     TemplateArgs                                                                                        \
-    requires ocarina::is_buffer_view_v<TBuffer>                                                         \
+    requires ocarina::is_byte_buffer_view_v<TBuffer>                                                    \
     struct ocarina::SOAView<TypeName, TBuffer> {                                                        \
     public:                                                                                             \
         static_assert(is_valid_buffer_element_v<TypeName>);                                             \
@@ -188,7 +188,9 @@ OC_MAKE_ATOMIC_SOA_VIEW(template<typename T OC_COMMA ocarina::uint N OC_COMMA ty
 #define OC_MAKE_SOA_VAR_MEMBER_SIZE(field_name) ret += field_name.size_in_byte();
 
 #define OC_MAKE_STRUCT_SOA_VAR(TemplateArgs, S, ...)                                    \
-    TemplateArgs struct ocarina::SOAViewVar<S, TBuffer> {                               \
+    TemplateArgs                                                                        \
+    requires ocarina::is_byte_buffer_view_v<TBuffer>                                    \
+    struct ocarina::SOAViewVar<S, TBuffer> {                                            \
     public:                                                                             \
         using struct_type = S;                                                          \
         static_assert(ocarina::is_valid_buffer_element_v<struct_type>);                 \
@@ -253,7 +255,9 @@ OC_MAKE_ATOMIC_SOA_VIEW(template<typename T OC_COMMA ocarina::uint N OC_COMMA ty
 #define OC_MAKE_STRUCT_SOA_VIEW_SIZE(member_name) +member_name.size_in_byte()
 
 #define OC_MAKE_STRUCT_SOA_VIEW(TemplateArgs, S, first_member, ...)                         \
-    TemplateArgs struct ocarina::SOAView<S, TBuffer> {                                      \
+    TemplateArgs                                                                            \
+    requires ocarina::is_byte_buffer_view_v<TBuffer>                                        \
+    struct ocarina::SOAView<S, TBuffer> {                                                   \
     public:                                                                                 \
         using struct_type = S;                                                              \
         static constexpr ocarina::uint type_size = sizeof(struct_type);                     \
