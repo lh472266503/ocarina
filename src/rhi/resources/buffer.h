@@ -94,7 +94,7 @@ public:
     }
 
     [[nodiscard]] BufferDownloadCommand *download(void *data, uint src_offset = 0, bool async = true) const noexcept {
-        return BufferDownloadCommand::create(data, handle(), src_offset * element_size(),
+        return BufferDownloadCommand::create(data, handle(), (offset_ + src_offset) * element_size(),
                                              size_in_byte(), async);
     }
 
