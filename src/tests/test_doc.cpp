@@ -292,11 +292,9 @@ void test_lambda(Device &device, Stream &stream) {
     Kernel kernel = [&](Var<uint64t> i, ByteBufferVar rbn) {
 //        ocarina::SOAViewVar<Ray, ByteBufferVar> soa;
 //            auto ray = rb2.read(0);
-        AOSViewVar<Ray, ByteBuffer> rays = make_aos_view_var<Ray>(rb);
-        AOSViewVar<Ray, ByteBuffer> *rayp = new AOSViewVar<Ray, ByteBuffer>();
-        *rayp = rays;
+        auto rays = make_aos_view_var<Ray>(rbn);
             auto ray2 = rb.load_as<Ray>(0);
-            auto ray3 = rayp->read(0);
+            auto ray3 = rays.read(0);
         $info("{} {} {} {}    {}  {}", ray2.dir_max, i, i);
         $info("{} {} {} {}", ray3.dir_max);
 //

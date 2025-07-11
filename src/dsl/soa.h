@@ -14,7 +14,27 @@
 
 namespace ocarina {
 
+namespace detail {
+
 template<typename T>
+struct is_valid_buffer_storage : public std::false_type {};
+
+template<>
+struct is_valid_buffer_storage<BindlessArrayByteBuffer> : public std::true_type {};
+
+template<>
+struct is_valid_buffer_storage<ByteBufferVar> : public std::true_type {};
+
+template<>
+struct is_valid_buffer_storage<Ref<ByteBuffer>> : public std::true_type {};
+
+}// namespace detail
+
+template<typename T>
+static constexpr bool is_valid_buffer_storage_v = detail::is_valid_buffer_storage<std::remove_cvref_t<T>>::value;
+
+template<typename T>
+requires is_valid_buffer_storage_v<T>
 struct BufferStorage {
 public:
     using Storage = std::aligned_storage_t<sizeof(T), alignof(T)>;
