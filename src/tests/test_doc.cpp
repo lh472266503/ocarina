@@ -270,17 +270,39 @@ void test_lambda(Device &device, Stream &stream) {
 
     bool aaa = match_dsl_unary_func_v<decltype(f.xyz())>;
 
+    auto rb = device.create_byte_buffer(2 * sizeof(Ray));
+
+    auto rb2 = device.create_buffer<Ray>(2);
+
+    vector<Ray> host_ray;
+    host_ray.emplace_back(make_float3(1,2,3), float3(4,5,6));
+    host_ray.emplace_back(make_float3(7,9,9), float3(7,6,3));
+
+    rb.upload_immediately(host_ray.data());
+    rb2.upload_immediately(host_ray.data());
+    ByteBufferView rbv = rb.view();
+    auto sv = SOAView<Ray, ByteBufferView>(rbv);
+
     //    auto inv = int4::rcp_impl(f4);
     //    auto ab = float4::abs_impl(make_float4(-1).xxxx());
     //    auto ab2 = absf(make_int4(-1));
     //    AVector<float, 4> af;
     //    Vector<float, 4> af1;
     //    bool abaa = ocarina::is_vector2_v<ocarina::detail::VectorStorage<int, 2>>;
-
-    Kernel kernel = [&](Uint i) {
-
-        Float3x4 m3 = float3x4{};
-        Float4x3 m4 = float4x3{};
+    Kernel kernel = [&](Var<uint64t> i, ByteBufferVar rbn) {
+//        ocarina::SOAViewVar<Ray, ByteBufferVar> soa;
+//            auto ray = rb2.read(0);
+        AOSViewVar<Ray, ByteBuffer> rays = make_aos_view_var<Ray>(rb);
+        AOSViewVar<Ray, ByteBuffer> *rayp = new AOSViewVar<Ray, ByteBuffer>();
+        *rayp = rays;
+            auto ray2 = rb.load_as<Ray>(0);
+            auto ray3 = rayp->read(0);
+        $info("{} {} {} {}    {}  {}", ray2.dir_max, i, i);
+        $info("{} {} {} {}", ray3.dir_max);
+//
+//        Float3x4 m3 = float3x4{};
+//        Float4x3 m4 = float4x3{};
+//        $info("{} {} {} {}", m4[0]);
 
 //        auto arr = DynamicArray<float>{1};
 //        outline("principled transmission", [&] {
@@ -436,10 +458,10 @@ void test_lambda(Device &device, Stream &stream) {
 
 
 
-    stream << shader(1).dispatch(1)
+    stream << shader(uint64t(1-2), rb).dispatch(1)
            //           << stk.download(vvv.data())
            //           << stk.view(400, 4).upload(&ui)
-           << shader(1).dispatch(1)
+//           << shader(1).dispatch(1)
            << Env::printer().retrieve()
            << synchronize() << commit();
 

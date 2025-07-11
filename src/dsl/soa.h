@@ -132,6 +132,7 @@ struct SOAView {
         using atomic_type = TypeName;                                                                   \
         static constexpr ocarina::uint type_size = sizeof(atomic_type);                                 \
         static constexpr AccessMode access_mode = SOA;                                                  \
+        static constexpr bool is_atomic = true;                                                         \
                                                                                                         \
     private:                                                                                            \
         TBuffer buffer_view_{};                                                                         \
@@ -261,6 +262,7 @@ OC_MAKE_ATOMIC_SOA_VIEW(template<typename T OC_COMMA ocarina::uint N OC_COMMA ty
         using struct_type = S;                                                         \
         static constexpr ocarina::uint type_size = sizeof(struct_type);                \
         static constexpr AccessMode access_mode = SOA;                                 \
+        static constexpr bool is_atomic = false;                                       \
                                                                                        \
     public:                                                                            \
         MAP(OC_MAKE_STRUCT_SOA_VIEW_MEMBER, first_member, ##__VA_ARGS__)               \
@@ -383,6 +385,7 @@ requires ocarina::is_byte_buffer_view_v<TBuffer>
         static constexpr AccessMode access_mode = SOA;                       \
         using element_type = ElementType;                                    \
         static constexpr ocarina::uint type_size = sizeof(struct_type);      \
+        static constexpr bool is_atomic = false;                             \
                                                                              \
     private:                                                                 \
         ocarina::array<ocarina::SOAView<element_type, TBuffer>, N> array_{}; \
