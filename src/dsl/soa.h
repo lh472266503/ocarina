@@ -61,7 +61,7 @@ struct SOAViewVar {
 
 template<typename T, typename TBufferView>
 struct SOAView {
-    static_assert(always_false_v<T, TBufferView>, "The SOAViewVar template must be specialized");
+    static_assert(always_false_v<T, TBufferView>, "The SOAView template must be specialized");
 };
 
 }// namespace ocarina
@@ -188,8 +188,7 @@ OC_MAKE_ATOMIC_SOA_VIEW(template<typename T OC_COMMA ocarina::uint N OC_COMMA ty
 #define OC_MAKE_SOA_VAR_MEMBER_SIZE(field_name) ret += field_name.size_in_byte();
 
 #define OC_MAKE_STRUCT_SOA_VAR(TemplateArgs, S, ...)                                    \
-    TemplateArgs                                                                        \
-    struct ocarina::SOAViewVar<S, TBuffer> {                                            \
+    TemplateArgs struct ocarina::SOAViewVar<S, TBuffer> {                               \
     public:                                                                             \
         using struct_type = S;                                                          \
         static_assert(ocarina::is_valid_buffer_element_v<struct_type>);                 \
@@ -247,40 +246,40 @@ OC_MAKE_ATOMIC_SOA_VIEW(template<typename T OC_COMMA ocarina::uint N OC_COMMA ty
 #define OC_MAKE_STRUCT_SOA_VIEW_MEMBER(member_name) \
     ocarina::SOAView<decltype(struct_type::member_name), TBuffer> member_name;
 
-#define OC_MAKE_STRUCT_SOA_VIEW_CONSTRUCT(member_name)                                 \
-    member_name = SOAView<decltype(member_name), TBuffer>(bv, view_size, ofs, stride); \
+#define OC_MAKE_STRUCT_SOA_VIEW_CONSTRUCT(member_name)                                              \
+    member_name = SOAView<decltype(struct_type::member_name), TBuffer>(bv, view_size, ofs, stride); \
     ofs += member_name.size_in_byte();
 
 #define OC_MAKE_STRUCT_SOA_VIEW_SIZE(member_name) +member_name.size_in_byte()
 
-#define OC_MAKE_STRUCT_SOA_VIEW(TemplateArgs, S, first_member, ...)                         \
-    TemplateArgs                                                                            \
-    requires ocarina::is_byte_buffer_view_v<TBuffer>                                        \
-    struct ocarina::SOAView<S, TBuffer> {                                                   \
-    public:                                                                                 \
-        using struct_type = S;                                                              \
-        static constexpr ocarina::uint type_size = sizeof(struct_type);                     \
-        static constexpr AccessMode access_mode = SOA;                                      \
-                                                                                            \
-    public:                                                                                 \
-        MAP(OC_MAKE_STRUCT_SOA_VIEW_MEMBER, first_member, ##__VA_ARGS__)                    \
-                                                                                            \
-    public:                                                                                 \
-        SOAView() = default;                                                                \
-        explicit SOAView(TBuffer bv, ocarina::uint view_size = ocarina::InvalidUI32,        \
-                         ocarina::uint ofs = 0u, ocarina::uint stride = type_size) {        \
-            view_size = ocarina::min(bv.template size_in_byte<ocarina::uint>(), view_size); \
-            MAP(OC_MAKE_STRUCT_SOA_VIEW_CONSTRUCT, first_member, ##__VA_ARGS__)             \
-        }                                                                                   \
-                                                                                            \
-        [[nodiscard]] TBuffer view() const noexcept {                                       \
-            return TBuffer{first_member.view().handle(), first_member.view().offset(),      \
-                           size_in_byte(), first_member.view().total_size()};               \
-        }                                                                                   \
-                                                                                            \
-        [[nodiscard]] ocarina::uint size_in_byte() const noexcept {                         \
-            return 0u MAP(OC_MAKE_STRUCT_SOA_VIEW_SIZE, first_member, ##__VA_ARGS__);       \
-        }                                                                                   \
+#define OC_MAKE_STRUCT_SOA_VIEW(TemplateArgs, S, first_member, ...)                    \
+    TemplateArgs                                                                       \
+    requires ocarina::is_byte_buffer_view_v<TBuffer>                                   \
+    struct ocarina::SOAView<S, TBuffer> {                                              \
+    public:                                                                            \
+        using struct_type = S;                                                         \
+        static constexpr ocarina::uint type_size = sizeof(struct_type);                \
+        static constexpr AccessMode access_mode = SOA;                                 \
+                                                                                       \
+    public:                                                                            \
+        MAP(OC_MAKE_STRUCT_SOA_VIEW_MEMBER, first_member, ##__VA_ARGS__)               \
+                                                                                       \
+    public:                                                                            \
+        SOAView() = default;                                                           \
+        explicit SOAView(TBuffer bv, ocarina::uint view_size = ocarina::InvalidUI32,   \
+                         ocarina::uint ofs = 0u, ocarina::uint stride = type_size) {   \
+            view_size = ocarina::min(uint(bv.size_in_byte()), view_size);              \
+            MAP(OC_MAKE_STRUCT_SOA_VIEW_CONSTRUCT, first_member, ##__VA_ARGS__)        \
+        }                                                                              \
+                                                                                       \
+        [[nodiscard]] TBuffer view() const noexcept {                                  \
+            return TBuffer{first_member.view().handle(), first_member.view().offset(), \
+                           size_in_byte(), first_member.view().total_size()};          \
+        }                                                                              \
+                                                                                       \
+        [[nodiscard]] ocarina::uint size_in_byte() const noexcept {                    \
+            return 0u MAP(OC_MAKE_STRUCT_SOA_VIEW_SIZE, first_member, ##__VA_ARGS__);  \
+        }                                                                              \
     };
 
 #define OC_MAKE_ARRAY_SOA_VAR(TemplateArgs, TypeName, ElementType)                      \
@@ -437,6 +436,7 @@ private:
     ocarina::Uint offset_;
 
 public:
+    AOSViewVar() = default;
     explicit AOSViewVar(const TBuffer &buffer, const Uint &view_size = InvalidUI32,
                         Uint ofs = 0u)
         : buffer_var_(buffer), offset_(std::move(ofs)) {}
@@ -470,7 +470,7 @@ public:
 };
 
 template<typename Elm, typename TBuffer>
-[[nodiscard]] AOSViewVar<Elm, TBuffer> make_aos_view(const TBuffer &buffer) noexcept {
+[[nodiscard]] AOSViewVar<Elm, TBuffer> make_aos_view_var(const TBuffer &buffer) noexcept {
     return AOSViewVar<Elm, TBuffer>(buffer);
 }
 
