@@ -112,6 +112,8 @@ public:
         return BufferView<T>(buffer_desc.head(), buffer_desc.size_in_byte() / sizeof(T));
     }
 
+    [[nodiscard]] ByteBufferView byte_buffer_view(uint index) const noexcept;
+
     template<typename Index>
     requires is_integral_expr_v<Index>
     [[nodiscard]] BindlessArrayByteBuffer byte_buffer_var(Index &&index) const noexcept {
