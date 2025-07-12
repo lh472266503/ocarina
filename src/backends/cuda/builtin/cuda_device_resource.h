@@ -27,6 +27,7 @@ public:
 template<typename T>
 struct OCBuffer {
     T *ptr{};
+    oc_uint offset{};
     oc_uint64t size{};
     template<typename Index>
     [[nodiscard]] const T &operator[](Index index) const noexcept { return ptr[index]; }
@@ -148,8 +149,13 @@ struct OCTexture {
 }
 
 struct BufferDesc {
-    void *head{};
+    void *handle{};
+    oc_uint offset_in_byte{};
     size_t size_in_byte{};
+
+    char *head() {
+        return reinterpret_cast<char *>(handle) + offset_in_byte;
+    }
 };
 
 struct OCBindlessArray {
@@ -210,7 +216,7 @@ __device__ oc_array<float, N> oc_tex_sample_float(OCTexture obj, oc_float u, oc_
 
 template<typename T>
 __device__ T &oc_bindless_array_buffer_read(OCBindlessArray bindless_array, oc_uint buffer_index, oc_uint64t index) noexcept {
-    T *buffer = reinterpret_cast<T *>(bindless_array.buffer_slot[buffer_index].head);
+    T *buffer = reinterpret_cast<T *>(bindless_array.buffer_slot[buffer_index].head());
     return buffer[index];
 }
 
@@ -220,21 +226,21 @@ __device__ oc_uint oc_bindless_array_buffer_size(OCBindlessArray bindless_array,
 
 template<typename T>
 __device__ T &oc_bindless_array_byte_buffer_read(OCBindlessArray bindless_array, oc_uint buffer_index, oc_uint64t offset) noexcept {
-    char *buffer = reinterpret_cast<char *>(bindless_array.buffer_slot[buffer_index].head);
+    char *buffer = reinterpret_cast<char *>(bindless_array.buffer_slot[buffer_index].head());
     return *reinterpret_cast<T *>(&buffer[offset]);
 }
 
 template<typename T>
 __device__ void oc_bindless_array_buffer_write(OCBindlessArray bindless_array, oc_uint buffer_index,
                                                oc_uint64t index, const T &val) noexcept {
-    T *buffer = reinterpret_cast<T *>(bindless_array.buffer_slot[buffer_index].head);
+    T *buffer = reinterpret_cast<T *>(bindless_array.buffer_slot[buffer_index].head());
     buffer[index] = val;
 }
 
 template<typename T>
 __device__ void oc_bindless_array_byte_buffer_write(OCBindlessArray bindless_array, oc_uint buffer_index,
                                                     oc_uint64t offset, const T &val) noexcept {
-    char *buffer = reinterpret_cast<char *>(bindless_array.buffer_slot[buffer_index].head);
+    char *buffer = reinterpret_cast<char *>(bindless_array.buffer_slot[buffer_index].head());
     T *ref = (reinterpret_cast<T *>(&(buffer[offset])));
     ref[0] = val;
 }

@@ -14,6 +14,7 @@ class CUDAMesh : public RHIMesh::Impl {
 private:
     CUDADevice *device_;
     MeshParams params_;
+    handle_ty final_vert_handle{};
     OptixTraversableHandle blas_handle_{};
     Buffer<std::byte> blas_buffer_{};
     OptixBuildInput build_input_{};

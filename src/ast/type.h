@@ -317,6 +317,7 @@ struct TextureProxy {
 template<typename T = std::byte>
 struct BufferDesc {
     T *handle{};
+    uint offset{};
     uint64_t size{};
 
     [[nodiscard]] size_t data_alignment() const noexcept {
@@ -334,8 +335,13 @@ struct BufferDesc {
     [[nodiscard]] handle_ty head() const noexcept {
         return reinterpret_cast<handle_ty>(handle);
     }
+
     [[nodiscard]] uint64_t size_in_byte() const noexcept {
         return size * sizeof(T);
+    }
+
+    [[nodiscard]] uint offset_in_byte() const noexcept {
+        return offset * sizeof(T);
     }
 };
 
