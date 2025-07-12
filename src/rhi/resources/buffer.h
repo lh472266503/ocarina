@@ -37,7 +37,8 @@ public:
     OC_MAKE_MEMBER_GETTER(total_size, )
 
     const BufferDesc<T> &proxy() const noexcept {
-        proxy_.handle = reinterpret_cast<T *>(head());
+        proxy_.handle = reinterpret_cast<T *>(handle());
+        proxy_.offset = offset_;
         proxy_.size = size_;
         return proxy_;
     }
@@ -60,8 +61,6 @@ public:
 
     BufferView(handle_ty handle, size_t total_size)
         : handle_(handle), offset_(0), total_size_(total_size), size_(total_size) {}
-
-    [[nodiscard]] handle_ty head() const { return handle_ + offset_ * element_size(); }
 
     [[nodiscard]] BufferView<T> subview(size_t offset, size_t size) const noexcept {
         return BufferView<T>(handle_, offset_ + offset, size, total_size_);
@@ -103,7 +102,7 @@ public:
     }
 
     [[nodiscard]] BufferByteSetCommand *byte_set(uchar value, bool async = true) const noexcept {
-        return BufferByteSetCommand::create(head(), size_in_byte(), value, async);
+        return BufferByteSetCommand::create(handle(), size_in_byte(), value, async);
     }
 
     [[nodiscard]] BufferByteSetCommand *reset(bool async = true) const noexcept {
@@ -224,9 +223,6 @@ public:
     }
 
     void set_size(size_t size) noexcept { size_ = size; }
-
-    /// head of the buffer
-    [[nodiscard]] handle_ty head() const noexcept { return handle(); }
 
     [[nodiscard]] uint offset_in_byte() const noexcept { return 0; }
 
