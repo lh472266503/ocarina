@@ -71,13 +71,13 @@ public:
     template<typename T>
     requires is_buffer_or_view_v<T>
     [[nodiscard]] size_t emplace(const T &buffer) noexcept {
-        return impl()->emplace_buffer(buffer.head(), buffer.offset_in_byte(),
+        return impl()->emplace_buffer(buffer.handle(), buffer.offset_in_byte(),
                                       buffer.size_in_byte());
     }
     template<typename T>
     requires is_buffer_or_view_v<T>
     void set_buffer(handle_ty index, const T &buffer) noexcept {
-        impl()->set_buffer(index, buffer.head(), buffer.offset_in_byte(),
+        impl()->set_buffer(index, buffer.handle(), buffer.offset_in_byte(),
                            buffer.size_in_byte());
     }
     size_t emplace(const Texture &texture) noexcept;

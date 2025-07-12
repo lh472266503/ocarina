@@ -154,7 +154,7 @@ struct BufferDesc {
     size_t size_in_byte{};
 
     char *head() {
-        return reinterpret_cast<char *>(handle);
+        return reinterpret_cast<char *>(handle) + offset_in_byte;
     }
 };
 
