@@ -32,11 +32,13 @@ public:
     void prepare_slotSOA(Device &device) noexcept override;
     [[nodiscard]] CommandList update_slotSOA(bool async) noexcept override;
 
-    [[nodiscard]] size_t emplace_buffer(handle_ty handle,size_t size_in_byte) noexcept override;
+    [[nodiscard]] size_t emplace_buffer(handle_ty handle, uint offset_in_byte,
+                                        size_t size_in_byte) noexcept override;
     void remove_buffer(handle_ty index) noexcept override;
     [[nodiscard]] size_t emplace_texture(handle_ty handle) noexcept override;
     void remove_texture(handle_ty index) noexcept override;
-    void set_buffer(ocarina::handle_ty index, ocarina::handle_ty handle, size_t size_in_byte) noexcept override;
+    void set_buffer(ocarina::handle_ty index, ocarina::handle_ty handle, uint offset_in_byte,
+                    size_t size_in_byte) noexcept override;
     [[nodiscard]] ByteBufferDesc buffer_view(ocarina::uint index) const noexcept override;
     void set_texture(ocarina::handle_ty index, ocarina::handle_ty handle) noexcept override;
     [[nodiscard]] size_t buffer_num() const noexcept override;

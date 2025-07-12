@@ -48,6 +48,7 @@ public:
     [[nodiscard]] size_t size() const noexcept { return size_; }
     template<typename Size = size_t>
     [[nodiscard]] Size size_in_byte() const noexcept { return size(); }
+    [[nodiscard]] uint offset_in_byte() const noexcept { return 0; }
 
     void destroy() override {
         _destroy();

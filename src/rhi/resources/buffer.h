@@ -228,6 +228,8 @@ public:
     /// head of the buffer
     [[nodiscard]] handle_ty head() const noexcept { return handle(); }
 
+    [[nodiscard]] uint offset_in_byte() const noexcept { return 0; }
+
     /// for dsl trait
     auto operator[](int i) { return T{}; }
 

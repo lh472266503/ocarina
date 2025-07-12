@@ -18,11 +18,13 @@ public:
     class Impl {
     public:
         static constexpr auto c_max_slot_num = 50000;
-        [[nodiscard]] virtual size_t emplace_buffer(handle_ty handle, size_t size_in_byte) noexcept = 0;
+        [[nodiscard]] virtual size_t emplace_buffer(handle_ty handle, uint offset_in_byte,
+                                                    size_t size_in_byte) noexcept = 0;
         virtual void remove_buffer(handle_ty index) noexcept = 0;
         [[nodiscard]] virtual size_t emplace_texture(handle_ty handle) noexcept = 0;
         virtual void remove_texture(handle_ty index) noexcept = 0;
-        virtual void set_buffer(handle_ty index, handle_ty handle, size_t size_in_byte) noexcept = 0;
+        virtual void set_buffer(handle_ty index, handle_ty handle, uint offset_in_byte,
+                                size_t size_in_byte) noexcept = 0;
         [[nodiscard]] virtual ByteBufferDesc buffer_view(uint index) const noexcept = 0;
         virtual void set_texture(handle_ty index, handle_ty handle) noexcept = 0;
         [[nodiscard]] virtual BufferUploadCommand *upload_buffer_handles(bool async) const noexcept = 0;
@@ -69,12 +71,14 @@ public:
     template<typename T>
     requires is_buffer_or_view_v<T>
     [[nodiscard]] size_t emplace(const T &buffer) noexcept {
-        return impl()->emplace_buffer(buffer.head(), buffer.size_in_byte());
+        return impl()->emplace_buffer(buffer.head(), buffer.offset_in_byte(),
+                                      buffer.size_in_byte());
     }
     template<typename T>
     requires is_buffer_or_view_v<T>
     void set_buffer(handle_ty index, const T &buffer) noexcept {
-        impl()->set_buffer(index, buffer.head(), buffer.size_in_byte());
+        impl()->set_buffer(index, buffer.head(), buffer.offset_in_byte(),
+                           buffer.size_in_byte());
     }
     size_t emplace(const Texture &texture) noexcept;
     void set_texture(handle_ty index, const Texture &texture) noexcept;
@@ -109,7 +113,9 @@ public:
     template<typename T>
     [[nodiscard]] BufferView<T> buffer_view(uint index) const noexcept {
         ByteBufferDesc buffer_desc = impl()->buffer_view(index);
-        return BufferView<T>(buffer_desc.head(), buffer_desc.size_in_byte() / sizeof(T));
+        auto size = buffer_desc.size_in_byte() / sizeof(T);
+        auto offset = 0 / sizeof(T);
+        return BufferView<T>(buffer_desc.head(), offset, size, offset + size);
     }
 
     [[nodiscard]] ByteBufferView byte_buffer_view(uint index) const noexcept;
