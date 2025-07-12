@@ -75,7 +75,7 @@ void CUDABindlessArray::set_buffer(ocarina::handle_ty index, ocarina::handle_ty 
     buffers_.host_buffer().at(index) = {reinterpret_cast<std::byte *>(handle), size_in_byte};
 }
 
-ByteBufferProxy CUDABindlessArray::buffer_view(ocarina::uint index) const noexcept {
+ByteBufferDesc CUDABindlessArray::buffer_view(ocarina::uint index) const noexcept {
     return buffers_.host_buffer().at(index);
 }
 
@@ -93,7 +93,7 @@ size_t CUDABindlessArray::texture_num() const noexcept {
 }
 
 size_t CUDABindlessArray::buffer_slots_size() const noexcept {
-    return sizeof(ByteBufferProxy) * c_max_slot_num;
+    return sizeof(ByteBufferDesc) * c_max_slot_num;
 }
 
 size_t CUDABindlessArray::tex_slots_size() const noexcept {

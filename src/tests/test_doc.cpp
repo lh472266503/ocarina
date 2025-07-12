@@ -32,8 +32,8 @@ OC_STRUCT(, Triple, i, j, k, h){
 struct Pair {
     uint i{50};
     Triple triple;
-    //    BufferProxy<float3> b;
-    //    BufferProxy<Triple> t;
+    //    BufferDesc<float3> b;
+    //    BufferDesc<Triple> t;
     Pair() = default;
 };
 
@@ -44,8 +44,8 @@ OC_STRUCT(, Pair, i, triple){
 
 struct Param {
     uint i{50};
-    BufferProxy<float3> b;
-    BufferProxy<Triple> t;
+    BufferDesc<float3> b;
+    BufferDesc<Triple> t;
     Pair pa;
     Param() = default;
 };

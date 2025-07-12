@@ -154,7 +154,7 @@ struct dsl_impl<vector<T>> {
 };
 
 template<typename T>
-struct dsl_impl<BufferProxy<T>> {
+struct dsl_impl<BufferDesc<T>> {
     using type = Var<Buffer<T>>;
 };
 

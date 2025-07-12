@@ -16,7 +16,7 @@ class CUDABindlessArray : public BindlessArray::Impl {
 private:
     BindlessArrayProxy slot_soa_{};
     CUDADevice *device_{};
-    Managed<ByteBufferProxy> buffers_;
+    Managed<ByteBufferDesc> buffers_;
     Managed<CUtexObject> textures_;
 
 public:
@@ -37,7 +37,7 @@ public:
     [[nodiscard]] size_t emplace_texture(handle_ty handle) noexcept override;
     void remove_texture(handle_ty index) noexcept override;
     void set_buffer(ocarina::handle_ty index, ocarina::handle_ty handle, size_t size_in_byte) noexcept override;
-    [[nodiscard]] ByteBufferProxy buffer_view(ocarina::uint index) const noexcept override;
+    [[nodiscard]] ByteBufferDesc buffer_view(ocarina::uint index) const noexcept override;
     void set_texture(ocarina::handle_ty index, ocarina::handle_ty handle) noexcept override;
     [[nodiscard]] size_t buffer_num() const noexcept override;
     [[nodiscard]] size_t texture_num() const noexcept override;

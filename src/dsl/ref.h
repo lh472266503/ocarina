@@ -200,7 +200,7 @@ struct Ref<Buffer<T>>
     OC_REF_COMMON(Ref<Buffer<T>>)
 
 public:
-    void set(const BufferProxy<T> &buffer) noexcept {
+    void set(const BufferDesc<T> &buffer) noexcept {
         /// empty
     }
     template<typename int_type = uint64t>

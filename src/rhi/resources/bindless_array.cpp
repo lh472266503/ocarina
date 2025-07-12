@@ -24,7 +24,7 @@ void BindlessArray::set_texture(ocarina::handle_ty index,
 }
 
 ByteBufferView BindlessArray::byte_buffer_view(ocarina::uint index) const noexcept {
-    ByteBufferProxy buffer_desc = impl()->buffer_view(index);
+    ByteBufferDesc buffer_desc = impl()->buffer_view(index);
     return {buffer_desc.head(), buffer_desc.size_in_byte()};
 }
 

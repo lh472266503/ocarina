@@ -315,7 +315,7 @@ struct TextureProxy {
 };
 
 template<typename T = std::byte>
-struct BufferProxy {
+struct BufferDesc {
     T *handle{};
     uint64_t size{};
 
@@ -346,7 +346,7 @@ struct is_buffer_proxy_impl {
 };
 
 template<typename T>
-struct is_buffer_proxy_impl<BufferProxy<T>> {
+struct is_buffer_proxy_impl<BufferDesc<T>> {
     static constexpr bool value = true;
 };
 }// namespace detail
@@ -355,7 +355,7 @@ template<typename T>
 struct is_buffer_proxy : public detail::is_buffer_proxy_impl<std::remove_cvref_t<T>> {};
 OC_DEFINE_TEMPLATE_VALUE(is_buffer_proxy);
 
-using ByteBufferProxy = BufferProxy<>;
+using ByteBufferDesc = BufferDesc<>;
 
 struct TypeVisitor {
     virtual void visit(const Type *) noexcept = 0;

@@ -30,7 +30,7 @@ public:
 class ByteBuffer : public RHIResource {
 private:
     /// just for construct memory block
-    mutable BufferProxy<> proxy_{};
+    mutable BufferDesc<> proxy_{};
     size_t size_{};
 
 public:
@@ -54,13 +54,13 @@ public:
         size_ = 0;
     }
 
-    const BufferProxy<std::byte> &proxy() const noexcept {
+    const BufferDesc<std::byte> &proxy() const noexcept {
         proxy_.handle = reinterpret_cast<std::byte *>(handle_);
         proxy_.size = size_;
         return proxy_;
     }
 
-    const BufferProxy<std::byte> *proxy_ptr() const noexcept {
+    const BufferDesc<std::byte> *proxy_ptr() const noexcept {
         return &proxy();
     }
 

@@ -11,7 +11,7 @@ template<typename T, int... dims>
 class Buffer;
 
 template<typename T>
-class BufferProxy;
+class BufferDesc;
 
 template<typename T, int... dims>
 class BufferView;
@@ -131,7 +131,7 @@ struct TypeDesc<Buffer<T, Dims...>> {
 };
 
 template<typename T>
-struct TypeDesc<BufferProxy<T>> : public TypeDesc<Buffer<T>> {};
+struct TypeDesc<BufferDesc<T>> : public TypeDesc<Buffer<T>> {};
 
 template<>
 struct TypeDesc<ByteBuffer> {

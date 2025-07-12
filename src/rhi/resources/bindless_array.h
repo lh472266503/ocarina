@@ -23,7 +23,7 @@ public:
         [[nodiscard]] virtual size_t emplace_texture(handle_ty handle) noexcept = 0;
         virtual void remove_texture(handle_ty index) noexcept = 0;
         virtual void set_buffer(handle_ty index, handle_ty handle, size_t size_in_byte) noexcept = 0;
-        [[nodiscard]] virtual ByteBufferProxy buffer_view(uint index) const noexcept = 0;
+        [[nodiscard]] virtual ByteBufferDesc buffer_view(uint index) const noexcept = 0;
         virtual void set_texture(handle_ty index, handle_ty handle) noexcept = 0;
         [[nodiscard]] virtual BufferUploadCommand *upload_buffer_handles(bool async) const noexcept = 0;
         [[nodiscard]] virtual BufferUploadCommand *upload_texture_handles(bool async) const noexcept = 0;
@@ -108,7 +108,7 @@ public:
 
     template<typename T>
     [[nodiscard]] BufferView<T> buffer_view(uint index) const noexcept {
-        ByteBufferProxy buffer_desc = impl()->buffer_view(index);
+        ByteBufferDesc buffer_desc = impl()->buffer_view(index);
         return BufferView<T>(buffer_desc.head(), buffer_desc.size_in_byte() / sizeof(T));
     }
 
