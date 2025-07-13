@@ -303,12 +303,12 @@ class Type;
 
 class TypeRegistry;
 
-struct BindlessArrayProxy {
+struct BindlessArrayDesc {
     handle_ty buffer_slot;
     handle_ty tex_slot;
 };
 
-struct TextureProxy {
+struct TextureDesc {
     handle_ty texture{};
     handle_ty surface{};
     PixelStorage pixel_storage{};

@@ -269,7 +269,7 @@ void TypeRegistry::parse_struct(Type *type, string_view desc) noexcept {
 
 void TypeRegistry::parse_bindless_array(Type *type, ocarina::string_view desc) noexcept {
     type->tag_ = Type::Tag::BINDLESS_ARRAY;
-    type->alignment_ = alignof(BindlessArrayProxy);
+    type->alignment_ = alignof(BindlessArrayDesc);
 }
 
 void TypeRegistry::parse_buffer(Type *type, ocarina::string_view desc) noexcept {
@@ -287,8 +287,8 @@ void TypeRegistry::parse_buffer(Type *type, ocarina::string_view desc) noexcept 
 
 void TypeRegistry::parse_texture(Type *type, ocarina::string_view desc) noexcept {
     type->tag_ = Type::Tag::TEXTURE;
-    type->alignment_ = alignof(TextureProxy);
-    type->size_ = sizeof(TextureProxy);
+    type->alignment_ = alignof(TextureDesc);
+    type->size_ = sizeof(TextureDesc);
 }
 
 void TypeRegistry::parse_accel(Type *type, ocarina::string_view desc) noexcept {

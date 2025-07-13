@@ -20,8 +20,8 @@ public:
             case Tag::BUFFER: return sizeof(BufferDesc<>);
             case Tag::BYTE_BUFFER: return sizeof(BufferDesc<>);
             case Tag::ACCEL: return sizeof(handle_ty);
-            case Tag::TEXTURE: return sizeof(TextureProxy);
-            case Tag::BINDLESS_ARRAY: return sizeof(BindlessArrayProxy);
+            case Tag::TEXTURE: return sizeof(TextureDesc);
+            case Tag::BINDLESS_ARRAY: return sizeof(BindlessArrayDesc);
             default:
                 return 0;
         }
@@ -37,8 +37,8 @@ public:
             case Tag::BUFFER: return alignof(BufferDesc<>);
             case Tag::BYTE_BUFFER: return alignof(BufferDesc<>);
             case Tag::ACCEL: return alignof(handle_ty);
-            case Tag::TEXTURE: return alignof(TextureProxy);
-            case Tag::BINDLESS_ARRAY: return alignof(BindlessArrayProxy);
+            case Tag::TEXTURE: return alignof(TextureDesc);
+            case Tag::BINDLESS_ARRAY: return alignof(BindlessArrayDesc);
             default:
                 return 0;
         }
