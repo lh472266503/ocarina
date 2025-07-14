@@ -7,8 +7,8 @@
 #include "math/basic_types.h"
 #include "dsl/dsl.h"
 
-namespace vision {
-using namespace ocarina;
+namespace ocarina {
+
 inline namespace geometry {
 
 template<typename T>
@@ -218,11 +218,11 @@ requires is_all_vector3_expr_v<T, U, V>
     return dot(w1, n) * dot(w2, n) > 0;
 }
 
-}// namespace geometry
-}// namespace vision
+}
+}// namespace ocarina::geometry
 
-namespace vision {
-using namespace ocarina;
+namespace ocarina {
+
 inline namespace geometry {
 struct Triangle {
     uint i, j, k;
@@ -230,28 +230,28 @@ struct Triangle {
     Triangle() = default;
 };
 }// namespace geometry
-}// namespace vision
-OC_STRUCT(vision, Triangle, i, j, k){};
+}// namespace ocarina
+OC_STRUCT(ocarina, Triangle, i, j, k){};
 
-[[nodiscard]] inline bool operator==(const vision::Triangle &lhs,
-                                     const vision::Triangle &rhs) noexcept {
+[[nodiscard]] inline bool operator==(const ocarina::Triangle &lhs,
+                                     const ocarina::Triangle &rhs) noexcept {
     return lhs.i == rhs.i &&
            lhs.j == rhs.j &&
            lhs.k == rhs.k;
 }
 
-namespace vision {
+namespace ocarina {
 struct LineSegment {
     float3 p0;
     float3 p1;
 };
-}// namespace vision
+}// namespace ocarina
 
 //clang-format off
-OC_STRUCT(vision, LineSegment, p0, p1){};
+OC_STRUCT(ocarina, LineSegment, p0, p1){};
 //clang-format on
 
-namespace vision {
+namespace ocarina {
 using namespace ocarina;
 using array_float3 = std::array<float, 3>;
 using array_float2 = std::array<float, 2>;
@@ -316,10 +316,10 @@ public:
 #undef VS_ATTR_STRIDE_OFFSET
 };
 }// namespace geometry
-}// namespace vision
+}// namespace ocarina
 
 // clang-format off
-OC_STRUCT(vision,Vertex, pos, n, uv, uv2){
+OC_STRUCT(ocarina,Vertex, pos, n, uv, uv2){
     void set_position(Float3 p) noexcept {
         pos[0] = p[0];
         pos[1] = p[1];
