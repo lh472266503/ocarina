@@ -204,8 +204,8 @@ public:
     using Impl = typename Shader<>::Impl;
 
 private:
-    ShaderTag _shader_tag{};
-    ocarina::shared_ptr<Function> _function{};
+    ShaderTag shader_tag_{};
+    ocarina::shared_ptr<Function> function_{};
 
 public:
     Shader() = default;
@@ -213,17 +213,17 @@ public:
     Shader(Device::Impl *device, ocarina::shared_ptr<Function> function, ShaderTag tag) noexcept
         : ShaderBase(device, SHADER,
                       device->create_shader(*function)),
-          _shader_tag(tag), _function(ocarina::move(function)) {}
+          shader_tag_(tag), function_(ocarina::move(function)) {}
 
     [[nodiscard]] const Impl *impl() const noexcept { return reinterpret_cast<const Impl *>(handle_); }
     [[nodiscard]] Impl *impl() noexcept { return reinterpret_cast<Impl *>(handle_); }
-    [[nodiscard]] ShaderTag shader_tag() const noexcept { return _shader_tag; }
+    [[nodiscard]] ShaderTag shader_tag() const noexcept { return shader_tag_; }
     void compute_fit_size() noexcept { impl()->compute_fit_size(); }
-    [[nodiscard]] bool has_function() const noexcept { return _function != nullptr; }
+    [[nodiscard]] bool has_function() const noexcept { return function_ != nullptr; }
     [[nodiscard]] ShaderInvoke operator()(prototype_to_shader_invocation_t<Args> &&...args) const noexcept {
-        auto argument_list = make_shared<ArgumentList>(_function.get());
+        auto argument_list = make_shared<ArgumentList>(function_.get());
         (*argument_list << ... << OC_FORWARD(args));
-        for (const auto &var : _function->captured_resources()) {
+        for (const auto &var : function_->captured_resources()) {
             argument_list->push_memory_block(var.block());
         }
         argument_list->move_argument_data();
