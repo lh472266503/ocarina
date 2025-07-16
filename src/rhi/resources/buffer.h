@@ -22,7 +22,7 @@ private:
     size_t size_{};
     size_t total_size_{};
 
-    mutable BufferDesc<T> proxy_{};
+    mutable BufferDesc<T> descriptor_{};
 
 public:
     BufferView() = default;
@@ -36,15 +36,15 @@ public:
     [[nodiscard]] size_t total_size_in_byte() const noexcept { return total_size_ * element_size(); }
     OC_MAKE_MEMBER_GETTER(total_size, )
 
-    const BufferDesc<T> &proxy() const noexcept {
-        proxy_.handle = reinterpret_cast<T *>(handle());
-        proxy_.offset = offset_;
-        proxy_.size = size_;
-        return proxy_;
+    const BufferDesc<T> &descriptor() const noexcept {
+        descriptor_.handle = reinterpret_cast<T *>(handle());
+        descriptor_.offset = offset_;
+        descriptor_.size = size_;
+        return descriptor_;
     }
 
-    const BufferDesc<T> *proxy_ptr() const noexcept {
-        return &proxy();
+    const BufferDesc<T> *descriptor_ptr() const noexcept {
+        return &descriptor();
     }
 
     template<typename Dst>
