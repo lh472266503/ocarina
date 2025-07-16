@@ -122,7 +122,7 @@ public:
 
 protected:
     size_t size_{};
-    mutable BufferDesc<T> proxy_{};
+    mutable BufferDesc<T> descriptor_{};
     string name_;
 
 public:
@@ -133,7 +133,7 @@ public:
     Buffer(Device::Impl *device, size_t size, const string &desc = "")
         : RHIResource(device, Tag::BUFFER, device->create_buffer(size * element_size(), desc)),
           size_(size), name_(desc) {
-        proxy_ptr();
+        descriptor_ptr();
     }
 
     OC_MAKE_MEMBER_GETTER_SETTER(name, )
@@ -141,7 +141,7 @@ public:
     Buffer(BufferView<T, Dims...> buffer_view)
         : RHIResource(nullptr, Tag::BUFFER, buffer_view.handle()),
           size_(buffer_view.size()) {
-        proxy_ptr();
+        descriptor_ptr();
     }
 
     void destroy() override {
@@ -164,7 +164,7 @@ public:
         : RHIResource(std::move(other)) {
         this->size_ = other.size_;
         this->name_ = std::move(other.name_);
-        this->proxy_ = other.proxy_;
+        this->descriptor_ = other.descriptor_;
     }
 
     // Move assignment
@@ -173,30 +173,31 @@ public:
         RHIResource::operator=(std::move(other));
         this->size_ = other.size_;
         this->name_ = std::move(other.name_);
-        this->proxy_ = other.proxy_;
+        this->descriptor_ = other.descriptor_;
         return *this;
     }
 
-    const BufferDesc<T> &proxy() const noexcept {
-        proxy_.handle = reinterpret_cast<T *>(handle_);
-        proxy_.size = size_;
-        return proxy_;
+    const BufferDesc<T> &descriptor() const noexcept {
+        descriptor_.handle = reinterpret_cast<T *>(handle_);
+        descriptor_.offset = 0u;
+        descriptor_.size = size_;
+        return descriptor_;
     }
 
-    const BufferDesc<T> *proxy_ptr() const noexcept {
-        return &proxy();
+    const BufferDesc<T> *descriptor_ptr() const noexcept {
+        return &descriptor();
     }
 
     [[nodiscard]] size_t data_alignment() const noexcept override {
-        return alignof(decltype(proxy_));
+        return alignof(decltype(descriptor_));
     }
 
     [[nodiscard]] size_t data_size() const noexcept override {
-        return sizeof(proxy_);
+        return sizeof(descriptor_);
     }
 
     [[nodiscard]] MemoryBlock memory_block() const noexcept override {
-        return {proxy_ptr(), data_size(), data_alignment(), max_member_size()};
+        return {descriptor_ptr(), data_size(), data_alignment(), max_member_size()};
     }
 
     template<typename U>

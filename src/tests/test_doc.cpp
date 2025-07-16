@@ -544,8 +544,8 @@ void test_parameter_struct(Device &device, Stream &stream) {
     stream << tri.upload(triangles.data());
 
     Param p;
-    p.b = vert.proxy();
-    p.t = tri.proxy();
+    p.b = vert.descriptor();
+    p.t = tri.descriptor();
     //    p.pa.b = vert.proxy();
 
     Kernel kernel = [&](Var<Pair> pa, BufferVar<float3> b3) {
