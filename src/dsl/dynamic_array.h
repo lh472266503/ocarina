@@ -234,30 +234,19 @@ public:
         }
     }
 
-    [[nodiscard]] DynamicArray<T> clamp(const Var<T> &min_, const Var<T> &max_) const noexcept {
-        return map([&](const Var<T> &val) {
-            return ocarina::clamp(val, min_, max_);
-        });
-    }
-
     [[nodiscard]] Var<T> sum() const noexcept {
         return reduce(0.f, [](auto r, auto x) noexcept { return r + x; });
     }
-    [[nodiscard]] Var<T> max() const noexcept {
-        return reduce(0.f, [](auto r, auto x) noexcept {
-            return ocarina::max(r, x);
-        });
-    }
-    [[nodiscard]] Var<T> min() const noexcept {
-        return reduce(std::numeric_limits<float>::max(), [](auto r, auto x) noexcept {
-            return ocarina::min(r, x);
-        });
-    }
-    void sanitize() noexcept {
-        *this = map([&](const Var<T> &val) {
-            return ocarina::select(ocarina::isnan(val) || ocarina::isinf(val), Var<T>(0), val);
-        });
-    }
+
+    /// implement in src/dsl/builtin.h
+    [[nodiscard]] DynamicArray<T> clamp(const Var<T> &min_, const Var<T> &max_) const noexcept;
+    /// implement in src/dsl/builtin.h
+    [[nodiscard]] Var<T> max() const noexcept;
+    /// implement in src/dsl/builtin.h
+    [[nodiscard]] Var<T> min() const noexcept;
+    /// implement in src/dsl/builtin.h
+    void sanitize() noexcept;
+
     template<typename F>
     [[nodiscard]] Bool any(F &&f) const noexcept {
         return reduce(false, [&f](auto ans, auto value) noexcept { return ans || f(value); });

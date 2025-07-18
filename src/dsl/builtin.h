@@ -11,6 +11,7 @@
 #include "math/base.h"
 #include "ast/expression.h"
 #include "var.h"
+#include "dynamic_array.h"
 
 namespace ocarina {
 
@@ -426,6 +427,33 @@ inline void unreachable() noexcept {
 
 inline void synchronize_block() noexcept {
     Function::current()->expr_statement(Function::current()->call_builtin(nullptr, CallOp::SYNCHRONIZE_BLOCK, {}));
+}
+
+template<typename T>
+void DynamicArray<T>::sanitize() noexcept {
+    *this = map([&](const Var<T> &val) {
+        return ocarina::select(ocarina::isnan(val) || ocarina::isinf(val), Var<T>(0), val);
+    });
+}
+
+template<typename T>
+Var<T> DynamicArray<T>::max() const noexcept {
+    return reduce(0.f, [](auto r, auto x) noexcept {
+        return ocarina::max(r, x);
+    });
+}
+template<typename T>
+Var<T> DynamicArray<T>::min() const noexcept {
+    return reduce(std::numeric_limits<float>::max(), [](auto r, auto x) noexcept {
+        return ocarina::min(r, x);
+    });
+}
+
+template<typename T>
+DynamicArray<T> DynamicArray<T>::clamp(const Var<T> &min_, const Var<T> &max_) const noexcept {
+    return map([&](const Var<T> &val) {
+        return ocarina::clamp(val, min_, max_);
+    });
 }
 
 }// namespace ocarina
