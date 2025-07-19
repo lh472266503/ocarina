@@ -141,6 +141,11 @@ public:
     bool slider_int3(const string &label, int3 *val, int min, int max) noexcept override;
     bool slider_int4(const string &label, int4 *val, int min, int max) noexcept override;
 
+    bool slider_uint(const string &label, uint *val, uint min, uint max) noexcept override;
+    bool slider_uint2(const string &label, uint2 *val, uint min, uint max) noexcept override;
+    bool slider_uint3(const string &label, uint3 *val, uint min, uint max) noexcept override;
+    bool slider_uint4(const string &label, uint4 *val, uint min, uint max) noexcept override;
+
     bool color_edit(const string &label, float3 *val) noexcept override;
     bool color_edit(const string &label, float4 *val) noexcept override;
 
