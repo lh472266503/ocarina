@@ -773,6 +773,7 @@ struct TriangleHit;
 
 OC_MAKE_VAR_TYPE(int)
 OC_MAKE_VAR_TYPE(uint)
+OC_MAKE_VAR_TYPE(uint64t)
 OC_MAKE_VAR_TYPE(float)
 OC_MAKE_VAR_TYPE(char)
 OC_MAKE_VAR_TYPE(uchar)
@@ -783,7 +784,6 @@ OC_MAKE_VAR_TYPE_IMPL(TriangleHit, )
 #define OC_MAKE_VAR_MAT(dim) \
     template<EPort port>     \
     using oc_float##dim##x##dim = var_t<float##dim##x##dim, port>;
-
 OC_MAKE_VAR_MAT(2)
 OC_MAKE_VAR_MAT(3)
 OC_MAKE_VAR_MAT(4)
