@@ -217,6 +217,9 @@ struct Ref<ByteBuffer>
     OC_REF_COMMON(Ref<ByteBuffer>)
 
 public:
+    void set(const BufferDesc<> &buffer) noexcept {
+        /// empty
+    }
     template<typename int_type = uint>
     [[nodiscard]] auto size_in_byte() const noexcept {
         const CallExpr *expr = Function::current()->call_builtin(Type::of<int_type>(), CallOp::BYTE_BUFFER_SIZE, {expression()});

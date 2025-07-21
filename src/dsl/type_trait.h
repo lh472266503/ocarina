@@ -24,6 +24,8 @@ class DynamicArray;
 template<typename T, int... Dims>
 class Buffer;
 
+class ByteBuffer;
+
 namespace detail {
 
 template<typename T>
@@ -156,6 +158,11 @@ struct dsl_impl<vector<T>> {
 template<typename T>
 struct dsl_impl<BufferDesc<T>> {
     using type = Var<Buffer<T>>;
+};
+
+template<>
+struct dsl_impl<BufferDesc<>> {
+    using type = Var<ByteBuffer>;
 };
 
 }// namespace detail
@@ -647,6 +654,7 @@ requires(!is_dsl_v<T>) && is_vector_v<T>
 auto vector_deduce() {
     return Vector<vector_expr_element_t<T>, N>();
 }
+
 template<typename T, size_t N>
 requires is_dsl_v<T> && is_vector_expr_v<T>
 auto vector_deduce() {

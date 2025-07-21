@@ -144,6 +144,9 @@ struct TypeDesc<ByteBuffer> {
 };
 
 template<>
+struct TypeDesc<BufferDesc<>> : public TypeDesc<ByteBuffer> {};
+
+template<>
 struct TypeDesc<Texture> {
     static ocarina::string_view description() noexcept {
         return "texture";
