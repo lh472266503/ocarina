@@ -102,6 +102,11 @@ inline T oc_atomicExch(OCBuffer<oc_uchar> buffer, Offset offset, T val) noexcept
     return oc_atomicExch(ref[0], val);
 }
 
+template<typename T>
+inline T oc_atomicCAS(T &ref, T compare, T val) noexcept {
+    return atomicCAS(&ref, compare, val);
+}
+
 template<typename T, typename U>
 inline T oc_atomicAdd(T &a, U v) noexcept {
     return atomicAdd(&a, v);

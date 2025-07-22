@@ -176,6 +176,7 @@ enum struct CallOp : uint32_t {
     ATOMIC_EXCH,
     ATOMIC_ADD,
     ATOMIC_SUB,
+    ATOMIC_CAS,
 
     // ray tracing
     MAKE_RAY,

@@ -47,11 +47,12 @@ struct Param {
     BufferDesc<float3> b;
     BufferDesc<Triple> t;
     Pair pa;
+    BufferDesc<float3> b2;
     Param() = default;
 };
 
 /// register a DSL struct, if you need upload a struct to device, be sure to register
-OC_PARAM_STRUCT(, Param, i, b, t, pa){
+OC_PARAM_STRUCT(, Param, i, b, t, pa, b2){
 
 };
 
@@ -546,27 +547,34 @@ void test_parameter_struct(Device &device, Stream &stream) {
     Param p;
     p.b = vert.descriptor();
     p.t = tri.descriptor();
+    auto sss = alignof( Triple);
+    auto ofs0 = offsetof(Param, i);
+    auto ofs1 = offsetof(Param, b);
+    auto ofs2 = offsetof(Param, t);
+    auto ofs3 = offsetof(Param, pa);
+    auto ofs4 = offsetof(Param, b2);
     //    p.pa.b = vert.proxy();
 
-    Kernel kernel = [&](Var<Pair> pa, BufferVar<float3> b3) {
+    Kernel kernel = [&](Var<Param> pp) {
         //        $info("{} ", pp.pa.b.at(dispatch_id()).x);
         //        vert.at(dispatch_id()).x += 90;
-        pa.triple.h.bary = make_float2(1.f);
-        $outline {
-            auto v = pa.triple.h.bary.xy();
-            int i = 0;
-            //            auto v = pp.pa.b.read(dispatch_id());
-            //            $info("{} {} {}  -- ", v);
-        };
-        //        atomic_add(pp.t.at(0).i, 5.6f);
-        //        atomic_sub(pp.t.at(0).j, 1);
-        //        atomic_exch(pp.t.at(dispatch_id()).k, dispatch_id() * 25 + 2);
-        //        auto v =  pp.t.at(dispatch_id()) ;
-        //        $info("{} {} {} ", v.i, v.j, v.k);
+//        pa.triple.h.bary = make_float2(1.f);
+//        $outline {
+//            auto v = pa.triple.h.bary.xy();
+//            int i = 0;
+//            //            auto v = pp.pa.b.read(dispatch_id());
+//            //            $info("{} {} {}  -- ", v);
+//        };
+                atomic_add(pp.t.at(0).i, 5.6f);
+                atomic_sub(pp.t.at(0).j, 1);
+                atomic_exch(pp.t.at(dispatch_id()).k, dispatch_id() * 25 + 2);
+                auto j = atomic_CAS(pp.t.at(0).j, 4294967295u, 100u);
+                auto v =  pp.t.at(dispatch_id()) ;
+                $info("{} {} {}  {}  {}", v.i, v.j, v.k, j, pp.t.at(0).j);
     };
     auto shader = device.compile(kernel, "param struct");
 
-    stream << shader(p.pa, vert).dispatch(2);
+    stream << shader(p).dispatch(2);
     stream << Env::printer().retrieve();
     stream << synchronize() << commit();
 }
@@ -634,8 +642,8 @@ int main(int argc, char *argv[]) {
     auto b4 = all(bool_4.ww());
 
 //    test_compute_shader(device, stream);
-    //    test_parameter_struct(device, stream);
-        test_lambda(device, stream);
+        test_parameter_struct(device, stream);
+//        test_lambda(device, stream);
 
     //    test_poly();
     return 0;

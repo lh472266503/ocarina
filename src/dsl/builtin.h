@@ -409,6 +409,17 @@ auto atomic_exch(A &&a, B &&b) noexcept {
     return eval<expr_value_t<A>>(expr);
 }
 
+template<typename T, typename U, typename V>
+requires concepts::assign_able<expr_value_t<T>, expr_value_t<V>> &&
+         concepts::assign_able<expr_value_t<T>, expr_value_t<V>>
+auto atomic_CAS(T &ref, U &&compare, V &&val) {
+    const Expression *expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
+                                                               CallOp::ATOMIC_CAS,
+                                                               {OC_EXPR(ref), OC_EXPR(compare),
+                                                                OC_EXPR(val)});
+    return eval<expr_value_t<T>>(expr);
+}
+
 template<typename T>
 requires is_vector_v<expr_value_t<T>> || is_scalar_v<expr_value_t<T>>
 [[nodiscard]] T zero_if_nan(T t) noexcept {
