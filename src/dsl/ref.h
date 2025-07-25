@@ -151,7 +151,9 @@ public:
             (*this)[i] = t[i];
         }
     }
-    void set(const Var<Vector<T, N>> &t) {
+    template<typename U>
+    requires is_scalar_v<U> && is_same_v<U, T>
+    void set(const Var<Vector<U, N>> &t) {
         for (int i = 0; i < N; ++i) {
             (*this)[i] = t[i];
         }
