@@ -433,9 +433,12 @@ public:
                                                                       step_.expression(), OC_EXPR(T(0)));
         const BinaryExpr *condition = Function::current()->binary(Type::of<bool>(), BinaryOp::LESS,
                                                                   var_.expression(), end_.expression());
-        condition = Function::current()->binary(Type::of<bool>(), BinaryOp::BIT_XOR, negative_step, condition);
+        const BinaryExpr *reduce_cond = Function::current()->binary(Type::of<bool>(), BinaryOp::GREATER,
+                                                                    var_.expression(), end_.expression());
+        const Expression* final_condition = Function::current()->conditional(Type::of<bool>(), negative_step,
+                                                                             reduce_cond, condition);
         for_stmt_ = Function::current()->for_(var_.expression(),
-                                              condition,
+                                              final_condition,
                                               step_.expression());
     }
 
