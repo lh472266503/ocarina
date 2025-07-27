@@ -184,6 +184,10 @@ enum struct CallOp : uint32_t {
     TRACE_CLOSEST,
     TRACE_OCCLUSION,
 
+    WARP_ACTIVE_COUNT_BITS, //WaveActiveCountBits
+    WARP_ACTIVE_BIT_MASK,  //WaveActiveBallot
+    WARP_PREFIX_COUNT_BITS, //WavePrefixCountBits
+
     COUNT
 };
 
