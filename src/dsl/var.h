@@ -227,7 +227,7 @@ using BindlessArrayVar = Var<BindlessArray>;
 
 OC_MAKE_DSL_TYPE(Int, int)
 OC_MAKE_DSL_TYPE(Uint, uint)
-OC_MAKE_DSL_TYPE(Uint64t, uint64t)
+OC_MAKE_DSL_TYPE(Ulong, ulong)
 OC_MAKE_DSL_TYPE(Float, float)
 OC_MAKE_DSL_TYPE(Uchar, uchar)
 OC_MAKE_DSL_TYPE(Char, char)

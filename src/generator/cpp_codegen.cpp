@@ -401,7 +401,7 @@ void CppCodegen::_emit_type_name(const Type *type) noexcept {
             case Type::Tag::UINT: current_scratch() << "uint"; break;
             case Type::Tag::UCHAR: current_scratch() << "uchar"; break;
             case Type::Tag::CHAR: current_scratch() << "char"; break;
-            case Type::Tag::UINT64T: current_scratch() << "uint64t"; break;
+            case Type::Tag::UINT64T: current_scratch() << "ulong"; break;
             case Type::Tag::VECTOR:
                 _emit_type_name(type->element());
                 current_scratch() << type->dimension();

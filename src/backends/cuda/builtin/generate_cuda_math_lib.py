@@ -5,7 +5,7 @@ from os.path import realpath, dirname
 import os
 from posixpath import split
 
-scalar_types = ["int", "uint", "float", "bool", "uchar", "ushort", "uint64t"]
+scalar_types = ["int", "uint", "float", "bool", "uchar", "ushort", "ulong"]
 native_types = ["int", "unsigned int", "float", "bool", "unsigned char", "unsigned short", "unsigned long long"]
 vector_alignments = {2: 8, 3: 16, 4: 16}
 indent = "\t"
@@ -550,6 +550,7 @@ def define_unary_funcs():
     tab = [
         ["rcp", True , ["return 1.f / v;", [["int"], ["uint"], ["float"]]]],
         ["sign", True , ["return v >= 0 ? 1: -1;", [["int"], ["float"]]]],
+        # ["popcount", True , ["return __popc(x)", [["uint"], ["ulong"]]]],
         ["abs", False , ["return fabsf(v);", [["float"]]]],
         ["abs", True , ["return abs(v);", [["int"]]]],
         ["ceil", True , ["return ceilf(v);", [["float"]]]],

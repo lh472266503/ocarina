@@ -187,7 +187,7 @@ struct SOAView {
     OC_MAKE_ATOMIC_SOA_VIEW(TemplateArgs, TypeName)
 
 OC_MAKE_ATOMIC_SOA_VAR_VIEW(template<typename TBuffer>, ocarina::uint)
-OC_MAKE_ATOMIC_SOA_VAR_VIEW(template<typename TBuffer>, ocarina::uint64t)
+OC_MAKE_ATOMIC_SOA_VAR_VIEW(template<typename TBuffer>, ocarina::ulong)
 OC_MAKE_ATOMIC_SOA_VAR_VIEW(template<typename TBuffer>, float)
 OC_MAKE_ATOMIC_SOA_VAR_VIEW(template<typename TBuffer>, int)
 OC_MAKE_ATOMIC_SOA_VAR(template<typename T OC_COMMA ocarina::uint N OC_COMMA typename TBuffer>,

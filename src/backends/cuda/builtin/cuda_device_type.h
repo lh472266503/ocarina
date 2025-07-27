@@ -95,7 +95,7 @@ public:
 };
 
 using uint = unsigned int;
-using uint64t = unsigned long long;
+using ulong = unsigned long long;
 using uchar = unsigned char;
 using ushort = unsigned short;
 
@@ -112,7 +112,7 @@ OC_MAKE_VECTOR_TYPES(short)
 OC_MAKE_VECTOR_TYPES(ushort)
 OC_MAKE_VECTOR_TYPES(uchar)
 OC_MAKE_VECTOR_TYPES(uint)
-OC_MAKE_VECTOR_TYPES(uint64t)
+OC_MAKE_VECTOR_TYPES(ulong)
 
 #undef OC_MAKE_VECTOR_TYPES
 
@@ -124,7 +124,7 @@ using oc_float = float;
 using oc_bool = bool;
 using oc_uchar = unsigned char;
 using oc_ushort = unsigned short;
-using oc_uint64t = unsigned long long;
+using oc_ulong = unsigned long long;
 
 #define OC_MAKE_VECTOR_N(type, dim) using type##dim = ocarina::Vector<type, dim>;
 
@@ -182,7 +182,7 @@ OC_MAKE_VECTOR(oc_float)
 OC_MAKE_VECTOR(oc_bool)
 OC_MAKE_VECTOR(oc_uchar)
 OC_MAKE_VECTOR(oc_ushort)
-OC_MAKE_VECTOR(oc_uint64t)
+OC_MAKE_VECTOR(oc_ulong)
 
 #define OC_MAKE_VECTOR_BINARY_OPERATOR(op, ...)                          \
     template<typename T, typename U, size_t N>                           \

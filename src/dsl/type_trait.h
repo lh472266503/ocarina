@@ -773,7 +773,7 @@ struct TriangleHit;
 
 OC_MAKE_VAR_TYPE(int)
 OC_MAKE_VAR_TYPE(uint)
-OC_MAKE_VAR_TYPE(uint64t)
+OC_MAKE_VAR_TYPE(ulong)
 OC_MAKE_VAR_TYPE(float)
 OC_MAKE_VAR_TYPE(char)
 OC_MAKE_VAR_TYPE(uchar)

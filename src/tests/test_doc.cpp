@@ -290,7 +290,7 @@ void test_lambda(Device &device, Stream &stream) {
     //    AVector<float, 4> af;
     //    Vector<float, 4> af1;
     //    bool abaa = ocarina::is_vector2_v<ocarina::detail::VectorStorage<int, 2>>;
-    Kernel kernel = [&](Var<uint64t> i, ByteBufferVar rbn) {
+    Kernel kernel = [&](Var<ulong> i, ByteBufferVar rbn) {
 //        ocarina::SOAViewVar<Ray, ByteBufferVar> soa;
 //            auto ray = rb2.read(0);
         auto rays = make_aos_view_var<Ray>(rbn);
@@ -457,7 +457,7 @@ void test_lambda(Device &device, Stream &stream) {
 
 
 
-    stream << shader(uint64t(1-2), rb).dispatch(1)
+    stream << shader(ulong(1-2), rb).dispatch(1)
            //           << stk.download(vvv.data())
            //           << stk.view(400, 4).upload(&ui)
 //           << shader(1).dispatch(1)
