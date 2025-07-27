@@ -142,15 +142,15 @@ inline T oc_atomicSub(OCBuffer<oc_uchar> buffer, Offset offset, T val) noexcept 
 #define OC_WARP_FULL_MASK 0xffff'ffffu
 #define OC_WARP_ACTIVE_MASK __activemask()
 
-[[nodiscard]] inline auto oc_warp_active_bit_mask(bool pred) noexcept {
+[[nodiscard]] inline uint4 oc_warp_active_bit_mask(bool pred) noexcept {
     return oc_make_uint4(__ballot_sync(OC_WARP_ACTIVE_MASK, pred), 0u, 0u, 0u);
 }
 
-[[nodiscard]] inline auto oc_warp_active_count_bits(bool pred) noexcept {
+[[nodiscard]] inline uint oc_warp_active_count_bits(bool pred) noexcept {
     return oc_popcount(__ballot_sync(OC_WARP_ACTIVE_MASK, pred));
 }
 
-[[nodiscard]] __device__ inline auto oc_warp_prefix_count_bits(bool pred) noexcept {
+[[nodiscard]] inline uint oc_warp_prefix_count_bits(bool pred) noexcept {
     return oc_popcount(__ballot_sync(OC_WARP_ACTIVE_MASK, pred) & lc_warp_prefix_mask());
 }
 
