@@ -90,6 +90,9 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         case CallOp::RADIANS: OC_GEN_FUNC_NAME(radians); break;
         case CallOp::SATURATE: OC_GEN_FUNC_NAME(saturate); break;
         case CallOp::SYNCHRONIZE_BLOCK: current_scratch() << "__syncthreads"; break;
+        case CallOp::WARP_ACTIVE_COUNT_BITS: OC_GEN_FUNC_NAME(warp_active_count_bits); break;
+        case CallOp::WARP_ACTIVE_BIT_MASK: OC_GEN_FUNC_NAME(warp_active_bit_mask); break;
+        case CallOp::WARP_PREFIX_COUNT_BITS: OC_GEN_FUNC_NAME(warp_prefix_count_bits); break;
         case CallOp::MAKE_BOOL2: OC_GEN_FUNC_NAME(make_bool2); break;
         case CallOp::MAKE_BOOL3: OC_GEN_FUNC_NAME(make_bool3); break;
         case CallOp::MAKE_BOOL4: OC_GEN_FUNC_NAME(make_bool4); break;

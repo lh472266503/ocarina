@@ -150,6 +150,10 @@ inline T oc_atomicSub(OCBuffer<oc_uchar> buffer, Offset offset, T val) noexcept 
     return oc_popcount(__ballot_sync(OC_WARP_ACTIVE_MASK, pred));
 }
 
+[[nodiscard]] __device__ inline auto oc_warp_prefix_count_bits(bool pred) noexcept {
+    return oc_popcount(__ballot_sync(OC_WARP_ACTIVE_MASK, pred) & lc_warp_prefix_mask());
+}
+
 [[nodiscard]] inline auto oc_warp_active_all(bool pred) noexcept {
     return static_cast<oc_bool>(__all_sync(OC_WARP_ACTIVE_MASK, pred));
 }
