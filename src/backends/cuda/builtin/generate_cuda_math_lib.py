@@ -550,7 +550,10 @@ def define_unary_funcs():
     tab = [
         ["rcp", True , ["return 1.f / v;", [["int"], ["uint"], ["float"]]]],
         ["sign", True , ["return v >= 0 ? 1: -1;", [["int"], ["float"]]]],
-        # ["popcount", True , ["return __popc(x)", [["uint"], ["ulong"]]]],
+        ["popcount", False , ["return __popc(v);", [["uint"]]]],
+        ["popcount", False , ["return __popcll(v);", [["ulong"]]]],
+        ["clz", False , ["return __clz(v);", [["uint"]]]],
+        ["clz", False , ["return __clzll(v);", [["ulong"]]]],
         ["abs", False , ["return fabsf(v);", [["float"]]]],
         ["abs", True , ["return abs(v);", [["int"]]]],
         ["ceil", True , ["return ceilf(v);", [["float"]]]],

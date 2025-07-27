@@ -974,6 +974,26 @@ __device__ oc_array<T, N> oc_sign(oc_array<T, N> x) {
     return ret;
 }
 
+__device__ oc_uint oc_popcount(oc_uint v) { return __popc(v); }
+__device__ oc_uint2 oc_popcount(oc_uint2 v) { return oc_uint2(oc_popcount(v.x), oc_popcount(v.y)); }
+__device__ oc_uint3 oc_popcount(oc_uint3 v) { return oc_uint3(oc_popcount(v.x), oc_popcount(v.y), oc_popcount(v.z)); }
+__device__ oc_uint4 oc_popcount(oc_uint4 v) { return oc_uint4(oc_popcount(v.x), oc_popcount(v.y), oc_popcount(v.z), oc_popcount(v.w)); }
+
+__device__ oc_ulong oc_popcount(oc_ulong v) { return __popcll(v); }
+__device__ oc_ulong2 oc_popcount(oc_ulong2 v) { return oc_ulong2(oc_popcount(v.x), oc_popcount(v.y)); }
+__device__ oc_ulong3 oc_popcount(oc_ulong3 v) { return oc_ulong3(oc_popcount(v.x), oc_popcount(v.y), oc_popcount(v.z)); }
+__device__ oc_ulong4 oc_popcount(oc_ulong4 v) { return oc_ulong4(oc_popcount(v.x), oc_popcount(v.y), oc_popcount(v.z), oc_popcount(v.w)); }
+
+__device__ oc_uint oc_clz(oc_uint v) { return __clz(v); }
+__device__ oc_uint2 oc_clz(oc_uint2 v) { return oc_uint2(oc_clz(v.x), oc_clz(v.y)); }
+__device__ oc_uint3 oc_clz(oc_uint3 v) { return oc_uint3(oc_clz(v.x), oc_clz(v.y), oc_clz(v.z)); }
+__device__ oc_uint4 oc_clz(oc_uint4 v) { return oc_uint4(oc_clz(v.x), oc_clz(v.y), oc_clz(v.z), oc_clz(v.w)); }
+
+__device__ oc_ulong oc_clz(oc_ulong v) { return __clzll(v); }
+__device__ oc_ulong2 oc_clz(oc_ulong2 v) { return oc_ulong2(oc_clz(v.x), oc_clz(v.y)); }
+__device__ oc_ulong3 oc_clz(oc_ulong3 v) { return oc_ulong3(oc_clz(v.x), oc_clz(v.y), oc_clz(v.z)); }
+__device__ oc_ulong4 oc_clz(oc_ulong4 v) { return oc_ulong4(oc_clz(v.x), oc_clz(v.y), oc_clz(v.z), oc_clz(v.w)); }
+
 __device__ oc_float oc_abs(oc_float v) { return fabsf(v); }
 __device__ oc_float2 oc_abs(oc_float2 v) { return oc_float2(oc_abs(v.x), oc_abs(v.y)); }
 __device__ oc_float3 oc_abs(oc_float3 v) { return oc_float3(oc_abs(v.x), oc_abs(v.y), oc_abs(v.z)); }

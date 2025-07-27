@@ -139,21 +139,24 @@ inline T oc_atomicSub(OCBuffer<oc_uchar> buffer, Offset offset, T val) noexcept 
     return oc_atomicSub(ref[0], val);
 }
 
-// [[nodiscard]] inline auto oc_warp_active_bit_mask(bool pred) noexcept {
-//     return oc_make_uint4(__ballot_sync(LC_WARP_ACTIVE_MASK, pred), 0u, 0u, 0u);
-// }
+#define OC_WARP_FULL_MASK 0xffff'ffffu
+#define OC_WARP_ACTIVE_MASK __activemask()
 
-// [[nodiscard]] inline auto oc_warp_active_count_bits(bool pred) noexcept {
-//     return oc_popcount(__ballot_sync(LC_WARP_ACTIVE_MASK, pred));
-// }
+[[nodiscard]] inline auto oc_warp_active_bit_mask(bool pred) noexcept {
+    return oc_make_uint4(__ballot_sync(OC_WARP_ACTIVE_MASK, pred), 0u, 0u, 0u);
+}
 
-// [[nodiscard]] inline auto oc_warp_active_all(bool pred) noexcept {
-//     return static_cast<oc_bool>(__all_sync(LC_WARP_ACTIVE_MASK, pred));
-// }
+[[nodiscard]] inline auto oc_warp_active_count_bits(bool pred) noexcept {
+    return oc_popcount(__ballot_sync(OC_WARP_ACTIVE_MASK, pred));
+}
 
-// [[nodiscard]] inline auto oc_warp_active_any(bool pred) noexcept {
-//     return static_cast<oc_bool>(__any_sync(LC_WARP_ACTIVE_MASK, pred));
-// }
+[[nodiscard]] inline auto oc_warp_active_all(bool pred) noexcept {
+    return static_cast<oc_bool>(__all_sync(OC_WARP_ACTIVE_MASK, pred));
+}
+
+[[nodiscard]] inline auto oc_warp_active_any(bool pred) noexcept {
+    return static_cast<oc_bool>(__any_sync(OC_WARP_ACTIVE_MASK, pred));
+}
 
 struct OCTextureDesc {
     cudaTextureObject_t texture{};
