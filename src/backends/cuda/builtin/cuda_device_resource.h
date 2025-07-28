@@ -157,6 +157,17 @@ inline T oc_atomicSub(OCBuffer<oc_uchar> buffer, Offset offset, T val) noexcept 
     return ret;
 }
 
+[[nodiscard]] inline auto oc_warp_lane_id() noexcept {
+    oc_uint ret;
+    asm("mov.u32 %0, %laneid;"
+        : "=r"(ret));
+    return ret;
+}
+
+[[nodiscard]] constexpr auto oc_warp_size() noexcept {
+    return static_cast<oc_uint>(warpSize);
+}
+
 [[nodiscard]] inline oc_uint oc_warp_prefix_count_bits(bool pred) noexcept {
     return oc_popcount(__ballot_sync(OC_WARP_ACTIVE_MASK, pred) & oc_warp_prefix_mask());
 }

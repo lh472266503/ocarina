@@ -440,6 +440,22 @@ inline void synchronize_block() noexcept {
     Function::current()->expr_statement(Function::current()->call_builtin(nullptr, CallOp::SYNCHRONIZE_BLOCK, {}));
 }
 
+#define OC_MAKE_WARP_FUNC(func_name, Tag, ret_type)                                                \
+    template<typename T>                                                                           \
+    requires ocarina::is_boolean_expr_v<T>                                                         \
+    [[nodiscard]] auto func_name(const T &pred) {                                                  \
+        const Expression *expr = Function::current()->call_builtin(Type::of<ret_type>(),           \
+                                                                   CallOp::WARP_ACTIVE_COUNT_BITS, \
+                                                                   {OC_EXPR(pred)});               \
+        return eval<ret_type>(expr);                                                               \
+    }
+
+OC_MAKE_WARP_FUNC(warp_active_bit_mask, WARP_ACTIVE_BIT_MASK, uint4)
+OC_MAKE_WARP_FUNC(warp_active_count_bits, WARP_ACTIVE_COUNT_BITS, uint)
+OC_MAKE_WARP_FUNC(warp_prefix_count_bits, WARP_PREFIX_COUNT_BITS, uint)
+
+#undef OC_MAKE_WARP_FUNC
+
 template<typename T>
 void DynamicArray<T>::sanitize() noexcept {
     *this = map([&](const Var<T> &val) {
