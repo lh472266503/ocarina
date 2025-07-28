@@ -168,6 +168,18 @@ inline T oc_atomicSub(OCBuffer<oc_uchar> buffer, Offset offset, T val) noexcept 
     return static_cast<oc_uint>(warpSize);
 }
 
+[[nodiscard]] void oc_synchronize_block() noexcept {
+    __syncthreads();
+}
+
+[[nodiscard]] inline auto oc_warp_first_active_lane() noexcept {
+    return __ffs(OC_WARP_ACTIVE_MASK) - 1u;
+}
+
+[[nodiscard]] inline auto oc_warp_is_first_active_lane() noexcept {
+    return oc_warp_first_active_lane() == oc_warp_lane_id();
+}
+
 [[nodiscard]] inline oc_uint oc_warp_prefix_count_bits(bool pred) noexcept {
     return oc_popcount(__ballot_sync(OC_WARP_ACTIVE_MASK, pred) & oc_warp_prefix_mask());
 }

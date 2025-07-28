@@ -453,6 +453,10 @@ inline void synchronize_block() noexcept {
 OC_MAKE_WARP_FUNC(warp_active_bit_mask, WARP_ACTIVE_BIT_MASK, uint4)
 OC_MAKE_WARP_FUNC(warp_active_count_bits, WARP_ACTIVE_COUNT_BITS, uint)
 OC_MAKE_WARP_FUNC(warp_prefix_count_bits, WARP_PREFIX_COUNT_BITS, uint)
+OC_MAKE_WARP_FUNC(warp_lane_id, WARP_LANE_ID, uint)
+OC_MAKE_WARP_FUNC(warp_size, WARP_SIZE, uint)
+OC_MAKE_WARP_FUNC(warp_first_active_lane, WARP_FIRST_ACTIVE_LANE, uint)
+OC_MAKE_WARP_FUNC(warp_is_first_active_lane, WARP_IS_FIRST_ACTIVE_LANE, uint)
 
 #undef OC_MAKE_WARP_FUNC
 

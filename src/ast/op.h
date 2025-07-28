@@ -141,8 +141,6 @@ enum struct CallOp : uint32_t {
     BINDLESS_ARRAY_BYTE_BUFFER_WRITE,
     BINDLESS_ARRAY_TEX_SAMPLE,
 
-    SYNCHRONIZE_BLOCK,
-
     MAKE_BOOL2,
     MAKE_BOOL3,
     MAKE_BOOL4,
@@ -184,9 +182,14 @@ enum struct CallOp : uint32_t {
     TRACE_CLOSEST,
     TRACE_OCCLUSION,
 
+    SYNCHRONIZE_BLOCK,
     WARP_ACTIVE_COUNT_BITS, //WaveActiveCountBits
     WARP_ACTIVE_BIT_MASK,  //WaveActiveBallot
     WARP_PREFIX_COUNT_BITS, //WavePrefixCountBits
+    WARP_LANE_ID,
+    WARP_SIZE,
+    WARP_FIRST_ACTIVE_LANE,
+    WARP_IS_FIRST_ACTIVE_LANE,
 
     COUNT
 };
