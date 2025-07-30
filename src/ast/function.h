@@ -99,7 +99,7 @@ private:
     Tag tag_{Tag::CALLABLE};
     ocarina::vector<SP<const Function>> used_custom_func_;
     StructureSet used_struct_;
-    mutable bool raytracing_{false};
+    mutable bool raytracing_{true};
     mutable uint3 block_dim_{make_uint3(0)};
     mutable uint3 grid_dim_{make_uint3(0)};
 

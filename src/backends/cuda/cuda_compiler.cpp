@@ -18,8 +18,6 @@ CUDACompiler::CUDACompiler(CUDADevice *device)
 
 ocarina::string CUDACompiler::compile(const Function &function, int sm) const noexcept {
 
-    function.set_raytracing(true);
-
     int ver_major = 0;
     int ver_minor = 0;
     OC_NVRTC_CHECK(nvrtcVersion(&ver_major, &ver_minor));
