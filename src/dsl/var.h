@@ -40,6 +40,13 @@ public:
     }
     Var(Var &&another) noexcept
         : Ref<T>(ocarina::move(another)) {}
+
+    Var<T> &set_symbol(const string &name) {
+         auto variable_expr = static_cast<const VariableExpr *>(Super::expression());
+         const_cast<VariableExpr *>(variable_expr)->variable().set_suffix(name);
+         return *this;
+    }
+
     Var(const Var &another) noexcept
         : Var() { ocarina::detail::assign(*this, another); }
     template<typename Arg>
