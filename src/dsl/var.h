@@ -266,4 +266,6 @@ Var(T &&) -> Var<expr_value_t<T>>;
 template<typename T>
 Var(const Buffer<T> &) -> Var<Buffer<T>>;
 
+#define Def(Type, var_name) Type var_name;var_name.set_symbol(#var_name)
+
 }// namespace ocarina
