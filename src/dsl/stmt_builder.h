@@ -435,11 +435,17 @@ public:
                                                                   var_.expression(), end_.expression());
         const BinaryExpr *reduce_cond = Function::current()->binary(Type::of<bool>(), BinaryOp::GREATER,
                                                                     var_.expression(), end_.expression());
-        const Expression* final_condition = Function::current()->conditional(Type::of<bool>(), negative_step,
+        const Expression *final_condition = Function::current()->conditional(Type::of<bool>(), negative_step,
                                                                              reduce_cond, condition);
         for_stmt_ = Function::current()->for_(var_.expression(),
                                               final_condition,
                                               step_.expression());
+    }
+
+    auto &set_var_symbol(std::string str) noexcept {
+        str = string_replace(str, "&", "_");
+        var_.set_symbol(str);
+        return *this;
     }
 
     template<typename Body>
