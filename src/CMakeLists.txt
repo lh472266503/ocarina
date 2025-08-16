@@ -11,7 +11,6 @@ add_subdirectory(generator)
 add_subdirectory(rhi)
 add_subdirectory(GUI)
 add_subdirectory(backends)
-add_subdirectory(math)
 add_subdirectory(GUI_impl)
 
 if (${OCARINA_PY})
@@ -27,7 +26,6 @@ target_link_libraries(ocarina-native INTERFACE
         ocarina-backend
         ocarina-rhi
         ocarina-GUI
-        ocarina-math
         ocarina-core)
 
 add_dependencies(ocarina-native ocarina-GUI_impl)

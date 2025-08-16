@@ -36,7 +36,7 @@ enum WindowFlag {
 
 class Window;
 
-class Widgets {
+class OC_GUI_API Widgets {
 private:
     Window *window_{nullptr};
 

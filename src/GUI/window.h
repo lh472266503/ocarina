@@ -8,7 +8,7 @@
 #include "widgets.h"
 
 namespace ocarina {
-class Window {
+class OC_GUI_API Window {
 public:
     using MouseButtonCallback = ocarina::function<void(int /* button */, int /* action */, float2 /* (x, y) */)>;
     using CursorPositionCallback = ocarina::function<void(float2 /* (x, y) */)>;

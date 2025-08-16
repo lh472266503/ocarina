@@ -83,6 +83,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <stddef.h>  // for size_t
 #include <stdint.h>  // guess stdint.h is available(C99)
+#include "core/header.h"
 
 #ifdef __cplusplus
 extern "C" {

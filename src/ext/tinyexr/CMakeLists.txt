@@ -4,7 +4,7 @@ file(GLOB_RECURSE SOURCE_FILES *.c*)
 
 
 add_library(ocarina-ext-tinyexr SHARED ${HEADER_FILES} ${SOURCE_FILES})
-
+target_compile_definitions(ocarina-ext-tinyexr PRIVATE OC_EXT_EXPORT_DLL=1)
 set_target_properties(ocarina-ext-tinyexr PROPERTIES
         PUBLIC_HEADER "${HEADER_FILES}"
         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}

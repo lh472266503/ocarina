@@ -67,6 +67,12 @@
 #define OC_GUI_API __declspec(dllimport)
 #endif
 
+#ifdef OC_EXT_EXPORT_DLL
+#define OC_EXT_API __declspec(dllexport)
+#else
+#define OC_EXT_API __declspec(dllimport)
+#endif
+
 #ifdef _MSC_VER
 #define OC_OFFSET_OF(type, member) __builtin_offsetof(type, member)
 #else
