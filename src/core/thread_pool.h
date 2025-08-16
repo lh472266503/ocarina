@@ -14,13 +14,14 @@
 
 #include <core/stl.h>
 #include "math/basic_types.h"
+#include "header.h"
 
 /// reference :https://github.com/LuisaGroup/LuisaCompute/src/core/thread_pool.h
 namespace ocarina {
 
 class Barrier;
 
-class ThreadPool {
+class OC_CORE_API ThreadPool {
 private:
     vector<std::thread> threads_;
     queue<std::function<void()>> tasks_;

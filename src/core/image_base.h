@@ -106,7 +106,7 @@ OC_NDSC_INLINE size_t channel_num(PixelStorage pixel_storage) {
     return 4u;
 }
 
-class ImageBase : public concepts::Noncopyable {
+class OC_CORE_API ImageBase : public concepts::Noncopyable {
 protected:
     PixelStorage pixel_storage_{PixelStorage::UNKNOWN};
     uint2 resolution_{};
