@@ -6,7 +6,7 @@
 #include "cuda_device.h"
 #include "ast/function.h"
 #include "cuda_codegen.h"
-#include "util/file_manager.h"
+#include "ocarina/src/rhi/file_manager.h"
 #include "core/util.h"
 #include "dsl/dsl.h"
 

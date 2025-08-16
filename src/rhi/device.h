@@ -46,7 +46,7 @@ class Accel;
 
 class CommandVisitor;
 
-class Device : public concepts::Noncopyable {
+class OC_RHI_API Device : public concepts::Noncopyable {
 public:
     class Impl : public concepts::Noncopyable {
     protected:

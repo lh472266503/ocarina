@@ -41,7 +41,7 @@ struct prototype_to_shader_invocation<BindlessArray> {
 template<typename T>
 using prototype_to_shader_invocation_t = typename detail::prototype_to_shader_invocation<T>::type;
 
-class ArgumentList {
+class OC_RHI_API ArgumentList {
 private:
     static constexpr auto Size = 200;
     ocarina::vector<void *> args_;

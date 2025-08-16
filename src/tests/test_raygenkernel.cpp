@@ -6,7 +6,7 @@
 #include "core/stl.h"
 #include "dsl/dsl.h"
 #include "rhi/common.h"
-#include "util/file_manager.h"
+#include "ocarina/src/rhi/file_manager.h"
 #include "math/base.h"
 #include "tiny_obj_loader.h"
 #include "cornell_box.h"

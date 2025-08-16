@@ -10,7 +10,7 @@
 
 namespace ocarina {
 
-struct Commit {
+struct OC_RHI_API Commit {
     using func_ty = std::function<void(void *)>;
     func_ty callback;
     Commit() = default;
@@ -22,7 +22,7 @@ template<typename... Args>
     return Commit(OC_FORWARD(args)...);
 }
 
-class Stream : public RHIResource {
+class OC_RHI_API Stream : public RHIResource {
 public:
     class Impl {
     protected:

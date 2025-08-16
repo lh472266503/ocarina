@@ -9,7 +9,7 @@
 #include "math/base.h"
 #include "base/scattering/interaction.h"
 #include "core/platform.h"
-#include "util/file_manager.h"
+#include "ocarina/src/rhi/file_manager.h"
 
 using namespace ocarina;
 

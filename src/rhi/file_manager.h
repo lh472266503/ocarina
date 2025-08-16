@@ -8,11 +8,12 @@
 #include "core/stl.h"
 #include "core/concepts.h"
 #include "GUI/decl.h"
+#include "core/dynamic_module.h"
 
 namespace ocarina {
 class Device;
 class DynamicModule;
-class FileManager : public concepts::Noncopyable {
+class OC_RHI_API FileManager : public concepts::Noncopyable {
 
     OC_MAKE_INSTANCE_CONSTRUCTOR(FileManager, s_file_manager)
 

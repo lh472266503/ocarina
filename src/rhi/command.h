@@ -35,7 +35,7 @@ OC_CMD_FWD_DECL
 
 /// declare command pool function
 #define OC_COMMAND_POOL_FUNC(CMD) CMD##_pool()
-#define OC_MAKE_COMMAND_POOL_FUNC_DECL(CMD) [[nodiscard]] Pool<CMD> &OC_COMMAND_POOL_FUNC(CMD) noexcept;
+#define OC_MAKE_COMMAND_POOL_FUNC_DECL(CMD) [[nodiscard]] OC_RHI_API Pool<CMD> &OC_COMMAND_POOL_FUNC(CMD) noexcept;
 #define OC_MAKE_COMMAND_POOL_FUNCS_DECL MAP(OC_MAKE_COMMAND_POOL_FUNC_DECL, OC_RUNTIME_CMD)
 OC_MAKE_COMMAND_POOL_FUNCS_DECL
 
@@ -65,7 +65,7 @@ OC_MAKE_COMMAND_POOL_FUNCS_DECL
     OC_MAKE_CMD_CREATOR(CMD)         \
     OC_MAKE_CMD_CLONE_FUNC(CMD)
 
-class CommandVisitor {
+class OC_RHI_API CommandVisitor {
 public:
 #define OC_MAKE_COMMAND_VISIT(CMD) virtual void visit(const CMD *cmd) noexcept = 0;
     MAP(OC_MAKE_COMMAND_VISIT, OC_RUNTIME_CMD)
@@ -73,7 +73,7 @@ public:
     virtual ~CommandVisitor() = default;
 };
 
-class Command {
+class OC_RHI_API Command {
 private:
     bool async_{};
 
@@ -85,7 +85,7 @@ public:
     [[nodiscard]] bool async() const noexcept { return async_; }
 };
 
-class BufferCommand : public Command {
+class OC_RHI_API BufferCommand : public Command {
 protected:
     handle_ty device_handle_{};
     size_t size_in_bytes_{};
@@ -97,7 +97,7 @@ public:
     [[nodiscard]] handle_ty device_handle() const noexcept { return device_handle_; }
 };
 
-class DataCopyCommand : public Command {
+class OC_RHI_API DataCopyCommand : public Command {
 protected:
     handle_ty src_{};
     handle_ty dst_{};
@@ -123,7 +123,7 @@ public:
     }
 };
 
-class BufferCopyCommand : public DataCopyCommand {
+class OC_RHI_API BufferCopyCommand : public DataCopyCommand {
 private:
     size_t src_offset_;
     size_t dst_offset_;
@@ -139,7 +139,7 @@ public:
     OC_MAKE_CMD_COMMON_FUNC(BufferCopyCommand)
 };
 
-class TextureCopyCommand : public DataCopyCommand {
+class OC_RHI_API TextureCopyCommand : public DataCopyCommand {
 private:
     PixelStorage storage_;
     uint3 res_;
@@ -161,7 +161,7 @@ public:
     OC_MAKE_CMD_COMMON_FUNC(TextureCopyCommand)
 };
 
-class DataOpCommand : public Command {
+class OC_RHI_API DataOpCommand : public Command {
 protected:
     handle_ty host_ptr_{};
     handle_ty device_handle_{};
@@ -181,7 +181,7 @@ public:
     OC_MAKE_MEMBER_GETTER(device_offset, )
 };
 
-class BufferOpCommand : public DataOpCommand {
+class OC_RHI_API BufferOpCommand : public DataOpCommand {
 private:
     size_t size_in_bytes_{};
 
@@ -195,7 +195,7 @@ public:
 
 class RHIResource;
 
-class BufferReallocateCommand : public Command {
+class OC_RHI_API BufferReallocateCommand : public Command {
 private:
     RHIResource *rhi_resource_{};
     size_t new_size_;
@@ -208,7 +208,7 @@ public:
     OC_MAKE_CMD_COMMON_FUNC(BufferReallocateCommand)
 };
 
-class BufferByteSetCommand final : public BufferCommand {
+class OC_RHI_API BufferByteSetCommand final : public BufferCommand {
 private:
     uchar val_{};
 
@@ -219,14 +219,14 @@ public:
     OC_MAKE_CMD_COMMON_FUNC(BufferByteSetCommand)
 };
 
-class BufferUploadCommand final : public BufferOpCommand {
+class OC_RHI_API BufferUploadCommand final : public BufferOpCommand {
 public:
     BufferUploadCommand(const void *hp, handle_ty dp, size_t d_offset, size_t size, bool async)
         : BufferOpCommand(reinterpret_cast<handle_ty>(hp), dp, d_offset, size, async) {}
     OC_MAKE_CMD_COMMON_FUNC(BufferUploadCommand)
 };
 
-class BufferToTextureCommand final : public DataCopyCommand {
+class OC_RHI_API BufferToTextureCommand final : public DataCopyCommand {
 private:
     PixelStorage storage_;
     size_t buffer_offset_;
@@ -251,14 +251,14 @@ public:
     OC_MAKE_CMD_COMMON_FUNC(BufferToTextureCommand)
 };
 
-class BufferDownloadCommand final : public BufferOpCommand {
+class OC_RHI_API BufferDownloadCommand final : public BufferOpCommand {
 public:
     BufferDownloadCommand(void *hp, handle_ty dp, size_t d_offset, size_t size, bool async)
         : BufferOpCommand(reinterpret_cast<handle_ty>(hp), dp, d_offset, size, async) {}
     OC_MAKE_CMD_COMMON_FUNC(BufferDownloadCommand)
 };
 
-class TextureOpCommand : public DataOpCommand {
+class OC_RHI_API TextureOpCommand : public DataOpCommand {
 private:
     PixelStorage pixel_storage_{};
     uint3 resolution_{};
@@ -277,21 +277,21 @@ public:
     [[nodiscard]] uint3 resolution() const noexcept { return resolution_; }
 };
 
-class TextureUploadCommand final : public TextureOpCommand {
+class OC_RHI_API TextureUploadCommand final : public TextureOpCommand {
 public:
     TextureUploadCommand(const void *data, handle_ty device_handle, uint3 resolution, PixelStorage storage, bool async)
         : TextureOpCommand(reinterpret_cast<handle_ty>(data), device_handle, resolution, storage, async) {}
     OC_MAKE_CMD_COMMON_FUNC(TextureUploadCommand)
 };
 
-class TextureDownloadCommand final : public TextureOpCommand {
+class OC_RHI_API TextureDownloadCommand final : public TextureOpCommand {
 public:
     TextureDownloadCommand(void *data, handle_ty device_handle, uint3 resolution, PixelStorage storage, bool async)
         : TextureOpCommand(reinterpret_cast<handle_ty>(data), device_handle, resolution, storage, async) {}
     OC_MAKE_CMD_COMMON_FUNC(TextureDownloadCommand)
 };
 
-class SynchronizeCommand final : public Command {
+class OC_RHI_API SynchronizeCommand final : public Command {
 public:
     OC_MAKE_CMD_COMMON_FUNC(SynchronizeCommand)
 };
@@ -300,7 +300,7 @@ public:
     return SynchronizeCommand::create();
 }
 
-class BLASBuildCommand final : public Command {
+class OC_RHI_API BLASBuildCommand final : public Command {
 private:
     handle_ty mesh_{};
 
@@ -311,7 +311,7 @@ public:
     OC_MAKE_CMD_COMMON_FUNC(BLASBuildCommand)
 };
 
-class TLASBuildCommand final : public Command {
+class OC_RHI_API TLASBuildCommand final : public Command {
 private:
     handle_ty accel_{};
 
@@ -322,7 +322,7 @@ public:
     OC_MAKE_CMD_COMMON_FUNC(TLASBuildCommand)
 };
 
-class TLASUpdateCommand final : public Command {
+class OC_RHI_API TLASUpdateCommand final : public Command {
 private:
     handle_ty accel_{};
 
@@ -335,7 +335,7 @@ public:
 
 class Function;
 class ArgumentList;
-class ShaderDispatchCommand final : public Command {
+class OC_RHI_API ShaderDispatchCommand final : public Command {
 private:
     SP<ArgumentList> argument_list_;
     uint3 dispatch_dim_;
@@ -353,7 +353,7 @@ public:
     OC_MAKE_CMD_COMMON_FUNC(ShaderDispatchCommand)
 };
 
-class HostFunctionCommand : public Command {
+class OC_RHI_API HostFunctionCommand : public Command {
 private:
     std::function<void()> function_;
 

@@ -13,7 +13,7 @@
 
 namespace ocarina {
 
-class BindlessArray : public RHIResource {
+class OC_RHI_API BindlessArray : public RHIResource {
 public:
     class Impl {
     public:

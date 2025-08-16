@@ -6,7 +6,7 @@
 #include "math/basic_types.h"
 #include "rhi/common.h"
 #include "dsl/dsl.h"
-#include "util/file_manager.h"
+#include "ocarina/src/rhi/file_manager.h"
 #include "generator/cpp_codegen.h"
 
 namespace py = pybind11;

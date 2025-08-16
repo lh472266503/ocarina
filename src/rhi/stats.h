@@ -12,7 +12,7 @@
 
 namespace ocarina {
 
-class MemoryStats : public thread_safety<> {
+class OC_RHI_API MemoryStats : public thread_safety<> {
     struct BufferData {
         string name;
         size_t size;
