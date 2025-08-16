@@ -8,7 +8,7 @@
 #include "core/stl.h"
 #include "math/basic_types.h"
 #include "core/util.h"
-#include "ocarina/src/core/image.h"
+#include "core/image.h"
 #include "objbase.h"
 #include <commctrl.h>
 #include <commdlg.h>

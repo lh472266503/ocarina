@@ -2,7 +2,7 @@
 // Created by Zero on 2022/8/18.
 //
 
-#include "ocarina/src/core/image.h"
+#include "core/image.h"
 #include "core/stl.h"
 #include "dsl/dsl.h"
 #include "rhi/common.h"
@@ -10,7 +10,7 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
 #include "cornell_box.h"
-#include "ocarina/src/rhi/context.h"
+#include "rhi/context.h"
 
 using namespace ocarina;
 

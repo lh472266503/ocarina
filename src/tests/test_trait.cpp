@@ -8,7 +8,7 @@
 #include "dsl/polymorphic.h"
 #include "dsl/dsl.h"
 #include "rhi/common.h"
-#include "ocarina/src/rhi/context.h"
+#include "rhi/context.h"
 #include <type_traits>
 
 using namespace ocarina;

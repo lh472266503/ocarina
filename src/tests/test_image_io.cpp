@@ -2,14 +2,14 @@
 // Created by Zero on 05/08/2022.
 //
 
-#include "ocarina/src/core/image.h"
+#include "core/image.h"
 #include "core/stl.h"
 #include "dsl/dsl.h"
-#include "ocarina/src/rhi/context.h"
+#include "rhi/context.h"
 #include "rhi/common.h"
 #include <windows.h>
 #include "math/base.h"
-#include "ocarina/src/core/image.h"
+#include "core/image.h"
 #include "dsl/dsl.h"
 
 using namespace ocarina;

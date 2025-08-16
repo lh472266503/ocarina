@@ -2,14 +2,14 @@
 // Created by Zero on 2023/11/23.
 //
 
-#include "ocarina/src/core/image.h"
+#include "core/image.h"
 #include "core/stl.h"
 #include "dsl/dsl.h"
 #include "rhi/common.h"
 #include "math/base.h"
 #include "base/scattering/interaction.h"
 #include "core/platform.h"
-#include "ocarina/src/rhi/context.h"
+#include "rhi/context.h"
 //#include "numpy.h"
 
 using namespace ocarina;

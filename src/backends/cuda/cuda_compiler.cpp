@@ -6,7 +6,7 @@
 #include "cuda_device.h"
 #include "ast/function.h"
 #include "cuda_codegen.h"
-#include "ocarina/src/rhi/context.h"
+#include "rhi/context.h"
 #include "core/util.h"
 #include "dsl/dsl.h"
 

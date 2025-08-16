@@ -8,7 +8,7 @@
 #include "cuda_shader.h"
 #include "cuda_mesh.h"
 #include "cuda_bindless_array.h"
-#include "ocarina/src/rhi/context.h"
+#include "rhi/context.h"
 #include <optix_stubs.h>
 #include <optix_function_table_definition.h>
 #include <nvrtc.h>
