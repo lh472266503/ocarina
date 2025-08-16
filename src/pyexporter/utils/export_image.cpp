@@ -4,7 +4,7 @@
 
 #include "pyexporter/ocapi.h"
 #include "GUI/window.h"
-#include "ocarina/src/rhi/file_manager.h"
+#include "ocarina/src/rhi/context.h"
 
 namespace py = pybind11;
 using namespace ocarina;

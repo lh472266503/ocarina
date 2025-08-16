@@ -9,14 +9,14 @@
 #include "math/base.h"
 #include "base/scattering/interaction.h"
 #include "core/platform.h"
-#include "ocarina/src/rhi/file_manager.h"
+#include "ocarina/src/rhi/context.h"
 
 using namespace ocarina;
 
 int main(int argc, char *argv[]) {
 
     fs::path path(argv[0]);
-    FileManager &file_manager = FileManager::instance();
+    RHIContext &file_manager = RHIContext::instance();
 
     /**
      * Conventional scheme

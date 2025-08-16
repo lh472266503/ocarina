@@ -5,7 +5,7 @@
 #include "util/image.h"
 #include "core/stl.h"
 #include "dsl/dsl.h"
-#include "ocarina/src/rhi/file_manager.h"
+#include "ocarina/src/rhi/context.h"
 #include "rhi/common.h"
 #include <windows.h>
 #include "math/base.h"
@@ -16,7 +16,7 @@ using namespace ocarina;
 
 int main(int argc, char *argv[]) {
     fs::path path(argv[0]);
-    FileManager &file_manager = FileManager::instance();
+    RHIContext &file_manager = RHIContext::instance();
 //    file_manager.clear_cache();
     Device device = file_manager.create_device("cuda");
     Stream stream = device.create_stream();

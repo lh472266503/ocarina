@@ -8,7 +8,7 @@
 #include "dsl/func.h"
 #include "ast/expression.h"
 #include <iostream>
-#include "ocarina/src/rhi/file_manager.h"
+#include "ocarina/src/rhi/context.h"
 #include "rhi/device.h"
 #include "generator/cpp_codegen.h"
 #include "core/platform.h"
@@ -116,7 +116,7 @@ int main(int argc, char *argv[]) {
     };
 
     fs::path path(argv[0]);
-    FileManager &file_manager = FileManager::instance();
+    RHIContext &file_manager = RHIContext::instance();
     Device device = file_manager.create_device("cuda");
 
     Stream stream = device.create_stream();

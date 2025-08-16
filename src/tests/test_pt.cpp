@@ -10,7 +10,7 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
 #include "cornell_box.h"
-#include "ocarina/src/rhi/file_manager.h"
+#include "ocarina/src/rhi/context.h"
 
 using namespace ocarina;
 
@@ -54,7 +54,7 @@ OC_STRUCT(,Onb, tangent, binormal, normal) {
 
 int main(int argc, char *argv[]) {
     fs::path path(argv[0]);
-    FileManager &file_manager = FileManager::instance();
+    RHIContext &file_manager = RHIContext::instance();
     file_manager.clear_cache();
     Device device = file_manager.create_device("cuda");
     device.init_rtx();

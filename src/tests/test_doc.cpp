@@ -9,7 +9,7 @@
 #include "math/base.h"
 #include "base/scattering/interaction.h"
 #include "core/platform.h"
-#include "ocarina/src/rhi/file_manager.h"
+#include "ocarina/src/rhi/context.h"
 //#include "numpy.h"
 
 using namespace ocarina;
@@ -606,7 +606,7 @@ int main(int argc, char *argv[]) {
     auto m3 = (float4x2()* float2x3());
     cout << to_str(m3) << endl;
     fs::path path(argv[0]);
-    FileManager &file_manager = FileManager::instance();
+    RHIContext &file_manager = RHIContext::instance();
 
     /**
      * Conventional scheme

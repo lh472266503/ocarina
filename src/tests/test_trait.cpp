@@ -8,7 +8,7 @@
 #include "dsl/polymorphic.h"
 #include "dsl/dsl.h"
 #include "rhi/common.h"
-#include "ocarina/src/rhi/file_manager.h"
+#include "ocarina/src/rhi/context.h"
 #include <type_traits>
 
 using namespace ocarina;
@@ -161,7 +161,7 @@ int main(int argc, char *argv[]) {
     log_level_debug();
 
     fs::path path(argv[0]);
-    FileManager &file_manager = FileManager::instance();
+    RHIContext &file_manager = RHIContext::instance();
     //    file_manager.clear_cache();
     Device device = file_manager.create_device("cuda");
     Stream stream = device.create_stream();

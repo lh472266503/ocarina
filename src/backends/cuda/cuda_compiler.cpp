@@ -6,7 +6,7 @@
 #include "cuda_device.h"
 #include "ast/function.h"
 #include "cuda_codegen.h"
-#include "ocarina/src/rhi/file_manager.h"
+#include "ocarina/src/rhi/context.h"
 #include "core/util.h"
 #include "dsl/dsl.h"
 
@@ -30,7 +30,7 @@ ocarina::string CUDACompiler::compile(const Function &function, int sm) const no
     std::vector<const char *> header_sources_ptr;
 
     for (auto fn : header_names) {
-        string source = FileManager::read_file(string("cuda/") + fn);
+        string source = RHIContext::read_file(string("cuda/") + fn);
         header_sources_ptr.push_back(source.c_str());
         header_sources.push_back(ocarina::move(source));
     }
@@ -59,7 +59,7 @@ ocarina::string CUDACompiler::compile(const Function &function, int sm) const no
         includes.push_back(ocarina::format("-I {}", inc_path));
         compile_option.push_back(includes.back().c_str());
         header_names.push_back("optix_device_header.h");
-        string source = FileManager::read_file(string("cuda/optix_device_header.h"));
+        string source = RHIContext::read_file(string("cuda/optix_device_header.h"));
         header_sources_ptr.push_back(source.c_str());
         header_sources.push_back(ocarina::move(source));
     }
@@ -102,7 +102,7 @@ ocarina::string CUDACompiler::compile(const Function &function, int sm) const no
     ocarina::string ptx_fn = fn + ".ptx";
     string cu_fn = fn + ".cu";
     ocarina::string ptx;
-    FileManager *file_manager = device_->file_manager();
+    RHIContext *file_manager = device_->file_manager();
     if (!file_manager->is_exist_cache(ptx_fn)) {
         OC_INFO_FORMAT("miss ptx file {}", ptx_fn);
         if (!file_manager->is_exist_cache(cu_fn)) {

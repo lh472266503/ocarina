@@ -83,7 +83,7 @@ private:
     };
 
 public:
-    explicit CUDADevice(FileManager *file_manager);
+    explicit CUDADevice(RHIContext *file_manager);
     void init_hardware_info();
     template<typename Func>
     decltype(auto) use_context(Func &&func) noexcept {

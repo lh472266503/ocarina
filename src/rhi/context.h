@@ -13,12 +13,12 @@
 namespace ocarina {
 class Device;
 class DynamicModule;
-class OC_RHI_API FileManager : public concepts::Noncopyable {
+class OC_RHI_API RHIContext : public concepts::Noncopyable {
 
-    OC_MAKE_INSTANCE_CONSTRUCTOR(FileManager, s_file_manager)
+    OC_MAKE_INSTANCE_CONSTRUCTOR(RHIContext, s_context)
 
 public:
-    [[nodiscard]] static FileManager &instance() noexcept;
+    [[nodiscard]] static RHIContext &instance() noexcept;
     static void destroy_instance();
 
 private:
@@ -32,8 +32,8 @@ private:
     ocarina::unique_ptr<Impl> impl_;
 
 public:
-    FileManager &init(const fs::path &path, string_view cache_dir = ".cache");
-    virtual ~FileManager() noexcept;
+    RHIContext &init(const fs::path &path, string_view cache_dir = ".cache");
+    virtual ~RHIContext() noexcept;
     [[nodiscard]] const fs::path &runtime_directory() const noexcept;
     [[nodiscard]] const fs::path &cache_directory() const noexcept;
     static bool create_directory_if_necessary(const fs::path &path);
