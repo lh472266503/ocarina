@@ -9,7 +9,7 @@
 
 namespace ocarina {
 
-class Env {
+class OC_DSL_API Env {
     OC_MAKE_INSTANCE_CONSTRUCTOR(Env, s_env)
 
 private:
