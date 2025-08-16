@@ -11,7 +11,7 @@
 #include "ext/imgui/imgui_impl_opengl3.h"
 #include <ext/imgui/imgui_impl_glfw.h>
 #include "GUI/window.h"
-#include "util/image.h"
+#include "ocarina/src/core/image.h"
 
 namespace ocarina {
 

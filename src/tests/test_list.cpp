@@ -2,7 +2,7 @@
 // Created by Zero on 2024/9/26.
 //
 
-#include "util/image.h"
+#include "ocarina/src/core/image.h"
 #include "core/stl.h"
 #include "dsl/dsl.h"
 #include "rhi/common.h"

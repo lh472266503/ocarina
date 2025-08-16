@@ -11,7 +11,6 @@ add_subdirectory(generator)
 add_subdirectory(rhi)
 add_subdirectory(GUI)
 add_subdirectory(backends)
-add_subdirectory(util)
 add_subdirectory(math)
 add_subdirectory(GUI_impl)
 
@@ -28,7 +27,6 @@ target_link_libraries(ocarina-native INTERFACE
         ocarina-backend
         ocarina-rhi
         ocarina-GUI
-        ocarina-util
         ocarina-math
         ocarina-core)
 

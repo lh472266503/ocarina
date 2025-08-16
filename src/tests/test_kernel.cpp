@@ -9,7 +9,7 @@
 #include "rhi/common.h"
 #include <windows.h>
 #include "math/base.h"
-#include "util/image.h"
+#include "ocarina/src/core/image.h"
 #include "dsl/dsl.h"
 
 using namespace ocarina;

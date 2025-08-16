@@ -8,7 +8,7 @@
 #include "buffer.h"
 #include "texture.h"
 #include "list.h"
-#include "util/image.h"
+#include "ocarina/src/core/image.h"
 
 namespace ocarina {
 
