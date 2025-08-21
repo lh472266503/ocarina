@@ -16,15 +16,8 @@ template<typename T>
 const Type *Type::of() noexcept {
     using raw_type = std::remove_cvref_t<T>;
     constexpr bool is_builtin = is_builtin_struct_v<raw_type>;
-    auto ret = Type::from(TypeDesc<raw_type>::description());
+    const Type *ret = Type::from(TypeDesc<raw_type>::description());
     if constexpr (ocarina::is_struct_v<T>) {
-        if constexpr (requires {
-                          Var<T>::cname;
-                      }) {
-            ret->set_cname(Var<T>::cname);
-        } else {
-            ret->set_cname(string(ret->description()));
-        }
         if constexpr (requires {
                           ocarina::struct_member_tuple<raw_type>::members;
                       }) {
@@ -139,17 +132,15 @@ public:
         }
     };
 
-    ocarina::vector<ocarina::unique_ptr<Type>> _types;
-    ocarina::unordered_set<Type *, TypePtrHash, TypePtrEqual> _type_set;
-    mutable std::mutex _mutex;
+    ocarina::vector<ocarina::unique_ptr<Type>> types_;
+    ocarina::unordered_set<Type *, TypePtrHash, TypePtrEqual> type_set_;
+    mutable std::mutex mutex_;
     TypeRegistry() = default;
 
 private:
-    [[nodiscard]] static uint64_t _hash(ocarina::string_view desc) noexcept;
     void parse_vector(Type *type, ocarina::string_view desc) noexcept;
     void parse_matrix(Type *type, ocarina::string_view desc) noexcept;
     void parse_array(Type *type, ocarina::string_view desc) noexcept;
-    void parse_dynamic_array(Type *type, ocarina::string_view desc) noexcept;
     void parse_buffer(Type *type, ocarina::string_view desc) noexcept;
     void parse_texture(Type *type, ocarina::string_view desc) noexcept;
     void parse_accel(Type *type, ocarina::string_view desc) noexcept;
@@ -158,11 +149,11 @@ private:
     void parse_bindless_array(Type *type, ocarina::string_view desc) noexcept;
 
 public:
+    [[nodiscard]] static uint64_t compute_hash(ocarina::string_view desc) noexcept;
     TypeRegistry &operator=(const TypeRegistry &) = delete;
     TypeRegistry &operator=(TypeRegistry &&) = delete;
     [[nodiscard]] static TypeRegistry &instance() noexcept;
-    [[nodiscard]] const Type *parse_type(ocarina::string_view desc,
-                                         uint64_t ext_hash = 0u) noexcept;
+    [[nodiscard]] const Type *parse_type(ocarina::string_view desc) noexcept;
     [[nodiscard]] bool is_exist(ocarina::string_view desc) const noexcept;
     [[nodiscard]] bool is_exist(uint64_t hash) const noexcept;
     [[nodiscard]] const Type *type_from(ocarina::string_view desc) noexcept;

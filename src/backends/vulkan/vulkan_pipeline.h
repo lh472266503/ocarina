@@ -13,9 +13,10 @@ namespace ocarina {
 class VulkanShader;
 class VulkanDevice;
 
-struct VulkanPipeline {
+struct VulkanPipeline : public Pipeline {
     VkPipelineCache pipeline_cache_ = VK_NULL_HANDLE;
     VkPipeline pipeline_ = VK_NULL_HANDLE;
+    VkPipelineLayout pipeline_layout_ = VK_NULL_HANDLE;
 };
 
 
@@ -32,7 +33,7 @@ struct VertexInputAttributeDescription {
     }
 
     bool operator==(const VertexInputAttributeDescription &other) const {
-        return location == other.location && binding == other.binding && format == other.format && offset == other.format;
+        return location == other.location && binding == other.binding && format == other.format && offset == other.offset;
     }
 
     bool operator!=(const VertexInputAttributeDescription &other) const {
@@ -173,13 +174,13 @@ public:
     void bind_render_pass(VkRenderPass render_pass) {
         pipeline_key_cache_.render_pass = render_pass;
     }
-    std::tuple<VkPipelineLayout, VulkanPipeline> get_or_create_pipeline(const PipelineState &pipeline_state, VulkanDevice *device, VkRenderPass render_pass);
+    VulkanPipeline* get_or_create_pipeline(const PipelineState &pipeline_state, VulkanDevice *device, VkRenderPass render_pass);
     void clear(VulkanDevice *device);
 
-    VkPipelineLayout get_pipeline_layout(VulkanDevice *device, VkDescriptorSetLayout *descriptset_layouts, uint8_t descriptset_layouts_count);
+    VkPipelineLayout get_pipeline_layout(VulkanDevice *device, VkDescriptorSetLayout *descriptset_layouts, uint8_t descriptset_layouts_count, uint32_t push_constant_size);
 
 private:
-    std::unordered_map<PipelineKey, VulkanPipeline, HashPipelineKeyFunction> vulkan_pipelines_;
+    std::unordered_map<PipelineKey, VulkanPipeline*, HashPipelineKeyFunction> vulkan_pipelines_;
     PipelineKey pipeline_key_cache_;
 
     std::unordered_map<PipelineLayoutKey, VkPipelineLayout, HashPipelineLayoutKeyFunction> pipeline_layouts_;

@@ -10,8 +10,7 @@
 #include "math/box.h"
 #include "quaternion.h"
 
-namespace vision {
-using namespace ocarina;
+namespace ocarina {
 
 inline namespace transform {
 
@@ -221,4 +220,4 @@ public:
     [[nodiscard]] auto apply_ray(T &&ray) noexcept { return transform_ray<port_v<TMat, T>>(_mat, OC_FORWARD(ray)); }
 };
 
-}// namespace vision
+}// namespace ocarina

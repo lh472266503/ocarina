@@ -18,20 +18,36 @@
 
 #define $comment(...) ::ocarina::comment(#__VA_ARGS__);
 
-#define $switch(...) ::ocarina::detail::SwitchStmtBuilder::create_with_source_location("switch: " + $source_location, __VA_ARGS__) *[&]() noexcept
-#define $case(...) ::ocarina::detail::CaseStmtBuilder::create_with_source_location("switch case: " + $source_location, __VA_ARGS__) *[&]() noexcept
-#define $break ::ocarina::break_("break: " + $source_location)
-#define $default ::ocarina::detail::DefaultStmtBuilder("default: " + $source_location) *[&]() noexcept
-#define $continue ::ocarina::continue_("continue: " + $source_location)
+#define $switch(...) ::ocarina::detail::SwitchStmtBuilder::create_with_source_location("switch: " + $source_location, __VA_ARGS__) \
+    *[&](::ocarina::Case case_,                                                                                                    \
+         ::ocarina::Default default_) noexcept
 
-#define $loop ::ocarina::detail::LoopStmtBuilder::create_with_source_location("loop: " + $source_location) *[&]() noexcept
-#define $while(...) ::ocarina::detail::LoopStmtBuilder::create_with_source_location("while: " + $source_location) / [&]() noexcept { \
-    if_(!(__VA_ARGS__), [&] {                                                                                                        \
-        break_();                                                                                                                    \
-    });                                                                                                                              \
-} *[&]() noexcept
+#define $case(...) case_("switch case: " + $source_location, __VA_ARGS__) \
+    *[&](::ocarina::Break break_) noexcept
 
-#define $for(v, ...) ::ocarina::detail::range_with_source_location("for: " + $source_location, __VA_ARGS__) / [&](auto v) noexcept
+#define $break break_("break: " + $source_location)
+#define $default default_("default: " + $source_location) *[&](::ocarina::Break break_) noexcept
+#define $continue continue_("continue: " + $source_location)
+
+#define $super_break ::ocarina::syntax::break_("break: " + $source_location)
+#define $super_continue ::ocarina::syntax::continue_("break: " + $source_location)
+
+#define $loop ::ocarina::detail::LoopStmtBuilder::create_with_source_location("loop: " + $source_location) \
+    *[&](::ocarina::Continue continue_,                                                                    \
+         ::ocarina::Break break_) noexcept
+
+#define $while(...) ::ocarina::detail::LoopStmtBuilder::create_with_source_location("while: " + $source_location) / \
+                        [&]() noexcept {                                                                            \
+                            ::ocarina::if_(!(__VA_ARGS__), [&] {                                                    \
+                                ocarina::syntax::break_();                                                          \
+                            });                                                                                     \
+                        } *[&](::ocarina::Continue continue_,                                                       \
+                               ::ocarina::Break break_) noexcept
+
+#define $for(v, ...) ::ocarina::detail::range_with_source_location("for: " + $source_location, __VA_ARGS__) / \
+                         [&](auto v,                                                                          \
+                             ::ocarina::Continue continue_,                                                   \
+                             ::ocarina::Break break_) noexcept
 
 #define $return(...) ::ocarina::return_(__VA_ARGS__)
 

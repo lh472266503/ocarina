@@ -17,10 +17,26 @@
 
 namespace ocarina {
 
-using Vector2 = Vector<float, 2>;
-using Vector3 = Vector<float, 3>;
-using Vector4 = Vector<float, 4>;
+//using Vector2 = Vector<float, 2>;
+//using Vector3 = Vector<float, 3>;
+//using Vector4 = Vector<float, 4>;
+struct Vector2 {
+    float x = 0.0f;
+    float y = 0.0f;
+};
 
+struct Vector3 {
+    float x = 0.0f;
+    float y = 0.0f;
+    float z = 0.0f;
+};
+
+struct Vector4 {
+    float x = 0.0f;
+    float y = 0.0f;
+    float z = 0.0f;
+    float w = 0.0f;
+};
 
 struct VertexStream {
     VertexAttributeType::Enum type;

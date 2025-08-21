@@ -13,6 +13,7 @@
 #include "core/thread_pool.h"
 #include "params.h"
 #include "graphics_descriptions.h"
+#include "pipeline_state.h"
 
 namespace ocarina {
 
@@ -52,7 +53,7 @@ class IndexBuffer;
 class RenderPass;
 class DescriptorSet;
 class DescriptorSetLayout;
-class DescriptorSetWriter;
+class Pipeline;
 
 class Device : public concepts::Noncopyable {
 public:
@@ -96,8 +97,11 @@ public:
         virtual void end_frame() noexcept = 0;
         virtual RenderPass* create_render_pass(const RenderPassCreation& render_pass_creation) noexcept = 0;
         virtual void destroy_render_pass(RenderPass* render_pass) noexcept = 0;
-        virtual DescriptorSetLayout *create_descriptor_set_layout(void **shaders, uint32_t shaders_count) noexcept = 0;
-        virtual DescriptorSetWriter *create_descriptor_set_writer(DescriptorSet *descriptor_set, void **shaders, uint32_t shaders_count) noexcept = 0;
+        virtual std::array<DescriptorSetLayout*, MAX_DESCRIPTOR_SETS_PER_SHADER> create_descriptor_set_layout(void **shaders, uint32_t shaders_count) noexcept = 0;
+        virtual void bind_pipeline(const handle_ty pipeline) noexcept = 0;
+        virtual Pipeline *get_pipeline(const PipelineState &pipeline_state, RenderPass *render_pass) noexcept = 0;
+        virtual DescriptorSet *get_global_descriptor_set(const string& name) noexcept = 0;
+        virtual void bind_descriptor_sets(DescriptorSet **descriptor_set, uint32_t descriptor_sets_num, Pipeline *pipeline) noexcept = 0;
     };
 
     using Creator = Device::Impl *(FileManager *);
@@ -205,12 +209,24 @@ public:
         impl_->destroy_render_pass(render_pass);
     }
 
-    [[nodiscard]] DescriptorSetLayout *create_descriptor_set_layout(void **shaders, uint32_t shaders_count) {
+    [[nodiscard]] std::array<DescriptorSetLayout*, MAX_DESCRIPTOR_SETS_PER_SHADER> create_descriptor_set_layout(void **shaders, uint32_t shaders_count) {
         return impl_->create_descriptor_set_layout(shaders, shaders_count);
     }
 
-    [[nodiscard]] DescriptorSetWriter *create_descriptor_set_writer(DescriptorSet *descriptor_set, void **shaders, uint32_t shaders_count) {
-        return impl_->create_descriptor_set_writer(descriptor_set, shaders, shaders_count);
+    void bind_pipeline(const handle_ty pipeline) noexcept {
+        impl_->bind_pipeline(pipeline);
+    }
+
+    Pipeline *get_pipeline(const PipelineState &pipeline_state, RenderPass *render_pass) noexcept {
+        return impl_->get_pipeline(pipeline_state, render_pass);
+    }
+
+    DescriptorSet *get_global_descriptor_set(const string &name) noexcept {
+        return impl_->get_global_descriptor_set(name);
+    }
+
+    void bind_descriptor_sets(DescriptorSet **descriptor_sets, uint32_t descriptor_sets_num, Pipeline *pipeline) noexcept {
+        impl_->bind_descriptor_sets(descriptor_sets, descriptor_sets_num, pipeline);
     }
 
     [[nodiscard]] static Device create_device(const string &backend_name, const ocarina::InstanceCreation &instance_creation);

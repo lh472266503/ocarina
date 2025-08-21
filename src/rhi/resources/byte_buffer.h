@@ -14,86 +14,11 @@ namespace ocarina {
 
 class ByteBuffer;
 
-class ByteBufferView {
-private:
-    handle_ty handle_{};
-    size_t offset_{};
-    size_t size_{};
-    size_t total_size_{};
-    mutable BufferProxy<> proxy_{};
-
+class ByteBufferView : public BufferView<std::byte> {
 public:
-    ByteBufferView() = default;
-
-    ByteBufferView(handle_ty handle, size_t offset, size_t size, size_t total_size)
-        : handle_(handle), offset_(offset), size_(size), total_size_(total_size) {}
-
-    ByteBufferView(handle_ty handle, size_t total_size)
-        : handle_(handle), offset_(0), size_(total_size), total_size_(total_size) {}
-
-    inline ByteBufferView(const ByteBuffer &buffer);
-
-    const BufferProxy<> &proxy() const noexcept {
-        proxy_.handle = reinterpret_cast<std::byte *>(head());
-        proxy_.size = size_;
-        return proxy_;
-    }
-
-    const BufferProxy<> *proxy_ptr() const noexcept {
-        return &proxy();
-    }
-
-    [[nodiscard]] ByteBufferView subview(size_t offset, size_t size) const noexcept {
-        return {handle_, offset_ + offset, size, total_size_};
-    }
-
-    template<typename T>
-    [[nodiscard]] BufferView<T> view_as(size_t offset = 0, size_t size = 0) const noexcept {
-        size = size == 0 ? size_ - offset : size;
-        return BufferView<T>(handle_, (offset_ + offset) / sizeof(T),
-                             size / sizeof(T), total_size_ / sizeof(T));
-    }
-
-    [[nodiscard]] size_t size() const { return size_; }
-    [[nodiscard]] size_t element_size() const noexcept { return 1; }
-    [[nodiscard]] size_t size_in_byte() const noexcept { return size_ * element_size(); }
-    [[nodiscard]] handle_ty head() const { return handle_ + offset_ * element_size(); }
-
-    [[nodiscard]] BufferCopyCommand *copy_from(const ByteBufferView &src, bool async = true,
-                                               uint dst_offset = 0) noexcept {
-        return BufferCopyCommand::create(src.head(), head(), 0, dst_offset * element_size(),
-                                         src.size_in_byte(), true);
-    }
-
-    template<typename Arg>
-    requires is_buffer_or_view_v<Arg>
-    [[nodiscard]] BufferCopyCommand *copy_to(Arg &dst, uint src_offset = 0,
-                                             bool async = true) noexcept {
-        return BufferCopyCommand::create(head(), dst.head(), src_offset * element_size(),
-                                         0, dst.size_in_byte(), true);
-    }
-
-    [[nodiscard]] BufferDownloadCommand *download(void *data, uint src_offset = 0,
-                                                  bool async = true) const noexcept {
-        return BufferDownloadCommand::create(data, head() + src_offset * element_size(),
-                                             size_in_byte(), async);
-    }
-
-    [[nodiscard]] BufferUploadCommand *upload(const void *data, bool async = true) const noexcept {
-        return BufferUploadCommand::create(data, head(), size_in_byte(), async);
-    }
-
-    [[nodiscard]] BufferByteSetCommand *byte_set(uchar value, bool async = true) const noexcept {
-        return BufferByteSetCommand::create(head(), size_in_byte(), value, async);
-    }
-
-    [[nodiscard]] BufferUploadCommand *upload_sync(const void *data) const noexcept {
-        return BufferUploadCommand::create(data, head(), size_in_byte(), false);
-    }
-
-    [[nodiscard]] BufferByteSetCommand *reset(bool async = true) const noexcept {
-        return byte_set(0, async);
-    }
+    using Super = BufferView<std::byte>;
+    using Super::Super;
+    explicit ByteBufferView(const ByteBuffer &buffer);
 };
 
 class ByteBuffer : public RHIResource {
@@ -109,7 +34,7 @@ public:
           size_(size) {}
 
     ByteBuffer(ByteBufferView buffer_view)
-        : RHIResource(nullptr, Tag::BUFFER, buffer_view.head()),
+        : RHIResource(nullptr, Tag::BUFFER, buffer_view.handle()),
           size_(buffer_view.size()) {}
 
     /// head of the buffer
@@ -160,7 +85,7 @@ public:
 
     template<typename T>
     [[nodiscard]] BufferView<T> view_as(size_t offset = 0, size_t size = 0) const noexcept {
-        return view().view_as<T>(offset, size);
+        return view().template view_as<T>(offset, size);
     }
 
     template<typename... Args>
@@ -239,13 +164,13 @@ public:
     }
 
     template<typename Elm, typename int_type = uint>
-    [[nodiscard]] auto soa_view(const Var<int_type> &view_size = InvalidUI32) const noexcept {
-        return expr().soa_view<Elm>(view_size);
+    [[nodiscard]] auto soa_view_var(const Var<int_type> &view_size = InvalidUI32) const noexcept {
+        return expr().soa_view_var<Elm>(view_size);
     }
 
     template<typename Elm, typename int_type = uint>
-    [[nodiscard]] auto aos_view(const Var<int_type> &view_size = InvalidUI32) const noexcept {
-        return expr().aos_view<Elm>(view_size);
+    [[nodiscard]] auto aos_view_var(const Var<int_type> &view_size = InvalidUI32) const noexcept {
+        return expr().aos_view_var<Elm>(view_size);
     }
 
     template<typename Target = uint, typename Index>
@@ -256,8 +181,8 @@ public:
     /// for dsl end
 };
 
-ByteBufferView::ByteBufferView(const ocarina::ByteBuffer &buffer)
-    : ByteBufferView(buffer.handle(), buffer.size()) {}
+inline ByteBufferView::ByteBufferView(const ocarina::ByteBuffer &buffer)
+    : Super(buffer.handle(), buffer.size()) {}
 
 template<typename T, ocarina::AccessMode mode>
 List<T, mode> Device::create_list(size_t size, const std::string &name) const noexcept {

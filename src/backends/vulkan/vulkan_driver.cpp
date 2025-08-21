@@ -34,19 +34,28 @@ VulkanDevice* VulkanDriver::create_device(FileManager* file_manager, const Insta
     return vulkan_device_;
 }
 
-void VulkanDriver::bind_pipeline(VkPipelineLayout pipeline_layout, const VulkanPipeline &pipeline) {
+void VulkanDriver::bind_pipeline(const VulkanPipeline &pipeline) {
     VkCommandBuffer current_buffer = get_current_command_buffer();
 
-    //vkCmdBindDescriptorSets(current_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout);
     vkCmdBindPipeline(current_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.pipeline_);
-
 }
 
 void VulkanDriver::terminate()
 {
     release_frame_buffer();
+    for (auto &it : global_descriptor_sets) {
+        ocarina::delete_with_allocator(it.second);
+    }
+    global_descriptor_sets.clear();
+
+    for (auto &it : render_passes_) {
+        ocarina::delete_with_allocator(it);
+    }
+    render_passes_.clear();
+
     vulkan_pipeline_manager->clear(vulkan_device_);
     vulkan_descriptor_manager->clear();
+    vulkan_shader_manager->clear(vulkan_device_);
     vkDestroySemaphore(device(), semaphores.presentComplete, nullptr);
     vkDestroySemaphore(device(), semaphores.renderComplete, nullptr);
     release_command_buffers();
@@ -58,7 +67,7 @@ void VulkanDriver::submit_frame() {
     VkPipelineStageFlags wait_stages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
     submit_info.pWaitDstStageMask = wait_stages;
     submit_info.commandBufferCount = 1;
-    submit_info.pCommandBuffers = &draw_cmd_buffers[current_buffer_];
+    submit_info.pCommandBuffers = &draw_cmd_buffers_[current_buffer_];
 
     // Submit to queue
     vkQueueSubmit(graphics_queue, 1, &submit_info, VK_NULL_HANDLE);
@@ -88,6 +97,7 @@ void VulkanDriver::setup_frame_buffer()
 {
     VulkanSwapchain *swapchain = vulkan_device_->get_swapchain();
     uint2 resolution = swapchain->resolution();
+
     //first create the frame buffer attach renderpass
     std::array<VkAttachmentDescription, 2> attachments = {};
     // Color attachment
@@ -244,35 +254,37 @@ void VulkanDriver::create_command_pool()
     VulkanSwapchain *swapchain = vulkan_device_->get_swapchain();
     uint32_t graphic_queue_index = vulkan_device_->get_queue_family_index(QueueType::Graphics);
 
-    VkCommandPoolCreateInfo cmdPoolInfo = {};
-    cmdPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-    cmdPoolInfo.queueFamilyIndex = graphic_queue_index;
-    cmdPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-    VK_CHECK_RESULT(vkCreateCommandPool(device(), &cmdPoolInfo, nullptr, &command_pool));
+    VkCommandPoolCreateInfo cmd_pool_info = {};
+    cmd_pool_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    cmd_pool_info.queueFamilyIndex = graphic_queue_index;
+    cmd_pool_info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+    VK_CHECK_RESULT(vkCreateCommandPool(device(), &cmd_pool_info, nullptr, &command_pool_));
 }
 
 void VulkanDriver::release_command_pool()
 {
-    vkFreeCommandBuffers(device(), command_pool, static_cast<uint32_t>(draw_cmd_buffers.size()), draw_cmd_buffers.data());
+    vkDestroyCommandPool(device(), command_pool_, nullptr);
+    command_pool_ = VK_NULL_HANDLE;
 }
 
 void VulkanDriver::create_command_buffers()
 {
     VulkanSwapchain *swapchain = vulkan_device_->get_swapchain();
-    draw_cmd_buffers.resize(swapchain->backbuffer_size());
+    draw_cmd_buffers_.resize(swapchain->backbuffer_size());
 
     VkCommandBufferAllocateInfo const allocateInfo{
         .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-        .commandPool = command_pool,
+        .commandPool = command_pool_,
         .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-        .commandBufferCount = (uint32_t)draw_cmd_buffers.size(),
+        .commandBufferCount = (uint32_t)draw_cmd_buffers_.size(),
     };
 
-    VK_CHECK_RESULT(vkAllocateCommandBuffers(device(), &allocateInfo, draw_cmd_buffers.data()));
+    VK_CHECK_RESULT(vkAllocateCommandBuffers(device(), &allocateInfo, draw_cmd_buffers_.data()));
 }
 
 void VulkanDriver::release_command_buffers() {
-    vkFreeCommandBuffers(device(), command_pool, static_cast<uint32_t>(draw_cmd_buffers.size()), draw_cmd_buffers.data());
+    vkFreeCommandBuffers(device(), command_pool_, static_cast<uint32_t>(draw_cmd_buffers_.size()), draw_cmd_buffers_.data());
+    draw_cmd_buffers_.clear();
 }
 
 void VulkanDriver::initialize()
@@ -317,7 +329,7 @@ void VulkanDriver::prepare_frame()
     infoCmd.pNext = nullptr;
     infoCmd.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
-    VK_CHECK_RESULT(vkBeginCommandBuffer(draw_cmd_buffers[current_buffer_], &infoCmd));
+    VK_CHECK_RESULT(vkBeginCommandBuffer(draw_cmd_buffers_[current_buffer_], &infoCmd));
 
     VkClearValue clearValues[2];
     VkClearColorValue defaultClearColor = {{0.025f, 0.025f, 0.025f, 1.0f}};
@@ -339,7 +351,7 @@ void VulkanDriver::prepare_frame()
 
     
 
-    vkCmdBeginRenderPass(draw_cmd_buffers[current_buffer_], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+    vkCmdBeginRenderPass(draw_cmd_buffers_[current_buffer_], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
     VkViewport viewport = {
         .x = 0.0f,
@@ -348,16 +360,16 @@ void VulkanDriver::prepare_frame()
         .height = (float)resolution.y,
         .minDepth = 0.0f,
         .maxDepth = 1.0f};
-    vkCmdSetViewport(draw_cmd_buffers[current_buffer_], 0, 1, &viewport);
+    vkCmdSetViewport(draw_cmd_buffers_[current_buffer_], 0, 1, &viewport);
 
     VkRect2D scissor;
     scissor.offset = {0, 0};
     scissor.extent = {(uint32_t)resolution.x, (uint32_t)resolution.y};
-    vkCmdSetScissor(draw_cmd_buffers[current_buffer_], 0, 1, &scissor);
+    vkCmdSetScissor(draw_cmd_buffers_[current_buffer_], 0, 1, &scissor);
 
-    vkCmdEndRenderPass(draw_cmd_buffers[current_buffer_]);
+    vkCmdEndRenderPass(draw_cmd_buffers_[current_buffer_]);
 
-    VK_CHECK_RESULT(vkEndCommandBuffer(draw_cmd_buffers[current_buffer_]));
+    VK_CHECK_RESULT(vkEndCommandBuffer(draw_cmd_buffers_[current_buffer_]));
 }
 
 void VulkanDriver::window_resize()
@@ -365,7 +377,7 @@ void VulkanDriver::window_resize()
 
 }
 
-std::tuple<VkPipelineLayout, VulkanPipeline> VulkanDriver::get_pipeline(const PipelineState &pipeline_state, VkRenderPass render_pass) {
+VulkanPipeline* VulkanDriver::get_pipeline(const PipelineState &pipeline_state, VkRenderPass render_pass) {
     return vulkan_pipeline_manager->get_or_create_pipeline(pipeline_state, vulkan_device_, render_pass);
 }
 
@@ -377,19 +389,25 @@ void VulkanDriver::begin_frame()
     VkCommandBufferBeginInfo infoCmd{};
     infoCmd.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-    VK_CHECK_RESULT(vkBeginCommandBuffer(draw_cmd_buffers[current_buffer_], &infoCmd));
+    VK_CHECK_RESULT(vkBeginCommandBuffer(draw_cmd_buffers_[current_buffer_], &infoCmd));
 }
 
 void VulkanDriver::end_frame()
 {
-    vkEndCommandBuffer(draw_cmd_buffers[current_buffer_]);
+    vkEndCommandBuffer(draw_cmd_buffers_[current_buffer_]);
 }
 
 VulkanRenderPass* VulkanDriver::create_render_pass(const RenderPassCreation& render_pass_creation) {
-    return ocarina::new_with_allocator<VulkanRenderPass>(vulkan_device_, render_pass_creation);
+    VulkanRenderPass* render_pass = ocarina::new_with_allocator<VulkanRenderPass>(vulkan_device_, render_pass_creation);
+    render_passes_.push_back(render_pass);
+    return render_pass;
 }
 
 void VulkanDriver::destroy_render_pass(VulkanRenderPass* render_pass) {
+    auto it = std::find(render_passes_.begin(), render_passes_.end(), render_pass);
+    if (it != render_passes_.end()) {
+        render_passes_.erase(it);
+    }
     ocarina::delete_with_allocator<VulkanRenderPass>(render_pass);
 }
 
@@ -397,7 +415,7 @@ VkResult VulkanDriver::copy_buffer(VulkanBuffer* src, VulkanBuffer* dst)
 {
     VkCommandBufferAllocateInfo cmd_buffer_allocate{};
     cmd_buffer_allocate.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    cmd_buffer_allocate.commandPool = command_pool;
+    cmd_buffer_allocate.commandPool = command_pool_;
     cmd_buffer_allocate.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
     cmd_buffer_allocate.commandBufferCount = 1;
 
@@ -436,7 +454,7 @@ VkResult VulkanDriver::copy_buffer(VulkanBuffer* src, VulkanBuffer* dst)
     VK_CHECK_RESULT(vkWaitForFences(device(), 1, &fence, VK_TRUE, std::numeric_limits<uint64_t>::max()));
     vkDestroyFence(device(), fence, nullptr);
 
-    vkFreeCommandBuffers(device(), command_pool, 1, &cmd_buffer);
+    vkFreeCommandBuffers(device(), command_pool_, 1, &cmd_buffer);
 
     return VK_SUCCESS;
 }
@@ -445,7 +463,7 @@ VkResult VulkanDriver::copy_buffer(VulkanBuffer* src, VkBuffer dst)
 {
     VkCommandBufferAllocateInfo cmd_buffer_allocate{};
     cmd_buffer_allocate.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    cmd_buffer_allocate.commandPool = command_pool;
+    cmd_buffer_allocate.commandPool = command_pool_;
     cmd_buffer_allocate.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
     cmd_buffer_allocate.commandBufferCount = 1;
 
@@ -482,7 +500,7 @@ VkResult VulkanDriver::copy_buffer(VulkanBuffer* src, VkBuffer dst)
     VK_CHECK_RESULT(vkWaitForFences(device(), 1, &fence, VK_TRUE, std::numeric_limits<uint64_t>::max()));
     vkDestroyFence(device(), fence, nullptr);
 
-    vkFreeCommandBuffers(device(), command_pool, 1, &cmd_buffer);
+    vkFreeCommandBuffers(device(), command_pool_, 1, &cmd_buffer);
 
     return VK_SUCCESS;
 }
@@ -498,12 +516,29 @@ void VulkanDriver::draw_triangles(VulkanIndexBuffer* index_buffer) {
     vkCmdDrawIndexed(current_buffer, index_buffer->get_index_count(), 1, 0, 0, 0);
 }
 
-VulkanDescriptorSetLayout* VulkanDriver::create_descriptor_set_layout(VulkanShader **shaders, uint32_t shaders_count) {
+void VulkanDriver::push_constants(VkPipelineLayout pipeline_layout, void *data, uint32_t size, uint32_t offset) {
+    VkCommandBuffer current_buffer = get_current_command_buffer();
+    vkCmdPushConstants(current_buffer, pipeline_layout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, offset, size, data);
+}
+
+void VulkanDriver::bind_descriptor_sets(VulkanDescriptorSet **descriptor_sets, uint32_t descriptor_sets_num, VkPipelineLayout pipeline_layout) {
+    VkCommandBuffer current_buffer = get_current_command_buffer();
+    std::array<VkDescriptorSet, MAX_DESCRIPTOR_SETS_PER_SHADER> descriptor_set_handles = {VK_NULL_HANDLE};
+    for (uint32_t i = 0; i < descriptor_sets_num; ++i) {
+        if (descriptor_sets[i] == nullptr) {
+            continue;
+        }
+        descriptor_set_handles[i] = descriptor_sets[i]->descriptor_set();
+    }
+    vkCmdBindDescriptorSets(current_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, descriptor_sets_num, descriptor_set_handles.data(), 0, nullptr);
+}
+
+std::array<DescriptorSetLayout *, MAX_DESCRIPTOR_SETS_PER_SHADER> VulkanDriver::create_descriptor_set_layout(VulkanShader *shaders[], uint32_t shaders_count) {
     return vulkan_descriptor_manager->create_descriptor_set_layout(shaders, shaders_count);
 }
 
-VkPipelineLayout VulkanDriver::get_pipeline_layout(VkDescriptorSetLayout *descriptset_layouts, uint8_t descriptset_layouts_count) {
-    return vulkan_pipeline_manager->get_pipeline_layout(vulkan_device_, descriptset_layouts, descriptset_layouts_count);
+VkPipelineLayout VulkanDriver::get_pipeline_layout(VkDescriptorSetLayout *descriptset_layouts, uint8_t descriptset_layouts_count, uint32_t push_constant_size) {
+    return vulkan_pipeline_manager->get_pipeline_layout(vulkan_device_, descriptset_layouts, descriptset_layouts_count, push_constant_size);
 }
 
 }// namespace ocarina

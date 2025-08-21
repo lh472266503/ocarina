@@ -10,10 +10,10 @@
 namespace ocarina {
 
 template<typename T, typename TBuffer>
-struct SOAView;
+struct SOAViewVar;
 
 template<typename T, typename TBuffer>
-struct AOSView;
+struct AOSViewVar;
 
 template<typename T, AccessMode mode, typename TBuffer>
 class List {
@@ -69,17 +69,17 @@ public:
 
     [[nodiscard]] auto view() noexcept {
         if constexpr (access_mode == AOS) {
-            return buffer().template aos_view<element_type>(storage_size_in_byte());
+            return buffer().template aos_view_var<element_type>(storage_size_in_byte());
         } else {
-            return buffer().template soa_view<element_type>(storage_size_in_byte());
+            return buffer().template soa_view_var<element_type>(storage_size_in_byte());
         }
     }
 
     [[nodiscard]] auto view() const noexcept {
         if constexpr (access_mode == AOS) {
-            return buffer().template aos_view<element_type>(storage_size_in_byte());
+            return buffer().template aos_view_var<element_type>(storage_size_in_byte());
         } else {
-            return buffer().template soa_view<element_type>(storage_size_in_byte());
+            return buffer().template soa_view_var<element_type>(storage_size_in_byte());
         }
     }
 

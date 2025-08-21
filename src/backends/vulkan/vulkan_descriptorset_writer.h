@@ -13,16 +13,24 @@ class VulkanShader;
 class VulkanDescriptor;
 class VulkanDevice;
 class VulkanDescriptorSet;
+class VulkanBuffer;
 class VulkanDescriptorSetWriter : public DescriptorSetWriter {
 public:
-    VulkanDescriptorSetWriter(VulkanDevice* device, VulkanShader **shaders, uint32_t shader_count, VulkanDescriptorSet* descriptor_set);
-    ~VulkanDescriptorSetWriter() override = default;
-    void bind_buffer(int32_t name_id, handle_ty buffer) override;
-    void bind_texture(int32_t name_id, handle_ty texture) override;
-    void build();
+    VulkanDescriptorSetWriter(VulkanDevice* device, VulkanDescriptorSet* descriptor_set);
+    ~VulkanDescriptorSetWriter();
+    void bind_buffer(uint32_t binding, VkDescriptorBufferInfo* buffer);
+    //void bind_texture(uint64_t name_id, handle_ty texture) override;
+    void build(VulkanDevice* device);
+
+    void update_buffer(uint64_t name_id, void *data, uint32_t size) override;
+    void update_push_constants(uint64_t name_id, void *data, uint32_t size, Pipeline* pipeline) override;
 
 private:
-    std::unordered_map<uint32_t, VulkanDescriptor*> descriptors_;
+    std::unordered_map<uint64_t, VulkanDescriptor*> descriptors_;
+    std::unordered_map<uint32_t, VulkanBuffer*> buffers_;
+    std::vector<VulkanDescriptor *> pending_writes_;
+    std::vector<VkWriteDescriptorSet> writes_;
+    VulkanDescriptorSet *descriptor_set_ = nullptr;
 };
 
 }// namespace ocarina

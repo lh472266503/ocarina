@@ -326,6 +326,9 @@ struct RenderTargetCreation {
     uint32_t array_size = 1;  /// texture array size
     uint32_t msaa_samples = 1;  /// msaa samples
     TextureUsageFlags usage = TextureUsageFlags::None; ///< texture usage
+    float4 clear_color = {0.025f, 0.025f, 0.025f, 1.0f};///< clear color
+    float clear_depth = 1.0f;          ///< clear depth
+    uint32_t clear_stencil = 0;        ///< clear stencil
 };
 
 struct RenderPassCreation
@@ -333,6 +336,11 @@ struct RenderPassCreation
     constexpr static uint32_t MAX_RENDER_TARGETS = 8;
     RenderTargetCreation render_targets[MAX_RENDER_TARGETS]; ///< render target
     uint32_t render_target_count = 0; ///< render target count, 0 use swapchain
+    float4 swapchain_clear_color = {0.025f, 0.025f, 0.025f, 1.0f};     ///< clear color
+    float swapchain_clear_depth = 1.0f;                           ///< clear depth
+    uint32_t swapchain_clear_stencil = 0;                              ///< clear stencil
 };
+
+#define MAX_DESCRIPTOR_SETS_PER_SHADER 8
 
 }// namespace ocarina

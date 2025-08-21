@@ -30,7 +30,7 @@ void VulkanSwapchain::create_swapchain(const SwapChainCreation &creation, Vulkan
     VkDevice device = vulkan_device->logicalDevice();
     VkPhysicalDevice physicalDevice = vulkan_device->physicalDevice();
     // Store the current swap chain handle so we can use it later on to ease up recreation
-    VkSwapchainKHR oldSwapchain = swapChain_;
+    VkSwapchainKHR oldSwapchain = swapchain_;
 
     // Get physical device surface properties and formats
     VkSurfaceCapabilitiesKHR surfCaps;
@@ -124,7 +124,7 @@ void VulkanSwapchain::create_swapchain(const SwapChainCreation &creation, Vulkan
         swapchainCI.imageUsage |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
     }
 
-    VkResult err = vkCreateSwapchainKHR(device, &swapchainCI, nullptr, &swapChain_);
+    VkResult err = vkCreateSwapchainKHR(device, &swapchainCI, nullptr, &swapchain_);
     VK_CHECK_RESULT(err);
 
     // If an existing swap chain is re-created, destroy the old swap chain
@@ -144,6 +144,8 @@ void VulkanSwapchain::release()
     VkDevice device = vulkan_device_->logicalDevice();
     release_backbuffers();
     release_depth_stencil();
+    vkDestroySwapchainKHR(device, swapchain_, nullptr);
+    vkDestroySurfaceKHR(vulkan_device_->get_instance(), surface_, nullptr);
 }
 
 VkResult VulkanSwapchain::queue_present(VkQueue queue, uint32_t imageIndex, VkSemaphore waitSemaphore) {
@@ -151,7 +153,7 @@ VkResult VulkanSwapchain::queue_present(VkQueue queue, uint32_t imageIndex, VkSe
     presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
     presentInfo.pNext = NULL;
     presentInfo.swapchainCount = 1;
-    presentInfo.pSwapchains = &swapChain_;
+    presentInfo.pSwapchains = &swapchain_;
     presentInfo.pImageIndices = &imageIndex;
     // Check if a wait semaphore has been specified to wait for before presenting the image
     if (waitSemaphore != VK_NULL_HANDLE) {
@@ -163,17 +165,17 @@ VkResult VulkanSwapchain::queue_present(VkQueue queue, uint32_t imageIndex, VkSe
 
 VkResult VulkanSwapchain::aquire_next_image(VkSemaphore present_complete_semaphore, uint32_t* image_index)
 {
-    return vkAcquireNextImageKHR(vulkan_device_->logicalDevice(), swapChain_, UINT64_MAX, present_complete_semaphore, (VkFence)nullptr, image_index);
+    return vkAcquireNextImageKHR(vulkan_device_->logicalDevice(), swapchain_, UINT64_MAX, present_complete_semaphore, (VkFence)nullptr, image_index);
 }
 
 void VulkanSwapchain::setup_backbuffers(const VkSwapchainCreateInfoKHR &swapChainCreateInfo) {
     VkDevice device = vulkan_device_->logicalDevice();
     uint32_t imageCount = 0;
-    vkGetSwapchainImagesKHR(device, swapChain_, &imageCount, nullptr);
+    vkGetSwapchainImagesKHR(device, swapchain_, &imageCount, nullptr);
 
     std::vector<VkImage> images;
     images.resize(imageCount);
-    vkGetSwapchainImagesKHR(device, swapChain_, &imageCount, &images.front());
+    vkGetSwapchainImagesKHR(device, swapchain_, &imageCount, &images.front());
 
     for (auto image : images) {
         // We pass a VK_NULL_HANDLE for the device since vkImages are owned by the swapchain
@@ -201,7 +203,7 @@ void VulkanSwapchain::setup_backbuffers(const VkSwapchainCreateInfoKHR &swapChai
 
         VkResult err = vkCreateImageView(device, &colorAttachmentView, nullptr, &imageView);
         VK_CHECK_RESULT(err);
-        backBuffers_.push_back({image, imageView});
+        backbuffers_.push_back({image, imageView});
     }
 }
 
@@ -250,12 +252,11 @@ void VulkanSwapchain::setup_depth_stencil()
 
 void VulkanSwapchain::release_backbuffers()
 {
-    for (size_t i = 0; i < backBuffers_.size(); i++) {
-        vkDestroyImage(vulkan_device_->logicalDevice(), backBuffers_[i].image_, nullptr);
-        vkDestroyImageView(vulkan_device_->logicalDevice(), backBuffers_[i].imageView_, nullptr);
+    for (size_t i = 0; i < backbuffers_.size(); i++) {
+        vkDestroyImageView(vulkan_device_->logicalDevice(), backbuffers_[i].imageView_, nullptr);
     }
 
-    backBuffers_.clear();
+    backbuffers_.clear();
 }
 
 void VulkanSwapchain::release_depth_stencil()

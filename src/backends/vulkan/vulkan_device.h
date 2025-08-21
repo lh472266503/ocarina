@@ -113,8 +113,12 @@ public:
     void end_frame() noexcept override;
     RenderPass* create_render_pass(const RenderPassCreation& render_pass_creation) noexcept override;
     void destroy_render_pass(RenderPass* render_pass) noexcept override;
-    DescriptorSetLayout *create_descriptor_set_layout(void **shaders, uint32_t shaders_count) noexcept override;    
-    DescriptorSetWriter *create_descriptor_set_writer(DescriptorSet *descriptor_set, void** shaders, uint32_t shaders_count) noexcept override;
+    std::array<DescriptorSetLayout*, MAX_DESCRIPTOR_SETS_PER_SHADER> create_descriptor_set_layout(void **shaders, uint32_t shaders_count) noexcept override;    
+    //DescriptorSetWriter *create_descriptor_set_writer(DescriptorSet *descriptor_set, void** shaders, uint32_t shaders_count) noexcept override;
+    void bind_pipeline(const handle_ty pipeline) noexcept override;
+    Pipeline* get_pipeline(const PipelineState &pipeline_state, RenderPass* render_pass) noexcept override;
+    DescriptorSet *get_global_descriptor_set(const string &name) noexcept override;
+    void bind_descriptor_sets(DescriptorSet **descriptor_set, uint32_t descriptor_sets_num, Pipeline* pipeline) noexcept override;
 
     OC_MAKE_MEMBER_GETTER(logicalDevice, );
 
@@ -136,6 +140,8 @@ public:
     {
         return queueFamilyIndices_[(uint)queue_type];
     }
+
+    VkInstance get_instance() const { return m_instance.instance(); }
  private:
     void init_vulkan();
     void create_logical_device();

@@ -123,6 +123,10 @@ public:
         OC_ASSERT(has_device_value());
         return *device_value_;
     }
+    [[nodiscard]] dsl_t<value_ty> &dv() noexcept {
+        OC_ASSERT(has_device_value());
+        return *device_value_;
+    }
     [[nodiscard]] uint alignment() const noexcept override {
         switch (encode_type_) {
             case Original:

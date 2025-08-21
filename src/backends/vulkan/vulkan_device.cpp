@@ -297,16 +297,41 @@ void VulkanDevice::destroy_render_pass(RenderPass* render_pass) noexcept
     VulkanDriver::instance().destroy_render_pass(static_cast<VulkanRenderPass*>(render_pass));
 }
 
-DescriptorSetLayout *VulkanDevice::create_descriptor_set_layout(void **shaders, uint32_t shaders_count) noexcept {
-    VulkanShader **vulkan_shaders = reinterpret_cast<VulkanShader **>(shaders);
-    VulkanDescriptorSetLayout* layout = VulkanDriver::instance().create_descriptor_set_layout(vulkan_shaders, shaders_count);
-    return (DescriptorSetLayout *)layout;
+std::array<DescriptorSetLayout*, MAX_DESCRIPTOR_SETS_PER_SHADER> VulkanDevice::create_descriptor_set_layout(void **shaders, uint32_t shaders_count) noexcept {
+    //VulkanShader **vulkan_shaders = reinterpret_cast<VulkanShader **>(shaders);
+    VulkanShader *vulkan_shaders[2] = {reinterpret_cast<VulkanShader *>(shaders[0]), reinterpret_cast<VulkanShader *>(shaders[1])};
+    return VulkanDriver::instance().create_descriptor_set_layout(vulkan_shaders, shaders_count);
 }
 
-DescriptorSetWriter *VulkanDevice::create_descriptor_set_writer(DescriptorSet *descriptor_set, void **shaders, uint32_t shaders_count) noexcept {
-    VulkanDescriptorSet *vulkan_descriptor_set = static_cast<VulkanDescriptorSet *>(descriptor_set);
-    VulkanShader **vulkan_shaders = reinterpret_cast<VulkanShader **>(shaders);
-    return ocarina::new_with_allocator<VulkanDescriptorSetWriter>(this, vulkan_shaders, shaders_count, vulkan_descriptor_set);
+//DescriptorSetWriter *VulkanDevice::create_descriptor_set_writer(DescriptorSet *descriptor_set, void **shaders, uint32_t shaders_count) noexcept {
+//    VulkanDescriptorSet *vulkan_descriptor_set = static_cast<VulkanDescriptorSet *>(descriptor_set);
+//    VulkanShader *vulkan_shaders[2] = {reinterpret_cast<VulkanShader *>(shaders[0]), reinterpret_cast<VulkanShader *>(shaders[1])};
+//    return ocarina::new_with_allocator<VulkanDescriptorSetWriter>(this, vulkan_shaders, shaders_count, vulkan_descriptor_set);
+//}
+
+void VulkanDevice::bind_pipeline(const handle_ty pipeline) noexcept {
+    VulkanPipeline *vulkan_pipeline = reinterpret_cast<VulkanPipeline *>(pipeline);
+    VulkanDriver::instance().bind_pipeline(*vulkan_pipeline);
+}
+
+Pipeline *VulkanDevice::get_pipeline(const PipelineState &pipeline_state, RenderPass *render_pass) noexcept {
+    VulkanRenderPass *vulkan_render_pass = static_cast<VulkanRenderPass *>(render_pass);
+    auto pipeline = VulkanDriver::instance().get_pipeline(pipeline_state, vulkan_render_pass->render_pass());
+    
+    return pipeline;
+}
+
+DescriptorSet* VulkanDevice::get_global_descriptor_set(const string& name) noexcept {
+    return VulkanDriver::instance().get_global_descriptor_set(name);
+}
+
+void VulkanDevice::bind_descriptor_sets(DescriptorSet **descriptor_set, uint32_t descriptor_sets_num, Pipeline* pipeline) noexcept {
+    std::array<VulkanDescriptorSet *, MAX_DESCRIPTOR_SETS_PER_SHADER> vulkan_descriptor_sets;
+    for (uint32_t i = 0; i < descriptor_sets_num; ++i) {
+        vulkan_descriptor_sets[i] = static_cast<VulkanDescriptorSet *>(descriptor_set[i]);
+    }
+    VulkanPipeline *vulkan_pipeline = static_cast<VulkanPipeline *>(pipeline);
+    VulkanDriver::instance().bind_descriptor_sets(vulkan_descriptor_sets.data(), descriptor_sets_num, vulkan_pipeline->pipeline_layout_);
 }
 
 VulkanBuffer *VulkanDevice::create_vulkan_buffer(VkBufferUsageFlags usage_flags, VkMemoryPropertyFlags memory_property_flags, VkDeviceSize size, const void *data) {

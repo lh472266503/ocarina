@@ -10,7 +10,7 @@ VulkanBuffer::VulkanBuffer(VulkanDevice *device, VkBufferUsageFlags usage_flags,
     VkBufferCreateInfo buffer_create{VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO};
     buffer_create.usage = usage_flags;
     buffer_create.size = size;
-    vkCreateBuffer(device->logicalDevice(), &buffer_create, nullptr, &vulkan_buffer_);
+    VK_CHECK_RESULT(vkCreateBuffer(device->logicalDevice(), &buffer_create, nullptr, &vulkan_buffer_));
     size_ = size;
 
     // Create the memory backing up the buffer handle
@@ -48,15 +48,14 @@ VulkanBuffer::~VulkanBuffer() {
     }
 }
 
-void VulkanBuffer::load_from_cpu(const void* cpuData, uint32_t byteOffset,
-    uint32_t numBytes)
-{
+void VulkanBuffer::load_from_cpu(const void *cpu_data, VkDeviceSize byte_offset,
+                                 VkDeviceSize size) {
     // If a pointer to the buffer data has been passed, map the buffer and copy over the data
-    if (cpuData != nullptr) {
-        VK_CHECK_RESULT(vkMapMemory(device_->logicalDevice(), memory_, byteOffset, numBytes, 0, &mapped_));
-        memcpy(mapped_, cpuData, numBytes);
+    if (cpu_data != nullptr) {
+        VK_CHECK_RESULT(vkMapMemory(device_->logicalDevice(), memory_, byte_offset, size, 0, &mapped_));
+        memcpy(mapped_, cpu_data, size);
         if ((memory_property_flags_ & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT) == 0)
-            flush();
+            flush(size);
 
         if (mapped_) {
             vkUnmapMemory(device_->logicalDevice(), memory_);

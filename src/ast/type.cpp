@@ -3,6 +3,8 @@
 //
 
 #include "type.h"
+
+#include <utility>
 #include "type_registry.h"
 
 namespace ocarina {
@@ -58,26 +60,6 @@ const Type *Type::get_member(ocarina::string_view name) const noexcept {
     return nullptr;
 }
 
-void Type::update_dynamic_member_length(ocarina::string_view member_name, uint length) const noexcept {
-    Type *member = const_cast<Type *>(get_member(member_name));
-    member->dimension_ = length;
-    member->size_ = length * member->max_member_size();
-    update_structure_alignment_and_size();
-}
-
-void Type::update_structure_alignment_and_size() const noexcept {
-    vector<MemoryBlock> blocks;
-    for (const Type *member : members_) {
-        MemoryBlock block;
-        block.max_member_size = member->max_member_size();
-        block.size = member->size();
-        block.alignment = member->alignment();
-        blocks.push_back(block);
-    }
-    const_cast<Type *>(this)->alignment_ = structure_alignment(blocks);
-    const_cast<Type *>(this)->size_ = structure_size(blocks);
-}
-
 size_t Type::max_member_size() const noexcept {
     switch (tag_) {
         case Tag::BOOL:
@@ -107,7 +89,9 @@ void Type::for_each(TypeVisitor *visitor) {
     TypeRegistry::instance().for_each(visitor);
 }
 
-uint64_t Type::compute_hash() const noexcept { return hash64(description_);}
+uint64_t Type::compute_hash() const noexcept {
+    return hash64(description_);
+}
 
 void Type::update_name(ocarina::string_view desc) noexcept {
     switch (tag_) {

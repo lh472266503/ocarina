@@ -17,6 +17,8 @@
 #include "framework/renderer.h"
 #include "framework/primitive.h"
 #include "rhi/descriptor_set.h"
+#include "rhi/renderpass.h"
+#include "framework/camera.h"
 
 using namespace ocarina;
 
@@ -146,6 +148,21 @@ struct PerframeUBOWriter
     std::unique_ptr<DescriptorSet> per_frame_descriptor_set_ = nullptr;
 };
 
+struct GlobalUniformBuffer {
+    math3d::Matrix4 projection_matrix;
+    math3d::Matrix4 view_matrix;
+};
+
+//struct Vector3
+//{
+//    float x, y, z;
+//};
+//
+//struct Vector4
+//{
+//    float x, y, z, w;
+//};
+
 int main(int argc, char *argv[]) {
     TestContainer *container = new TestContainer();
 
@@ -179,7 +196,8 @@ int main(int argc, char *argv[]) {
     std::set<string> options;
     handle_ty vertex_shader = device.create_shader_from_file("D:\\github\\Vision\\src\\ocarina\\src\\backends\\vulkan\\builtin\\triangle.vert", ShaderType::VertexShader, options);
     handle_ty pixel_shader = device.create_shader_from_file("D:\\github\\Vision\\src\\ocarina\\src\\backends\\vulkan\\builtin\\triangle.frag", ShaderType::PixelShader, options);
-
+    //void **shaders = reinterpret_cast<void **>(vertex_shader, pixel_shader);
+    //device.create_descriptor_set_layout(shaders, 2);
 
     Primitive triangle;
     //std::vector<Primitive> opaques;
@@ -195,23 +213,30 @@ int main(int argc, char *argv[]) {
         triangle.set_pixel_shader(pixel_shader);
         
         VertexBuffer* vertex_buffer = device.create_vertex_buffer();
-        float3 positions[3] = { {  1.0f,  1.0f, 0.0f }, { -1.0f,  1.0f, 0.0f }, {  0.0f, -1.0f, 0.0f } };
-        vertex_buffer->add_vertex_stream(VertexAttributeType::Enum::Position, 3, sizeof(float3), (const void*)&positions[0]);
-        float4 colors[3] = {{1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}};
-        vertex_buffer->add_vertex_stream(VertexAttributeType::Enum::Color0, 3, sizeof(float4), (const void*)&colors[0]);
-
+        Vector3 positions[3] = {{1.0f, 1.0f, 0.0f}, {-1.0f, 1.0f, 0.0f}, {0.0f, -1.0f, 0.0f}};
+        vertex_buffer->add_vertex_stream(VertexAttributeType::Enum::Position, 3, sizeof(Vector3), (const void *)&positions[0]);
+        Vector4 colors[3] = {{1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}};
+        vertex_buffer->add_vertex_stream(VertexAttributeType::Enum::Color0, 3, sizeof(Vector4), (const void *)&colors[0]);
+        vertex_buffer->upload_data();
         triangle.set_vertex_buffer(vertex_buffer);
         pipeline_state.vertex_buffer = vertex_buffer;
 
         // Setup indices
-        std::vector<uint32_t> indices{ 0, 1, 2 };
+        std::vector<uint16_t> indices{ 0, 1, 2 };
         uint32_t indices_count = static_cast<uint32_t>(indices.size());
-        uint32_t indices_bytes = indices_count * sizeof(uint32_t);
-        IndexBuffer* index_buffer = device.create_index_buffer(indices.data(), indices_bytes);
+        uint32_t indices_bytes = indices_count * sizeof(uint16_t);
+        IndexBuffer *index_buffer = device.create_index_buffer(indices.data(), indices_count);
         triangle.set_index_buffer(index_buffer);
         triangle.set_pipeline_state(pipeline_state);
+
+        
         //opaques.push_back(triangle);
     };
+
+    Camera camera;
+    camera.set_aspect_ratio(800.0f / 600.0f);
+    camera.set_position({0.0f, 0.0f, -2.5f});
+    camera.set_target({0.0f, 0.0f, 0.0f});
 
     auto setup_renderer = [&]() {
         // Setup renderer if needed
@@ -220,13 +245,37 @@ int main(int argc, char *argv[]) {
     auto release_renderer = [&]() {
     };
 
-    triangle.set_geometry_data_setup(setup_triangle);
+    uint64_t push_constant_name_id = hash64("PushConstants");
+
+    auto pre_render_draw_item = [&](const DrawCallItem &item) {
+        //update push constants before draw
+        //item.descriptor_set_writer->update_push_constants(push_constant_name_id, (void *)&item.world_matrix, sizeof(item.world_matrix), item.pipeline_line);
+    };
+
+    triangle.set_geometry_data_setup(&device, setup_triangle);
+    triangle.set_draw_call_pre_render_function(pre_render_draw_item);
 
     Renderer renderer(&device);
 
     RenderPassCreation render_pass_creation;
+    render_pass_creation.swapchain_clear_color = make_float4(0.1f, 0.1f, 0.1f, 1.0f);
+    render_pass_creation.swapchain_clear_depth = 1.0f;
+    render_pass_creation.swapchain_clear_stencil = 0;
     RenderPass* render_pass = device.create_render_pass(render_pass_creation);
-    render_pass->add_draw_call(triangle.get_draw_call_item(&device));
+    void *shaders[2] = {reinterpret_cast<void *>(vertex_shader), reinterpret_cast<void *>(pixel_shader)};
+    //DescriptorSetWriter *global_descriptor_set_writer = device.create_descriptor_set_writer(device.get_global_descriptor_set("global_ubo"), shaders, 2);
+    DescriptorSet *global_descriptor_set = device.get_global_descriptor_set("global_ubo");
+    render_pass->add_global_descriptor_set("global_ubo", global_descriptor_set);
+    render_pass->set_begin_renderpass_callback([&](RenderPass *rp) {
+        //rp->set_clear_color(make_float4(0.1f, 0.1f, 0.1f, 1.0f));
+        GlobalUniformBuffer global_ubo_data = {camera.get_projection_matrix().transpose(), camera.get_view_matrix().transpose()};
+        global_descriptor_set->update_buffer(hash64("global_ubo"), &global_ubo_data, sizeof(GlobalUniformBuffer));
+        //global_descriptor_set_writer->update_buffer(hash64("global_ubo"), &global_ubo_data, sizeof(GlobalUniformBuffer));
+    });
+
+
+    auto draw_item = triangle.get_draw_call_item(&device, render_pass);
+    render_pass->add_draw_call(draw_item);
     renderer.add_render_pass(render_pass);
 
     auto image_io = Image::pure_color(make_float4(1, 0, 0, 1), ColorSpace::LINEAR, make_uint2(500));

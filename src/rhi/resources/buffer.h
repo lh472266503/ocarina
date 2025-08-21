@@ -17,7 +17,6 @@ class Buffer;
 template<typename T, int... Dims>
 class BufferView {
 private:
-    size_t element_size_{Buffer<T>::calculate_size()};
     handle_ty handle_{};
     size_t offset_{};
     size_t size_{};
@@ -30,8 +29,10 @@ public:
     BufferView(const Buffer<T, Dims...> &buffer);
     [[nodiscard]] handle_ty handle() const { return handle_; }
     [[nodiscard]] size_t size() const { return size_; }
-    [[nodiscard]] size_t element_size() const noexcept { return element_size_; }
+    [[nodiscard]] static constexpr size_t element_size() noexcept { return sizeof(T); }
     [[nodiscard]] size_t size_in_byte() const noexcept { return size_ * element_size(); }
+    [[nodiscard]] size_t offset() const noexcept { return offset_; }
+    [[nodiscard]] size_t offset_in_byte() const noexcept { return offset_ * element_size(); }
 
     const BufferProxy<T> &proxy() const noexcept {
         proxy_.handle = reinterpret_cast<T *>(head());
@@ -41,6 +42,15 @@ public:
 
     const BufferProxy<T> *proxy_ptr() const noexcept {
         return &proxy();
+    }
+
+    template<typename Dst>
+    [[nodiscard]] BufferView<Dst> view_as(size_t offset = 0, size_t size = 0) const noexcept {
+        size = size == 0 ? size_ - offset : size;
+        return BufferView<Dst>(handle_,
+                               (offset_ + offset) * sizeof(T) / sizeof(Dst),
+                               size * sizeof(T) / sizeof(Dst),
+                               total_size_ * sizeof(T) / sizeof(Dst));
     }
 
     BufferView(handle_ty handle, size_t offset, size_t size, size_t total_size)
@@ -58,19 +68,23 @@ public:
     template<typename Arg>
     requires is_buffer_or_view_v<Arg> && std::is_same_v<buffer_element_t<Arg>, T>
     [[nodiscard]] BufferCopyCommand *copy_from(const Arg &src, uint dst_offset = 0) noexcept {
-        return BufferCopyCommand::create(src.head(), head(), 0, dst_offset * element_size(),
+        return BufferCopyCommand::create(src.handle(), handle(),
+                                         src.offset_in_byte(),
+                                         (dst_offset + offset_) * element_size(),
                                          src.size_in_byte(), true);
     }
 
     template<typename Arg>
     requires is_buffer_or_view_v<Arg> && std::is_same_v<buffer_element_t<Arg>, T>
     [[nodiscard]] BufferCopyCommand *copy_to(Arg &dst, uint src_offset = 0) noexcept {
-        return BufferCopyCommand::create(head(), dst.head(), src_offset * element_size(),
-                                         0, dst.size_in_byte(), true);
+        return BufferCopyCommand::create(handle(), dst.handle(),
+                                         (src_offset + offset_) * element_size(),
+                                         dst.offset_in_byte(),
+                                         dst.size_in_byte(), true);
     }
 
     [[nodiscard]] BufferUploadCommand *upload(const void *data, bool async = true) const noexcept {
-        return BufferUploadCommand::create(data, head(), size_in_byte(), async);
+        return BufferUploadCommand::create(data, handle(), offset_in_byte(), size_in_byte(), async);
     }
 
     [[nodiscard]] BufferUploadCommand *upload_sync(const void *data) const noexcept {
@@ -78,7 +92,7 @@ public:
     }
 
     [[nodiscard]] BufferDownloadCommand *download(void *data, uint src_offset = 0, bool async = true) const noexcept {
-        return BufferDownloadCommand::create(data, head() + src_offset * element_size(),
+        return BufferDownloadCommand::create(data, handle(), src_offset * element_size(),
                                              size_in_byte(), async);
     }
 
@@ -107,42 +121,27 @@ public:
 
 protected:
     size_t size_{};
-    size_t element_size_{0};
-    mutable uint gl_handle_{0};
-    mutable void *gl_shared_handle_{0};
     mutable BufferProxy<T> proxy_{};
     string name_;
 
 public:
-    Buffer() : element_size_(calculate_size()) {}
+    Buffer() = default;
 
-    [[nodiscard]] size_t element_size() const noexcept {
-        return element_size_;
-    }
+    [[nodiscard]] static constexpr size_t element_size() noexcept { return sizeof(T); }
 
     Buffer(Device::Impl *device, size_t size, const string &desc = "")
-        : RHIResource(device, Tag::BUFFER, device->create_buffer(size * calculate_size(), desc)),
-          size_(size), element_size_(calculate_size()), name_(desc) {
+        : RHIResource(device, Tag::BUFFER, device->create_buffer(size * element_size(), desc)),
+          size_(size), name_(desc) {
         proxy_ptr();
     }
 
     OC_MAKE_MEMBER_GETTER_SETTER(name, )
 
-    static size_t calculate_size() noexcept {
-        if constexpr (is_struct_v<T>) {
-            return Type::of<T>()->size();
-        }
-        return sizeof(T);
-    }
-
     Buffer(BufferView<T, Dims...> buffer_view)
-        : RHIResource(nullptr, Tag::BUFFER, buffer_view.head()),
-          size_(buffer_view.size()), element_size_(calculate_size()) {
+        : RHIResource(nullptr, Tag::BUFFER, buffer_view.handle()),
+          size_(buffer_view.size()) {
         proxy_ptr();
     }
-
-    [[nodiscard]] uint &gl_handle() const noexcept { return gl_handle_; }
-    [[nodiscard]] void *&gl_shared_handle() const noexcept { return gl_shared_handle_; }
 
     void destroy() override {
         _destroy();
@@ -154,20 +153,9 @@ public:
         return BufferView<T>(handle_, offset, size, size_);
     }
 
-    void register_shared() const noexcept {
-        device()->register_shared_buffer(gl_shared_handle_, gl_handle_);
-    }
-
-    void mapping() const noexcept {
-        device()->mapping_shared_buffer(gl_shared_handle_, const_cast<handle_ty &>(handle_));
-    }
-
-    void unmapping() const noexcept {
-        device()->unmapping_shared(gl_shared_handle_);
-    }
-
-    void unregister_shared() const noexcept {
-        device()->unregister_shared(gl_shared_handle_);
+    template<typename Dst>
+    [[nodiscard]] BufferView<Dst> view_as(size_t offset = 0, size_t size = 0) const noexcept {
+        return view().template view_as<Dst>(offset, size);
     }
 
     // Move constructor
@@ -176,7 +164,6 @@ public:
         this->size_ = other.size_;
         this->name_ = std::move(other.name_);
         this->proxy_ = other.proxy_;
-        this->element_size_ = other.element_size_;
     }
 
     // Move assignment
@@ -186,7 +173,6 @@ public:
         this->size_ = other.size_;
         this->name_ = std::move(other.name_);
         this->proxy_ = other.proxy_;
-        this->element_size_ = other.element_size_;
         return *this;
     }
 

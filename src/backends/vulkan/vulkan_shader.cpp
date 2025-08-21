@@ -131,6 +131,11 @@ void VulkanShader::get_shader_variables(const ShaderReflection &reflection) {
         variable.shader_variables_ = std::move(ubo.shader_variables);
         variables_.push_back(variable);
     }
+
+    for (auto& push_constant : reflection.push_constant_buffers)
+    {
+        push_constant_size_ += push_constant.size;
+    }
 }
 
 void VulkanShader::get_vertex_attributes(const ShaderReflection& reflection)
@@ -262,7 +267,7 @@ void VulkanShaderManager::clear(VulkanDevice* device)
 {
     for (auto iter : vulkan_shaders_)
     {
-        delete iter.second;
+        ocarina::delete_with_allocator(iter.second);
     }
     vulkan_shaders_.clear();
     vulkan_shader_entries_.clear();

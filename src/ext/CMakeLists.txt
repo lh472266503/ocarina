@@ -28,9 +28,6 @@ add_subdirectory(EASTL)
 target_include_directories(EASTL PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/EASTL/include)
 target_link_libraries(ocarina-ext PUBLIC EASTL)
 
-add_subdirectory(pybind11)
-
-
 
 add_subdirectory(tinyexr)
 
@@ -56,9 +53,17 @@ set_property(TARGET SDL3_test PROPERTY FOLDER "ocarina/ext/SDL3")
 set_property(TARGET SDL3-shared PROPERTY FOLDER "ocarina/ext/SDL3")
 
 cmake_policy(SET CMP0148 NEW)
-find_package(Python REQUIRED COMPONENTS Interpreter Development)
-include_directories(${PYTHON_INCLUDE_DIRS})
-link_directories(${PYTHON_LIBRARIES})
+
+if (${OCARINA_PY})
+    add_subdirectory(pybind11)
+    find_package(Python REQUIRED COMPONENTS Interpreter Development)
+    include_directories(${PYTHON_INCLUDE_DIRS})
+    link_directories(${PYTHON_LIBRARIES})
+    target_include_directories(ocarina-ext INTERFACE
+            ${CMAKE_CURRENT_SOURCE_DIR}/pybind11/include/pybind11
+            ${CMAKE_CURRENT_SOURCE_DIR}/pybind11/include
+            ${PYTHON_INCLUDE_DIRS})
+endif ()
 
 add_subdirectory(SPIRV-Cross)
 set_property(TARGET spirv-cross PROPERTY FOLDER "ocarina/ext/spirv")
@@ -71,11 +76,6 @@ set_property(TARGET spirv-cross-cpp PROPERTY FOLDER "ocarina/ext/spirv")
 set_property(TARGET spirv-cross-reflect PROPERTY FOLDER "ocarina/ext/spirv")
 set_property(TARGET spirv-cross-util PROPERTY FOLDER "ocarina/ext/spirv")
 #list(APPEND SPIRV_LIBS "spirv-cross-core" "spirv-cross-hlsl" )
-
-target_include_directories(ocarina-ext INTERFACE
-        ${CMAKE_CURRENT_SOURCE_DIR}/pybind11/include/pybind11
-        ${CMAKE_CURRENT_SOURCE_DIR}/pybind11/include
-        ${PYTHON_INCLUDE_DIRS})
 
 target_link_libraries(ocarina-ext
         PUBLIC

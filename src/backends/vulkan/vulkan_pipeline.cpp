@@ -55,9 +55,7 @@ void VulkanPipelineManager::bind_topology(PrimitiveType primitive_type) {
     pipeline_key_cache_.topology = get_vulkan_topology(primitive_type);
 }
 
-std::tuple<VkPipelineLayout, VulkanPipeline> VulkanPipelineManager::get_or_create_pipeline(const PipelineState &pipeline_state, VulkanDevice *device, VkRenderPass render_pass) {
-    
-
+VulkanPipeline* VulkanPipelineManager::get_or_create_pipeline(const PipelineState &pipeline_state, VulkanDevice *device, VkRenderPass render_pass) {
     for (int i = 0; i < PipelineKey::MAX_SHADER_STAGE; ++i) {
         VulkanShader *shader = reinterpret_cast<VulkanShader *>(pipeline_state.shaders[i]);
         bind_shader(shader->shader_module(), i);
@@ -85,15 +83,36 @@ std::tuple<VkPipelineLayout, VulkanPipeline> VulkanPipelineManager::get_or_creat
     bind_topology(pipeline_state.primitive_type);
     bind_render_pass(render_pass);
 
-    VkDescriptorSetLayout descriptor_set_layouts[4] = {};
+    VkDescriptorSetLayout vk_descriptor_set_layouts[MAX_DESCRIPTOR_SETS_PER_SHADER] = {};
+    uint32_t layouts_count = 0;
     VulkanShader *shaders[2] = { vertex_shader, pixel_shader };
-    descriptor_set_layouts[0] = VulkanDriver::instance().create_descriptor_set_layout(shaders, 2)->layout();
+    std::array<DescriptorSetLayout *, MAX_DESCRIPTOR_SETS_PER_SHADER> descriptor_set_layouts = VulkanDriver::instance().create_descriptor_set_layout(shaders, 2);
+    for (uint32_t i = 0; i < MAX_DESCRIPTOR_SETS_PER_SHADER; ++i) {
+        if (descriptor_set_layouts[i]) {
+            vk_descriptor_set_layouts[i] = static_cast<VulkanDescriptorSetLayout*>(descriptor_set_layouts[i])->layout();
+            layouts_count++;
+        } else {
+            vk_descriptor_set_layouts[i] = VK_NULL_HANDLE;
+        }
+    }
 
-    pipeline_key_cache_.pipeline_layout = VulkanDriver::instance().get_pipeline_layout(descriptor_set_layouts, 1);
+    uint32_t push_constant_size = vertex_shader->get_push_constant_size();
+
+    pipeline_key_cache_.pipeline_layout = VulkanDriver::instance().get_pipeline_layout(vk_descriptor_set_layouts, layouts_count, push_constant_size);
+    for (uint32_t i = 0; i < layouts_count; ++i) {
+        if (descriptor_set_layouts[i]) {
+            VulkanDescriptorSetLayout* vk_descriptro_set_layout = static_cast<VulkanDescriptorSetLayout *>(descriptor_set_layouts[i]);
+            if (vk_descriptro_set_layout->is_global_ubo())
+            {
+                //global_descriptor_set_writers_->in
+            }
+        } 
+    }
+    
 
     auto it = vulkan_pipelines_.find(pipeline_key_cache_);
     if (it != vulkan_pipelines_.end()) {
-        return std::make_tuple(pipeline_key_cache_.pipeline_layout, it->second);
+        return it->second;
     }
 
     VkPipelineVertexInputStateCreateInfo vertex_input_state = {};
@@ -195,28 +214,27 @@ std::tuple<VkPipelineLayout, VulkanPipeline> VulkanPipelineManager::get_or_creat
     pipelineCreateInfo.basePipelineIndex = -1;
     pipelineCreateInfo.basePipelineHandle = VK_NULL_HANDLE;
 
-    VulkanPipeline pipeline_entry;
-    VkResult error = vkCreateGraphicsPipelines(device->logicalDevice(), VK_NULL_HANDLE, 1, &pipelineCreateInfo,
-                                               nullptr, &pipeline_entry.pipeline_);
+    VulkanPipeline *pipeline_entry = ocarina::new_with_allocator<VulkanPipeline>();
+    VK_CHECK_RESULT(vkCreateGraphicsPipelines(device->logicalDevice(), VK_NULL_HANDLE, 1, &pipelineCreateInfo,
+                                               nullptr, &pipeline_entry->pipeline_));
+    pipeline_entry->pipeline_layout_ = pipeline_key_cache_.pipeline_layout;
     vulkan_pipelines_.insert(std::make_pair(pipeline_key_cache_, pipeline_entry));
     
-    return std::make_tuple(pipeline_key_cache_.pipeline_layout, pipeline_entry);
+    return pipeline_entry;
 }
 
 void VulkanPipelineManager::clear(VulkanDevice *device) {
     for (auto &iter : vulkan_pipelines_) {
-        vkDestroyPipeline(device->logicalDevice(), iter.second.pipeline_, nullptr);
+        vkDestroyPipelineLayout(device->logicalDevice(), iter.second->pipeline_layout_, nullptr);
+        vkDestroyPipeline(device->logicalDevice(), iter.second->pipeline_, nullptr);
+        ocarina::delete_with_allocator(iter.second);
     }
     vulkan_pipelines_.clear();
 }
 
-VkPipelineLayout VulkanPipelineManager::get_pipeline_layout(VulkanDevice *device, VkDescriptorSetLayout *descriptset_layouts, uint8_t descriptset_layouts_count) {
+VkPipelineLayout VulkanPipelineManager::get_pipeline_layout(VulkanDevice *device, VkDescriptorSetLayout *descriptset_layouts, 
+    uint8_t descriptset_layouts_count, uint32_t push_constant_size) {
     assert(descriptset_layouts_count != 0);
-
-    VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
-    pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipelineLayoutInfo.setLayoutCount = descriptset_layouts_count;
-    pipelineLayoutInfo.pSetLayouts = descriptset_layouts;
 
     PipelineLayoutKey pipeline_layout_key;
     pipeline_layout_key.descriptor_set_count = descriptset_layouts_count;
@@ -229,8 +247,20 @@ VkPipelineLayout VulkanPipelineManager::get_pipeline_layout(VulkanDevice *device
         return it->second;
     }
 
+    VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
+    pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+    pipelineLayoutInfo.setLayoutCount = descriptset_layouts_count;
+    pipelineLayoutInfo.pSetLayouts = descriptset_layouts;
+
+    VkPushConstantRange push_constant_range{};
+    push_constant_range.stageFlags = {VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT};
+    push_constant_range.offset = 0;
+    push_constant_range.size = push_constant_size;
+    pipelineLayoutInfo.pPushConstantRanges = &push_constant_range;
+    pipelineLayoutInfo.pushConstantRangeCount = push_constant_size > 0 ? 1 : 0;
+
     VkPipelineLayout pipeline_layout;
-    vkCreatePipelineLayout(device->logicalDevice(), &pipelineLayoutInfo, nullptr, &pipeline_layout);
+    VK_CHECK_RESULT(vkCreatePipelineLayout(device->logicalDevice(), &pipelineLayoutInfo, nullptr, &pipeline_layout));
 
     pipeline_layouts_.insert(std::make_pair(pipeline_layout_key, pipeline_layout));
     return pipeline_layout;

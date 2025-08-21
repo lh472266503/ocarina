@@ -580,7 +580,7 @@ template<typename T, size_t N = 0u>
 struct is_matrix_impl : std::false_type {};
 
 template<size_t N, size_t M>
-struct is_matrix_impl<Matrix<N, M>, N> : std::true_type {};
+struct is_matrix_impl<Matrix<N, M>, M> : std::true_type {};
 
 template<size_t N, size_t M>
 struct is_matrix_impl<Matrix<N, M>, 0u> : std::true_type {};

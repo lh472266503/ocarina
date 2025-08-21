@@ -21,6 +21,8 @@ class Shader;
 class DescriptorSet;
 class DescriptorSetLayout;
 class Device;
+class DescriptorSetWriter;
+class Pipeline;
 
 class Primitive {
 public:
@@ -30,27 +32,47 @@ public:
     //Primitive(Primitive &&right);
     //Primitive &operator=(Primitive &&right);
     
-    void set_pipeline_state(const PipelineState &pipeline_state) { pipeline_state_ = pipeline_state; }
+    void set_pipeline_state(const PipelineState &pipeline_state) {
+        if (pipeline_state_ != pipeline_state) {
+            pipeline_state_ = pipeline_state;
+            pipeline_state_dirty = true;
+        }
+    }
     const PipelineState &get_pipeline_state() const { return pipeline_state_; }
 
     using GeometryDataSetup = ocarina::function<void(Primitive&)>;
 
-    void set_geometry_data_setup(GeometryDataSetup setup);
+    void set_geometry_data_setup(Device *device, GeometryDataSetup setup);
+    void set_draw_call_pre_render_function(DrawCallItem::PreRenderFunction pre_render_function) {
+        drawcall_pre_draw_function_ = pre_render_function;
+    }
     void set_vertex_buffer(VertexBuffer *vertex_buffer);
     void set_index_buffer(IndexBuffer *index_buffer);
     void set_vertex_shader(handle_ty vertex_shader);
     void set_pixel_shader(handle_ty pixel_shader);
-    void set_blend_state(const BlendState &blend_state) { pipeline_state_.blend_state = blend_state; }
-    void set_raster_state(const RasterState &raster_state) { pipeline_state_.raster_state = raster_state; }
-    void set_depth_stencil_state(const DepthStencilState &depth_stencil_state) { pipeline_state_.depth_stencil_state = depth_stencil_state; }
-    void set_primitive_type(PrimitiveType primitive_type) { pipeline_state_.primitive_type = primitive_type; }
+    void set_blend_state(const BlendState &blend_state) {
+        pipeline_state_.blend_state = blend_state;
+        pipeline_state_dirty = true;
+    }
+    void set_raster_state(const RasterState &raster_state) {
+        pipeline_state_.raster_state = raster_state;
+        pipeline_state_dirty = true;
+    }
+    void set_depth_stencil_state(const DepthStencilState &depth_stencil_state) {
+        pipeline_state_.depth_stencil_state = depth_stencil_state;
+        pipeline_state_dirty = true;
+    }
+    void set_primitive_type(PrimitiveType primitive_type) {
+        pipeline_state_.primitive_type = primitive_type;
+        pipeline_state_dirty = true;
+    }
 
     handle_ty get_vertex_shader() const { return vertex_shader_; }   
     handle_ty get_pixel_shader() const { return pixel_shader_; }
     VertexBuffer *get_vertex_buffer() const { return vertex_buffer_; }
     IndexBuffer *get_index_buffer() const { return index_buffer_; }
 
-    void set_per_object_descriptors();
+    void add_descriptor_set(DescriptorSet* descriptor_set);
 
     void set_position(const float3 &position) {
         position_ = position;
@@ -67,7 +89,7 @@ public:
         return world_matrix_;
     }
 
-    DrawCallItem get_draw_call_item(Device *device);
+    DrawCallItem get_draw_call_item(Device *device, RenderPass* render_pass);
 
 private:
     VertexBuffer* vertex_buffer_;
@@ -77,13 +99,22 @@ private:
     PipelineState pipeline_state_;
     //std::unique_ptr<VertexBuffer> vertex_buffer_;
     GeometryDataSetup geometry_data_setup_;
+    DrawCallItem::PreRenderFunction drawcall_pre_draw_function_ = nullptr;
 
     float4x4 world_matrix_;
     float3 position_;
     bool transform_dirty_ = true;
+    bool pipeline_state_dirty = true;
+    Pipeline *pipeline_ = nullptr;
 
-    unique_ptr<DescriptorSet> descriptor_set_ = nullptr;
-    DescriptorSetLayout* descriptor_set_layout_ = nullptr;
+    std::vector<DescriptorSet *> descriptor_sets_;
+
+    //std::array<DescriptorSet *, MAX_DESCRIPTOR_SETS_PER_SHADER> descriptor_sets_ = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
+
+    //std::array<DescriptorSetLayout *, MAX_DESCRIPTOR_SETS_PER_SHADER> descriptor_set_layouts_ = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
+
+    //std::array<DescriptorSetWriter *, MAX_DESCRIPTOR_SETS_PER_SHADER> descriptor_set_writers_ = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
+    DrawCallItem item_;
 };
 
 }// namespace ocarina

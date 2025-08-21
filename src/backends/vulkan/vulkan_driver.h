@@ -21,6 +21,8 @@ class VulkanVertexBuffer;
 class VulkanIndexBuffer;
 struct VulkanVertexStreamBinding;
 class VulkanDescriptorSetLayout;
+class DescriptorSetLayout;
+class VulkanDescriptorSet;
 
 class VulkanDriver : public concepts::Noncopyable {
 public:
@@ -31,7 +33,7 @@ public:
         return s_instance;
     }
     VulkanDevice *create_device(FileManager *file_manager, const InstanceCreation &instance_creation);
-    void bind_pipeline(VkPipelineLayout pipeline_layout, const VulkanPipeline &pipeline);
+    void bind_pipeline(const VulkanPipeline &pipeline);
     void terminate();
     void submit_frame();
     inline VkDevice device() const;
@@ -43,16 +45,16 @@ public:
     OC_MAKE_MEMBER_GETTER(current_buffer, )
     VkCommandBuffer get_current_command_buffer() const
     {
-        return draw_cmd_buffers[current_buffer_];
+        return draw_cmd_buffers_[current_buffer_];
     }
 
-    std::tuple<VkPipelineLayout, VulkanPipeline> get_pipeline(const PipelineState &pipeline_state, VkRenderPass render_pass);
+    VulkanPipeline* get_pipeline(const PipelineState &pipeline_state, VkRenderPass render_pass);
 
     void begin_frame();
     void end_frame();
 
-    VulkanDescriptorSetLayout* create_descriptor_set_layout(VulkanShader **shaders, uint32_t shaders_count);
-    VkPipelineLayout get_pipeline_layout(VkDescriptorSetLayout *descriptset_layouts, uint8_t descriptset_layouts_count);
+    std::array<DescriptorSetLayout *, MAX_DESCRIPTOR_SETS_PER_SHADER> create_descriptor_set_layout(VulkanShader *shaders[], uint32_t shaders_count);
+    VkPipelineLayout get_pipeline_layout(VkDescriptorSetLayout *descriptset_layouts, uint8_t descriptset_layouts_count, uint32_t push_constant_size);
 
     VulkanRenderPass* create_render_pass(const RenderPassCreation& render_pass_creation);
     void destroy_render_pass(VulkanRenderPass* render_pass);
@@ -67,6 +69,35 @@ public:
 
     void set_vertex_buffer(const VulkanVertexStreamBinding& vertex_stream);
     void draw_triangles(VulkanIndexBuffer* index_buffer);
+
+    void push_constants(VkPipelineLayout pipeline, void *data, uint32_t size, uint32_t offset);
+
+    void add_global_descriptor_set(uint64_t name_id, VulkanDescriptorSet *descriptor_set) {
+        if (global_descriptor_sets.find(name_id) != global_descriptor_sets.end()) {
+            //now allow multiple add global descriptor set
+            return;
+        }
+        global_descriptor_sets[name_id] = descriptor_set;
+    }
+
+    VulkanDescriptorSet *get_global_descriptor_set(uint64_t name_id) {
+        auto it = global_descriptor_sets.find(name_id);
+        if (it != global_descriptor_sets.end()) {
+            return it->second;
+        }
+        return nullptr;
+    }
+
+    VulkanDescriptorSet *get_global_descriptor_set(const std::string &name) {
+        uint64_t name_id = hash64(name);
+        return get_global_descriptor_set(name_id);
+    }
+
+    void bind_descriptor_sets(VulkanDescriptorSet **descriptor_sets, uint32_t descriptor_sets_num, VkPipelineLayout pipeline_layout);
+
+    VkRenderPass get_framebuffer_render_pass() const {
+        return renderpass_framebuffer;
+    }
     //VkResult copy_buffer(VulkanBuffer* src, VkBuffer dst);
 private:
     void setup_frame_buffer();
@@ -92,9 +123,9 @@ private:
     VkSubmitInfo submit_info;
 
     /** @brief Default command pool for the graphics queue family index */
-    VkCommandPool command_pool = VK_NULL_HANDLE;
+    VkCommandPool command_pool_ = VK_NULL_HANDLE;
     // Command buffers used for rendering
-    std::vector<VkCommandBuffer> draw_cmd_buffers;
+    std::vector<VkCommandBuffer> draw_cmd_buffers_;
     // Active frame buffer index
     uint32_t current_buffer_ = 0;
 
@@ -115,5 +146,8 @@ private:
     VkRenderPass renderpass_framebuffer{VK_NULL_HANDLE};
     //VkFormat depth_stencil_format;
     std::vector<VkFramebuffer> frame_buffers;
+
+    std::unordered_map<uint64_t, VulkanDescriptorSet *> global_descriptor_sets;
+    std::vector<VulkanRenderPass *> render_passes_;
 };
 }// namespace ocarina

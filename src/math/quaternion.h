@@ -8,17 +8,25 @@
 #include "dsl/dsl.h"
 #include "geometry.h"
 
-namespace vision {
+namespace ocarina {
 
 template<EPort p>
 class oc_quaternion {
 private:
-    oc_float4<p> _vw{make_float4(0, 0, 0, 1)};
+    oc_float4<p> vw_{make_float4(0, 0, 0, 1)};
 
 public:
     oc_quaternion() = default;
-    explicit oc_quaternion(oc_float4<p> val) : _vw(val) {}
-    explicit oc_quaternion(oc_float3<p> v, oc_float<p> w) : _vw(make_float4(v, w)) {}
+    explicit oc_quaternion(oc_float4<p> val) : vw_(val) {}
+    explicit oc_quaternion(oc_float3<p> v, oc_float<p> w) : vw_(make_float4(v, w)) {}
+
+    static oc_quaternion<p> from_axis_angle(oc_float3<p> axis, oc_float<p> theta) {
+        oc_float<p> half_theta = theta * 0.5f;
+        oc_float3<p> v = ocarina::sin(half_theta) * axis;
+        oc_float<p> w = ocarina::cos(half_theta);
+        return oc_quaternion<p>(v, w);
+    }
+
     static oc_quaternion<p> from_float3x3(oc_float3x3<p> m) {
         oc_quaternion<p> ret;
         float3 v;
@@ -74,14 +82,14 @@ public:
         return m;
     }
     oc_quaternion &operator+=(const oc_quaternion &q) {
-        _vw += q._vw;
+        vw_ += q.vw_;
         return *this;
     }
     oc_float3<p> v() const noexcept {
-        return _vw.xyz();
+        return vw_.xyz();
     }
     oc_float<p> w() const noexcept {
-        return _vw.w;
+        return vw_.w;
     }
     oc_float<p> theta() const noexcept {
         oc_float<p> half_theta = safe_acos(w());
@@ -97,12 +105,12 @@ public:
         return ret += q2;
     }
     oc_quaternion &operator-=(const oc_quaternion &q) {
-        _vw -= q._vw;
+        vw_ -= q.vw_;
         return *this;
     }
     oc_quaternion operator-() const {
         oc_quaternion ret;
-        ret._vw = -_vw;
+        ret.vw_ = -vw_;
         return ret;
     }
     friend oc_quaternion<p> operator-(const oc_quaternion<p> &q1, const oc_quaternion<p> &q2) {
@@ -110,7 +118,7 @@ public:
         return ret -= q2;
     }
     oc_quaternion &operator*=(oc_float<p> f) {
-        _vw *= f;
+        vw_ *= f;
         return *this;
     }
     oc_quaternion operator*(oc_float<p> f) const {
@@ -119,7 +127,7 @@ public:
         return ret;
     }
     oc_quaternion &operator/=(oc_float<p> f) {
-        _vw /= f;
+        vw_ /= f;
         return *this;
     }
     oc_quaternion operator/(oc_float<p> f) const {
@@ -132,4 +140,4 @@ public:
 using quaternion = oc_quaternion<H>;
 using Quaternion = oc_quaternion<D>;
 
-}// namespace vision
+}// namespace ocarina

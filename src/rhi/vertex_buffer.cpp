@@ -28,6 +28,11 @@ void VertexBuffer::add_vertex_stream(VertexAttributeType::Enum type, uint32_t co
     {
         vertex_streams_[(uint8_t)type].data = new uint8_t[count * stride];
         memcpy(vertex_streams_[(uint8_t)type].data, data, count * stride);
+        if (type == VertexAttributeType::Enum::Position)
+        {
+            Vector3 *pos = static_cast<Vector3 *>(vertex_streams_[(uint8_t)type].data);
+            int a = 0;
+        }
     }
     vertex_streams_[(uint8_t)type].type = type;
     vertex_streams_[(uint8_t)type].count = count;

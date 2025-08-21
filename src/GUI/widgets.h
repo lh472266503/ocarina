@@ -320,6 +320,11 @@ public:
         return combo(label, current_item, items.data(), items.size());
     }
 
+    template<size_t N>
+    bool combo(const string &label, int *current_item, const array<const char *, N> &items) noexcept {
+        return combo(label, current_item, items.data(), items.size());
+    }
+
     virtual ~Widgets() = default;
 };
 

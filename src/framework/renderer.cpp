@@ -13,6 +13,7 @@ Renderer::~Renderer() {
     if (release != nullptr) {
         release();
     }
+    render_passes_.clear();
 }
 
 void Renderer::set_render_callback(RenderCallback cb) {

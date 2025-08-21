@@ -10,7 +10,7 @@
 #include "base/scattering/interaction.h"
 #include "core/platform.h"
 #include "util/file_manager.h"
-#include "numpy.h"
+//#include "numpy.h"
 
 using namespace ocarina;
 
@@ -148,10 +148,10 @@ void test_compute_shader(Device &device, Stream &stream) {
 //List< float4x4 ,SOA, BindlessArrayByteBuffer> list = create_list<float4x4, SOA>(bindless_array.byte_buffer_var(byte_handle));
         List<float4x4 ,  SOA,ByteBufferVar> list = create_list<float4x4, SOA>(byte_buffer_var);
         //        return ;
-        //        auto soa = ba.byte_buffer_var(byte_handle).soa_view<Elm>();
-        //                auto soa = ba.byte_buffer_var(byte_handle).aos_view<Elm>();
-        //        auto soa = lst.buffer().soa_view<Elm>();
-        //        auto soa = list.buffer().soa_view<Elm>();
+        //        auto soa = ba.byte_buffer_var(byte_handle).soa_view_var<Elm>();
+        //                auto soa = ba.byte_buffer_var(byte_handle).aos_view_var<Elm>();
+        //        auto soa = lst.buffer().soa_view_var<Elm>();
+        //        auto soa = list.buffer().soa_view_var<Elm>();
 //        list.count() = 2;
         list.push_back( make_float4x4(dispatch_id() * 1.f));
         ml.write(dispatch_id(), make_float4x4(dispatch_id() * 2.f));
@@ -159,7 +159,7 @@ void test_compute_shader(Device &device, Stream &stream) {
         //      fbuffer.write(11, float4x4{6});
         //      $info("{} ", list.advance_index());
         //      auto soa1 = soa;a
-//        auto soa = byte_buffer_var.soa_view<Elm>();
+//        auto soa = byte_buffer_var.soa_view_var<Elm>();
 //        soa.write(0, make_float4x4(1.f * dispatch_id() + 1));
         //        list.at(dispatch_id()) = make_float4x4(1.f * dispatch_id() + 1);
                         Var a = list.read(dispatch_id());
@@ -278,10 +278,14 @@ void test_lambda(Device &device, Stream &stream) {
     //    bool abaa = ocarina::is_vector2_v<ocarina::detail::VectorStorage<int, 2>>;
 
     Kernel kernel = [&](Uint i) {
-        auto arr = DynamicArray<float>{1};
-        outline("principled transmission", [&] {
-            rcp(arr);
-        });
+
+        Float3x4 m3 = float3x4{};
+        Float4x3 m4 = float4x3{};
+
+//        auto arr = DynamicArray<float>{1};
+//        outline("principled transmission", [&] {
+//            rcp(arr);
+//        });
         return ;
 //        float_array *arr;
 //        Float f1 = 6;
@@ -547,16 +551,32 @@ void test_parameter_struct(Device &device, Stream &stream) {
     stream << synchronize() << commit();
 }
 
+template<size_t N, size_t M>
+[[nodiscard]] constexpr auto mul(ocarina::Matrix<N, M> m, ocarina::Vector<float, M> v) noexcept {
+    return [&]<size_t... i>(std::index_sequence<i...>) {
+        return ((v[i] * m[i]) + ...);
+    }(std::make_index_sequence<M>());
+}
+
+template<size_t N, size_t M, size_t Dim>
+[[nodiscard]] constexpr auto mul(ocarina::Matrix<N, Dim> lhs, ocarina::Matrix<Dim, M> rhs) noexcept {
+    return [&]<size_t... i>(std::index_sequence<i...>) {
+        return ocarina::Matrix<N, M>(mul(lhs , rhs[i])...);
+    }(std::make_index_sequence<M>());
+}
+
 int main(int argc, char *argv[]) {
-    auto m = float3x2() * float2x3();
+
+    float3x2 m2x = float3x2(1.f, 1.f, 1.f, 1.f, 1.f ,1.f);
+
+    auto m = (float3x2() * float2x3());
     cout << to_str(m) << endl;
 
-    auto m2 = float2x3() * float3x2();
+    auto m2 = (float2x3() * float3x2());
     cout << to_str(m2) << endl;
-
-    auto m3 = float2x3() * float4x2();
+//
+    auto m3 = (float4x2()* float2x3());
     cout << to_str(m3) << endl;
-//    return 0;
     fs::path path(argv[0]);
     FileManager &file_manager = FileManager::instance();
 

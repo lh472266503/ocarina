@@ -108,6 +108,47 @@ struct PipelineState {
     DepthStencilState depth_stencil_state;  
     MultiSampleState multiple_sample_state;
     PrimitiveType primitive_type = PrimitiveType::TRIANGLES;
+
+    
+
+    bool operator!=(const PipelineState &other) const {
+        return shaders[0] != other.shaders[0] ||
+            shaders[1] != other.shaders[1] ||
+            shaders[2] != other.shaders[2] ||
+            descriptorset_layout != other.descriptorset_layout ||
+            vertex_buffer != other.vertex_buffer ||
+            raster_state.cull_mode != other.raster_state.cull_mode ||
+            raster_state.front_face != other.raster_state.front_face ||
+            raster_state.depth_bias != other.raster_state.depth_bias ||
+            raster_state.depth_clamp != other.raster_state.depth_clamp ||
+            blend_state.srccolorblend_factor != other.blend_state.srccolorblend_factor ||
+            blend_state.dstcolorblend_factor != other.blend_state.dstcolorblend_factor ||
+            blend_state.srcalphablend_factor != other.blend_state.srcalphablend_factor ||
+            blend_state.dstalphablend_factor != other.blend_state.dstalphablend_factor ||
+            blend_state.colorBlendOp != other.blend_state.colorBlendOp ||
+            blend_state.alphaBlendOp != other.blend_state.alphaBlendOp ||
+            blend_state.color_mask != other.blend_state.color_mask ||
+            blend_state.blend_enable != other.blend_state.blend_enable ||
+            depth_stencil_state.depth_test_enable != other.depth_stencil_state.depth_test_enable ||
+            depth_stencil_state.depth_write_enable != other.depth_stencil_state.depth_write_enable ||
+            depth_stencil_state.depth_compare_op != other.depth_stencil_state.depth_compare_op ||
+            depth_stencil_state.depth_bounds_test_enable != other.depth_stencil_state.depth_bounds_test_enable ||
+            depth_stencil_state.stencil_test_enable != other.depth_stencil_state.stencil_test_enable ||
+            multiple_sample_state.sample_count != other.multiple_sample_state.sample_count ||
+            multiple_sample_state.alpha_to_coverage_enable != other.multiple_sample_state.alpha_to_coverage_enable ||
+            multiple_sample_state.alpha_to_one_enable != other.multiple_sample_state.alpha_to_one_enable ||
+            multiple_sample_state.sample_shading_enable != other.multiple_sample_state.sample_shading_enable;
+
+    }
+
+    bool operator==(const PipelineState &other) const {
+        return !(*this != other);
+    }
+};
+
+struct Pipeline
+{
+
 };
 
 }// namespace ocarina

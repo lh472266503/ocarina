@@ -21,7 +21,7 @@ namespace detail {
 }
 
 [[nodiscard]] bool is_letter_or_num(char ch) noexcept {
-    return std::isalnum(ch) || ch == '_';
+    return std::isalnum(ch) || ch == '_' || ch == ':';
 }
 
 [[nodiscard]] bool is_num(char ch) noexcept {
@@ -85,7 +85,6 @@ namespace detail {
         ret == "struct"sv ||
         ret == "buffer"sv ||
         ret == "texture"sv ||
-        ret == "d_array"sv ||
         ret == "array"sv) {
         auto [start, end] = bracket_matching_near(str);
         ret = str.substr(0, end + 1);
@@ -134,16 +133,12 @@ namespace detail {
  * MATRIX: matrix<2> | matrix<3> | matrix<4>
  * STRUCT: struct<4,TYPE...> | struct<8,TYPE...> | struct<16,TYPE...>
  */
-const Type *TypeRegistry::parse_type(ocarina::string_view desc, uint64_t ext_hash) noexcept {
+const Type *TypeRegistry::parse_type(ocarina::string_view desc) noexcept {
     if (desc == "void") {
         return nullptr;
     }
-    uint64_t hash = _hash(desc);
-    if (desc.starts_with("d_array")) {
-        // dynamic array need change attribute, special handling
-        hash = hash64(hash, ext_hash);
-    }
-    if (auto iter = _type_set.find(hash); iter != _type_set.cend()) {
+    uint64_t hash = compute_hash(desc);
+    if (auto iter = type_set_.find(hash); iter != type_set_.cend()) {
         try_add_to_current_function(*iter);
         return *iter;
     }
@@ -179,8 +174,6 @@ const Type *TypeRegistry::parse_type(ocarina::string_view desc, uint64_t ext_has
         parse_matrix(type.get(), desc);
     } else if (desc.starts_with("array")) {
         parse_array(type.get(), desc);
-    } else if (desc.starts_with("d_array")) {
-        parse_dynamic_array(type.get(), desc);
     } else if (desc.starts_with("struct")) {
         parse_struct(type.get(), desc);
     } else if (desc.starts_with("bytebuffer")) {
@@ -253,20 +246,21 @@ void TypeRegistry::parse_matrix(Type *type, ocarina::string_view desc) noexcept 
 
 void TypeRegistry::parse_struct(Type *type, string_view desc) noexcept {
     type->tag_ = Type::Tag::STRUCTURE;
-    uint64_t ext_hash = hash64(desc);
     auto lst = detail::find_content(desc);
-    auto alignment_str = lst[0];
-    bool is_builtin_struct = lst[1] == "true";
+    type->cname_ = lst[0];
+    auto alignment_str = lst[1];
+    bool is_builtin_struct = lst[2] == "true";
     type->builtin_struct_ = is_builtin_struct;
-    bool is_param_struct = lst[2] == "true";
+    bool is_param_struct = lst[3] == "true";
     type->param_struct_ = is_param_struct;
     auto alignment = std::stoi(string(alignment_str));
     type->alignment_ = alignment;
     auto size = 0u;
-    for (int i = 3; i < lst.size(); ++i) {
+    static constexpr uint member_offset = 4;
+    for (int i = member_offset; i < lst.size(); ++i) {
         auto type_str = lst[i];
-        type->members_.push_back(parse_type(type_str, hash64(ext_hash, i - 3)));
-        auto member = type->members_[i - 3];
+        type->members_.push_back(parse_type(type_str));
+        auto member = type->members_[i - member_offset];
         size = mem_offset(size, member->alignment());
         size += member->size();
     }
@@ -320,16 +314,11 @@ void TypeRegistry::parse_array(Type *type, ocarina::string_view desc) noexcept {
     type->size_ = size;
 }
 
-void TypeRegistry::parse_dynamic_array(Type *type, ocarina::string_view desc) noexcept {
-    auto p = desc.substr(2);
-    parse_array(type, desc.substr(2));
-}
-
 void TypeRegistry::add_type(ocarina::unique_ptr<Type> type) {
-    _type_set.insert(type.get());
-    type->index_ = _types.size();
+    type_set_.insert(type.get());
+    type->index_ = types_.size();
     try_add_to_current_function(type.get());
-    _types.push_back(std::move(type));
+    types_.push_back(std::move(type));
 }
 
 void TypeRegistry::try_add_to_current_function(const ocarina::Type *type) noexcept {
@@ -343,28 +332,28 @@ const Type *TypeRegistry::type_from(ocarina::string_view desc) noexcept {
 }
 
 size_t TypeRegistry::type_count() const noexcept {
-    std::unique_lock lock{_mutex};
-    return _types.size();
+    std::unique_lock lock{mutex_};
+    return types_.size();
 }
 
 const Type *TypeRegistry::type_at(uint i) const noexcept {
-    std::unique_lock lock{_mutex};
-    return _types[i].get();
+    std::unique_lock lock{mutex_};
+    return types_[i].get();
 }
 
-uint64_t TypeRegistry::_hash(ocarina::string_view desc) noexcept {
+uint64_t TypeRegistry::compute_hash(ocarina::string_view desc) noexcept {
     return Hashable::compute_hash<Type>(hash64(desc));
 }
 bool TypeRegistry::is_exist(ocarina::string_view desc) const noexcept {
-    return is_exist(_hash(desc));
+    return is_exist(compute_hash(desc));
 }
 
 bool TypeRegistry::is_exist(uint64_t hash) const noexcept {
-    return _type_set.find(hash) != _type_set.cend();
+    return type_set_.find(hash) != type_set_.cend();
 }
 
 void TypeRegistry::for_each(TypeVisitor *visitor) const noexcept {
-    for (const auto &t : _types) {
+    for (const auto &t : types_) {
         visitor->visit(t.get());
     }
 }

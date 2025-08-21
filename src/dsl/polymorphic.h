@@ -86,12 +86,18 @@ public:
             func(raw_ptr(Super::at(0u)));
             return;
         }
-        switch_(index, [&] {
+        switch_(index, [&](Case case_, Default default_) {
             for (int i = 0; i < Super::size(); ++i) {
                 comment(typeid(*Super::at(i)).name());
-                case_(i, [&] {func(raw_ptr(Super::at(i)));break_(); });
+                case_(i, [&](Break break_) {
+                    func(raw_ptr(Super::at(i)));
+                    break_();
+                });
             }
-            default_([&] { unreachable();break_(); });
+            default_([&](Break break_) {
+                unreachable();
+                break_();
+            });
         });
     }
 
@@ -106,12 +112,18 @@ public:
             func(raw_ptr(Super::at(0u)));
             return;
         }
-        switch_(index, [&] {
+        switch_(index, [&](Case case_, Default default_) {
             for (int i = 0; i < Super::size(); ++i) {
                 comment(typeid(*Super::at(i)).name());
-                case_(i, [&] {func(raw_ptr(Super::at(i)));break_(); });
+                case_(i, [&](Break break_) {
+                    func(raw_ptr(Super::at(i)));
+                    break_();
+                });
             }
-            default_([&] { unreachable();break_(); });
+            default_([&](Break break_) {
+                unreachable();
+                break_();
+            });
         });
     }
 };
@@ -472,12 +484,18 @@ public:
             func(raw_ptr(Super::at(0u)));
             return;
         }
-        switch_(corrected, [&] {
+        switch_(corrected, [&](Case case_, Default default_) {
             for (int i = 0; i < Super::size(); ++i) {
                 comment(typeid(*Super::at(i)).name());
-                case_(i, [&] {func(raw_ptr(Super::at(i)));break_(); });
+                case_(i, [&](Break break_) {
+                    func(raw_ptr(Super::at(i)));
+                    break_();
+                });
             }
-            default_([&] {unreachable();break_(); });
+            default_([&](Break break_) {
+                unreachable();
+                break_();
+            });
         });
     }
 
@@ -498,15 +516,18 @@ public:
             func(elm);
             return;
         }
-        switch_(corrected, [&] {
+        switch_(corrected, [&](Case case_, Default default_) {
             group_mgr_.for_each_representative([&](ptr_type *elm, uint i) {
                 comment(typeid(*elm).name());
-                case_(i, [&] {
+                case_(i, [&](Break break_) {
                     func(elm);
                     break_();
                 });
             });
-            default_([&] {unreachable();break_(); });
+            default_([&](Break break_) {
+                unreachable();
+                break_();
+            });
         });
     }
 

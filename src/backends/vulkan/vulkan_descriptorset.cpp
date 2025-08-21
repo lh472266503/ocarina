@@ -3,6 +3,8 @@
 #include "vulkan_descriptorset.h"
 #include "vulkan_shader.h"
 #include "util.h"
+#include "vulkan_driver.h"
+#include "vulkan_descriptorset_writer.h"
 
 namespace ocarina {
 
@@ -13,16 +15,28 @@ VulkanDescriptorSet::VulkanDescriptorSet(VulkanDevice *device, VulkanDescriptorS
     VkDescriptorSetLayout layouts[1] = {layout->layout()};
     allocInfo.pSetLayouts = layouts;
     allocInfo.descriptorSetCount = 1;
-
+    set_is_global(layout->is_global_ubo());
     // Might want to create a "DescriptorPoolManager" class that handles this case, and builds
     // a new pool whenever an old pool fills up. But this is beyond our current scope
     VK_CHECK_RESULT(vkAllocateDescriptorSets(device->logicalDevice(), &allocInfo, &descriptor_set_));
 
+
+    writer_ = ocarina::new_with_allocator<VulkanDescriptorSetWriter>(device, this);
 }
 
 VulkanDescriptorSet::~VulkanDescriptorSet()
 {
+    if (writer_) {
+        ocarina::delete_with_allocator(writer_);
+        writer_ = nullptr;
+    }
     vkFreeDescriptorSets(device_->logicalDevice(), layout_->descriptor_pool(), 1, &descriptor_set_);
+}
+
+void VulkanDescriptorSet::update_buffer(uint64_t name_id, void *data, uint32_t size) {
+    if (writer_) {
+        writer_->update_buffer(name_id, data, size);
+    }
 }
 
 VulkanDescriptorSetLayout::VulkanDescriptorSetLayout(VulkanDevice* device) : device_(device)
@@ -47,19 +61,27 @@ void VulkanDescriptorSetLayout::add_binding(const char* name,
     uint32_t binding,
     VkDescriptorType descriptor_type,
     VkShaderStageFlags stage_flags,
+    uint32_t size,
     uint32_t count)
 {
     char *end;
-    uint32_t nameid = std::strtoll(name, &end, 10);
+    uint64_t nameid = hash64(name);
 
     if (name_to_bindings_.find(nameid) == name_to_bindings_.end())
     {
         name_to_bindings_.insert(std::make_pair(nameid, binding));
-        VkDescriptorSetLayoutBinding descriptor_binding;
+        //VkDescriptorSetLayoutBinding descriptor_binding;
+        //descriptor_binding.binding = binding;
+        //descriptor_binding.descriptorType = descriptor_type;
+        //descriptor_binding.stageFlags = stage_flags; 
+        //descriptor_binding.descriptorCount = count; 
+        VulkanShaderVariableBinding descriptor_binding;
+        strcpy(descriptor_binding.name, name);
         descriptor_binding.binding = binding;
-        descriptor_binding.descriptorType = descriptor_type;
-        descriptor_binding.stageFlags = stage_flags; 
-        descriptor_binding.descriptorCount = count; 
+        descriptor_binding.type = descriptor_type;
+        descriptor_binding.shader_stage = stage_flags;
+        descriptor_binding.count = count;
+        descriptor_binding.size = size;
 
         bindings_.insert(std::make_pair(binding, descriptor_binding));
 
@@ -87,7 +109,12 @@ void VulkanDescriptorSetLayout::build_layout()
     layout_bindings.reserve(bindings_.size());
     for (auto& it : bindings_)
     {
-        layout_bindings.push_back(it.second);
+        VkDescriptorSetLayoutBinding descriptor_binding;
+        descriptor_binding.binding = it.second.binding;
+        descriptor_binding.descriptorType = it.second.type;
+        descriptor_binding.stageFlags = it.second.shader_stage;
+        descriptor_binding.descriptorCount = it.second.count; 
+        layout_bindings.push_back(descriptor_binding);
     }
     VkDescriptorSetLayoutCreateInfo info{};
     info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
@@ -139,9 +166,17 @@ void VulkanDescriptorSetLayout::build_layout()
     VK_CHECK_RESULT(vkCreateDescriptorPool(device_->logicalDevice(), &pool_create_info, nullptr, &descriptor_pool_));
 }
 
-std::unique_ptr<DescriptorSet> VulkanDescriptorSetLayout::allocate_descriptor_set() {
+DescriptorSet *VulkanDescriptorSetLayout::allocate_descriptor_set() {
     //ocarina::make_unique_with_allocator<VulkanDescriptorSet>(device_, descriptor_pool_);
-    return ocarina::make_unique_with_allocator<VulkanDescriptorSet>(device_, this);
+    return ocarina::new_with_allocator<VulkanDescriptorSet>(device_, this);
+}
+
+VulkanShaderVariableBinding VulkanDescriptorSetLayout::get_binding(uint64_t binding) {
+    auto it = bindings_.find(binding);
+    if (it != bindings_.end()) {
+        return it->second;
+    }
+    return {};
 }
 
 VulkanDescriptorPool::VulkanDescriptorPool(const DescriptorPoolCreation &creation, VulkanDevice *device) : device_(device), descriptor_pool_creation_(creation) {
@@ -215,23 +250,15 @@ VkDescriptorSet VulkanDescriptorPool::get_descriptor_set(VkDescriptorSetLayout l
 }
 
 
-VulkanDescriptorSetLayout* VulkanDescriptorManager::create_descriptor_set_layout(VulkanShader **shaders, uint32_t shaders_count) {
+std::array<DescriptorSetLayout*, MAX_DESCRIPTOR_SETS_PER_SHADER> VulkanDescriptorManager::create_descriptor_set_layout(VulkanShader **shaders, uint32_t shaders_count) {
 
-    uint64_t key = 0;
-    uint32_t shiftbit = 32;
-    for (uint32_t i = 0; i < shaders_count; ++i)
-    {
-        uint64_t handle = (uint64_t)shaders[i]->shader_module() << shiftbit;
-        key |= handle;
-        shiftbit -= 32;
-    }
+    std::array<DescriptorSetLayout *, MAX_DESCRIPTOR_SETS_PER_SHADER> descriptor_set_layouts_array = {};
 
-    auto it = descriptor_set_layouts_.find(key);
-    if (it != descriptor_set_layouts_.end())
-    {
-        return it->second;
-    }
-    VulkanDescriptorSetLayout* layout = ocarina::new_with_allocator<VulkanDescriptorSetLayout>(device_);
+    uint32_t count = 0;
+
+    VulkanDescriptorSetLayout *layout = nullptr;
+
+    DescriptorLayoutKey layout_key;
 
     for (uint32_t i = 0; i < shaders_count; ++i)
     {
@@ -241,15 +268,54 @@ VulkanDescriptorSetLayout* VulkanDescriptorManager::create_descriptor_set_layout
         for (uint32_t j = 0; j < variables_count; ++j)
         {
             const VulkanShaderVariableBinding& binding = shader->get_shader_variable(j);
-            layout->add_binding(binding.name, binding.binding, binding.type, binding.shader_stage, binding.count);
+            if (binding.type == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
+            {
+                //one uniform one descriptorset
+                DescriptorLayoutKey ubo_layout_key;
+                ubo_layout_key.bindings.push_back(binding);
+                auto it = descriptor_set_layouts_.find(ubo_layout_key);
+                if (it != descriptor_set_layouts_.end()) {
+                    descriptor_set_layouts_array[count++] = it->second;
+                }
+                else
+                {
+                    layout = ocarina::new_with_allocator<VulkanDescriptorSetLayout>(device_); 
+                    layout->add_binding(binding.name, binding.binding, binding.type, binding.shader_stage, binding.size, binding.count);
+                    layout->build_layout();
+                    layout->set_name(binding.name);
+                    if (strcmp(binding.name, "global_ubo") == 0) {
+                        layout->set_is_global_ubo(true);
+                        VulkanDriver::instance().add_global_descriptor_set(hash64(binding.name), static_cast<VulkanDescriptorSet*>(layout->allocate_descriptor_set()));
+                    }
+                    descriptor_set_layouts_array[count++] = layout;
+                    descriptor_set_layouts_.insert(std::make_pair(ubo_layout_key, layout));
+                    layout = nullptr;
+                }
+            } 
+            else
+                layout_key.bindings.push_back(binding);
+            //layout->add_binding(binding.name, binding.binding, binding.type, binding.shader_stage, binding.count);
         }
     }
 
-    layout->build_layout();
+    if (layout_key.bindings.size() > 0) {
+        layout_key.Normalize();
+        auto it = descriptor_set_layouts_.find(layout_key);
+        if (it != descriptor_set_layouts_.end()) {
+            descriptor_set_layouts_array[count++] = it->second;
+        } else {
+            layout = ocarina::new_with_allocator<VulkanDescriptorSetLayout>(device_);
+            for (const auto &binding : layout_key.bindings) {
+                layout->add_binding(binding.name, binding.binding, binding.type, binding.shader_stage, binding.size, binding.count);
+            }
+            layout->build_layout();
+            descriptor_set_layouts_array[count++] = layout;
+            descriptor_set_layouts_.insert(std::make_pair(layout_key, layout));
+            layout = nullptr;
+        }
+    }
 
-    descriptor_set_layouts_.insert(std::make_pair(key, layout));
-
-    return layout;
+    return descriptor_set_layouts_array;
 }
 
 void VulkanDescriptorManager::clear()

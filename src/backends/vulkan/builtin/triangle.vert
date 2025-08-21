@@ -8,7 +8,7 @@ struct VSInput
 };
 
 
-cbuffer ubo : register(b0) 
+cbuffer global_ubo : register(b0) 
 { 
 	float4x4 projectionMatrix;
 

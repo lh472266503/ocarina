@@ -60,15 +60,15 @@ auto export_matrix_base(PythonExporter &exporter) {
     string cls_name = ocarina::format("float{}x{}", N, M);
     auto mt = export_pod_type<Matrix<N, M>>(exporter);
     mt.def("__getitem__", [](Matrix<N, M> &self, size_t i) { return &self[i]; }, py::return_value_policy::reference_internal);
-    mt.def("__setitem__", [](Matrix<N, M> &self, size_t i, Vector<float, M> k) { self[i] = k; });
+    mt.def("__setitem__", [](Matrix<N, M> &self, size_t i, Vector<float, N> k) { self[i] = k; });
     mt.def("__neg__", [](Matrix<N, M> &self) { return -self; }, py::is_operator());
     mt.def("__mul__", [](Matrix<N, M> &self, float s) { return self * s; }, py::is_operator());
     mt.def("__rmul__", [](Matrix<N, M> &self, float s) { return self * s; }, py::is_operator());
-    mt.def("__mul__", [](Matrix<N, M> &self, ocarina::Vector<float, N> v) { return self * v; }, py::is_operator());
+    mt.def("__mul__", [](Matrix<N, M> &self, ocarina::Vector<float, M> v) { return self * v; }, py::is_operator());
 
-    mt.def("__mul__", [](Matrix<N, M> &self, ocarina::Matrix<2, N> rhs) { return self * rhs; }, py::is_operator());
-    mt.def("__mul__", [](Matrix<N, M> &self, ocarina::Matrix<3, N> rhs) { return self * rhs; }, py::is_operator());
-    mt.def("__mul__", [](Matrix<N, M> &self, ocarina::Matrix<4, N> rhs) { return self * rhs; }, py::is_operator());
+    mt.def("__mul__", [](Matrix<N, 2> &self, ocarina::Matrix<2, M> rhs) { return self * rhs; }, py::is_operator());
+    mt.def("__mul__", [](Matrix<N, 3> &self, ocarina::Matrix<3, M> rhs) { return self * rhs; }, py::is_operator());
+    mt.def("__mul__", [](Matrix<N, 4> &self, ocarina::Matrix<4, M> rhs) { return self * rhs; }, py::is_operator());
 
     mt.def("__truediv__", [](Matrix<N, M> &self, float s) { return self / s; }, py::is_operator());
     mt.def("__add__", [](Matrix<N, M> &self, ocarina::Matrix<N, M> rhs) { return self + rhs; }, py::is_operator());
@@ -90,16 +90,16 @@ auto export_matrix_base(PythonExporter &exporter) {
         }(std::make_index_sequence<M * N>());
     });
 
-    export_constructor([](std::array<Vector<float, M>, N> a) {
+    export_constructor([](std::array<Vector<float, N>, M> a) {
         return [&]<size_t... i>(std::index_sequence<i...>) {
             return Matrix<N, M>(a[i]...);
-        }(std::make_index_sequence<N>());
+        }(std::make_index_sequence<M>());
     });
 
-    export_constructor([](std::array<array<float, M>, N> a) {
+    export_constructor([](std::array<array<float, N>, M> a) {
         return [&]<size_t... i>(std::index_sequence<i...>) {
-            return Matrix<N, M>(Vector<float, M>(a[i].data())...);
-        }(std::make_index_sequence<N>());
+            return Matrix<N, M>(Vector<float, N>(a[i].data())...);
+        }(std::make_index_sequence<M>());
     });
 
     return mt;

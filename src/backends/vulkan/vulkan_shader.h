@@ -32,6 +32,7 @@ struct VulkanShaderVariableBinding
         count = other.count;
         shader_stage = other.shader_stage;
         size = other.size;
+        shader_variables_ = other.shader_variables_;
         strcpy(name, other.name);
     }
 
@@ -43,6 +44,8 @@ struct VulkanShaderVariableBinding
         shader_stage = other.shader_stage;
         size = other.size;
         strcpy(name, other.name);
+        shader_variables_ = other.shader_variables_;
+        return *this;
     }
 
     std::vector<ShaderReflection::ShaderVariable> shader_variables_;
@@ -61,9 +64,6 @@ private:
     static bool HLSLToSPRIV(std::span<char> hlsl, VkShaderStageFlagBits stage, const std::string_view &entryPoint, bool outputSymbols, std::vector<uint32_t> &outSpriv, std::string &errorLog);
     void get_shader_variables(const ShaderReflection &reflection);
     void get_vertex_attributes(const ShaderReflection &reflection);
-
-    
-
 public:
     VulkanShader(VulkanDevice *device, std::span<uint32_t> shaderCode, const std::string_view &entryPoint, VkShaderStageFlagBits stage);
     ~VulkanShader() override;
@@ -81,7 +81,6 @@ public:
 
     OC_MAKE_MEMBER_GETTER(shader_module, );
     OC_MAKE_MEMBER_GETTER(stage, );
-    //OC_MAKE_MEMBER_GETTER(descriptor_count, );
 
     const char* get_entry_point() const
     {

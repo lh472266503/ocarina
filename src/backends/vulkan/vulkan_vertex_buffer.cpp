@@ -58,7 +58,7 @@ VulkanVertexBuffer::~VulkanVertexBuffer()
 {
     for (auto it : vertex_bindings_)
     {
-        delete it.second;
+        ocarina::delete_with_allocator(it.second);
     }
 
     for (size_t i = 0; i < (size_t)VertexAttributeType::Enum::Count; ++i)
@@ -84,7 +84,7 @@ VulkanVertexStreamBinding *VulkanVertexBuffer::get_or_create_vertex_binding(Vulk
         return it->second;
     }
 
-    auto binding = new VulkanVertexStreamBinding();
+    auto binding = ocarina::new_with_allocator<VulkanVertexStreamBinding>();
     VulkanVertexStreamBinding::create_from_vertex_shader(vertex_shader, this, *binding);
     vertex_bindings_.insert(std::make_pair((handle_ty)vertex_shader->shader_module(), binding));
 

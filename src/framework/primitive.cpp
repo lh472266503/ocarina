@@ -9,6 +9,7 @@
 #include "rhi/index_buffer.h"
 #include "rhi/device.h"
 #include "rhi/descriptor_set.h"
+#include "rhi/resources/shader.h"
 
 namespace ocarina {
 
@@ -23,11 +24,21 @@ Primitive::~Primitive() {
     }
 }
 
-void Primitive::set_geometry_data_setup(GeometryDataSetup setup) {
+void Primitive::set_geometry_data_setup(Device *device, GeometryDataSetup setup) {
     geometry_data_setup_ = setup;
     if (geometry_data_setup_) {
         geometry_data_setup_(*this);
     }
+
+    descriptor_sets_.clear();
+    void *shaders[2] = {reinterpret_cast<void *>(vertex_shader_), reinterpret_cast<void *>(pixel_shader_)};
+    std::array<DescriptorSetLayout *, MAX_DESCRIPTOR_SETS_PER_SHADER> descriptor_set_layouts = device->create_descriptor_set_layout(shaders, 2);
+    for (size_t i = 0; i < MAX_DESCRIPTOR_SETS_PER_SHADER; ++i) {
+        if (descriptor_set_layouts[i] && !descriptor_set_layouts[i]->is_global_ubo()) {
+            add_descriptor_set(descriptor_set_layouts[i]->allocate_descriptor_set());
+        }
+    }
+    pipeline_state_dirty = true;
 }
 
 void Primitive::set_vertex_buffer(VertexBuffer *vertex_buffer) {
@@ -49,22 +60,52 @@ void Primitive::set_pixel_shader(handle_ty pixel_shader) {
     pipeline_state_.shaders[1] = pixel_shader;
 }
 
-DrawCallItem Primitive::get_draw_call_item(Device* device)
-{
-    DrawCallItem item;
-    item.pipeline_state = &pipeline_state_;
-    item.index_buffer = index_buffer_;
+void Primitive::add_descriptor_set(DescriptorSet *descriptor_set) {
+    auto it = std::find(descriptor_sets_.begin(), descriptor_sets_.end(), descriptor_set);
+    if (it == descriptor_sets_.end()) {
+        descriptor_sets_.push_back(descriptor_set);
+    }
+}
 
-    if (descriptor_set_layout_ == nullptr)
+DrawCallItem Primitive::get_draw_call_item(Device *device, RenderPass *render_pass) {
+    if (pipeline_state_dirty)
     {
-        void **shaders = reinterpret_cast<void**>(pipeline_state_.shaders);
-        descriptor_set_layout_ = device->create_descriptor_set_layout(shaders, 2);
+        descriptor_sets_.clear();
+        void *shaders[2] = {reinterpret_cast<void *>(vertex_shader_), reinterpret_cast<void *>(pixel_shader_)};
+        std::array<DescriptorSetLayout *, MAX_DESCRIPTOR_SETS_PER_SHADER> descriptor_set_layouts = device->create_descriptor_set_layout(shaders, 2);
+        for (size_t i = 0; i < MAX_DESCRIPTOR_SETS_PER_SHADER; ++i) {
+            if (descriptor_set_layouts[i] && !descriptor_set_layouts[i]->is_global_ubo()) {
+                add_descriptor_set(descriptor_set_layouts[i]->allocate_descriptor_set());
+            }
+        }
+        pipeline_ = device->get_pipeline(pipeline_state_, render_pass);
+        pipeline_state_dirty = false;
+    }
+    item_.pipeline_state = &pipeline_state_;
+    item_.index_buffer = index_buffer_;
+    //item.descriptor_set_writer = descriptor_set_writer_;
+    //item.world_matrix = world_matrix_;
+    if (item_.push_constant_data == nullptr) {
+        Shader<>::Impl *vertex_shader_impl = reinterpret_cast<Shader<>::Impl *>(vertex_shader_);
+        item_.push_constant_data = ocarina::allocate(vertex_shader_impl->get_push_constant_size());
+        item_.push_constant_size = vertex_shader_impl->get_push_constant_size();
+    }
+    if (item_.push_constant_data != nullptr) {
+        memcpy(item_.push_constant_data, &world_matrix_, sizeof(float4x4));
+    }
+    item_.pre_render_function = drawcall_pre_draw_function_;
+    item_.descriptor_set_count = descriptor_sets_.size();
+    for (size_t i = 0; i < MAX_DESCRIPTOR_SETS_PER_SHADER; ++i) {
+        if (i < descriptor_sets_.size() && !descriptor_sets_[i]->is_global()) {
+            item_.descriptor_sets[i] = descriptor_sets_[i];
+        } else {
+            item_.descriptor_sets[i] = nullptr;
+        }
     }
 
-    if (descriptor_set_ == nullptr) {
-        //descriptor_set_ = std::make_unique<DescriptorSet>(descriptor_set_layout_->allocate_descriptor_set());
-    }
-    return item;
+    item_.pipeline = pipeline_;
+
+    return item_;
 }
 
 }// namespace ocarina

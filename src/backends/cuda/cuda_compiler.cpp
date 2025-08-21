@@ -49,9 +49,9 @@ ocarina::string CUDACompiler::compile(const Function &function, int sm) const no
         "-default-device",
         "--use_fast_math",
         "-restrict",
-#ifndef NDEBUG
+//#ifndef NDEBUG
         "-lineinfo",
-#endif
+//#endif
         "-extra-device-vectorization",
         "-dw",
         "-w"};

@@ -99,6 +99,24 @@ public:
         return ret;
     }
 
+    template<typename U, size_t N>
+    static DynamicArray<T> from_vec(Vector<U, N> vec) noexcept {
+        DynamicArray<T> ret{N};
+        for (uint i = 0; i < N; ++i) {
+            ret[i] = vec[i];
+        }
+        return ret;
+    }
+
+    template<typename U, size_t N>
+    static DynamicArray<T> from_vec(const Var<Vector<U, N>> &vec) noexcept {
+        DynamicArray<T> ret{N};
+        for (uint i = 0; i < N; ++i) {
+            ret[i] = vec[i];
+        }
+        return ret;
+    }
+
     template<typename... Args>
     static DynamicArray<T> create(Args &&...args) noexcept {
         return create(ocarina::array<Var<T>, sizeof...(args)>{OC_FORWARD(args)...});
@@ -214,6 +232,12 @@ public:
                 f(i);
             }
         }
+    }
+
+    [[nodiscard]] DynamicArray<T> clamp(const Var<T> &min_, const Var<T> &max_) const noexcept {
+        return map([&](const Var<T> &val) {
+            return ocarina::clamp(val, min_, max_);
+        });
     }
 
     [[nodiscard]] Var<T> sum() const noexcept {

@@ -11,19 +11,19 @@ namespace ocarina {
 template<size_t N, size_t M>
 struct Matrix {
 public:
-    static constexpr auto row_num = M;
-    static constexpr auto col_num = N;
+    static constexpr auto row_num = N;
+    static constexpr auto col_num = M;
     static constexpr auto element_num = M * N;
     using scalar_type = float;
-    using vector_type = Vector<scalar_type, M>;
-    using array_t = array<vector_type, N>;
+    using vector_type = Vector<scalar_type, N>;
+    using array_t = array<vector_type, M>;
 
 private:
     array_t cols_{};
 
 public:
     template<typename... Args>
-    requires(sizeof...(Args) == N)
+    requires(sizeof...(Args) == M)
     explicit constexpr Matrix(Args &&...args) noexcept
         : cols_(array_t{static_cast<vector_type>(OC_FORWARD(args))...}) {}
 
@@ -32,16 +32,16 @@ public:
     explicit constexpr Matrix(Args &&...args) noexcept
         : cols_([&]<size_t... i>(std::index_sequence<i...>,
                                  const array<scalar_type, element_num> &arr) {
-              return array_t{vector_type{addressof(arr.data()[i * M])}...};
-          }(std::make_index_sequence<N>(), array<scalar_type, element_num>{static_cast<scalar_type>(OC_FORWARD(args))...})) {
+              return array_t{vector_type{addressof(arr.data()[i * N])}...};
+          }(std::make_index_sequence<M>(), array<scalar_type, element_num>{static_cast<scalar_type>(OC_FORWARD(args))...})) {
     }
 
     template<size_t NN, size_t MM>
     requires(NN >= N && MM >= M)
     explicit constexpr Matrix(Matrix<NN, MM> mat) noexcept
         : cols_{[&]<size_t... i>(std::index_sequence<i...>) {
-              return std::array<Vector<float, M>, N>{Vector<float, M>{mat[i]}...};
-          }(std::make_index_sequence<N>())} {}
+              return std::array<Vector<float, N>, M>{Vector<float, N>{mat[i]}...};
+          }(std::make_index_sequence<M>())} {}
 
     constexpr Matrix(scalar_type s = 1) noexcept
         : cols_([&]<size_t... i>(std::index_sequence<i...>) {
@@ -62,7 +62,7 @@ public:
     [[nodiscard]] Matrix<N, M> func(Matrix<N, M> m) noexcept { \
         return [&]<size_t... i>(std::index_sequence<i...>) {   \
             return ocarina::Matrix<N, M>(func(m[i])...);       \
-        }(std::make_index_sequence<N>());                      \
+        }(std::make_index_sequence<M>());                      \
     }
 
 OC_MATRIX_UNARY_FUNC(rcp)
@@ -136,14 +136,14 @@ template<size_t N, size_t M>
 [[nodiscard]] constexpr auto operator-(ocarina::Matrix<N, M> m) {
     return [&]<size_t... i>(std::index_sequence<i...>) {
         return ocarina::Matrix<N, M>((-m[i])...);
-    }(std::make_index_sequence<N>());
+    }(std::make_index_sequence<M>());
 }
 
 template<size_t N, size_t M>
 [[nodiscard]] constexpr auto operator*(ocarina::Matrix<N, M> m, float s) {
     return [&]<size_t... i>(std::index_sequence<i...>) {
         return ocarina::Matrix<N, M>((m[i] * s)...);
-    }(std::make_index_sequence<N>());
+    }(std::make_index_sequence<M>());
 }
 
 template<size_t N, size_t M>
@@ -157,24 +157,24 @@ template<size_t N, size_t M>
 }
 
 template<size_t N, size_t M>
-[[nodiscard]] constexpr auto operator*(ocarina::Matrix<N, M> m, ocarina::Vector<float, N> v) noexcept {
+[[nodiscard]] constexpr auto operator*(ocarina::Matrix<N, M> m, ocarina::Vector<float, M> v) noexcept {
     return [&]<size_t... i>(std::index_sequence<i...>) {
         return ((v[i] * m[i]) + ...);
-    }(std::make_index_sequence<N>());
+    }(std::make_index_sequence<M>());
 }
 
 template<size_t N, size_t M, size_t Dim>
-[[nodiscard]] constexpr auto operator*(ocarina::Matrix<N, M> lhs, ocarina::Matrix<Dim, N> rhs) noexcept {
+[[nodiscard]] constexpr auto operator*(ocarina::Matrix<N, Dim> lhs, ocarina::Matrix<Dim, M> rhs) noexcept {
     return [&]<size_t... i>(std::index_sequence<i...>) {
-        return ocarina::Matrix<Dim, M>(lhs * rhs[i]...);
-    }(std::make_index_sequence<Dim>());
+        return ocarina::Matrix<N, M>((lhs * rhs[i])...);
+    }(std::make_index_sequence<M>());
 }
 
 template<size_t N, size_t M>
 [[nodiscard]] constexpr auto operator+(ocarina::Matrix<N, M> lhs, ocarina::Matrix<N, M> rhs) noexcept {
     return [&]<size_t... i>(std::index_sequence<i...>) {
         return ocarina::Matrix<N, M>(lhs[i] + rhs[i]...);
-    }(std::make_index_sequence<N>());
+    }(std::make_index_sequence<M>());
 }
 
 template<size_t N, size_t M>
@@ -212,16 +212,16 @@ OC_MAKE_MATRIX_(4, 2)
 OC_MAKE_MATRIX_(4, 3)
 OC_MAKE_MATRIX_(4, 4)
 
-template<size_t N, size_t M>
-[[nodiscard]] constexpr Matrix<M, N> transpose(const Matrix<N, M> &mat) noexcept {
-    Matrix<M, N> ret = make_float<M, N>();
-    auto func_n = [&]<size_t... n>(size_t i, std::index_sequence<n...>) {
-        return Vector<float, N>((mat[n][i])...);
+template<size_t M, size_t N>
+[[nodiscard]] constexpr Matrix<N, M> transpose(const Matrix<M, N> &mat) noexcept {
+    Matrix<N, M> ret = make_float<N, M>();
+    auto func_m = [&]<size_t... m>(size_t i, std::index_sequence<m...>) {
+        return Vector<float, N>((mat[m][i])...);
     };
-    auto func_m = [&]<size_t... m>(std::index_sequence<m...>) {
-        return Matrix<M, N>(func_n(m, std::make_index_sequence<N>())...);
+    auto func_n = [&]<size_t... n>(std::index_sequence<n...>) {
+        return Matrix<N, M>(func_m(n, std::make_index_sequence<N>())...);
     };
-    return func_m(std::make_index_sequence<M>());
+    return func_n(std::make_index_sequence<M>());
 }
 
 [[nodiscard]] constexpr auto make_float3x3(float2x2 m) noexcept {
@@ -237,12 +237,12 @@ template<size_t N, size_t M>
                     float4{0.0f, 0.0f, 0.0f, 1.0f}};
 }
 
-[[nodiscard]] constexpr auto make_float4x4(float3x4 m) noexcept {
+[[nodiscard]] constexpr auto make_float4x4(float4x3 m) noexcept {
     return float4x4{m[0], m[1], m[2],
                     float4{0.0f, 0.0f, 0.0f, 1.0f}};
 }
 
-[[nodiscard]] constexpr auto make_float4x4(float4x3 m) noexcept {
+[[nodiscard]] constexpr auto make_float4x4(float3x4 m) noexcept {
     return float4x4{make_float4(m[0], 0.0f),
                     make_float4(m[1], 0.0f),
                     make_float4(m[2], 0.0f),
