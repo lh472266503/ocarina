@@ -4,11 +4,11 @@
 
 #include "core/stl.h"
 #include "dsl/dsl.h"
-#include "util/file_manager.h"
+#include "rhi/context.h"
 #include "rhi/common.h"
 #include <windows.h>
 #include "math/base.h"
-#include "util/image.h"
+#include "core/image.h"
 #include "dsl/dsl.h"
 
 using namespace ocarina;
@@ -53,7 +53,7 @@ auto get_cube(float x = 1, float y = 1, float z = 1) {
 
 int main(int argc, char *argv[]) {
     fs::path path(argv[0]);
-    FileManager &file_manager = FileManager::instance();
+    RHIContext &file_manager = RHIContext::instance();
     file_manager.clear_cache();
     Device device = file_manager.create_device("cuda");
     device.init_rtx();

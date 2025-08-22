@@ -12,7 +12,7 @@ namespace ocarina {
 
 using handle_ty = uint64_t;
 
-class RHIResource : public concepts::Noncopyable {
+class OC_RHI_API RHIResource : public concepts::Noncopyable {
 public:
     enum Tag : uint8_t {
         BUFFER,

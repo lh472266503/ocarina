@@ -130,7 +130,7 @@ OC_NDSC_INLINE uint32_t format_size_in_bytes(PixelStorage pixel_storage) {
     }
 }
 
-class ImageBase : public concepts::Noncopyable {
+class OC_CORE_API ImageBase : public concepts::Noncopyable {
 protected:
     PixelStorage pixel_storage_{PixelStorage::UNKNOWN};
     uint2 resolution_{};

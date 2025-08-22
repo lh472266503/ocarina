@@ -143,6 +143,9 @@ protected:
 
 public:
     [[nodiscard]] ocarina::shared_ptr<Function> &function() const noexcept { return function_; }
+    void set_description(const std::string &desc) noexcept {
+        function()->set_description(desc);
+    }
 };
 
 namespace detail {

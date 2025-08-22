@@ -55,7 +55,7 @@
 #define OC_UTIL_API __declspec(dllimport)
 #endif
 
-#ifdef OC_MARH_EXPORT_DLL
+#ifdef OC_MATH_EXPORT_DLL
 #define OC_MATH_API __declspec(dllexport)
 #else
 #define OC_MATH_API __declspec(dllimport)
@@ -65,6 +65,12 @@
 #define OC_GUI_API __declspec(dllexport)
 #else
 #define OC_GUI_API __declspec(dllimport)
+#endif
+
+#ifdef OC_EXT_EXPORT_DLL
+#define OC_EXT_API __declspec(dllexport)
+#else
+#define OC_EXT_API __declspec(dllimport)
 #endif
 
 #ifdef _MSC_VER

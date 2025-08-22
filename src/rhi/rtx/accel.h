@@ -10,7 +10,7 @@
 #include "dsl/var.h"
 
 namespace ocarina {
-class Accel : public RHIResource {
+class OC_RHI_API Accel : public RHIResource {
 private:
     uint triangle_num_{};
     uint vertex_num_{};

@@ -12,10 +12,10 @@
 namespace ocarina {
 
 using basic_types = ocarina::tuple<
-    bool, float, int, uint, uint64t,
-    bool2, float2, int2, uint2, uint64t2,
-    bool3, float3, int3, uint3, uint64t3,
-    bool4, float4, int4, uint4, uint64t4,
+    bool, float, int, uint, ulong,
+    bool2, float2, int2, uint2, ulong2,
+    bool3, float3, int3, uint3, ulong3,
+    bool4, float4, int4, uint4, ulong4,
     float2x2, float2x3, float2x4,
     float3x2, float3x3, float3x4,
     float4x2, float4x3, float4x4>;

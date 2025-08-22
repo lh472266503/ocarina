@@ -3,7 +3,6 @@
 //
 #include "rhi/device.h"
 #include "vulkan_instance.h"
-#include "util/file_manager.h"
 #include "util.h"
 #if defined(_WIN32)
 #include <vulkan/vulkan_win32.h>

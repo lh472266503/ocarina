@@ -2,14 +2,14 @@
 // Created by Zero on 2023/11/23.
 //
 
-#include "util/image.h"
+#include "core/image.h"
 #include "core/stl.h"
 #include "dsl/dsl.h"
 #include "rhi/common.h"
 #include "math/base.h"
 #include "base/scattering/interaction.h"
 #include "core/platform.h"
-#include "util/file_manager.h"
+#include "rhi/context.h"
 //#include "numpy.h"
 
 using namespace ocarina;
@@ -32,8 +32,8 @@ OC_STRUCT(, Triple, i, j, k, h){
 struct Pair {
     uint i{50};
     Triple triple;
-    //    BufferProxy<float3> b;
-    //    BufferProxy<Triple> t;
+    //    BufferDesc<float3> b;
+    //    BufferDesc<Triple> t;
     Pair() = default;
 };
 
@@ -44,14 +44,15 @@ OC_STRUCT(, Pair, i, triple){
 
 struct Param {
     uint i{50};
-    BufferProxy<float3> b;
-    BufferProxy<Triple> t;
+    BufferDesc<float3> b;
+    BufferDesc<Triple> t;
     Pair pa;
+    BufferDesc<float3> b2;
     Param() = default;
 };
 
 /// register a DSL struct, if you need upload a struct to device, be sure to register
-OC_PARAM_STRUCT(, Param, i, b, t, pa){
+OC_PARAM_STRUCT(, Param, i, b, t, pa, b2){
 
 };
 
@@ -270,17 +271,37 @@ void test_lambda(Device &device, Stream &stream) {
 
     bool aaa = match_dsl_unary_func_v<decltype(f.xyz())>;
 
+    auto rb = device.create_byte_buffer(2 * sizeof(Ray));
+
+    auto rb2 = device.create_buffer<Ray>(2);
+
+    vector<Ray> host_ray;
+    host_ray.emplace_back(make_float3(1,2,3), float3(4,5,6));
+    host_ray.emplace_back(make_float3(7,9,9), float3(7,6,3));
+
+    rb.upload_immediately(host_ray.data());
+    rb2.upload_immediately(host_ray.data());
+    ByteBufferView rbv = rb.view();
+    auto sv = SOAView<Ray, ByteBufferView>(rbv);
+
     //    auto inv = int4::rcp_impl(f4);
     //    auto ab = float4::abs_impl(make_float4(-1).xxxx());
     //    auto ab2 = absf(make_int4(-1));
     //    AVector<float, 4> af;
     //    Vector<float, 4> af1;
     //    bool abaa = ocarina::is_vector2_v<ocarina::detail::VectorStorage<int, 2>>;
-
-    Kernel kernel = [&](Uint i) {
-
-        Float3x4 m3 = float3x4{};
-        Float4x3 m4 = float4x3{};
+    Kernel kernel = [&](Var<ulong> i, ByteBufferVar rbn) {
+//        ocarina::SOAViewVar<Ray, ByteBufferVar> soa;
+//            auto ray = rb2.read(0);
+        auto rays = make_aos_view_var<Ray>(rbn);
+            auto ray2 = rb.load_as<Ray>(0);
+            auto ray3 = rays.read(0);
+        $info("{} {} {} {}    {}  {}", ray2.dir_max, i, i);
+        $info("{} {} {} {}", ray3.dir_max);
+//
+//        Float3x4 m3 = float3x4{};
+//        Float4x3 m4 = float4x3{};
+//        $info("{} {} {} {}", m4[0]);
 
 //        auto arr = DynamicArray<float>{1};
 //        outline("principled transmission", [&] {
@@ -436,10 +457,10 @@ void test_lambda(Device &device, Stream &stream) {
 
 
 
-    stream << shader(1).dispatch(1)
+    stream << shader(ulong(1-2), rb).dispatch(1)
            //           << stk.download(vvv.data())
            //           << stk.view(400, 4).upload(&ui)
-           << shader(1).dispatch(1)
+//           << shader(1).dispatch(1)
            << Env::printer().retrieve()
            << synchronize() << commit();
 
@@ -524,29 +545,36 @@ void test_parameter_struct(Device &device, Stream &stream) {
     stream << tri.upload(triangles.data());
 
     Param p;
-    p.b = vert.proxy();
-    p.t = tri.proxy();
+    p.b = vert.descriptor();
+    p.t = tri.descriptor();
+    auto sss = alignof( Triple);
+    auto ofs0 = offsetof(Param, i);
+    auto ofs1 = offsetof(Param, b);
+    auto ofs2 = offsetof(Param, t);
+    auto ofs3 = offsetof(Param, pa);
+    auto ofs4 = offsetof(Param, b2);
     //    p.pa.b = vert.proxy();
 
-    Kernel kernel = [&](Var<Pair> pa, BufferVar<float3> b3) {
+    Kernel kernel = [&](Var<Param> pp) {
         //        $info("{} ", pp.pa.b.at(dispatch_id()).x);
         //        vert.at(dispatch_id()).x += 90;
-        pa.triple.h.bary = make_float2(1.f);
-        $outline {
-            auto v = pa.triple.h.bary.xy();
-            int i = 0;
-            //            auto v = pp.pa.b.read(dispatch_id());
-            //            $info("{} {} {}  -- ", v);
-        };
-        //        atomic_add(pp.t.at(0).i, 5.6f);
-        //        atomic_sub(pp.t.at(0).j, 1);
-        //        atomic_exch(pp.t.at(dispatch_id()).k, dispatch_id() * 25 + 2);
-        //        auto v =  pp.t.at(dispatch_id()) ;
-        //        $info("{} {} {} ", v.i, v.j, v.k);
+//        pa.triple.h.bary = make_float2(1.f);
+//        $outline {
+//            auto v = pa.triple.h.bary.xy();
+//            int i = 0;
+//            //            auto v = pp.pa.b.read(dispatch_id());
+//            //            $info("{} {} {}  -- ", v);
+//        };
+                atomic_add(pp.t.at(0).i, 5.6f);
+                atomic_sub(pp.t.at(0).j, 1);
+                atomic_exch(pp.t.at(dispatch_id()).k, dispatch_id() * 25 + 2);
+                auto j = atomic_CAS(pp.t.at(0).j, 4294967295u, 100u);
+                auto v =  pp.t.at(dispatch_id()) ;
+                $info("{} {} {}  {}  {}", v.i, v.j, v.k, j, pp.t.at(0).j);
     };
     auto shader = device.compile(kernel, "param struct");
 
-    stream << shader(p.pa, vert).dispatch(2);
+    stream << shader(p).dispatch(2);
     stream << Env::printer().retrieve();
     stream << synchronize() << commit();
 }
@@ -578,7 +606,7 @@ int main(int argc, char *argv[]) {
     auto m3 = (float4x2()* float2x3());
     cout << to_str(m3) << endl;
     fs::path path(argv[0]);
-    FileManager &file_manager = FileManager::instance();
+    RHIContext &file_manager = RHIContext::instance();
 
     /**
      * Conventional scheme
@@ -614,8 +642,8 @@ int main(int argc, char *argv[]) {
     auto b4 = all(bool_4.ww());
 
 //    test_compute_shader(device, stream);
-    //    test_parameter_struct(device, stream);
-        test_lambda(device, stream);
+        test_parameter_struct(device, stream);
+//        test_lambda(device, stream);
 
     //    test_poly();
     return 0;

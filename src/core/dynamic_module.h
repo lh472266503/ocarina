@@ -9,7 +9,7 @@
 #include "core/concepts.h"
 
 namespace ocarina {
-class DynamicModule : public concepts::Noncopyable {
+class OC_CORE_API DynamicModule : public concepts::Noncopyable {
 private:
     void *handle_{};
     static ocarina::vector<fs::path> &search_path();

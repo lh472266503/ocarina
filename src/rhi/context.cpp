@@ -2,7 +2,7 @@
 // Created by Zero on 06/06/2022.
 //
 
-#include "file_manager.h"
+#include "context.h"
 #include "core/dynamic_module.h"
 #include "rhi/device.h"
 #include "core/platform.h"
@@ -39,7 +39,7 @@ bool create_directory_if_necessary(const fs::path &path) {
     return true;
 }
 
-[[nodiscard]] ocarina::string backend_full_name(const string &name) {
+[[nodiscard]] std::string backend_full_name(const string &name) {
     return string(backend_prefix) + name;
 }
 
@@ -48,7 +48,7 @@ bool create_directory_if_necessary(const fs::path &path) {
 }
 }// namespace detail
 
-FileManager &FileManager::init(const fs::path &path, std::string_view cache_dir) {
+RHIContext &RHIContext::init(const fs::path &path, std::string_view cache_dir) {
     impl_ = std::move(ocarina::make_unique<Impl>());
     impl_->runtime_directory = detail::create_runtime_directory(path);
     impl_->cache_directory = runtime_directory() / cache_dir;
@@ -57,40 +57,40 @@ FileManager &FileManager::init(const fs::path &path, std::string_view cache_dir)
     return *this;
 }
 
-FileManager *FileManager::s_file_manager = nullptr;
+RHIContext *RHIContext::s_context = nullptr;
 
-FileManager &FileManager::instance() noexcept {
-    if (s_file_manager == nullptr) {
-        s_file_manager = new FileManager();
-        s_file_manager->init(fs::current_path());
+RHIContext &RHIContext::instance() noexcept {
+    if (s_context == nullptr) {
+        s_context = new RHIContext();
+        s_context->init(fs::current_path());
     }
-    return *s_file_manager;
+    return *s_context;
 }
 
-void FileManager::destroy_instance() {
-    if (s_file_manager) {
-        delete s_file_manager;
-        s_file_manager = nullptr;
+void RHIContext::destroy_instance() {
+    if (s_context) {
+        delete s_context;
+        s_context = nullptr;
     }
 }
 
-FileManager::~FileManager() noexcept {
+RHIContext::~RHIContext() noexcept {
     OC_INFO("file_manager was destructed !");
 }
 
-const fs::path &FileManager::runtime_directory() const noexcept {
+const fs::path &RHIContext::runtime_directory() const noexcept {
     return impl_->runtime_directory;
 }
 
-const fs::path &FileManager::cache_directory() const noexcept {
+const fs::path &RHIContext::cache_directory() const noexcept {
     return impl_->cache_directory;
 }
 
-bool FileManager::create_directory_if_necessary(const fs::path &path) {
+bool RHIContext::create_directory_if_necessary(const fs::path &path) {
     return detail::create_directory_if_necessary(path);
 }
 
-string FileManager::read_file(const fs::path &fn) {
+string RHIContext::read_file(const fs::path &fn) {
     std::ifstream fst;
     fst.open(fn.c_str());
     std::stringstream buffer;
@@ -98,28 +98,28 @@ string FileManager::read_file(const fs::path &fn) {
     return buffer.str();
 }
 
-void FileManager::write_file(const fs::path &fn, const std::string &text) {
+void RHIContext::write_file(const fs::path &fn, const std::string &text) {
     std::ofstream fs;
     fs.open(fn.c_str());
     fs << text;
     fs.close();
 }
 
-void FileManager::write_global_cache(const string &fn, const string &text) const noexcept {
+void RHIContext::write_global_cache(const string &fn, const string &text) const noexcept {
     write_file(cache_directory() / fn, text);
 }
 
-string FileManager::read_global_cache(const string &fn) const noexcept {
+string RHIContext::read_global_cache(const string &fn) const noexcept {
     return read_file(cache_directory() / fn);
 }
 
-void FileManager::clear_cache() const noexcept {
+void RHIContext::clear_cache() const noexcept {
     if (fs::exists(impl_->cache_directory)) {
         fs::remove_all(impl_->cache_directory);
     }
 }
 
-bool FileManager::is_exist_cache(const string &fn) const noexcept {
+bool RHIContext::is_exist_cache(const string &fn) const noexcept {
     if (!impl_->use_cache) {
         return false;
     }
@@ -127,7 +127,7 @@ bool FileManager::is_exist_cache(const string &fn) const noexcept {
     return fs::exists(path);
 }
 
-const DynamicModule *FileManager::obtain_module(const string &module_name) noexcept {
+const DynamicModule *RHIContext::obtain_module(const string &module_name) noexcept {
     auto iter = impl_->modules.find(module_name);
     DynamicModule *ret = nullptr;
     if (iter == impl_->modules.cend()) {
@@ -140,11 +140,11 @@ const DynamicModule *FileManager::obtain_module(const string &module_name) noexc
     return ret;
 }
 
-void FileManager::unload_module(void *handle) noexcept {
+void RHIContext::unload_module(void *handle) noexcept {
     dynamic_module_destroy(handle);
 }
 
-bool FileManager::unload_module(const std::string &module_name) noexcept {
+bool RHIContext::unload_module(const std::string &module_name) noexcept {
     auto iter = impl_->modules.find(module_name);
     if (iter == impl_->modules.cend()) {
         return false;
@@ -154,18 +154,21 @@ bool FileManager::unload_module(const std::string &module_name) noexcept {
     return true;
 }
 
-std::string FileManager::backend_full_name(const string &name) {
-    return detail::backend_full_name(name);
-}
+Device RHIContext::create_device(const string &backend_name, const ocarina::InstanceCreation &instance_creation) noexcept {
+    //auto d = obtain_module(dynamic_module_name(detail::backend_full_name(backend_name)));
+    //auto create_device = reinterpret_cast<Device::Creator *>(d->function_ptr("create"));
+    //auto destroy_func = reinterpret_cast<Device::Deleter *>(d->function_ptr("destroy"));
+    //return Device{Device::Handle{create_device(this), destroy_func}};
 
-Device FileManager::create_device(const string &backend_name) noexcept {
-    auto d = obtain_module(dynamic_module_name(detail::backend_full_name(backend_name)));
-    auto create_device = reinterpret_cast<Device::Creator *>(d->function_ptr("create"));
+    std::string full_backend_name = detail::backend_full_name(backend_name);
+    auto d = obtain_module(dynamic_module_name(full_backend_name));
+    using Constructor = Device::Impl *(RHIContext *, const InstanceCreation &instance_creation);
+    auto create_device = reinterpret_cast<Constructor *>(d->function_ptr("create_device"));
     auto destroy_func = reinterpret_cast<Device::Deleter *>(d->function_ptr("destroy"));
-    return Device{Device::Handle{create_device(this), destroy_func}};
+    return Device{Device::Handle{create_device(this, instance_creation), destroy_func}};
 }
 
-WindowWrapper FileManager::create_window(const char *name, uint2 initial_size, WindowLibrary library, const char *type, bool resizable) {
+WindowWrapper RHIContext::create_window(const char *name, uint2 initial_size, WindowLibrary library, const char *type, bool resizable) {
     auto d = obtain_module(dynamic_module_name(detail::window_name(type)));
     auto create_window = reinterpret_cast<WindowCreator *>(d->function_ptr("create"));
     auto destroy_func = reinterpret_cast<WindowDeleter *>(d->function_ptr("destroy"));

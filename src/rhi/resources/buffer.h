@@ -22,7 +22,7 @@ private:
     size_t size_{};
     size_t total_size_{};
 
-    mutable BufferProxy<T> proxy_{};
+    mutable BufferDesc<T> descriptor_{};
 
 public:
     BufferView() = default;
@@ -33,15 +33,18 @@ public:
     [[nodiscard]] size_t size_in_byte() const noexcept { return size_ * element_size(); }
     [[nodiscard]] size_t offset() const noexcept { return offset_; }
     [[nodiscard]] size_t offset_in_byte() const noexcept { return offset_ * element_size(); }
+    [[nodiscard]] size_t total_size_in_byte() const noexcept { return total_size_ * element_size(); }
+    OC_MAKE_MEMBER_GETTER(total_size, )
 
-    const BufferProxy<T> &proxy() const noexcept {
-        proxy_.handle = reinterpret_cast<T *>(head());
-        proxy_.size = size_;
-        return proxy_;
+    const BufferDesc<T> &descriptor() const noexcept {
+        descriptor_.handle = reinterpret_cast<T *>(handle());
+        descriptor_.offset = offset_;
+        descriptor_.size = size_;
+        return descriptor_;
     }
 
-    const BufferProxy<T> *proxy_ptr() const noexcept {
-        return &proxy();
+    const BufferDesc<T> *descriptor_ptr() const noexcept {
+        return &descriptor();
     }
 
     template<typename Dst>
@@ -58,8 +61,6 @@ public:
 
     BufferView(handle_ty handle, size_t total_size)
         : handle_(handle), offset_(0), total_size_(total_size), size_(total_size) {}
-
-    [[nodiscard]] handle_ty head() const { return handle_ + offset_ * element_size(); }
 
     [[nodiscard]] BufferView<T> subview(size_t offset, size_t size) const noexcept {
         return BufferView<T>(handle_, offset_ + offset, size, total_size_);
@@ -92,7 +93,7 @@ public:
     }
 
     [[nodiscard]] BufferDownloadCommand *download(void *data, uint src_offset = 0, bool async = true) const noexcept {
-        return BufferDownloadCommand::create(data, handle(), src_offset * element_size(),
+        return BufferDownloadCommand::create(data, handle(), (offset_ + src_offset) * element_size(),
                                              size_in_byte(), async);
     }
 
@@ -101,7 +102,7 @@ public:
     }
 
     [[nodiscard]] BufferByteSetCommand *byte_set(uchar value, bool async = true) const noexcept {
-        return BufferByteSetCommand::create(head(), size_in_byte(), value, async);
+        return BufferByteSetCommand::create(handle(), size_in_byte(), value, async);
     }
 
     [[nodiscard]] BufferByteSetCommand *reset(bool async = true) const noexcept {
@@ -121,7 +122,7 @@ public:
 
 protected:
     size_t size_{};
-    mutable BufferProxy<T> proxy_{};
+    mutable BufferDesc<T> descriptor_{};
     string name_;
 
 public:
@@ -132,7 +133,7 @@ public:
     Buffer(Device::Impl *device, size_t size, const string &desc = "")
         : RHIResource(device, Tag::BUFFER, device->create_buffer(size * element_size(), desc)),
           size_(size), name_(desc) {
-        proxy_ptr();
+        descriptor_ptr();
     }
 
     OC_MAKE_MEMBER_GETTER_SETTER(name, )
@@ -140,7 +141,7 @@ public:
     Buffer(BufferView<T, Dims...> buffer_view)
         : RHIResource(nullptr, Tag::BUFFER, buffer_view.handle()),
           size_(buffer_view.size()) {
-        proxy_ptr();
+        descriptor_ptr();
     }
 
     void destroy() override {
@@ -163,7 +164,7 @@ public:
         : RHIResource(std::move(other)) {
         this->size_ = other.size_;
         this->name_ = std::move(other.name_);
-        this->proxy_ = other.proxy_;
+        this->descriptor_ = other.descriptor_;
     }
 
     // Move assignment
@@ -172,30 +173,31 @@ public:
         RHIResource::operator=(std::move(other));
         this->size_ = other.size_;
         this->name_ = std::move(other.name_);
-        this->proxy_ = other.proxy_;
+        this->descriptor_ = other.descriptor_;
         return *this;
     }
 
-    const BufferProxy<T> &proxy() const noexcept {
-        proxy_.handle = reinterpret_cast<T *>(handle_);
-        proxy_.size = size_;
-        return proxy_;
+    const BufferDesc<T> &descriptor() const noexcept {
+        descriptor_.handle = reinterpret_cast<T *>(handle_);
+        descriptor_.offset = 0u;
+        descriptor_.size = size_;
+        return descriptor_;
     }
 
-    const BufferProxy<T> *proxy_ptr() const noexcept {
-        return &proxy();
+    const BufferDesc<T> *descriptor_ptr() const noexcept {
+        return &descriptor();
     }
 
     [[nodiscard]] size_t data_alignment() const noexcept override {
-        return alignof(decltype(proxy_));
+        return alignof(decltype(descriptor_));
     }
 
     [[nodiscard]] size_t data_size() const noexcept override {
-        return sizeof(proxy_);
+        return sizeof(descriptor_);
     }
 
     [[nodiscard]] MemoryBlock memory_block() const noexcept override {
-        return {proxy_ptr(), data_size(), data_alignment(), max_member_size()};
+        return {descriptor_ptr(), data_size(), data_alignment(), max_member_size()};
     }
 
     template<typename U>
@@ -223,8 +225,7 @@ public:
 
     void set_size(size_t size) noexcept { size_ = size; }
 
-    /// head of the buffer
-    [[nodiscard]] handle_ty head() const noexcept { return handle(); }
+    [[nodiscard]] uint offset_in_byte() const noexcept { return 0; }
 
     /// for dsl trait
     auto operator[](int i) { return T{}; }

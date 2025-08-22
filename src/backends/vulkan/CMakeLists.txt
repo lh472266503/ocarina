@@ -38,7 +38,7 @@ if(AUTO_LOCATE_VULKAN)
 	foreach(file ${HEADER_FILES})
 		# Get the file extension
 		get_filename_component(file_ext ${file} EXT)
-		message("get_filename_component in vulkan backend project : ${file}, ext is ${file_ext}")
+		message(STATUS "get_filename_component in vulkan backend project : ${file}, ext is ${file_ext}")
 		# Check if the extension is not "hlsl" and remove it from the list
 		if(file_ext STREQUAL ".hlsl")
 			message("ext equals to hlsl: ${file}")

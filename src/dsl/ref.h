@@ -151,7 +151,9 @@ public:
             (*this)[i] = t[i];
         }
     }
-    void set(const Var<Vector<T, N>> &t) {
+    template<typename U>
+    requires is_scalar_v<U> && is_same_v<U, T>
+    void set(const Var<Vector<U, N>> &t) {
         for (int i = 0; i < N; ++i) {
             (*this)[i] = t[i];
         }
@@ -200,10 +202,10 @@ struct Ref<Buffer<T>>
     OC_REF_COMMON(Ref<Buffer<T>>)
 
 public:
-    void set(const BufferProxy<T> &buffer) noexcept {
+    void set(const BufferDesc<T> &buffer) noexcept {
         /// empty
     }
-    template<typename int_type = uint64t>
+    template<typename int_type = ulong>
     [[nodiscard]] auto size() const noexcept {
         const CallExpr *expr = Function::current()->call_builtin(Type::of<int_type>(), CallOp::BUFFER_SIZE, {expression()});
         return eval<int_type>(expr);
@@ -217,6 +219,9 @@ struct Ref<ByteBuffer>
     OC_REF_COMMON(Ref<ByteBuffer>)
 
 public:
+    void set(const BufferDesc<> &buffer) noexcept {
+        /// empty
+    }
     template<typename int_type = uint>
     [[nodiscard]] auto size_in_byte() const noexcept {
         const CallExpr *expr = Function::current()->call_builtin(Type::of<int_type>(), CallOp::BYTE_BUFFER_SIZE, {expression()});

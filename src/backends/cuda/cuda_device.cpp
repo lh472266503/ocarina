@@ -8,7 +8,7 @@
 #include "cuda_shader.h"
 #include "cuda_mesh.h"
 #include "cuda_bindless_array.h"
-#include "util/file_manager.h"
+#include "rhi/context.h"
 #include <optix_stubs.h>
 #include <optix_function_table_definition.h>
 #include <nvrtc.h>
@@ -20,7 +20,7 @@
 
 namespace ocarina {
 
-CUDADevice::CUDADevice(FileManager *file_manager)
+CUDADevice::CUDADevice(RHIContext *file_manager)
     : Device::Impl(file_manager) {
     OC_CU_CHECK(cuInit(0));
     OC_CU_CHECK(cuDeviceGet(&cu_device_, 0));
@@ -207,7 +207,7 @@ CommandVisitor *CUDADevice::command_visitor() noexcept {
 
 }// namespace ocarina
 
-OC_EXPORT_API ocarina::CUDADevice *create(ocarina::FileManager *file_manager) {
+OC_EXPORT_API ocarina::CUDADevice *create(ocarina::RHIContext *file_manager) {
     return ocarina::new_with_allocator<ocarina::CUDADevice>(file_manager);
 }
 

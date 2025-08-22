@@ -27,7 +27,8 @@ public:
 template<typename T>
 struct OCBuffer {
     T *ptr{};
-    oc_uint64t size{};
+    oc_uint offset{};
+    oc_ulong size{};
     template<typename Index>
     [[nodiscard]] const T &operator[](Index index) const noexcept { return ptr[index]; }
     template<typename Index>
@@ -35,7 +36,7 @@ struct OCBuffer {
 };
 
 template<typename T>
-oc_uint64t oc_buffer_size(OCBuffer<T> buffer) {
+oc_ulong oc_buffer_size(OCBuffer<T> buffer) {
     return buffer.size;
 }
 
@@ -101,6 +102,11 @@ inline T oc_atomicExch(OCBuffer<oc_uchar> buffer, Offset offset, T val) noexcept
     return oc_atomicExch(ref[0], val);
 }
 
+template<typename T>
+inline T oc_atomicCAS(T &ref, T compare, T val) noexcept {
+    return atomicCAS(&ref, compare, val);
+}
+
 template<typename T, typename U>
 inline T oc_atomicAdd(T &a, U v) noexcept {
     return atomicAdd(&a, v);
@@ -133,7 +139,60 @@ inline T oc_atomicSub(OCBuffer<oc_uchar> buffer, Offset offset, T val) noexcept 
     return oc_atomicSub(ref[0], val);
 }
 
-struct OCTexture {
+#define OC_WARP_FULL_MASK 0xffff'ffffu
+#define OC_WARP_ACTIVE_MASK __activemask()
+
+[[nodiscard]] inline oc_uint4 oc_warp_active_bit_mask(bool pred) noexcept {
+    return oc_make_uint4(__ballot_sync(OC_WARP_ACTIVE_MASK, pred), 0u, 0u, 0u);
+}
+
+[[nodiscard]] inline oc_uint oc_warp_active_count_bits(bool pred) noexcept {
+    return oc_popcount(__ballot_sync(OC_WARP_ACTIVE_MASK, pred));
+}
+
+[[nodiscard]] inline auto oc_warp_prefix_mask() noexcept {
+    oc_uint ret;
+    asm("mov.u32 %0, %lanemask_lt;"
+        : "=r"(ret));
+    return ret;
+}
+
+[[nodiscard]] inline auto oc_warp_lane_id() noexcept {
+    oc_uint ret;
+    asm("mov.u32 %0, %laneid;"
+        : "=r"(ret));
+    return ret;
+}
+
+[[nodiscard]] constexpr auto oc_warp_size() noexcept {
+    return static_cast<oc_uint>(warpSize);
+}
+
+[[nodiscard]] void oc_synchronize_block() noexcept {
+    __syncthreads();
+}
+
+[[nodiscard]] inline auto oc_warp_first_active_lane() noexcept {
+    return __ffs(OC_WARP_ACTIVE_MASK) - 1u;
+}
+
+[[nodiscard]] inline auto oc_warp_is_first_active_lane() noexcept {
+    return oc_warp_first_active_lane() == oc_warp_lane_id();
+}
+
+[[nodiscard]] inline oc_uint oc_warp_prefix_count_bits(bool pred) noexcept {
+    return oc_popcount(__ballot_sync(OC_WARP_ACTIVE_MASK, pred) & oc_warp_prefix_mask());
+}
+
+[[nodiscard]] inline auto oc_warp_active_all(bool pred) noexcept {
+    return static_cast<oc_bool>(__all_sync(OC_WARP_ACTIVE_MASK, pred));
+}
+
+[[nodiscard]] inline auto oc_warp_active_any(bool pred) noexcept {
+    return static_cast<oc_bool>(__any_sync(OC_WARP_ACTIVE_MASK, pred));
+}
+
+struct OCTextureDesc {
     cudaTextureObject_t texture{};
     cudaSurfaceObject_t surface{};
     OCPixelStorage pixel_storage{};
@@ -143,17 +202,22 @@ struct OCTexture {
     return buffer == nullptr;
 }
 
-[[nodiscard]] inline bool oc_is_null_texture(OCTexture obj) noexcept {
+[[nodiscard]] inline bool oc_is_null_texture(OCTextureDesc obj) noexcept {
     return obj.texture == 0;
 }
 
-struct BufferDesc {
-    void *head{};
+struct OCBufferDesc {
+    void *handle{};
+    oc_uint offset_in_byte{};
     size_t size_in_byte{};
+
+    char *head() {
+        return reinterpret_cast<char *>(handle) + offset_in_byte;
+    }
 };
 
-struct OCBindlessArray {
-    BufferDesc *buffer_slot;
+struct OCBindlessArrayDesc {
+    OCBufferDesc *buffer_slot;
     cudaTextureObject_t *tex_slot{};
 };
 
@@ -172,15 +236,15 @@ static constexpr bool oc_is_same_v = oc_is_same<A, B>::value;
 
 using uchar = unsigned char;
 
-__device__ auto oc_tex_sample_float1(OCTexture obj, oc_float u, oc_float v, oc_float w = 0.f) noexcept {
+__device__ auto oc_tex_sample_float1(OCTextureDesc obj, oc_float u, oc_float v, oc_float w = 0.f) noexcept {
     auto ret = tex3D<float>(obj.texture, u, v, w);
     return ret;
 }
-__device__ auto oc_tex_sample_float2(OCTexture obj, oc_float u, oc_float v, oc_float w = 0.f) noexcept {
+__device__ auto oc_tex_sample_float2(OCTextureDesc obj, oc_float u, oc_float v, oc_float w = 0.f) noexcept {
     auto ret = tex3D<float2>(obj.texture, u, v, w);
     return oc_make_float2(ret.x, ret.y);
 }
-__device__ auto oc_tex_sample_float4(OCTexture obj, oc_float u, oc_float v, oc_float w = 0.f) noexcept {
+__device__ auto oc_tex_sample_float4(OCTextureDesc obj, oc_float u, oc_float v, oc_float w = 0.f) noexcept {
     auto ret = tex3D<float4>(obj.texture, u, v, w);
     return oc_make_float4(ret.x, ret.y, ret.z, ret.w);
 }
@@ -204,49 +268,49 @@ __device__ oc_array<float, N> _oc_tex_sample_float(cudaTextureObject_t texture, 
 }
 
 template<oc_uint N>
-__device__ oc_array<float, N> oc_tex_sample_float(OCTexture obj, oc_float u, oc_float v, oc_float w = 0.f) noexcept {
+__device__ oc_array<float, N> oc_tex_sample_float(OCTextureDesc obj, oc_float u, oc_float v, oc_float w = 0.f) noexcept {
     return _oc_tex_sample_float<N>(obj.texture, u, v, w);
 }
 
 template<typename T>
-__device__ T &oc_bindless_array_buffer_read(OCBindlessArray bindless_array, oc_uint buffer_index, oc_uint64t index) noexcept {
-    T *buffer = reinterpret_cast<T *>(bindless_array.buffer_slot[buffer_index].head);
+__device__ T &oc_bindless_array_buffer_read(OCBindlessArrayDesc bindless_array, oc_uint buffer_index, oc_ulong index) noexcept {
+    T *buffer = reinterpret_cast<T *>(bindless_array.buffer_slot[buffer_index].head());
     return buffer[index];
 }
 
-__device__ oc_uint oc_bindless_array_buffer_size(OCBindlessArray bindless_array, oc_uint buffer_index) noexcept {
+__device__ oc_uint oc_bindless_array_buffer_size(OCBindlessArrayDesc bindless_array, oc_uint buffer_index) noexcept {
     return bindless_array.buffer_slot[buffer_index].size_in_byte;
 }
 
 template<typename T>
-__device__ T &oc_bindless_array_byte_buffer_read(OCBindlessArray bindless_array, oc_uint buffer_index, oc_uint64t offset) noexcept {
-    char *buffer = reinterpret_cast<char *>(bindless_array.buffer_slot[buffer_index].head);
+__device__ T &oc_bindless_array_byte_buffer_read(OCBindlessArrayDesc bindless_array, oc_uint buffer_index, oc_ulong offset) noexcept {
+    char *buffer = reinterpret_cast<char *>(bindless_array.buffer_slot[buffer_index].head());
     return *reinterpret_cast<T *>(&buffer[offset]);
 }
 
 template<typename T>
-__device__ void oc_bindless_array_buffer_write(OCBindlessArray bindless_array, oc_uint buffer_index,
-                                               oc_uint64t index, const T &val) noexcept {
-    T *buffer = reinterpret_cast<T *>(bindless_array.buffer_slot[buffer_index].head);
+__device__ void oc_bindless_array_buffer_write(OCBindlessArrayDesc bindless_array, oc_uint buffer_index,
+                                               oc_ulong index, const T &val) noexcept {
+    T *buffer = reinterpret_cast<T *>(bindless_array.buffer_slot[buffer_index].head());
     buffer[index] = val;
 }
 
 template<typename T>
-__device__ void oc_bindless_array_byte_buffer_write(OCBindlessArray bindless_array, oc_uint buffer_index,
-                                                    oc_uint64t offset, const T &val) noexcept {
-    char *buffer = reinterpret_cast<char *>(bindless_array.buffer_slot[buffer_index].head);
+__device__ void oc_bindless_array_byte_buffer_write(OCBindlessArrayDesc bindless_array, oc_uint buffer_index,
+                                                    oc_ulong offset, const T &val) noexcept {
+    char *buffer = reinterpret_cast<char *>(bindless_array.buffer_slot[buffer_index].head());
     T *ref = (reinterpret_cast<T *>(&(buffer[offset])));
     ref[0] = val;
 }
 
 template<typename T>
-__device__ T &oc_byte_buffer_read(OCBuffer<oc_uchar> buffer, oc_uint64t offset) noexcept {
+__device__ T &oc_byte_buffer_read(OCBuffer<oc_uchar> buffer, oc_ulong offset) noexcept {
     T *ref = (reinterpret_cast<T *>(&(buffer.ptr[offset])));
     return ref[0];
 }
 
 template<int N>
-__device__ auto oc_byte_buffer_read(OCBuffer<oc_uchar> buffer, oc_uint64t offset) noexcept {
+__device__ auto oc_byte_buffer_read(OCBuffer<oc_uchar> buffer, oc_ulong offset) noexcept {
     if constexpr (N == 1) {
         oc_uint *ref = (reinterpret_cast<oc_uint *>(&(buffer.ptr[offset])));
         return ref[0];
@@ -263,13 +327,13 @@ __device__ auto oc_byte_buffer_read(OCBuffer<oc_uchar> buffer, oc_uint64t offset
 }
 
 template<typename T>
-__device__ void oc_byte_buffer_write(OCBuffer<oc_uchar> buffer, oc_uint64t offset, const T &val) noexcept {
+__device__ void oc_byte_buffer_write(OCBuffer<oc_uchar> buffer, oc_ulong offset, const T &val) noexcept {
     T *ref = (reinterpret_cast<T *>(&(buffer.ptr[offset])));
     ref[0] = val;
 }
 
 template<typename T>
-__device__ T oc_bindless_array_tex_sample(OCBindlessArray bindless_array, oc_uint tex_index,
+__device__ T oc_bindless_array_tex_sample(OCBindlessArrayDesc bindless_array, oc_uint tex_index,
                                           oc_float u, oc_float v, oc_float w = 0.f) noexcept {
     cudaTextureObject_t texture = bindless_array.tex_slot[tex_index];
     if constexpr (oc_is_same_v<T, oc_float>) {
@@ -286,7 +350,7 @@ __device__ T oc_bindless_array_tex_sample(OCBindlessArray bindless_array, oc_uin
 }
 
 template<oc_uint N>
-__device__ oc_array<float, N> oc_bindless_array_tex_sample(OCBindlessArray bindless_array, oc_uint tex_index,
+__device__ oc_array<float, N> oc_bindless_array_tex_sample(OCBindlessArrayDesc bindless_array, oc_uint tex_index,
                                                            oc_float u, oc_float v, oc_float w = 0.f) noexcept {
     cudaTextureObject_t texture = bindless_array.tex_slot[tex_index];
     return _oc_tex_sample_float<N>(texture, u, v, w);
@@ -394,7 +458,7 @@ __device__ auto oc_fit(const Src &src) noexcept {
 }
 
 template<typename T>
-__device__ T oc_texture_read(OCTexture obj, oc_uint x, oc_uint y, oc_uint z = 0) noexcept {
+__device__ T oc_texture_read(OCTextureDesc obj, oc_uint x, oc_uint y, oc_uint z = 0) noexcept {
     if constexpr (oc_is_same_v<T, uchar> || oc_is_same_v<T, float>) {
         switch (obj.pixel_storage) {
             case OCPixelStorage::BYTE1: {
@@ -443,7 +507,7 @@ __device__ T oc_texture_read(OCTexture obj, oc_uint x, oc_uint y, oc_uint z = 0)
 }
 
 template<typename T>
-__device__ void oc_texture_write(OCTexture obj, T val, oc_uint x, oc_uint y, oc_uint z = 0) noexcept {
+__device__ void oc_texture_write(OCTextureDesc obj, T val, oc_uint x, oc_uint y, oc_uint z = 0) noexcept {
     if constexpr (oc_is_same_v<T, uchar> || oc_is_same_v<T, float>) {
         switch (obj.pixel_storage) {
             case OCPixelStorage::BYTE1: {

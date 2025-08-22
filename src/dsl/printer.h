@@ -38,7 +38,7 @@ auto args_to_tuple(const Current &cur, const Args &...args) {
 }
 }// namespace detail
 
-class Printer {
+class OC_DSL_API Printer {
 public:
     using OutputFunc = std::function<void(int, const char *)>;
 

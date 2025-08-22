@@ -8,5 +8,5 @@ set_target_properties(ocarina-framework PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
         WINDOWS_EXPORT_ALL_SYMBOLS ON
         FOLDER "ocarina")
-target_compile_definitions(ocarina-framework PRIVATE OC_RHI_EXPORT_DLL=1)
+target_compile_definitions(ocarina-framework PRIVATE OC_FRAMEWORK_EXPORT_DLL=1)
 target_link_libraries(ocarina-framework PUBLIC ocarina-rhi)

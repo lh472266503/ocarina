@@ -13,12 +13,13 @@
     using S##Var = ocarina::Var<S>; \
     }
 
-#define OC_STRUCT_IMPL(NS, S, ...)                                                \
-    OC_MAKE_STRUCT_REFLECTION(NS::S, ##__VA_ARGS__)                               \
-    OC_MAKE_STRUCT_DESC(NS::S, ##__VA_ARGS__)                                     \
-    OC_MAKE_COMPUTABLE_BODY(NS::S, ##__VA_ARGS__)                                 \
-    OC_MAKE_STRUCT_SOA_VIEW_VAR(template<typename TBuffer>, NS::S, ##__VA_ARGS__) \
-    OC_STRUCT_ALIAS(NS, S)                                                        \
+#define OC_STRUCT_IMPL(NS, S, ...)                                            \
+    OC_MAKE_STRUCT_REFLECTION(NS::S, ##__VA_ARGS__)                           \
+    OC_MAKE_STRUCT_DESC(NS::S, ##__VA_ARGS__)                                 \
+    OC_MAKE_COMPUTABLE_BODY(NS::S, ##__VA_ARGS__)                             \
+    OC_MAKE_STRUCT_SOA_VAR(template<typename TBuffer>, NS::S, ##__VA_ARGS__)  \
+    OC_MAKE_STRUCT_SOA_VIEW(template<typename TBuffer>, NS::S, ##__VA_ARGS__) \
+    OC_STRUCT_ALIAS(NS, S)                                                    \
     OC_MAKE_PROXY(NS::S)
 
 #define OC_STRUCT(NS, S, ...) \

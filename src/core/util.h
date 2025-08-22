@@ -20,17 +20,15 @@ mem_offset(T offset, U alignment) noexcept {
 
 inline size_t structure_size(ocarina::span<const MemoryBlock> members) noexcept {
     size_t size = 0;
-    size_t max_member_size = 0;
+    size_t alignment = 0;
     for (const MemoryBlock block : members) {
         size = mem_offset(size, block.alignment);
         size += block.size;
-        if (block.max_member_size > max_member_size) {
-            max_member_size = block.max_member_size;
-        }
+        alignment = std::max({alignment, block.max_member_size, block.alignment});
     }
-    auto mod = size % max_member_size;
+    auto mod = size % alignment;
     if (mod != 0) {
-        size += (max_member_size)-mod;
+        size += (alignment)-mod;
     }
     return size;
 }

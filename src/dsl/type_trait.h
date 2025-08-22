@@ -24,6 +24,8 @@ class DynamicArray;
 template<typename T, int... Dims>
 class Buffer;
 
+class ByteBuffer;
+
 namespace detail {
 
 template<typename T>
@@ -154,8 +156,13 @@ struct dsl_impl<vector<T>> {
 };
 
 template<typename T>
-struct dsl_impl<BufferProxy<T>> {
+struct dsl_impl<BufferDesc<T>> {
     using type = Var<Buffer<T>>;
+};
+
+template<>
+struct dsl_impl<BufferDesc<>> {
+    using type = Var<ByteBuffer>;
 };
 
 }// namespace detail
@@ -476,7 +483,13 @@ struct buffer_element_impl<BufferView<T>> {
     using type = T;
 };
 
-}// namespace detail
+template<typename T>
+struct is_byte_buffer_view : public std::false_type {};
+
+template<>
+struct is_byte_buffer_view<ByteBufferView> : public std::true_type {};
+
+};// namespace detail
 
 template<typename T>
 using buffer_element = detail::buffer_element_impl<std::remove_cvref_t<T>>;
@@ -493,6 +506,10 @@ OC_DEFINE_TEMPLATE_VALUE(is_buffer_view)
 template<typename T>
 using is_buffer_or_view = std::disjunction<is_buffer<T>, is_buffer_view<T>>;
 OC_DEFINE_TEMPLATE_VALUE(is_buffer_or_view)
+
+template<typename T>
+using is_byte_buffer_view = detail::is_byte_buffer_view<std::remove_cvref_t<T>>;
+OC_DEFINE_TEMPLATE_VALUE(is_byte_buffer_view)
 
 namespace detail {
 
@@ -637,6 +654,7 @@ requires(!is_dsl_v<T>) && is_vector_v<T>
 auto vector_deduce() {
     return Vector<vector_expr_element_t<T>, N>();
 }
+
 template<typename T, size_t N>
 requires is_dsl_v<T> && is_vector_expr_v<T>
 auto vector_deduce() {
@@ -755,6 +773,7 @@ struct TriangleHit;
 
 OC_MAKE_VAR_TYPE(int)
 OC_MAKE_VAR_TYPE(uint)
+OC_MAKE_VAR_TYPE(ulong)
 OC_MAKE_VAR_TYPE(float)
 OC_MAKE_VAR_TYPE(char)
 OC_MAKE_VAR_TYPE(uchar)
@@ -765,7 +784,6 @@ OC_MAKE_VAR_TYPE_IMPL(TriangleHit, )
 #define OC_MAKE_VAR_MAT(dim) \
     template<EPort port>     \
     using oc_float##dim##x##dim = var_t<float##dim##x##dim, port>;
-
 OC_MAKE_VAR_MAT(2)
 OC_MAKE_VAR_MAT(3)
 OC_MAKE_VAR_MAT(4)

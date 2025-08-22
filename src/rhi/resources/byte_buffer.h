@@ -18,13 +18,19 @@ class ByteBufferView : public BufferView<std::byte> {
 public:
     using Super = BufferView<std::byte>;
     using Super::Super;
+
+public:
     explicit ByteBufferView(const ByteBuffer &buffer);
+    template<typename T>
+    explicit ByteBufferView(const BufferView<T> &bv)
+        : Super(bv.handle(), bv.offset_in_byte(),
+                bv.size_in_byte(), bv.total_size_in_byte()) {}
 };
 
 class ByteBuffer : public RHIResource {
 private:
     /// just for construct memory block
-    mutable BufferProxy<> proxy_{};
+    mutable BufferDesc<> proxy_{};
     size_t size_{};
 
 public:
@@ -42,19 +48,20 @@ public:
     [[nodiscard]] size_t size() const noexcept { return size_; }
     template<typename Size = size_t>
     [[nodiscard]] Size size_in_byte() const noexcept { return size(); }
+    [[nodiscard]] uint offset_in_byte() const noexcept { return 0; }
 
     void destroy() override {
         _destroy();
         size_ = 0;
     }
 
-    const BufferProxy<std::byte> &proxy() const noexcept {
+    const BufferDesc<std::byte> &proxy() const noexcept {
         proxy_.handle = reinterpret_cast<std::byte *>(handle_);
         proxy_.size = size_;
         return proxy_;
     }
 
-    const BufferProxy<std::byte> *proxy_ptr() const noexcept {
+    const BufferDesc<std::byte> *proxy_ptr() const noexcept {
         return &proxy();
     }
 

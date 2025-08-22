@@ -17,7 +17,7 @@
 
 namespace ocarina {
 
-class IndexBuffer {
+class OC_RHI_API IndexBuffer {
 public:
     IndexBuffer() = default;
     virtual ~IndexBuffer();

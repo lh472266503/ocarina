@@ -8,7 +8,7 @@
 #include "rtx/accel.h"
 #include "resources/bindless_array.h"
 #include "resources/byte_buffer.h"
-#include "util/file_manager.h"
+#include "context.h"
 #include "core/dynamic_module.h"
 
 namespace ocarina {
@@ -38,13 +38,14 @@ Texture Device::create_texture(uint2 res, PixelStorage storage, const string &de
 }
 
 Device Device::create_device(const string &backend_name, const ocarina::InstanceCreation &instance_creation) {
-    FileManager& file_manager = FileManager::instance();
-    std::string full_backend_name = FileManager::backend_full_name(backend_name);
-    auto d = file_manager.obtain_module(dynamic_module_name(full_backend_name));
-    using Constructor = Device::Impl *(FileManager *, const InstanceCreation &instance_creation);
-    auto create_device = reinterpret_cast<Constructor *>(d->function_ptr("create_device"));
-    auto destroy_func = reinterpret_cast<Device::Deleter *>(d->function_ptr("destroy"));
-    return Device{Device::Handle{create_device(&file_manager, instance_creation), destroy_func}};
+    RHIContext &rhi_context = RHIContext::instance();
+    return rhi_context.create_device(backend_name, instance_creation);
+    //std::string full_backend_name = detail::backend_full_name(backend_name);
+    //auto d = file_manager.obtain_module(dynamic_module_name(full_backend_name));
+    //using Constructor = Device::Impl *(RHIContext *, const InstanceCreation &instance_creation);
+    //auto create_device = reinterpret_cast<Constructor *>(d->function_ptr("create_device"));
+    //auto destroy_func = reinterpret_cast<Device::Deleter *>(d->function_ptr("destroy"));
+    //return Device{Device::Handle{create_device(&file_manager, instance_creation), destroy_func}};
 }
 
 }// namespace ocarina

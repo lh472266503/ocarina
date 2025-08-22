@@ -11,6 +11,7 @@
 #include "math/base.h"
 #include "ast/expression.h"
 #include "var.h"
+#include "dynamic_array.h"
 
 namespace ocarina {
 
@@ -408,6 +409,17 @@ auto atomic_exch(A &&a, B &&b) noexcept {
     return eval<expr_value_t<A>>(expr);
 }
 
+template<typename T, typename U, typename V>
+requires concepts::assign_able<expr_value_t<T>, expr_value_t<V>> &&
+         concepts::assign_able<expr_value_t<T>, expr_value_t<V>>
+auto atomic_CAS(T &ref, U &&compare, V &&val) {
+    const Expression *expr = Function::current()->call_builtin(Type::of<expr_value_t<T>>(),
+                                                               CallOp::ATOMIC_CAS,
+                                                               {OC_EXPR(ref), OC_EXPR(compare),
+                                                                OC_EXPR(val)});
+    return eval<expr_value_t<T>>(expr);
+}
+
 template<typename T>
 requires is_vector_v<expr_value_t<T>> || is_scalar_v<expr_value_t<T>>
 [[nodiscard]] T zero_if_nan(T t) noexcept {
@@ -426,6 +438,53 @@ inline void unreachable() noexcept {
 
 inline void synchronize_block() noexcept {
     Function::current()->expr_statement(Function::current()->call_builtin(nullptr, CallOp::SYNCHRONIZE_BLOCK, {}));
+}
+
+#define OC_MAKE_WARP_FUNC(func_name, Tag, ret_type)                                                \
+    template<typename T>                                                                           \
+    requires ocarina::is_boolean_expr_v<T>                                                         \
+    [[nodiscard]] auto func_name(const T &pred) {                                                  \
+        const Expression *expr = Function::current()->call_builtin(Type::of<ret_type>(),           \
+                                                                   CallOp::WARP_ACTIVE_COUNT_BITS, \
+                                                                   {OC_EXPR(pred)});               \
+        return eval<ret_type>(expr);                                                               \
+    }
+
+OC_MAKE_WARP_FUNC(warp_active_bit_mask, WARP_ACTIVE_BIT_MASK, uint4)
+OC_MAKE_WARP_FUNC(warp_active_count_bits, WARP_ACTIVE_COUNT_BITS, uint)
+OC_MAKE_WARP_FUNC(warp_prefix_count_bits, WARP_PREFIX_COUNT_BITS, uint)
+OC_MAKE_WARP_FUNC(warp_lane_id, WARP_LANE_ID, uint)
+OC_MAKE_WARP_FUNC(warp_size, WARP_SIZE, uint)
+OC_MAKE_WARP_FUNC(warp_first_active_lane, WARP_FIRST_ACTIVE_LANE, uint)
+OC_MAKE_WARP_FUNC(warp_is_first_active_lane, WARP_IS_FIRST_ACTIVE_LANE, uint)
+
+#undef OC_MAKE_WARP_FUNC
+
+template<typename T>
+void DynamicArray<T>::sanitize() noexcept {
+    *this = map([&](const Var<T> &val) {
+        return ocarina::select(ocarina::isnan(val) || ocarina::isinf(val), Var<T>(0), val);
+    });
+}
+
+template<typename T>
+Var<T> DynamicArray<T>::max() const noexcept {
+    return reduce(0.f, [](auto r, auto x) noexcept {
+        return ocarina::max(r, x);
+    });
+}
+template<typename T>
+Var<T> DynamicArray<T>::min() const noexcept {
+    return reduce(std::numeric_limits<float>::max(), [](auto r, auto x) noexcept {
+        return ocarina::min(r, x);
+    });
+}
+
+template<typename T>
+DynamicArray<T> DynamicArray<T>::clamp(const Var<T> &min_, const Var<T> &max_) const noexcept {
+    return map([&](const Var<T> &val) {
+        return ocarina::clamp(val, min_, max_);
+    });
 }
 
 }// namespace ocarina

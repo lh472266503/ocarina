@@ -5,6 +5,7 @@
 #include "bindless_array.h"
 #include "texture.h"
 #include "buffer.h"
+#include "byte_buffer.h"
 #include "managed.h"
 
 namespace ocarina {
@@ -17,8 +18,14 @@ size_t BindlessArray::emplace(const Texture &texture) noexcept {
     return impl()->emplace_texture(texture.tex_handle());
 }
 
-void BindlessArray::set_texture(ocarina::handle_ty index, const ocarina::Texture &texture) noexcept {
+void BindlessArray::set_texture(ocarina::handle_ty index,
+                                const ocarina::Texture &texture) noexcept {
     impl()->set_texture(index, texture.tex_handle());
+}
+
+ByteBufferView BindlessArray::byte_buffer_view(ocarina::uint index) const noexcept {
+    ByteBufferDesc buffer_desc = impl()->buffer_view(index);
+    return {buffer_desc.head(), buffer_desc.size_in_byte()};
 }
 
 CommandList BindlessArray::upload_handles(bool async) noexcept {

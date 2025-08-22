@@ -44,9 +44,10 @@
                         } *[&](::ocarina::Continue continue_,                                                       \
                                ::ocarina::Break break_) noexcept
 
-#define $for(v, ...) ::ocarina::detail::range_with_source_location("for: " + $source_location, __VA_ARGS__) / \
-                         [&](auto v,                                                                          \
-                             ::ocarina::Continue continue_,                                                   \
+#define $for(v, ...) ::ocarina::detail::range_with_source_location("for: " + $source_location, __VA_ARGS__) \
+                             .set_var_symbol(#v) /                                                          \
+                         [&](auto v,                                                                        \
+                             ::ocarina::Continue continue_,                                                 \
                              ::ocarina::Break break_) noexcept
 
 #define $return(...) ::ocarina::return_(__VA_ARGS__)

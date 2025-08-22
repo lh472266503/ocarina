@@ -48,7 +48,7 @@ struct GlobalUBO
     float4x4 projection_matrix = {1.0f};
 };
 
-class RenderPass {
+class OC_RHI_API RenderPass {
 public:
     RenderPass(const RenderPassCreation &render_pass_creation) {}
     virtual ~RenderPass();

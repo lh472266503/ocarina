@@ -68,13 +68,14 @@ void CUDAMesh::init_build_input() noexcept {
         build_input_.triangleArray.vertexFormat = OPTIX_VERTEX_FORMAT_FLOAT3;
         build_input_.triangleArray.vertexStrideInBytes = params_.vert_stride;
         build_input_.triangleArray.numVertices = params_.vert_num;
-        build_input_.triangleArray.vertexBuffers = reinterpret_cast<const CUdeviceptr *>(&params_.vert_handle);
+        final_vert_handle = params_.vert_handle + params_.vert_offset;
+        build_input_.triangleArray.vertexBuffers = reinterpret_cast<const CUdeviceptr *>(&final_vert_handle);
     }
     {
         build_input_.triangleArray.indexFormat = OPTIX_INDICES_FORMAT_UNSIGNED_INT3;
         build_input_.triangleArray.indexStrideInBytes = params_.tri_stride;
         build_input_.triangleArray.numIndexTriplets = params_.tri_num;
-        build_input_.triangleArray.indexBuffer = params_.tri_handle;
+        build_input_.triangleArray.indexBuffer = params_.tri_handle + params_.tri_offset;
     }
     {
         static constexpr uint32_t geom_flags = OPTIX_GEOMETRY_FLAG_DISABLE_ANYHIT;

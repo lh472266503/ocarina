@@ -11,7 +11,7 @@ namespace ocarina {
 class Command;
 class CommandVisitor;
 
-class CommandList : public ocarina::vector<Command *> {
+class OC_RHI_API CommandList : public ocarina::vector<Command *> {
 public:
     using Super = ocarina::vector<Command *>;
     using Super::Super;
@@ -22,7 +22,7 @@ public:
     void recycle() noexcept;
 };
 
-class CommandQueue {
+class OC_RHI_API CommandQueue {
 
 private:
     CommandList commands_{};

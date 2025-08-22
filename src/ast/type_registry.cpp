@@ -163,7 +163,7 @@ const Type *TypeRegistry::parse_type(ocarina::string_view desc) noexcept {
     OC_PARSE_BASIC_TYPE(uchar, UCHAR)
     OC_PARSE_BASIC_TYPE(char, CHAR)
     OC_PARSE_BASIC_TYPE(ushort, USHORT)
-    OC_PARSE_BASIC_TYPE(uint64t, UINT64T)
+    OC_PARSE_BASIC_TYPE(ulong, UINT64T)
     OC_PARSE_BASIC_TYPE(short, SHORT)
 
 #undef OC_PARSE_BASIC_TYPE
@@ -269,7 +269,7 @@ void TypeRegistry::parse_struct(Type *type, string_view desc) noexcept {
 
 void TypeRegistry::parse_bindless_array(Type *type, ocarina::string_view desc) noexcept {
     type->tag_ = Type::Tag::BINDLESS_ARRAY;
-    type->alignment_ = alignof(BindlessArrayProxy);
+    type->alignment_ = alignof(BindlessArrayDesc);
 }
 
 void TypeRegistry::parse_buffer(Type *type, ocarina::string_view desc) noexcept {
@@ -281,14 +281,14 @@ void TypeRegistry::parse_buffer(Type *type, ocarina::string_view desc) noexcept 
     for (int i = 1; i < lst.size(); ++i) {
         type->dims_.push_back(std::stoi(lst[i].data()));
     }
-    type->alignment_ = alignof(BufferProxy<>);
-    type->size_ = sizeof(BufferProxy<>);
+    type->alignment_ = alignof(BufferDesc<>);
+    type->size_ = sizeof(BufferDesc<>);
 }
 
 void TypeRegistry::parse_texture(Type *type, ocarina::string_view desc) noexcept {
     type->tag_ = Type::Tag::TEXTURE;
-    type->alignment_ = alignof(TextureProxy);
-    type->size_ = sizeof(TextureProxy);
+    type->alignment_ = alignof(TextureDesc);
+    type->size_ = sizeof(TextureDesc);
 }
 
 void TypeRegistry::parse_accel(Type *type, ocarina::string_view desc) noexcept {
@@ -297,7 +297,7 @@ void TypeRegistry::parse_accel(Type *type, ocarina::string_view desc) noexcept {
 
 void TypeRegistry::parse_byte_buffer(ocarina::Type *type, ocarina::string_view desc) noexcept {
     type->tag_ = Type::Tag::BYTE_BUFFER;
-    type->alignment_ = alignof(BufferProxy<>);
+    type->alignment_ = alignof(BufferDesc<>);
 }
 
 void TypeRegistry::parse_array(Type *type, ocarina::string_view desc) noexcept {

@@ -15,6 +15,7 @@ namespace ocarina {
 class VulkanBuffer;
 class VulkanDevice : public Device::Impl {
 public:
+    /*
     static constexpr size_t size(Type::Tag tag) {
         using Tag = Type::Tag;
         switch (tag) {
@@ -54,6 +55,7 @@ public:
         auto ret = type->max_member_size();
         return ret == 0 ? sizeof(handle_ty) : ret;
     }
+    */
 
 private:
     /** @brief Physical device representation */
@@ -75,7 +77,7 @@ private:
     std::vector<const char *> m_enableExtensions;
 
 public:
-    explicit VulkanDevice(FileManager *file_manager, const ocarina::InstanceCreation &instance_creation);
+    explicit VulkanDevice(RHIContext *file_manager, const ocarina::InstanceCreation &instance_creation);
     ~VulkanDevice();
     void init_hardware_info();
 

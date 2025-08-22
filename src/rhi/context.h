@@ -8,16 +8,18 @@
 #include "core/stl.h"
 #include "core/concepts.h"
 #include "GUI/decl.h"
+#include "core/dynamic_module.h"
+#include "graphics_descriptions.h"
 
 namespace ocarina {
 class Device;
 class DynamicModule;
-class FileManager : public concepts::Noncopyable {
+class OC_RHI_API RHIContext : public concepts::Noncopyable {
 
-    OC_MAKE_INSTANCE_CONSTRUCTOR(FileManager, s_file_manager)
+    OC_MAKE_INSTANCE_CONSTRUCTOR(RHIContext, s_context)
 
 public:
-    [[nodiscard]] static FileManager &instance() noexcept;
+    [[nodiscard]] static RHIContext &instance() noexcept;
     static void destroy_instance();
 
 private:
@@ -31,8 +33,8 @@ private:
     ocarina::unique_ptr<Impl> impl_;
 
 public:
-    FileManager &init(const fs::path &path, string_view cache_dir = ".cache");
-    virtual ~FileManager() noexcept;
+    RHIContext &init(const fs::path &path, string_view cache_dir = ".cache");
+    virtual ~RHIContext() noexcept;
     [[nodiscard]] const fs::path &runtime_directory() const noexcept;
     [[nodiscard]] const fs::path &cache_directory() const noexcept;
     static bool create_directory_if_necessary(const fs::path &path);
@@ -45,8 +47,7 @@ public:
     const DynamicModule *obtain_module(const string &module_name) noexcept;
     bool unload_module(const string &module_name) noexcept;
     void unload_module(void *handle) noexcept;
-    [[nodiscard]] static std::string backend_full_name(const string &name);
-    [[nodiscard]] Device create_device(const string &backend_name) noexcept;
+    [[nodiscard]] Device create_device(const string &backend_name, const ocarina::InstanceCreation &instance_creation) noexcept;
     [[nodiscard]] WindowWrapper create_window(const char *name, uint2 initial_size, WindowLibrary library = WindowLibrary::GLFW, const char *type = "imGui", bool resizable = false);
 };
 

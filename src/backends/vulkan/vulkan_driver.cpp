@@ -2,7 +2,7 @@
 #include "vulkan_device.h"
 #include "util.h"
 #include "vulkan_pipeline.h"
-#include "util/file_manager.h"
+#include "rhi/context.h"
 #include "rhi/graphics_descriptions.h"
 #include "vulkan_shader.h"
 #include "vulkan_descriptorset.h"
@@ -20,7 +20,7 @@ VulkanDriver::~VulkanDriver() {
    
 }
 
-VulkanDevice* VulkanDriver::create_device(FileManager* file_manager, const InstanceCreation& instance_creation)
+VulkanDevice* VulkanDriver::create_device(RHIContext* file_manager, const InstanceCreation& instance_creation)
 {
     vulkan_device_ = ocarina::new_with_allocator<ocarina::VulkanDevice>(file_manager, instance_creation);
 

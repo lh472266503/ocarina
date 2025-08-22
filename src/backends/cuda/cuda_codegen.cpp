@@ -89,7 +89,16 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         case CallOp::DEGREES: OC_GEN_FUNC_NAME(degrees); break;
         case CallOp::RADIANS: OC_GEN_FUNC_NAME(radians); break;
         case CallOp::SATURATE: OC_GEN_FUNC_NAME(saturate); break;
-        case CallOp::SYNCHRONIZE_BLOCK: current_scratch() << "__syncthreads"; break;
+
+        case CallOp::SYNCHRONIZE_BLOCK: OC_GEN_FUNC_NAME(synchronize_block); break;
+        case CallOp::WARP_ACTIVE_BIT_MASK: OC_GEN_FUNC_NAME(warp_active_bit_mask); break;
+        case CallOp::WARP_ACTIVE_COUNT_BITS: OC_GEN_FUNC_NAME(warp_active_count_bits); break;
+        case CallOp::WARP_PREFIX_COUNT_BITS: OC_GEN_FUNC_NAME(warp_prefix_count_bits); break;
+        case CallOp::WARP_LANE_ID: OC_GEN_FUNC_NAME(warp_lane_id); break;
+        case CallOp::WARP_SIZE: OC_GEN_FUNC_NAME(warp_size); break;
+        case CallOp::WARP_FIRST_ACTIVE_LANE: OC_GEN_FUNC_NAME(warp_first_active_lane); break;
+        case CallOp::WARP_IS_FIRST_ACTIVE_LANE: OC_GEN_FUNC_NAME(warp_is_first_active_lane); break;
+
         case CallOp::MAKE_BOOL2: OC_GEN_FUNC_NAME(make_bool2); break;
         case CallOp::MAKE_BOOL3: OC_GEN_FUNC_NAME(make_bool3); break;
         case CallOp::MAKE_BOOL4: OC_GEN_FUNC_NAME(make_bool4); break;
@@ -121,6 +130,7 @@ void CUDACodegen::visit(const CallExpr *expr) noexcept {
         case CallOp::ATOMIC_EXCH: OC_GEN_FUNC_NAME(atomicExch); break;
         case CallOp::ATOMIC_ADD: OC_GEN_FUNC_NAME(atomicAdd); break;
         case CallOp::ATOMIC_SUB: OC_GEN_FUNC_NAME(atomicSub); break;
+        case CallOp::ATOMIC_CAS: OC_GEN_FUNC_NAME(atomicCAS); break;
         case CallOp::BINDLESS_ARRAY_BUFFER_WRITE: OC_GEN_FUNC_NAME(bindless_array_buffer_write); break;
         case CallOp::BINDLESS_ARRAY_BYTE_BUFFER_WRITE: OC_GEN_FUNC_NAME(bindless_array_byte_buffer_write); break;
         case CallOp::BINDLESS_ARRAY_BUFFER_SIZE: OC_GEN_FUNC_NAME(bindless_array_buffer_size); break;
@@ -395,10 +405,10 @@ void CUDACodegen::_emit_type_name(const Type *type) noexcept {
                 current_scratch() << "OCBuffer<oc_uchar>";
                 break;
             case Type::Tag::TEXTURE:
-                current_scratch() << "OCTexture";
+                current_scratch() << "OCTextureDesc";
                 break;
             case Type::Tag::BINDLESS_ARRAY:
-                current_scratch() << "OCBindlessArray";
+                current_scratch() << "OCBindlessArrayDesc";
                 break;
             case Type::Tag::ACCEL:
                 current_scratch() << "OptixTraversableHandle";

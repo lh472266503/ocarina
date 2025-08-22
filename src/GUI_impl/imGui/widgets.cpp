@@ -213,6 +213,22 @@ bool ImGuiWidgets::slider_int4(const string &label, int4 *val, int min, int max)
     return ImGui::SliderInt4(label.c_str(), reinterpret_cast<int *>(val), min, max);
 }
 
+bool ImGuiWidgets::slider_uint(const string &label, uint *val, uint min, uint max) noexcept {
+    return ImGui::SliderScalar(label.c_str(), ImGuiDataType_U32, val, &min, &max, "%u", 0);
+}
+
+bool ImGuiWidgets::slider_uint2(const string &label, uint2 *val, uint min, uint max) noexcept {
+    return ImGui::SliderScalarN(label.c_str(), ImGuiDataType_U32, val, 2, &min, &max, "%u", 0);
+}
+
+bool ImGuiWidgets::slider_uint3(const string &label, uint3 *val, uint min, uint max) noexcept {
+    return ImGui::SliderScalarN(label.c_str(), ImGuiDataType_U32, val, 3, &min, &max, "%u", 0);
+}
+
+bool ImGuiWidgets::slider_uint4(const string &label, uint4 *val, uint min, uint max) noexcept {
+    return ImGui::SliderScalarN(label.c_str(), ImGuiDataType_U32, val, 4, &min, &max, "%u", 0);
+}
+
 bool ImGuiWidgets::color_edit(const string &label, float3 *val) noexcept {
     return ImGui::ColorEdit3(label.c_str(), reinterpret_cast<float *>(val));
 }

@@ -11,7 +11,7 @@ template<typename T, int... dims>
 class Buffer;
 
 template<typename T>
-class BufferProxy;
+class BufferDesc;
 
 template<typename T, int... dims>
 class BufferView;
@@ -63,7 +63,7 @@ OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(int)
 OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(uint)
 OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(uchar)
 OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(char)
-OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(uint64t)
+OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(ulong)
 OC_MAKE_SCALAR_AND_VECTOR_TYPE_DESC_SPECIALIZATION(ushort)
 
 #undef OC_MAKE_VECTOR_DESC_NAME
@@ -131,7 +131,7 @@ struct TypeDesc<Buffer<T, Dims...>> {
 };
 
 template<typename T>
-struct TypeDesc<BufferProxy<T>> : public TypeDesc<Buffer<T>> {};
+struct TypeDesc<BufferDesc<T>> : public TypeDesc<Buffer<T>> {};
 
 template<>
 struct TypeDesc<ByteBuffer> {
@@ -142,6 +142,9 @@ struct TypeDesc<ByteBuffer> {
         return description();
     }
 };
+
+template<>
+struct TypeDesc<BufferDesc<>> : public TypeDesc<ByteBuffer> {};
 
 template<>
 struct TypeDesc<Texture> {

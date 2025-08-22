@@ -33,5 +33,7 @@ if (CUDAToolkit_FOUND)
                 COMMAND ${CMAKE_COMMAND} -E echo "Complete copy!"
         )
     endif ()
+else ()
+    message(STATUS "CUDAToolkit not found, skipping CUDA backend build.")
 endif ()
 

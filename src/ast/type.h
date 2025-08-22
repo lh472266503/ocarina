@@ -303,20 +303,21 @@ class Type;
 
 class TypeRegistry;
 
-struct BindlessArrayProxy {
+struct BindlessArrayDesc {
     handle_ty buffer_slot;
     handle_ty tex_slot;
 };
 
-struct TextureProxy {
+struct TextureDesc {
     handle_ty texture{};
     handle_ty surface{};
     PixelStorage pixel_storage{};
 };
 
 template<typename T = std::byte>
-struct BufferProxy {
+struct BufferDesc {
     T *handle{};
+    uint offset{};
     uint64_t size{};
 
     [[nodiscard]] size_t data_alignment() const noexcept {
@@ -334,8 +335,13 @@ struct BufferProxy {
     [[nodiscard]] handle_ty head() const noexcept {
         return reinterpret_cast<handle_ty>(handle);
     }
+
     [[nodiscard]] uint64_t size_in_byte() const noexcept {
         return size * sizeof(T);
+    }
+
+    [[nodiscard]] uint offset_in_byte() const noexcept {
+        return offset * sizeof(T);
     }
 };
 
@@ -346,7 +352,7 @@ struct is_buffer_proxy_impl {
 };
 
 template<typename T>
-struct is_buffer_proxy_impl<BufferProxy<T>> {
+struct is_buffer_proxy_impl<BufferDesc<T>> {
     static constexpr bool value = true;
 };
 }// namespace detail
@@ -355,7 +361,7 @@ template<typename T>
 struct is_buffer_proxy : public detail::is_buffer_proxy_impl<std::remove_cvref_t<T>> {};
 OC_DEFINE_TEMPLATE_VALUE(is_buffer_proxy);
 
-using ByteBufferProxy = BufferProxy<>;
+using ByteBufferDesc = BufferDesc<>;
 
 struct TypeVisitor {
     virtual void visit(const Type *) noexcept = 0;

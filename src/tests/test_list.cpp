@@ -2,14 +2,14 @@
 // Created by Zero on 2024/9/26.
 //
 
-#include "util/image.h"
+#include "core/image.h"
 #include "core/stl.h"
 #include "dsl/dsl.h"
 #include "rhi/common.h"
 #include "math/base.h"
 #include "base/scattering/interaction.h"
 #include "core/platform.h"
-#include "util/file_manager.h"
+#include "rhi/context.h"
 
 using namespace ocarina;
 
@@ -120,7 +120,7 @@ int main(int argc, char *argv[]) {
     cout << to_str(h) << endl;
     return 0;
     fs::path path(argv[0]);
-    FileManager &file_manager = FileManager::instance();
+    RHIContext &file_manager = RHIContext::instance();
 
     /**
      * Conventional scheme

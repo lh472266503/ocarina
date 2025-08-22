@@ -40,6 +40,13 @@ public:
     }
     Var(Var &&another) noexcept
         : Ref<T>(ocarina::move(another)) {}
+
+    Var<T> &set_symbol(const string &name) {
+         auto variable_expr = static_cast<const VariableExpr *>(Super::expression());
+         const_cast<VariableExpr *>(variable_expr)->variable().set_suffix(name);
+         return *this;
+    }
+
     Var(const Var &another) noexcept
         : Var() { ocarina::detail::assign(*this, another); }
     template<typename Arg>
@@ -227,6 +234,7 @@ using BindlessArrayVar = Var<BindlessArray>;
 
 OC_MAKE_DSL_TYPE(Int, int)
 OC_MAKE_DSL_TYPE(Uint, uint)
+OC_MAKE_DSL_TYPE(Ulong, ulong)
 OC_MAKE_DSL_TYPE(Float, float)
 OC_MAKE_DSL_TYPE(Uchar, uchar)
 OC_MAKE_DSL_TYPE(Char, char)
@@ -257,5 +265,8 @@ Var(T &&) -> Var<expr_value_t<T>>;
 
 template<typename T>
 Var(const Buffer<T> &) -> Var<Buffer<T>>;
+
+#define Def(Type, var_name) Type var_name; \
+    var_name.set_symbol(#var_name)
 
 }// namespace ocarina

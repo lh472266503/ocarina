@@ -52,7 +52,7 @@ struct VertexStream {
     }
 };
 
-class VertexBuffer {
+class OC_RHI_API VertexBuffer {
 public:
     VertexBuffer(Device::Impl *device) : device_(device) {}
     virtual ~VertexBuffer();

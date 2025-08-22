@@ -9,7 +9,7 @@
 namespace ocarina {
 class VulkanPipelineManager;
 class VulkanPipeline;
-class FileManager;
+class RHIContext;
 class VulkanDevice;
 class VulkanShaderManager;
 class VulkanDescriptorManager;
@@ -32,7 +32,7 @@ public:
         static VulkanDriver s_instance;
         return s_instance;
     }
-    VulkanDevice *create_device(FileManager *file_manager, const InstanceCreation &instance_creation);
+    VulkanDevice *create_device(RHIContext *file_manager, const InstanceCreation &instance_creation);
     void bind_pipeline(const VulkanPipeline &pipeline);
     void terminate();
     void submit_frame();

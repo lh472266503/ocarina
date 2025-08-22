@@ -8,7 +8,7 @@
 
 namespace ocarina {
 
-class ImageView : public ImageBase {
+class OC_CORE_API ImageView : public ImageBase {
 private:
     const std::byte *pixel_{nullptr};
 
@@ -28,7 +28,7 @@ public:
     T *pixel_ptr() { return reinterpret_cast<T *>(const_cast<std::byte *>(pixel_)); }
 };
 
-class Image : public ImageBase {
+class OC_CORE_API Image : public ImageBase {
 private:
     fs::path path_;
     std::unique_ptr<const std::byte[]> pixel_;
