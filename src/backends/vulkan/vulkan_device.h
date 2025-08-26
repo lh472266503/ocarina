@@ -14,49 +14,6 @@
 namespace ocarina {
 class VulkanBuffer;
 class VulkanDevice : public Device::Impl {
-public:
-    /*
-    static constexpr size_t size(Type::Tag tag) {
-        using Tag = Type::Tag;
-        switch (tag) {
-            case Tag::BUFFER: return sizeof(BufferProxy<>);
-            case Tag::BYTE_BUFFER: return sizeof(BufferProxy<>);
-            case Tag::ACCEL: return sizeof(handle_ty);
-            case Tag::TEXTURE: return sizeof(TextureProxy);
-            case Tag::BINDLESS_ARRAY: return sizeof(BindlessArrayProxy);
-            default:
-                return 0;
-        }
-    }
-    // return size of type on device memory
-    static constexpr size_t size(const Type *type) {
-        auto ret = size(type->tag());
-        return ret == 0 ? type->size() : ret;
-    }
-    static constexpr size_t alignment(Type::Tag tag) {
-        using Tag = Type::Tag;
-        switch (tag) {
-            case Tag::BUFFER: return alignof(BufferProxy<>);
-            case Tag::BYTE_BUFFER: return alignof(BufferProxy<>);
-            case Tag::ACCEL: return alignof(handle_ty);
-            case Tag::TEXTURE: return alignof(TextureProxy);
-            case Tag::BINDLESS_ARRAY: return alignof(BindlessArrayProxy);
-            default:
-                return 0;
-        }
-    }
-    // return alignment of type on device memory
-    static constexpr size_t alignment(const Type *type) {
-        auto ret = alignment(type->tag());
-        return ret == 0 ? type->alignment() : ret;
-    }
-    // return the size of max member recursive
-    static size_t max_member_size(const Type *type) {
-        auto ret = type->max_member_size();
-        return ret == 0 ? sizeof(handle_ty) : ret;
-    }
-    */
-
 private:
     /** @brief Physical device representation */
     VkPhysicalDevice physicalDevice_;
@@ -121,6 +78,7 @@ public:
     Pipeline* get_pipeline(const PipelineState &pipeline_state, RenderPass* render_pass) noexcept override;
     DescriptorSet *get_global_descriptor_set(const string &name) noexcept override;
     void bind_descriptor_sets(DescriptorSet **descriptor_set, uint32_t descriptor_sets_num, Pipeline* pipeline) noexcept override;
+    handle_ty create_texture(Image *image_resource, const TextureViewCreation &texture_view) noexcept override;
 
     OC_MAKE_MEMBER_GETTER(logicalDevice, );
 

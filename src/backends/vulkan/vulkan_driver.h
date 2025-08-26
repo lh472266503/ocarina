@@ -23,6 +23,7 @@ struct VulkanVertexStreamBinding;
 class VulkanDescriptorSetLayout;
 class DescriptorSetLayout;
 class VulkanDescriptorSet;
+class VulkanTexture;
 
 class VulkanDriver : public concepts::Noncopyable {
 public:
@@ -66,6 +67,7 @@ public:
 
     VkResult copy_buffer(VulkanBuffer* src, VulkanBuffer* dst);
     VkResult copy_buffer(VulkanBuffer *src, VkBuffer dst);
+    VkResult copy_image(VulkanBuffer *src, VulkanTexture *dst);
 
     void set_vertex_buffer(const VulkanVertexStreamBinding& vertex_stream);
     void draw_triangles(VulkanIndexBuffer* index_buffer);
@@ -110,6 +112,8 @@ private:
     void initialize();
     void prepare_frame();
     void window_resize();
+    void flush_command_buffer(VkCommandBuffer cmd);
+
 private:
     VulkanDriver();
     VulkanDevice *vulkan_device_;

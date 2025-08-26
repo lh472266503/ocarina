@@ -10,20 +10,27 @@
 
 namespace ocarina {
 
-    class VulkanDevice;
+class VulkanDevice;
+class Image;
 
 class VulkanTexture : public Texture::Impl {
 private:
     VkImageType imageType_;
-    VkImage image_;
+    VkImage image_ = VK_NULL_HANDLE;
+    VkImageView image_view_ = VK_NULL_HANDLE;
     PixelStorage pixel_storage_;
     uint3 res_{};
-    VkDevice device_;
+    VulkanDevice* device_ = nullptr;
+    Image *image_resource_ = nullptr;
+    VkFormat image_format_;
+    uint32_t mip_levels_ = 1;
+    VkDeviceMemory image_memory_ = VK_NULL_HANDLE;
 
 public:
-    VulkanTexture(VulkanDevice *device, VkImage image, VkImageType imageType, uint3 res, PixelStorage pixel_storage, uint level_num);
+    VulkanTexture(VulkanDevice *device, Image *image, VkMemoryPropertyFlags memory_property_flags);
     ~VulkanTexture() override;
-    void init();
+    void init(VkMemoryPropertyFlags memory_property_flags);
+    void load_cpu_data(Image *image);
     [[nodiscard]] uint3 resolution() const noexcept override { return res_; }
     [[nodiscard]] handle_ty array_handle() const noexcept override {
         return reinterpret_cast<handle_ty>(image_);
@@ -32,7 +39,7 @@ public:
         return reinterpret_cast<handle_ty *>(image_);
     }
     [[nodiscard]] handle_ty tex_handle() const noexcept override {
-        return (handle_ty)image_;
+        return reinterpret_cast<handle_ty>(image_);
     }
     [[nodiscard]] const void *handle_ptr() const noexcept override {
         return &image_;
@@ -41,5 +48,9 @@ public:
     [[nodiscard]] size_t data_alignment() const noexcept override;
     [[nodiscard]] size_t max_member_size() const noexcept override;
     [[nodiscard]] PixelStorage pixel_storage() const noexcept override { return pixel_storage_; }
+    uint32_t mip_levels() const noexcept { return mip_levels_; }
+    uint32_t width() const noexcept { return res_.x; }
+    uint32_t height() const noexcept { return res_.y; }
+    uint32_t depth() const noexcept { return res_.z; }
 };
 }// namespace ocarina

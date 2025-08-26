@@ -7,14 +7,6 @@ struct VSInput
 [[vk::location(1)]] float4 Color : COLOR0;
 };
 
-
-cbuffer global_ubo : register(b0) 
-{ 
-	float4x4 projectionMatrix;
-
-	float4x4 viewMatrix;
-};
-
 struct PushConstants
 {
     float4x4 modelMatrix;

@@ -9,6 +9,7 @@
 #include "vulkan_renderpass.h"
 #include "vulkan_vertex_buffer.h"
 #include "vulkan_index_buffer.h"
+#include "vulkan_texture.h"
 
 namespace ocarina {
 
@@ -305,76 +306,29 @@ void VulkanDriver::initialize()
     submit_info.pSignalSemaphores = &semaphores.renderComplete;
 }
 
-void VulkanDriver::prepare_frame()
-{
-    // Acquire the next image from the swap chain
-    VulkanSwapchain* swapchain = vulkan_device_->get_swapchain();
-    VkResult result = swapchain->aquire_next_image(semaphores.presentComplete, &current_buffer_);
-    // Recreate the swapchain if it's no longer compatible with the surface (OUT_OF_DATE)
-    // SRS - If no longer optimal (VK_SUBOPTIMAL_KHR), wait until submitFrame() in case number of swapchain images will change on resize
-    if ((result == VK_ERROR_OUT_OF_DATE_KHR) || (result == VK_SUBOPTIMAL_KHR)) {
-        if (result == VK_ERROR_OUT_OF_DATE_KHR) {
-            window_resize();
-        }
-        return;
-    } else {
-        VK_CHECK_RESULT(result);
-    }
-
-    uint2 resolution = swapchain->resolution();
-
-    VkCommandBufferBeginInfo infoCmd;
-    infoCmd.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    infoCmd.pInheritanceInfo = nullptr;
-    infoCmd.pNext = nullptr;
-    infoCmd.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-
-    VK_CHECK_RESULT(vkBeginCommandBuffer(draw_cmd_buffers_[current_buffer_], &infoCmd));
-
-    VkClearValue clearValues[2];
-    VkClearColorValue defaultClearColor = {{0.025f, 0.025f, 0.025f, 1.0f}};
-    clearValues[0].color = defaultClearColor;
-    clearValues[1].depthStencil = {1.0f, 0};
-
-    VkRenderPassBeginInfo renderPassBeginInfo;
-    renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    renderPassBeginInfo.renderPass = renderpass_framebuffer;
-    renderPassBeginInfo.renderArea.offset.x = 0;
-    renderPassBeginInfo.renderArea.offset.y = 0;
-    renderPassBeginInfo.renderArea.extent.width = (uint32_t)resolution.x;
-    renderPassBeginInfo.renderArea.extent.height = (uint32_t)resolution.y;
-    renderPassBeginInfo.clearValueCount = 2;
-    renderPassBeginInfo.pClearValues = clearValues;
-
-    // Set target frame buffer
-    renderPassBeginInfo.framebuffer = frame_buffers[current_buffer_];
-
-    
-
-    vkCmdBeginRenderPass(draw_cmd_buffers_[current_buffer_], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-    VkViewport viewport = {
-        .x = 0.0f,
-        .y = 0.0f,
-        .width = (float)resolution.x,
-        .height = (float)resolution.y,
-        .minDepth = 0.0f,
-        .maxDepth = 1.0f};
-    vkCmdSetViewport(draw_cmd_buffers_[current_buffer_], 0, 1, &viewport);
-
-    VkRect2D scissor;
-    scissor.offset = {0, 0};
-    scissor.extent = {(uint32_t)resolution.x, (uint32_t)resolution.y};
-    vkCmdSetScissor(draw_cmd_buffers_[current_buffer_], 0, 1, &scissor);
-
-    vkCmdEndRenderPass(draw_cmd_buffers_[current_buffer_]);
-
-    VK_CHECK_RESULT(vkEndCommandBuffer(draw_cmd_buffers_[current_buffer_]));
-}
-
 void VulkanDriver::window_resize()
 {
 
+}
+
+void VulkanDriver::flush_command_buffer(VkCommandBuffer cmd)
+{
+    // Create fence to ensure that the command buffer has finished executing
+    VkFenceCreateInfo fence_info{};
+    fence_info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+    fence_info.flags = 0;
+    fence_info.pNext = nullptr;
+    VkFence fence;
+    VK_CHECK_RESULT(vkCreateFence(device(), &fence_info, nullptr, &fence));
+    // Submit to the queue
+    VkSubmitInfo submitInfo = {};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &cmd;
+    VK_CHECK_RESULT(vkQueueSubmit(graphics_queue, 1, &submitInfo, fence));
+    // Wait for the fence to signal that command buffer has finished executing
+    VK_CHECK_RESULT(vkWaitForFences(device(), 1, &fence, VK_TRUE, std::numeric_limits<uint64_t>::max()));
+    vkDestroyFence(device(), fence, nullptr);
 }
 
 VulkanPipeline* VulkanDriver::get_pipeline(const PipelineState &pipeline_state, VkRenderPass render_pass) {
@@ -436,23 +390,7 @@ VkResult VulkanDriver::copy_buffer(VulkanBuffer* src, VulkanBuffer* dst)
     //flushCommandBuffer(copyCmd, queue);
     vkEndCommandBuffer(cmd_buffer);
 
-    
-    // Create fence to ensure that the command buffer has finished executing
-    VkFenceCreateInfo fence_info{};
-    fence_info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-    fence_info.flags = 0;
-    fence_info.pNext = nullptr;
-    VkFence fence;
-    VK_CHECK_RESULT(vkCreateFence(device(), &fence_info, nullptr, &fence));
-    // Submit to the queue
-    VkSubmitInfo submitInfo = {};
-    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &cmd_buffer;
-    VK_CHECK_RESULT(vkQueueSubmit(graphics_queue, 1, &submitInfo, fence));
-    // Wait for the fence to signal that command buffer has finished executing
-    VK_CHECK_RESULT(vkWaitForFences(device(), 1, &fence, VK_TRUE, std::numeric_limits<uint64_t>::max()));
-    vkDestroyFence(device(), fence, nullptr);
+    flush_command_buffer(cmd_buffer);
 
     vkFreeCommandBuffers(device(), command_pool_, 1, &cmd_buffer);
 
@@ -483,26 +421,109 @@ VkResult VulkanDriver::copy_buffer(VulkanBuffer* src, VkBuffer dst)
     //flushCommandBuffer(copyCmd, queue);
     vkEndCommandBuffer(cmd_buffer);
 
-    // Create fence to ensure that the command buffer has finished executing
-    VkFenceCreateInfo fence_info{};
-    fence_info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-    fence_info.flags = 0;
-    fence_info.pNext = nullptr;
-    VkFence fence;
-    VK_CHECK_RESULT(vkCreateFence(device(), &fence_info, nullptr, &fence));
-    // Submit to the queue
-    VkSubmitInfo submitInfo = {};
-    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &cmd_buffer;
-    VK_CHECK_RESULT(vkQueueSubmit(graphics_queue, 1, &submitInfo, fence));
-    // Wait for the fence to signal that command buffer has finished executing
-    VK_CHECK_RESULT(vkWaitForFences(device(), 1, &fence, VK_TRUE, std::numeric_limits<uint64_t>::max()));
-    vkDestroyFence(device(), fence, nullptr);
+    flush_command_buffer(cmd_buffer);
 
     vkFreeCommandBuffers(device(), command_pool_, 1, &cmd_buffer);
 
     return VK_SUCCESS;
+}
+
+VkResult VulkanDriver::copy_image(VulkanBuffer* src, VulkanTexture* dst)
+{
+    // Setup buffer copy regions for each mip level
+    std::vector<VkBufferImageCopy> bufferCopyRegions;
+    uint32_t offset = 0;
+
+    for (uint32_t i = 0; i < dst->mip_levels(); i++) {
+
+        // Setup a buffer image copy structure for the current mip level
+        VkBufferImageCopy bufferCopyRegion = {};
+        bufferCopyRegion.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        bufferCopyRegion.imageSubresource.mipLevel = i;
+        bufferCopyRegion.imageSubresource.baseArrayLayer = 0;
+        bufferCopyRegion.imageSubresource.layerCount = 1;
+        bufferCopyRegion.imageExtent.width = dst->width() >> i;
+        bufferCopyRegion.imageExtent.height = dst->height() >> i;
+        bufferCopyRegion.imageExtent.depth = 1;
+        bufferCopyRegion.bufferOffset = offset;
+        bufferCopyRegions.push_back(bufferCopyRegion);
+    }
+
+    VkCommandBufferAllocateInfo cmd_buffer_allocate{};
+    cmd_buffer_allocate.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    cmd_buffer_allocate.commandPool = command_pool_;
+    cmd_buffer_allocate.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    cmd_buffer_allocate.commandBufferCount = 1;
+
+    VkCommandBuffer cmd_buffer;
+    VK_CHECK_RESULT(vkAllocateCommandBuffers(device(), &cmd_buffer_allocate, &cmd_buffer));
+
+    // The sub resource range describes the regions of the image that will be transitioned using the memory barriers below
+    VkImageSubresourceRange subresourceRange = {};
+    // Image only contains color data
+    subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    // Start at first mip level
+    subresourceRange.baseMipLevel = 0;
+    // We will transition on all mip levels
+    subresourceRange.levelCount = dst->mip_levels();
+    // The 2D texture only has one layer
+    subresourceRange.layerCount = 1;
+
+    // Transition the texture image layout to transfer target, so we can safely copy our buffer data to it.
+    VkImageMemoryBarrier imageMemoryBarrier;
+    VkImage image = reinterpret_cast<VkImage>(dst->tex_handle());
+    imageMemoryBarrier.image = image;
+    imageMemoryBarrier.subresourceRange = subresourceRange;
+    imageMemoryBarrier.srcAccessMask = 0;
+    imageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+    imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+
+    // Insert a memory dependency at the proper pipeline stages that will execute the image layout transition
+    // Source pipeline stage is host write/read execution (VK_PIPELINE_STAGE_HOST_BIT)
+    // Destination pipeline stage is copy command execution (VK_PIPELINE_STAGE_TRANSFER_BIT)
+    vkCmdPipelineBarrier(
+        cmd_buffer,
+        VK_PIPELINE_STAGE_HOST_BIT,
+        VK_PIPELINE_STAGE_TRANSFER_BIT,
+        0,
+        0, nullptr,
+        0, nullptr,
+        1, &imageMemoryBarrier);
+
+    // Copy mip levels from staging buffer
+    vkCmdCopyBufferToImage(
+        cmd_buffer,
+        src->buffer_handle(),
+        image,
+        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+        static_cast<uint32_t>(bufferCopyRegions.size()),
+        bufferCopyRegions.data());
+
+    // Once the data has been uploaded we transfer to the texture image to the shader read layout, so it can be sampled from
+    imageMemoryBarrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+    imageMemoryBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+    imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+    imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+    // Insert a memory dependency at the proper pipeline stages that will execute the image layout transition
+    // Source pipeline stage is copy command execution (VK_PIPELINE_STAGE_TRANSFER_BIT)
+    // Destination pipeline stage fragment shader access (VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT)
+    vkCmdPipelineBarrier(
+        cmd_buffer,
+        VK_PIPELINE_STAGE_TRANSFER_BIT,
+        VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+        0,
+        0, nullptr,
+        0, nullptr,
+        1, &imageMemoryBarrier);
+
+    vkEndCommandBuffer(cmd_buffer);
+
+    // Create fence to ensure that the command buffer has finished executing
+    flush_command_buffer(cmd_buffer);
+
+    vkFreeCommandBuffers(device(), command_pool_, 1, &cmd_buffer);
 }
 
 void VulkanDriver::set_vertex_buffer(const VulkanVertexStreamBinding& vertex_stream) {

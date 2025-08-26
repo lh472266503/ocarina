@@ -47,3 +47,9 @@ bool IsFinite(float x)
     return (asuint(x) & 0x7F800000) != 0x7F800000;
 }
 
+cbuffer global_ubo : register(b0) 
+{ 
+	float4x4 projectionMatrix;
+
+	float4x4 viewMatrix;
+};

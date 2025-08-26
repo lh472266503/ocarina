@@ -54,6 +54,8 @@ class RenderPass;
 class DescriptorSet;
 class DescriptorSetLayout;
 class Pipeline;
+class Image;
+
 class Device : public concepts::Noncopyable {
 public:
     class Impl : public concepts::Noncopyable {
@@ -101,6 +103,7 @@ public:
         virtual Pipeline *get_pipeline(const PipelineState &pipeline_state, RenderPass *render_pass) noexcept = 0;
         virtual DescriptorSet *get_global_descriptor_set(const string& name) noexcept = 0;
         virtual void bind_descriptor_sets(DescriptorSet **descriptor_set, uint32_t descriptor_sets_num, Pipeline *pipeline) noexcept = 0;
+        virtual handle_ty create_texture(Image *image_resource, const TextureViewCreation &texture_view) noexcept = 0;
     };
 
     using Creator = Device::Impl *(RHIContext *);
@@ -162,6 +165,7 @@ public:
     void init_rtx() noexcept { impl_->init_rtx(); }
     [[nodiscard]] Texture create_texture(uint3 res, PixelStorage storage, const string &desc = "") const noexcept;
     [[nodiscard]] Texture create_texture(uint2 res, PixelStorage storage, const string &desc = "") const noexcept;
+    [[nodiscard]] Texture create_texture(Image* image_resource, const TextureViewCreation& texture_view) const noexcept;
     template<typename T>
     [[nodiscard]] auto compile(const Kernel<T> &kernel, const string &shader_desc = "", ShaderTag tag = CS) const noexcept {
         OC_INFO_FORMAT("compile shader : {}", shader_desc.c_str());

@@ -334,6 +334,10 @@ void VulkanDevice::bind_descriptor_sets(DescriptorSet **descriptor_set, uint32_t
     VulkanDriver::instance().bind_descriptor_sets(vulkan_descriptor_sets.data(), descriptor_sets_num, vulkan_pipeline->pipeline_layout_);
 }
 
+handle_ty VulkanDevice::create_texture(Image *image_resource, const TextureViewCreation &texture_view) noexcept {
+    return InvalidUI64;
+}
+
 VulkanBuffer *VulkanDevice::create_vulkan_buffer(VkBufferUsageFlags usage_flags, VkMemoryPropertyFlags memory_property_flags, VkDeviceSize size, const void *data) {
     //return VulkanBufferManager::instance()->create_vulkan_buffer(this, usage_flags, memory_property_flags, size, data);
     return ocarina::new_with_allocator<VulkanBuffer>(this, usage_flags, memory_property_flags, size, data);

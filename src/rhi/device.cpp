@@ -37,6 +37,11 @@ Texture Device::create_texture(uint2 res, PixelStorage storage, const string &de
     return create_texture(make_uint3(res, 1u), storage, desc);
 }
 
+Texture Device::create_texture(Image *image_resource, const TextureViewCreation &texture_view) const noexcept {
+    Texture tex(impl_.get(), image_resource, texture_view);
+    return tex;
+}
+
 Device Device::create_device(const string &backend_name, const ocarina::InstanceCreation &instance_creation) {
     RHIContext &rhi_context = RHIContext::instance();
     return rhi_context.create_device(backend_name, instance_creation);

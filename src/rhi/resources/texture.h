@@ -8,9 +8,11 @@
 #include "resource.h"
 #include "rhi/command.h"
 #include "texture_sampler.h"
+#include "../graphics_descriptions.h"
 
 namespace ocarina {
 
+class Image;
 namespace detail {
 [[nodiscard]] constexpr uint compute_mip_level_num(uint3 res, uint request_level_num) noexcept {
     uint max_size = std::max({res.x, res.y, res.z});
@@ -55,6 +57,11 @@ public:
                       device->create_texture(res, pixel_storage,
                                              detail::compute_mip_level_num(res, level_num), desc)),
           channel_num_(ocarina::channel_num(pixel_storage)) {}
+
+    explicit Texture(Device::Impl *device, Image* image_resource, const TextureViewCreation& texture_view)
+        : RHIResource(device, Tag::TEXTURE,
+                      device->create_texture(image_resource, texture_view)),
+          channel_num_(ocarina::channel_num(texture_view.format)) {}
 
     OC_MAKE_MEMBER_GETTER(channel_num, )
 
