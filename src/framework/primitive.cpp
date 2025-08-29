@@ -11,6 +11,7 @@
 #include "rhi/descriptor_set.h"
 #include "rhi/resources/shader.h"
 
+
 namespace ocarina {
 
 
@@ -106,6 +107,14 @@ DrawCallItem Primitive::get_draw_call_item(Device *device, RenderPass *render_pa
     item_.pipeline = pipeline_;
 
     return item_;
+}
+
+void Primitive::add_texture(uint64_t name_id, Texture *texture) {
+    textures_.insert(std::make_pair(name_id, texture));
+
+    for (auto &descriptor_set : descriptor_sets_) {
+        descriptor_set->update_texture(name_id, texture);
+    }
 }
 
 }// namespace ocarina

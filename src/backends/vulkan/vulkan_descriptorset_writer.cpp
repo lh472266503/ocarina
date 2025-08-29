@@ -10,6 +10,7 @@
 #include "vulkan_descriptorset.h"
 #include "vulkan_device.h"
 #include "vulkan_driver.h"
+#include "vulkan_texture.h"
 
 namespace ocarina {
 VulkanDescriptorSetWriter::VulkanDescriptorSetWriter(VulkanDevice *device, VulkanDescriptorSet *descriptor_set) 
@@ -30,6 +31,13 @@ VulkanDescriptorSetWriter::VulkanDescriptorSetWriter(VulkanDevice *device, Vulka
             bind_buffer(binding.binding, buffer->get_descriptor_info());
             buffers_.insert(std::make_pair(binding.binding, buffer));
             descriptors_.insert(std::make_pair(hash64(descriptor_buffer->name_), descriptor_buffer));
+        } 
+        else if (binding.type == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER) {
+
+            VulkanDescriptorImage *descriptor_image = ocarina::new_with_allocator<VulkanDescriptorImage>();
+            descriptor_image->binding = binding.binding;
+            descriptor_image->name_ = binding.name;
+            descriptors_.insert(std::make_pair(hash64(descriptor_image->name_), descriptor_image));
         }
         // Add other types of descriptors as needed
     }
@@ -52,7 +60,6 @@ VulkanDescriptorSetWriter::~VulkanDescriptorSetWriter()
                 VulkanDescriptorBuffer *buffer_descriptor = static_cast<VulkanDescriptorBuffer *>(descriptor.second);
                 ocarina::delete_with_allocator(buffer_descriptor);
             }
-           
         }
     }
     descriptors_.clear();
@@ -70,35 +77,22 @@ void VulkanDescriptorSetWriter::bind_buffer(uint32_t binding, VkDescriptorBuffer
     writes_.push_back(write);
 }
 
-//void VulkanDescriptorSetWriter::bind_buffer(uint64_t name_id, handle_ty buffer) {
-//
-//}
-//
-//void VulkanDescriptorSetWriter::bind_texture(uint64_t name_id, handle_ty texture) {
-//
-//}
+void VulkanDescriptorSetWriter::bind_texture(uint32_t binding, VkDescriptorImageInfo* texture)
+{
+    VkWriteDescriptorSet write{};
+    write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    write.dstSet = descriptor_set_->descriptor_set();
+    write.dstBinding = binding;
+    write.descriptorCount = 1;
+    write.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+    write.pImageInfo = texture;
+    writes_.push_back(write);
+}
 
 void VulkanDescriptorSetWriter::build(VulkanDevice *device) {
     
     std::vector<VkWriteDescriptorSet> writes;
 
-    /*
-    for (auto &descriptor : pending_writes_) {
-        if (descriptor->is_buffer_) {
-            VulkanDescriptorBuffer *buffer_descriptor = static_cast<VulkanDescriptorBuffer *>(descriptor);
-            VkDescriptorBufferInfo* buffer_info = buffer_descriptor->buffer_->get_descriptor_info();
-
-            VkWriteDescriptorSet write{};
-            write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            write.dstSet = descriptor_set_->descriptor_set();
-            write.dstBinding = buffer_descriptor->binding;
-            write.descriptorCount = 1;
-            write.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-            write.pBufferInfo = buffer_info;
-            writes.push_back(write);
-        }
-    }
-    */
     for (auto &write : writes_) {
         writes.push_back(write);
     }
@@ -124,6 +118,16 @@ void VulkanDescriptorSetWriter::update_push_constants(uint64_t name_id, void *da
         VulkanPipeline *vulkan_pipeline = static_cast<VulkanPipeline *>(pipeline);
         VkPipelineLayout layout = vulkan_pipeline->pipeline_layout_;
         VulkanDriver::instance().push_constants(layout, data, size, 0);
+    }
+}
+
+void VulkanDescriptorSetWriter::update_texture(uint64_t name_id, Texture *texture) {
+    auto it = descriptors_.find(name_id);
+    if (it != descriptors_.end()) {
+        VulkanTexture *vulkan_texture = static_cast<VulkanTexture *>(texture->impl());
+        VulkanDescriptorImage *descriptor_image = static_cast<VulkanDescriptorImage *>(it->second);
+        VkDescriptorImageInfo descriptor_info = vulkan_texture->get_descriptor_info();
+        bind_texture(descriptor_image->binding, &descriptor_info);
     }
 }
 

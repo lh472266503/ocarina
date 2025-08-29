@@ -39,6 +39,12 @@ void VulkanDescriptorSet::update_buffer(uint64_t name_id, void *data, uint32_t s
     }
 }
 
+void VulkanDescriptorSet::update_texture(uint64_t name_id, Texture *texture) {
+    if (writer_) {
+        writer_->update_texture(name_id, texture);
+    }
+}
+
 VulkanDescriptorSetLayout::VulkanDescriptorSetLayout(VulkanDevice* device) : device_(device)
 {
 

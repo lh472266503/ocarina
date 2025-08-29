@@ -21,6 +21,7 @@ class VulkanDescriptorSetWriter;
 class VulkanDescriptor
 {
 public:
+    virtual ~VulkanDescriptor() = default;
     uint32_t binding = 0;
     std::string name_;
     bool is_buffer_ = false;
@@ -110,6 +111,7 @@ public:
     OC_MAKE_MEMBER_GETTER(layout, );
     //void copy_descriptors(VulkanDescriptor *descriptor);
     void update_buffer(uint64_t name_id, void *data, uint32_t size) override;
+    void update_texture(uint64_t name_id, Texture *texture) override;
 };
 
 struct DescriptorPoolCreation {

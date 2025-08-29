@@ -13,6 +13,7 @@
 #include "vulkan_renderpass.h"
 #include "vulkan_descriptorset.h"
 #include "vulkan_descriptorset_writer.h"
+#include "vulkan_texture.h"
 
 namespace ocarina {
 
@@ -51,6 +52,11 @@ handle_ty VulkanDevice::create_texture(uint3 res, PixelStorage pixel_storage,
                                      uint level_num,
                                      const string &desc) noexcept {
     return 0;
+}
+
+handle_ty VulkanDevice::create_texture(Image *image, const TextureViewCreation &texture_view) noexcept {
+    auto texture = ocarina::new_with_allocator<VulkanTexture>(this, image, texture_view);
+    return reinterpret_cast<handle_ty>(texture);
 }
 
 handle_ty VulkanDevice::create_shader(const Function &function) noexcept {
@@ -121,7 +127,7 @@ void VulkanDevice::destroy_shader(handle_ty handle) noexcept {
 }
 
 void VulkanDevice::destroy_texture(handle_ty handle) noexcept {
-
+    ocarina::delete_with_allocator(reinterpret_cast<VulkanTexture *>(handle));
 }
 
 void VulkanDevice::destroy_stream(handle_ty handle) noexcept {
@@ -332,10 +338,6 @@ void VulkanDevice::bind_descriptor_sets(DescriptorSet **descriptor_set, uint32_t
     }
     VulkanPipeline *vulkan_pipeline = static_cast<VulkanPipeline *>(pipeline);
     VulkanDriver::instance().bind_descriptor_sets(vulkan_descriptor_sets.data(), descriptor_sets_num, vulkan_pipeline->pipeline_layout_);
-}
-
-handle_ty VulkanDevice::create_texture(Image *image_resource, const TextureViewCreation &texture_view) noexcept {
-    return InvalidUI64;
 }
 
 VulkanBuffer *VulkanDevice::create_vulkan_buffer(VkBufferUsageFlags usage_flags, VkMemoryPropertyFlags memory_property_flags, VkDeviceSize size, const void *data) {

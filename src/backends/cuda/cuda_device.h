@@ -117,6 +117,7 @@ public:
     [[nodiscard]] handle_ty create_texture(uint3 res, PixelStorage pixel_storage,
                                            uint level_num,
                                            const string &desc) noexcept override;
+    [[nodiscard]] handle_ty create_texture(Image *image, const TextureViewCreation &texture_view) noexcept override { return 0; }
     void destroy_texture(handle_ty handle) noexcept override;
     [[nodiscard]] handle_ty create_shader(const Function &function) noexcept override;
     [[nodiscard]] handle_ty create_shader_from_file(const std::string &file_name, ShaderType shader_type, const std::set<string> &options) noexcept override { return InvalidUI64; }
@@ -147,7 +148,6 @@ public:
     Pipeline *get_pipeline(const PipelineState &pipeline_state, RenderPass *render_pass) noexcept override { return nullptr; }
     DescriptorSet *get_global_descriptor_set(const string &name) noexcept override { return nullptr; }
     void bind_descriptor_sets(DescriptorSet **descriptor_set, uint32_t descriptor_sets_num, Pipeline *pipeline) noexcept override {}
-    handle_ty create_texture(Image *image_resource, const TextureViewCreation &texture_view) noexcept override { return InvalidUI64; }
     void begin_frame() noexcept override {}
     void end_frame() noexcept override {}
 };

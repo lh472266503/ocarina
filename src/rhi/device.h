@@ -56,7 +56,7 @@ class DescriptorSetLayout;
 class Pipeline;
 class Image;
 
-class Device : public concepts::Noncopyable {
+class OC_RHI_API Device : public concepts::Noncopyable {
 public:
     class Impl : public concepts::Noncopyable {
     protected:
@@ -70,6 +70,7 @@ public:
         virtual void destroy_buffer(handle_ty handle) noexcept = 0;
         [[nodiscard]] virtual handle_ty create_texture(uint3 res, PixelStorage pixel_storage,
                                                        uint level_num, const string &desc) noexcept = 0;
+        [[nodiscard]] virtual handle_ty create_texture(Image* image, const TextureViewCreation& texture_view) noexcept = 0;
         virtual void destroy_texture(handle_ty handle) noexcept = 0;
         [[nodiscard]] virtual handle_ty create_shader(const Function &function) noexcept = 0;
         [[nodiscard]] virtual handle_ty create_shader_from_file(const std::string &file_name, ShaderType shader_type, const std::set<string> &options) noexcept = 0;
@@ -103,7 +104,6 @@ public:
         virtual Pipeline *get_pipeline(const PipelineState &pipeline_state, RenderPass *render_pass) noexcept = 0;
         virtual DescriptorSet *get_global_descriptor_set(const string& name) noexcept = 0;
         virtual void bind_descriptor_sets(DescriptorSet **descriptor_set, uint32_t descriptor_sets_num, Pipeline *pipeline) noexcept = 0;
-        virtual handle_ty create_texture(Image *image_resource, const TextureViewCreation &texture_view) noexcept = 0;
     };
 
     using Creator = Device::Impl *(RHIContext *);

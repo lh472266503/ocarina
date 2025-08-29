@@ -19,11 +19,12 @@ public:
     VulkanDescriptorSetWriter(VulkanDevice* device, VulkanDescriptorSet* descriptor_set);
     ~VulkanDescriptorSetWriter();
     void bind_buffer(uint32_t binding, VkDescriptorBufferInfo* buffer);
-    //void bind_texture(uint64_t name_id, handle_ty texture) override;
+    void bind_texture(uint32_t binding, VkDescriptorImageInfo* texture);
     void build(VulkanDevice* device);
 
     void update_buffer(uint64_t name_id, void *data, uint32_t size) override;
     void update_push_constants(uint64_t name_id, void *data, uint32_t size, Pipeline* pipeline) override;
+    void update_texture(uint64_t name_id, Texture *texture) override;
 
 private:
     std::unordered_map<uint64_t, VulkanDescriptor*> descriptors_;

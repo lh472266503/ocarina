@@ -12,6 +12,7 @@
 #include "rhi/graphics_descriptions.h"
 #include "rhi/pipeline_state.h"
 #include "rhi/renderpass.h"
+#include "rhi/resources/texture.h"
 
 namespace ocarina {
 class VertexBuffer;
@@ -91,6 +92,8 @@ public:
 
     DrawCallItem get_draw_call_item(Device *device, RenderPass* render_pass);
 
+    void add_texture(uint64_t name_id, Texture* texture);
+
 private:
     VertexBuffer* vertex_buffer_;
     IndexBuffer* index_buffer_;
@@ -107,13 +110,9 @@ private:
     bool pipeline_state_dirty = true;
     Pipeline *pipeline_ = nullptr;
 
+    std::unordered_map<uint64_t, Texture*> textures_;
     std::vector<DescriptorSet *> descriptor_sets_;
 
-    //std::array<DescriptorSet *, MAX_DESCRIPTOR_SETS_PER_SHADER> descriptor_sets_ = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
-
-    //std::array<DescriptorSetLayout *, MAX_DESCRIPTOR_SETS_PER_SHADER> descriptor_set_layouts_ = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
-
-    //std::array<DescriptorSetWriter *, MAX_DESCRIPTOR_SETS_PER_SHADER> descriptor_set_writers_ = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
     DrawCallItem item_;
 };
 

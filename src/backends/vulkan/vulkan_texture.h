@@ -18,19 +18,23 @@ private:
     VkImageType imageType_;
     VkImage image_ = VK_NULL_HANDLE;
     VkImageView image_view_ = VK_NULL_HANDLE;
+    VkImageLayout image_layout_ = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    VkSampler sampler_ = VK_NULL_HANDLE;
     PixelStorage pixel_storage_;
     uint3 res_{};
     VulkanDevice* device_ = nullptr;
-    Image *image_resource_ = nullptr;
+    //Image *image_resource_ = nullptr;
     VkFormat image_format_;
     uint32_t mip_levels_ = 1;
     VkDeviceMemory image_memory_ = VK_NULL_HANDLE;
 
 public:
-    VulkanTexture(VulkanDevice *device, Image *image, VkMemoryPropertyFlags memory_property_flags);
+    VulkanTexture(VulkanDevice *device, Image *image, const TextureViewCreation& texture_view);
     ~VulkanTexture() override;
-    void init(VkMemoryPropertyFlags memory_property_flags);
+    void init(Image *image, const TextureViewCreation &texture_view);
     void load_cpu_data(Image *image);
+    void generate_mipmaps();
+    void create_sampler();
     [[nodiscard]] uint3 resolution() const noexcept override { return res_; }
     [[nodiscard]] handle_ty array_handle() const noexcept override {
         return reinterpret_cast<handle_ty>(image_);
@@ -52,5 +56,19 @@ public:
     uint32_t width() const noexcept { return res_.x; }
     uint32_t height() const noexcept { return res_.y; }
     uint32_t depth() const noexcept { return res_.z; }
+
+    void set_image_layout(VkImageLayout new_image_layout)
+    {
+        image_layout_ = new_image_layout;
+    }
+
+    VkDescriptorImageInfo get_descriptor_info() const
+    {
+        VkDescriptorImageInfo image_info{};
+        image_info.imageLayout = image_layout_;
+        image_info.imageView = image_view_;
+        image_info.sampler = sampler_;
+        return image_info;
+    }
 };
 }// namespace ocarina

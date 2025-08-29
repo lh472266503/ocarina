@@ -341,8 +341,7 @@ struct RenderPassCreation
     uint32_t swapchain_clear_stencil = 0;                              ///< clear stencil
 };
 
-struct TextureViewCreation
-{
+struct TextureViewCreation {
     PixelStorage format = PixelStorage::BYTE4;        ///< Back buffers format.
     uint32_t mip_level_count = 1;                     ///< mip level count
     uint32_t array_layer_count = 1;                   ///< array layer count

@@ -49,6 +49,9 @@ public:
         return draw_cmd_buffers_[current_buffer_];
     }
 
+    VkCommandBuffer begin_one_time_command_buffer();
+    void end_one_time_command_buffer(VkCommandBuffer cmd);
+
     VulkanPipeline* get_pipeline(const PipelineState &pipeline_state, VkRenderPass render_pass);
 
     void begin_frame();

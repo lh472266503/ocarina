@@ -14,6 +14,7 @@
 #include "rhi/vertex_buffer.h"
 #include "rhi/index_buffer.h"
 #include "rhi/resources/buffer.h"
+#include "rhi/resources/texture.h"
 #include "GUI/window.h"
 #include "framework/renderer.h"
 #include "framework/primitive.h"
@@ -47,31 +48,34 @@ int main(int argc, char *argv[]) {
     std::set<string> options;
     handle_ty vertex_shader = device.create_shader_from_file("D:\\github\\Vision\\src\\ocarina\\src\\backends\\vulkan\\builtin\\texture.vert", ShaderType::VertexShader, options);
     handle_ty pixel_shader = device.create_shader_from_file("D:\\github\\Vision\\src\\ocarina\\src\\backends\\vulkan\\builtin\\texture.frag", ShaderType::PixelShader, options);
-    //void **shaders = reinterpret_cast<void **>(vertex_shader, pixel_shader);
-    //device.create_descriptor_set_layout(shaders, 2);
 
-    Primitive triangle;
-    //std::vector<Primitive> opaques;
+    Primitive quad;
     PipelineState pipeline_state;
     pipeline_state.shaders[0] = vertex_shader;
     pipeline_state.shaders[1] = pixel_shader;
     pipeline_state.blend_state = BlendState::Opaque();
     pipeline_state.raster_state = RasterState::Default();
     pipeline_state.depth_stencil_state = DepthStencilState::Default();
+    
+    Image image = Image::load("D:\\github\\Vision\\media\\textures\\uv_grid.png", ColorSpace::SRGB);
+    TextureViewCreation texture_view = {};
+    texture_view.mip_level_count = 0;
+    texture_view.usage = TextureUsageFlags::ShaderReadOnly;
+    Texture texture = device.create_texture(&image, texture_view);
 
-    auto setup_quad = [&](Primitive& triangle) {
-        triangle.set_vertex_shader(vertex_shader);
-        triangle.set_pixel_shader(pixel_shader);
+    auto setup_quad = [&](Primitive& quad) {
+        quad.set_vertex_shader(vertex_shader);
+        quad.set_pixel_shader(pixel_shader);
         
         VertexBuffer* vertex_buffer = device.create_vertex_buffer();
         Vector3 positions[4] = {{1.0f, 1.0f, 0.0f}, {-1.0f, 1.0f, 0.0f}, {-1.0f, -1.0f, 0.0f}, {1.0f, -1.0f, 0.0f}};
         vertex_buffer->add_vertex_stream(VertexAttributeType::Enum::Position, 3, sizeof(Vector3), (const void *)&positions[0]);
         Vector2 uvs[4] = {{1.0f, 1.0f}, {0.0f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f}};
-        vertex_buffer->add_vertex_stream(VertexAttributeType::Enum::Texcoord0, 3, sizeof(Vector3), (const void *)&uvs[0]);
+        vertex_buffer->add_vertex_stream(VertexAttributeType::Enum::TexCoord0, 3, sizeof(Vector2), (const void *)&uvs[0]);
         Vector4 colors[4] = {{1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}};
         vertex_buffer->add_vertex_stream(VertexAttributeType::Enum::Color0, 3, sizeof(Vector4), (const void *)&colors[0]);
         vertex_buffer->upload_data();
-        triangle.set_vertex_buffer(vertex_buffer);
+        quad.set_vertex_buffer(vertex_buffer);
         pipeline_state.vertex_buffer = vertex_buffer;
 
         // Setup indices
@@ -79,10 +83,11 @@ int main(int argc, char *argv[]) {
         uint32_t indices_count = static_cast<uint32_t>(indices.size());
         uint32_t indices_bytes = indices_count * sizeof(uint16_t);
         IndexBuffer *index_buffer = device.create_index_buffer(indices.data(), indices_count);
-        triangle.set_index_buffer(index_buffer);
-        triangle.set_pipeline_state(pipeline_state);
+        quad.set_index_buffer(index_buffer);
+        quad.set_pipeline_state(pipeline_state);
 
-        
+        uint64_t name_id = hash64("albedo");
+        quad.add_texture(name_id, &texture);
         //opaques.push_back(triangle);
     };
 
@@ -105,8 +110,8 @@ int main(int argc, char *argv[]) {
         //item.descriptor_set_writer->update_push_constants(push_constant_name_id, (void *)&item.world_matrix, sizeof(item.world_matrix), item.pipeline_line);
     };
 
-    triangle.set_geometry_data_setup(&device, setup_quad);
-    triangle.set_draw_call_pre_render_function(pre_render_draw_item);
+    quad.set_geometry_data_setup(&device, setup_quad);
+    quad.set_draw_call_pre_render_function(pre_render_draw_item);
 
     Renderer renderer(&device);
 
@@ -127,7 +132,7 @@ int main(int argc, char *argv[]) {
     });
 
 
-    auto draw_item = triangle.get_draw_call_item(&device, render_pass);
+    auto draw_item = quad.get_draw_call_item(&device, render_pass);
     render_pass->add_draw_call(draw_item);
     renderer.add_render_pass(render_pass);
 
@@ -141,5 +146,5 @@ int main(int argc, char *argv[]) {
         }
     });
 
-    
+    texture.destroy();
 }

@@ -94,6 +94,30 @@ VulkanShader* VulkanDriver::get_shader(handle_ty shader) const
     return vulkan_shader_manager->get_shader(shader);
 }
 
+VkCommandBuffer VulkanDriver::begin_one_time_command_buffer()
+{
+    VkCommandBufferAllocateInfo cmd_buffer_allocate{};
+    cmd_buffer_allocate.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    cmd_buffer_allocate.commandPool = command_pool_;
+    cmd_buffer_allocate.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    cmd_buffer_allocate.commandBufferCount = 1;
+
+    VkCommandBuffer cmd_buffer;
+    VK_CHECK_RESULT(vkAllocateCommandBuffers(device(), &cmd_buffer_allocate, &cmd_buffer));
+
+    VkCommandBufferBeginInfo cmd_buffer_begin{};
+    cmd_buffer_begin.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    vkBeginCommandBuffer(cmd_buffer, &cmd_buffer_begin);
+
+    return cmd_buffer;
+}
+
+void VulkanDriver::end_one_time_command_buffer(VkCommandBuffer cmd) {
+    vkEndCommandBuffer(cmd);
+    flush_command_buffer(cmd);
+    vkFreeCommandBuffers(device(), command_pool_, 1, &cmd);
+}
+
 void VulkanDriver::setup_frame_buffer()
 {
     VulkanSwapchain *swapchain = vulkan_device_->get_swapchain();
