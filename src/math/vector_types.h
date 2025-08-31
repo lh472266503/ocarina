@@ -214,6 +214,8 @@ public:
 #include "swizzle_inl/swizzle2.inl.h"
 };
 
+#define OC_VECTOR3_ALIGN_16 1
+
 template<typename T>
 struct alignas(sizeof(T) * 4) VectorStorage<T, 3> {
     static_assert(valid_vector_v<T>, "Invalid vector type");
