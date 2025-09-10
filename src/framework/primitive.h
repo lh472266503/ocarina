@@ -95,6 +95,8 @@ public:
     void add_texture(uint64_t name_id, Texture* texture);
 
 private:
+    void update_descriptor_sets(Device *device);
+
     VertexBuffer* vertex_buffer_;
     IndexBuffer* index_buffer_;
     handle_ty vertex_shader_;
@@ -108,6 +110,7 @@ private:
     float3 position_;
     bool transform_dirty_ = true;
     bool pipeline_state_dirty = true;
+    bool shader_dirty = false;
     Pipeline *pipeline_ = nullptr;
 
     std::unordered_map<uint64_t, Texture*> textures_;

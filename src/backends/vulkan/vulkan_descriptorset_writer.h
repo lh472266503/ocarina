@@ -20,6 +20,7 @@ public:
     ~VulkanDescriptorSetWriter();
     void bind_buffer(uint32_t binding, VkDescriptorBufferInfo* buffer);
     void bind_texture(uint32_t binding, VkDescriptorImageInfo* texture);
+    void bind_sampler(uint32_t binding, VkDescriptorImageInfo* sampler);
     void build(VulkanDevice* device);
 
     void update_buffer(uint64_t name_id, void *data, uint32_t size) override;

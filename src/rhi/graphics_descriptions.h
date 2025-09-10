@@ -154,6 +154,21 @@ enum class CullingMode : uint8_t {
     FRONT_AND_BACK//!< Front and Back, geometry is not visible
 };
 
+enum class FilterMode : uint8_t {
+    POINT,     //!< Point filtering, also known as nearest neighbor filtering
+    BILINEAR,  //!< Bilinear filtering
+    TRILINEAR, //!< Trilinear filtering
+    ANISOTROPIC//!< Anisotropic filtering
+};
+
+enum class AddressMode : uint8_t {
+    WRAP,      //!< Texture coordinates outside 0..1 are wrapped around
+    MIRROR,    //!< Texture coordinates outside 0..1 are mirrored
+    CLAMP,     //!< Texture coordinates outside 0..1 are clamped to 0 or 1
+    BORDER,    //!< Texture coordinates outside 0..1 are given a user-defined border color
+    MIRROR_ONCE//!< Texture coordinates outside 0..1 are mirrored once and then clamped
+};
+
 struct DescriptorCount {
     uint32_t ubo : 8;
     uint32_t srv : 8;
@@ -341,11 +356,20 @@ struct RenderPassCreation
     uint32_t swapchain_clear_stencil = 0;                              ///< clear stencil
 };
 
+struct SamplerCreation {
+    FilterMode filter = FilterMode::BILINEAR;///< Filtering mode.
+    FilterMode mipmap_filter = FilterMode::BILINEAR;///< Mipmap filtering mode.
+    AddressMode address_u = AddressMode::WRAP;///< Addressing mode for U coordinate.
+    AddressMode address_v = AddressMode::WRAP;///< Addressing mode for V coordinate.
+    AddressMode address_w = AddressMode::WRAP;///< Addressing mode for W coordinate.
+};
+
 struct TextureViewCreation {
     PixelStorage format = PixelStorage::BYTE4;        ///< Back buffers format.
     uint32_t mip_level_count = 1;                     ///< mip level count
     uint32_t array_layer_count = 1;                   ///< array layer count
     TextureUsageFlags usage = TextureUsageFlags::None;///< texture usage
+    SamplerCreation sampler;                          ///< sampler creation
 };
 
 #define MAX_DESCRIPTOR_SETS_PER_SHADER 8

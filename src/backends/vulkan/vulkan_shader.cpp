@@ -100,16 +100,17 @@ void VulkanShader::get_shader_variables(const ShaderReflection &reflection) {
     for (auto& shader_resource : reflection.shader_resources)
     {
         strcpy(variable.name, shader_resource.name.c_str());
-        variable.binding = shader_resource.location;
+        variable.binding = shader_resource.binding;
+        variable.descriptor_set = shader_resource.descriptor_set;
         variable.size = shader_resource.size;
-        variable.count = shader_resource.register_count;
+        variable.count = 1;
         
         if (shader_resource.parameter_type == ShaderReflection::ResourceType::ConstantBuffer)
         {
             variable.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         } else if (shader_resource.parameter_type == ShaderReflection::ResourceType::SRV)
         {
-            variable.type = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+            variable.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         } else if (shader_resource.parameter_type == ShaderReflection::ResourceType::UAV) {
             variable.type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
         } else if (shader_resource.parameter_type == ShaderReflection::ResourceType::Sampler) {
@@ -124,6 +125,7 @@ void VulkanShader::get_shader_variables(const ShaderReflection &reflection) {
         VulkanShaderVariableBinding variable;
         strcpy(variable.name, ubo.name.c_str());
         variable.binding = ubo.binding;
+        variable.descriptor_set = ubo.descriptor_set;
         variable.size = ubo.size;
         variable.count = 1;// UBO is always 1
         variable.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;

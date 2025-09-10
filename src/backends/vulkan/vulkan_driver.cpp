@@ -391,18 +391,7 @@ void VulkanDriver::destroy_render_pass(VulkanRenderPass* render_pass) {
 
 VkResult VulkanDriver::copy_buffer(VulkanBuffer* src, VulkanBuffer* dst)
 {
-    VkCommandBufferAllocateInfo cmd_buffer_allocate{};
-    cmd_buffer_allocate.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    cmd_buffer_allocate.commandPool = command_pool_;
-    cmd_buffer_allocate.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    cmd_buffer_allocate.commandBufferCount = 1;
-
-    VkCommandBuffer cmd_buffer;
-    VK_CHECK_RESULT(vkAllocateCommandBuffers(device(), &cmd_buffer_allocate, &cmd_buffer));
-
-    VkCommandBufferBeginInfo cmd_buffer_begin{};
-    cmd_buffer_begin.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    vkBeginCommandBuffer(cmd_buffer, &cmd_buffer_begin);
+    VkCommandBuffer cmd_buffer = begin_one_time_command_buffer();
 
     VkBufferCopy buffer_copy{};
 
@@ -411,30 +400,14 @@ VkResult VulkanDriver::copy_buffer(VulkanBuffer* src, VulkanBuffer* dst)
 
     vkCmdCopyBuffer(cmd_buffer, src->buffer_handle(), dst->buffer_handle(), 1, &buffer_copy);
 
-    //flushCommandBuffer(copyCmd, queue);
-    vkEndCommandBuffer(cmd_buffer);
-
-    flush_command_buffer(cmd_buffer);
-
-    vkFreeCommandBuffers(device(), command_pool_, 1, &cmd_buffer);
+    end_one_time_command_buffer(cmd_buffer);
 
     return VK_SUCCESS;
 }
 
 VkResult VulkanDriver::copy_buffer(VulkanBuffer* src, VkBuffer dst)
 {
-    VkCommandBufferAllocateInfo cmd_buffer_allocate{};
-    cmd_buffer_allocate.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    cmd_buffer_allocate.commandPool = command_pool_;
-    cmd_buffer_allocate.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    cmd_buffer_allocate.commandBufferCount = 1;
-
-    VkCommandBuffer cmd_buffer;
-    VK_CHECK_RESULT(vkAllocateCommandBuffers(device(), &cmd_buffer_allocate, &cmd_buffer));
-
-    VkCommandBufferBeginInfo cmd_buffer_begin{};
-    cmd_buffer_begin.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    vkBeginCommandBuffer(cmd_buffer, &cmd_buffer_begin);
+    VkCommandBuffer cmd_buffer = begin_one_time_command_buffer();
 
     VkBufferCopy buffer_copy{};
 
@@ -442,112 +415,40 @@ VkResult VulkanDriver::copy_buffer(VulkanBuffer* src, VkBuffer dst)
 
     vkCmdCopyBuffer(cmd_buffer, src->buffer_handle(), dst, 1, &buffer_copy);
 
-    //flushCommandBuffer(copyCmd, queue);
-    vkEndCommandBuffer(cmd_buffer);
-
-    flush_command_buffer(cmd_buffer);
-
-    vkFreeCommandBuffers(device(), command_pool_, 1, &cmd_buffer);
+    end_one_time_command_buffer(cmd_buffer);
 
     return VK_SUCCESS;
 }
 
 VkResult VulkanDriver::copy_image(VulkanBuffer* src, VulkanTexture* dst)
 {
-    // Setup buffer copy regions for each mip level
-    std::vector<VkBufferImageCopy> bufferCopyRegions;
-    uint32_t offset = 0;
+    VkBufferImageCopy region{};
+    region.bufferOffset = 0;
+    region.bufferRowLength = 0;
+    region.bufferImageHeight = 0;
 
-    for (uint32_t i = 0; i < dst->mip_levels(); i++) {
+    region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    region.imageSubresource.mipLevel = 0;
+    region.imageSubresource.baseArrayLayer = 0;
+    region.imageSubresource.layerCount = 1;
 
-        // Setup a buffer image copy structure for the current mip level
-        VkBufferImageCopy bufferCopyRegion = {};
-        bufferCopyRegion.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-        bufferCopyRegion.imageSubresource.mipLevel = i;
-        bufferCopyRegion.imageSubresource.baseArrayLayer = 0;
-        bufferCopyRegion.imageSubresource.layerCount = 1;
-        bufferCopyRegion.imageExtent.width = dst->width() >> i;
-        bufferCopyRegion.imageExtent.height = dst->height() >> i;
-        bufferCopyRegion.imageExtent.depth = 1;
-        bufferCopyRegion.bufferOffset = offset;
-        bufferCopyRegions.push_back(bufferCopyRegion);
-    }
+    region.imageOffset = {0, 0, 0};
+    region.imageExtent = {dst->resolution().x, dst->resolution().y, 1};
 
-    VkCommandBufferAllocateInfo cmd_buffer_allocate{};
-    cmd_buffer_allocate.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    cmd_buffer_allocate.commandPool = command_pool_;
-    cmd_buffer_allocate.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    cmd_buffer_allocate.commandBufferCount = 1;
-
-    VkCommandBuffer cmd_buffer;
-    VK_CHECK_RESULT(vkAllocateCommandBuffers(device(), &cmd_buffer_allocate, &cmd_buffer));
-
-    // The sub resource range describes the regions of the image that will be transitioned using the memory barriers below
-    VkImageSubresourceRange subresourceRange = {};
-    // Image only contains color data
-    subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-    // Start at first mip level
-    subresourceRange.baseMipLevel = 0;
-    // We will transition on all mip levels
-    subresourceRange.levelCount = dst->mip_levels();
-    // The 2D texture only has one layer
-    subresourceRange.layerCount = 1;
-
-    // Transition the texture image layout to transfer target, so we can safely copy our buffer data to it.
-    VkImageMemoryBarrier imageMemoryBarrier;
     VkImage image = reinterpret_cast<VkImage>(dst->tex_handle());
-    imageMemoryBarrier.image = image;
-    imageMemoryBarrier.subresourceRange = subresourceRange;
-    imageMemoryBarrier.srcAccessMask = 0;
-    imageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-    imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-    imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 
-    // Insert a memory dependency at the proper pipeline stages that will execute the image layout transition
-    // Source pipeline stage is host write/read execution (VK_PIPELINE_STAGE_HOST_BIT)
-    // Destination pipeline stage is copy command execution (VK_PIPELINE_STAGE_TRANSFER_BIT)
-    vkCmdPipelineBarrier(
-        cmd_buffer,
-        VK_PIPELINE_STAGE_HOST_BIT,
-        VK_PIPELINE_STAGE_TRANSFER_BIT,
-        0,
-        0, nullptr,
-        0, nullptr,
-        1, &imageMemoryBarrier);
-
-    // Copy mip levels from staging buffer
+    VkCommandBuffer command_buffer = begin_one_time_command_buffer();
     vkCmdCopyBufferToImage(
-        cmd_buffer,
+        command_buffer,
         src->buffer_handle(),
         image,
         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-        static_cast<uint32_t>(bufferCopyRegions.size()),
-        bufferCopyRegions.data());
+        1,
+        &region);
 
-    // Once the data has been uploaded we transfer to the texture image to the shader read layout, so it can be sampled from
-    imageMemoryBarrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-    imageMemoryBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-    imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-    imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    end_one_time_command_buffer(command_buffer);
 
-    // Insert a memory dependency at the proper pipeline stages that will execute the image layout transition
-    // Source pipeline stage is copy command execution (VK_PIPELINE_STAGE_TRANSFER_BIT)
-    // Destination pipeline stage fragment shader access (VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT)
-    vkCmdPipelineBarrier(
-        cmd_buffer,
-        VK_PIPELINE_STAGE_TRANSFER_BIT,
-        VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-        0,
-        0, nullptr,
-        0, nullptr,
-        1, &imageMemoryBarrier);
-
-    vkEndCommandBuffer(cmd_buffer);
-
-    // Create fence to ensure that the command buffer has finished executing
-    flush_command_buffer(cmd_buffer);
-
-    vkFreeCommandBuffers(device(), command_pool_, 1, &cmd_buffer);
+    return VK_SUCCESS;
 }
 
 void VulkanDriver::set_vertex_buffer(const VulkanVertexStreamBinding& vertex_stream) {
@@ -566,16 +467,32 @@ void VulkanDriver::push_constants(VkPipelineLayout pipeline_layout, void *data, 
     vkCmdPushConstants(current_buffer, pipeline_layout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, offset, size, data);
 }
 
+void VulkanDriver::add_global_descriptor_set(uint64_t name_id, VulkanDescriptorSet *descriptor_set) {
+    auto it = global_descriptor_sets.find(name_id);
+    if (it != global_descriptor_sets.end()) {
+        //now allow multiple add global descriptor set
+        if (descriptor_set == it->second) {
+            return;
+        }
+        ocarina::delete_with_allocator<VulkanDescriptorSet>(it->second);
+    }
+    global_descriptor_sets[name_id] = descriptor_set;
+}
+
 void VulkanDriver::bind_descriptor_sets(VulkanDescriptorSet **descriptor_sets, uint32_t descriptor_sets_num, VkPipelineLayout pipeline_layout) {
     VkCommandBuffer current_buffer = get_current_command_buffer();
     std::array<VkDescriptorSet, MAX_DESCRIPTOR_SETS_PER_SHADER> descriptor_set_handles = {VK_NULL_HANDLE};
+    uint32_t first_set = -1;
     for (uint32_t i = 0; i < descriptor_sets_num; ++i) {
         if (descriptor_sets[i] == nullptr) {
             continue;
         }
+        if (first_set == -1) {
+            first_set = descriptor_sets[i]->get_layout()->get_descriptor_set_index();
+        }
         descriptor_set_handles[i] = descriptor_sets[i]->descriptor_set();
     }
-    vkCmdBindDescriptorSets(current_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, descriptor_sets_num, descriptor_set_handles.data(), 0, nullptr);
+    vkCmdBindDescriptorSets(current_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, first_set, descriptor_sets_num, descriptor_set_handles.data(), 0, nullptr);
 }
 
 std::array<DescriptorSetLayout *, MAX_DESCRIPTOR_SETS_PER_SHADER> VulkanDriver::create_descriptor_set_layout(VulkanShader *shaders[], uint32_t shaders_count) {

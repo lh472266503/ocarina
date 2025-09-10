@@ -37,8 +37,14 @@ VulkanDescriptorSetWriter::VulkanDescriptorSetWriter(VulkanDevice *device, Vulka
             VulkanDescriptorImage *descriptor_image = ocarina::new_with_allocator<VulkanDescriptorImage>();
             descriptor_image->binding = binding.binding;
             descriptor_image->name_ = binding.name;
+            descriptor_image->default_sampler_name_ = std::string("sampler_") + binding.name;
             descriptors_.insert(std::make_pair(hash64(descriptor_image->name_), descriptor_image));
-        }
+        } else if (binding.type == VK_DESCRIPTOR_TYPE_SAMPLER) {
+            VulkanDescriptorSampler *descriptor_sampler = ocarina::new_with_allocator<VulkanDescriptorSampler>();
+            descriptor_sampler->binding = binding.binding;
+            descriptor_sampler->name_ = binding.name;
+            descriptors_.insert(std::make_pair(hash64(descriptor_sampler->name_), descriptor_sampler));
+        } 
         // Add other types of descriptors as needed
     }
 
@@ -84,13 +90,26 @@ void VulkanDescriptorSetWriter::bind_texture(uint32_t binding, VkDescriptorImage
     write.dstSet = descriptor_set_->descriptor_set();
     write.dstBinding = binding;
     write.descriptorCount = 1;
-    write.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+    write.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
     write.pImageInfo = texture;
     writes_.push_back(write);
 }
 
+void VulkanDescriptorSetWriter::bind_sampler(uint32_t binding, VkDescriptorImageInfo *sampler) {
+    VkWriteDescriptorSet write{};
+    write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    write.dstSet = descriptor_set_->descriptor_set();
+    write.dstBinding = binding;
+    write.descriptorCount = 1;
+    write.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
+    write.pImageInfo = sampler;
+    writes_.push_back(write);
+}
+
 void VulkanDescriptorSetWriter::build(VulkanDevice *device) {
-    
+    if (writes_.empty()) {
+        return;
+    }
     std::vector<VkWriteDescriptorSet> writes;
 
     for (auto &write : writes_) {
@@ -98,7 +117,7 @@ void VulkanDescriptorSetWriter::build(VulkanDevice *device) {
     }
 
     vkUpdateDescriptorSets(device->logicalDevice(), writes.size(), writes.data(), 0, nullptr);
-    pending_writes_.clear();
+    writes_.clear();
 }
 
 void VulkanDescriptorSetWriter::update_buffer(uint64_t name_id, void *data, uint32_t size) {
@@ -128,6 +147,17 @@ void VulkanDescriptorSetWriter::update_texture(uint64_t name_id, Texture *textur
         VulkanDescriptorImage *descriptor_image = static_cast<VulkanDescriptorImage *>(it->second);
         VkDescriptorImageInfo descriptor_info = vulkan_texture->get_descriptor_info();
         bind_texture(descriptor_image->binding, &descriptor_info);
+
+        //bind its sampler
+        uint64_t sampler_name_id = hash64(descriptor_image->default_sampler_name_);
+        auto sampler_it = descriptors_.find(sampler_name_id);
+        if (sampler_it != descriptors_.end()) {
+            VulkanDescriptorSampler *descriptor_sampler = static_cast<VulkanDescriptorSampler *>(sampler_it->second);
+            bind_sampler(descriptor_sampler->binding, &descriptor_info);
+        }
+
+        VulkanDevice *device = VulkanDriver::instance().get_device();
+        build(device);
     }
 }
 

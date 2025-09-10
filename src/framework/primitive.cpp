@@ -31,14 +31,15 @@ void Primitive::set_geometry_data_setup(Device *device, GeometryDataSetup setup)
         geometry_data_setup_(*this);
     }
 
-    descriptor_sets_.clear();
-    void *shaders[2] = {reinterpret_cast<void *>(vertex_shader_), reinterpret_cast<void *>(pixel_shader_)};
-    std::array<DescriptorSetLayout *, MAX_DESCRIPTOR_SETS_PER_SHADER> descriptor_set_layouts = device->create_descriptor_set_layout(shaders, 2);
-    for (size_t i = 0; i < MAX_DESCRIPTOR_SETS_PER_SHADER; ++i) {
-        if (descriptor_set_layouts[i] && !descriptor_set_layouts[i]->is_global_ubo()) {
-            add_descriptor_set(descriptor_set_layouts[i]->allocate_descriptor_set());
-        }
-    }
+    //descriptor_sets_.clear();
+    //void *shaders[2] = {reinterpret_cast<void *>(vertex_shader_), reinterpret_cast<void *>(pixel_shader_)};
+    //std::array<DescriptorSetLayout *, MAX_DESCRIPTOR_SETS_PER_SHADER> descriptor_set_layouts = device->create_descriptor_set_layout(shaders, 2);
+    //for (size_t i = 0; i < MAX_DESCRIPTOR_SETS_PER_SHADER; ++i) {
+    //    if (descriptor_set_layouts[i] && !descriptor_set_layouts[i]->is_global_ubo()) {
+    //        add_descriptor_set(descriptor_set_layouts[i]->allocate_descriptor_set());
+    //    }
+    //}
+    update_descriptor_sets(device);
     pipeline_state_dirty = true;
 }
 
@@ -52,11 +53,17 @@ void Primitive::set_index_buffer(IndexBuffer *index_buffer) {
 }
 
 void Primitive::set_vertex_shader(handle_ty vertex_shader) {
+    if (vertex_shader_ != vertex_shader) {
+        shader_dirty = true;
+    }
     vertex_shader_ = vertex_shader;
     pipeline_state_.shaders[0] = vertex_shader;
 }
 
 void Primitive::set_pixel_shader(handle_ty pixel_shader) {
+    if (pixel_shader_ != pixel_shader) {
+        shader_dirty = true;
+    }
     pixel_shader_ = pixel_shader;
     pipeline_state_.shaders[1] = pixel_shader;
 }
@@ -69,16 +76,9 @@ void Primitive::add_descriptor_set(DescriptorSet *descriptor_set) {
 }
 
 DrawCallItem Primitive::get_draw_call_item(Device *device, RenderPass *render_pass) {
+    update_descriptor_sets(device);
     if (pipeline_state_dirty)
     {
-        descriptor_sets_.clear();
-        void *shaders[2] = {reinterpret_cast<void *>(vertex_shader_), reinterpret_cast<void *>(pixel_shader_)};
-        std::array<DescriptorSetLayout *, MAX_DESCRIPTOR_SETS_PER_SHADER> descriptor_set_layouts = device->create_descriptor_set_layout(shaders, 2);
-        for (size_t i = 0; i < MAX_DESCRIPTOR_SETS_PER_SHADER; ++i) {
-            if (descriptor_set_layouts[i] && !descriptor_set_layouts[i]->is_global_ubo()) {
-                add_descriptor_set(descriptor_set_layouts[i]->allocate_descriptor_set());
-            }
-        }
         pipeline_ = device->get_pipeline(pipeline_state_, render_pass);
         pipeline_state_dirty = false;
     }
@@ -117,4 +117,27 @@ void Primitive::add_texture(uint64_t name_id, Texture *texture) {
     }
 }
 
+void Primitive::update_descriptor_sets(Device *device) {
+    if (shader_dirty) {
+        for (auto &descriptor_set : descriptor_sets_) {
+            ocarina::delete_with_allocator<DescriptorSet>(descriptor_set);
+        }
+        descriptor_sets_.clear();
+
+        void *shaders[2] = {reinterpret_cast<void *>(vertex_shader_), reinterpret_cast<void *>(pixel_shader_)};
+        std::array<DescriptorSetLayout *, MAX_DESCRIPTOR_SETS_PER_SHADER> descriptor_set_layouts = device->create_descriptor_set_layout(shaders, 2);
+        for (size_t i = 1; i < MAX_DESCRIPTOR_SETS_PER_SHADER; ++i) {
+            if (descriptor_set_layouts[i]/* && !descriptor_set_layouts[i]->is_global_ubo()*/) {
+                add_descriptor_set(descriptor_set_layouts[i]->allocate_descriptor_set());
+            }
+        }
+
+        for (auto &descriptor_set : descriptor_sets_) {
+            for (auto &tex_pair : textures_) {
+                descriptor_set->update_texture(tex_pair.first, tex_pair.second);
+            }
+        }
+        shader_dirty = false;
+    }
+}
 }// namespace ocarina

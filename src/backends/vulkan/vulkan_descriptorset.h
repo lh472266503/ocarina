@@ -39,7 +39,8 @@ public:
 };
 
 class VulkanDescriptorImage : public VulkanDescriptor{
-
+public:
+    std::string default_sampler_name_;
 };
 
 class VulkanDescriptorSampler : public VulkanDescriptor {
@@ -51,7 +52,7 @@ class VulkanDescriptorPushConstants : public VulkanDescriptor {
 class VulkanDescriptorSetLayout : public DescriptorSetLayout {
     static constexpr uint8_t MAX_BINDINGS = 16;
 public:
-    VulkanDescriptorSetLayout(VulkanDevice* device);
+    VulkanDescriptorSetLayout(VulkanDevice* device, uint8_t descriptor_set_index);
     ~VulkanDescriptorSetLayout() override;
     void add_binding(const char* name,
         uint32_t binding,
@@ -61,14 +62,14 @@ public:
         uint32_t count = 1);
 
 
-    void build_layout();
+    bool build_layout();
 
     DescriptorCount get_descriptor_count() const noexcept {
         return descriptor_count_;
     }
 
     OC_MAKE_MEMBER_GETTER(layout, );
-    OC_MAKE_MEMBER_GETTER(descriptor_pool, );
+    //OC_MAKE_MEMBER_GETTER(descriptor_pool, );
     void set_is_global_ubo(bool is_global) {
         is_global_ubo_ = is_global;
     }
@@ -79,9 +80,22 @@ public:
     //}
 
     DescriptorSet* allocate_descriptor_set() override;
+    void free_descriptor_set(VkDescriptorSet descriptor_set);
     VulkanShaderVariableBinding get_binding(uint64_t binding);
     size_t get_bindings_count() const {
         return bindings_.size();
+    }
+
+    bool free_descriptor_set() const {
+        return free_descriptor_set_;
+    }
+
+    void set_free_descriptor_set(bool free_set) {
+        free_descriptor_set_ = free_set;
+    }
+
+    uint8_t get_descriptor_set_index() const {
+        return descriptor_set_index_;
     }
 
 private:
@@ -95,6 +109,11 @@ private:
     VulkanDevice* device_ = nullptr;
 
     VkDescriptorPool descriptor_pool_ = VK_NULL_HANDLE;
+    bool layout_built_ = false;
+    bool free_descriptor_set_ = false;  
+    uint32_t allocated_sets_count_ = 0;
+    uint32_t pool_max_sets_count_ = 1;
+    uint8_t descriptor_set_index_ = 0;
 };
 
 class VulkanDescriptorSet : public DescriptorSet {
@@ -105,13 +124,16 @@ private:
     VulkanDescriptorSetWriter *writer_ = nullptr;
 
 public:
-    VulkanDescriptorSet(VulkanDevice *device, VulkanDescriptorSetLayout* layout);
+    VulkanDescriptorSet(VulkanDevice *device, VulkanDescriptorSetLayout* layout, VkDescriptorSet descriptor_set);
     ~VulkanDescriptorSet() override;
     OC_MAKE_MEMBER_GETTER(descriptor_set, );
     OC_MAKE_MEMBER_GETTER(layout, );
     //void copy_descriptors(VulkanDescriptor *descriptor);
     void update_buffer(uint64_t name_id, void *data, uint32_t size) override;
     void update_texture(uint64_t name_id, Texture *texture) override;
+    VulkanDescriptorSetLayout *get_layout() const {
+        return layout_;
+    }
 };
 
 struct DescriptorPoolCreation {
@@ -186,9 +208,11 @@ public:
 
             for (size_t i = 0; i < bindings.size(); ++i) {
                 if (bindings[i].binding != other.bindings[i].binding ||
+                    bindings[i].descriptor_set != other.bindings[i].descriptor_set ||
                     bindings[i].count != other.bindings[i].count ||
                     bindings[i].shader_stage != other.bindings[i].shader_stage ||
-                    bindings[i].size != other.bindings[i].size) {
+                    bindings[i].size != other.bindings[i].size ||
+                    bindings[i].type != other.bindings[i].type) {
                     return false;
                 }
             }
@@ -202,9 +226,11 @@ public:
             std::size_t h = 0;
             for (const auto &b : key.bindings) {
                 h ^= std::hash<uint64_t>()(b.binding) ^
+                     std::hash<uint64_t>()(b.descriptor_set) ^
                      std::hash<uint64_t>()(b.count) ^
                      std::hash<uint64_t>()(b.shader_stage) ^
-                     std::hash<uint64_t>()(b.size);
+                     std::hash<uint64_t>()(b.size) ^
+                     std::hash<uint64_t>()(b.type);
             }
             return h;
         }
@@ -212,7 +238,9 @@ public:
 
 private:
     VulkanDevice *device_ = nullptr;
-    std::unordered_map<DescriptorLayoutKey, VulkanDescriptorSetLayout *, HashDescriptorLayoutKeyFunction> descriptor_set_layouts_;
+    //std::unordered_map<DescriptorLayoutKey, VulkanDescriptorSetLayout *, HashDescriptorLayoutKeyFunction> descriptor_set_layouts_;
+    std::array<DescriptorSetLayout *, MAX_DESCRIPTOR_SETS_PER_SHADER> descriptor_set_layouts_ = {};
+    VulkanDescriptorSetLayout *global_descriptor_set_layouts_ = nullptr;
 };
 
 }// namespace ocarina

@@ -62,13 +62,56 @@ void VulkanTexture::init(Image *image, const TextureViewCreation &texture_view) 
     if (mip_levels_ > 1) {
         generate_mipmaps();
     }
+
+    create_image_view(texture_view);
+
+    create_sampler(texture_view.sampler);
 }
 
 void VulkanTexture::load_cpu_data(Image *image) {
     VulkanBuffer staging_buffer(device_, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
                                 image->size_in_bytes(), image->pixel_ptr());
-
+    transition_image_layout(VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
     VulkanDriver::instance().copy_image(&staging_buffer, this);
+}
+
+void VulkanTexture::transition_image_layout(VkImageLayout old_layout, VkImageLayout new_layout) {
+    VkCommandBuffer cmd = VulkanDriver::instance().begin_one_time_command_buffer();
+
+    VkImageMemoryBarrier barrier{};
+    barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+    barrier.oldLayout = old_layout;
+    barrier.newLayout = new_layout;
+    barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.image = image_;
+    barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    barrier.subresourceRange.baseMipLevel = 0;
+    barrier.subresourceRange.levelCount = mip_levels_;
+    barrier.subresourceRange.baseArrayLayer = 0;
+    barrier.subresourceRange.layerCount = 1;
+
+    VkPipelineStageFlags sourceStage;
+    VkPipelineStageFlags destinationStage;
+
+    if (old_layout == VK_IMAGE_LAYOUT_UNDEFINED && new_layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
+        barrier.srcAccessMask = 0;
+        barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+
+        sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+        destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+    } else if (old_layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && new_layout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
+        barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+        barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+        sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+        destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+    } else {
+        throw std::runtime_error("unsupported layout transition!");
+    }
+
+    vkCmdPipelineBarrier(cmd, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+    VulkanDriver::instance().end_one_time_command_buffer(cmd);
 }
 
 void VulkanTexture::generate_mipmaps() {
@@ -139,6 +182,40 @@ void VulkanTexture::generate_mipmaps() {
     vkCmdPipelineBarrier(command_buffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 
     VulkanDriver::instance().end_one_time_command_buffer(command_buffer);
+}
+
+void VulkanTexture::create_image_view(const TextureViewCreation &texture_view) {
+    VkImageViewCreateInfo view_info{};
+    view_info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+    view_info.image = image_;
+    view_info.viewType = VK_IMAGE_VIEW_TYPE_2D;
+    view_info.format = image_format_;
+    view_info.components = {VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_G, VK_COMPONENT_SWIZZLE_B, VK_COMPONENT_SWIZZLE_A};
+    view_info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    view_info.subresourceRange.baseMipLevel = 0;
+    view_info.subresourceRange.levelCount = mip_levels_;
+    view_info.subresourceRange.baseArrayLayer = 0;
+    view_info.subresourceRange.layerCount = texture_view.array_layer_count;
+    VK_CHECK_RESULT(vkCreateImageView(device_->logicalDevice(), &view_info, nullptr, &image_view_));
+}
+
+void VulkanTexture::create_sampler(const SamplerCreation &sampler_creation) {
+    VkSamplerCreateInfo sampler_info{};
+    sampler_info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+    sampler_info.magFilter = get_vulkan_filter(sampler_creation.filter);
+    sampler_info.minFilter = get_vulkan_filter(sampler_creation.filter);
+    sampler_info.mipmapMode = get_vulkan_sampler_mipmap_mode(sampler_creation.mipmap_filter);
+    sampler_info.addressModeU = get_vulkan_sampler_address(sampler_creation.address_u);
+    sampler_info.addressModeV = get_vulkan_sampler_address(sampler_creation.address_v);
+    sampler_info.addressModeW = get_vulkan_sampler_address(sampler_creation.address_w);
+    sampler_info.mipLodBias = 0.0f;
+    sampler_info.compareOp = VK_COMPARE_OP_NEVER;
+    sampler_info.minLod = 0.0f;
+    sampler_info.maxLod = static_cast<float>(mip_levels_);
+    sampler_info.maxAnisotropy = 4.0f;
+    sampler_info.anisotropyEnable = VK_FALSE;
+    sampler_info.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
+    VK_CHECK_RESULT(vkCreateSampler(device_->logicalDevice(), &sampler_info, nullptr, &sampler_));
 }
 
 VulkanTexture::~VulkanTexture() {

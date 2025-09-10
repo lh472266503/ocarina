@@ -177,7 +177,7 @@ public:
     [[nodiscard]] size_t pitch_byte_size() const { return resolution_.x * pixel_size(pixel_storage_); }
     [[nodiscard]] size_t pixel_num() const { return resolution_.x * resolution_.y; }
     [[nodiscard]] size_t size_in_bytes() const {
-        return pixel_size(pixel_storage_) * pixel_num() * channel_num();
+        return pixel_size(pixel_storage_) * pixel_num();
     }
 };
 

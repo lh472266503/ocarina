@@ -34,6 +34,7 @@ public:
         return s_instance;
     }
     VulkanDevice *create_device(RHIContext *file_manager, const InstanceCreation &instance_creation);
+    VulkanDevice *get_device() const { return vulkan_device_; }
     void bind_pipeline(const VulkanPipeline &pipeline);
     void terminate();
     void submit_frame();
@@ -77,13 +78,7 @@ public:
 
     void push_constants(VkPipelineLayout pipeline, void *data, uint32_t size, uint32_t offset);
 
-    void add_global_descriptor_set(uint64_t name_id, VulkanDescriptorSet *descriptor_set) {
-        if (global_descriptor_sets.find(name_id) != global_descriptor_sets.end()) {
-            //now allow multiple add global descriptor set
-            return;
-        }
-        global_descriptor_sets[name_id] = descriptor_set;
-    }
+    void add_global_descriptor_set(uint64_t name_id, VulkanDescriptorSet *descriptor_set);
 
     VulkanDescriptorSet *get_global_descriptor_set(uint64_t name_id) {
         auto it = global_descriptor_sets.find(name_id);
@@ -103,7 +98,9 @@ public:
     VkRenderPass get_framebuffer_render_pass() const {
         return renderpass_framebuffer;
     }
-    //VkResult copy_buffer(VulkanBuffer* src, VkBuffer dst);
+
+    void flush_command_buffer(VkCommandBuffer cmd);
+
 private:
     void setup_frame_buffer();
     //void setup_depth_stencil(uint32_t width, uint32_t height);
@@ -113,9 +110,8 @@ private:
     void create_command_buffers();
     void release_command_buffers();
     void initialize();
-    void prepare_frame();
     void window_resize();
-    void flush_command_buffer(VkCommandBuffer cmd);
+    
 
 private:
     VulkanDriver();

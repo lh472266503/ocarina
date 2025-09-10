@@ -28,13 +28,16 @@ private:
     uint32_t mip_levels_ = 1;
     VkDeviceMemory image_memory_ = VK_NULL_HANDLE;
 
+    void transition_image_layout(VkImageLayout old_layout, VkImageLayout new_layout);
+
 public:
     VulkanTexture(VulkanDevice *device, Image *image, const TextureViewCreation& texture_view);
     ~VulkanTexture() override;
     void init(Image *image, const TextureViewCreation &texture_view);
     void load_cpu_data(Image *image);
     void generate_mipmaps();
-    void create_sampler();
+    void create_image_view(const TextureViewCreation &texture_view);
+    void create_sampler(const SamplerCreation& sampler_creation);
     [[nodiscard]] uint3 resolution() const noexcept override { return res_; }
     [[nodiscard]] handle_ty array_handle() const noexcept override {
         return reinterpret_cast<handle_ty>(image_);

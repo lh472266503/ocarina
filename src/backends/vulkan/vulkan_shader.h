@@ -15,11 +15,20 @@ class VulkanDevice;
 class VulkanDescriptorSetLayout;
 struct ShaderKey;
 
+enum class DescriptorSetIndex : uint8_t {
+    GLOBAL_SET = 0,
+    MATERIAL_SET = 1,
+    PER_OBJECT_SET = 2,
+
+    MAX_DESCRIPTOR_SET = MAX_DESCRIPTOR_SETS_PER_SHADER
+};
+
 struct VulkanShaderVariableBinding
 {
     
     char name[256] = { 0 };
-    uint32_t binding = 0;
+    uint8_t binding = 0;
+    uint8_t descriptor_set = 0;
     VkDescriptorType type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     VkShaderStageFlags shader_stage = VK_SHADER_STAGE_VERTEX_BIT;
     uint32_t count = 1;
@@ -28,6 +37,7 @@ struct VulkanShaderVariableBinding
     VulkanShaderVariableBinding(const VulkanShaderVariableBinding& other)
     {
         binding = other.binding;
+        descriptor_set = other.descriptor_set;
         type = other.type;
         count = other.count;
         shader_stage = other.shader_stage;
@@ -39,6 +49,7 @@ struct VulkanShaderVariableBinding
     VulkanShaderVariableBinding& operator = (const VulkanShaderVariableBinding& other)
     {
         binding = other.binding;
+        descriptor_set = other.descriptor_set;
         type = other.type;
         count = other.count;
         shader_stage = other.shader_stage;

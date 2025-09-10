@@ -101,13 +101,6 @@ void VulkanRenderPass::end_render_pass() {
 void VulkanRenderPass::draw_items() {
     VulkanDriver& driver = VulkanDriver::instance();
 
-    for (auto& it : global_descriptor_sets_) {
-
-        //it.second->update_buffer(it.first, &global_ubo_data_, sizeof(GlobalUBO));
-    }
-
-    
-
     for (const auto& queue : pipeline_render_queues_) {
         VulkanPipeline *vulkan_pipeline = static_cast<VulkanPipeline *>(queue.first);
         driver.bind_descriptor_sets(reinterpret_cast<VulkanDescriptorSet **>(global_descriptor_sets_array_.data()), global_descriptor_sets_array_.size(), vulkan_pipeline->pipeline_layout_);
@@ -120,12 +113,15 @@ void VulkanRenderPass::draw_items() {
             if (item.push_constant_data) {
                 driver.push_constants(vulkan_pipeline->pipeline_layout_, item.push_constant_data, item.push_constant_size, 0);
             }
+            if (item.descriptor_set_count > 0)
+            {
+                driver.bind_descriptor_sets(reinterpret_cast<VulkanDescriptorSet **>(item.descriptor_sets.data()), item.descriptor_set_count, vulkan_pipeline->pipeline_layout_);
+            }
             VulkanVertexBuffer *vertex_buffer = static_cast<VulkanVertexBuffer *>(item.pipeline_state->vertex_buffer);
             VulkanShader *vertex_shader = reinterpret_cast<VulkanShader *>(item.pipeline_state->shaders[0]);//driver.get_shader(item.pipeline_state->shaders[0]);
             driver.set_vertex_buffer(*(vertex_buffer->get_or_create_vertex_binding(vertex_shader)));
             driver.draw_triangles(static_cast<VulkanIndexBuffer *>(item.index_buffer));
         }
-        
     }
 }
 

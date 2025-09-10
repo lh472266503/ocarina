@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
     pipeline_state.raster_state = RasterState::Default();
     pipeline_state.depth_stencil_state = DepthStencilState::Default();
     
-    Image image = Image::load("D:\\github\\Vision\\media\\textures\\uv_grid.png", ColorSpace::SRGB);
+    Image image = Image::load("D:\\Github\\Vision\\src\\ocarina\\res\\textures\\granite.png", ColorSpace::SRGB);
     TextureViewCreation texture_view = {};
     texture_view.mip_level_count = 0;
     texture_view.usage = TextureUsageFlags::ShaderReadOnly;
@@ -69,11 +69,11 @@ int main(int argc, char *argv[]) {
         
         VertexBuffer* vertex_buffer = device.create_vertex_buffer();
         Vector3 positions[4] = {{1.0f, 1.0f, 0.0f}, {-1.0f, 1.0f, 0.0f}, {-1.0f, -1.0f, 0.0f}, {1.0f, -1.0f, 0.0f}};
-        vertex_buffer->add_vertex_stream(VertexAttributeType::Enum::Position, 3, sizeof(Vector3), (const void *)&positions[0]);
+        vertex_buffer->add_vertex_stream(VertexAttributeType::Enum::Position, 4, sizeof(Vector3), (const void *)&positions[0]);
         Vector2 uvs[4] = {{1.0f, 1.0f}, {0.0f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f}};
-        vertex_buffer->add_vertex_stream(VertexAttributeType::Enum::TexCoord0, 3, sizeof(Vector2), (const void *)&uvs[0]);
+        vertex_buffer->add_vertex_stream(VertexAttributeType::Enum::TexCoord0, 4, sizeof(Vector2), (const void *)&uvs[0]);
         Vector4 colors[4] = {{1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}};
-        vertex_buffer->add_vertex_stream(VertexAttributeType::Enum::Color0, 3, sizeof(Vector4), (const void *)&colors[0]);
+        vertex_buffer->add_vertex_stream(VertexAttributeType::Enum::Color0, 4, sizeof(Vector4), (const void *)&colors[0]);
         vertex_buffer->upload_data();
         quad.set_vertex_buffer(vertex_buffer);
         pipeline_state.vertex_buffer = vertex_buffer;

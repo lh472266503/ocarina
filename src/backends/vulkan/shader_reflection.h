@@ -33,6 +33,7 @@ struct ShaderReflection{
             register_ = other.register_;
             register_count = other.register_count;
             parameter_type = other.parameter_type;
+            binding = other.binding;
             descriptor_set = other.descriptor_set;
             format = other.format;
             name = other.name;
@@ -46,6 +47,7 @@ struct ShaderReflection{
             register_ = other.register_;
             register_count = other.register_count;
             parameter_type = other.parameter_type;
+            binding = other.binding;
             descriptor_set = other.descriptor_set;
             format = other.format;
             name = other.name;
@@ -61,6 +63,7 @@ struct ShaderReflection{
             register_ = rvalue.register_;
             register_count = rvalue.register_count;
             parameter_type = rvalue.parameter_type;
+            binding = rvalue.binding;
             descriptor_set = rvalue.descriptor_set;
             format = rvalue.format;
             name = std::move(rvalue.name);
@@ -75,6 +78,7 @@ struct ShaderReflection{
             register_ = rvalue.register_;
             register_count = rvalue.register_count;
             parameter_type = rvalue.parameter_type;
+            binding = rvalue.binding;
             descriptor_set = rvalue.descriptor_set;
             format = rvalue.format;
             name = std::move(rvalue.name);
@@ -85,12 +89,13 @@ struct ShaderReflection{
         }
 
         uint32_t shader_type : 4 = 0;
-        uint32_t register_ : 8 = 0;
-        uint32_t register_count : 8 = 0;
+        uint32_t register_ : 4 = 0;
+        uint32_t register_count : 4 = 0;
         uint32_t location : 4 = 0;
         uint32_t offset : 5 = 0;
         uint32_t parameter_type : 3 = 0;
-        uint32_t descriptor_set = 0;
+        uint32_t binding : 4 = 0;
+        uint32_t descriptor_set : 4 = 0;
         uint32_t size = 0;
         VkFormat format = VK_FORMAT_UNDEFINED;
         VertexAttributeType::Enum vertex_attribute_type = VertexAttributeType::Enum::Count;
@@ -108,6 +113,7 @@ struct ShaderReflection{
         uint32_t register_ = 0;
         uint32_t register_count = 0;
         uint32_t descriptor_set = 0;
+        uint32_t binding_ = 0;
         ShaderVariableType variable_type = ShaderVariableType::FLOAT;
         ShaderVariable() = default;
         ShaderVariable(const ShaderVariable& other)
@@ -117,6 +123,7 @@ struct ShaderReflection{
             register_count = other.register_count;
             descriptor_set = other.descriptor_set;
             variable_type = other.variable_type;
+            binding_ = other.binding_;
             name = other.name;
             size = other.size;
         }
@@ -127,6 +134,7 @@ struct ShaderReflection{
             register_count = other.register_count;
             descriptor_set = other.descriptor_set;
             variable_type = other.variable_type;
+            binding_ = other.binding_;
             name = other.name;
             size = other.size;
             return *this;
@@ -138,6 +146,7 @@ struct ShaderReflection{
             register_count = rvalue.register_count;
             descriptor_set = rvalue.descriptor_set;
             variable_type = rvalue.variable_type;
+            binding_ = rvalue.binding_;
             name = std::move(rvalue.name);
             size = rvalue.size;
         }
@@ -148,6 +157,7 @@ struct ShaderReflection{
             register_count = rvalue.register_count;
             descriptor_set = rvalue.descriptor_set;
             variable_type = rvalue.variable_type;
+            binding_ = rvalue.binding_;
             name = std::move(rvalue.name);
             size = rvalue.size;
             return *this;
@@ -156,18 +166,23 @@ struct ShaderReflection{
 
     struct UniformBuffer {
         std::string name;
-        uint32_t binding = 0;
+        uint8_t binding = 0;
+        uint8_t descriptor_set = 0;
         uint32_t size = 0;
         std::vector<ShaderVariable> shader_variables;
         UniformBuffer() = default;
         UniformBuffer(const UniformBuffer &other) {
             name = other.name;
+            binding = other.binding;
+            descriptor_set = other.descriptor_set;
             size = other.size;
             shader_variables = other.shader_variables;
         }
 
         UniformBuffer &operator=(const UniformBuffer &other) {
             name = other.name;
+            binding = other.binding;
+            descriptor_set = other.descriptor_set;
             size = other.size;
             shader_variables = other.shader_variables;
             return *this;
@@ -175,12 +190,16 @@ struct ShaderReflection{
 
         UniformBuffer(UniformBuffer &&rvalue) noexcept {
             name = std::move(rvalue.name);
+            binding = rvalue.binding;
+            descriptor_set = rvalue.descriptor_set;
             size = rvalue.size;
             shader_variables = std::move(rvalue.shader_variables);
         }
 
         UniformBuffer &operator=(UniformBuffer &&rvalue) noexcept {
             name = std::move(rvalue.name);
+            binding = rvalue.binding;
+            descriptor_set = rvalue.descriptor_set;
             size = rvalue.size;
             shader_variables = std::move(rvalue.shader_variables);
             return *this;

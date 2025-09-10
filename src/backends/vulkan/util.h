@@ -351,4 +351,49 @@ static VkCompareOp get_vulkan_compare_op(SamplerCompareFunc func)
     }
 }
 
-}// namespace ocarina
+static VkFilter get_vulkan_filter(FilterMode filter) {
+    switch (filter) {
+        case FilterMode::POINT:
+            return VK_FILTER_NEAREST;
+        case FilterMode::BILINEAR:
+        case FilterMode::TRILINEAR:
+            return VK_FILTER_LINEAR;
+        //case FilterMode::ANISOTROPIC:
+        //return VK_FILTER_CUBIC_EXT;
+        default:
+            return VK_FILTER_LINEAR;
+    }
+}
+
+static VkSamplerAddressMode get_vulkan_sampler_address(AddressMode address_mode) {
+    switch (address_mode) {
+        case AddressMode::WRAP:
+            return VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        case AddressMode::MIRROR:
+            return VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
+        case AddressMode::CLAMP:
+            return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+        case AddressMode::BORDER:
+            return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+        case AddressMode::MIRROR_ONCE:
+            return VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE;
+        default:
+            return VK_SAMPLER_ADDRESS_MODE_REPEAT;
+    }
+
+}
+
+static VkSamplerMipmapMode get_vulkan_sampler_mipmap_mode(FilterMode filter) {
+    switch (filter) {
+        case FilterMode::POINT:
+            return VK_SAMPLER_MIPMAP_MODE_NEAREST;
+        case FilterMode::BILINEAR:
+        case FilterMode::TRILINEAR:
+        case FilterMode::ANISOTROPIC:
+            return VK_SAMPLER_MIPMAP_MODE_LINEAR;
+        default:
+            return VK_SAMPLER_MIPMAP_MODE_LINEAR;
+    }
+}
+
+}// namespace ocarina 
