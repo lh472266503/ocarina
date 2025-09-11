@@ -11,7 +11,8 @@
 #include "math/base.h"
 #include "core/image.h"
 #include "dsl/dsl.h"
-#include "GUI_impl/imGui/window.h"
+//#include "GUI_impl/imGui/window.h"
+#include "GUI/window.h"
 #include "core/image.h"
 
 using namespace ocarina;
