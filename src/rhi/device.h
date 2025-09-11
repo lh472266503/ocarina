@@ -50,7 +50,7 @@ class CommandVisitor;
 
 class VertexBuffer;
 class IndexBuffer;
-class RenderPass;
+class RHIRenderPass;
 class DescriptorSet;
 class DescriptorSetLayout;
 class Pipeline;
@@ -97,11 +97,11 @@ public:
         virtual IndexBuffer* create_index_buffer(const void *initial_data, uint32_t indices_count, bool bit16) noexcept = 0;
         virtual void begin_frame() noexcept = 0;
         virtual void end_frame() noexcept = 0;
-        virtual RenderPass* create_render_pass(const RenderPassCreation& render_pass_creation) noexcept = 0;
-        virtual void destroy_render_pass(RenderPass* render_pass) noexcept = 0;
+        virtual RHIRenderPass *create_render_pass(const RenderPassCreation &render_pass_creation) noexcept = 0;
+        virtual void destroy_render_pass(RHIRenderPass *render_pass) noexcept = 0;
         virtual std::array<DescriptorSetLayout*, MAX_DESCRIPTOR_SETS_PER_SHADER> create_descriptor_set_layout(void **shaders, uint32_t shaders_count) noexcept = 0;
         virtual void bind_pipeline(const handle_ty pipeline) noexcept = 0;
-        virtual Pipeline *get_pipeline(const PipelineState &pipeline_state, RenderPass *render_pass) noexcept = 0;
+        virtual Pipeline *get_pipeline(const PipelineState &pipeline_state, RHIRenderPass *render_pass) noexcept = 0;
         virtual DescriptorSet *get_global_descriptor_set(const string& name) noexcept = 0;
         virtual void bind_descriptor_sets(DescriptorSet **descriptor_set, uint32_t descriptor_sets_num, Pipeline *pipeline) noexcept = 0;
     };
@@ -204,11 +204,11 @@ public:
         impl_->submit_frame();
     }
 
-    [[nodiscard]] RenderPass* create_render_pass(const RenderPassCreation& render_pass_creation) {
+    [[nodiscard]] RHIRenderPass *create_render_pass(const RenderPassCreation &render_pass_creation) {
         return impl_->create_render_pass(render_pass_creation);
     }
 
-    [[nodiscard]] void destroy_render_pass(RenderPass* render_pass) {
+    [[nodiscard]] void destroy_render_pass(RHIRenderPass *render_pass) {
         impl_->destroy_render_pass(render_pass);
     }
 
@@ -220,7 +220,7 @@ public:
         impl_->bind_pipeline(pipeline);
     }
 
-    Pipeline *get_pipeline(const PipelineState &pipeline_state, RenderPass *render_pass) noexcept {
+    Pipeline *get_pipeline(const PipelineState &pipeline_state, RHIRenderPass *render_pass) noexcept {
         return impl_->get_pipeline(pipeline_state, render_pass);
     }
 
@@ -233,7 +233,7 @@ public:
     }
 
     [[nodiscard]] static Device create_device(const string &backend_name, const ocarina::InstanceCreation &instance_creation);
-
+    [[nodiscard]] static Device create_device(const string &backend_name);
 
 };
 

@@ -11,8 +11,7 @@ namespace ocarina {
 
     class VulkanDevice;
 
-class VulkanRenderPass : public RenderPass 
-{
+class VulkanRenderPass : public RHIRenderPass {
 public:
     VulkanRenderPass(VulkanDevice *device, const RenderPassCreation &render_pass_creation);
     ~VulkanRenderPass() override;

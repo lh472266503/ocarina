@@ -75,7 +75,7 @@ void Primitive::add_descriptor_set(DescriptorSet *descriptor_set) {
     }
 }
 
-DrawCallItem Primitive::get_draw_call_item(Device *device, RenderPass *render_pass) {
+DrawCallItem Primitive::get_draw_call_item(Device *device, RHIRenderPass *render_pass) {
     update_descriptor_sets(device);
     if (pipeline_state_dirty)
     {

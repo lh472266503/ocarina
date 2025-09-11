@@ -293,13 +293,11 @@ void VulkanDevice::end_frame() noexcept
     VulkanDriver::instance().end_frame();
 }
 
-RenderPass* VulkanDevice::create_render_pass(const RenderPassCreation& render_pass_creation) noexcept
-{
+RHIRenderPass *VulkanDevice::create_render_pass(const RenderPassCreation &render_pass_creation) noexcept {
     return VulkanDriver::instance().create_render_pass(render_pass_creation);
 }
 
-void VulkanDevice::destroy_render_pass(RenderPass* render_pass) noexcept
-{
+void VulkanDevice::destroy_render_pass(RHIRenderPass *render_pass) noexcept {
     VulkanDriver::instance().destroy_render_pass(static_cast<VulkanRenderPass*>(render_pass));
 }
 
@@ -320,7 +318,7 @@ void VulkanDevice::bind_pipeline(const handle_ty pipeline) noexcept {
     VulkanDriver::instance().bind_pipeline(*vulkan_pipeline);
 }
 
-Pipeline *VulkanDevice::get_pipeline(const PipelineState &pipeline_state, RenderPass *render_pass) noexcept {
+Pipeline *VulkanDevice::get_pipeline(const PipelineState &pipeline_state, RHIRenderPass *render_pass) noexcept {
     VulkanRenderPass *vulkan_render_pass = static_cast<VulkanRenderPass *>(render_pass);
     auto pipeline = VulkanDriver::instance().get_pipeline(pipeline_state, vulkan_render_pass->render_pass());
     

@@ -13,7 +13,7 @@
 
 namespace ocarina {
 class Primitive;
-class RenderPass;
+class RHIRenderPass;
 class Device;
 
 class Renderer : public concepts::Noncopyable {
@@ -40,12 +40,12 @@ public:
     }
 
     void render_frame();
-    void add_render_pass(RenderPass* render_pass)
+    void add_render_pass(RHIRenderPass *render_pass)
     {
         render_passes_.emplace_back(render_pass);
     }
 
-    void remove_render_pass(RenderPass* render_pass)
+    void remove_render_pass(RHIRenderPass *render_pass)
     {
         render_passes_.remove(render_pass);
     }
@@ -58,7 +58,7 @@ private:
     float4 clear_color = {0, 0, 0, 1};
     
 protected:
-    std::list<RenderPass*> render_passes_;
+    std::list<RHIRenderPass *> render_passes_;
     Device* device_ = nullptr;
 
     

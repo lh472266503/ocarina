@@ -48,6 +48,7 @@ public:
     bool unload_module(const string &module_name) noexcept;
     void unload_module(void *handle) noexcept;
     [[nodiscard]] Device create_device(const string &backend_name, const ocarina::InstanceCreation &instance_creation) noexcept;
+    [[nodiscard]] Device create_device(const string &backend_name) noexcept;
     [[nodiscard]] WindowWrapper create_window(const char *name, uint2 initial_size, WindowLibrary library = WindowLibrary::GLFW, const char *type = "imGui", bool resizable = false);
 };
 

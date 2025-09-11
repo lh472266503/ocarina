@@ -9,20 +9,20 @@
 
 namespace ocarina {
 
-RenderPass::~RenderPass() {
+RHIRenderPass::~RHIRenderPass() {
     for (auto &queue : pipeline_render_queues_) {
         ocarina::delete_with_allocator<PipelineRenderQueue>(queue.second);
     }
     pipeline_render_queues_.clear();
 }
 
-void RenderPass::clear_draw_call_items() {
+void RHIRenderPass::clear_draw_call_items() {
     for (auto &queue : pipeline_render_queues_) {
         queue.second->clear();
     }
 }
 
-void RenderPass::add_draw_call(DrawCallItem &item) {
+void RHIRenderPass::add_draw_call(DrawCallItem &item) {
     if (item.pipeline != nullptr)
     {
         auto it = pipeline_render_queues_.find(item.pipeline);
@@ -38,7 +38,7 @@ void RenderPass::add_draw_call(DrawCallItem &item) {
     }
 }
 
-void RenderPass::add_global_descriptor_set(const std::string &name, DescriptorSet *descriptor_set) {
+void RHIRenderPass::add_global_descriptor_set(const std::string &name, DescriptorSet *descriptor_set) {
     uint64_t hash = hash64(name);
     if (global_descriptor_sets_.find(hash) != global_descriptor_sets_.end()) {
         // Now allow multiple add global descriptor set

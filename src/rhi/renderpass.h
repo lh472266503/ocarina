@@ -48,10 +48,10 @@ struct GlobalUBO
     float4x4 projection_matrix = {1.0f};
 };
 
-class OC_RHI_API RenderPass {
+class OC_RHI_API RHIRenderPass {
 public:
-    RenderPass(const RenderPassCreation &render_pass_creation) {}
-    virtual ~RenderPass();
+    RHIRenderPass(const RenderPassCreation &render_pass_creation) {}
+    virtual ~RHIRenderPass();
 
     void clear_draw_call_items();
 
@@ -66,7 +66,7 @@ public:
     virtual void end_render_pass() = 0;
     virtual void draw_items() = 0;
 
-    using BeginRenderPassCallback = ocarina::function<void(RenderPass *)>;
+    using BeginRenderPassCallback = ocarina::function<void(RHIRenderPass *)>;
     void set_begin_renderpass_callback(BeginRenderPassCallback callback)
     {
         begin_render_pass_callback_ = callback;
@@ -84,7 +84,7 @@ protected:
     int4 scissor_ = {0, 0, 0, 0};
     uint2 size_ = {0, 0};
 
-    std::string name_ = "RenderPass";
+    std::string name_ = "RHIRenderPass";
 
     //if render_target_count == 0, use the swapchain backbuffer as render target
     uint32_t render_target_count_ = 0;

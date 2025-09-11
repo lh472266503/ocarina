@@ -263,12 +263,12 @@ int main(int argc, char *argv[]) {
     render_pass_creation.swapchain_clear_color = make_float4(0.1f, 0.1f, 0.1f, 1.0f);
     render_pass_creation.swapchain_clear_depth = 1.0f;
     render_pass_creation.swapchain_clear_stencil = 0;
-    RenderPass* render_pass = device.create_render_pass(render_pass_creation);
+    RHIRenderPass *render_pass = device.create_render_pass(render_pass_creation);
     void *shaders[2] = {reinterpret_cast<void *>(vertex_shader), reinterpret_cast<void *>(pixel_shader)};
     //DescriptorSetWriter *global_descriptor_set_writer = device.create_descriptor_set_writer(device.get_global_descriptor_set("global_ubo"), shaders, 2);
     DescriptorSet *global_descriptor_set = device.get_global_descriptor_set("global_ubo");
     render_pass->add_global_descriptor_set("global_ubo", global_descriptor_set);
-    render_pass->set_begin_renderpass_callback([&](RenderPass *rp) {
+    render_pass->set_begin_renderpass_callback([&](RHIRenderPass *rp) {
         //rp->set_clear_color(make_float4(0.1f, 0.1f, 0.1f, 1.0f));
         GlobalUniformBuffer global_ubo_data = {camera.get_projection_matrix().transpose(), camera.get_view_matrix().transpose()};
         global_descriptor_set->update_buffer(hash64("global_ubo"), &global_ubo_data, sizeof(GlobalUniformBuffer));

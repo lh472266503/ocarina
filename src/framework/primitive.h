@@ -90,7 +90,7 @@ public:
         return world_matrix_;
     }
 
-    DrawCallItem get_draw_call_item(Device *device, RenderPass* render_pass);
+    DrawCallItem get_draw_call_item(Device *device, RHIRenderPass *render_pass);
 
     void add_texture(uint64_t name_id, Texture* texture);
 

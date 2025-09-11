@@ -17,7 +17,7 @@
 
 namespace ocarina {
 
-VulkanRenderPass::VulkanRenderPass(VulkanDevice *device, const RenderPassCreation &render_pass_creation) : RenderPass(render_pass_creation), device_(device) {
+VulkanRenderPass::VulkanRenderPass(VulkanDevice *device, const RenderPassCreation &render_pass_creation) : RHIRenderPass(render_pass_creation), device_(device) {
     render_target_count_ = render_pass_creation.render_target_count;
     
     for (uint8_t i = 0; i < render_target_count_; ++i) {

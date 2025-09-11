@@ -71,12 +71,12 @@ public:
     VulkanBuffer *create_vulkan_buffer(VkBufferUsageFlags usage_flags, VkMemoryPropertyFlags memory_property_flags, VkDeviceSize size, const void *data = nullptr);
     void begin_frame() noexcept override;
     void end_frame() noexcept override;
-    RenderPass* create_render_pass(const RenderPassCreation& render_pass_creation) noexcept override;
-    void destroy_render_pass(RenderPass* render_pass) noexcept override;
+    RHIRenderPass *create_render_pass(const RenderPassCreation &render_pass_creation) noexcept override;
+    void destroy_render_pass(RHIRenderPass *render_pass) noexcept override;
     std::array<DescriptorSetLayout*, MAX_DESCRIPTOR_SETS_PER_SHADER> create_descriptor_set_layout(void **shaders, uint32_t shaders_count) noexcept override;    
     //DescriptorSetWriter *create_descriptor_set_writer(DescriptorSet *descriptor_set, void** shaders, uint32_t shaders_count) noexcept override;
     void bind_pipeline(const handle_ty pipeline) noexcept override;
-    Pipeline* get_pipeline(const PipelineState &pipeline_state, RenderPass* render_pass) noexcept override;
+    Pipeline *get_pipeline(const PipelineState &pipeline_state, RHIRenderPass *render_pass) noexcept override;
     DescriptorSet *get_global_descriptor_set(const string &name) noexcept override;
     void bind_descriptor_sets(DescriptorSet **descriptor_set, uint32_t descriptor_sets_num, Pipeline* pipeline) noexcept override;
 
