@@ -318,7 +318,7 @@ void VulkanDevice::bind_pipeline(const handle_ty pipeline) noexcept {
     VulkanDriver::instance().bind_pipeline(*vulkan_pipeline);
 }
 
-Pipeline *VulkanDevice::get_pipeline(const PipelineState &pipeline_state, RHIRenderPass *render_pass) noexcept {
+RHIPipeline *VulkanDevice::get_pipeline(const PipelineState &pipeline_state, RHIRenderPass *render_pass) noexcept {
     VulkanRenderPass *vulkan_render_pass = static_cast<VulkanRenderPass *>(render_pass);
     auto pipeline = VulkanDriver::instance().get_pipeline(pipeline_state, vulkan_render_pass->render_pass());
     
@@ -329,7 +329,7 @@ DescriptorSet* VulkanDevice::get_global_descriptor_set(const string& name) noexc
     return VulkanDriver::instance().get_global_descriptor_set(name);
 }
 
-void VulkanDevice::bind_descriptor_sets(DescriptorSet **descriptor_set, uint32_t descriptor_sets_num, Pipeline* pipeline) noexcept {
+void VulkanDevice::bind_descriptor_sets(DescriptorSet **descriptor_set, uint32_t descriptor_sets_num, RHIPipeline* pipeline) noexcept {
     std::array<VulkanDescriptorSet *, MAX_DESCRIPTOR_SETS_PER_SHADER> vulkan_descriptor_sets;
     for (uint32_t i = 0; i < descriptor_sets_num; ++i) {
         vulkan_descriptor_sets[i] = static_cast<VulkanDescriptorSet *>(descriptor_set[i]);

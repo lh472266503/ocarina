@@ -128,7 +128,7 @@ void VulkanDescriptorSetWriter::update_buffer(uint64_t name_id, void *data, uint
     }
 }
 
-void VulkanDescriptorSetWriter::update_push_constants(uint64_t name_id, void *data, uint32_t size, Pipeline *pipeline) {
+void VulkanDescriptorSetWriter::update_push_constants(uint64_t name_id, void *data, uint32_t size, RHIPipeline *pipeline) {
     auto it = descriptors_.find(name_id);
     if (it != descriptors_.end()) {
         VulkanDescriptorPushConstants *push_constants_descriptor = static_cast<VulkanDescriptorPushConstants *>(it->second);

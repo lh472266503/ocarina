@@ -13,7 +13,7 @@ class IndexBuffer;
 class RenderTarget;
 class DescriptorSetWriter;
 class DescriptorSet;
-class Pipeline;
+struct RHIPipeline;
 
 struct DrawCallItem {
     PipelineState* pipeline_state = nullptr;
@@ -26,7 +26,7 @@ struct DrawCallItem {
     using PreRenderFunction = ocarina::function<void(const DrawCallItem&)>;
 
     PreRenderFunction pre_render_function = nullptr;
-    Pipeline *pipeline = nullptr;
+    RHIPipeline *pipeline = nullptr;
     void *push_constant_data = nullptr;
     uint8_t push_constant_size = 0;
 };
@@ -34,7 +34,7 @@ struct DrawCallItem {
 struct PipelineRenderQueue
 {
     std::list<DrawCallItem> draw_call_items;
-    Pipeline *pipeline_line = nullptr;
+    RHIPipeline *pipeline_line = nullptr;
 
     void clear()
     {
@@ -93,7 +93,7 @@ protected:
     RenderTarget* depth_stencil_target_ = nullptr;
     BeginRenderPassCallback begin_render_pass_callback_ = nullptr;
 
-    std::unordered_map<Pipeline *, PipelineRenderQueue*> pipeline_render_queues_;
+    std::unordered_map<RHIPipeline *, PipelineRenderQueue *> pipeline_render_queues_;
     std::unordered_map<uint64_t, DescriptorSet*> global_descriptor_sets_;
     std::vector<DescriptorSet *> global_descriptor_sets_array_;
     GlobalUBO global_ubo_data_ = {};

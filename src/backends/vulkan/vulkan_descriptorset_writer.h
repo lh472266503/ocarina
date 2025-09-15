@@ -14,6 +14,7 @@ class VulkanDescriptor;
 class VulkanDevice;
 class VulkanDescriptorSet;
 class VulkanBuffer;
+struct RHIPipeline;
 class VulkanDescriptorSetWriter : public DescriptorSetWriter {
 public:
     VulkanDescriptorSetWriter(VulkanDevice* device, VulkanDescriptorSet* descriptor_set);
@@ -24,7 +25,7 @@ public:
     void build(VulkanDevice* device);
 
     void update_buffer(uint64_t name_id, void *data, uint32_t size) override;
-    void update_push_constants(uint64_t name_id, void *data, uint32_t size, Pipeline* pipeline) override;
+    void update_push_constants(uint64_t name_id, void *data, uint32_t size, RHIPipeline *pipeline) override;
     void update_texture(uint64_t name_id, Texture *texture) override;
 
 private:

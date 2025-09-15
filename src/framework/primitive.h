@@ -23,7 +23,7 @@ class DescriptorSet;
 class DescriptorSetLayout;
 class Device;
 class DescriptorSetWriter;
-class Pipeline;
+struct RHIPipeline;
 
 class Primitive {
 public:
@@ -111,7 +111,7 @@ private:
     bool transform_dirty_ = true;
     bool pipeline_state_dirty = true;
     bool shader_dirty = false;
-    Pipeline *pipeline_ = nullptr;
+    RHIPipeline *pipeline_ = nullptr;
 
     std::unordered_map<uint64_t, Texture*> textures_;
     std::vector<DescriptorSet *> descriptor_sets_;

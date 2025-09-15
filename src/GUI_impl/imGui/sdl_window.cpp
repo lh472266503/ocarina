@@ -22,7 +22,7 @@ void SDLWindow::init(const char *name, uint2 initial_size, bool resizable) noexc
     handle_ = SDL_CreateWindow(name, initial_size.x, initial_size.y, flags);
     HWND hwnd = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(handle_), SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL);
     window_handle_ = (uint64_t)hwnd;
-
+    IMGUI_CHECKVERSION();
 }
 
 SDLWindow::SDLWindow(const char *name, uint2 initial_size, bool resizable) noexcept
@@ -36,7 +36,7 @@ SDLWindow::~SDLWindow() noexcept {
     //widgets_.reset();
     //ImGui_ImplOpenGL3_Shutdown();
     //ImGui_ImplGlfw_Shutdown();
-    //ImGui::DestroyContext();
+    
     SDL_DestroyWindow(handle_);
 }
 

@@ -145,9 +145,9 @@ public:
     void destroy_render_pass(RHIRenderPass *render_pass) noexcept override {}
     std::array<DescriptorSetLayout *, MAX_DESCRIPTOR_SETS_PER_SHADER> create_descriptor_set_layout(void **shaders, uint32_t shaders_count) noexcept override { return {}; }
     void bind_pipeline(const handle_ty pipeline) noexcept override {}
-    Pipeline *get_pipeline(const PipelineState &pipeline_state, RHIRenderPass *render_pass) noexcept override { return nullptr; }
+    RHIPipeline *get_pipeline(const PipelineState &pipeline_state, RHIRenderPass *render_pass) noexcept override { return nullptr; }
     DescriptorSet *get_global_descriptor_set(const string &name) noexcept override { return nullptr; }
-    void bind_descriptor_sets(DescriptorSet **descriptor_set, uint32_t descriptor_sets_num, Pipeline *pipeline) noexcept override {}
+    void bind_descriptor_sets(DescriptorSet **descriptor_set, uint32_t descriptor_sets_num, RHIPipeline *pipeline) noexcept override {}
     void begin_frame() noexcept override {}
     void end_frame() noexcept override {}
 };

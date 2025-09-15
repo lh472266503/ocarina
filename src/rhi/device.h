@@ -53,7 +53,7 @@ class IndexBuffer;
 class RHIRenderPass;
 class DescriptorSet;
 class DescriptorSetLayout;
-class Pipeline;
+struct RHIPipeline;
 class Image;
 
 class OC_RHI_API Device : public concepts::Noncopyable {
@@ -101,9 +101,9 @@ public:
         virtual void destroy_render_pass(RHIRenderPass *render_pass) noexcept = 0;
         virtual std::array<DescriptorSetLayout*, MAX_DESCRIPTOR_SETS_PER_SHADER> create_descriptor_set_layout(void **shaders, uint32_t shaders_count) noexcept = 0;
         virtual void bind_pipeline(const handle_ty pipeline) noexcept = 0;
-        virtual Pipeline *get_pipeline(const PipelineState &pipeline_state, RHIRenderPass *render_pass) noexcept = 0;
+        virtual RHIPipeline *get_pipeline(const PipelineState &pipeline_state, RHIRenderPass *render_pass) noexcept = 0;
         virtual DescriptorSet *get_global_descriptor_set(const string& name) noexcept = 0;
-        virtual void bind_descriptor_sets(DescriptorSet **descriptor_set, uint32_t descriptor_sets_num, Pipeline *pipeline) noexcept = 0;
+        virtual void bind_descriptor_sets(DescriptorSet **descriptor_set, uint32_t descriptor_sets_num, RHIPipeline *pipeline) noexcept = 0;
     };
 
     using Creator = Device::Impl *(RHIContext *);
@@ -220,7 +220,7 @@ public:
         impl_->bind_pipeline(pipeline);
     }
 
-    Pipeline *get_pipeline(const PipelineState &pipeline_state, RHIRenderPass *render_pass) noexcept {
+    RHIPipeline *get_pipeline(const PipelineState &pipeline_state, RHIRenderPass *render_pass) noexcept {
         return impl_->get_pipeline(pipeline_state, render_pass);
     }
 
@@ -228,7 +228,7 @@ public:
         return impl_->get_global_descriptor_set(name);
     }
 
-    void bind_descriptor_sets(DescriptorSet **descriptor_sets, uint32_t descriptor_sets_num, Pipeline *pipeline) noexcept {
+    void bind_descriptor_sets(DescriptorSet **descriptor_sets, uint32_t descriptor_sets_num, RHIPipeline *pipeline) noexcept {
         impl_->bind_descriptor_sets(descriptor_sets, descriptor_sets_num, pipeline);
     }
 

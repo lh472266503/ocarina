@@ -178,6 +178,9 @@ Device RHIContext::create_device(const string &backend_name) noexcept {
     auto d = obtain_module(dynamic_module_name(full_backend_name));
     using Constructor = Device::Impl *(RHIContext *);
     auto create_device = reinterpret_cast<Constructor *>(d->function_ptr("create_device"));
+    if (!create_device) {
+        OC_ERROR("Failed to create device for backend ", backend_name);
+    }
     auto destroy_func = reinterpret_cast<Device::Deleter *>(d->function_ptr("destroy"));
     return Device{Device::Handle{create_device(this), destroy_func}};
 }
@@ -187,6 +190,13 @@ WindowWrapper RHIContext::create_window(const char *name, uint2 initial_size, Wi
     auto create_window = reinterpret_cast<WindowCreator *>(d->function_ptr("create"));
     auto destroy_func = reinterpret_cast<WindowDeleter *>(d->function_ptr("destroy"));
     return WindowWrapper(create_window(name, initial_size, library, resizable), destroy_func);
+}
+
+WindowWrapper RHIContext::create_window(const char *name, uint2 initial_size, const char *type, bool resizable) {
+    auto d = obtain_module(dynamic_module_name(detail::window_name(type)));
+    auto create_window = reinterpret_cast<WindowCreator *>(d->function_ptr("create"));
+    auto destroy_func = reinterpret_cast<WindowDeleter *>(d->function_ptr("destroy"));
+    return WindowWrapper(create_window(name, initial_size, WindowLibrary::GLFW, resizable), destroy_func);
 }
 
 }// namespace ocarina

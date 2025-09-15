@@ -146,7 +146,7 @@ struct PipelineState {
     }
 };
 
-struct Pipeline
+struct RHIPipeline
 {
 
 };

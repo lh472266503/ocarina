@@ -13,7 +13,7 @@ namespace ocarina {
 class VulkanShader;
 class VulkanDevice;
 
-struct VulkanPipeline : public Pipeline {
+struct VulkanPipeline : public RHIPipeline {
     VkPipelineCache pipeline_cache_ = VK_NULL_HANDLE;
     VkPipeline pipeline_ = VK_NULL_HANDLE;
     VkPipelineLayout pipeline_layout_ = VK_NULL_HANDLE;
