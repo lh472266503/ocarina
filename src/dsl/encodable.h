@@ -155,6 +155,7 @@ public:
         switch (encode_type_) {
             case Original: {
                 uint index = offset_ / sizeof(buffer_ty);
+                assert(index + i < data.host_buffer().size());
                 data.host_buffer()[index + i] = bit_cast<T>(scalar);
                 break;
             }

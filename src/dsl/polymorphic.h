@@ -145,7 +145,8 @@ protected:
             uint size = 0;
             for (const ptr_type *object : objects) {
                 size = object->cal_offset(size);
-                size = mem_offset(size, object->alignment());
+                uint alignment = object->alignment();
+                size = mem_offset(size, alignment);
             }
         }
     };
