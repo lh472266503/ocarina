@@ -27,6 +27,7 @@
 #include <source_location>
 #include <EASTL/tuple.h>
 #include <EASTL/string.h>
+#include <sys/stat.h>
 
 #define OC_FORWARD(arg) std::forward<decltype(arg)>(arg)
 
@@ -423,7 +424,7 @@ inline std::wstring string_to_wstring(const std::string& source)
 {
     return std::wstring(source.begin(), source.end());
 }
-#include <sys/stat.h>
+
 inline bool is_file_exist(const char* full_file_path)
 {
     struct stat buffer;

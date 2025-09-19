@@ -18,7 +18,10 @@ endfunction()
 add_library(ocarina-backend INTERFACE)
 
 add_subdirectory(cuda)
-if (${VISION_BUILD_VULKAN})
+
+option(VISION_BUILD_VULKAN "VISION BUILD VULKAN" ON)
+
+if (VISION_BUILD_VULKAN)
     add_subdirectory(vulkan)
 endif ()
 
