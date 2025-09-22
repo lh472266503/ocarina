@@ -36,7 +36,7 @@ ocarina::string CUDACompiler::compile(const Function &function, int sm) const no
     }
 
     auto compute_sm = ocarina::format("-arch=compute_{}", sm);
-    auto rt_option = fmt::format("-DLC_OPTIX_VERSION={}", 70300);
+    auto rt_option = fmt::format("-DLC_OPTIX_VERSION={}", OPTIX_VERSION);
     auto const_option = fmt::format("-Dlc_constant={}", nvrtc_version <= 110200 ? "const" : "constexpr");
     ocarina::vector<const char *> compile_option = {
         "--std=c++17",
