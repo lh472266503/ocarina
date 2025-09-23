@@ -168,7 +168,7 @@ inline T oc_atomicSub(OCBuffer<oc_uchar> buffer, Offset offset, T val) noexcept 
     return static_cast<oc_uint>(warpSize);
 }
 
-[[nodiscard]] void oc_synchronize_block() noexcept {
+void oc_synchronize_block() noexcept {
     __syncthreads();
 }
 
