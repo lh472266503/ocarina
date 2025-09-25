@@ -2,3 +2,8 @@
 /cmake-build-release
 /build
 /vs2019
+/vs2022
+/CMakeFiles
+**/*.vcxproj
+**/*.vcxproj.filters
+**/*.pdb

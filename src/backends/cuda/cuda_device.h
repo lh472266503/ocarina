@@ -117,8 +117,10 @@ public:
     [[nodiscard]] handle_ty create_texture(uint3 res, PixelStorage pixel_storage,
                                            uint level_num,
                                            const string &desc) noexcept override;
+    [[nodiscard]] handle_ty create_texture(Image *image, const TextureViewCreation &texture_view) noexcept override { return 0; }
     void destroy_texture(handle_ty handle) noexcept override;
     [[nodiscard]] handle_ty create_shader(const Function &function) noexcept override;
+    [[nodiscard]] handle_ty create_shader_from_file(const std::string &file_name, ShaderType shader_type, const std::set<string> &options) noexcept override { return InvalidUI64; }
     void destroy_shader(handle_ty handle) noexcept override;
     [[nodiscard]] handle_ty create_accel() noexcept override;
     void destroy_accel(handle_ty handle) noexcept override;
@@ -136,5 +138,17 @@ public:
     void unregister_shared(void *&shared_handle) noexcept override;
     void init_rtx() noexcept override { init_optix_context(); }
     [[nodiscard]] CommandVisitor *command_visitor() noexcept override;
+    void submit_frame() noexcept override {}
+    VertexBuffer* create_vertex_buffer() noexcept override { return nullptr; }
+    IndexBuffer *create_index_buffer(const void *initial_data, uint32_t indices_count, bool bit16) noexcept override { return nullptr; }
+    RHIRenderPass *create_render_pass(const RenderPassCreation &render_pass_creation) noexcept override { return nullptr; }
+    void destroy_render_pass(RHIRenderPass *render_pass) noexcept override {}
+    std::array<DescriptorSetLayout *, MAX_DESCRIPTOR_SETS_PER_SHADER> create_descriptor_set_layout(void **shaders, uint32_t shaders_count) noexcept override { return {}; }
+    void bind_pipeline(const handle_ty pipeline) noexcept override {}
+    RHIPipeline *get_pipeline(const PipelineState &pipeline_state, RHIRenderPass *render_pass) noexcept override { return nullptr; }
+    DescriptorSet *get_global_descriptor_set(const string &name) noexcept override { return nullptr; }
+    void bind_descriptor_sets(DescriptorSet **descriptor_set, uint32_t descriptor_sets_num, RHIPipeline *pipeline) noexcept override {}
+    void begin_frame() noexcept override {}
+    void end_frame() noexcept override {}
 };
 }// namespace ocarina

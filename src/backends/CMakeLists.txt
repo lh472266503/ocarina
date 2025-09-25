@@ -11,9 +11,17 @@ function(ocarina_add_backend name)
             RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
             WINDOWS_EXPORT_ALL_SYMBOLS OFF
             UNITY_BUILD OFF
-            DEBUG_POSTFIX "")
+            DEBUG_POSTFIX ""
+            FOLDER "ocarina")
 endfunction()
 
 add_library(ocarina-backend INTERFACE)
 
 add_subdirectory(cuda)
+
+option(VISION_BUILD_VULKAN "VISION BUILD VULKAN" ON)
+
+if (VISION_BUILD_VULKAN)
+    add_subdirectory(vulkan)
+endif ()
+

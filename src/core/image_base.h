@@ -106,6 +106,30 @@ OC_NDSC_INLINE size_t channel_num(PixelStorage pixel_storage) {
     return 4u;
 }
 
+OC_NDSC_INLINE uint32_t format_size_in_bytes(PixelStorage pixel_storage) {
+    switch (pixel_storage) {
+        case ocarina::PixelStorage::BYTE1:
+            return 1;
+        case ocarina::PixelStorage::BYTE2:
+            return 2;
+        case ocarina::PixelStorage::BYTE4:
+            return 4;
+        case ocarina::PixelStorage::UINT1:
+        case ocarina::PixelStorage::FLOAT1:
+            return 4;
+        case ocarina::PixelStorage::UINT2:
+        case ocarina::PixelStorage::FLOAT2:
+            return 8;
+        case ocarina::PixelStorage::UINT4:
+        case ocarina::PixelStorage::FLOAT4:
+            return 16;
+        case ocarina::PixelStorage::UNKNOWN:
+            return 0;
+        default:
+            return 4;
+    }
+}
+
 class OC_CORE_API ImageBase : public concepts::Noncopyable {
 protected:
     PixelStorage pixel_storage_{PixelStorage::UNKNOWN};
@@ -153,7 +177,7 @@ public:
     [[nodiscard]] size_t pitch_byte_size() const { return resolution_.x * pixel_size(pixel_storage_); }
     [[nodiscard]] size_t pixel_num() const { return resolution_.x * resolution_.y; }
     [[nodiscard]] size_t size_in_bytes() const {
-        return pixel_size(pixel_storage_) * pixel_num() * channel_num();
+        return pixel_size(pixel_storage_) * pixel_num();
     }
 };
 

@@ -27,6 +27,7 @@
 #include <source_location>
 #include <EASTL/tuple.h>
 #include <EASTL/string.h>
+#include <sys/stat.h>
 
 #define OC_FORWARD(arg) std::forward<decltype(arg)>(arg)
 
@@ -170,6 +171,43 @@ template<typename To, typename From>
     To *casted = static_cast<To *>(from.get());
     from.release();
     return std::unique_ptr<To>(casted);
+}
+
+
+struct unique_allocator {
+    unique_allocator() = default;
+    template<typename T>
+    [[nodiscard]] T *allocate(size_t n) const noexcept {
+        return static_cast<T *>(::operator new(n * sizeof(T)));
+    }
+    template<typename T>
+    void deallocate(T *p, size_t) const noexcept {
+        deallocate(p);
+    }
+};
+
+template<typename T, typename Alloc>
+struct unique_deleter {
+    Alloc alloc;
+    void operator()(T *ptr) {
+        if (ptr) {
+            ptr->~T();
+            alloc.deallocate(ptr, 1);
+        }
+    }
+};
+
+template<typename T, typename Alloc = unique_allocator, typename... Args>
+std::unique_ptr<T> make_unique_with_allocator(Args &&...args) {
+    //auto deleter = [](T *p) {
+    //    std::destroy_at(p);
+    //    deallocate(p);
+    //};
+    Alloc alloc;
+    //return {ptr, std::bind(deleter, std::placeholders::_1, allocate<T>, 1)};
+    T *rawPtr = alloc.allocate<T>(1);
+    new (rawPtr) T(std::forward<Args>(args)...);
+    return std::unique_ptr<T>(rawPtr);//std::unique_ptr<T, unique_deleter<T, Alloc>>(rawPtr, unique_deleter<T, Alloc>{alloc});
 }
 
 template<typename... Ts>
@@ -345,6 +383,52 @@ inline void clear_directory(const std::filesystem::path &dir_path) {
     } catch (const std::filesystem::filesystem_error &e) {
         std::cerr << "Error clearing directory: " << e.what() << std::endl;
     }
+}
+
+inline std::string get_file_name(const std::string& file_path)
+{
+    auto it = std::find_if(file_path.rbegin(), file_path.rend(), [](const char c) {
+        return c == '\\' || c == '/';
+    });
+    if (it == file_path.rend())
+    {
+        return file_path;
+    }
+
+    return file_path.substr(it.base() - file_path.begin());
+}
+
+inline std::string get_file_directory(const std::string& file_path)
+{
+    std::string file_name = get_file_name(file_path);
+    return file_path.substr(0, file_path.length() - file_name.length());
+}
+
+inline std::string wstring_to_string(const wchar_t* source)
+{
+    size_t len = std::wcstombs(nullptr, source, 0) + 1;
+    // Creating a buffer to hold the multibyte string
+    char *buffer = new char[len];
+
+    // Converting wstring to string
+    std::wcstombs(buffer, source, len);
+
+    // Creating std::string from char buffer
+    std::string str(buffer);
+
+    delete[] buffer;
+    return str;
+}
+
+inline std::wstring string_to_wstring(const std::string& source)
+{
+    return std::wstring(source.begin(), source.end());
+}
+
+inline bool is_file_exist(const char* full_file_path)
+{
+    struct stat buffer;
+    return (stat(full_file_path, &buffer) == 0);
 }
 
 template<typename T>

@@ -6,7 +6,7 @@
 #include "util.h"
 #include "cuda_device.h"
 #include "cuda_runtime_api.h"
-#include "texture_fetch_functions.h"
+//#include "texture_fetch_functions.h"
 #include <cuda_gl_interop.h>
 
 namespace ocarina {

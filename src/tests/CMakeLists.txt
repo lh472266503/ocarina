@@ -8,7 +8,8 @@ function(ocarina_add_test name)
             PUBLIC_HEADER "${HEADER_FILES}"
             LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
             RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-            WINDOWS_EXPORT_ALL_SYMBOLS ON)
+            WINDOWS_EXPORT_ALL_SYMBOLS ON
+            FOLDER "ocarina/test")
 endfunction()
 
 
@@ -24,3 +25,5 @@ ocarina_add_test(test-doc SOURCES test_doc.cpp)
 ocarina_add_test(test-list SOURCES test_list.cpp)
 ocarina_add_test(test-read_buffer SOURCES test_read_buffer.cpp)
 ocarina_add_test(test-trait SOURCES test_trait.cpp)
+ocarina_add_test(test-vulkan-triangle SOURCES test_vulkan_triangle.cpp)
+ocarina_add_test(test-vulkan-texture SOURCES test_vulkan_texture.cpp)

@@ -6,32 +6,30 @@
 
 #include "GUI/window.h"
 #include "widgets.h"
-
+#include <SDL3/SDL.h>
 
 namespace ocarina {
 
-class GLTexture;
-class GLFWContext;
-
-class GLWindow : public Window {
+class SDLWindow : public Window {
 private:
-    ocarina::shared_ptr<GLFWContext> context_;
-    GLFWwindow *handle_{nullptr};
-    mutable ocarina::unique_ptr<GLTexture> texture_;
+    //ocarina::shared_ptr<GLFWContext> context_;
+    SDL_Window *handle_{nullptr};
+    //mutable ocarina::unique_ptr<GLTexture> texture_;
 
 private:
     void _begin_frame() noexcept override;
     void _end_frame() noexcept override;
+    bool should_close_ = false;
 
 public:
-    GLWindow(const char *name, uint2 initial_size, bool resizable = false) noexcept;
+    SDLWindow(const char *name, uint2 initial_size, bool resizable = false) noexcept;
     void init(const char *name, uint2 initial_size, bool resizable) noexcept override;
     void init_widgets() noexcept override;
-    GLWindow(GLWindow &&) noexcept = delete;
-    GLWindow(const GLWindow &) noexcept = delete;
-    GLWindow &operator=(GLWindow &&) noexcept = delete;
-    GLWindow &operator=(const GLWindow &) noexcept = delete;
-    ~GLWindow() noexcept override;
+    SDLWindow(SDLWindow &&) noexcept = delete;
+    SDLWindow(const SDLWindow &) noexcept = delete;
+    SDLWindow &operator=(SDLWindow &&) noexcept = delete;
+    SDLWindow &operator=(const SDLWindow &) noexcept = delete;
+    ~SDLWindow() noexcept override;
     [[nodiscard]] uint2 size() const noexcept override;
     [[nodiscard]] bool should_close() const noexcept override;
     [[nodiscard]] auto handle() const noexcept { return handle_; }
@@ -43,5 +41,7 @@ public:
     void set_background(const Buffer<ocarina::float4> &buffer, ocarina::uint2 size) noexcept override;
     void set_should_close() noexcept override;
     void set_size(uint2 size) noexcept override;
+    void show_window() noexcept override;
+    void hide_window() noexcept override;
 };
 }// namespace ocarina

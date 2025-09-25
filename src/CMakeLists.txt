@@ -12,6 +12,7 @@ add_subdirectory(rhi)
 add_subdirectory(GUI)
 add_subdirectory(backends)
 add_subdirectory(GUI_impl)
+add_subdirectory(framework)
 
 if (${OCARINA_PY})
     add_subdirectory(pyexporter)
@@ -26,7 +27,8 @@ target_link_libraries(ocarina-native INTERFACE
         ocarina-backend
         ocarina-rhi
         ocarina-GUI
-        ocarina-core)
+        ocarina-core
+        ocarina-framework)
 
 add_dependencies(ocarina-native ocarina-GUI_impl)
 
@@ -44,5 +46,6 @@ set_target_properties(ocarina PROPERTIES
         PUBLIC_HEADER "${HEADER_FILES}"
         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-        WINDOWS_EXPORT_ALL_SYMBOLS ON)
+        WINDOWS_EXPORT_ALL_SYMBOLS ON
+        FOLDER "ocarina")
 

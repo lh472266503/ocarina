@@ -4,7 +4,8 @@ set_target_properties(ocarina-ext PROPERTIES
         PUBLIC_HEADER "${HEADER_FILES}"
         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-        WINDOWS_EXPORT_ALL_SYMBOLS ON)
+        WINDOWS_EXPORT_ALL_SYMBOLS ON
+        FOLDER "ocarina")
 
 add_library(xxhash INTERFACE)
 target_include_directories(xxhash INTERFACE xxHash)
@@ -46,6 +47,11 @@ add_subdirectory(stblib)
 add_library(ocarina-gui-ext INTERFACE)
 target_link_libraries(ocarina-gui-ext INTERFACE glfw_config ocarina-imgui)
 
+add_subdirectory(SDL)
+set_property(TARGET SDL_uclibc PROPERTY FOLDER "ocarina/ext/SDL3")
+set_property(TARGET SDL3_test PROPERTY FOLDER "ocarina/ext/SDL3")
+set_property(TARGET SDL3-shared PROPERTY FOLDER "ocarina/ext/SDL3")
+
 cmake_policy(SET CMP0148 NEW)
 
 if (${OCARINA_PY})
@@ -59,6 +65,17 @@ if (${OCARINA_PY})
             ${PYTHON_INCLUDE_DIRS})
 endif ()
 
+add_subdirectory(SPIRV-Cross)
+set_property(TARGET spirv-cross PROPERTY FOLDER "ocarina/ext/spirv")
+set_property(TARGET spirv-cross-c PROPERTY FOLDER "ocarina/ext/spirv")
+set_property(TARGET spirv-cross-core PROPERTY FOLDER "ocarina/ext/spirv")
+set_property(TARGET spirv-cross-glsl PROPERTY FOLDER "ocarina/ext/spirv")
+set_property(TARGET spirv-cross-hlsl PROPERTY FOLDER "ocarina/ext/spirv")
+set_property(TARGET spirv-cross-msl PROPERTY FOLDER "ocarina/ext/spirv")
+set_property(TARGET spirv-cross-cpp PROPERTY FOLDER "ocarina/ext/spirv")
+set_property(TARGET spirv-cross-reflect PROPERTY FOLDER "ocarina/ext/spirv")
+set_property(TARGET spirv-cross-util PROPERTY FOLDER "ocarina/ext/spirv")
+#list(APPEND SPIRV_LIBS "spirv-cross-core" "spirv-cross-hlsl" )
 
 target_link_libraries(ocarina-ext
         PUBLIC
@@ -67,4 +84,5 @@ target_link_libraries(ocarina-ext
         ${PYTHON_LIBRARIES}
         xxhash
         spdlog
-        ocarina-ext-tinyexr)
+        ocarina-ext-tinyexr
+        SDL3::SDL3)

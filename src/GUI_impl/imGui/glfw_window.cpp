@@ -2,11 +2,15 @@
 // Created by Zero on 2022/8/16.
 //
 
-#include "window.h"
+#include "glfw_window.h"
 #include "widgets.h"
 #include "ext/imgui/gizmo/ImGuizmo.h"
 #include "core/logging.h"
 #include "rhi/common.h"
+#ifdef _WIN32
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include "GLFW/glfw3native.h"// for glfwGetWin32Window
+#endif
 
 namespace ocarina {
 
@@ -54,6 +58,9 @@ void GLWindow::init(const char *name, uint2 initial_size, bool resizable) noexce
         glfwGetError(&error);
         OC_ERROR_FORMAT("Failed to create GLFW window: {}.", error);
     }
+    #ifdef _WIN32
+    window_handle_ = (uint64_t)glfwGetWin32Window(handle_);
+    #endif
     glfwMakeContextCurrent(handle_);
     glfwSwapInterval(0);// disable vsync
 
@@ -223,12 +230,22 @@ void GLWindow::set_size(uint2 size) noexcept {
     }
 }
 
+void GLWindow::show_window() noexcept
+{
+
+}
+
+void GLWindow::hide_window() noexcept
+{
+
+}
+
 }// namespace ocarina
 
-OC_EXPORT_API ocarina::GLWindow *create(const char *name, ocarina::uint2 initial_size, bool resizable) {
-    return ocarina::new_with_allocator<ocarina::GLWindow>(name, initial_size, resizable);
-}
-
-OC_EXPORT_API void destroy(ocarina::GLWindow *ptr) {
-    ocarina::delete_with_allocator(ptr);
-}
+//OC_EXPORT_API ocarina::GLWindow *create(const char *name, ocarina::uint2 initial_size, bool resizable) {
+//    return ocarina::new_with_allocator<ocarina::GLWindow>(name, initial_size, resizable);
+//}
+//
+//OC_EXPORT_API void destroy(ocarina::GLWindow *ptr) {
+//    ocarina::delete_with_allocator(ptr);
+//}

@@ -9,6 +9,7 @@
 #include "core/concepts.h"
 #include "GUI/decl.h"
 #include "core/dynamic_module.h"
+#include "graphics_descriptions.h"
 
 namespace ocarina {
 class Device;
@@ -46,7 +47,9 @@ public:
     const DynamicModule *obtain_module(const string &module_name) noexcept;
     bool unload_module(const string &module_name) noexcept;
     void unload_module(void *handle) noexcept;
+    [[nodiscard]] Device create_device(const string &backend_name, const ocarina::InstanceCreation &instance_creation) noexcept;
     [[nodiscard]] Device create_device(const string &backend_name) noexcept;
+    [[nodiscard]] WindowWrapper create_window(const char *name, uint2 initial_size, WindowLibrary library, const char *type = "imgui", bool resizable = false);
     [[nodiscard]] WindowWrapper create_window(const char *name, uint2 initial_size, const char *type = "gl", bool resizable = false);
 };
 

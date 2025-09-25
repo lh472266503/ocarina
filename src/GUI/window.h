@@ -32,6 +32,7 @@ protected:
     Clock clock_;
     double dt_{};
     unique_ptr<Widgets> widgets_{};
+    uint64_t window_handle_ = InvalidUI64;
 
 protected:
     virtual void _begin_frame() noexcept;
@@ -52,6 +53,7 @@ public:
     [[nodiscard]] virtual uint2 size() const noexcept = 0;
     [[nodiscard]] virtual bool should_close() const noexcept = 0;
     [[nodiscard]] explicit operator bool() const noexcept { return !should_close(); }
+    [[nodiscard]] uint64_t get_window_handle() const { return window_handle_; }
     virtual Window &set_mouse_callback(MouseButtonCallback cb) noexcept;
     virtual Window &set_cursor_position_callback(CursorPositionCallback cb) noexcept;
     virtual Window &set_window_size_callback(WindowSizeCallback cb) noexcept;
@@ -59,7 +61,7 @@ public:
     virtual Window &set_scroll_callback(ScrollCallback cb) noexcept;
     virtual Window &set_begin_frame_callback(BeginFrame cb) noexcept;
     virtual Window &set_end_frame_callback(EndFrame cb) noexcept;
-    virtual void gen_buffer(uint &handle,uint size_in_byte) const noexcept = 0;
+    virtual void gen_buffer(uint &handle, uint size_in_byte) const noexcept = 0;
     virtual void bind_buffer(uint &handle, uint size_in_byte) const noexcept = 0;
     virtual void unbind_buffer(uint &handle) const noexcept = 0;
     virtual void set_background(const uchar4 *pixels, uint2 size) noexcept = 0;
@@ -82,8 +84,27 @@ public:
     virtual void run_one_frame(UpdateCallback &&draw) noexcept {
         run_one_frame(OC_FORWARD(draw), 0);
     }
-};
+    virtual void show_window() noexcept = 0;
+    virtual void hide_window() noexcept = 0;
 
+    class WindowLoop {
+    public:
+        WindowLoop(Window *window) : window_(window) {
+            if (window_) {
+                window_->_begin_frame();
+            }
+        }
+
+        ~WindowLoop() {
+            if (window_) {
+                window_->_end_frame();
+            }
+        }
+
+    private:
+        Window *window_{nullptr};
+    };
+};
 void dependency_window();
 
 }// namespace ocarina
