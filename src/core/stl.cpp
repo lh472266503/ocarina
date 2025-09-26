@@ -5,7 +5,7 @@
 #include "stl.h"
 #include "EASTL/allocator.h"
 
-namespace ocarina::detail {
+namespace ocarina {
 
 fs::path parent_path(const fs::path &p,int levels) {
     fs::path cur_path = p;
@@ -42,7 +42,8 @@ inline std::string get_file_name(const std::string& file_path) {
     return file_path.substr(it.base() - file_path.begin());
 }
 
-void *allocator_allocate(size_t size, size_t alignment) noexcept {
+namespace detail{
+    void *allocator_allocate(size_t size, size_t alignment) noexcept {
     return eastl::GetDefaultAllocator()->allocate(size, alignment, 0u);
 }
 
@@ -54,5 +55,6 @@ void *allocator_reallocate(void *p, size_t size, size_t alignment) noexcept {
     auto &&allocator = eastl::GetDefaultAllocator();
     allocator->deallocate(p, 0u);
     return allocator->allocate(size, alignment, 0u);
+}
 }
 }// namespace ocarina
