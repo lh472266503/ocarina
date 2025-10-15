@@ -7,3 +7,4 @@
 **/*.vcxproj
 **/*.vcxproj.filters
 **/*.pdb
+.cache/
